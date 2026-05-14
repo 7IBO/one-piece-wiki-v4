@@ -1,0 +1,18 @@
+{
+  "$schema": "https://onepiece-wiki/schemas/vocabulary.schema.json",
+  "id": "depiction-roles",
+  "schema_version": 1,
+  "values": {
+    "primary_portrait":     { "labels": { "en": "Primary portrait",     "fr": "Portrait principal" } },
+    "secondary_portrait":   { "labels": { "en": "Secondary portrait",   "fr": "Portrait secondaire" } },
+    "scene":                { "labels": { "en": "Scene",                "fr": "Scène" } },
+    "ability_illustration": { "labels": { "en": "Ability illustration", "fr": "Illustration de capacité" } },
+    "group_photo":          { "labels": { "en": "Group photo",          "fr": "Photo de groupe" } },
+    "equipment_view":       { "labels": { "en": "Equipment view",       "fr": "Vue d'équipement" } },
+    "location_view":        { "labels": { "en": "Location view",        "fr": "Vue de lieu" } },
+    "emotional_moment":     { "labels": { "en": "Emotional moment",     "fr": "Moment émotionnel" } },
+    "cover":                { "labels": { "en": "Cover",                "fr": "Couverture" } },
+    "silhouette":           { "labels": { "en": "Silhouette",           "fr": "Silhouette" } },
+    "color_spread":         { "labels": { "en": "Color spread",         "fr": "Illustration couleur" } }
+  }
+}
