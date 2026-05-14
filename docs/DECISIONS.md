@@ -8,6 +8,95 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-009 — Doc-consistency pass before Phase 1 code
+
+**Date**: 2026-05-14
+
+**Context**: Before any code work began for Phase 1, an audit of the
+full doc set (CLAUDE.md plus the twelve files under `/docs/`) surfaced
+three genuine contradictions and several smaller ambiguities. The risk
+of starting code on top of contradictory specs is that decisions get
+silently locked in by whichever spec the implementer happened to read.
+
+**Choice**: Apply eight targeted doc-only commits resolving each issue
+discretely, with no code touched. Specifically:
+
+1. **ADR-007** retitled and rewritten so it no longer claims the preview
+   app belongs to Phase 1; ROADMAP (Phase 3) is the authority.
+2. **DATA_MODEL.md** Gomu Gomu example: `revealed` → `revealed_to_reader`,
+   matching the canonical enum in EPISTEMIC_MODEL.md.
+3. **SCHEMA_SPEC.md** — introduce a *base qualifiers* concept
+   (`epistemic_status`, `actual_value`, `event`, `believed_by`,
+   `known_truth_by` implicit on every historisable property) and clarify
+   that `default_qualifiers` vs `allowed_qualifiers` is a UI distinction
+   (shown by default vs behind "more options"). Drop `epistemic_status`
+   from the bounty example's `allowed_qualifiers`.
+4. **Localization terminology** section added to SCHEMA_SPEC.md and
+   mirrored in I18N_STRATEGY.md, defining `i18n_key` (value type),
+   `value_key` (entry field), `canonical_name_key` (entity field), and
+   formally retiring the orphan term `name_key`.
+5. **CLAUDE.md** — drop the `bun:sqlite` alternative; `better-sqlite3`
+   is the only listed driver, matching ARCHITECTURE and BUILD_PIPELINE.
+6. **CLAUDE.md + ARCHITECTURE.md** — replace the "oxfmt if stable, else
+   dprint" conditional with "dprint (oxfmt under consideration when it
+   stabilises)", since CONVENTIONS.md already names `dprint.json` as the
+   config file.
+7. **SCHEMA_SPEC.md** — document when relation `since` may be omitted
+   (pre-canon events) and the alternative qualifier `during_period`
+   anchored by a controlled vocabulary; add `eaten-by` as a worked
+   example covering the Joy Boy / Void Century case.
+8. **CONVENTIONS.md** — introduce the rule "omit fields equal to their
+   schema default in entity JSON", enforced by `bun run format:data`.
+   Apply across all worked examples in DATA_MODEL.md.
+
+**Rationale**: Resolving these now means Phase 1 code is built against a
+single, internally consistent specification. The eight changes are
+small, additive, and reviewable; doing them as one bulk PR would have
+hidden the *kind* of issue each one addresses.
+
+**Consequences**:
+
+- The doc set is now self-consistent on phase placement, the epistemic
+  enum, the qualifier model, localisation terminology, the SQLite
+  driver, the formatter default, when `since` is required on relations,
+  and the default-omission rule.
+- A small number of in-scope follow-ups remain for later passes:
+  - CONVENTIONS.md still phrases the formatter as "oxfmt (or dprint as
+    fallback)" in the Formatting section — the wording was left
+    untouched because it was out of scope for fix 6, but it should
+    converge with CLAUDE.md and ARCHITECTURE.md in a future commit.
+  - The Luffy bounty history disagrees between two DATA_MODEL.md
+    examples (chapter 1053 vs 1058 for ₿3B). A simple fact-check, not
+    architectural — flagged here so it isn't lost.
+  - The `during-periods.json` vocabulary and the
+    `MISSING_TEMPORAL_ANCHOR` build error were referenced by the
+    eaten-by example but not yet authored under `/data/schemas/`. Both
+    are Phase 1 deliverables.
+
+**What we learned** (recorded so the next phase boundary repeats it):
+
+- **Worked examples drift fastest.** DATA_MODEL.md held more
+  contradictions than the formal spec layer. Whenever the data model
+  changes, the examples must be revalidated, not just the spec.
+- **Establish vocabulary before using it.** The four near-synonyms for
+  the localisation key space (`i18n_key`, `value_key`,
+  `canonical_name_key`, `name_key`) accreted across separate docs
+  written at different times. Naming a concept is part of introducing
+  it.
+- **ADR titles outrun their bodies.** ADR-007's title contradicted its
+  own body, and the title won every time the ADR was referenced
+  elsewhere. Title and body must agree.
+- **"Implicit on every X" rules need a formal home.** The five base
+  qualifiers were used uniformly in examples but had no canonical
+  declaration; editors who didn't read EPISTEMIC_MODEL would have
+  redeclared them per property type.
+
+**Process for future passes**: run a doc-consistency audit at the end of
+every completed phase, before any code is written for the next phase.
+Fix in small commits per concern, log the result as a new ADR.
+
+---
+
 ## ADR-008 — Storage strategy for dashboard drafts and sessions
 
 **Date**: 2026-05 (TBD on commit)
