@@ -140,8 +140,8 @@ A file in `/data/schemas/property-types/<id>.json`.
 | `localizable`        | boolean      | yes      | Whether values are translated (then `value_key` is stored)   |
 | `spoiler_sensitive`  | boolean      | yes      | Whether values must be filtered by spoiler progression       |
 | `applies_to_entity_types` | string[] | no    | Restrict which entity types can have this property           |
-| `default_qualifiers` | string[]     | no       | Qualifier keys that always apply                             |
-| `allowed_qualifiers` | object[]     | no       | Additional optional qualifiers (id, value_type, enum_ref)    |
+| `default_qualifiers` | string[]     | no       | Property-declared qualifiers shown in the form by default    |
+| `allowed_qualifiers` | object[]     | no       | Property-declared qualifiers accessible via "more options"   |
 | `ui_hint`            | object       | no       | Display format, input widget, icon                           |
 
 ### Value types
@@ -163,23 +163,49 @@ The following primitive `value_type`s are supported:
 
 ### Qualifiers
 
-A qualifier is metadata on a value entry. Common qualifiers:
+A qualifier is metadata on a value entry. Qualifiers come in two flavors:
+**base qualifiers** (implicit on every historisable property) and
+**property-declared qualifiers** (declared per property type).
 
-| Qualifier             | Type                  | Meaning                                          |
-| --------------------- | --------------------- | ------------------------------------------------ |
-| `since`               | source_ref            | First source where this value applies            |
-| `until`               | source_ref            | Last source where this value applies (optional)  |
-| `source`              | source_ref            | Source proving the value                         |
-| `epistemic_status`    | enum (epistemic)      | What kind of truth this is                       |
-| `actual_value`        | same as value         | The real value when status is a false belief     |
-| `event`               | entity_ref (event)    | The event that caused/revealed this value        |
-| `believed_by`         | array of entity_refs  | Characters who hold this belief                  |
-| `known_truth_by`      | array of entity_refs  | Characters who know the actual truth             |
-| `canon_scope`         | enum (canon-scopes)   | Restricts the value to a specific canon          |
-| `in_universe_date`    | string                | In-universe date (e.g. `"12_years_before_story"`)|
+#### Base qualifiers
 
-Each property type declares which qualifiers apply by default
-(`default_qualifiers`) and which are allowed additionally (`allowed_qualifiers`).
+The following qualifiers are **implicit on every historisable property**.
+They are provided by the schema engine and MUST NOT be listed in a
+property type's `default_qualifiers` or `allowed_qualifiers`. They are the
+mechanism by which the wiki expresses epistemic nuance — false beliefs,
+reveals, partial knowledge. See `/docs/EPISTEMIC_MODEL.md` for the full
+semantics.
+
+| Qualifier          | Type                  | Meaning                                          |
+| ------------------ | --------------------- | ------------------------------------------------ |
+| `epistemic_status` | enum (epistemic)      | What kind of truth this is. Defaults to `true`.  |
+| `actual_value`     | same as the value     | The real value when status is a false belief     |
+| `event`            | entity_ref (event)    | The event that caused/revealed this value        |
+| `believed_by`      | array of entity_refs  | Characters who hold this belief                  |
+| `known_truth_by`   | array of entity_refs  | Characters who know the actual truth             |
+
+#### Property-declared qualifiers
+
+Each property type declares its own qualifiers via two fields:
+
+- **`default_qualifiers`** — keys shown in the form by default. The form
+  generator surfaces these as primary inputs on every entry.
+- **`allowed_qualifiers`** — additional keys accessible behind a "more
+  options" affordance in the form. Editors who need them can reveal them;
+  most edits won't.
+
+Common property-declared qualifiers across the model:
+
+| Qualifier          | Type                  | Meaning                                          |
+| ------------------ | --------------------- | ------------------------------------------------ |
+| `since`            | source_ref            | First source where this value applies            |
+| `until`            | source_ref            | Last source where this value applies (optional)  |
+| `source`           | source_ref            | Source proving the value                         |
+| `canon_scope`      | enum (canon-scopes)   | Restricts the value to a specific canon          |
+| `in_universe_date` | string                | In-universe date (e.g. `"12_years_before_story"`)|
+
+A property type may also declare bespoke qualifiers in
+`allowed_qualifiers` (e.g. `issued_by` on `bounty`).
 
 ### Example
 
@@ -204,8 +230,7 @@ Each property type declares which qualifiers apply by default
   "applies_to_entity_types": ["character"],
   "default_qualifiers": ["since", "source"],
   "allowed_qualifiers": [
-    { "id": "issued_by", "value_type": "entity_ref" },
-    { "id": "epistemic_status", "value_type": "enum", "enum_ref": "epistemic-statuses" }
+    { "id": "issued_by", "value_type": "entity_ref" }
   ],
   "ui_hint": {
     "display_format": "currency_short",
