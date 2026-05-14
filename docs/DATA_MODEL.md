@@ -193,6 +193,87 @@ and uses for cross-reference indexing and spoiler-on-prose filtering.
 
 Detailed in `/docs/I18N_STRATEGY.md`.
 
+### Images
+
+Images are **first-class entities of type `image`**, not strings on
+other entities. This makes them reusable, individually spoiler-gated,
+and tracked for licensing.
+
+Other entities link to images via the `depicted-by` relation; the
+build pipeline generates the inverse `depicts` direction automatically.
+Each `depicted-by` instance carries qualifiers describing the
+depiction — `role` (e.g. `primary_portrait`, `cover`,
+`ability_illustration`), `period` (free-form, e.g. `east_blue`),
+`context`, and an optional `since` source ref binding the depiction
+to a specific in-universe moment.
+
+```json
+{
+  "type": "depicted-by",
+  "target": "image:luffy-bounty-3b",
+  "qualifiers": {
+    "role": "primary_portrait",
+    "period": "post_wano",
+    "since": "manga-chapter:1053"
+  }
+}
+```
+
+**Multiple images per entity.** Because `depicted-by` has
+`allow_multiple_concurrent: true`, an entity carries as many image
+relations as needed. A character's evolving wanted posters are
+modelled as one `depicted-by` relation per poster, each with its own
+`since` source ref. The current poster at any progression is the
+latest `depicted-by` whose qualifier `since` is reachable.
+
+**Reuse.** A single image can be linked from multiple entities — a
+group photo of the Straw Hats depicts nine characters via nine
+separate `depicted-by` relations, all pointing at the same image
+entity.
+
+**Spoiler gating.** Each image carries a required `spoiler_since`
+property (a source ref) defining when the image itself becomes safe
+to display. Combined with the relation's optional `since`, this gives
+two filters:
+
+1. `image.spoiler_since` — "is this image safe to show at all?"
+2. relation `since` — "is this depiction contextually relevant?"
+
+The read path applies both before rendering. A Gear 5 image
+(`spoiler_since: "manga-chapter:1044"`) is hidden from anyone before
+chapter 1044 regardless of which entity it appears on.
+
+**Sources.** Every image carries a `sourced-from` relation to the
+canonical source (chapter, episode, film, SBS, databook) it was
+extracted from. This drives the spoiler reachability calculation and
+preserves provenance for licensing review.
+
+**Storage.** Image files live in **Cloudflare R2** under a flat
+namespace: `images/<image-slug>.<format>`. The flat layout handles
+reuse cleanly — an image with multiple depicted-by targets has no
+single "owner" entity. The key convention is detailed in
+`/docs/ARCHITECTURE.md` § "Deployment".
+
+**Licensing.** Every image carries a `license` property
+(`image-licenses` vocabulary) and a required `attribution` string. An
+optional `source_origin` records where the image was obtained beyond
+the canonical source — useful for permissioned fan art or licensor
+attribution.
+
+The full image-handling guide (upload workflow, accessibility,
+captions, migration plan to documents) is in `/docs/IMAGES.md`.
+
+**Deferred: in-universe documents.** Wanted posters, vivre cards,
+newspapers, letters, maps, flags, and similar diegetic objects will
+eventually become their own entity type (`document`) with subtypes,
+enabling queries like "all wanted posters issued by the Marines" or
+"all vivre cards held by Luffy". In Phase 1 they are modelled as
+plain images (the wanted poster is an `image` entity, not a `document`
+entity). The migration path is non-destructive — existing images that
+depict such documents become `depicted-by` targets of the future
+`document` entities. See `/IDEAS.md` for the detailed thinking and
+ADR-011 for the deferral decision.
+
 ## Worked examples
 
 ### Character: Monkey D. Luffy (excerpt)
@@ -475,6 +556,7 @@ creating a schema file; no code changes.
 - `databook`
 - `title` (for inherited identities like Joy Boy)
 - `concept` (for mythological figures like Nika)
+- `image`
 
 Each type's properties and relations are declared in its
 `/data/schemas/entity-types/<type>.json` file. See `/docs/SCHEMA_SPEC.md`.
