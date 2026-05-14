@@ -4,17 +4,20 @@
  * a row per property using the value-input registry. Historical
  * properties get an array editor (one entry per historisable value).
  *
- * Phase 4.1 scope:
- *   - Read and write each value's primary `value` / `value_key` field
- *   - Read and write `since` (where applicable)
- *   - All other qualifiers (epistemic_status, assisted_by, etc.) are
- *     preserved in-place but not exposed in the form. Phase 4.3 adds
- *     the qualifier sub-form and the historical timeline UI.
+ * Phase 4.2.1: pickers replace free-text where the catalogue has
+ * better data — enums use the real vocabulary values, source_ref
+ * uses /api/sources, i18n_key has datalist suggestions from
+ * /api/i18n-keys.
  */
-import type { EntityTypeSchema, PropertyTypeSchema } from '@onepiece-wiki/schemas';
+import type {
+  EntityTypeSchema,
+  PropertyTypeSchema,
+  VocabularySchema,
+} from '@onepiece-wiki/schemas';
 import { Card } from '@onepiece-wiki/ui';
 import { type JSX, useState } from 'react';
-import { ValueInput, type ValueType } from './inputs.tsx';
+import type { SourceRef } from '../api.ts';
+import { ValueInput, type ValueInputContext, type ValueType } from './inputs.tsx';
 
 type PropertyEntry = Record<string, unknown>;
 type PropertyValue = PropertyEntry | PropertyEntry[];
@@ -25,6 +28,9 @@ type EntityData = Record<string, unknown> & {
 export type EntityFormProps = {
   entityType: EntityTypeSchema;
   propertyTypes: Record<string, PropertyTypeSchema>;
+  vocabularies: Record<string, VocabularySchema>;
+  sources: readonly SourceRef[];
+  i18nKeys: readonly string[];
   initialData: EntityData;
   onSave: (next: EntityData) => Promise<void>;
 };
@@ -36,6 +42,20 @@ function getValueField(propertyType: PropertyTypeSchema): 'value' | 'value_key' 
 function entries(value: PropertyValue | undefined): PropertyEntry[] {
   if (value === undefined) return [];
   return Array.isArray(value) ? value : [value];
+}
+
+function enumValuesFor(
+  propertyType: PropertyTypeSchema,
+  vocabularies: Record<string, VocabularySchema>,
+): readonly { id: string; label?: string; }[] {
+  const enumRef = propertyType.value_constraints?.enum_ref;
+  if (enumRef === undefined) return [];
+  const vocab = vocabularies[enumRef];
+  if (vocab === undefined) return [];
+  return Object.entries(vocab.values).map(([id, v]) => ({
+    id,
+    label: v.labels.en,
+  }));
 }
 
 export function EntityForm(props: EntityFormProps): JSX.Element {
@@ -94,6 +114,12 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     }
   }
 
+  const sinceCtx: ValueInputContext = {
+    enumValues: [],
+    sources: props.sources,
+    i18nKeys: props.i18nKeys,
+  };
+
   return (
     <div className='space-y-4'>
       {props.entityType.properties.map((decl) => {
@@ -110,6 +136,11 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         const valueField = getValueField(propertyType);
         const propertyEntries = entries(data.properties?.[decl.id]);
         const valueType = propertyType.value_type as ValueType;
+        const valueCtx: ValueInputContext = {
+          enumValues: enumValuesFor(propertyType, props.vocabularies),
+          sources: props.sources,
+          i18nKeys: props.i18nKeys,
+        };
 
         return (
           <Card
@@ -132,7 +163,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                   <thead>
                     <tr className='text-text-muted text-left'>
                       <th className='pb-1'>value</th>
-                      {propertyType.historical ? <th className='w-48 pb-1'>since</th> : null}
+                      {propertyType.historical ? <th className='w-64 pb-1'>since</th> : null}
                       {propertyType.historical ? <th className='w-12 pb-1'></th> : null}
                     </tr>
                   </thead>
@@ -143,6 +174,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                           <ValueInput
                             valueType={valueType}
                             value={entry[valueField]}
+                            ctx={valueCtx}
                             onChange={(next) => {
                               updateEntry(decl.id, propertyType.historical, idx, {
                                 ...entry,
@@ -157,6 +189,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                               <ValueInput
                                 valueType='source_ref'
                                 value={entry['since']}
+                                ctx={sinceCtx}
                                 onChange={(next) => {
                                   updateEntry(decl.id, true, idx, { ...entry, since: next });
                                 }}
@@ -215,7 +248,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
           onClick={handleSave}
           className='bg-accent text-accent-fg disabled:bg-text-muted rounded px-4 py-2 text-sm font-medium hover:opacity-90'
         >
-          {saving ? 'Saving…' : 'Save to disk'}
+          {saving ? 'Saving…' : 'Open PR with these changes'}
         </button>
         {error !== null ? <span className='text-danger text-sm'>{error}</span> : null}
       </div>

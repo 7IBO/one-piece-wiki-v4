@@ -1,7 +1,7 @@
 import { Content } from '@onepiece-wiki/ui';
 import { createFileRoute } from '@tanstack/react-router';
 import { type JSX, useEffect, useState } from 'react';
-import { api, type EntityDetail, type SchemaCatalogue } from '../api.ts';
+import { api, type EntityDetail, type SchemaCatalogue, type SourceRef } from '../api.ts';
 import { EntityForm } from '../form/EntityForm.tsx';
 
 export const Route = createFileRoute('/types/$type/$slug')({
@@ -12,14 +12,23 @@ function EntityEditComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const [entity, setEntity] = useState<EntityDetail | null>(null);
   const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
+  const [sources, setSources] = useState<readonly SourceRef[]>([]);
+  const [i18nKeys, setI18nKeys] = useState<readonly string[]>([]);
   const [error, setError] = useState<string | null>(null);
   const [savedNote, setSavedNote] = useState<string | null>(null);
 
   useEffect(() => {
-    Promise.all([api.getEntity(type, slug), api.schemas()])
-      .then(([e, s]) => {
+    Promise.all([
+      api.getEntity(type, slug),
+      api.schemas(),
+      api.sources(),
+      api.i18nKeys(),
+    ])
+      .then(([e, s, src, keys]) => {
         setEntity(e);
         setSchemas(s);
+        setSources(src);
+        setI18nKeys(keys);
       })
       .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
   }, [type, slug]);
@@ -57,6 +66,9 @@ function EntityEditComponent(): JSX.Element {
       <EntityForm
         entityType={entityType}
         propertyTypes={schemas.propertyTypes}
+        vocabularies={schemas.vocabularies}
+        sources={sources}
+        i18nKeys={i18nKeys}
         initialData={entity.data}
         onSave={async (next) => {
           const result = await api.saveEntity(type, slug, next, entity.sha);

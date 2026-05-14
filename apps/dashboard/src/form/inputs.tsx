@@ -4,15 +4,26 @@
  * (inside the array editor). The registry is keyed by the property
  * type's value_type, matching the schema-driven form generator's
  * contract — no per-property-name component.
+ *
+ * Phase 4.2.1 wired the inputs to real catalogue data:
+ *   - EnumInput receives the vocabulary's values via enumValues.
+ *   - SourceRefInput is a dedicated picker over /api/sources, ordered
+ *     by chapter number when applicable.
+ *   - I18nKeyInput is a datalist-backed combobox over every i18n key
+ *     already in use (collected from /api/i18n-keys).
  */
 import { cn } from '@onepiece-wiki/ui';
 import type { JSX } from 'react';
+import { useId } from 'react';
+import type { SourceRef } from '../api.ts';
 
-type InputProps<T> = {
+type CommonProps = {
+  disabled?: boolean | undefined;
+};
+
+type InputProps<T> = CommonProps & {
   value: T | undefined;
   onChange: (next: T) => void;
-  disabled?: boolean | undefined;
-  enumValues?: readonly string[] | undefined;
 };
 
 const baseInput =
@@ -58,7 +69,9 @@ export function BooleanInput({ value, onChange, disabled }: InputProps<boolean>)
 }
 
 export function EnumInput(
-  { value, onChange, enumValues, disabled }: InputProps<string>,
+  { value, onChange, enumValues, disabled }: InputProps<string> & {
+    enumValues: readonly { id: string; label?: string; }[];
+  },
 ): JSX.Element {
   return (
     <select
@@ -67,10 +80,10 @@ export function EnumInput(
       disabled={disabled === true}
       onChange={(e) => onChange(e.target.value)}
     >
-      <option value=''></option>
-      {(enumValues ?? []).map((v) => (
-        <option key={v} value={v}>
-          {v}
+      <option value=''>— pick one —</option>
+      {enumValues.map((v) => (
+        <option key={v.id} value={v.id}>
+          {v.label !== undefined ? `${v.label} (${v.id})` : v.id}
         </option>
       ))}
     </select>
@@ -80,9 +93,9 @@ export function EnumInput(
 export function EntityRefInput(
   { value, onChange, disabled }: InputProps<string>,
 ): JSX.Element {
-  // Phase 4.1: simple text input with a hint at the expected format.
-  // Phase 4.3 replaces this with an autocomplete over SDK-discovered
-  // entities filtered by relation_type's valid_to_types.
+  // Phase 4.2.1: free text with a hint. Phase 4.3 layers a real
+  // typeahead over /api/entities/<type> filtered by the relation's
+  // valid_to_types.
   return (
     <input
       type='text'
@@ -96,18 +109,49 @@ export function EntityRefInput(
   );
 }
 
-export function I18nKeyInput(
-  { value, onChange, disabled }: InputProps<string>,
+export function SourceRefInput(
+  { value, onChange, sources, disabled }: InputProps<string> & {
+    sources: readonly SourceRef[];
+  },
 ): JSX.Element {
   return (
-    <input
-      type='text'
+    <select
       className={cn(baseInput, 'font-mono text-xs')}
-      placeholder='entity.slug.property.variant'
       value={value ?? ''}
       disabled={disabled === true}
       onChange={(e) => onChange(e.target.value)}
-    />
+    >
+      <option value=''>— pick a source —</option>
+      {sources.map((s) => (
+        <option key={s.id} value={s.id}>
+          {s.number !== null ? `${s.type} ${s.number} (${s.id})` : s.id}
+        </option>
+      ))}
+    </select>
+  );
+}
+
+export function I18nKeyInput(
+  { value, onChange, suggestions, disabled }: InputProps<string> & {
+    suggestions: readonly string[];
+  },
+): JSX.Element {
+  const listId = useId();
+  return (
+    <>
+      <input
+        type='text'
+        list={listId}
+        className={cn(baseInput, 'font-mono text-xs')}
+        placeholder='entity.slug.property.variant'
+        value={value ?? ''}
+        disabled={disabled === true}
+        onChange={(e) => onChange(e.target.value)}
+      />
+      <datalist id={listId}>
+        {suggestions.map((s) => <option key={s} value={s} />)}
+      </datalist>
+    </>
   );
 }
 
@@ -123,13 +167,19 @@ export type ValueType =
   | 'i18n_key'
   | 'markdown';
 
+export type ValueInputContext = {
+  readonly enumValues: readonly { id: string; label?: string; }[];
+  readonly sources: readonly SourceRef[];
+  readonly i18nKeys: readonly string[];
+};
+
 export function ValueInput(
-  { valueType, value, onChange, disabled, enumValues }: {
+  { valueType, value, onChange, disabled, ctx }: {
     valueType: ValueType;
     value: unknown;
     onChange: (next: unknown) => void;
     disabled?: boolean | undefined;
-    enumValues?: readonly string[] | undefined;
+    ctx: ValueInputContext;
   },
 ): JSX.Element {
   switch (valueType) {
@@ -158,11 +208,10 @@ export function ValueInput(
           value={value as string | undefined}
           onChange={onChange}
           disabled={disabled}
-          enumValues={enumValues ?? []}
+          enumValues={ctx.enumValues}
         />
       );
     case 'entity_ref':
-    case 'source_ref':
       return (
         <EntityRefInput
           value={value as string | undefined}
@@ -170,9 +219,23 @@ export function ValueInput(
           disabled={disabled}
         />
       );
+    case 'source_ref':
+      return (
+        <SourceRefInput
+          value={value as string | undefined}
+          onChange={onChange}
+          disabled={disabled}
+          sources={ctx.sources}
+        />
+      );
     case 'i18n_key':
       return (
-        <I18nKeyInput value={value as string | undefined} onChange={onChange} disabled={disabled} />
+        <I18nKeyInput
+          value={value as string | undefined}
+          onChange={onChange}
+          disabled={disabled}
+          suggestions={ctx.i18nKeys}
+        />
       );
   }
 }

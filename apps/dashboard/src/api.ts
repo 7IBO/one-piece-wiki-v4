@@ -5,7 +5,11 @@
  * implementation from "write JSON file directly" to "open PR via
  * Octokit" without affecting this surface.
  */
-import type { EntityTypeSchema, PropertyTypeSchema } from '@onepiece-wiki/schemas';
+import type {
+  EntityTypeSchema,
+  PropertyTypeSchema,
+  VocabularySchema,
+} from '@onepiece-wiki/schemas';
 
 export type EntityRef = {
   readonly id: string;
@@ -30,6 +34,14 @@ export type SaveResult = {
 export type SchemaCatalogue = {
   readonly entityTypes: Record<string, EntityTypeSchema>;
   readonly propertyTypes: Record<string, PropertyTypeSchema>;
+  readonly vocabularies: Record<string, VocabularySchema>;
+};
+
+export type SourceRef = {
+  readonly id: string;
+  readonly type: string;
+  readonly slug: string;
+  readonly number: number | null;
 };
 
 async function getJson<T>(path: string): Promise<T> {
@@ -55,6 +67,12 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
 export const api = {
   async schemas(): Promise<SchemaCatalogue> {
     return getJson<SchemaCatalogue>('/api/schemas');
+  },
+  async sources(): Promise<SourceRef[]> {
+    return getJson<SourceRef[]>('/api/sources');
+  },
+  async i18nKeys(): Promise<string[]> {
+    return getJson<string[]>('/api/i18n-keys');
   },
   async listEntities(type: string): Promise<EntityRef[]> {
     return getJson<EntityRef[]>(`/api/entities/${encodeURIComponent(type)}`);

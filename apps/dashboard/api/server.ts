@@ -114,7 +114,74 @@ async function handleSchemas(): Promise<Response> {
   return json({
     entityTypes: Object.fromEntries(snap.validated.entityTypes),
     propertyTypes: Object.fromEntries(snap.validated.propertyTypes),
+    vocabularies: Object.fromEntries(snap.validated.vocabularies),
   });
+}
+
+const SOURCE_TYPES: ReadonlySet<string> = new Set([
+  'manga-chapter',
+  'anime-episode',
+  'film',
+  'sbs',
+  'databook',
+]);
+
+function chapterNumber(entity: { id: string; data: Record<string, unknown>; }): number | null {
+  const props = entity.data['properties'];
+  if (props === null || typeof props !== 'object') return null;
+  const num = (props as Record<string, unknown>)['number'];
+  if (num !== null && typeof num === 'object' && num !== undefined) {
+    const v = (num as Record<string, unknown>)['value'];
+    if (typeof v === 'number') return v;
+  }
+  return null;
+}
+
+async function handleSources(): Promise<Response> {
+  const snap = await snapshot();
+  const sources = [...snap.entities.values()]
+    .filter((e) => SOURCE_TYPES.has(e.type))
+    .map((e) => ({
+      id: e.id,
+      type: e.type,
+      slug: e.data['slug'],
+      number: chapterNumber(e),
+    }))
+    .sort((a, b) => {
+      if (a.type !== b.type) return a.type.localeCompare(b.type);
+      if (a.number !== null && b.number !== null) return a.number - b.number;
+      return String(a.slug).localeCompare(String(b.slug));
+    });
+  return json(sources);
+}
+
+function collectI18nKeysFrom(value: unknown, out: Set<string>): void {
+  if (value === null || value === undefined) return;
+  if (typeof value === 'string') {
+    if (/^[a-z0-9]+(?:[-_][a-z0-9]+)*(?:\.[a-z0-9]+(?:[-_][a-z0-9]+)*)+$/.test(value)) {
+      out.add(value);
+    }
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) collectI18nKeysFrom(item, out);
+    return;
+  }
+  if (typeof value === 'object') {
+    for (const v of Object.values(value as Record<string, unknown>)) {
+      collectI18nKeysFrom(v, out);
+    }
+  }
+}
+
+async function handleI18nKeys(): Promise<Response> {
+  const snap = await snapshot();
+  const seen = new Set<string>();
+  for (const entity of snap.entities.values()) {
+    collectI18nKeysFrom(entity.data, seen);
+  }
+  const keys = [...seen].sort();
+  return json(keys);
 }
 
 async function handleListEntities(type: string): Promise<Response> {
@@ -271,6 +338,8 @@ const server = Bun.serve({
       if (req.method === 'POST' && path === '/api/auth/logout') return handleAuthLogout();
 
       if (req.method === 'GET' && path === '/api/schemas') return await handleSchemas();
+      if (req.method === 'GET' && path === '/api/sources') return await handleSources();
+      if (req.method === 'GET' && path === '/api/i18n-keys') return await handleI18nKeys();
       const listMatch = /^\/api\/entities\/([^/]+)$/.exec(path);
       if (req.method === 'GET' && listMatch !== null) {
         return await handleListEntities(listMatch[1]!);
