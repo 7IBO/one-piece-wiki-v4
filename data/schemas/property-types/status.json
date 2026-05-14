@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "status",
+  "schema_version": 1,
+  "labels": { "en": "Status", "fr": "Statut" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "character-statuses" },
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": ["character"],
+  "default_qualifiers": ["since"]
+}

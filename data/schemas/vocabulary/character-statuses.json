@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "character-statuses",
+  "schema_version": 1,
+  "values": {
+    "alive": { "labels": { "en": "Alive", "fr": "Vivant" } },
+    "dead": { "labels": { "en": "Dead", "fr": "Mort" } },
+    "presumed_dead": { "labels": { "en": "Presumed dead", "fr": "Présumé mort" } },
+    "missing": { "labels": { "en": "Missing", "fr": "Disparu" } },
+    "unknown": { "labels": { "en": "Unknown", "fr": "Inconnu" } }
+  }
+}

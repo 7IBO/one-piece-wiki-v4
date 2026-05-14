@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "name",
+  "schema_version": 1,
+  "labels": { "en": "Name", "fr": "Nom" },
+  "value_type": "i18n_key",
+  "historical": true,
+  "localizable": true,
+  "spoiler_sensitive": false,
+  "default_qualifiers": ["since", "source"],
+  "allowed_qualifiers": [
+    { "id": "name_type", "value_type": "enum", "enum_ref": "name-types", "required": false },
+    { "id": "given_by", "value_type": "entity_ref", "required": false },
+    { "id": "context", "value_type": "string", "required": false }
+  ]
+}

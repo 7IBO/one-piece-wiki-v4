@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "title_key",
+  "schema_version": 1,
+  "labels": { "en": "Title", "fr": "Titre" },
+  "value_type": "i18n_key",
+  "historical": false,
+  "localizable": true,
+  "spoiler_sensitive": false
+}

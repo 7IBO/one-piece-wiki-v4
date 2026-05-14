@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "width",
+  "schema_version": 1,
+  "labels": { "en": "Width", "fr": "Largeur" },
+  "value_type": "number",
+  "value_constraints": { "min": 1, "step": 1 },
+  "unit": "px",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["image"]
+}

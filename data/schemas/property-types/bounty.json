@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "bounty",
+  "schema_version": 1,
+  "labels": { "en": "Bounty", "fr": "Prime" },
+  "value_type": "number",
+  "value_constraints": { "min": 0, "step": 1000000 },
+  "unit": "berry",
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": ["character"],
+  "default_qualifiers": ["since", "source"],
+  "allowed_qualifiers": [
+    { "id": "issued_by", "value_type": "entity_ref", "required": false }
+  ],
+  "ui_hint": { "display_format": "currency_short", "input_widget": "number_with_units" }
+}

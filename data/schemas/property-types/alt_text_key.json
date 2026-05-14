@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "alt_text_key",
+  "schema_version": 1,
+  "labels": { "en": "Alt text", "fr": "Texte alternatif" },
+  "value_type": "i18n_key",
+  "historical": false,
+  "localizable": true,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["image"]
+}

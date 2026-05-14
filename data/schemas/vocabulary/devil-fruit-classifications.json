@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "devil-fruit-classifications",
+  "schema_version": 1,
+  "values": {
+    "paramecia": { "labels": { "en": "Paramecia", "fr": "Paramecia" } },
+    "zoan": { "labels": { "en": "Zoan", "fr": "Zoan" } },
+    "ancient_zoan": { "labels": { "en": "Ancient Zoan", "fr": "Zoan ancestral" } },
+    "mythical_zoan": { "labels": { "en": "Mythical Zoan", "fr": "Zoan mythique" } },
+    "logia": { "labels": { "en": "Logia", "fr": "Logia" } },
+    "smile": { "labels": { "en": "SMILE", "fr": "SMILE" } },
+    "unknown": { "labels": { "en": "Unknown", "fr": "Inconnu" } }
+  }
+}

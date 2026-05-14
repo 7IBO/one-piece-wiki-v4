@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "format",
+  "schema_version": 1,
+  "labels": { "en": "Format", "fr": "Format" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "image-formats" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["image"]
+}

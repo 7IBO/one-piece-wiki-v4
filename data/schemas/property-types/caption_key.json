@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "caption_key",
+  "schema_version": 1,
+  "labels": { "en": "Caption", "fr": "Légende" },
+  "value_type": "i18n_key",
+  "historical": true,
+  "localizable": true,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["image"]
+}
