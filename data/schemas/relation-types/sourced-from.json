@@ -1,0 +1,20 @@
+{
+  "$schema": "https://onepiece-wiki/schemas/relation-type.schema.json",
+  "id": "sourced-from",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Sourced from", "inverse": "Sources image" },
+    "fr": { "active": "Provient de",  "inverse": "Source d'image" }
+  },
+  "valid_from_types": ["image"],
+  "valid_to_types": [
+    "manga-chapter",
+    "anime-episode",
+    "film",
+    "sbs",
+    "databook"
+  ],
+  "qualifiers": [],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true
+}
