@@ -1,0 +1,525 @@
+# Data Model
+
+This document defines the conceptual model. The formal schema specification
+is in `/docs/SCHEMA_SPEC.md`; the deep dives on specific aspects are in
+`/docs/EPISTEMIC_MODEL.md` and `/docs/CANON_MODEL.md`.
+
+## The three primitives
+
+Everything in the data layer reduces to three primitives. Every concept in
+the wiki — characters, devil fruits, chapters, battles, locations — is
+modeled with these three building blocks. There is no special case in the
+data layer.
+
+### 1. Entity types
+
+A **declaration** of what kinds of things can exist. Examples: `character`,
+`devil-fruit`, `crew`, `manga-chapter`, `event`, `arc`. Each entity type
+declares which properties it accepts and which relations it can participate in.
+
+Entity types live in `/data/schemas/entity-types/`.
+
+### 2. Entities
+
+Instances of entity types. An entity has:
+
+- A stable internal `id` (`type:slug`)
+- A public `slug` (English, kebab-case)
+- A bag of `properties` (each potentially historisable)
+- A list of `relations` to other entities
+
+Entities live in `/data/universes/<universe>/entities/<type>/<id>.json`.
+
+### 3. Relations
+
+Typed, qualified links between two entities. A relation has:
+
+- A `type` (defined in `/data/schemas/relation-types/`)
+- A `target` (the other entity)
+- Optional `qualifiers` (role, since, until, epistemic_status, …)
+- Optional historisation (the relation itself can change over time)
+
+Relations are stored on the entity where they are most natural to edit (e.g.
+`appears_in` on a chapter rather than on every character), and the build
+pipeline generates the inverse automatically.
+
+## Core concepts
+
+The three primitives are bare. The richness of the model comes from a set of
+cross-cutting concepts that any historisable value can carry.
+
+### Historisation
+
+Most properties are not single values but **arrays of timestamped values**.
+The current value is implied by the latest entry whose `since` predates the
+query date.
+
+```json
+"bounty": [
+  { "value": 30000000,    "since": "manga-chapter:119", "epistemic_status": "true" },
+  { "value": 100000000,   "since": "manga-chapter:432", "epistemic_status": "true" },
+  { "value": 3000000000,  "since": "manga-chapter:1058", "epistemic_status": "true" }
+]
+```
+
+Whether a property is historisable is declared in its property type definition
+(`historical: true`).
+
+### Epistemic status
+
+Every value can be qualified by **what kind of truth it is** at the moment it
+was published. This is the core mechanism that lets the wiki model false
+beliefs, hidden identities, retcons, and reveals.
+
+The full enum and its semantics are in `/docs/EPISTEMIC_MODEL.md`. Summary:
+
+| Status                  | Meaning                                                      |
+| ----------------------- | ------------------------------------------------------------ |
+| `true`                  | This is the in-universe reality, plain and known             |
+| `confirmed`             | Explicitly stated in canon at this point                     |
+| `believed_by_world`     | Public belief, possibly false; uses `actual_value`           |
+| `believed_by_characters`| Specific characters believe this; uses `believed_by`         |
+| `revealed_to_reader`    | The reader now knows; in-universe knowledge varies           |
+| `rumored`               | Unverified in-universe rumor                                 |
+| `implied`               | Strongly suggested but not explicit                          |
+| `retconned`             | Replaced by a later reveal; kept for historical record       |
+| `disputed`              | Sources disagree (e.g. SBS vs manga)                         |
+
+When an entry has a non-`true` status that diverges from reality, it carries
+an `actual_value` field referencing the real value.
+
+### Sources and in-universe progression
+
+Every dated value points to a **source entity**: a manga chapter, anime
+episode, film, SBS volume, databook, etc. Sources are first-class entities,
+not metadata.
+
+The user's progression is a multi-dimensional cursor over sources:
+
+```json
+{
+  "manga_chapter": 1043,
+  "anime_episode": 1070,
+  "films_seen": ["strong-world", "red"],
+  "sbs_read_up_to": "sbs:volume-105"
+}
+```
+
+Filtering for spoilers means evaluating, for each historisable value:
+"is the `since` source reachable from the user's progression?" Sources have
+cross-medium relations (`adapted_by`, `references`) so reaching `episode:1071`
+implicitly reaches `chapter:1044` (and vice versa).
+
+### Events
+
+Significant in-universe occurrences are modeled as **entities of type
+`event`**, not as ad-hoc fields. Examples: Battle of Marineford, Death of Ace,
+Nika reveal, Luffy's bounty raise after Enies Lobby.
+
+Events have:
+
+- A subtype (`battle`, `death`, `presumed_death`, `recruitment`,
+  `revelation`, `bounty_change`, `alliance_formed`, `awakening`, …)
+- A span (`first_source`, `last_source`)
+- A primary location (relation)
+- Participants (relations, with role and outcome qualifiers)
+- Effects (caused_death_of, set_up_event, …)
+- An optional narrative key for prose summary
+
+Properties on other entities can reference an event:
+
+```json
+"status": [
+  {
+    "value": "presumed_dead",
+    "since": "manga-chapter:585",
+    "epistemic_status": "believed_by_world",
+    "actual_value": "alive",
+    "event": "event:sabo-canon-incident"
+  }
+]
+```
+
+This binds the property change to the in-universe cause, making the data
+self-documenting and queryable.
+
+### Arcs and sagas
+
+`arc` and `saga` are entity types representing **narrative containers** (not
+in-universe occurrences). They are the primary navigation axis for users, as
+on Fandom. Events occur within arcs; arcs belong to sagas.
+
+### Canon scope
+
+Every source declares its canon scope (`manga`, `anime`, `anime_filler`,
+`film_canon`, `film_non_canon`, `sbs`, `databook`, `live_action`). Every
+derived fact inherits a canon scope from its source(s). Users configure which
+scopes they accept.
+
+Full detail in `/docs/CANON_MODEL.md`.
+
+### Knowledge graph (deferred to phase 2+)
+
+In addition to historisable property values, entities can carry an explicit
+`knowledge` list: facts they have learned, with when, from whom, and how
+certain they are. This enables the "perspective of character X at chapter Y"
+mode.
+
+```json
+"knowledge": [
+  { "fact": "fact:dragon-is-luffy-father", "learned_at": "manga-chapter:432", "learned_from": "character:garp" }
+]
+```
+
+Facts are entities themselves. The knowledge graph is **not implemented in
+phase 1** — `epistemic_status` is enough for now. It is documented here so
+the model is anticipated and nothing forecloses it.
+
+### Narratives
+
+Prose summaries (1–3 paragraphs) describing events, arcs, and character
+trajectories. They live in `/data/universes/<u>/narratives/<locale>/...`
+and are referenced by key from entities and events.
+
+Three levels:
+
+1. **Entity overview**: 1 paragraph per entity per locale
+2. **Event narrative**: 1–3 paragraphs per event per locale
+3. **Entity-in-event narrative**: optional, per major participant of an event
+
+Narratives use light Markdown and may include typed entity links via
+`[[character:zoro]]` syntax, which the build pipeline turns into hyperlinks
+and uses for cross-reference indexing and spoiler-on-prose filtering.
+
+Detailed in `/docs/I18N_STRATEGY.md`.
+
+## Worked examples
+
+### Character: Monkey D. Luffy (excerpt)
+
+```json
+{
+  "$schema": "../../../../schemas/zod/entity-character.schema.json",
+  "id": "character:luffy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "monkey-d-luffy",
+  "slug_history": [],
+  "canonical_name_key": "character.luffy.name.canonical",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.luffy.name.short",
+        "since": "manga-chapter:1",
+        "name_type": "common",
+        "epistemic_status": "true"
+      },
+      {
+        "value_key": "character.luffy.name.full",
+        "since": "manga-chapter:100",
+        "name_type": "full_name",
+        "epistemic_status": "true"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.luffy.epithet.straw-hat",
+        "since": "manga-chapter:98",
+        "given_by": "context:newspapers",
+        "epistemic_status": "true"
+      }
+    ],
+    "bounty": [
+      { "value": 30000000,   "since": "manga-chapter:119",  "source": "manga-chapter:119"  },
+      { "value": 100000000,  "since": "manga-chapter:432",  "source": "manga-chapter:432"  },
+      { "value": 300000000,  "since": "manga-chapter:601",  "source": "manga-chapter:601"  },
+      { "value": 400000000,  "since": "manga-chapter:801",  "source": "manga-chapter:801"  },
+      { "value": 500000000,  "since": "manga-chapter:801",  "source": "manga-chapter:801"  },
+      { "value": 1500000000, "since": "manga-chapter:903",  "source": "manga-chapter:903"  },
+      { "value": 3000000000, "since": "manga-chapter:1053", "source": "manga-chapter:1053" }
+    ],
+    "status": [
+      { "value": "alive", "since": "manga-chapter:1", "epistemic_status": "true" }
+    ]
+  },
+  "relations": [
+    {
+      "type": "member-of",
+      "target": "crew:straw-hat-pirates",
+      "qualifiers": {
+        "role": "captain",
+        "since": "manga-chapter:1",
+        "loyalty_status": "founder"
+      }
+    },
+    {
+      "type": "ate-fruit",
+      "target": "devil-fruit:gomu-gomu",
+      "qualifiers": {
+        "since": "manga-chapter:1",
+        "epistemic_status": "true"
+      }
+    },
+    {
+      "type": "family-of",
+      "target": "character:dragon",
+      "qualifiers": {
+        "relation_kind": "father",
+        "known_publicly_since": "manga-chapter:432"
+      }
+    },
+    {
+      "type": "bears-title",
+      "target": "title:joy-boy",
+      "qualifiers": {
+        "since": "manga-chapter:1043",
+        "epistemic_status": "implied"
+      }
+    }
+  ]
+}
+```
+
+### Devil Fruit: Gomu Gomu no Mi
+
+```json
+{
+  "$schema": "../../../../schemas/zod/entity-devil-fruit.schema.json",
+  "id": "devil-fruit:gomu-gomu",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "gomu-gomu-no-mi",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.gomu-gomu.name.common",
+        "since": "manga-chapter:1",
+        "name_type": "common",
+        "epistemic_status": "true"
+      },
+      {
+        "value_key": "devil-fruit.gomu-gomu.name.true",
+        "since": "manga-chapter:1044",
+        "name_type": "true_name",
+        "epistemic_status": "revealed",
+        "event": "event:nika-reveal"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "manga-chapter:1",
+        "epistemic_status": "believed_by_world",
+        "actual_value": "mythical-zoan"
+      },
+      {
+        "value": "mythical-zoan",
+        "since": "manga-chapter:1044",
+        "epistemic_status": "confirmed",
+        "event": "event:nika-reveal"
+      }
+    ]
+  },
+  "relations": [
+    {
+      "type": "eaten-by",
+      "target": "character:joy-boy-original",
+      "qualifiers": {
+        "during_period": "void_century",
+        "epistemic_status": "confirmed"
+      }
+    },
+    {
+      "type": "eaten-by",
+      "target": "character:luffy",
+      "qualifiers": {
+        "since": "manga-chapter:1",
+        "epistemic_status": "true"
+      }
+    }
+  ]
+}
+```
+
+### Manga chapter: 1044 (excerpt)
+
+```json
+{
+  "id": "manga-chapter:1044",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-1044",
+  "properties": {
+    "number": [{ "value": 1044, "since": "manga-chapter:1044" }],
+    "title_key": [{ "value": "manga-chapter.1044.title", "since": "manga-chapter:1044" }],
+    "published_at_jp": [{ "value": "2022-03-07", "since": "manga-chapter:1044" }],
+    "volume": [{ "value": "104", "since": "manga-chapter:1044" }],
+    "canon_scope": [{ "value": "manga", "since": "manga-chapter:1044" }]
+  },
+  "relations": [
+    { "type": "part-of-arc", "target": "arc:wano" },
+    { "type": "adapted-by", "target": "anime-episode:1071", "qualifiers": { "coverage": "full" } },
+    { "type": "features", "target": "character:luffy", "qualifiers": { "appearance_type": "full" } },
+    { "type": "features", "target": "devil-fruit:gomu-gomu", "qualifiers": { "appearance_type": "revelation", "event": "event:nika-reveal" } }
+  ]
+}
+```
+
+### Event: Battle of Marineford (excerpt)
+
+```json
+{
+  "id": "event:battle-of-marineford",
+  "type": "event",
+  "schema_version": 1,
+  "slug": "battle-of-marineford",
+  "properties": {
+    "event_subtype": [{ "value": "battle", "since": "manga-chapter:550" }],
+    "narrative_key": [{ "value": "event.battle-of-marineford.summary", "since": "manga-chapter:550" }]
+  },
+  "spans": {
+    "first_source": "manga-chapter:550",
+    "last_source": "manga-chapter:580",
+    "primary_location": "location:marineford"
+  },
+  "relations": [
+    { "type": "occurs-during-arc", "target": "arc:marineford" },
+    { "type": "participant", "target": "character:luffy", "qualifiers": { "side": "whitebeard-allies", "role": "rescuer", "outcome": "survived" } },
+    { "type": "participant", "target": "character:ace", "qualifiers": { "side": "captive", "outcome": "killed" } },
+    { "type": "participant", "target": "character:whitebeard", "qualifiers": { "side": "whitebeard-allies", "role": "leader", "outcome": "killed" } },
+    { "type": "participant", "target": "character:akainu", "qualifiers": { "side": "marines", "role": "admiral", "notable_action": "killed-ace" } },
+    { "type": "caused-death-of", "target": "character:ace" },
+    { "type": "caused-death-of", "target": "character:whitebeard" }
+  ]
+}
+```
+
+## Appearance types
+
+Relations of type `features` (chapter → entity) and `appears_in` (entity →
+chapter, generated as the inverse) carry an `appearance_type` qualifier. Full
+enumeration:
+
+| Value           | Meaning                                                 |
+| --------------- | ------------------------------------------------------- |
+| `full`          | The entity appears identifiable and present             |
+| `silhouette`    | Visible but unidentifiable on purpose                   |
+| `partial`       | A hand, an eye, a back of the head                      |
+| `mentioned`     | Named but not visually present                          |
+| `named_only`    | Name spoken without visual                              |
+| `flashback`     | Appears in a flashback                                  |
+| `cover_story`   | Appears in the volume cover story (parallel narrative)  |
+| `recap`         | Appears in a recap page                                 |
+| `vision`        | Hallucination, prophecy, dream sequence                 |
+| `photograph`    | On a wanted poster, vivre card, news clipping           |
+| `portrait`      | Painting, statue                                        |
+| `corpse`        | Already dead in the appearance                          |
+| `imagined`      | Someone imagining them                                  |
+| `narrator_only` | Mentioned by the narrator without character or visual   |
+
+Plus orthogonal flags:
+
+- `is_first_appearance: true` — first appearance of any kind
+- `is_first_full: true` — first identifiable appearance
+- `identity_revealed: false` — visual present but not yet known to be them
+
+## Name types
+
+Names are historisable with a `name_type` qualifier:
+
+| Value           | Meaning                                                  |
+| --------------- | -------------------------------------------------------- |
+| `common`        | Everyday name used by most                               |
+| `full_name`     | Full legal name                                          |
+| `true_name`     | Original/hidden name revealed late                       |
+| `epithet`       | Press/world title ("Straw Hat", "Pirate Hunter")         |
+| `nickname`      | Used by close ones                                       |
+| `alias`         | Active disguise / pseudonym                              |
+| `codename`      | Used inside an organisation                              |
+| `title`         | Held title ("Fifth Emperor")                             |
+| `insult`        | Used by enemies                                          |
+| `honorific`     | Cultural address ("Luffy-Taro", "Luffy-Sama")            |
+| `mistranslation`| Variant from a specific translation edition              |
+
+Each name entry can carry `given_by` (who calls them this) and `context`
+(where, e.g. `dressrosa-coliseum`).
+
+## Slugs and IDs
+
+- **ID**: `type:slug` form. Internal, immutable, never in URLs.
+  Example: `character:luffy`, `manga-chapter:1044`.
+- **Slug**: kebab-case, English, public, mutable. Used in URLs.
+  Example: `monkey-d-luffy`, `chapter-1044`.
+- **slug_history**: list of previous slugs that map to the current entity,
+  used to generate 301 redirects in the public app.
+
+The two are distinct because:
+- IDs are referenced from thousands of other files; changing them is
+  catastrophic.
+- Slugs are user-facing; corrections, disambiguations and renames happen.
+
+## Entity types (phase 1 inventory)
+
+These are the entity types in scope for phase 1. New types are added by
+creating a schema file; no code changes.
+
+- `character`
+- `devil-fruit`
+- `crew`
+- `organization`
+- `location`
+- `technique`
+- `weapon`
+- `ship`
+- `race`
+- `manga-chapter`
+- `anime-episode`
+- `film`
+- `arc`
+- `saga`
+- `event`
+- `sbs`
+- `databook`
+- `title` (for inherited identities like Joy Boy)
+- `concept` (for mythological figures like Nika)
+
+Each type's properties and relations are declared in its
+`/data/schemas/entity-types/<type>.json` file. See `/docs/SCHEMA_SPEC.md`.
+
+## What lives where
+
+| Content                         | Location                                            |
+| ------------------------------- | --------------------------------------------------- |
+| Entity definitions              | `/data/universes/<u>/entities/<type>/<id>.json`     |
+| Property values, dates, status  | Inside entity files                                 |
+| Localized names, descriptions   | `/data/universes/<u>/translations/<locale>/...json` |
+| Prose summaries                 | `/data/universes/<u>/narratives/<locale>/...md`     |
+| What types exist                | `/data/schemas/entity-types/`                       |
+| What properties exist           | `/data/schemas/property-types/`                     |
+| What relations exist            | `/data/schemas/relation-types/`                     |
+| Enum values (haki types, etc.)  | `/data/schemas/vocabulary/`                         |
+
+## What the data model intentionally does not capture
+
+- **Reader emotion and authorial intent**: these belong in narratives, not
+  in structured fields.
+- **Fan theories and speculation**: out of scope in phase 1; may be added
+  with strict separation under a `theory` entity type later.
+- **Real-world publication metadata beyond essentials**: editor, artist
+  assistants, sales numbers. Possibly added later.
+- **Cross-media identity at the actor/voice level** (live-action cast,
+  seiyū): possible later, scoped to `voice-cast` and `live-action-cast`
+  entity types.
+
+## Migration to new entity types
+
+Adding a new entity type or property is a pure data operation:
+
+1. Create or edit the schema file
+2. Generate updated Zod (`bun run schema:generate`)
+3. If existing entities need new fields, write a migration in
+   `/data/migrations/` (one PR, scripted)
+4. Commit, PR, review, merge
+
+No application code changes for these operations. This is the test of
+maintainability and the invariant the codebase must preserve.

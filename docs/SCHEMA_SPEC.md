@@ -1,0 +1,439 @@
+# Schema Specification
+
+Schemas are JSON files that declare the shape of the data. They are the
+single source of truth for what can be expressed. Application code reads
+schemas at startup, generates Zod validators from them, and renders forms
+dynamically based on them. **No code knows about specific property or
+relation names**; everything is mediated by the schema layer.
+
+This document is the formal spec. The conceptual overview is in
+`/docs/DATA_MODEL.md`.
+
+## Directory layout
+
+```
+/data/schemas/
+├── entity-types/
+│   ├── character.json
+│   ├── devil-fruit.json
+│   ├── manga-chapter.json
+│   ├── event.json
+│   └── ...
+├── property-types/
+│   ├── name.json
+│   ├── bounty.json
+│   ├── classification.json
+│   ├── status.json
+│   └── ...
+├── relation-types/
+│   ├── member-of.json
+│   ├── ate-fruit.json
+│   ├── features.json
+│   ├── participant.json
+│   └── ...
+└── vocabulary/
+    ├── haki-types.json
+    ├── crew-roles.json
+    ├── canon-scopes.json
+    ├── epistemic-statuses.json
+    └── ...
+```
+
+Every schema file starts with `$schema` pointing to its meta-schema, used
+for editor support and validation of schemas themselves.
+
+## Entity type schema
+
+A file in `/data/schemas/entity-types/<id>.json`.
+
+### Fields
+
+| Field                  | Type        | Required | Description                                                     |
+| ---------------------- | ----------- | -------- | --------------------------------------------------------------- |
+| `$schema`              | string      | yes      | Meta-schema reference                                           |
+| `id`                   | string      | yes      | Type identifier, kebab-case (e.g. `character`)                  |
+| `schema_version`       | integer     | yes      | Bumped on breaking changes                                      |
+| `labels`               | object      | yes      | Locale → label, used in UI and breadcrumbs                      |
+| `url_segment`          | string      | yes      | Segment used in URLs (kebab-case English, e.g. `characters`)    |
+| `properties`           | array       | yes      | Allowed property declarations                                   |
+| `allowed_relations`    | string[]    | yes      | IDs of relation types entities of this type may participate in  |
+| `requires_translations`| boolean     | no       | If true, translations are mandatory for `name_key` properties   |
+| `ui_hint`              | object      | no       | Hints for the dashboard (icon, color, group)                    |
+
+### Property declaration
+
+Each entry in `properties` declares whether a property is required, historisable,
+localizable, and what default qualifiers it carries.
+
+```json
+{
+  "id": "bounty",
+  "required": false,
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "default_qualifiers": ["since", "source", "epistemic_status"]
+}
+```
+
+The shape of values is defined in the corresponding property type file.
+
+### Example
+
+```json
+{
+  "$schema": "https://onepiece-wiki/schemas/entity-type.schema.json",
+  "id": "character",
+  "schema_version": 1,
+  "labels": {
+    "en": "Character",
+    "fr": "Personnage"
+  },
+  "url_segment": "characters",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "epithet", "required": false, "historical": true, "localizable": true },
+    { "id": "bounty", "required": false, "historical": true, "localizable": false },
+    { "id": "age", "required": false, "historical": true, "localizable": false },
+    { "id": "height", "required": false, "historical": true, "localizable": false },
+    { "id": "birthday", "required": false, "historical": false, "localizable": false },
+    { "id": "blood_type", "required": false, "historical": false, "localizable": false },
+    { "id": "haki_types", "required": false, "historical": true, "localizable": false },
+    { "id": "status", "required": true, "historical": true, "localizable": false }
+  ],
+  "allowed_relations": [
+    "member-of",
+    "ate-fruit",
+    "uses-technique",
+    "family-of",
+    "ally-of",
+    "enemy-of",
+    "mentor-of",
+    "appears-in",
+    "bears-title",
+    "participated-in"
+  ],
+  "ui_hint": {
+    "icon": "user",
+    "group": "people",
+    "color": "blue"
+  }
+}
+```
+
+## Property type schema
+
+A file in `/data/schemas/property-types/<id>.json`.
+
+### Fields
+
+| Field                | Type         | Required | Description                                                  |
+| -------------------- | ------------ | -------- | ------------------------------------------------------------ |
+| `$schema`            | string       | yes      | Meta-schema reference                                        |
+| `id`                 | string       | yes      | Property identifier, kebab-case                              |
+| `schema_version`     | integer      | yes      | Bumped on breaking changes                                   |
+| `labels`             | object       | yes      | Locale → label                                               |
+| `value_type`         | enum         | yes      | One of the value type primitives (see below)                 |
+| `value_constraints`  | object       | no       | Type-specific constraints (min, max, pattern, enum_ref, etc.)|
+| `unit`               | string       | no       | Display unit (e.g. `berry`, `cm`, `kg`)                      |
+| `historical`         | boolean      | yes      | Whether values are versioned                                 |
+| `localizable`        | boolean      | yes      | Whether values are translated (then `value_key` is stored)   |
+| `spoiler_sensitive`  | boolean      | yes      | Whether values must be filtered by spoiler progression       |
+| `applies_to_entity_types` | string[] | no    | Restrict which entity types can have this property           |
+| `default_qualifiers` | string[]     | no       | Qualifier keys that always apply                             |
+| `allowed_qualifiers` | object[]     | no       | Additional optional qualifiers (id, value_type, enum_ref)    |
+| `ui_hint`            | object       | no       | Display format, input widget, icon                           |
+
+### Value types
+
+The following primitive `value_type`s are supported:
+
+| value_type    | TypeScript                | Example                                        |
+| ------------- | ------------------------- | ---------------------------------------------- |
+| `string`      | `string`                  | `"alive"`                                      |
+| `number`      | `number`                  | `30000000`                                     |
+| `boolean`     | `boolean`                 | `true`                                         |
+| `enum`        | one of `enum_ref` values  | `"paramecia"`                                  |
+| `multi_enum`  | array of `enum_ref` values| `["conqueror", "armament"]`                    |
+| `date`        | ISO 8601 string           | `"2022-03-07"`                                 |
+| `entity_ref`  | entity ID                 | `"location:goa-kingdom"`                       |
+| `source_ref`  | source entity ID          | `"manga-chapter:1044"`                         |
+| `i18n_key`    | localizable key           | `"character.luffy.name.full"` (resolved later) |
+| `markdown`    | light markdown string     | `"### Personality\n\nLuffy is **fearless**…"`  |
+
+### Qualifiers
+
+A qualifier is metadata on a value entry. Common qualifiers:
+
+| Qualifier             | Type                  | Meaning                                          |
+| --------------------- | --------------------- | ------------------------------------------------ |
+| `since`               | source_ref            | First source where this value applies            |
+| `until`               | source_ref            | Last source where this value applies (optional)  |
+| `source`              | source_ref            | Source proving the value                         |
+| `epistemic_status`    | enum (epistemic)      | What kind of truth this is                       |
+| `actual_value`        | same as value         | The real value when status is a false belief     |
+| `event`               | entity_ref (event)    | The event that caused/revealed this value        |
+| `believed_by`         | array of entity_refs  | Characters who hold this belief                  |
+| `known_truth_by`      | array of entity_refs  | Characters who know the actual truth             |
+| `canon_scope`         | enum (canon-scopes)   | Restricts the value to a specific canon          |
+| `in_universe_date`    | string                | In-universe date (e.g. `"12_years_before_story"`)|
+
+Each property type declares which qualifiers apply by default
+(`default_qualifiers`) and which are allowed additionally (`allowed_qualifiers`).
+
+### Example
+
+```json
+{
+  "$schema": "https://onepiece-wiki/schemas/property-type.schema.json",
+  "id": "bounty",
+  "schema_version": 1,
+  "labels": {
+    "en": "Bounty",
+    "fr": "Prime"
+  },
+  "value_type": "number",
+  "value_constraints": {
+    "min": 0,
+    "step": 1000000
+  },
+  "unit": "berry",
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": ["character"],
+  "default_qualifiers": ["since", "source"],
+  "allowed_qualifiers": [
+    { "id": "issued_by", "value_type": "entity_ref" },
+    { "id": "epistemic_status", "value_type": "enum", "enum_ref": "epistemic-statuses" }
+  ],
+  "ui_hint": {
+    "display_format": "currency_short",
+    "input_widget": "number_with_units",
+    "icon": "bounty_poster"
+  }
+}
+```
+
+## Relation type schema
+
+A file in `/data/schemas/relation-types/<id>.json`.
+
+### Fields
+
+| Field                | Type         | Required | Description                                                   |
+| -------------------- | ------------ | -------- | ------------------------------------------------------------- |
+| `$schema`            | string       | yes      | Meta-schema reference                                         |
+| `id`                 | string       | yes      | Relation identifier, kebab-case                               |
+| `schema_version`     | integer      | yes      | Bumped on breaking changes                                    |
+| `labels`             | object       | yes      | Locale → `{ active, inverse }` labels                         |
+| `valid_from_types`   | string[]     | yes      | Allowed source entity types                                   |
+| `valid_to_types`     | string[]     | yes      | Allowed target entity types                                   |
+| `qualifiers`         | object[]     | no       | Qualifier declarations (id, value_type, required, enum_ref…)  |
+| `allow_multiple_concurrent` | boolean | no    | If true, multiple active relations of this type are allowed   |
+| `inverse_inferred`   | boolean      | yes      | If true, the build pipeline generates the inverse direction   |
+| `historical`         | boolean      | no       | If true, relations themselves carry `since`/`until`           |
+| `ui_hint`            | object       | no       | Display hints                                                 |
+
+### Example
+
+```json
+{
+  "$schema": "https://onepiece-wiki/schemas/relation-type.schema.json",
+  "id": "member-of",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Member of", "inverse": "Members" },
+    "fr": { "active": "Membre de", "inverse": "Membres" }
+  },
+  "valid_from_types": ["character"],
+  "valid_to_types": ["crew", "organization"],
+  "qualifiers": [
+    { "id": "role", "value_type": "enum", "enum_ref": "crew-roles", "required": true },
+    { "id": "since", "value_type": "source_ref", "required": true },
+    { "id": "until", "value_type": "source_ref", "required": false },
+    { "id": "loyalty_status", "value_type": "enum", "enum_ref": "loyalty-statuses", "required": false, "default": "member" },
+    { "id": "appears_to_world_as", "value_type": "enum", "enum_ref": "loyalty-statuses", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": true
+}
+```
+
+## Vocabulary schema
+
+A file in `/data/schemas/vocabulary/<id>.json`. Vocabularies are flat
+enumerated lists with localized labels and optional metadata.
+
+### Fields
+
+| Field            | Type    | Required | Description                                  |
+| ---------------- | ------- | -------- | -------------------------------------------- |
+| `$schema`        | string  | yes      | Meta-schema reference                        |
+| `id`             | string  | yes      | Vocabulary identifier                        |
+| `schema_version` | integer | yes      | Bumped on breaking changes                   |
+| `values`         | object  | yes      | Map value → { labels, optional metadata }    |
+
+### Example
+
+```json
+{
+  "$schema": "https://onepiece-wiki/schemas/vocabulary.schema.json",
+  "id": "crew-roles",
+  "schema_version": 1,
+  "values": {
+    "captain":       { "labels": { "en": "Captain", "fr": "Capitaine" } },
+    "first_mate":    { "labels": { "en": "First Mate", "fr": "Second" } },
+    "navigator":     { "labels": { "en": "Navigator", "fr": "Navigateur" } },
+    "cook":          { "labels": { "en": "Cook", "fr": "Cuisinier" } },
+    "doctor":        { "labels": { "en": "Doctor", "fr": "Docteur" } },
+    "archaeologist": { "labels": { "en": "Archaeologist", "fr": "Archéologue" } },
+    "shipwright":    { "labels": { "en": "Shipwright", "fr": "Charpentier" } },
+    "musician":      { "labels": { "en": "Musician", "fr": "Musicien" } },
+    "sniper":        { "labels": { "en": "Sniper", "fr": "Tireur d'élite" } },
+    "helmsman":      { "labels": { "en": "Helmsman", "fr": "Barreur" } }
+  }
+}
+```
+
+## Generated Zod schemas
+
+At build time, `packages/schema-engine` reads `/data/schemas/**` and emits
+generated Zod schemas in `packages/schemas/generated/`. These are
+**git-ignored** and regenerated on every build.
+
+Example output for the bounty property declaration above:
+
+```ts
+// packages/schemas/generated/property-bounty.ts
+import { z } from 'zod';
+import { SourceRef, EntityRef } from '../primitives';
+import { EpistemicStatus } from '../vocabularies/epistemic-statuses';
+
+export const BountyValue = z.object({
+  value: z.number().int().min(0).multipleOf(1_000_000),
+  since: SourceRef,
+  source: SourceRef,
+  issued_by: EntityRef.optional(),
+  epistemic_status: EpistemicStatus.default('true'),
+});
+
+export type BountyValue = z.infer<typeof BountyValue>;
+```
+
+Generated schemas compose into entity schemas. Example for the character
+type:
+
+```ts
+export const CharacterEntity = z.object({
+  id: EntityId,
+  type: z.literal('character'),
+  schema_version: z.number(),
+  slug: Slug,
+  slug_history: z.array(Slug).default([]),
+  canonical_name_key: I18nKey,
+  properties: z.object({
+    name:      z.array(NameValue).optional(),
+    epithet:   z.array(EpithetValue).optional(),
+    bounty:    z.array(BountyValue).optional(),
+    age:       z.array(AgeValue).optional(),
+    height:    z.array(HeightValue).optional(),
+    birthday:  z.array(BirthdayValue).optional(),
+    blood_type: z.array(BloodTypeValue).optional(),
+    haki_types: z.array(HakiTypesValue).optional(),
+    status:    z.array(StatusValue),
+  }),
+  relations: z.array(RelationSchema),
+});
+```
+
+## Adding a new entity type
+
+1. Create `/data/schemas/entity-types/<new-type>.json`
+2. List the properties it accepts in `properties` (referencing existing
+   property types, or creating new ones in `property-types/`)
+3. List the relations in `allowed_relations`
+4. Run `bun run schema:generate` to regenerate Zod
+5. Run `bun run validate` to check existing data isn't broken
+6. The dashboard now shows the new type in its menus, and the form generator
+   produces the right inputs automatically
+7. Document the new type in `/docs/DATA_MODEL.md` (in the "Entity types"
+   inventory) **in the same PR**
+
+## Adding a new property to an existing entity type
+
+1. If the property type doesn't exist yet, create
+   `/data/schemas/property-types/<new-prop>.json`
+2. Add it to the `properties` list of the relevant entity type
+3. Generate, validate, document
+4. If the property is `required: true`, write a migration to fill it on
+   existing entities (`/data/migrations/<n>-fill-<prop>-on-<type>.ts`)
+
+## Adding a new relation type
+
+1. Create `/data/schemas/relation-types/<new-rel>.json`
+2. Add it to the `allowed_relations` of the relevant entity types
+3. If `inverse_inferred: true`, no further action; the inverse is generated
+4. Generate, validate, document
+
+## Adding a new vocabulary value
+
+1. Edit `/data/schemas/vocabulary/<voc>.json`
+2. Add the new key with localized labels
+3. Generate, validate
+
+This operation is always safe (additive). It can be performed via the
+dashboard's referential admin (phase 4+).
+
+## Breaking changes
+
+The following are breaking changes and require a migration script:
+
+- Removing a property from an entity type
+- Renaming a property type or relation type
+- Changing a property type's `value_type`
+- Tightening a constraint (e.g. min from 0 to 100)
+- Removing a value from a vocabulary
+- Making an optional property required
+
+All breaking changes:
+
+1. Bump `schema_version` on the affected schema file
+2. Provide a migration script in `/data/migrations/`
+3. Are reviewed by ≥2 admins
+4. Are labeled `schema-breaking` on the PR
+
+## Schema validation
+
+The schema files themselves are validated by **meta-schemas** living in
+`/packages/schema-engine/meta-schemas/`. The CI runs:
+
+1. `bun run schema:check` — meta-validate all schema files
+2. `bun run schema:generate` — generate Zod
+3. `bun run validate` — validate every entity JSON file
+4. `bun run check:references` — every reference resolves
+5. `bun run typecheck`
+6. `bun run lint`
+7. `bun run test`
+
+Any failure aborts the PR.
+
+## File naming
+
+- Schema files: `<id>.json`, where `<id>` is the kebab-case identifier
+- Entity files: `<type-singular>/<id-without-prefix>.json`
+  - Example: `entities/character/luffy.json` (the file's contents have
+    `"id": "character:luffy"`)
+- Vocabulary files: `<id>.json` (e.g. `crew-roles.json`)
+
+## JSON formatting
+
+- 2-space indentation
+- Trailing commas where the JSON parser allows (we use JSONC for `.jsonc`
+  files; plain `.json` is strict)
+- `$schema` is always the first field
+- `id`, `type`, `schema_version` come right after `$schema`
+- Properties and relations are ordered by their declaration order in the
+  schema (the validator does not enforce this, but `bun run format:data`
+  reorders them automatically)
