@@ -38,24 +38,28 @@ the data model.
 
 ---
 
-## ADR-007 — Phase 1 includes a minimal preview app, not dashboard-only
+## ADR-007 — Preview app exists before the dashboard, not after
 
 **Date**: 2026-05
 
-**Context**: The initial intent was to build only the dashboard in phase 1
-and defer all read-side concerns. The risk is that a write-only system
-produces data unsuitable for actual reading, and that the build pipeline is
-never exercised end-to-end.
+**Context**: The initial intent was to build the dashboard first and defer
+all read-side concerns until much later. The risk is that a write-only
+system produces data unsuitable for actual reading, and that the build
+pipeline is never exercised end-to-end. An early draft of this ADR
+mistakenly placed the preview app in Phase 1; the ROADMAP correctly puts it
+in Phase 3, before the dashboard work in Phase 4.
 
-**Choice**: Include a minimal preview app alongside the dashboard in
-phase 1.
+**Choice**: Build a minimal preview app in **Phase 3** (see `/docs/ROADMAP.md`),
+before the dashboard. The preview is not part of Phase 1; Phase 1 stops at a
+typed, validated data model.
 
 **Rationale**: The preview app is the cheapest possible end-to-end test of
-the data model. It can be unstyled and minimal but must exist before phase
-4 dashboard work begins.
+the data model. It can be unstyled and minimal, but it must exist **before
+the Phase 4 dashboard work begins**, so the dashboard is built against a
+data model that has been exercised by a real reader.
 
-**Consequences**: ~1 week of additional work in phase 3, repaid many times
-over by avoiding model rework later.
+**Consequences**: ~1 week of additional work in Phase 3, repaid many times
+over by avoiding model rework once the dashboard is in flight.
 
 ---
 
