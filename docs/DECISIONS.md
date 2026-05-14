@@ -8,6 +8,88 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-011 — Images as first-class entities; in-universe documents deferred
+
+**Date**: 2026-05-14
+
+**Context**: The data model needs to represent visual content
+(portraits, scenes, covers, wanted posters, …). Two design tensions:
+
+1. **Images as illustrations vs. as data.** A simplistic
+   "url-on-entity" approach treats images as decoration. The wiki
+   needs more: licensing per file, spoiler-gating per image, reuse
+   across multiple entities (group photos), and a clean R2 storage
+   convention.
+2. **Plain images vs. in-universe documents.** Wanted posters, vivre
+   cards, newspapers, and similar diegetic objects could be modeled
+   as their own entity type (`document`) with subtypes — enabling
+   queries like "all wanted posters issued by the Marines" or "all
+   vivre cards held by Luffy".
+
+**Options**:
+
+- A — Defer images entirely; revisit after the basic model ships.
+- B — Add `image` as a first-class entity and `document` as a
+  separate first-class entity in Phase 1.
+- C — Add `image` as a first-class entity in Phase 1. Model
+  in-universe documents as plain images for now; promote to a
+  `document` entity type in a later phase via a non-destructive
+  migration.
+
+**Choice**: C.
+
+**Rationale**:
+
+- Images must be first-class — licensing, dedup, reuse, spoiler
+  gating, and R2 storage all demand entity status. Option A blocks
+  too much downstream work (preview app, dashboard upload form,
+  bulk-import provenance).
+- Document semantics are valuable but premature. The current
+  contributor count is one. Most images don't need document
+  semantics (a portrait is just a portrait). Validating the basic
+  image flow first reduces the risk of designing `document` against
+  unknown contributor patterns.
+- The migration path is clean. Existing `image` entities representing
+  diegetic objects stay as-is; new `document` entities are created
+  later and carry their own `depicted-by` relations to those images.
+  No data loss, no schema rewrites. Detailed in `/docs/IMAGES.md`
+  § "Migration plan: images → documents" and `/IDEAS.md`
+  § "In-universe documents as first-class entities".
+
+**Consequences**:
+
+- Phase 1 adds: `image` entity type; `depicted-by` and `sourced-from`
+  relation types; `image-licenses`, `depiction-roles`, and
+  `image-formats` vocabularies. Phase 4 adds the upload value-input
+  component and R2 upload server function. See `/docs/ROADMAP.md`.
+- Known limitation: bounty-change images cannot be queried as "all
+  wanted posters issued by the Marines" until `document` lands. The
+  workaround for Phase 1 is the `depicted-by` relation's `period` and
+  `context` qualifiers, which carry free-form string metadata. Logged
+  in `/IDEAS.md` as a forward-pointer.
+- Storage is **flat** on R2: `images/<image-slug>.<format>`. The
+  per-entity-directory layout was rejected because reused images
+  (group photos) have no single "owner" to nest under. Detailed in
+  `/docs/ARCHITECTURE.md` § "R2 storage key convention".
+- Two filters apply to image display: `image.spoiler_since` (is the
+  image itself safe?) and the `depicted-by` qualifier `since` (is
+  this depiction contextually accurate?). The dual filter is
+  intentional — it handles Gear-5 reveals and historisable wanted
+  posters with the same mechanism. Detailed in `/docs/IMAGES.md`
+  § "Spoiler handling".
+
+**Non-decisions** (deferred):
+
+- The exact `document` schema shape — its properties, subtypes, and
+  qualifiers — stays unwritten until promotion. Speculating now would
+  bias the design before contributor demand surfaces.
+- Whether to also defer SVG support pending the `image-formats`
+  vocabulary's first real-world use. Phase 1 ships all six formats;
+  if any prove unused or problematic, the vocabulary entry can be
+  removed in a vocabulary PR without entity-level migration.
+
+---
+
 ## ADR-009 — Doc-consistency pass before Phase 1 code
 
 **Date**: 2026-05-14
