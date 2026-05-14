@@ -1,0 +1,33 @@
+{
+  "name": "one-piece-wiki",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "packageManager": "bun@1.3.6",
+  "workspaces": [
+    "apps/*",
+    "packages/*"
+  ],
+  "scripts": {
+    "typecheck": "turbo run typecheck",
+    "lint": "oxlint .",
+    "format": "dprint fmt",
+    "format:check": "dprint check",
+    "test": "turbo run test",
+    "schema:check": "bun packages/schema-engine/src/cli/check.ts",
+    "schema:generate": "bun packages/schema-engine/src/cli/generate.ts",
+    "validate": "bun packages/schema-engine/src/cli/validate.ts",
+    "check:references": "bun packages/schema-engine/src/cli/check-references.ts",
+    "format:data": "bun packages/schema-engine/src/cli/format-data.ts"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^19.5.0",
+    "@commitlint/config-conventional": "^19.5.0",
+    "@types/bun": "^1.1.13",
+    "dprint": "^0.49.0",
+    "lefthook": "^1.10.0",
+    "oxlint": "^0.15.0",
+    "turbo": "^2.3.0",
+    "typescript": "^5.7.0"
+  }
+}

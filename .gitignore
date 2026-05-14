@@ -1,2 +1,41 @@
 # Per-machine Claude Code permissions
 .claude/settings.local.json
+
+# Dependencies
+node_modules/
+bun.lockb
+
+# Build artifacts
+dist/
+build/
+.turbo/
+
+# Generated schemas
+packages/schemas/generated/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# Logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/*
+!.vscode/settings.json
+!.vscode/extensions.json
+
+# TypeScript
+*.tsbuildinfo
+
+# Coverage
+coverage/
