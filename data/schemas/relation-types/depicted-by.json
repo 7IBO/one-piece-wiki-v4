@@ -1,0 +1,38 @@
+{
+  "$schema": "https://onepiece-wiki/schemas/relation-type.schema.json",
+  "id": "depicted-by",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Depicted by", "inverse": "Depicts" },
+    "fr": { "active": "Représenté par", "inverse": "Représente" }
+  },
+  "valid_from_types": [
+    "character",
+    "devil-fruit",
+    "crew",
+    "organization",
+    "location",
+    "technique",
+    "weapon",
+    "ship",
+    "race",
+    "title",
+    "concept",
+    "event",
+    "arc",
+    "saga",
+    "manga-chapter",
+    "anime-episode",
+    "film"
+  ],
+  "valid_to_types": ["image"],
+  "qualifiers": [
+    { "id": "role",    "value_type": "enum",       "enum_ref": "depiction-roles", "required": true  },
+    { "id": "period",  "value_type": "string",                                    "required": false },
+    { "id": "context", "value_type": "string",                                    "required": false },
+    { "id": "since",   "value_type": "source_ref",                                "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": true
+}
