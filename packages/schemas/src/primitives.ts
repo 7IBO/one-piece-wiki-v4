@@ -1,8 +1,12 @@
 import { z } from 'zod';
 
-const KEBAB_CASE = /^[a-z0-9]+(?:-[a-z0-9]+)*$/;
+// Slugs accept hyphens for kebab-case ids (entity types, relations,
+// vocabularies) AND underscores for snake_case property/qualifier ids.
+// Both are in active use across the data model; the convention is to
+// pick one separator per id but the validator does not enforce that.
+const SLUG = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
 const I18N_KEY = /^[a-z0-9]+(?:[-_][a-z0-9]+)*(?:\.[a-z0-9]+(?:[-_][a-z0-9]+)*)+$/;
-const ENTITY_ID = /^[a-z0-9]+(?:-[a-z0-9]+)*:[a-z0-9]+(?:-[a-z0-9]+)*$/;
+const ENTITY_ID = /^[a-z0-9]+(?:[-_][a-z0-9]+)*:[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
 
 export type Brand<TBase, TBrand extends string> = TBase & { readonly __brand: TBrand; };
 
@@ -10,7 +14,10 @@ export const Slug = z
   .string()
   .min(1)
   .max(60)
-  .regex(KEBAB_CASE, 'Slug must be kebab-case English (a-z, 0-9, hyphen).')
+  .regex(
+    SLUG,
+    'Slug must be kebab-case or snake_case English (a-z, 0-9, hyphen or underscore separators).',
+  )
   .transform((value) => value as Brand<string, 'Slug'>);
 export type Slug = z.infer<typeof Slug>;
 

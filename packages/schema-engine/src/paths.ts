@@ -1,0 +1,26 @@
+/**
+ * Resolves the project's well-known data paths relative to the repo root.
+ * The schema engine never reaches above repoRoot; everything else is
+ * expressed as descendants of that root.
+ */
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+const here = dirname(fileURLToPath(import.meta.url));
+
+export const REPO_ROOT: string = resolve(here, '..', '..', '..');
+
+export const SCHEMA_DIR: string = resolve(REPO_ROOT, 'data', 'schemas');
+export const ENTITY_TYPES_DIR: string = resolve(SCHEMA_DIR, 'entity-types');
+export const PROPERTY_TYPES_DIR: string = resolve(SCHEMA_DIR, 'property-types');
+export const RELATION_TYPES_DIR: string = resolve(SCHEMA_DIR, 'relation-types');
+export const VOCABULARY_DIR: string = resolve(SCHEMA_DIR, 'vocabulary');
+
+export const UNIVERSES_DIR: string = resolve(REPO_ROOT, 'data', 'universes');
+
+export const GENERATED_DIR: string = resolve(
+  REPO_ROOT,
+  'packages',
+  'schemas',
+  'generated',
+);
