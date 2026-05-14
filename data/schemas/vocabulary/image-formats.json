@@ -1,0 +1,13 @@
+{
+  "$schema": "https://onepiece-wiki/schemas/vocabulary.schema.json",
+  "id": "image-formats",
+  "schema_version": 1,
+  "values": {
+    "webp": { "labels": { "en": "WebP", "fr": "WebP" } },
+    "jpg":  { "labels": { "en": "JPEG", "fr": "JPEG" } },
+    "png":  { "labels": { "en": "PNG",  "fr": "PNG"  } },
+    "gif":  { "labels": { "en": "GIF",  "fr": "GIF"  } },
+    "avif": { "labels": { "en": "AVIF", "fr": "AVIF" } },
+    "svg":  { "labels": { "en": "SVG",  "fr": "SVG"  } }
+  }
+}
