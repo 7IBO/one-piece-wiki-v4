@@ -1,4 +1,5 @@
-import { Header, Page } from '@onepiece-wiki/ui';
+import { Button } from '@/components/ui/button';
+import { Toaster } from '@/components/ui/sonner';
 import { createRootRoute, Link, Outlet } from '@tanstack/react-router';
 import { type JSX, useEffect, useState } from 'react';
 import { auth, type CurrentUser } from '../auth.ts';
@@ -19,41 +20,48 @@ function RootComponent(): JSX.Element {
   }, []);
 
   return (
-    <Page>
-      <Header>
-        <Link to='/' className='text-text-primary text-base font-semibold no-underline'>
-          One Piece Wiki — Dashboard
+    <div className='min-h-screen bg-background text-foreground antialiased'>
+      <header className='border-border bg-card flex items-center gap-6 border-b px-6 py-3'>
+        <Link
+          to='/'
+          className='text-foreground text-base font-semibold no-underline'
+        >
+          One Piece Wiki
+          <span className='text-muted-foreground ml-2 text-xs font-normal'>
+            Dashboard · Phase 4.2
+          </span>
         </Link>
-        <span className='text-text-muted text-xs'>
-          Phase 4.2 · GitHub PR save · admin-only
-        </span>
-        <div className='text-text-secondary ml-auto text-sm'>
-          {!loaded
-            ? null
-            : user === null
+        <div className='ml-auto flex items-center gap-3 text-sm'>
+          {!loaded ? null : user === null
             ? (
-              <a href={auth.loginUrl()} className='text-accent hover:underline'>
+              <a
+                href={auth.loginUrl()}
+                className='bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-9 items-center rounded-md px-3 text-sm font-medium'
+              >
                 Sign in with GitHub
               </a>
             )
             : (
               <>
-                <span className='mr-3'>@{user.login}</span>
-                <button
-                  type='button'
+                <span className='text-muted-foreground'>@{user.login}</span>
+                <Button
+                  size='sm'
+                  variant='outline'
                   onClick={async () => {
                     await auth.logout();
                     setUser(null);
                   }}
-                  className='text-accent text-xs hover:underline'
                 >
-                  sign out
-                </button>
+                  Sign out
+                </Button>
               </>
             )}
         </div>
-      </Header>
-      <Outlet />
-    </Page>
+      </header>
+      <main className='mx-auto w-full max-w-5xl px-6 py-6'>
+        <Outlet />
+      </main>
+      <Toaster richColors closeButton position='top-right' />
+    </div>
   );
 }

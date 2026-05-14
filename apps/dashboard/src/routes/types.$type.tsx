@@ -1,4 +1,5 @@
-import { Card, Content } from '@onepiece-wiki/ui';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { type JSX, useEffect, useState } from 'react';
 import { api, type EntityRef } from '../api.ts';
@@ -20,38 +21,41 @@ function TypeListComponent(): JSX.Element {
   }, [type]);
 
   if (error !== null) {
-    return (
-      <Content>
-        <p className='text-danger'>Failed: {error}</p>
-      </Content>
-    );
+    return <p className='text-destructive'>Failed: {error}</p>;
   }
 
   return (
-    <Content>
-      <h2 className='mb-3 text-lg font-semibold'>
-        <code className='font-mono'>{type}</code>
-        <span className='text-text-muted ml-2 text-sm'>
-          ({list?.length ?? '…'})
-        </span>
-      </h2>
-      {list === null ? <p className='text-text-muted'>Loading…</p> : (
+    <div className='space-y-4'>
+      <div>
+        <h1 className='font-mono text-2xl font-semibold tracking-tight'>{type}</h1>
+        <p className='text-muted-foreground text-sm'>
+          {list === null ? 'Loading…' : `${list.length} entities`}
+        </p>
+      </div>
+
+      {list === null ? <Skeleton className='h-64 w-full' /> : (
         <Card>
-          <ul className='space-y-1 text-sm'>
-            {list.map((e) => (
-              <li key={e.id}>
-                <Link
-                  to='/types/$type/$slug'
-                  params={{ type: e.type, slug: e.slug }}
-                  className='text-accent hover:underline'
-                >
-                  <code className='font-mono'>{e.slug}</code>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <CardHeader>
+            <CardTitle className='text-sm font-medium'>Browse</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <ul className='divide-border divide-y'>
+              {list.map((e) => (
+                <li key={e.id} className='py-2'>
+                  <Link
+                    to='/types/$type/$slug'
+                    params={{ type: e.type, slug: e.slug }}
+                    className='hover:text-primary text-sm'
+                  >
+                    <code className='font-mono'>{e.slug}</code>
+                    <span className='text-muted-foreground ml-2 text-xs'>{e.id}</span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          </CardContent>
         </Card>
       )}
-    </Content>
+    </div>
   );
 }

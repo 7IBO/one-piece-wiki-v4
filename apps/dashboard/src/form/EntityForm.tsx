@@ -3,18 +3,24 @@
  * list, looks up each property-type from the catalogue, and renders
  * a row per property using the value-input registry. Historical
  * properties get an array editor (one entry per historisable value).
- *
- * Phase 4.2.1: pickers replace free-text where the catalogue has
- * better data — enums use the real vocabulary values, source_ref
- * uses /api/sources, i18n_key has datalist suggestions from
- * /api/i18n-keys.
  */
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from '@/components/ui/table';
 import type {
   EntityTypeSchema,
   PropertyTypeSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
-import { Card } from '@onepiece-wiki/ui';
+import { Trash2 } from 'lucide-react';
 import { type JSX, useState } from 'react';
 import type { SourceRef } from '../api.ts';
 import { ValueInput, type ValueInputContext, type ValueType } from './inputs.tsx';
@@ -126,10 +132,12 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         const propertyType = props.propertyTypes[decl.id];
         if (propertyType === undefined) {
           return (
-            <Card key={decl.id} title={`${decl.id} (unknown property type)`}>
-              <p className='text-text-muted text-sm'>
-                No property-type schema for <code>{decl.id}</code>.
-              </p>
+            <Card key={decl.id}>
+              <CardHeader>
+                <CardTitle className='font-mono text-sm'>
+                  {decl.id} <Badge variant='destructive'>unknown property type</Badge>
+                </CardTitle>
+              </CardHeader>
             </Card>
           );
         }
@@ -143,114 +151,107 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         };
 
         return (
-          <Card
-            key={decl.id}
-            title={
-              <span>
+          <Card key={decl.id}>
+            <CardHeader>
+              <CardTitle className='flex items-center gap-2 text-sm'>
                 <code className='font-mono'>{decl.id}</code>
-                <span className='text-text-muted ml-2 text-xs'>
+                <Badge variant='secondary' className='font-normal'>
                   {valueType}
-                  {propertyType.historical ? ' · historical' : ''}
-                  {decl.required ? ' · required' : ''}
-                </span>
-              </span>
-            }
-          >
-            {propertyEntries.length === 0
-              ? <p className='text-text-muted text-sm italic'>No entries.</p>
-              : (
-                <table className='w-full text-sm'>
-                  <thead>
-                    <tr className='text-text-muted text-left'>
-                      <th className='pb-1'>value</th>
-                      {propertyType.historical ? <th className='w-64 pb-1'>since</th> : null}
-                      {propertyType.historical ? <th className='w-12 pb-1'></th> : null}
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {propertyEntries.map((entry, idx) => (
-                      <tr key={idx}>
-                        <td className='py-1 pr-2'>
-                          <ValueInput
-                            valueType={valueType}
-                            value={entry[valueField]}
-                            ctx={valueCtx}
-                            onChange={(next) => {
-                              updateEntry(decl.id, propertyType.historical, idx, {
-                                ...entry,
-                                [valueField]: next,
-                              });
-                            }}
-                          />
-                        </td>
+                </Badge>
+                {propertyType.historical
+                  ? <Badge variant='outline' className='font-normal'>historical</Badge>
+                  : null}
+                {decl.required
+                  ? <Badge variant='outline' className='font-normal'>required</Badge>
+                  : null}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              {propertyEntries.length === 0
+                ? <p className='text-muted-foreground text-sm italic'>No entries.</p>
+                : (
+                  <Table>
+                    <TableHeader>
+                      <TableRow>
+                        <TableHead>value</TableHead>
                         {propertyType.historical
-                          ? (
-                            <td className='py-1 pr-2'>
-                              <ValueInput
-                                valueType='source_ref'
-                                value={entry['since']}
-                                ctx={sinceCtx}
-                                onChange={(next) => {
-                                  updateEntry(decl.id, true, idx, { ...entry, since: next });
-                                }}
-                              />
-                            </td>
-                          )
+                          ? <TableHead className='w-72'>since</TableHead>
                           : null}
-                        {propertyType.historical
-                          ? (
-                            <td className='py-1'>
-                              <button
-                                type='button'
-                                className='text-danger text-xs hover:underline'
-                                onClick={() => removeEntry(decl.id, idx)}
-                              >
-                                remove
-                              </button>
-                            </td>
-                          )
-                          : null}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              )}
-            {propertyType.historical
-              ? (
-                <button
-                  type='button'
-                  className='text-accent mt-2 text-xs hover:underline'
-                  onClick={() => addEntry(decl.id, valueField)}
-                >
-                  + add entry
-                </button>
-              )
-              : null}
-            {!propertyType.historical && propertyEntries.length === 0
-              ? (
-                <button
-                  type='button'
-                  className='text-accent mt-2 text-xs hover:underline'
-                  onClick={() => addEntry(decl.id, valueField)}
-                >
-                  + set value
-                </button>
-              )
-              : null}
+                        {propertyType.historical ? <TableHead className='w-12' /> : null}
+                      </TableRow>
+                    </TableHeader>
+                    <TableBody>
+                      {propertyEntries.map((entry, idx) => (
+                        <TableRow key={idx}>
+                          <TableCell>
+                            <ValueInput
+                              valueType={valueType}
+                              value={entry[valueField]}
+                              ctx={valueCtx}
+                              onChange={(next) => {
+                                updateEntry(decl.id, propertyType.historical, idx, {
+                                  ...entry,
+                                  [valueField]: next,
+                                });
+                              }}
+                            />
+                          </TableCell>
+                          {propertyType.historical
+                            ? (
+                              <TableCell>
+                                <ValueInput
+                                  valueType='source_ref'
+                                  value={entry['since']}
+                                  ctx={sinceCtx}
+                                  onChange={(next) => {
+                                    updateEntry(decl.id, true, idx, { ...entry, since: next });
+                                  }}
+                                />
+                              </TableCell>
+                            )
+                            : null}
+                          {propertyType.historical
+                            ? (
+                              <TableCell>
+                                <Button
+                                  type='button'
+                                  variant='ghost'
+                                  size='icon'
+                                  onClick={() => removeEntry(decl.id, idx)}
+                                >
+                                  <Trash2 className='size-4' />
+                                </Button>
+                              </TableCell>
+                            )
+                            : null}
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                )}
+              {(propertyType.historical || propertyEntries.length === 0)
+                ? (
+                  <Button
+                    type='button'
+                    variant='outline'
+                    size='sm'
+                    className='mt-3'
+                    onClick={() => addEntry(decl.id, valueField)}
+                  >
+                    + {propertyType.historical ? 'Add entry' : 'Set value'}
+                  </Button>
+                )
+                : null}
+            </CardContent>
           </Card>
         );
       })}
 
       <div className='border-border flex items-center gap-3 border-t pt-4'>
-        <button
-          type='button'
-          disabled={saving}
-          onClick={handleSave}
-          className='bg-accent text-accent-fg disabled:bg-text-muted rounded px-4 py-2 text-sm font-medium hover:opacity-90'
-        >
-          {saving ? 'Saving…' : 'Open PR with these changes'}
-        </button>
-        {error !== null ? <span className='text-danger text-sm'>{error}</span> : null}
+        <Button type='button' disabled={saving} onClick={handleSave}>
+          {saving ? 'Opening PR…' : 'Open PR with these changes'}
+        </Button>
+        {error !== null ? <span className='text-destructive text-sm'>{error}</span> : null}
       </div>
     </div>
   );

@@ -1,18 +1,18 @@
 /**
- * Value-input registry. Each input renders a single property value
- * (the non-historical case) or a single historical entry's value
- * (inside the array editor). The registry is keyed by the property
- * type's value_type, matching the schema-driven form generator's
- * contract — no per-property-name component.
- *
- * Phase 4.2.1 wired the inputs to real catalogue data:
- *   - EnumInput receives the vocabulary's values via enumValues.
- *   - SourceRefInput is a dedicated picker over /api/sources, ordered
- *     by chapter number when applicable.
- *   - I18nKeyInput is a datalist-backed combobox over every i18n key
- *     already in use (collected from /api/i18n-keys).
+ * Value-input registry built on shadcn primitives. The registry is
+ * keyed by the property type's value_type so the form generator stays
+ * schema-driven (no per-property-name component).
  */
-import { cn } from '@onepiece-wiki/ui';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
+import { cn } from '@/lib/utils';
+import { Checkbox } from '@base-ui-components/react/checkbox';
 import type { JSX } from 'react';
 import { useId } from 'react';
 import type { SourceRef } from '../api.ts';
@@ -26,14 +26,10 @@ type InputProps<T> = CommonProps & {
   onChange: (next: T) => void;
 };
 
-const baseInput =
-  'w-full rounded border border-border bg-surface-primary px-2 py-1 text-sm text-text-primary focus:border-accent focus:outline-none disabled:opacity-50';
-
 export function StringInput({ value, onChange, disabled }: InputProps<string>): JSX.Element {
   return (
-    <input
+    <Input
       type='text'
-      className={cn(baseInput)}
       value={value ?? ''}
       disabled={disabled === true}
       onChange={(e) => onChange(e.target.value)}
@@ -43,9 +39,8 @@ export function StringInput({ value, onChange, disabled }: InputProps<string>): 
 
 export function NumberInput({ value, onChange, disabled }: InputProps<number>): JSX.Element {
   return (
-    <input
+    <Input
       type='number'
-      className={cn(baseInput)}
       value={value ?? ''}
       disabled={disabled === true}
       onChange={(e) => {
@@ -58,13 +53,16 @@ export function NumberInput({ value, onChange, disabled }: InputProps<number>): 
 
 export function BooleanInput({ value, onChange, disabled }: InputProps<boolean>): JSX.Element {
   return (
-    <input
-      type='checkbox'
-      className='size-4 rounded border-border accent-accent'
+    <Checkbox.Root
       checked={value === true}
       disabled={disabled === true}
-      onChange={(e) => onChange(e.target.checked)}
-    />
+      onCheckedChange={(next) => onChange(next === true)}
+      className='border-input data-[checked]:bg-primary data-[checked]:border-primary inline-flex size-4 items-center justify-center rounded border'
+    >
+      <Checkbox.Indicator className='text-primary-foreground text-xs leading-none'>
+        ✓
+      </Checkbox.Indicator>
+    </Checkbox.Root>
   );
 }
 
@@ -74,32 +72,33 @@ export function EnumInput(
   },
 ): JSX.Element {
   return (
-    <select
-      className={cn(baseInput)}
+    <Select
       value={value ?? ''}
+      onValueChange={(v) => onChange(v ?? '')}
       disabled={disabled === true}
-      onChange={(e) => onChange(e.target.value)}
     >
-      <option value=''>— pick one —</option>
-      {enumValues.map((v) => (
-        <option key={v.id} value={v.id}>
-          {v.label !== undefined ? `${v.label} (${v.id})` : v.id}
-        </option>
-      ))}
-    </select>
+      <SelectTrigger className='w-full'>
+        <SelectValue placeholder='— pick one —' />
+      </SelectTrigger>
+      <SelectContent>
+        {enumValues.map((v) => (
+          <SelectItem key={v.id} value={v.id}>
+            {v.label !== undefined ? `${v.label}` : v.id}
+            <span className='text-muted-foreground ml-2 font-mono text-xs'>{v.id}</span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
 export function EntityRefInput(
   { value, onChange, disabled }: InputProps<string>,
 ): JSX.Element {
-  // Phase 4.2.1: free text with a hint. Phase 4.3 layers a real
-  // typeahead over /api/entities/<type> filtered by the relation's
-  // valid_to_types.
   return (
-    <input
+    <Input
       type='text'
-      className={cn(baseInput, 'font-mono text-xs')}
+      className='font-mono text-xs'
       placeholder='type:slug'
       pattern='[a-z0-9-]+:[a-z0-9-]+'
       value={value ?? ''}
@@ -115,19 +114,23 @@ export function SourceRefInput(
   },
 ): JSX.Element {
   return (
-    <select
-      className={cn(baseInput, 'font-mono text-xs')}
+    <Select
       value={value ?? ''}
+      onValueChange={(v) => onChange(v ?? '')}
       disabled={disabled === true}
-      onChange={(e) => onChange(e.target.value)}
     >
-      <option value=''>— pick a source —</option>
-      {sources.map((s) => (
-        <option key={s.id} value={s.id}>
-          {s.number !== null ? `${s.type} ${s.number} (${s.id})` : s.id}
-        </option>
-      ))}
-    </select>
+      <SelectTrigger className='w-full font-mono text-xs'>
+        <SelectValue placeholder='— pick a source —' />
+      </SelectTrigger>
+      <SelectContent>
+        {sources.map((s) => (
+          <SelectItem key={s.id} value={s.id}>
+            {s.number !== null ? `${s.type} ${s.number}` : s.slug}
+            <span className='text-muted-foreground ml-2 font-mono text-xs'>{s.id}</span>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }
 
@@ -139,10 +142,10 @@ export function I18nKeyInput(
   const listId = useId();
   return (
     <>
-      <input
+      <Input
         type='text'
         list={listId}
-        className={cn(baseInput, 'font-mono text-xs')}
+        className={cn('font-mono text-xs')}
         placeholder='entity.slug.property.variant'
         value={value ?? ''}
         disabled={disabled === true}

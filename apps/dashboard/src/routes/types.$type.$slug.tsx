@@ -1,6 +1,7 @@
-import { Content } from '@onepiece-wiki/ui';
+import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute } from '@tanstack/react-router';
 import { type JSX, useEffect, useState } from 'react';
+import { toast } from 'sonner';
 import { api, type EntityDetail, type SchemaCatalogue, type SourceRef } from '../api.ts';
 import { EntityForm } from '../form/EntityForm.tsx';
 
@@ -15,7 +16,6 @@ function EntityEditComponent(): JSX.Element {
   const [sources, setSources] = useState<readonly SourceRef[]>([]);
   const [i18nKeys, setI18nKeys] = useState<readonly string[]>([]);
   const [error, setError] = useState<string | null>(null);
-  const [savedNote, setSavedNote] = useState<string | null>(null);
 
   useEffect(() => {
     Promise.all([
@@ -34,35 +34,38 @@ function EntityEditComponent(): JSX.Element {
   }, [type, slug]);
 
   if (error !== null) {
-    return (
-      <Content>
-        <p className='text-danger'>Failed: {error}</p>
-      </Content>
-    );
+    return <p className='text-destructive'>Failed: {error}</p>;
   }
   if (entity === null || schemas === null) {
     return (
-      <Content>
-        <p className='text-text-muted'>Loading…</p>
-      </Content>
+      <div className='space-y-4'>
+        <Skeleton className='h-8 w-64' />
+        <Skeleton className='h-32 w-full' />
+        <Skeleton className='h-32 w-full' />
+      </div>
     );
   }
 
   const entityType = schemas.entityTypes[type];
   if (entityType === undefined) {
-    return (
-      <Content>
-        <p className='text-danger'>No entity-type schema for {type}.</p>
-      </Content>
-    );
+    return <p className='text-destructive'>No entity-type schema for {type}.</p>;
   }
 
   return (
-    <Content>
-      <h2 className='mb-2 text-lg font-semibold'>
-        <code className='font-mono'>{entity.id}</code>
-      </h2>
-      {savedNote !== null ? <p className='text-accent mb-3 text-sm'>{savedNote}</p> : null}
+    <div className='space-y-4'>
+      <div>
+        <h1 className='font-mono text-2xl font-semibold tracking-tight'>{entity.id}</h1>
+        <p className='text-muted-foreground text-xs'>
+          slug=<code className='font-mono'>{entity.slug}</code>
+          {entity.sha !== null
+            ? (
+              <>
+                · sha=<code className='font-mono'>{entity.sha.slice(0, 7)}</code>
+              </>
+            )
+            : <span className='text-amber-500'>· not yet on GitHub</span>}
+        </p>
+      </div>
       <EntityForm
         entityType={entityType}
         propertyTypes={schemas.propertyTypes}
@@ -72,11 +75,15 @@ function EntityEditComponent(): JSX.Element {
         initialData={entity.data}
         onSave={async (next) => {
           const result = await api.saveEntity(type, slug, next, entity.sha);
-          setSavedNote(
-            `PR #${result.pr.number} opened at ${result.pr.htmlUrl} (branch ${result.pr.headBranch}).`,
-          );
+          toast.success(`PR #${result.pr.number} opened`, {
+            description: result.pr.htmlUrl,
+            action: {
+              label: 'Open PR',
+              onClick: () => globalThis.open(result.pr.htmlUrl, '_blank'),
+            },
+          });
         }}
       />
-    </Content>
+    </div>
   );
 }
