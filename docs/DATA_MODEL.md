@@ -301,7 +301,7 @@ Detailed in `/docs/I18N_STRATEGY.md`.
         "value_key": "devil-fruit.gomu-gomu.name.true",
         "since": "manga-chapter:1044",
         "name_type": "true_name",
-        "epistemic_status": "revealed",
+        "epistemic_status": "revealed_to_reader",
         "event": "event:nika-reveal"
       }
     ],
