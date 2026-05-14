@@ -40,6 +40,28 @@ locale.
   fetched on demand
 - **Editing**: by contributors via the dashboard
 
+## Localization terminology
+
+Three related but distinct names appear across the data model and
+schemas. The full specification lives in `/docs/SCHEMA_SPEC.md` under
+"Localization terminology"; this section is the editor-facing summary.
+
+- **`i18n_key`** — the **`value_type`** on a property type that marks
+  the property's values as localizable. Property types with this
+  `value_type` store i18n keys, not literal strings.
+
+- **`value_key`** — the **field** inside a historisable property entry
+  that holds the i18n key, replacing the bare `value` when the property
+  is localizable.
+
+- **`canonical_name_key`** — a **top-level field on the entity** holding
+  the i18n key for its canonical display name. Distinct from the
+  historisable `name` property: `canonical_name_key` is what listings,
+  breadcrumbs, and search results render.
+
+The token `name_key` is **not part of the model**; treat any occurrence
+as a doc bug.
+
 ## Content storage layout
 
 ```

@@ -57,7 +57,7 @@ A file in `/data/schemas/entity-types/<id>.json`.
 | `url_segment`          | string      | yes      | Segment used in URLs (kebab-case English, e.g. `characters`)    |
 | `properties`           | array       | yes      | Allowed property declarations                                   |
 | `allowed_relations`    | string[]    | yes      | IDs of relation types entities of this type may participate in  |
-| `requires_translations`| boolean     | no       | If true, translations are mandatory for `name_key` properties   |
+| `requires_translations`| boolean     | no       | If true, translations are mandatory for the entity's `canonical_name_key` and all `i18n_key`-valued properties |
 | `ui_hint`              | object      | no       | Hints for the dashboard (icon, color, group)                    |
 
 ### Property declaration
@@ -321,6 +321,40 @@ enumerated lists with localized labels and optional metadata.
   }
 }
 ```
+
+## Localization terminology
+
+Three related but distinct names appear across the data model and
+schemas. Use these exact terms; do not coin synonyms.
+
+- **`i18n_key`** — the **`value_type`** name that marks a property value
+  as localizable. Declared on a property type:
+  `"value_type": "i18n_key"`. The dashboard's value-input registry maps
+  this to `I18nKeyInput` (see `/docs/DASHBOARD_ARCHITECTURE.md`).
+
+- **`value_key`** — the **field** that carries an `i18n_key` inside a
+  historisable property entry. Replaces the bare `value` when the
+  property type's `value_type` is `i18n_key`. Example:
+
+  ```json
+  "name": [
+    { "value_key": "character.luffy.name.short", "since": "manga-chapter:1" }
+  ]
+  ```
+
+- **`canonical_name_key`** — a dedicated **field on the entity itself**
+  (not inside a property entry) holding the i18n key for the entity's
+  canonical display name. Used by listings, breadcrumbs, search results,
+  and inverse-relation rendering, so the app never has to pick the
+  "right" entry out of a historisable `name` array. Convention: the
+  canonical name is the one most readers recognize today, not the
+  earliest historisable entry.
+
+The token `name_key` is **not part of the model**. Earlier drafts used it
+loosely as a generic stand-in; treat any remaining occurrence as a doc
+bug to be cleaned up.
+
+The same terminology is mirrored in `/docs/I18N_STRATEGY.md`.
 
 ## Generated Zod schemas
 
