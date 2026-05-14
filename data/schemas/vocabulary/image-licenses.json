@@ -1,0 +1,63 @@
+{
+  "$schema": "https://onepiece-wiki/schemas/vocabulary.schema.json",
+  "id": "image-licenses",
+  "schema_version": 1,
+  "values": {
+    "official-shueisha": {
+      "labels": { "en": "Official Shueisha/Toei", "fr": "Officiel Shueisha/Toei" },
+      "description": {
+        "en": "Official material from Shueisha or Toei (covers, key visuals, promotional art).",
+        "fr": "Matériel officiel de Shueisha ou Toei (couvertures, visuels-clés, illustrations promotionnelles)."
+      }
+    },
+    "fan-art-permitted": {
+      "labels": { "en": "Fan art (with permission)", "fr": "Fan art (avec autorisation)" },
+      "description": {
+        "en": "Fan art used with explicit permission from the artist.",
+        "fr": "Fan art utilisé avec l'autorisation explicite de l'artiste."
+      }
+    },
+    "fan-art-fair-use": {
+      "labels": { "en": "Fan art (fair use)", "fr": "Fan art (usage équitable)" },
+      "description": {
+        "en": "Fan art used under fair use principles (small thumbnail with attribution).",
+        "fr": "Fan art utilisé selon le principe d'usage équitable (vignette avec attribution)."
+      }
+    },
+    "screenshot-anime": {
+      "labels": { "en": "Anime screenshot", "fr": "Capture d'écran d'anime" },
+      "description": {
+        "en": "Anime screenshot used for documentary or critical purposes.",
+        "fr": "Capture d'écran d'anime utilisée à des fins documentaires ou critiques."
+      }
+    },
+    "screenshot-manga": {
+      "labels": { "en": "Manga panel excerpt", "fr": "Extrait de planche manga" },
+      "description": {
+        "en": "Manga panel excerpt used for documentary or critical purposes. Use sparingly.",
+        "fr": "Extrait de planche manga à des fins documentaires ou critiques. À utiliser avec parcimonie."
+      }
+    },
+    "public-domain": {
+      "labels": { "en": "Public domain", "fr": "Domaine public" },
+      "description": {
+        "en": "Public domain material.",
+        "fr": "Matériel du domaine public."
+      }
+    },
+    "cc-by": {
+      "labels": { "en": "CC BY", "fr": "CC BY" },
+      "description": {
+        "en": "Creative Commons Attribution. Attribution required.",
+        "fr": "Creative Commons Attribution. Attribution requise."
+      }
+    },
+    "cc-by-sa": {
+      "labels": { "en": "CC BY-SA", "fr": "CC BY-SA" },
+      "description": {
+        "en": "Creative Commons Attribution-ShareAlike. Attribution required; derivatives must share the same licence.",
+        "fr": "Creative Commons Attribution-Partage dans les mêmes conditions. Attribution requise ; les dérivés doivent partager la même licence."
+      }
+    }
+  }
+}
