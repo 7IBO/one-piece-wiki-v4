@@ -86,8 +86,7 @@ If any task touches a specialized area, also read the relevant deep-dive doc:
 - **Database (build artifact)**: SQLite via `better-sqlite3`
 - **GitHub integration**: Octokit with a GitHub App
 - **Linter**: oxlint
-- **Formatter**: oxfmt if production-ready at install time, otherwise dprint.
-  Switch to oxfmt as soon as it stabilises.
+- **Formatter**: dprint (oxfmt under consideration when it stabilises)
 - **Type checker**: `tsc --noEmit`, cached via Turborepo
 - **Tests (unit)**: Vitest (use `bun test` only for plain runtime scripts)
 - **Tests (e2e)**: Playwright

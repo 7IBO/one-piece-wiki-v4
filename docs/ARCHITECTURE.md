@@ -105,7 +105,7 @@ The architecture optimizes for three properties, in order:
 | Build DB             | SQLite via `better-sqlite3`                         |
 | GitHub integration   | Octokit with GitHub App                             |
 | Linter               | oxlint                                              |
-| Formatter            | oxfmt if stable, else dprint                        |
+| Formatter            | dprint (oxfmt under consideration when it stabilises) |
 | Type checker         | `tsc --noEmit`, cached by Turborepo                 |
 | Unit tests           | Vitest                                              |
 | E2E tests            | Playwright                                          |
