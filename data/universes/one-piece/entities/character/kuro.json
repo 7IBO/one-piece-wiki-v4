@@ -1,0 +1,43 @@
+{
+  "id": "character:kuro",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "kuro",
+  "canonical_name_key": "character.kuro.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.kuro.name.common",
+        "since": "manga-chapter:1",
+        "name_type": "common",
+        "assisted_by": "claude-opus-4.7-via-cc",
+        "review_status": "auto_imported"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.kuro.epithet.thousand-plans",
+        "since": "manga-chapter:1",
+        "assisted_by": "claude-opus-4.7-via-cc",
+        "review_status": "auto_imported"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 16000000,
+        "since": "manga-chapter:1",
+        "assisted_by": "claude-opus-4.7-via-cc",
+        "review_status": "auto_imported"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1",
+        "assisted_by": "claude-opus-4.7-via-cc",
+        "review_status": "auto_imported"
+      }
+    ]
+  },
+  "relations": []
+}

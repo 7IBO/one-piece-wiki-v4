@@ -1,0 +1,58 @@
+{
+  "id": "character:nami",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "nami",
+  "canonical_name_key": "character.nami.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.nami.name.common",
+        "since": "manga-chapter:1",
+        "name_type": "common",
+        "assisted_by": "claude-opus-4.7-via-cc",
+        "review_status": "auto_imported"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.nami.epithet.cat-burglar",
+        "since": "manga-chapter:96",
+        "assisted_by": "claude-opus-4.7-via-cc",
+        "review_status": "auto_imported"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 16000000,
+        "since": "manga-chapter:432",
+        "assisted_by": "claude-opus-4.7-via-cc",
+        "review_status": "auto_imported"
+      },
+      {
+        "value": 66000000,
+        "since": "manga-chapter:1053",
+        "assisted_by": "claude-opus-4.7-via-cc",
+        "review_status": "auto_imported"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1",
+        "assisted_by": "claude-opus-4.7-via-cc",
+        "review_status": "auto_imported"
+      }
+    ]
+  },
+  "relations": [
+    {
+      "type": "member-of",
+      "target": "crew:straw-hat-pirates",
+      "qualifiers": {
+        "role": "navigator",
+        "since": "manga-chapter:96"
+      }
+    }
+  ]
+}

@@ -16,6 +16,18 @@
         "vitest": "^2.1.0",
       },
     },
+    "apps/preview": {
+      "name": "@onepiece-wiki/preview",
+      "version": "0.0.0",
+      "dependencies": {
+        "@onepiece-wiki/schemas": "workspace:*",
+        "@onepiece-wiki/sdk": "workspace:*",
+      },
+      "devDependencies": {
+        "@onepiece-wiki/tsconfig": "workspace:*",
+        "typescript": "^5.7.0",
+      },
+    },
     "packages/db-builder": {
       "name": "@onepiece-wiki/db-builder",
       "version": "0.0.0",
@@ -204,6 +216,8 @@
     "@onepiece-wiki/i18n": ["@onepiece-wiki/i18n@workspace:packages/i18n"],
 
     "@onepiece-wiki/importers": ["@onepiece-wiki/importers@workspace:packages/importers"],
+
+    "@onepiece-wiki/preview": ["@onepiece-wiki/preview@workspace:apps/preview"],
 
     "@onepiece-wiki/schema-engine": ["@onepiece-wiki/schema-engine@workspace:packages/schema-engine"],
 

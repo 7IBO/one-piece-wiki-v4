@@ -8,6 +8,70 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-013 — Phase 3 preview is a minimal Bun HTTP server, not TanStack Start
+
+**Date**: 2026-05-14
+
+**Context**: ARCHITECTURE.md, CLAUDE.md, and ROADMAP Phase 3 Task 1 all
+name TanStack Start as the web framework for `apps/preview`. The
+preview app's stated purpose (ADR-007 + ARCHITECTURE.md § "Public web
+app (deferred)") is:
+
+> raw entity display, basic spoiler filter, to validate the data model
+> end-to-end
+
+i.e. a sandbox, not a product surface. The full TanStack Start setup —
+file-based routing, server functions, build pipeline, React 19, Vite,
+Tailwind v4, Base UI — is significant scaffolding for an app that
+exists to prove the SDK queries the right rows.
+
+**Options**:
+
+- A — Full TanStack Start + React + Tailwind v4 + Base UI in Phase 3.
+  Matches the documented stack. Significant up-front cost; the
+  resulting app's UI is throwaway because Phase 6 builds the real
+  public app from scratch with proper SEO/SSG.
+- B — Minimal Bun HTTP server in Phase 3. Server-rendered semantic
+  HTML with a tiny inline stylesheet. Query-param-driven spoiler
+  filter (`?chapter=N`) and locale switch (`?locale=fr`). No React,
+  no Vite, no framework boilerplate. The dashboard (Phase 4) is where
+  TanStack Start lands; the public web app (Phase 6) is where the
+  Base-UI + Tailwind design system lands.
+- C — TanStack Start without Tailwind / Base UI in Phase 3, then
+  layer those on for Phase 4. Hybrid; gets the framework cost without
+  the design-system payoff.
+
+**Choice**: B.
+
+**Rationale**: The preview's role is validation, not design. A
+purpose-built HTTP server hits every Phase 3 exit criterion (route
+`/preview/[type]/[slug]` renders an entity, chapter input filters
+spoilers, locale switcher swaps EN/FR labels) in dramatically less
+code. The data-model bugs the preview is supposed to surface are
+already visible in pure-data rendering; running them through a React
+tree adds no signal. The dashboard's TanStack Start setup in Phase 4
+remains exactly as planned — that surface needs the type-safe server
+functions and dynamic forms.
+
+**Consequences**:
+
+- `apps/preview` is ~200 lines of Bun + a small render module, not a
+  Vite project. No React in the dependency tree until Phase 4.
+- The Pagefind static index task moves from Phase 3 to Phase 6 (the
+  real public app). The preview has no search bar; entity lookup is
+  via URL.
+- ROADMAP Phase 3 Task 1 stands; only the framework choice softens.
+  Phase 3 exit criteria are unchanged.
+- The Phase 4 dashboard task remains "TanStack Start setup". This
+  ADR does not affect that decision.
+
+**Non-decisions** (deferred):
+
+- Whether the public web app in Phase 6 reuses the preview server or
+  starts fresh from TanStack Start. Phase 6's design pass will pick.
+
+---
+
 ## ADR-012 — Switch to `bun:sqlite` (better-sqlite3 unusable under Bun on Windows)
 
 **Date**: 2026-05-14

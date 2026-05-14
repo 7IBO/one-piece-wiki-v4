@@ -1,0 +1,19 @@
+{
+  "name": "@onepiece-wiki/preview",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "bun --hot src/server.ts",
+    "start": "bun src/server.ts",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@onepiece-wiki/sdk": "workspace:*",
+    "@onepiece-wiki/schemas": "workspace:*"
+  },
+  "devDependencies": {
+    "@onepiece-wiki/tsconfig": "workspace:*",
+    "typescript": "^5.7.0"
+  }
+}

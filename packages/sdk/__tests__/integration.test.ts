@@ -45,13 +45,21 @@ describe('Phase 2 end-to-end', () => {
 
   it('emits a non-trivial entity catalogue', () => {
     const characters = client.getByType('character');
-    expect(characters.length).toBe(5);
+    expect(characters.length).toBeGreaterThanOrEqual(10);
 
     const chapters = client.getByType('manga-chapter');
     expect(chapters.length).toBeGreaterThanOrEqual(9);
 
     const images = client.getByType('image');
     expect(images.length).toBe(3);
+  });
+
+  it('Phase 3 bulk-imported characters carry AI provenance', () => {
+    const namiProps = client.getProperties('character:nami');
+    const aiTagged = namiProps.filter((p) => p.assisted_by !== null);
+    expect(aiTagged.length).toBeGreaterThan(0);
+    expect(aiTagged[0]!.assisted_by).toMatch(/^claude-.*-via-cc$/);
+    expect(aiTagged[0]!.review_status).toBe('auto_imported');
   });
 
   it('returns a character with its first/last appearance', () => {
