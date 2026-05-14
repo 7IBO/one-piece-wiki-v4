@@ -1,0 +1,44 @@
+@import 'tailwindcss';
+
+@theme {
+  --color-surface-primary: oklch(99% 0 0);
+  --color-surface-secondary: oklch(96% 0 0);
+  --color-surface-tertiary: oklch(92% 0 0);
+  --color-surface-inverted: oklch(15% 0 0);
+
+  --color-text-primary: oklch(15% 0 0);
+  --color-text-secondary: oklch(40% 0 0);
+  --color-text-muted: oklch(55% 0 0);
+  --color-text-inverted: oklch(98% 0 0);
+
+  --color-accent: oklch(50% 0.18 250);
+  --color-accent-fg: oklch(98% 0 0);
+  --color-warn: oklch(60% 0.18 60);
+  --color-warn-fg: oklch(15% 0 0);
+  --color-danger: oklch(55% 0.22 25);
+  --color-danger-fg: oklch(98% 0 0);
+
+  --color-border: oklch(88% 0 0);
+  --color-border-strong: oklch(75% 0 0);
+
+  --font-sans: system-ui, ui-sans-serif, sans-serif;
+  --font-mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+
+@media (prefers-color-scheme: dark) {
+  @theme {
+    --color-surface-primary: oklch(15% 0 0);
+    --color-surface-secondary: oklch(20% 0 0);
+    --color-surface-tertiary: oklch(25% 0 0);
+    --color-surface-inverted: oklch(96% 0 0);
+
+    --color-text-primary: oklch(96% 0 0);
+    --color-text-secondary: oklch(75% 0 0);
+    --color-text-muted: oklch(60% 0 0);
+    --color-text-inverted: oklch(15% 0 0);
+
+    --color-accent: oklch(75% 0.15 250);
+    --color-border: oklch(28% 0 0);
+    --color-border-strong: oklch(40% 0 0);
+  }
+}

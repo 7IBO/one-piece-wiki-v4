@@ -10,7 +10,10 @@
     "no-console": "error",
     "no-debugger": "error",
     "eqeqeq": "error",
-    "no-unused-vars": "warn"
+    "no-unused-vars": "warn",
+    "react/react-in-jsx-scope": "off",
+    "react/jsx-key": "warn",
+    "react/no-array-index-key": "off"
   },
   "ignorePatterns": [
     "node_modules",

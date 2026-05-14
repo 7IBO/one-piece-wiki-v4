@@ -6,7 +6,7 @@ demonstrably working and reviewed.**
 
 Current phase is tracked at the top of this file. Update it as you progress.
 
-> **Current phase**: 3 — Preview app + first bulk import (complete; Phase 4 ready to start)
+> **Current phase**: 4.1 — Local dashboard (complete; Phase 4.2 blocked on GitHub App registration — see ADR-014)
 
 ## Phase 1 — Foundations
 

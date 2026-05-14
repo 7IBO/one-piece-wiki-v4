@@ -8,6 +8,100 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-014 — Split Phase 4 into sub-phases; ship 4.1 (local dashboard) first
+
+**Date**: 2026-05-14
+
+**Context**: ROADMAP Phase 4 enumerates eight large tasks for one
+sub-phase: TanStack Start setup, GitHub App auth, packages/github-client
+(Octokit), schema-driven form generator, ten value-input components,
+historical-value editor, relation editor, IndexedDB drafts, AI-assisted
+Suggest buttons, and an image upload pipeline writing to R2. Some
+of those dependencies require **external setup the maintainer must
+perform out of band** — registering a GitHub App at
+`github.com/settings/apps/new`, generating a private key, installing
+it on the data repo — which Claude Code cannot do from inside the
+sandbox. Treating Phase 4 as one monolithic deliverable conflates
+"the dashboard works locally" (no external blockers) with "the
+dashboard opens PRs on GitHub" (blocked on GitHub App registration).
+
+**Options**:
+
+- A — Keep Phase 4 monolithic. Wait until the maintainer registers
+  the GitHub App; only then start any Phase 4 implementation. Phase 4
+  stays at zero progress in the meantime.
+- B — Split Phase 4 into four sub-phases, each with its own exit
+  criteria. Ship the parts that have no external dependency first.
+
+**Choice**: B.
+
+**Phase 4 sub-phases**:
+
+- **Phase 4.1 — Local dashboard** (no external blockers)
+  - `apps/dashboard` (TanStack Start) runs locally.
+  - `packages/ui` exposes the Tailwind v4 theme tokens + Base UI
+    re-exports + `cn()` helper.
+  - Routes: home, type list, entity list per type, entity edit.
+  - Schema-driven form generator. Value inputs: String, Number,
+    Enum, Boolean, EntityRef, I18nKey.
+  - Save action writes JSON files to `/data/universes/` directly
+    via a Bun server function. No auth, no PR flow.
+  - Exit: `bun --filter @onepiece-wiki/dashboard dev` opens a
+    browser-renderable dashboard; editing an entity and saving
+    persists to disk; reloading shows the change.
+- **Phase 4.2 — GitHub integration** (blocked on GitHub App)
+  - `packages/github-client` (Octokit wrapper).
+  - Server-side GitHub OAuth session.
+  - Save action replaces local FS write with branch + PR via
+    Octokit. SHA-based optimistic locking.
+  - Exit: edits go through PRs rather than direct disk writes.
+- **Phase 4.3 — Editor depth**
+  - Remaining value inputs: SourceRef, MultiEnum, Date, Markdown.
+  - Historical value editor (add/remove/reorder entries with
+    qualifier sub-forms and inline timeline).
+  - Relation editor (per-relation qualifier form).
+  - IndexedDB drafts with auto-save and restore.
+- **Phase 4.4 — AI-assisted + images**
+  - `✨ Suggest` button per field (manual paste-flow via Claude Code).
+  - Image upload value input writing to R2 (the upload server
+    function from ROADMAP Phase 4 Task 8).
+
+**Rationale**:
+
+- 4.1 ships immediately. The maintainer gains a UI for editing
+  entities without touching JSON, which is itself a meaningful
+  improvement over Claude-Code-only editing.
+- 4.2's blocking dependency is surfaced explicitly. Future sessions
+  start it once the GitHub App is registered.
+- 4.3 and 4.4 are nice-to-haves whose value compounds as data volume
+  grows.
+- The ROADMAP Phase 4 exit criteria remain the bar to mark Phase 4
+  _complete_. ADR-014 only restructures the path to that bar; it
+  does not move it.
+
+**Consequences**:
+
+- ROADMAP's "Current phase" tracker uses "4.1 complete" /
+  "4.2 ready / blocked on GitHub App" semantics rather than a single
+  in-progress/complete bit.
+- Phase 4.1 ships without auth. The local server binds to localhost
+  only and is **not** meant to be exposed publicly — it's a
+  single-machine maintainer tool.
+- Direct FS writes in 4.1 mean the maintainer's git workflow stays
+  manual: edits land in the working tree; the maintainer commits.
+  This is exactly the same surface they've been using via Claude
+  Code so far, so no behaviour regression.
+- ROADMAP Phase 4 task list is reorganised under the sub-phase
+  headings; original task content unchanged.
+
+**Non-decisions** (deferred):
+
+- Whether Phase 4.4's Suggest button stays manual paste-flow or
+  upgrades to a direct API call. Tied to the AI scale-up criteria
+  in ROADMAP.
+
+---
+
 ## ADR-013 — Phase 3 preview is a minimal Bun HTTP server, not TanStack Start
 
 **Date**: 2026-05-14

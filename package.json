@@ -20,12 +20,14 @@
     "validate": "bun packages/schema-engine/src/cli/validate.ts",
     "check:references": "bun packages/schema-engine/src/cli/check-references.ts",
     "format:data": "bun packages/schema-engine/src/cli/format-data.ts",
-    "build:data": "bun packages/db-builder/src/cli/build.ts"
+    "build:data": "bun packages/db-builder/src/cli/build.ts",
+    "dashboard:dev": "bun --filter @onepiece-wiki/dashboard dev"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@types/bun": "^1.1.13",
+    "concurrently": "9.2.1",
     "dprint": "^0.49.0",
     "lefthook": "^1.10.0",
     "oxlint": "^0.15.0",

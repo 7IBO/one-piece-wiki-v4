@@ -3,45 +3,45 @@
   "type": "character",
   "schema_version": 1,
   "slug": "buggy",
+  "slug_history": [],
   "canonical_name_key": "character.buggy.name.common",
   "properties": {
     "name": [
       {
-        "value_key": "character.buggy.name.common",
         "since": "manga-chapter:1",
-        "name_type": "common",
         "assisted_by": "claude-opus-4.7-via-cc",
-        "review_status": "auto_imported"
+        "review_status": "auto_imported",
+        "value_key": "character.buggy.name.common"
       }
     ],
     "epithet": [
       {
-        "value_key": "character.buggy.epithet.clown",
         "since": "manga-chapter:1",
         "assisted_by": "claude-opus-4.7-via-cc",
-        "review_status": "auto_imported"
+        "review_status": "auto_imported",
+        "value_key": "character.buggy.epithet.clown"
       }
     ],
     "bounty": [
       {
-        "value": 15000000,
         "since": "manga-chapter:96",
         "assisted_by": "claude-opus-4.7-via-cc",
-        "review_status": "auto_imported"
+        "review_status": "auto_imported",
+        "value": 15000000
       },
       {
-        "value": 3189000000,
         "since": "manga-chapter:1053",
         "assisted_by": "claude-opus-4.7-via-cc",
-        "review_status": "auto_imported"
+        "review_status": "auto_imported",
+        "value": 3189000000
       }
     ],
     "status": [
       {
-        "value": "alive",
         "since": "manga-chapter:1",
         "assisted_by": "claude-opus-4.7-via-cc",
-        "review_status": "auto_imported"
+        "review_status": "auto_imported",
+        "value": "alive"
       }
     ]
   },
