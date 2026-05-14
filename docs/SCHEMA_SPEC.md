@@ -171,18 +171,40 @@ A qualifier is metadata on a value entry. Qualifiers come in two flavors:
 
 The following qualifiers are **implicit on every historisable property**.
 They are provided by the schema engine and MUST NOT be listed in a
-property type's `default_qualifiers` or `allowed_qualifiers`. They are the
-mechanism by which the wiki expresses epistemic nuance — false beliefs,
-reveals, partial knowledge. See `/docs/EPISTEMIC_MODEL.md` for the full
-semantics.
+property type's `default_qualifiers` or `allowed_qualifiers`. They serve
+two roles: expressing epistemic nuance (false beliefs, reveals, partial
+knowledge — see `/docs/EPISTEMIC_MODEL.md`) and tracking AI-assisted
+entry plus human-review state (see `/docs/DATA_MODEL.md` § "Provenance
+and review status").
 
-| Qualifier          | Type                  | Meaning                                          |
-| ------------------ | --------------------- | ------------------------------------------------ |
-| `epistemic_status` | enum (epistemic)      | What kind of truth this is. Defaults to `true`.  |
-| `actual_value`     | same as the value     | The real value when status is a false belief     |
-| `event`            | entity_ref (event)    | The event that caused/revealed this value        |
-| `believed_by`      | array of entity_refs  | Characters who hold this belief                  |
-| `known_truth_by`   | array of entity_refs  | Characters who know the actual truth             |
+| Qualifier          | Type                   | Meaning                                                       |
+| ------------------ | ---------------------- | ------------------------------------------------------------- |
+| `epistemic_status` | enum (epistemic)       | What kind of truth this is. Defaults to `true`.               |
+| `actual_value`     | same as the value      | The real value when status is a false belief                  |
+| `event`            | entity_ref (event)     | The event that caused/revealed this value                     |
+| `believed_by`      | array of entity_refs   | Characters who hold this belief                               |
+| `known_truth_by`   | array of entity_refs   | Characters who know the actual truth                          |
+| `assisted_by`      | string                 | AI agent that generated/last edited the value. Absent = human. |
+| `review_status`    | enum (review-statuses) | Human-review state. Defaults to `reviewed`.                   |
+
+**Defaults and omission.** `epistemic_status` defaults to `true`;
+`review_status` defaults to `reviewed`; the others default to absent.
+Per `/docs/CONVENTIONS.md` § "Entity JSON", default-equal qualifiers
+MUST NOT appear in entity JSON. A typical human-edited value therefore
+carries none of these qualifiers; an AI-generated value awaiting review
+typically carries `assisted_by` and `review_status: "not_reviewed"`.
+
+Example — an AI-suggested epithet awaiting human review:
+
+```json
+{
+  "value_key": "character.unknown.epithet.fifth-emperor",
+  "since": "manga-chapter:903",
+  "epistemic_status": "confirmed",
+  "assisted_by": "claude-opus-4.7-via-cc",
+  "review_status": "not_reviewed"
+}
+```
 
 #### Property-declared qualifiers
 
