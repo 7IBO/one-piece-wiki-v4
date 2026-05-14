@@ -4,7 +4,7 @@
   "schema_version": 1,
   "labels": {
     "en": { "active": "Sourced from", "inverse": "Sources image" },
-    "fr": { "active": "Provient de",  "inverse": "Source d'image" }
+    "fr": { "active": "Provient de", "inverse": "Source d'image" }
   },
   "valid_from_types": ["image"],
   "valid_to_types": [

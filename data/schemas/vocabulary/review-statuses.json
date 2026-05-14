@@ -3,9 +3,9 @@
   "id": "review-statuses",
   "schema_version": 1,
   "values": {
-    "reviewed":      { "labels": { "en": "Reviewed",      "fr": "Vérifié" } },
-    "not_reviewed":  { "labels": { "en": "Not reviewed",  "fr": "Non vérifié" } },
-    "flagged":       { "labels": { "en": "Flagged",       "fr": "Signalé" } },
+    "reviewed": { "labels": { "en": "Reviewed", "fr": "Vérifié" } },
+    "not_reviewed": { "labels": { "en": "Not reviewed", "fr": "Non vérifié" } },
+    "flagged": { "labels": { "en": "Flagged", "fr": "Signalé" } },
     "auto_imported": { "labels": { "en": "Auto-imported", "fr": "Importé automatiquement" } }
   }
 }

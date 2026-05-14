@@ -51,8 +51,13 @@ Wrapped in `packages/github-client`. Public surface:
 
 ```ts
 export interface GithubClient {
-  getFile(path: string): Promise<{ content: string; sha: string }>;
-  writeFile(branch: string, path: string, content: string, message: string): Promise<void>;
+  getFile(path: string): Promise<{ content: string; sha: string; }>;
+  writeFile(
+    branch: string,
+    path: string,
+    content: string,
+    message: string,
+  ): Promise<void>;
   createBranch(name: string, fromSha: string): Promise<void>;
   openPR(input: {
     title: string;
@@ -60,7 +65,7 @@ export interface GithubClient {
     head: string;
     base: string;
     labels?: string[];
-  }): Promise<{ number: number; url: string }>;
+  }): Promise<{ number: number; url: string; }>;
   getDefaultBranchSha(): Promise<string>;
 }
 ```
@@ -81,6 +86,7 @@ edit/<entity-id-sanitized>/<nano-id-8>
 ```
 
 Examples:
+
 - `edit/character-luffy/k3F2aBx7`
 - `edit/manga-chapter-1044/m9q2P1r4`
 
@@ -93,6 +99,7 @@ schema/<scope>/<slug>
 ```
 
 Examples:
+
 - `schema/add-title-entity-type`
 - `schema/character-add-haki-color`
 

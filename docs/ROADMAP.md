@@ -14,6 +14,7 @@ Current phase is tracked at the top of this file. Update it as you progress.
 and the tooling to validate them.
 
 **Exit criteria**:
+
 - The monorepo builds cleanly
 - Schema files exist for the 5 core primitives
 - ~10 entities exist as JSON and pass validation
@@ -101,6 +102,7 @@ and the tooling to validate them.
 **Goal**: turn JSON into a queryable SQLite, with derived fields computed.
 
 **Exit criteria**:
+
 - `bun run build:data` produces `dist/onepiece.db`
 - The DB has tables for every entity type, plus relation tables
 - Derived fields are computed: `first_appearance`,
@@ -168,6 +170,7 @@ and the tooling to validate them.
 acts as a development sandbox for the dashboard.
 
 **Exit criteria**:
+
 - `apps/preview` runs locally and on Vercel
 - Route `/preview/[type]/[slug]` displays an entity with all its data
 - A user-progression input (chapter number) filters spoilers
@@ -238,6 +241,7 @@ acts as a development sandbox for the dashboard.
 GitHub PRs.
 
 **Exit criteria**:
+
 - `apps/dashboard` runs locally and on Vercel
 - Admin authenticates via GitHub OAuth (App)
 - Lists entities, creates entities, edits entities
@@ -339,6 +343,7 @@ GitHub PRs.
 dashboard.
 
 **Exit criteria**:
+
 - Add a new vocabulary value via the dashboard (safe, additive)
 - Add a new property to an existing entity type via the dashboard, with
   impact analysis and migration generation
@@ -372,6 +377,7 @@ dashboard.
 **Goal**: the actual wiki: SEO-optimized, fast, beautiful.
 
 **Exit criteria**:
+
 - `apps/web` (or replaces `apps/preview`) serves the public-facing wiki
 - SSG or ISR for all entity pages
 - Locale routes (`/en/...`, `/fr/...`)
@@ -402,6 +408,7 @@ dashboard.
 **Goal**: open editing to non-admin contributors.
 
 **Exit criteria**:
+
 - GitHub OAuth login for any user
 - Submission UX guides users through the form
 - Moderation queue

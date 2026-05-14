@@ -4,10 +4,10 @@
   "schema_version": 1,
   "values": {
     "webp": { "labels": { "en": "WebP", "fr": "WebP" } },
-    "jpg":  { "labels": { "en": "JPEG", "fr": "JPEG" } },
-    "png":  { "labels": { "en": "PNG",  "fr": "PNG"  } },
-    "gif":  { "labels": { "en": "GIF",  "fr": "GIF"  } },
+    "jpg": { "labels": { "en": "JPEG", "fr": "JPEG" } },
+    "png": { "labels": { "en": "PNG", "fr": "PNG" } },
+    "gif": { "labels": { "en": "GIF", "fr": "GIF" } },
     "avif": { "labels": { "en": "AVIF", "fr": "AVIF" } },
-    "svg":  { "labels": { "en": "SVG",  "fr": "SVG"  } }
+    "svg": { "labels": { "en": "SVG", "fr": "SVG" } }
   }
 }

@@ -123,8 +123,8 @@ The base `tsconfig.json` extends `@onepiece-wiki/tsconfig/base.json`:
 
 ```ts
 type Result<T, E extends string = string> =
-  | { ok: true; data: T }
-  | { ok: false; error: { code: E; message: string } };
+  | { ok: true; data: T; }
+  | { ok: false; error: { code: E; message: string; }; };
 ```
 
 ## Imports
@@ -144,7 +144,7 @@ type Result<T, E extends string = string> =
 
 ```tsx
 // EntityEditor.tsx
-import type { EntityType, Entity } from '@onepiece-wiki/schemas';
+import type { Entity, EntityType } from '@onepiece-wiki/schemas';
 import { PropertyEditor } from './property-editor';
 import { RelationEditor } from './relation-editor';
 
@@ -358,7 +358,7 @@ spec does not enforce.
   the schema declaration order, and is part of the pre-commit hook. A PR
   with default-equal fields fails CI.
 - **Rationale.** Diffs stay minimal and readable. When a default changes
-  in a schema migration, only the entities that *actively* override it
+  in a schema migration, only the entities that _actively_ override it
   show up in the diff — making review of behaviour changes possible.
 
 ## Testing

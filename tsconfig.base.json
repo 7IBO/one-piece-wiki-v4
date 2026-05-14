@@ -19,6 +19,7 @@
     "forceConsistentCasingInFileNames": true,
     "useDefineForClassFields": true,
     "noEmit": true,
+    "allowImportingTsExtensions": true,
     "types": ["bun"]
   },
   "exclude": ["node_modules", "dist", "build", ".turbo"]

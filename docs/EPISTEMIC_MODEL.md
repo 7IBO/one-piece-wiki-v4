@@ -131,10 +131,10 @@ Do canon sources contradict each other?
 
 These are independent concepts. Conflating them is a frequent mistake.
 
-| Concept            | Tracks                            | Lives in                  |
-| ------------------ | --------------------------------- | ------------------------- |
-| `epistemic_status` | In-universe truth of the value    | The fiction               |
-| `review_status`    | Whether a human checked the entry | The contributor workflow  |
+| Concept            | Tracks                            | Lives in                 |
+| ------------------ | --------------------------------- | ------------------------ |
+| `epistemic_status` | In-universe truth of the value    | The fiction              |
+| `review_status`    | Whether a human checked the entry | The contributor workflow |
 
 `review_status` is **not an epistemic concept**. It does not affect what
 the wiki claims to be true in-universe; it only tracks human attention
@@ -272,7 +272,7 @@ graph (phase 2+), not on the status of the fruit.
 
 ### A reveal is partial
 
-Example: chapter 1043 *implies* Luffy is Nika; chapter 1044 *confirms* it
+Example: chapter 1043 _implies_ Luffy is Nika; chapter 1044 _confirms_ it
 via the Gorosei. Two separate entries: `implied` then `confirmed`.
 
 ### A reveal in-universe that the reader already knew

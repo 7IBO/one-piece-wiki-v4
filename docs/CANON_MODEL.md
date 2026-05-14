@@ -10,18 +10,18 @@ filters by it.
 Every source declares a `canon_scope` from the enum in
 `/data/schemas/vocabulary/canon-scopes.json`:
 
-| Value             | Meaning                                                       |
-| ----------------- | ------------------------------------------------------------- |
-| `manga`           | Manga, Oda's hand. The hardest canon.                         |
-| `anime`           | Anime adapting the manga; canon within its medium             |
-| `anime_filler`    | Filler episodes; non-canon                                    |
-| `film_canon`      | Films supervised by Oda (e.g. Strong World, Z, Stampede credits) |
-| `film_non_canon`  | Standalone films with no enforced canon link                  |
-| `sbs`             | Question corners in volumes; canon for facts but non-narrative |
-| `databook`        | Vivre Card, One Piece Magazine, official guides                |
-| `live_action`     | Netflix adaptation and follow-ups; alternate canon            |
-| `crossover`       | Toriko x One Piece etc.; explicitly non-canon                  |
-| `video_game`      | Game-specific characters and events; non-canon by default      |
+| Value            | Meaning                                                          |
+| ---------------- | ---------------------------------------------------------------- |
+| `manga`          | Manga, Oda's hand. The hardest canon.                            |
+| `anime`          | Anime adapting the manga; canon within its medium                |
+| `anime_filler`   | Filler episodes; non-canon                                       |
+| `film_canon`     | Films supervised by Oda (e.g. Strong World, Z, Stampede credits) |
+| `film_non_canon` | Standalone films with no enforced canon link                     |
+| `sbs`            | Question corners in volumes; canon for facts but non-narrative   |
+| `databook`       | Vivre Card, One Piece Magazine, official guides                  |
+| `live_action`    | Netflix adaptation and follow-ups; alternate canon               |
+| `crossover`      | Toriko x One Piece etc.; explicitly non-canon                    |
+| `video_game`     | Game-specific characters and events; non-canon by default        |
 
 ## How sources declare scope
 
@@ -32,7 +32,9 @@ A source entity carries `canon_scope` as a regular property:
   "id": "film:one-piece-stampede",
   "type": "film",
   "properties": {
-    "canon_scope": [{ "value": "film_non_canon", "since": "film:one-piece-stampede" }],
+    "canon_scope": [
+      { "value": "film_non_canon", "since": "film:one-piece-stampede" }
+    ],
     "oda_supervised": [{ "value": true, "since": "film:one-piece-stampede" }],
     "canonical_elements": [{
       "value": ["bullet-character-design"],
@@ -66,7 +68,7 @@ Users opt into canon scopes via a preference (defaults: `manga`, `anime`,
 The read path filters facts whose canon scope is not in the user's set.
 Counter-intuitively, this is **additive**: a fact existing in `manga` is
 always shown if `manga` is enabled, even if the user disabled `anime`,
-unless the fact exists *only* in anime.
+unless the fact exists _only_ in anime.
 
 ## Anime-manga adaptation
 

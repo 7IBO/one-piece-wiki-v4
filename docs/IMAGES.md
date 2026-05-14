@@ -58,16 +58,16 @@ Every image carries `license` (a value from the `image-licenses`
 vocabulary) and an `attribution` string. The combination determines
 what the wiki may do with the file:
 
-| Licence              | Hosting on R2 | Display surface         | Notes                                        |
-| -------------------- | ------------- | ----------------------- | -------------------------------------------- |
-| `official-shueisha`  | Yes           | All pages               | Attribution to Shueisha/Toei required.       |
-| `fan-art-permitted`  | Yes           | All pages               | Attribution must match artist's preference.  |
-| `fan-art-fair-use`   | Yes, small    | Thumbnail-size only     | No high-res; sparing use.                    |
-| `screenshot-anime`   | Yes           | All pages               | Critical/documentary context required.       |
-| `screenshot-manga`   | Yes, sparing  | Thumbnail or excerpt    | Use only when prose can't substitute.        |
-| `public-domain`      | Yes           | All pages               | No attribution required (still record one).  |
-| `cc-by`              | Yes           | All pages               | Attribution mandatory.                       |
-| `cc-by-sa`           | Yes           | All pages               | Attribution mandatory; ShareAlike applies.   |
+| Licence             | Hosting on R2 | Display surface      | Notes                                       |
+| ------------------- | ------------- | -------------------- | ------------------------------------------- |
+| `official-shueisha` | Yes           | All pages            | Attribution to Shueisha/Toei required.      |
+| `fan-art-permitted` | Yes           | All pages            | Attribution must match artist's preference. |
+| `fan-art-fair-use`  | Yes, small    | Thumbnail-size only  | No high-res; sparing use.                   |
+| `screenshot-anime`  | Yes           | All pages            | Critical/documentary context required.      |
+| `screenshot-manga`  | Yes, sparing  | Thumbnail or excerpt | Use only when prose can't substitute.       |
+| `public-domain`     | Yes           | All pages            | No attribution required (still record one). |
+| `cc-by`             | Yes           | All pages            | Attribution mandatory.                      |
+| `cc-by-sa`          | Yes           | All pages            | Attribution mandatory; ShareAlike applies.  |
 
 If a licence isn't on this list, the image MUST NOT be uploaded.
 External hot-linking is forbidden — every served image lives in our R2
@@ -104,7 +104,7 @@ Two filters apply when deciding whether to render an image:
    progression? A Gear 5 image with `spoiler_since:
    "manga-chapter:1044"` is hidden from anyone before that chapter,
    regardless of which entity it appears on.
-2. **`depicted-by` qualifier `since`** — is *this* depiction
+2. **`depicted-by` qualifier `since`** — is _this_ depiction
    contextually accurate at the user's progression? Luffy's 3-billion
    wanted poster has `since: "manga-chapter:1053"` on its
    `depicted-by` relation; before chapter 1053, the depiction is
@@ -167,7 +167,7 @@ won't collapse "looks similar enough."
 ## Captions and accessibility
 
 - **`alt_text_key`** is required on every image. The localised string
-  it points to is the screen-reader description. It is *not* the
+  it points to is the screen-reader description. It is _not_ the
   caption.
 - **`caption_key`** is optional and historisable. The caption that
   appears under the image in prose context. Treated like any other
@@ -192,7 +192,7 @@ Marines".
 - A new `document` entity is created for each diegetic object
   (`document:luffy-wanted-poster-30m`, etc.).
 - The `document` entity carries a `depicted-by` relation to its image
-  (the image *depicts* the document).
+  (the image _depicts_ the document).
 - Existing `depicted-by` relations from characters/crews to the
   poster-image are rewired to point at the new `document` entity if
   the depiction is "depicting the wanted poster", or kept if the

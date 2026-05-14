@@ -123,8 +123,8 @@ unverified entries.
   between the queue and the data. Per-value qualifiers stay in lockstep
   by construction.
 - Two separate qualifiers (not one combined "trust" field) preserve
-  orthogonality: `assisted_by` answers *who generated this*,
-  `review_status` answers *has a human checked it*. They evolve
+  orthogonality: `assisted_by` answers _who generated this_,
+  `review_status` answers _has a human checked it_. They evolve
   independently — an AI-generated value can be reviewed; an
   auto-imported value can be flagged later by a different reviewer.
 
@@ -185,7 +185,7 @@ discretely, with no code touched. Specifically:
    app belongs to Phase 1; ROADMAP (Phase 3) is the authority.
 2. **DATA_MODEL.md** Gomu Gomu example: `revealed` → `revealed_to_reader`,
    matching the canonical enum in EPISTEMIC_MODEL.md.
-3. **SCHEMA_SPEC.md** — introduce a *base qualifiers* concept
+3. **SCHEMA_SPEC.md** — introduce a _base qualifiers_ concept
    (`epistemic_status`, `actual_value`, `event`, `believed_by`,
    `known_truth_by` implicit on every historisable property) and clarify
    that `default_qualifiers` vs `allowed_qualifiers` is a UI distinction
@@ -212,7 +212,7 @@ discretely, with no code touched. Specifically:
 **Rationale**: Resolving these now means Phase 1 code is built against a
 single, internally consistent specification. The eight changes are
 small, additive, and reviewable; doing them as one bulk PR would have
-hidden the *kind* of issue each one addresses.
+hidden the _kind_ of issue each one addresses.
 
 **Consequences**:
 

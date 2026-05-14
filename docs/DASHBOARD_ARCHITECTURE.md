@@ -242,7 +242,7 @@ This avoids overwriting another contributor's work.
 The main navigation is generated from the entity types:
 
 ```ts
-const navItems = entityTypes.map(et => ({
+const navItems = entityTypes.map((et) => ({
   label: et.labels[locale],
   href: `/dashboard/${et.id}`,
   icon: et.ui_hint?.icon,

@@ -8,16 +8,16 @@
   },
   "url_segment": "images",
   "properties": [
-    { "id": "url",           "required": true,  "historical": true,  "localizable": false },
-    { "id": "caption_key",   "required": false, "historical": true,  "localizable": true  },
-    { "id": "license",       "required": true,  "historical": false, "localizable": false },
-    { "id": "attribution",   "required": true,  "historical": false, "localizable": false },
+    { "id": "url", "required": true, "historical": true, "localizable": false },
+    { "id": "caption_key", "required": false, "historical": true, "localizable": true },
+    { "id": "license", "required": true, "historical": false, "localizable": false },
+    { "id": "attribution", "required": true, "historical": false, "localizable": false },
     { "id": "source_origin", "required": false, "historical": false, "localizable": false },
-    { "id": "width",         "required": false, "historical": false, "localizable": false },
-    { "id": "height",        "required": false, "historical": false, "localizable": false },
-    { "id": "format",        "required": true,  "historical": false, "localizable": false },
-    { "id": "spoiler_since", "required": true,  "historical": false, "localizable": false },
-    { "id": "alt_text_key",  "required": true,  "historical": false, "localizable": true  }
+    { "id": "width", "required": false, "historical": false, "localizable": false },
+    { "id": "height", "required": false, "historical": false, "localizable": false },
+    { "id": "format", "required": true, "historical": false, "localizable": false },
+    { "id": "spoiler_since", "required": true, "historical": false, "localizable": false },
+    { "id": "alt_text_key", "required": true, "historical": false, "localizable": true }
   ],
   "allowed_relations": [
     "depicted-by",

@@ -73,17 +73,17 @@ beliefs, hidden identities, retcons, and reveals.
 
 The full enum and its semantics are in `/docs/EPISTEMIC_MODEL.md`. Summary:
 
-| Status                  | Meaning                                                      |
-| ----------------------- | ------------------------------------------------------------ |
-| `true`                  | This is the in-universe reality, plain and known             |
-| `confirmed`             | Explicitly stated in canon at this point                     |
-| `believed_by_world`     | Public belief, possibly false; uses `actual_value`           |
-| `believed_by_characters`| Specific characters believe this; uses `believed_by`         |
-| `revealed_to_reader`    | The reader now knows; in-universe knowledge varies           |
-| `rumored`               | Unverified in-universe rumor                                 |
-| `implied`               | Strongly suggested but not explicit                          |
-| `retconned`             | Replaced by a later reveal; kept for historical record       |
-| `disputed`              | Sources disagree (e.g. SBS vs manga)                         |
+| Status                   | Meaning                                                |
+| ------------------------ | ------------------------------------------------------ |
+| `true`                   | This is the in-universe reality, plain and known       |
+| `confirmed`              | Explicitly stated in canon at this point               |
+| `believed_by_world`      | Public belief, possibly false; uses `actual_value`     |
+| `believed_by_characters` | Specific characters believe this; uses `believed_by`   |
+| `revealed_to_reader`     | The reader now knows; in-universe knowledge varies     |
+| `rumored`                | Unverified in-universe rumor                           |
+| `implied`                | Strongly suggested but not explicit                    |
+| `retconned`              | Replaced by a later reveal; kept for historical record |
+| `disputed`               | Sources disagree (e.g. SBS vs manga)                   |
 
 When an entry has a non-`true` status that diverges from reality, it carries
 an `actual_value` field referencing the real value.
@@ -343,13 +343,41 @@ ADR-011 for the deferral decision.
       }
     ],
     "bounty": [
-      { "value": 30000000,   "since": "manga-chapter:119",  "source": "manga-chapter:119"  },
-      { "value": 100000000,  "since": "manga-chapter:432",  "source": "manga-chapter:432"  },
-      { "value": 300000000,  "since": "manga-chapter:601",  "source": "manga-chapter:601"  },
-      { "value": 400000000,  "since": "manga-chapter:801",  "source": "manga-chapter:801"  },
-      { "value": 500000000,  "since": "manga-chapter:801",  "source": "manga-chapter:801"  },
-      { "value": 1500000000, "since": "manga-chapter:903",  "source": "manga-chapter:903"  },
-      { "value": 3000000000, "since": "manga-chapter:1053", "source": "manga-chapter:1053" }
+      {
+        "value": 30000000,
+        "since": "manga-chapter:119",
+        "source": "manga-chapter:119"
+      },
+      {
+        "value": 100000000,
+        "since": "manga-chapter:432",
+        "source": "manga-chapter:432"
+      },
+      {
+        "value": 300000000,
+        "since": "manga-chapter:601",
+        "source": "manga-chapter:601"
+      },
+      {
+        "value": 400000000,
+        "since": "manga-chapter:801",
+        "source": "manga-chapter:801"
+      },
+      {
+        "value": 500000000,
+        "since": "manga-chapter:801",
+        "source": "manga-chapter:801"
+      },
+      {
+        "value": 1500000000,
+        "since": "manga-chapter:903",
+        "source": "manga-chapter:903"
+      },
+      {
+        "value": 3000000000,
+        "since": "manga-chapter:1053",
+        "source": "manga-chapter:1053"
+      }
     ],
     "status": [
       { "value": "alive", "since": "manga-chapter:1" }
@@ -461,16 +489,35 @@ ADR-011 for the deferral decision.
   "slug": "chapter-1044",
   "properties": {
     "number": [{ "value": 1044, "since": "manga-chapter:1044" }],
-    "title_key": [{ "value": "manga-chapter.1044.title", "since": "manga-chapter:1044" }],
-    "published_at_jp": [{ "value": "2022-03-07", "since": "manga-chapter:1044" }],
+    "title_key": [
+      { "value": "manga-chapter.1044.title", "since": "manga-chapter:1044" }
+    ],
+    "published_at_jp": [
+      { "value": "2022-03-07", "since": "manga-chapter:1044" }
+    ],
     "volume": [{ "value": "104", "since": "manga-chapter:1044" }],
     "canon_scope": [{ "value": "manga", "since": "manga-chapter:1044" }]
   },
   "relations": [
     { "type": "part-of-arc", "target": "arc:wano" },
-    { "type": "adapted-by", "target": "anime-episode:1071", "qualifiers": { "coverage": "full" } },
-    { "type": "features", "target": "character:luffy", "qualifiers": { "appearance_type": "full" } },
-    { "type": "features", "target": "devil-fruit:gomu-gomu", "qualifiers": { "appearance_type": "revelation", "event": "event:nika-reveal" } }
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1071",
+      "qualifiers": { "coverage": "full" }
+    },
+    {
+      "type": "features",
+      "target": "character:luffy",
+      "qualifiers": { "appearance_type": "full" }
+    },
+    {
+      "type": "features",
+      "target": "devil-fruit:gomu-gomu",
+      "qualifiers": {
+        "appearance_type": "revelation",
+        "event": "event:nika-reveal"
+      }
+    }
   ]
 }
 ```
@@ -485,7 +532,12 @@ ADR-011 for the deferral decision.
   "slug": "battle-of-marineford",
   "properties": {
     "event_subtype": [{ "value": "battle", "since": "manga-chapter:550" }],
-    "narrative_key": [{ "value": "event.battle-of-marineford.summary", "since": "manga-chapter:550" }]
+    "narrative_key": [
+      {
+        "value": "event.battle-of-marineford.summary",
+        "since": "manga-chapter:550"
+      }
+    ]
   },
   "spans": {
     "first_source": "manga-chapter:550",
@@ -494,10 +546,38 @@ ADR-011 for the deferral decision.
   },
   "relations": [
     { "type": "occurs-during-arc", "target": "arc:marineford" },
-    { "type": "participant", "target": "character:luffy", "qualifiers": { "side": "whitebeard-allies", "role": "rescuer", "outcome": "survived" } },
-    { "type": "participant", "target": "character:ace", "qualifiers": { "side": "captive", "outcome": "killed" } },
-    { "type": "participant", "target": "character:whitebeard", "qualifiers": { "side": "whitebeard-allies", "role": "leader", "outcome": "killed" } },
-    { "type": "participant", "target": "character:akainu", "qualifiers": { "side": "marines", "role": "admiral", "notable_action": "killed-ace" } },
+    {
+      "type": "participant",
+      "target": "character:luffy",
+      "qualifiers": {
+        "side": "whitebeard-allies",
+        "role": "rescuer",
+        "outcome": "survived"
+      }
+    },
+    {
+      "type": "participant",
+      "target": "character:ace",
+      "qualifiers": { "side": "captive", "outcome": "killed" }
+    },
+    {
+      "type": "participant",
+      "target": "character:whitebeard",
+      "qualifiers": {
+        "side": "whitebeard-allies",
+        "role": "leader",
+        "outcome": "killed"
+      }
+    },
+    {
+      "type": "participant",
+      "target": "character:akainu",
+      "qualifiers": {
+        "side": "marines",
+        "role": "admiral",
+        "notable_action": "killed-ace"
+      }
+    },
     { "type": "caused-death-of", "target": "character:ace" },
     { "type": "caused-death-of", "target": "character:whitebeard" }
   ]
@@ -510,22 +590,22 @@ Relations of type `features` (chapter → entity) and `appears_in` (entity →
 chapter, generated as the inverse) carry an `appearance_type` qualifier. Full
 enumeration:
 
-| Value           | Meaning                                                 |
-| --------------- | ------------------------------------------------------- |
-| `full`          | The entity appears identifiable and present             |
-| `silhouette`    | Visible but unidentifiable on purpose                   |
-| `partial`       | A hand, an eye, a back of the head                      |
-| `mentioned`     | Named but not visually present                          |
-| `named_only`    | Name spoken without visual                              |
-| `flashback`     | Appears in a flashback                                  |
-| `cover_story`   | Appears in the volume cover story (parallel narrative)  |
-| `recap`         | Appears in a recap page                                 |
-| `vision`        | Hallucination, prophecy, dream sequence                 |
-| `photograph`    | On a wanted poster, vivre card, news clipping           |
-| `portrait`      | Painting, statue                                        |
-| `corpse`        | Already dead in the appearance                          |
-| `imagined`      | Someone imagining them                                  |
-| `narrator_only` | Mentioned by the narrator without character or visual   |
+| Value           | Meaning                                                |
+| --------------- | ------------------------------------------------------ |
+| `full`          | The entity appears identifiable and present            |
+| `silhouette`    | Visible but unidentifiable on purpose                  |
+| `partial`       | A hand, an eye, a back of the head                     |
+| `mentioned`     | Named but not visually present                         |
+| `named_only`    | Name spoken without visual                             |
+| `flashback`     | Appears in a flashback                                 |
+| `cover_story`   | Appears in the volume cover story (parallel narrative) |
+| `recap`         | Appears in a recap page                                |
+| `vision`        | Hallucination, prophecy, dream sequence                |
+| `photograph`    | On a wanted poster, vivre card, news clipping          |
+| `portrait`      | Painting, statue                                       |
+| `corpse`        | Already dead in the appearance                         |
+| `imagined`      | Someone imagining them                                 |
+| `narrator_only` | Mentioned by the narrator without character or visual  |
 
 Plus orthogonal flags:
 
@@ -537,19 +617,19 @@ Plus orthogonal flags:
 
 Names are historisable with a `name_type` qualifier:
 
-| Value           | Meaning                                                  |
-| --------------- | -------------------------------------------------------- |
-| `common`        | Everyday name used by most                               |
-| `full_name`     | Full legal name                                          |
-| `true_name`     | Original/hidden name revealed late                       |
-| `epithet`       | Press/world title ("Straw Hat", "Pirate Hunter")         |
-| `nickname`      | Used by close ones                                       |
-| `alias`         | Active disguise / pseudonym                              |
-| `codename`      | Used inside an organisation                              |
-| `title`         | Held title ("Fifth Emperor")                             |
-| `insult`        | Used by enemies                                          |
-| `honorific`     | Cultural address ("Luffy-Taro", "Luffy-Sama")            |
-| `mistranslation`| Variant from a specific translation edition              |
+| Value            | Meaning                                          |
+| ---------------- | ------------------------------------------------ |
+| `common`         | Everyday name used by most                       |
+| `full_name`      | Full legal name                                  |
+| `true_name`      | Original/hidden name revealed late               |
+| `epithet`        | Press/world title ("Straw Hat", "Pirate Hunter") |
+| `nickname`       | Used by close ones                               |
+| `alias`          | Active disguise / pseudonym                      |
+| `codename`       | Used inside an organisation                      |
+| `title`          | Held title ("Fifth Emperor")                     |
+| `insult`         | Used by enemies                                  |
+| `honorific`      | Cultural address ("Luffy-Taro", "Luffy-Sama")    |
+| `mistranslation` | Variant from a specific translation edition      |
 
 Each name entry can carry `given_by` (who calls them this) and `context`
 (where, e.g. `dressrosa-coliseum`).
@@ -564,6 +644,7 @@ Each name entry can carry `given_by` (who calls them this) and `context`
   used to generate 301 redirects in the public app.
 
 The two are distinct because:
+
 - IDs are referenced from thousands of other files; changing them is
   catastrophic.
 - Slugs are user-facing; corrections, disambiguations and renames happen.
@@ -599,16 +680,16 @@ Each type's properties and relations are declared in its
 
 ## What lives where
 
-| Content                         | Location                                            |
-| ------------------------------- | --------------------------------------------------- |
-| Entity definitions              | `/data/universes/<u>/entities/<type>/<id>.json`     |
-| Property values, dates, status  | Inside entity files                                 |
-| Localized names, descriptions   | `/data/universes/<u>/translations/<locale>/...json` |
-| Prose summaries                 | `/data/universes/<u>/narratives/<locale>/...md`     |
-| What types exist                | `/data/schemas/entity-types/`                       |
-| What properties exist           | `/data/schemas/property-types/`                     |
-| What relations exist            | `/data/schemas/relation-types/`                     |
-| Enum values (haki types, etc.)  | `/data/schemas/vocabulary/`                         |
+| Content                        | Location                                            |
+| ------------------------------ | --------------------------------------------------- |
+| Entity definitions             | `/data/universes/<u>/entities/<type>/<id>.json`     |
+| Property values, dates, status | Inside entity files                                 |
+| Localized names, descriptions  | `/data/universes/<u>/translations/<locale>/...json` |
+| Prose summaries                | `/data/universes/<u>/narratives/<locale>/...md`     |
+| What types exist               | `/data/schemas/entity-types/`                       |
+| What properties exist          | `/data/schemas/property-types/`                     |
+| What relations exist           | `/data/schemas/relation-types/`                     |
+| Enum values (haki types, etc.) | `/data/schemas/vocabulary/`                         |
 
 ## What the data model intentionally does not capture
 

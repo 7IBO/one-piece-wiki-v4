@@ -48,17 +48,17 @@ A file in `/data/schemas/entity-types/<id>.json`.
 
 ### Fields
 
-| Field                  | Type        | Required | Description                                                     |
-| ---------------------- | ----------- | -------- | --------------------------------------------------------------- |
-| `$schema`              | string      | yes      | Meta-schema reference                                           |
-| `id`                   | string      | yes      | Type identifier, kebab-case (e.g. `character`)                  |
-| `schema_version`       | integer     | yes      | Bumped on breaking changes                                      |
-| `labels`               | object      | yes      | Locale → label, used in UI and breadcrumbs                      |
-| `url_segment`          | string      | yes      | Segment used in URLs (kebab-case English, e.g. `characters`)    |
-| `properties`           | array       | yes      | Allowed property declarations                                   |
-| `allowed_relations`    | string[]    | yes      | IDs of relation types entities of this type may participate in  |
-| `requires_translations`| boolean     | no       | If true, translations are mandatory for the entity's `canonical_name_key` and all `i18n_key`-valued properties |
-| `ui_hint`              | object      | no       | Hints for the dashboard (icon, color, group)                    |
+| Field                   | Type     | Required | Description                                                                                                    |
+| ----------------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------- |
+| `$schema`               | string   | yes      | Meta-schema reference                                                                                          |
+| `id`                    | string   | yes      | Type identifier, kebab-case (e.g. `character`)                                                                 |
+| `schema_version`        | integer  | yes      | Bumped on breaking changes                                                                                     |
+| `labels`                | object   | yes      | Locale → label, used in UI and breadcrumbs                                                                     |
+| `url_segment`           | string   | yes      | Segment used in URLs (kebab-case English, e.g. `characters`)                                                   |
+| `properties`            | array    | yes      | Allowed property declarations                                                                                  |
+| `allowed_relations`     | string[] | yes      | IDs of relation types entities of this type may participate in                                                 |
+| `requires_translations` | boolean  | no       | If true, translations are mandatory for the entity's `canonical_name_key` and all `i18n_key`-valued properties |
+| `ui_hint`               | object   | no       | Hints for the dashboard (icon, color, group)                                                                   |
 
 ### Property declaration
 
@@ -92,14 +92,54 @@ The shape of values is defined in the corresponding property type file.
   "url_segment": "characters",
   "properties": [
     { "id": "name", "required": true, "historical": true, "localizable": true },
-    { "id": "epithet", "required": false, "historical": true, "localizable": true },
-    { "id": "bounty", "required": false, "historical": true, "localizable": false },
-    { "id": "age", "required": false, "historical": true, "localizable": false },
-    { "id": "height", "required": false, "historical": true, "localizable": false },
-    { "id": "birthday", "required": false, "historical": false, "localizable": false },
-    { "id": "blood_type", "required": false, "historical": false, "localizable": false },
-    { "id": "haki_types", "required": false, "historical": true, "localizable": false },
-    { "id": "status", "required": true, "historical": true, "localizable": false }
+    {
+      "id": "epithet",
+      "required": false,
+      "historical": true,
+      "localizable": true
+    },
+    {
+      "id": "bounty",
+      "required": false,
+      "historical": true,
+      "localizable": false
+    },
+    {
+      "id": "age",
+      "required": false,
+      "historical": true,
+      "localizable": false
+    },
+    {
+      "id": "height",
+      "required": false,
+      "historical": true,
+      "localizable": false
+    },
+    {
+      "id": "birthday",
+      "required": false,
+      "historical": false,
+      "localizable": false
+    },
+    {
+      "id": "blood_type",
+      "required": false,
+      "historical": false,
+      "localizable": false
+    },
+    {
+      "id": "haki_types",
+      "required": false,
+      "historical": true,
+      "localizable": false
+    },
+    {
+      "id": "status",
+      "required": true,
+      "historical": true,
+      "localizable": false
+    }
   ],
   "allowed_relations": [
     "member-of",
@@ -127,39 +167,39 @@ A file in `/data/schemas/property-types/<id>.json`.
 
 ### Fields
 
-| Field                | Type         | Required | Description                                                  |
-| -------------------- | ------------ | -------- | ------------------------------------------------------------ |
-| `$schema`            | string       | yes      | Meta-schema reference                                        |
-| `id`                 | string       | yes      | Property identifier, kebab-case                              |
-| `schema_version`     | integer      | yes      | Bumped on breaking changes                                   |
-| `labels`             | object       | yes      | Locale → label                                               |
-| `value_type`         | enum         | yes      | One of the value type primitives (see below)                 |
-| `value_constraints`  | object       | no       | Type-specific constraints (min, max, pattern, enum_ref, etc.)|
-| `unit`               | string       | no       | Display unit (e.g. `berry`, `cm`, `kg`)                      |
-| `historical`         | boolean      | yes      | Whether values are versioned                                 |
-| `localizable`        | boolean      | yes      | Whether values are translated (then `value_key` is stored)   |
-| `spoiler_sensitive`  | boolean      | yes      | Whether values must be filtered by spoiler progression       |
-| `applies_to_entity_types` | string[] | no    | Restrict which entity types can have this property           |
-| `default_qualifiers` | string[]     | no       | Property-declared qualifiers shown in the form by default    |
-| `allowed_qualifiers` | object[]     | no       | Property-declared qualifiers accessible via "more options"   |
-| `ui_hint`            | object       | no       | Display format, input widget, icon                           |
+| Field                     | Type     | Required | Description                                                   |
+| ------------------------- | -------- | -------- | ------------------------------------------------------------- |
+| `$schema`                 | string   | yes      | Meta-schema reference                                         |
+| `id`                      | string   | yes      | Property identifier, kebab-case                               |
+| `schema_version`          | integer  | yes      | Bumped on breaking changes                                    |
+| `labels`                  | object   | yes      | Locale → label                                                |
+| `value_type`              | enum     | yes      | One of the value type primitives (see below)                  |
+| `value_constraints`       | object   | no       | Type-specific constraints (min, max, pattern, enum_ref, etc.) |
+| `unit`                    | string   | no       | Display unit (e.g. `berry`, `cm`, `kg`)                       |
+| `historical`              | boolean  | yes      | Whether values are versioned                                  |
+| `localizable`             | boolean  | yes      | Whether values are translated (then `value_key` is stored)    |
+| `spoiler_sensitive`       | boolean  | yes      | Whether values must be filtered by spoiler progression        |
+| `applies_to_entity_types` | string[] | no       | Restrict which entity types can have this property            |
+| `default_qualifiers`      | string[] | no       | Property-declared qualifiers shown in the form by default     |
+| `allowed_qualifiers`      | object[] | no       | Property-declared qualifiers accessible via "more options"    |
+| `ui_hint`                 | object   | no       | Display format, input widget, icon                            |
 
 ### Value types
 
 The following primitive `value_type`s are supported:
 
-| value_type    | TypeScript                | Example                                        |
-| ------------- | ------------------------- | ---------------------------------------------- |
-| `string`      | `string`                  | `"alive"`                                      |
-| `number`      | `number`                  | `30000000`                                     |
-| `boolean`     | `boolean`                 | `true`                                         |
-| `enum`        | one of `enum_ref` values  | `"paramecia"`                                  |
-| `multi_enum`  | array of `enum_ref` values| `["conqueror", "armament"]`                    |
-| `date`        | ISO 8601 string           | `"2022-03-07"`                                 |
-| `entity_ref`  | entity ID                 | `"location:goa-kingdom"`                       |
-| `source_ref`  | source entity ID          | `"manga-chapter:1044"`                         |
-| `i18n_key`    | localizable key           | `"character.luffy.name.full"` (resolved later) |
-| `markdown`    | light markdown string     | `"### Personality\n\nLuffy is **fearless**…"`  |
+| value_type   | TypeScript                 | Example                                        |
+| ------------ | -------------------------- | ---------------------------------------------- |
+| `string`     | `string`                   | `"alive"`                                      |
+| `number`     | `number`                   | `30000000`                                     |
+| `boolean`    | `boolean`                  | `true`                                         |
+| `enum`       | one of `enum_ref` values   | `"paramecia"`                                  |
+| `multi_enum` | array of `enum_ref` values | `["conqueror", "armament"]`                    |
+| `date`       | ISO 8601 string            | `"2022-03-07"`                                 |
+| `entity_ref` | entity ID                  | `"location:goa-kingdom"`                       |
+| `source_ref` | source entity ID           | `"manga-chapter:1044"`                         |
+| `i18n_key`   | localizable key            | `"character.luffy.name.full"` (resolved later) |
+| `markdown`   | light markdown string      | `"### Personality\n\nLuffy is **fearless**…"`  |
 
 ### Qualifiers
 
@@ -177,15 +217,15 @@ knowledge — see `/docs/EPISTEMIC_MODEL.md`) and tracking AI-assisted
 entry plus human-review state (see `/docs/DATA_MODEL.md` § "Provenance
 and review status").
 
-| Qualifier          | Type                   | Meaning                                                       |
-| ------------------ | ---------------------- | ------------------------------------------------------------- |
-| `epistemic_status` | enum (epistemic)       | What kind of truth this is. Defaults to `true`.               |
-| `actual_value`     | same as the value      | The real value when status is a false belief                  |
-| `event`            | entity_ref (event)     | The event that caused/revealed this value                     |
-| `believed_by`      | array of entity_refs   | Characters who hold this belief                               |
-| `known_truth_by`   | array of entity_refs   | Characters who know the actual truth                          |
+| Qualifier          | Type                   | Meaning                                                        |
+| ------------------ | ---------------------- | -------------------------------------------------------------- |
+| `epistemic_status` | enum (epistemic)       | What kind of truth this is. Defaults to `true`.                |
+| `actual_value`     | same as the value      | The real value when status is a false belief                   |
+| `event`            | entity_ref (event)     | The event that caused/revealed this value                      |
+| `believed_by`      | array of entity_refs   | Characters who hold this belief                                |
+| `known_truth_by`   | array of entity_refs   | Characters who know the actual truth                           |
 | `assisted_by`      | string                 | AI agent that generated/last edited the value. Absent = human. |
-| `review_status`    | enum (review-statuses) | Human-review state. Defaults to `reviewed`.                   |
+| `review_status`    | enum (review-statuses) | Human-review state. Defaults to `reviewed`.                    |
 
 **Defaults and omission.** `epistemic_status` defaults to `true`;
 `review_status` defaults to `reviewed`; the others default to absent.
@@ -218,13 +258,13 @@ Each property type declares its own qualifiers via two fields:
 
 Common property-declared qualifiers across the model:
 
-| Qualifier          | Type                  | Meaning                                          |
-| ------------------ | --------------------- | ------------------------------------------------ |
-| `since`            | source_ref            | First source where this value applies            |
-| `until`            | source_ref            | Last source where this value applies (optional)  |
-| `source`           | source_ref            | Source proving the value                         |
-| `canon_scope`      | enum (canon-scopes)   | Restricts the value to a specific canon          |
-| `in_universe_date` | string                | In-universe date (e.g. `"12_years_before_story"`)|
+| Qualifier          | Type                | Meaning                                           |
+| ------------------ | ------------------- | ------------------------------------------------- |
+| `since`            | source_ref          | First source where this value applies             |
+| `until`            | source_ref          | Last source where this value applies (optional)   |
+| `source`           | source_ref          | Source proving the value                          |
+| `canon_scope`      | enum (canon-scopes) | Restricts the value to a specific canon           |
+| `in_universe_date` | string              | In-universe date (e.g. `"12_years_before_story"`) |
 
 A property type may also declare bespoke qualifiers in
 `allowed_qualifiers` (e.g. `issued_by` on `bounty`).
@@ -268,19 +308,19 @@ A file in `/data/schemas/relation-types/<id>.json`.
 
 ### Fields
 
-| Field                | Type         | Required | Description                                                   |
-| -------------------- | ------------ | -------- | ------------------------------------------------------------- |
-| `$schema`            | string       | yes      | Meta-schema reference                                         |
-| `id`                 | string       | yes      | Relation identifier, kebab-case                               |
-| `schema_version`     | integer      | yes      | Bumped on breaking changes                                    |
-| `labels`             | object       | yes      | Locale → `{ active, inverse }` labels                         |
-| `valid_from_types`   | string[]     | yes      | Allowed source entity types                                   |
-| `valid_to_types`     | string[]     | yes      | Allowed target entity types                                   |
-| `qualifiers`         | object[]     | no       | Qualifier declarations (id, value_type, required, enum_ref…)  |
-| `allow_multiple_concurrent` | boolean | no    | If true, multiple active relations of this type are allowed   |
-| `inverse_inferred`   | boolean      | yes      | If true, the build pipeline generates the inverse direction   |
-| `historical`         | boolean      | no       | If true, relations themselves carry `since`/`until`           |
-| `ui_hint`            | object       | no       | Display hints                                                 |
+| Field                       | Type     | Required | Description                                                  |
+| --------------------------- | -------- | -------- | ------------------------------------------------------------ |
+| `$schema`                   | string   | yes      | Meta-schema reference                                        |
+| `id`                        | string   | yes      | Relation identifier, kebab-case                              |
+| `schema_version`            | integer  | yes      | Bumped on breaking changes                                   |
+| `labels`                    | object   | yes      | Locale → `{ active, inverse }` labels                        |
+| `valid_from_types`          | string[] | yes      | Allowed source entity types                                  |
+| `valid_to_types`            | string[] | yes      | Allowed target entity types                                  |
+| `qualifiers`                | object[] | no       | Qualifier declarations (id, value_type, required, enum_ref…) |
+| `allow_multiple_concurrent` | boolean  | no       | If true, multiple active relations of this type are allowed  |
+| `inverse_inferred`          | boolean  | yes      | If true, the build pipeline generates the inverse direction  |
+| `historical`                | boolean  | no       | If true, relations themselves carry `since`/`until`          |
+| `ui_hint`                   | object   | no       | Display hints                                                |
 
 ### When `since` is required on a relation
 
@@ -299,7 +339,7 @@ The `during_period` qualifier is a controlled vocabulary
 (`/data/schemas/vocabulary/during-periods.json`) of named historical
 ranges: `void_century`, `god_valley_incident`, `pre_story`, etc. The
 build pipeline treats `during_period`-anchored relations as reachable
-once the user has read the source that *reveals* the fact (carried via
+once the user has read the source that _reveals_ the fact (carried via
 `epistemic_status` and `event` on the relation, not `since`).
 
 ### Example: member-of (source-anchored)
@@ -316,11 +356,27 @@ once the user has read the source that *reveals* the fact (carried via
   "valid_from_types": ["character"],
   "valid_to_types": ["crew", "organization"],
   "qualifiers": [
-    { "id": "role", "value_type": "enum", "enum_ref": "crew-roles", "required": true },
+    {
+      "id": "role",
+      "value_type": "enum",
+      "enum_ref": "crew-roles",
+      "required": true
+    },
     { "id": "since", "value_type": "source_ref", "required": true },
     { "id": "until", "value_type": "source_ref", "required": false },
-    { "id": "loyalty_status", "value_type": "enum", "enum_ref": "loyalty-statuses", "required": false, "default": "member" },
-    { "id": "appears_to_world_as", "value_type": "enum", "enum_ref": "loyalty-statuses", "required": false }
+    {
+      "id": "loyalty_status",
+      "value_type": "enum",
+      "enum_ref": "loyalty-statuses",
+      "required": false,
+      "default": "member"
+    },
+    {
+      "id": "appears_to_world_as",
+      "value_type": "enum",
+      "enum_ref": "loyalty-statuses",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,
@@ -343,7 +399,12 @@ once the user has read the source that *reveals* the fact (carried via
   "valid_to_types": ["character"],
   "qualifiers": [
     { "id": "since", "value_type": "source_ref", "required": false },
-    { "id": "during_period", "value_type": "enum", "enum_ref": "during-periods", "required": false }
+    {
+      "id": "during_period",
+      "value_type": "enum",
+      "enum_ref": "during-periods",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,
@@ -363,12 +424,12 @@ enumerated lists with localized labels and optional metadata.
 
 ### Fields
 
-| Field            | Type    | Required | Description                                  |
-| ---------------- | ------- | -------- | -------------------------------------------- |
-| `$schema`        | string  | yes      | Meta-schema reference                        |
-| `id`             | string  | yes      | Vocabulary identifier                        |
-| `schema_version` | integer | yes      | Bumped on breaking changes                   |
-| `values`         | object  | yes      | Map value → { labels, optional metadata }    |
+| Field            | Type    | Required | Description                               |
+| ---------------- | ------- | -------- | ----------------------------------------- |
+| `$schema`        | string  | yes      | Meta-schema reference                     |
+| `id`             | string  | yes      | Vocabulary identifier                     |
+| `schema_version` | integer | yes      | Bumped on breaking changes                |
+| `values`         | object  | yes      | Map value → { labels, optional metadata } |
 
 ### Example
 
@@ -378,16 +439,18 @@ enumerated lists with localized labels and optional metadata.
   "id": "crew-roles",
   "schema_version": 1,
   "values": {
-    "captain":       { "labels": { "en": "Captain", "fr": "Capitaine" } },
-    "first_mate":    { "labels": { "en": "First Mate", "fr": "Second" } },
-    "navigator":     { "labels": { "en": "Navigator", "fr": "Navigateur" } },
-    "cook":          { "labels": { "en": "Cook", "fr": "Cuisinier" } },
-    "doctor":        { "labels": { "en": "Doctor", "fr": "Docteur" } },
-    "archaeologist": { "labels": { "en": "Archaeologist", "fr": "Archéologue" } },
-    "shipwright":    { "labels": { "en": "Shipwright", "fr": "Charpentier" } },
-    "musician":      { "labels": { "en": "Musician", "fr": "Musicien" } },
-    "sniper":        { "labels": { "en": "Sniper", "fr": "Tireur d'élite" } },
-    "helmsman":      { "labels": { "en": "Helmsman", "fr": "Barreur" } }
+    "captain": { "labels": { "en": "Captain", "fr": "Capitaine" } },
+    "first_mate": { "labels": { "en": "First Mate", "fr": "Second" } },
+    "navigator": { "labels": { "en": "Navigator", "fr": "Navigateur" } },
+    "cook": { "labels": { "en": "Cook", "fr": "Cuisinier" } },
+    "doctor": { "labels": { "en": "Doctor", "fr": "Docteur" } },
+    "archaeologist": {
+      "labels": { "en": "Archaeologist", "fr": "Archéologue" }
+    },
+    "shipwright": { "labels": { "en": "Shipwright", "fr": "Charpentier" } },
+    "musician": { "labels": { "en": "Musician", "fr": "Musicien" } },
+    "sniper": { "labels": { "en": "Sniper", "fr": "Tireur d'élite" } },
+    "helmsman": { "labels": { "en": "Helmsman", "fr": "Barreur" } }
   }
 }
 ```
@@ -437,7 +500,7 @@ Example output for the bounty property declaration above:
 ```ts
 // packages/schemas/generated/property-bounty.ts
 import { z } from 'zod';
-import { SourceRef, EntityRef } from '../primitives';
+import { EntityRef, SourceRef } from '../primitives';
 import { EpistemicStatus } from '../vocabularies/epistemic-statuses';
 
 export const BountyValue = z.object({
@@ -463,15 +526,15 @@ export const CharacterEntity = z.object({
   slug_history: z.array(Slug).default([]),
   canonical_name_key: I18nKey,
   properties: z.object({
-    name:      z.array(NameValue).optional(),
-    epithet:   z.array(EpithetValue).optional(),
-    bounty:    z.array(BountyValue).optional(),
-    age:       z.array(AgeValue).optional(),
-    height:    z.array(HeightValue).optional(),
-    birthday:  z.array(BirthdayValue).optional(),
+    name: z.array(NameValue).optional(),
+    epithet: z.array(EpithetValue).optional(),
+    bounty: z.array(BountyValue).optional(),
+    age: z.array(AgeValue).optional(),
+    height: z.array(HeightValue).optional(),
+    birthday: z.array(BirthdayValue).optional(),
     blood_type: z.array(BloodTypeValue).optional(),
     haki_types: z.array(HakiTypesValue).optional(),
-    status:    z.array(StatusValue),
+    status: z.array(StatusValue),
   }),
   relations: z.array(RelationSchema),
 });
