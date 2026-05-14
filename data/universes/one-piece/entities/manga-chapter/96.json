@@ -1,0 +1,14 @@
+{
+  "id": "manga-chapter:96",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-96",
+  "properties": {
+    "number": { "value": 96 },
+    "title_key": { "value_key": "manga-chapter.96.title" },
+    "published_at_jp": { "value": "1999-04-19" }
+  },
+  "relations": [
+    { "type": "part-of-arc", "target": "arc:east-blue" }
+  ]
+}

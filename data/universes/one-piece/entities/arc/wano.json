@@ -1,0 +1,11 @@
+{
+  "id": "arc:wano",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "wano",
+  "canonical_name_key": "arc.wano.name",
+  "properties": {
+    "name": [{ "value_key": "arc.wano.name", "since": "manga-chapter:1043" }]
+  },
+  "relations": []
+}

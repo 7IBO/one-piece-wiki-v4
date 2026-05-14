@@ -1,0 +1,14 @@
+{
+  "id": "manga-chapter:585",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-585",
+  "properties": {
+    "number": { "value": 585 },
+    "title_key": { "value_key": "manga-chapter.585.title" },
+    "published_at_jp": { "value": "2010-05-31" }
+  },
+  "relations": [
+    { "type": "part-of-arc", "target": "arc:marineford" }
+  ]
+}

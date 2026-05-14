@@ -1,0 +1,24 @@
+{
+  "id": "image:gomu-gomu-no-mi",
+  "type": "image",
+  "schema_version": 1,
+  "slug": "gomu-gomu-no-mi",
+  "canonical_name_key": "image.gomu-gomu-no-mi.name",
+  "properties": {
+    "url": [
+      { "value": "https://images.onepiece-wiki.example/gomu-gomu-no-mi.webp" }
+    ],
+    "license": { "value": "official-shueisha" },
+    "attribution": { "value": "© Eiichiro Oda / Shueisha" },
+    "format": { "value": "webp" },
+    "spoiler_since": { "value": "manga-chapter:1" },
+    "alt_text_key": { "value_key": "image.gomu-gomu-no-mi.alt" }
+  },
+  "relations": [
+    {
+      "type": "depicted-by",
+      "target": "devil-fruit:gomu-gomu",
+      "qualifiers": { "role": "primary_portrait" }
+    }
+  ]
+}

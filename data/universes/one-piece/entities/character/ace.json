@@ -1,0 +1,46 @@
+{
+  "id": "character:ace",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "portgas-d-ace",
+  "canonical_name_key": "character.ace.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.ace.name.common",
+        "since": "manga-chapter:1",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.ace.epithet.fire-fist",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "bounty": [
+      { "value": 550000000, "since": "manga-chapter:1" }
+    ],
+    "status": [
+      { "value": "alive", "since": "manga-chapter:1" },
+      {
+        "value": "dead",
+        "since": "manga-chapter:574",
+        "epistemic_status": "confirmed",
+        "event": "event:battle-of-marineford"
+      }
+    ]
+  },
+  "relations": [
+    {
+      "type": "family-of",
+      "target": "character:luffy",
+      "qualifiers": { "relation_kind": "sworn_brother" }
+    },
+    {
+      "type": "family-of",
+      "target": "character:sabo",
+      "qualifiers": { "relation_kind": "sworn_brother" }
+    }
+  ]
+}

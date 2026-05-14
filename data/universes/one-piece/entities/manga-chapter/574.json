@@ -1,0 +1,14 @@
+{
+  "id": "manga-chapter:574",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-574",
+  "properties": {
+    "number": { "value": 574 },
+    "title_key": { "value_key": "manga-chapter.574.title" },
+    "published_at_jp": { "value": "2010-02-15" }
+  },
+  "relations": [
+    { "type": "part-of-arc", "target": "arc:marineford" }
+  ]
+}

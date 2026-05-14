@@ -1,0 +1,14 @@
+{
+  "id": "manga-chapter:1043",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-1043",
+  "properties": {
+    "number": { "value": 1043 },
+    "title_key": { "value_key": "manga-chapter.1043.title" },
+    "published_at_jp": { "value": "2022-02-28" }
+  },
+  "relations": [
+    { "type": "part-of-arc", "target": "arc:wano" }
+  ]
+}

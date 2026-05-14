@@ -1,0 +1,24 @@
+{
+  "id": "image:luffy-primary-portrait",
+  "type": "image",
+  "schema_version": 1,
+  "slug": "luffy-primary-portrait",
+  "canonical_name_key": "image.luffy-primary-portrait.name",
+  "properties": {
+    "url": [
+      { "value": "https://images.onepiece-wiki.example/luffy-primary-portrait.webp" }
+    ],
+    "license": { "value": "official-shueisha" },
+    "attribution": { "value": "© Eiichiro Oda / Shueisha" },
+    "format": { "value": "webp" },
+    "spoiler_since": { "value": "manga-chapter:1" },
+    "alt_text_key": { "value_key": "image.luffy-primary-portrait.alt" }
+  },
+  "relations": [
+    {
+      "type": "depicted-by",
+      "target": "character:luffy",
+      "qualifiers": { "role": "primary_portrait" }
+    }
+  ]
+}

@@ -1,0 +1,11 @@
+{
+  "id": "arc:marineford",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "marineford",
+  "canonical_name_key": "arc.marineford.name",
+  "properties": {
+    "name": [{ "value_key": "arc.marineford.name", "since": "manga-chapter:550" }]
+  },
+  "relations": []
+}

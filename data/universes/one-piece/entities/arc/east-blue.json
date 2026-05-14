@@ -1,0 +1,11 @@
+{
+  "id": "arc:east-blue",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "east-blue",
+  "canonical_name_key": "arc.east-blue.name",
+  "properties": {
+    "name": [{ "value_key": "arc.east-blue.name", "since": "manga-chapter:1" }]
+  },
+  "relations": []
+}

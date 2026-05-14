@@ -1,0 +1,38 @@
+{
+  "id": "devil-fruit:gomu-gomu",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "gomu-gomu-no-mi",
+  "canonical_name_key": "devil-fruit.gomu-gomu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.gomu-gomu.name.common",
+        "since": "manga-chapter:1",
+        "name_type": "common"
+      },
+      {
+        "value_key": "devil-fruit.gomu-gomu.name.true",
+        "since": "manga-chapter:1044",
+        "name_type": "true_name",
+        "epistemic_status": "revealed_to_reader",
+        "event": "event:nika-reveal"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "manga-chapter:1",
+        "epistemic_status": "believed_by_world",
+        "actual_value": "mythical_zoan"
+      },
+      {
+        "value": "mythical_zoan",
+        "since": "manga-chapter:1044",
+        "epistemic_status": "confirmed",
+        "event": "event:nika-reveal"
+      }
+    ]
+  },
+  "relations": []
+}

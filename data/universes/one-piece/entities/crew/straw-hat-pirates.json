@@ -1,0 +1,13 @@
+{
+  "id": "crew:straw-hat-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "straw-hat-pirates",
+  "canonical_name_key": "crew.straw-hat-pirates.name",
+  "properties": {
+    "name": [
+      { "value_key": "crew.straw-hat-pirates.name", "since": "manga-chapter:1" }
+    ]
+  },
+  "relations": []
+}

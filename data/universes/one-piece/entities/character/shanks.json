@@ -1,0 +1,29 @@
+{
+  "id": "character:shanks",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "shanks",
+  "canonical_name_key": "character.shanks.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.shanks.name.common",
+        "since": "manga-chapter:1",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.shanks.epithet.red-hair",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "bounty": [
+      { "value": 4048900000, "since": "manga-chapter:1053" }
+    ],
+    "status": [
+      { "value": "alive", "since": "manga-chapter:1" }
+    ]
+  },
+  "relations": []
+}

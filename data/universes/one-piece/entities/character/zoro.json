@@ -1,0 +1,36 @@
+{
+  "id": "character:zoro",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "roronoa-zoro",
+  "canonical_name_key": "character.zoro.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.zoro.name.common",
+        "since": "manga-chapter:1",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.zoro.epithet.pirate-hunter",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "bounty": [
+      { "value": 60000000, "since": "manga-chapter:96" },
+      { "value": 1111000000, "since": "manga-chapter:1053" }
+    ],
+    "status": [
+      { "value": "alive", "since": "manga-chapter:1" }
+    ]
+  },
+  "relations": [
+    {
+      "type": "member-of",
+      "target": "crew:straw-hat-pirates",
+      "qualifiers": { "role": "first_mate", "since": "manga-chapter:1" }
+    }
+  ]
+}

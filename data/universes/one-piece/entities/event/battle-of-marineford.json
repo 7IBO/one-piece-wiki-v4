@@ -1,0 +1,25 @@
+{
+  "id": "event:battle-of-marineford",
+  "type": "event",
+  "schema_version": 1,
+  "slug": "battle-of-marineford",
+  "canonical_name_key": "event.battle-of-marineford.name",
+  "properties": {
+    "event_subtype": { "value": "battle" },
+    "name": [{ "value_key": "event.battle-of-marineford.name", "since": "manga-chapter:550" }]
+  },
+  "relations": [
+    { "type": "part-of-arc", "target": "arc:marineford" },
+    {
+      "type": "participant",
+      "target": "character:luffy",
+      "qualifiers": { "side": "whitebeard-allies", "role": "rescuer", "outcome": "survived" }
+    },
+    {
+      "type": "participant",
+      "target": "character:ace",
+      "qualifiers": { "side": "captive", "outcome": "killed" }
+    },
+    { "type": "caused-death-of", "target": "character:ace" }
+  ]
+}

@@ -1,0 +1,43 @@
+{
+  "id": "character:sabo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "sabo",
+  "canonical_name_key": "character.sabo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.sabo.name.common",
+        "since": "manga-chapter:1",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      { "value": "alive", "since": "manga-chapter:1" },
+      {
+        "value": "presumed_dead",
+        "since": "manga-chapter:585",
+        "epistemic_status": "believed_by_characters",
+        "believed_by": ["character:luffy", "character:ace"],
+        "actual_value": "alive"
+      },
+      {
+        "value": "alive",
+        "since": "manga-chapter:731",
+        "epistemic_status": "revealed_to_reader"
+      }
+    ]
+  },
+  "relations": [
+    {
+      "type": "family-of",
+      "target": "character:luffy",
+      "qualifiers": { "relation_kind": "sworn_brother" }
+    },
+    {
+      "type": "family-of",
+      "target": "character:ace",
+      "qualifiers": { "relation_kind": "sworn_brother" }
+    }
+  ]
+}
