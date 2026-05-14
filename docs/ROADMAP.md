@@ -54,16 +54,19 @@ and the tooling to validate them.
 
 5. **Initial schema files**
    - Entity types: `character`, `devil-fruit`, `manga-chapter`,
-     `event`, `arc`, `crew`
+     `event`, `arc`, `crew`, `image`
    - Property types: `name`, `epithet`, `bounty`, `status`,
      `classification`, `event_subtype`, `number`, `title_key`,
-     `published_at_jp`
+     `published_at_jp`, `url`, `caption_key`, `license`,
+     `attribution`, `source_origin`, `width`, `height`, `format`,
+     `spoiler_since`, `alt_text_key`
    - Relation types: `member-of`, `ate-fruit`, `features`,
      `participant`, `part-of-arc`, `caused-death-of`,
-     `adapted-by`, `family-of`
+     `adapted-by`, `family-of`, `depicted-by`, `sourced-from`
    - Vocabularies: `crew-roles`, `epistemic-statuses`,
      `canon-scopes`, `name-types`, `appearance-types`,
-     `event-subtypes`, `review-statuses`
+     `event-subtypes`, `review-statuses`, `image-licenses`,
+     `depiction-roles`, `image-formats`
    - Note: `assisted_by` and `review_status` are **universal base
      qualifiers** (see `/docs/SCHEMA_SPEC.md` § "Base qualifiers" and
      `/docs/DATA_MODEL.md` § "Provenance and review status"). They are
@@ -77,6 +80,11 @@ and the tooling to validate them.
    - Chapters: 1, 96, 432, 1043, 1044, 1053
    - Arc: East Blue, Marineford, Wano
    - Event: Battle of Marineford, Nika Reveal
+   - Images: ~3 examples covering the model end-to-end, e.g.
+     `image:luffy-primary-portrait` (depicted-by character:luffy,
+     role: primary_portrait), `image:gomu-gomu-no-mi`
+     (depicted-by devil-fruit:gomu-gomu), and one group photo
+     exercising the reuse pattern (depicted-by multiple characters)
 
 7. **Validation pipeline**
    - `bun run schema:check` — meta-validate schemas
@@ -286,7 +294,25 @@ GitHub PRs.
    - Restore on entity reopen
    - Manual "submit" creates PR
 
-8. **AI-assisted Suggest buttons**
+8. **Image upload value input**
+   - Server function for R2 upload: accepts a file, validates format
+     and size, deduplicates by content hash, writes to
+     `images/<image-slug>.<format>` per the R2 convention in
+     `/docs/ARCHITECTURE.md`.
+   - `ImageUpload` value input component for the form generator,
+     registered under `value_type: "entity_ref"` constrained to
+     `image` targets (or a dedicated `image_ref` variant if the
+     existing entity-ref input is insufficient).
+   - On submission, the upload server function creates the `image`
+     entity (with url, license, attribution, alt_text_key,
+     spoiler_since, format, optional caption) **and** the
+     `depicted-by` relation on the parent entity in a single
+     transaction (one PR carrying both files).
+   - Licensing surface: the form requires picking a value from
+     `image-licenses` and entering an attribution string before
+     upload is allowed.
+
+9. **AI-assisted Suggest buttons**
    - On every form field rendered by the form generator, a
      `✨ Suggest` button calls a server function returning a draft
      value the editor can accept, edit, or reject.
