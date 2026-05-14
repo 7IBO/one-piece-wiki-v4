@@ -286,6 +286,27 @@ GitHub PRs.
    - Restore on entity reopen
    - Manual "submit" creates PR
 
+8. **AI-assisted Suggest buttons**
+   - On every form field rendered by the form generator, a
+     `✨ Suggest` button calls a server function returning a draft
+     value the editor can accept, edit, or reject.
+   - The server function reuses the prompts and mapping patterns
+     proven during the Phase 3 bulk import — the same heuristics that
+     already produced acceptable data, exposed as an inline affordance.
+   - **Phase 4 operator model**: Claude Code in a side session. The
+     server function returns a structured request; the maintainer
+     pastes it into Claude Code, copies the response back. No direct
+     Anthropic API integration in this phase — the manual paste-flow
+     keeps cost predictable and lets the prompts mature before
+     productisation.
+   - **Provenance**: accepted suggestions land as values with
+     `assisted_by: "claude-<family>-<version>-via-dashboard"` and
+     `review_status: "not_reviewed"` until a follow-up commit drops
+     both qualifiers.
+   - **Deferred to a later phase**: replacing the manual paste-flow
+     with a direct API call. Triggered by the criteria in the
+     "AI scale-up criteria" section at the bottom of this file.
+
 ## Phase 5 — Referential and schema management
 
 **Goal**: edit vocabularies and (with care) schema files from the
