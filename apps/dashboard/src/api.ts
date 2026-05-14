@@ -19,6 +19,12 @@ export type EntityDetail = {
   readonly type: string;
   readonly slug: string;
   readonly data: Record<string, unknown>;
+  readonly sha: string | null;
+};
+
+export type SaveResult = {
+  readonly ok: true;
+  readonly pr: { readonly number: number; readonly htmlUrl: string; readonly headBranch: string; };
 };
 
 export type SchemaCatalogue = {
@@ -35,6 +41,7 @@ async function getJson<T>(path: string): Promise<T> {
 async function postJson<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(path, {
     method: 'POST',
+    credentials: 'include',
     headers: { 'content-type': 'application/json' },
     body: JSON.stringify(body),
   });
@@ -61,10 +68,11 @@ export const api = {
     type: string,
     slug: string,
     data: Record<string, unknown>,
-  ): Promise<EntityDetail> {
-    return postJson<EntityDetail>(
+    sha: string | null,
+  ): Promise<SaveResult> {
+    return postJson<SaveResult>(
       `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`,
-      data,
+      { data, sha },
     );
   },
 };

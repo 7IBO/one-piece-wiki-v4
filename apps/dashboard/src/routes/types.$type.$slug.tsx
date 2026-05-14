@@ -59,9 +59,10 @@ function EntityEditComponent(): JSX.Element {
         propertyTypes={schemas.propertyTypes}
         initialData={entity.data}
         onSave={async (next) => {
-          const saved = await api.saveEntity(type, slug, next);
-          setEntity(saved);
-          setSavedNote(`Saved at ${new Date().toLocaleTimeString()}.`);
+          const result = await api.saveEntity(type, slug, next, entity.sha);
+          setSavedNote(
+            `PR #${result.pr.number} opened at ${result.pr.htmlUrl} (branch ${result.pr.headBranch}).`,
+          );
         }}
       />
     </Content>

@@ -6,7 +6,7 @@ demonstrably working and reviewed.**
 
 Current phase is tracked at the top of this file. Update it as you progress.
 
-> **Current phase**: 4.1 — Local dashboard (complete; Phase 4.2 blocked on GitHub App registration — see ADR-014)
+> **Current phase**: 4.2 — GitHub-integrated dashboard (code shipped; awaits maintainer's first end-to-end PR test)
 
 ## Phase 1 — Foundations
 

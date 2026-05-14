@@ -4,13 +4,16 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently -k -n vite,api -c blue,green \"vite\" \"bun --hot api/server.ts\"",
+    "dev:vite": "vite",
+    "dev:api": "bun --hot api/server.ts",
     "build": "vite build",
     "start": "vite preview",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
     "@base-ui-components/react": "^1.0.0-rc.0",
+    "@onepiece-wiki/github-client": "workspace:*",
     "@onepiece-wiki/schema-engine": "workspace:*",
     "@onepiece-wiki/schemas": "workspace:*",
     "@onepiece-wiki/sdk": "workspace:*",
