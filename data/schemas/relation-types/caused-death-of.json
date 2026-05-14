@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "caused-death-of",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Caused death of", "inverse": "Killed by event" },
+    "fr": { "active": "A causé la mort de", "inverse": "Tué par l'évènement" }
+  },
+  "valid_from_types": ["event"],
+  "valid_to_types": ["character"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true
+}

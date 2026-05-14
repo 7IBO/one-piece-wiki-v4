@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "arc",
+  "schema_version": 1,
+  "labels": { "en": "Arc", "fr": "Arc" },
+  "url_segment": "arcs",
+  "properties": [
+    { "id": "name", "required": true, "historical": false, "localizable": true }
+  ],
+  "allowed_relations": ["part-of-arc", "depicted-by"],
+  "ui_hint": { "icon": "compass", "group": "narrative" }
+}

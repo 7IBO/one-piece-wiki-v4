@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "event",
+  "schema_version": 1,
+  "labels": { "en": "Event", "fr": "Évènement" },
+  "url_segment": "events",
+  "properties": [
+    { "id": "event_subtype", "required": true, "historical": false, "localizable": false },
+    { "id": "name", "required": true, "historical": false, "localizable": true }
+  ],
+  "allowed_relations": [
+    "participant",
+    "part-of-arc",
+    "caused-death-of",
+    "depicted-by"
+  ],
+  "ui_hint": { "icon": "flag", "group": "events" }
+}

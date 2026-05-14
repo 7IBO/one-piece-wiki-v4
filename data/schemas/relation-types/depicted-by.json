@@ -10,20 +10,9 @@
     "character",
     "devil-fruit",
     "crew",
-    "organization",
-    "location",
-    "technique",
-    "weapon",
-    "ship",
-    "race",
-    "title",
-    "concept",
     "event",
     "arc",
-    "saga",
-    "manga-chapter",
-    "anime-episode",
-    "film"
+    "manga-chapter"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [

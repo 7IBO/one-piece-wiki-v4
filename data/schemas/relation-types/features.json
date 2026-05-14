@@ -1,0 +1,26 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "features",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Features", "inverse": "Appears in" },
+    "fr": { "active": "Met en scène", "inverse": "Apparaît dans" }
+  },
+  "valid_from_types": ["manga-chapter"],
+  "valid_to_types": [
+    "character",
+    "devil-fruit",
+    "crew",
+    "image"
+  ],
+  "qualifiers": [
+    {
+      "id": "appearance_type",
+      "value_type": "enum",
+      "enum_ref": "appearance-types",
+      "required": true
+    }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true
+}

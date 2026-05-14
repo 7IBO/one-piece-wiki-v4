@@ -1,0 +1,22 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "character",
+  "schema_version": 1,
+  "labels": { "en": "Character", "fr": "Personnage" },
+  "url_segment": "characters",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "epithet", "required": false, "historical": true, "localizable": true },
+    { "id": "bounty", "required": false, "historical": true, "localizable": false },
+    { "id": "status", "required": true, "historical": true, "localizable": false }
+  ],
+  "allowed_relations": [
+    "member-of",
+    "ate-fruit",
+    "family-of",
+    "features",
+    "participant",
+    "depicted-by"
+  ],
+  "ui_hint": { "icon": "user", "group": "people" }
+}

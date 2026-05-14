@@ -7,13 +7,7 @@
     "fr": { "active": "Provient de", "inverse": "Source d'image" }
   },
   "valid_from_types": ["image"],
-  "valid_to_types": [
-    "manga-chapter",
-    "anime-episode",
-    "film",
-    "sbs",
-    "databook"
-  ],
+  "valid_to_types": ["manga-chapter"],
   "qualifiers": [],
   "allow_multiple_concurrent": false,
   "inverse_inferred": true
