@@ -1,5 +1,8 @@
+import { Badge } from '@/components/ui/badge';
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { createFileRoute } from '@tanstack/react-router';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { ChevronLeft } from 'lucide-react';
 import { type JSX, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type EntityDetail, type SchemaCatalogue, type SourceRef } from '../api.ts';
@@ -52,18 +55,33 @@ function EntityEditComponent(): JSX.Element {
   }
 
   return (
-    <div className='space-y-4'>
+    <div className='space-y-6'>
       <div>
-        <h1 className='font-mono text-2xl font-semibold tracking-tight'>{entity.id}</h1>
-        <p className='text-muted-foreground text-xs'>
-          slug=<code className='font-mono'>{entity.slug}</code>
+        <Button
+          render={<Link to='/types/$type' params={{ type }} />}
+          variant='ghost'
+          size='sm'
+          className='-ml-2 h-7 px-2'
+        >
+          <ChevronLeft className='size-4' />
+          {type}
+        </Button>
+        <div className='mt-2 flex items-baseline gap-3'>
+          <h1 className='font-mono text-2xl font-semibold tracking-tight'>{entity.id}</h1>
           {entity.sha !== null
             ? (
-              <>
-                · sha=<code className='font-mono'>{entity.sha.slice(0, 7)}</code>
-              </>
+              <Badge variant='secondary' className='font-mono text-xs'>
+                {entity.sha.slice(0, 7)}
+              </Badge>
             )
-            : <span className='text-amber-500'>· not yet on GitHub</span>}
+            : (
+              <Badge variant='outline' className='text-amber-500'>
+                not on GitHub yet
+              </Badge>
+            )}
+        </div>
+        <p className='text-muted-foreground mt-1 text-sm'>
+          slug=<code className='font-mono'>{entity.slug}</code>
         </p>
       </div>
       <EntityForm
@@ -73,8 +91,9 @@ function EntityEditComponent(): JSX.Element {
         sources={sources}
         i18nKeys={i18nKeys}
         initialData={entity.data}
-        onSave={async (next) => {
-          const result = await api.saveEntity(type, slug, next, entity.sha);
+        initialTranslations={entity.translations}
+        onSave={async (next, translations) => {
+          const result = await api.saveEntity(type, slug, next, entity.sha, translations);
           toast.success(`PR #${result.pr.number} opened`, {
             description: result.pr.htmlUrl,
             action: {

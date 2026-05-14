@@ -30,6 +30,7 @@ import {
 } from '@onepiece-wiki/github-client';
 import { loadEntities, loadSchemas, validateCatalogue } from '@onepiece-wiki/schema-engine';
 import { randomBytes } from 'node:crypto';
+import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import {
   buildCookie,
@@ -100,6 +101,33 @@ function conflict(message: string, currentSha: string): Response {
 
 function dataPath(type: string, fileBase: string): string {
   return `data/universes/${UNIVERSE}/entities/${type}/${fileBase}.json`;
+}
+
+const LOCALES = ['en', 'fr'] as const;
+type Locale = typeof LOCALES[number];
+
+function translationsPath(locale: Locale, type: string, fileBase: string): string {
+  return `data/universes/${UNIVERSE}/translations/${locale}/${type}/${fileBase}.json`;
+}
+
+async function readTranslationsFor(
+  type: string,
+  fileBase: string,
+): Promise<Record<Locale, Record<string, string>>> {
+  const out = { en: {}, fr: {} } as Record<Locale, Record<string, string>>;
+  for (const locale of LOCALES) {
+    const path = resolve(REPO_ROOT, translationsPath(locale, type, fileBase));
+    try {
+      const text = await readFile(path, 'utf8');
+      const parsed = JSON.parse(text) as unknown;
+      if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        out[locale] = parsed as Record<string, string>;
+      }
+    } catch {
+      // missing file → empty translations for this locale; that's fine.
+    }
+  }
+  return out;
 }
 
 async function findEntity(snap: CatalogueSnapshot, type: string, slug: string) {
@@ -203,11 +231,12 @@ async function handleGetEntity(type: string, slug: string): Promise<Response> {
   const entity = await findEntity(snap, type, slug);
   if (entity === undefined) return notFound(`No entity of type ${type} with slug ${slug}`);
 
+  const fileBase = entity.id.split(':')[1] ?? slug;
+
   let sha: string | null = null;
   if (config !== null) {
     try {
       const octokit = await installationClient(config);
-      const fileBase = entity.id.split(':')[1] ?? slug;
       const file = await getFile(octokit, config, dataPath(type, fileBase));
       sha = file?.sha ?? null;
     } catch (err) {
@@ -217,7 +246,9 @@ async function handleGetEntity(type: string, slug: string): Promise<Response> {
     }
   }
 
-  return json({ id: entity.id, type, slug, data: entity.data, sha });
+  const translations = await readTranslationsFor(type, fileBase);
+
+  return json({ id: entity.id, type, slug, data: entity.data, sha, translations });
 }
 
 async function handleSaveEntity(
@@ -236,7 +267,11 @@ async function handleSaveEntity(
   if (body === null || typeof body !== 'object') {
     return badRequest('Body must be an object with { data, sha }.');
   }
-  const payload = body as { data?: Record<string, unknown>; sha?: string | null; };
+  const payload = body as {
+    data?: Record<string, unknown>;
+    sha?: string | null;
+    translations?: Partial<Record<Locale, Record<string, string>>>;
+  };
   if (payload.data === undefined || typeof payload.data !== 'object' || payload.data === null) {
     return badRequest('Body.data must be the entity object.');
   }
@@ -255,6 +290,23 @@ async function handleSaveEntity(
   const path = dataPath(type, fileBase);
   const newContent = `${JSON.stringify(payload.data, null, 2)}\n`;
 
+  const extraFiles: { path: string; content: string; }[] = [];
+  for (const locale of LOCALES) {
+    const map = payload.translations?.[locale];
+    if (map === undefined) continue;
+    // Only write if the locale has at least one translation; otherwise
+    // skip to avoid creating empty files in the PR.
+    const filtered: Record<string, string> = {};
+    for (const [k, v] of Object.entries(map)) {
+      if (typeof v === 'string' && v.length > 0) filtered[k] = v;
+    }
+    if (Object.keys(filtered).length === 0) continue;
+    extraFiles.push({
+      path: translationsPath(locale, type, fileBase),
+      content: `${JSON.stringify(filtered, null, 2)}\n`,
+    });
+  }
+
   const octokit = await installationClient(cfg);
   try {
     const pr = await submitEntityEdit(octokit, cfg, {
@@ -263,6 +315,7 @@ async function handleSaveEntity(
       newContent,
       expectedSha: payload.sha ?? null,
       contributorLogin: session.login,
+      extraFiles,
     });
     return json({ ok: true, pr });
   } catch (err) {

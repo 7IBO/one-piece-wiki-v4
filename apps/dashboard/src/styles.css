@@ -4,8 +4,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+/* Reserve scrollbar gutter so opening any popover (Select, Popover,
+ * Dialog, …) doesn't shift the page horizontally when Base UI locks
+ * body scroll. */
+html {
+  scrollbar-gutter: stable;
+}
+
 body {
   margin: 0;
+}
+
+/* Cancel inline padding/margin Base UI may add for scroll-lock — the
+ * stable gutter above already reserved the space. */
+body[data-scroll-locked] {
+  padding-right: 0 !important;
+  margin-right: 0 !important;
 }
 
 @theme inline {

@@ -1,12 +1,21 @@
 /**
- * Schema-driven entity form. Walks the entity-type's `properties`
- * list, looks up each property-type from the catalogue, and renders
- * a row per property using the value-input registry. Historical
- * properties get an array editor (one entry per historisable value).
+ * Schema-driven entity form with inline translation editor.
+ *
+ * Walks the entity-type's `properties` list, looks up each
+ * property-type from the catalogue, and renders a row per property
+ * using the value-input registry. Historical properties get an array
+ * editor (one entry per historisable value).
+ *
+ * Localizable properties (i18n_key value type) get an additional
+ * translation panel showing EN + FR side-by-side. Saving the form
+ * persists both the entity JSON and the translation files in a
+ * single PR.
  */
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import {
   Table,
   TableBody,
@@ -21,8 +30,8 @@ import type {
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
 import { Trash2 } from 'lucide-react';
-import { type JSX, useState } from 'react';
-import type { SourceRef } from '../api.ts';
+import { Fragment, type JSX, useEffect, useMemo, useState } from 'react';
+import type { SourceRef, Translations } from '../api.ts';
 import { ValueInput, type ValueInputContext, type ValueType } from './inputs.tsx';
 
 type PropertyEntry = Record<string, unknown>;
@@ -38,7 +47,8 @@ export type EntityFormProps = {
   sources: readonly SourceRef[];
   i18nKeys: readonly string[];
   initialData: EntityData;
-  onSave: (next: EntityData) => Promise<void>;
+  initialTranslations: Translations;
+  onSave: (next: EntityData, translations: Translations) => Promise<void>;
 };
 
 function getValueField(propertyType: PropertyTypeSchema): 'value' | 'value_key' {
@@ -66,8 +76,30 @@ function enumValuesFor(
 
 export function EntityForm(props: EntityFormProps): JSX.Element {
   const [data, setData] = useState<EntityData>(props.initialData);
+  const [translations, setTranslations] = useState<Translations>(props.initialTranslations);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+
+  const initialDataString = useMemo(() => JSON.stringify(props.initialData), [props.initialData]);
+  const initialTranslationsString = useMemo(
+    () => JSON.stringify(props.initialTranslations),
+    [props.initialTranslations],
+  );
+  const dirty = JSON.stringify(data) !== initialDataString
+    || JSON.stringify(translations) !== initialTranslationsString;
+
+  // Cmd/Ctrl+S to save when dirty.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent): void {
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 's') {
+        e.preventDefault();
+        if (dirty && !saving) void handleSave();
+      }
+    }
+    document.addEventListener('keydown', onKey);
+    return () => document.removeEventListener('keydown', onKey);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [dirty, saving, data, translations]);
 
   function updateEntry(
     propertyId: string,
@@ -108,11 +140,20 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     });
   }
 
+  function updateTranslation(locale: 'en' | 'fr', key: string, value: string): void {
+    setTranslations((prev) => {
+      const next = { ...prev[locale] };
+      if (value === '') delete next[key];
+      else next[key] = value;
+      return { ...prev, [locale]: next };
+    });
+  }
+
   async function handleSave(): Promise<void> {
     setSaving(true);
     setError(null);
     try {
-      await props.onSave(data);
+      await props.onSave(data, translations);
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
@@ -127,7 +168,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   };
 
   return (
-    <div className='space-y-4'>
+    <div className='space-y-4 pb-20'>
       {props.entityType.properties.map((decl) => {
         const propertyType = props.propertyTypes[decl.id];
         if (propertyType === undefined) {
@@ -164,16 +205,19 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                 {decl.required
                   ? <Badge variant='outline' className='font-normal'>required</Badge>
                   : null}
+                {propertyType.localizable
+                  ? <Badge variant='outline' className='font-normal'>localizable</Badge>
+                  : null}
               </CardTitle>
             </CardHeader>
-            <CardContent>
+            <CardContent className='space-y-4'>
               {propertyEntries.length === 0
                 ? <p className='text-muted-foreground text-sm italic'>No entries.</p>
                 : (
                   <Table>
                     <TableHeader>
                       <TableRow>
-                        <TableHead>value</TableHead>
+                        <TableHead>{propertyType.localizable ? 'i18n key' : 'value'}</TableHead>
                         {propertyType.historical
                           ? <TableHead className='w-72'>since</TableHead>
                           : null}
@@ -181,51 +225,98 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                       </TableRow>
                     </TableHeader>
                     <TableBody>
-                      {propertyEntries.map((entry, idx) => (
-                        <TableRow key={idx}>
-                          <TableCell>
-                            <ValueInput
-                              valueType={valueType}
-                              value={entry[valueField]}
-                              ctx={valueCtx}
-                              onChange={(next) => {
-                                updateEntry(decl.id, propertyType.historical, idx, {
-                                  ...entry,
-                                  [valueField]: next,
-                                });
-                              }}
-                            />
-                          </TableCell>
-                          {propertyType.historical
-                            ? (
+                      {propertyEntries.map((entry, idx) => {
+                        const i18nKey = typeof entry[valueField] === 'string'
+                          ? entry[valueField] as string
+                          : '';
+                        return (
+                          <Fragment key={idx}>
+                            <TableRow>
                               <TableCell>
                                 <ValueInput
-                                  valueType='source_ref'
-                                  value={entry['since']}
-                                  ctx={sinceCtx}
+                                  valueType={valueType}
+                                  value={entry[valueField]}
+                                  ctx={valueCtx}
                                   onChange={(next) => {
-                                    updateEntry(decl.id, true, idx, { ...entry, since: next });
+                                    updateEntry(decl.id, propertyType.historical, idx, {
+                                      ...entry,
+                                      [valueField]: next,
+                                    });
                                   }}
                                 />
                               </TableCell>
-                            )
-                            : null}
-                          {propertyType.historical
-                            ? (
-                              <TableCell>
-                                <Button
-                                  type='button'
-                                  variant='ghost'
-                                  size='icon'
-                                  onClick={() => removeEntry(decl.id, idx)}
-                                >
-                                  <Trash2 className='size-4' />
-                                </Button>
-                              </TableCell>
-                            )
-                            : null}
-                        </TableRow>
-                      ))}
+                              {propertyType.historical
+                                ? (
+                                  <TableCell>
+                                    <ValueInput
+                                      valueType='source_ref'
+                                      value={entry['since']}
+                                      ctx={sinceCtx}
+                                      onChange={(next) => {
+                                        updateEntry(decl.id, true, idx, {
+                                          ...entry,
+                                          since: next,
+                                        });
+                                      }}
+                                    />
+                                  </TableCell>
+                                )
+                                : null}
+                              {propertyType.historical
+                                ? (
+                                  <TableCell>
+                                    <Button
+                                      type='button'
+                                      variant='ghost'
+                                      size='icon'
+                                      onClick={() => removeEntry(decl.id, idx)}
+                                    >
+                                      <Trash2 className='size-4' />
+                                    </Button>
+                                  </TableCell>
+                                )
+                                : null}
+                            </TableRow>
+                            {propertyType.localizable && i18nKey.length > 0
+                              ? (
+                                <TableRow>
+                                  <TableCell
+                                    colSpan={propertyType.historical ? 3 : 1}
+                                    className='bg-muted/40'
+                                  >
+                                    <div className='grid grid-cols-1 gap-2 sm:grid-cols-2'>
+                                      <div className='space-y-1'>
+                                        <Label className='text-muted-foreground text-xs'>
+                                          EN
+                                        </Label>
+                                        <Input
+                                          type='text'
+                                          value={translations.en[i18nKey] ?? ''}
+                                          onChange={(e) =>
+                                            updateTranslation('en', i18nKey, e.target.value)}
+                                          placeholder='English value'
+                                        />
+                                      </div>
+                                      <div className='space-y-1'>
+                                        <Label className='text-muted-foreground text-xs'>
+                                          FR
+                                        </Label>
+                                        <Input
+                                          type='text'
+                                          value={translations.fr[i18nKey] ?? ''}
+                                          onChange={(e) =>
+                                            updateTranslation('fr', i18nKey, e.target.value)}
+                                          placeholder='French value'
+                                        />
+                                      </div>
+                                    </div>
+                                  </TableCell>
+                                </TableRow>
+                              )
+                              : null}
+                          </Fragment>
+                        );
+                      })}
                     </TableBody>
                   </Table>
                 )}
@@ -235,7 +326,6 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                     type='button'
                     variant='outline'
                     size='sm'
-                    className='mt-3'
                     onClick={() => addEntry(decl.id, valueField)}
                   >
                     + {propertyType.historical ? 'Add entry' : 'Set value'}
@@ -247,11 +337,20 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         );
       })}
 
-      <div className='border-border flex items-center gap-3 border-t pt-4'>
-        <Button type='button' disabled={saving} onClick={handleSave}>
-          {saving ? 'Opening PR…' : 'Open PR with these changes'}
-        </Button>
-        {error !== null ? <span className='text-destructive text-sm'>{error}</span> : null}
+      <div className='border-border bg-background/95 fixed inset-x-0 bottom-0 z-40 border-t backdrop-blur'>
+        <div className='mx-auto flex w-full max-w-5xl items-center justify-between px-6 py-3'>
+          <div className='text-muted-foreground text-xs'>
+            {dirty
+              ? <span className='text-amber-500'>● Unsaved changes · ⌘S to save</span>
+              : <span>No changes</span>}
+            {error !== null
+              ? <span className='text-destructive ml-3'>{error}</span>
+              : null}
+          </div>
+          <Button type='button' disabled={saving || !dirty} onClick={handleSave}>
+            {saving ? 'Opening PR…' : 'Open PR'}
+          </Button>
+        </div>
       </div>
     </div>
   );

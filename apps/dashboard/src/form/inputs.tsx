@@ -3,6 +3,7 @@
  * keyed by the property type's value_type so the form generator stays
  * schema-driven (no per-property-name component).
  */
+import { Combobox } from '@/components/ui/combobox';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -11,10 +12,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { cn } from '@/lib/utils';
 import { Checkbox } from '@base-ui-components/react/checkbox';
 import type { JSX } from 'react';
-import { useId } from 'react';
 import type { SourceRef } from '../api.ts';
 
 type CommonProps = {
@@ -113,24 +112,21 @@ export function SourceRefInput(
     sources: readonly SourceRef[];
   },
 ): JSX.Element {
+  const items = sources.map((s) => ({
+    value: s.id,
+    label: s.number !== null ? `${s.type} ${s.number}` : s.slug,
+    searchText: `${s.type} ${s.number ?? ''} ${s.slug} ${s.id}`,
+    hint: s.id,
+  }));
   return (
-    <Select
-      value={value ?? ''}
-      onValueChange={(v) => onChange(v ?? '')}
+    <Combobox
+      value={value}
+      onChange={onChange}
+      items={items}
+      placeholder='— pick a source —'
+      emptyText='No source matches.'
       disabled={disabled === true}
-    >
-      <SelectTrigger className='w-full font-mono text-xs'>
-        <SelectValue placeholder='— pick a source —' />
-      </SelectTrigger>
-      <SelectContent>
-        {sources.map((s) => (
-          <SelectItem key={s.id} value={s.id}>
-            {s.number !== null ? `${s.type} ${s.number}` : s.slug}
-            <span className='text-muted-foreground ml-2 font-mono text-xs'>{s.id}</span>
-          </SelectItem>
-        ))}
-      </SelectContent>
-    </Select>
+    />
   );
 }
 
@@ -139,22 +135,21 @@ export function I18nKeyInput(
     suggestions: readonly string[];
   },
 ): JSX.Element {
-  const listId = useId();
+  const items = suggestions.map((s) => ({
+    value: s,
+    label: s,
+    searchText: s,
+  }));
   return (
-    <>
-      <Input
-        type='text'
-        list={listId}
-        className={cn('font-mono text-xs')}
-        placeholder='entity.slug.property.variant'
-        value={value ?? ''}
-        disabled={disabled === true}
-        onChange={(e) => onChange(e.target.value)}
-      />
-      <datalist id={listId}>
-        {suggestions.map((s) => <option key={s} value={s} />)}
-      </datalist>
-    </>
+    <Combobox
+      value={value}
+      onChange={onChange}
+      items={items}
+      placeholder='entity.slug.property.variant'
+      emptyText='No matching key — type a new one.'
+      disabled={disabled === true}
+      allowCustom
+    />
   );
 }
 

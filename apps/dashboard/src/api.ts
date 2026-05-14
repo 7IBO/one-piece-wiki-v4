@@ -18,12 +18,18 @@ export type EntityRef = {
   readonly canonical_name_key: string | null;
 };
 
+export type Translations = {
+  readonly en: Record<string, string>;
+  readonly fr: Record<string, string>;
+};
+
 export type EntityDetail = {
   readonly id: string;
   readonly type: string;
   readonly slug: string;
   readonly data: Record<string, unknown>;
   readonly sha: string | null;
+  readonly translations: Translations;
 };
 
 export type SaveResult = {
@@ -87,10 +93,11 @@ export const api = {
     slug: string,
     data: Record<string, unknown>,
     sha: string | null,
+    translations: Translations,
   ): Promise<SaveResult> {
     return postJson<SaveResult>(
       `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`,
-      { data, sha },
+      { data, sha, translations },
     );
   },
 };

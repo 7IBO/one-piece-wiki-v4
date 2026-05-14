@@ -1,12 +1,15 @@
 /**
  * High-level save flow used by the dashboard.
  *
- * 1. Read current file from main; capture its SHA.
- * 2. If `expectedSha` doesn't match the current SHA, throw
+ * 1. Read the entity file from main; capture its SHA.
+ * 2. If the dashboard's expectedSha doesn't match, throw
  *    OptimisticLockError so the dashboard can show a conflict.
  * 3. Create a branch named edit/<safe-id>/<ts>.
- * 4. Write the new content to the branch with the matching SHA.
- * 5. Open a PR labelled "edit" + "via-dashboard".
+ * 4. Write the entity file to the branch (one commit).
+ * 5. Write each additional file (typically translations) to the same
+ *    branch, one commit per file. Each file's pre-existing SHA is
+ *    fetched first; new files are created without a SHA.
+ * 6. Open a PR labelled "edit" + "via-dashboard".
  *
  * Returns the opened PR.
  */
@@ -21,12 +24,18 @@ import {
   writeFile,
 } from './repo-ops.ts';
 
+export type ExtraFile = {
+  readonly path: string;
+  readonly content: string;
+};
+
 export type SaveRequest = {
   readonly entityId: string;
   readonly path: string;
   readonly newContent: string;
   readonly expectedSha: string | null;
   readonly contributorLogin: string;
+  readonly extraFiles?: readonly ExtraFile[];
 };
 
 function safeBranchSegment(value: string): string {
@@ -59,6 +68,23 @@ export async function submitEntityEdit(
     `Edit ${request.entityId}`,
   );
 
+  const extraPaths: string[] = [];
+  for (const file of request.extraFiles ?? []) {
+    const existing = await getFile(octokit, config, file.path, branch);
+    await writeFile(
+      octokit,
+      config,
+      branch,
+      file.path,
+      file.content,
+      existing?.sha ?? null,
+      `Update ${file.path}`,
+    );
+    extraPaths.push(file.path);
+  }
+
+  const fileList = [`File: \`${request.path}\``, ...extraPaths.map((p) => `File: \`${p}\``)];
+
   return openPullRequest(octokit, config, {
     headBranch: branch,
     title: `Edit ${request.entityId}`,
@@ -67,7 +93,7 @@ export async function submitEntityEdit(
       ``,
       `Contributor: @${request.contributorLogin}`,
       `Entity: \`${request.entityId}\``,
-      `File: \`${request.path}\``,
+      ...fileList,
     ].join('\n'),
     labels: ['edit', 'via-dashboard'],
   });
