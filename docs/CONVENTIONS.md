@@ -348,6 +348,8 @@ spec does not enforce.
   - `"slug_history": []` — omit; the default is `[]`.
   - `"epistemic_status": "true"` — omit on any property entry or relation
     qualifier; the default is `"true"`.
+  - `"assisted_by"` — omit when absent (human-entered values).
+  - `"review_status": "reviewed"` — omit; the default is `"reviewed"`.
   - Any property-type-declared qualifier with a `default` value matching
     the entry (e.g. `"loyalty_status": "member"` on a `member-of`
     relation).
