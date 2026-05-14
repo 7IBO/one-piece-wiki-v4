@@ -63,7 +63,12 @@ and the tooling to validate them.
      `adapted-by`, `family-of`
    - Vocabularies: `crew-roles`, `epistemic-statuses`,
      `canon-scopes`, `name-types`, `appearance-types`,
-     `event-subtypes`
+     `event-subtypes`, `review-statuses`
+   - Note: `assisted_by` and `review_status` are **universal base
+     qualifiers** (see `/docs/SCHEMA_SPEC.md` § "Base qualifiers" and
+     `/docs/DATA_MODEL.md` § "Provenance and review status"). They are
+     declared once at the schema-engine level — no per-property-type or
+     per-relation-type work is required to enable them on every value.
 
 6. **Initial entities**
    - Characters: Luffy, Zoro, Shanks, Ace, Sabo
