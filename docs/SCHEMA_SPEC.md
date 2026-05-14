@@ -260,7 +260,27 @@ A file in `/data/schemas/relation-types/<id>.json`.
 | `historical`         | boolean      | no       | If true, relations themselves carry `since`/`until`           |
 | `ui_hint`            | object       | no       | Display hints                                                 |
 
-### Example
+### When `since` is required on a relation
+
+Most relations should carry `since` — it anchors the relation to a
+specific source and makes spoiler filtering possible. Declare it
+`required: true` on the relation type whenever the relation can be
+unambiguously anchored to a chapter, episode, or other source entity.
+
+For a small number of relations involving **pre-canon events** — facts
+established before the story begins or during periods with no specific
+source coverage (Void Century, distant backstory, mythological eras) —
+`since` cannot point to a meaningful source. In those cases the relation
+declares `since` as `required: false` and uses `during_period` instead.
+
+The `during_period` qualifier is a controlled vocabulary
+(`/data/schemas/vocabulary/during-periods.json`) of named historical
+ranges: `void_century`, `god_valley_incident`, `pre_story`, etc. The
+build pipeline treats `during_period`-anchored relations as reachable
+once the user has read the source that *reveals* the fact (carried via
+`epistemic_status` and `event` on the relation, not `since`).
+
+### Example: member-of (source-anchored)
 
 ```json
 {
@@ -285,6 +305,34 @@ A file in `/data/schemas/relation-types/<id>.json`.
   "historical": true
 }
 ```
+
+### Example: eaten-by (pre-canon allowed)
+
+```json
+{
+  "$schema": "https://onepiece-wiki/schemas/relation-type.schema.json",
+  "id": "eaten-by",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Eaten by", "inverse": "Ate fruit" },
+    "fr": { "active": "Mangé par", "inverse": "A mangé" }
+  },
+  "valid_from_types": ["devil-fruit"],
+  "valid_to_types": ["character"],
+  "qualifiers": [
+    { "id": "since", "value_type": "source_ref", "required": false },
+    { "id": "during_period", "value_type": "enum", "enum_ref": "during-periods", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": true
+}
+```
+
+Either `since` or `during_period` should be present. The build pipeline
+errors if both are missing (`MISSING_TEMPORAL_ANCHOR`). This pattern
+covers the Joy Boy / Gomu Gomu case (`during_period: "void_century"`)
+without forcing editors to invent a fake source ID.
 
 ## Vocabulary schema
 
