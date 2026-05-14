@@ -1,5 +1,5 @@
 {
-  "$schema": "https://onepiece-wiki/schemas/vocabulary.schema.json",
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
   "id": "image-licenses",
   "schema_version": 1,
   "values": {

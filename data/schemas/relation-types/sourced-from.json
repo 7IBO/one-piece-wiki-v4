@@ -1,5 +1,5 @@
 {
-  "$schema": "https://onepiece-wiki/schemas/relation-type.schema.json",
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
   "id": "sourced-from",
   "schema_version": 1,
   "labels": {

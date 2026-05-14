@@ -82,7 +82,7 @@ The shape of values is defined in the corresponding property type file.
 
 ```json
 {
-  "$schema": "https://onepiece-wiki/schemas/entity-type.schema.json",
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "character",
   "schema_version": 1,
   "labels": {
@@ -211,7 +211,7 @@ A property type may also declare bespoke qualifiers in
 
 ```json
 {
-  "$schema": "https://onepiece-wiki/schemas/property-type.schema.json",
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
   "id": "bounty",
   "schema_version": 1,
   "labels": {
@@ -284,7 +284,7 @@ once the user has read the source that *reveals* the fact (carried via
 
 ```json
 {
-  "$schema": "https://onepiece-wiki/schemas/relation-type.schema.json",
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
   "id": "member-of",
   "schema_version": 1,
   "labels": {
@@ -310,7 +310,7 @@ once the user has read the source that *reveals* the fact (carried via
 
 ```json
 {
-  "$schema": "https://onepiece-wiki/schemas/relation-type.schema.json",
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
   "id": "eaten-by",
   "schema_version": 1,
   "labels": {
@@ -352,7 +352,7 @@ enumerated lists with localized labels and optional metadata.
 
 ```json
 {
-  "$schema": "https://onepiece-wiki/schemas/vocabulary.schema.json",
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
   "id": "crew-roles",
   "schema_version": 1,
   "values": {

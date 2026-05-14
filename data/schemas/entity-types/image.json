@@ -1,5 +1,5 @@
 {
-  "$schema": "https://onepiece-wiki/schemas/entity-type.schema.json",
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "image",
   "schema_version": 1,
   "labels": {
