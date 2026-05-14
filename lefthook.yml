@@ -1,0 +1,14 @@
+pre-commit:
+  parallel: true
+  commands:
+    format-check:
+      glob: '*.{ts,tsx,js,json,md}'
+      run: bun run format:check {staged_files}
+    lint:
+      glob: '*.{ts,tsx}'
+      run: bun run lint {staged_files}
+
+commit-msg:
+  commands:
+    commitlint:
+      run: bun x commitlint --edit {1}

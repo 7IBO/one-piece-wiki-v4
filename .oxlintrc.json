@@ -1,0 +1,23 @@
+{
+  "$schema": "./node_modules/oxlint/configuration_schema.json",
+  "categories": {
+    "correctness": "error",
+    "suspicious": "error",
+    "perf": "warn",
+    "style": "off"
+  },
+  "rules": {
+    "no-console": "error",
+    "no-debugger": "error",
+    "eqeqeq": "error",
+    "no-unused-vars": "warn"
+  },
+  "ignorePatterns": [
+    "node_modules",
+    "dist",
+    "build",
+    ".turbo",
+    "packages/schemas/generated",
+    "data"
+  ]
+}
