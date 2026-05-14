@@ -1,0 +1,4 @@
+{
+  "extends": "@onepiece-wiki/tsconfig/base.json",
+  "include": ["src/**/*"]
+}

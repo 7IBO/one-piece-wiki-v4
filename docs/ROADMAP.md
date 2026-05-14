@@ -6,7 +6,7 @@ demonstrably working and reviewed.**
 
 Current phase is tracked at the top of this file. Update it as you progress.
 
-> **Current phase**: 1 — Foundations (complete; Phase 2 ready to start)
+> **Current phase**: 2 — Build pipeline (complete; Phase 3 ready to start)
 
 ## Phase 1 — Foundations
 

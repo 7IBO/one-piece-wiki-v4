@@ -8,6 +8,71 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-012 — Switch to `bun:sqlite` (better-sqlite3 unusable under Bun on Windows)
+
+**Date**: 2026-05-14
+
+**Context**: Phase 2 implementation of `packages/db-builder` required
+opening a SQLite database. ADR-001 / the doc-consistency pass (fix 5)
+committed to `better-sqlite3` as the only SQLite driver. On the project
+maintainer's Windows machine with Bun 1.3.6, `new Database(path)` from
+`better-sqlite3` 12.10 fails at load time:
+
+```
+ERR_DLOPEN_FAILED
+at new Database (better-sqlite3/lib/database.js:48:29)
+```
+
+The error message itself suggests `bun:sqlite`. The native `.node`
+binding is incompatible with Bun's Windows runtime; the only way to
+keep `better-sqlite3` would be to run the build pipeline under Node
+instead of Bun, which contradicts ARCHITECTURE.md's stated runtime.
+
+**Options**:
+
+- A — Keep `better-sqlite3`; run the build pipeline under Node only.
+  Adds a runtime split (Bun for scripts, Node for the builder) and
+  bifurcates the developer experience.
+- B — Switch to `bun:sqlite`. Native to Bun, no compilation step, API
+  compatible with `better-sqlite3` for the subset Phase 2 uses
+  (Database, prepare, run, transaction, exec).
+- C — Switch to a JS-only SQLite (sql.js, etc.). Loses the
+  better-sqlite3 performance characteristics that motivated ADR-001.
+
+**Choice**: B.
+
+**Rationale**: The error message is explicit; the API is compatible;
+keeping one runtime simplifies tooling. `bun:sqlite` is mature enough
+for Phase 2's needs (build-time write, no online concurrency, no FTS5
+yet). When Phase 3+ ships the public web app, it reads the artefact at
+runtime; that reader can be `better-sqlite3` under Node (Vercel
+serverless) without affecting the build pipeline — i.e. write-side and
+read-side drivers may legitimately differ.
+
+**Consequences**:
+
+- `packages/db-builder` uses `import { Database } from 'bun:sqlite'`.
+  `better-sqlite3` is removed from the package dependencies.
+- ARCHITECTURE.md and CLAUDE.md soften the "better-sqlite3 only"
+  language to: build-time uses `bun:sqlite`; read-time may use
+  `better-sqlite3` under Node when serverless deployments require it.
+- Phase 2 work flagged a real bug in fix 5 of the doc-consistency
+  pass: the runtime was tested only on the docs layer, not against an
+  actual install. The same risk applies to other native-binding
+  dependencies; future ADRs should require a smoke test before
+  committing to a specific binding.
+- `bun:sqlite` requires **positional parameter binding** (`?` rather
+  than `$name`) when an object key collides with a SQL reserved word
+  like `type`. The Phase 2 writer uses `?` throughout for
+  predictability.
+
+**Non-decisions** (deferred):
+
+- Whether to drop `better-sqlite3` from the project entirely. Phase 6
+  may want it for the read-side serverless app; we'll decide then.
+
+---
+
 ## ADR-011 — Images as first-class entities; in-universe documents deferred
 
 **Date**: 2026-05-14

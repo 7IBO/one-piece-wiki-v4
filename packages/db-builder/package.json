@@ -1,0 +1,25 @@
+{
+  "name": "@onepiece-wiki/db-builder",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@onepiece-wiki/schema-engine": "workspace:*",
+    "@onepiece-wiki/schemas": "workspace:*",
+    "better-sqlite3": "^12.10.0",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@onepiece-wiki/tsconfig": "workspace:*",
+    "@types/better-sqlite3": "^7.6.0",
+    "typescript": "^5.7.0"
+  }
+}

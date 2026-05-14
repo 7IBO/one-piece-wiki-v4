@@ -13,12 +13,14 @@
     "lint": "oxlint .",
     "format": "dprint fmt",
     "format:check": "dprint check",
-    "test": "turbo run test",
+    "test": "bun test",
+    "test:watch": "bun test --watch",
     "schema:check": "bun packages/schema-engine/src/cli/check.ts",
     "schema:generate": "bun packages/schema-engine/src/cli/generate.ts",
     "validate": "bun packages/schema-engine/src/cli/validate.ts",
     "check:references": "bun packages/schema-engine/src/cli/check-references.ts",
-    "format:data": "bun packages/schema-engine/src/cli/format-data.ts"
+    "format:data": "bun packages/schema-engine/src/cli/format-data.ts",
+    "build:data": "bun packages/db-builder/src/cli/build.ts"
   },
   "devDependencies": {
     "@commitlint/cli": "^19.5.0",
@@ -28,6 +30,7 @@
     "lefthook": "^1.10.0",
     "oxlint": "^0.15.0",
     "turbo": "^2.3.0",
-    "typescript": "^5.7.0"
+    "typescript": "^5.7.0",
+    "vitest": "^2.1.0"
   }
 }

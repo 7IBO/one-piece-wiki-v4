@@ -1,0 +1,22 @@
+{
+  "name": "@onepiece-wiki/importers",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "main": "./src/index.ts",
+  "types": "./src/index.ts",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@onepiece-wiki/schemas": "workspace:*",
+    "zod": "^3.23.8"
+  },
+  "devDependencies": {
+    "@onepiece-wiki/tsconfig": "workspace:*",
+    "typescript": "^5.7.0"
+  }
+}

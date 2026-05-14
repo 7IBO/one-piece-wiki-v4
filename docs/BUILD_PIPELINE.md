@@ -117,6 +117,10 @@ Generate Pagefind-compatible static index:
 
 ### 10. SQLite write
 
+The build-time writer uses **`bun:sqlite`** (see ADR-012). Positional
+parameter binding is used throughout to avoid bun:sqlite's
+named-parameter collision with SQL reserved words (`type`, etc.).
+
 Schema (simplified):
 
 ```sql

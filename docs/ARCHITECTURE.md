@@ -92,28 +92,28 @@ The architecture optimizes for three properties, in order:
 
 ### Runtime and tooling
 
-| Concern            | Choice                                                |
-| ------------------ | ----------------------------------------------------- |
-| Runtime            | Bun (with Node fallback where needed)                 |
-| Monorepo           | Turborepo                                             |
-| Web framework      | TanStack Start                                        |
-| UI primitives      | Base UI                                               |
-| Styling            | Tailwind CSS v4 with `@theme` CSS-first config        |
-| Validation         | Zod                                                   |
-| Forms              | React Hook Form + `@hookform/resolvers/zod`           |
-| Server state       | TanStack Query                                        |
-| Build DB           | SQLite via `better-sqlite3`                           |
-| GitHub integration | Octokit with GitHub App                               |
-| Linter             | oxlint                                                |
-| Formatter          | dprint (oxfmt under consideration when it stabilises) |
-| Type checker       | `tsc --noEmit`, cached by Turborepo                   |
-| Unit tests         | Vitest                                                |
-| E2E tests          | Playwright                                            |
-| Git hooks          | lefthook                                              |
-| Commits            | Conventional Commits + commitlint                     |
-| Dead code          | knip                                                  |
-| Image storage      | Cloudflare R2                                         |
-| Deployment         | Vercel                                                |
+| Concern            | Choice                                                                           |
+| ------------------ | -------------------------------------------------------------------------------- |
+| Runtime            | Bun (with Node fallback where needed)                                            |
+| Monorepo           | Turborepo                                                                        |
+| Web framework      | TanStack Start                                                                   |
+| UI primitives      | Base UI                                                                          |
+| Styling            | Tailwind CSS v4 with `@theme` CSS-first config                                   |
+| Validation         | Zod                                                                              |
+| Forms              | React Hook Form + `@hookform/resolvers/zod`                                      |
+| Server state       | TanStack Query                                                                   |
+| Build DB           | SQLite via `bun:sqlite` (write); `better-sqlite3` read-side under Node (ADR-012) |
+| GitHub integration | Octokit with GitHub App                                                          |
+| Linter             | oxlint                                                                           |
+| Formatter          | dprint (oxfmt under consideration when it stabilises)                            |
+| Type checker       | `tsc --noEmit`, cached by Turborepo                                              |
+| Unit tests         | Vitest                                                                           |
+| E2E tests          | Playwright                                                                       |
+| Git hooks          | lefthook                                                                         |
+| Commits            | Conventional Commits + commitlint                                                |
+| Dead code          | knip                                                                             |
+| Image storage      | Cloudflare R2                                                                    |
+| Deployment         | Vercel                                                                           |
 
 ### Why these choices
 

@@ -84,7 +84,9 @@ If any task touches a specialized area, also read the relevant deep-dive doc:
 - **Validation**: Zod
 - **Forms**: React Hook Form + `@hookform/resolvers/zod`
 - **State (server)**: TanStack Query (bundled with TanStack Start)
-- **Database (build artifact)**: SQLite via `better-sqlite3`
+- **Database (build artifact)**: SQLite via `bun:sqlite` for the
+  write-side (build pipeline); `better-sqlite3` may be used read-side
+  under Node if/when a serverless target requires it (see ADR-012)
 - **GitHub integration**: Octokit with a GitHub App
 - **Linter**: oxlint
 - **Formatter**: dprint (oxfmt under consideration when it stabilises)
