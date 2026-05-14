@@ -132,6 +132,28 @@ and the tooling to validate them.
    - Unit tests on derived computation
    - Integration test: full build of a fixture, query, assertions
 
+4. **`packages/importers` foundation**
+   - Package scaffold and exports; no concrete importer yet.
+   - Typed core interface: `Importer<TSource, TEntity>` with
+     `fetch`, `map`, and `emit` stages, each generic over the source
+     shape and the target entity type.
+   - Mandatory Zod validation step between `map` and `emit`; no write
+     of any kind is allowed without it passing.
+   - **Dry-run mode**: emits a JSON diff (proposed entity files vs.
+     existing files in `/data`) without writing anything.
+   - **Stage-to-local mode**: writes to `/data/universes/<u>/entities/`
+     so the maintainer can inspect, edit, and commit manually.
+   - **PR mode**: writes via `packages/github-client` (built in
+     Phase 4), opens a branch and PR labelled `auto-imported`.
+   - Every emitted value carries `assisted_by` and
+     `review_status: "auto_imported"`. Logging records the source URL,
+     the model identifier, and the timestamp for every value.
+
+   **Exit criteria**: the package builds, `bun run typecheck` passes
+   across the affected workspaces, the public interface is documented
+   in `packages/importers/README.md`, and no concrete importer is
+   implemented yet — those land in Phase 3 onward.
+
 ## Phase 3 — Preview app
 
 **Goal**: a minimal reading app that proves the data model end-to-end and
