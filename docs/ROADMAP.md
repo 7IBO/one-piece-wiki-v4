@@ -420,3 +420,31 @@ A phase is complete when:
 4. The relevant `/docs/*.md` are updated
 5. `/docs/DECISIONS.md` reflects any deviations from this roadmap
 6. A retrospective note is added at the bottom of this file
+
+## AI scale-up criteria
+
+Phases 1–4 use Claude Code with the Max subscription as the AI-entry
+surface. The subscription is preferred over direct Anthropic API calls
+while volume stays manageable: simpler ops, no per-request billing, and
+the human-in-the-loop pattern fits the single-maintainer phase.
+
+Migrate to a script that calls the Anthropic API directly (likely in
+Batch mode for cost) when **any** of the following signals appear:
+
+- More than **50 import runs per month**. Around this volume,
+  subscription stops being the cheaper option.
+- Need to run **more than 2 parallel extraction sessions** at once.
+  Claude Code is interactive and single-channel; the API parallelises
+  trivially.
+- Need for **runs that exceed 24 hours unattended**. Subscription
+  requires an active Claude Code session; the API does not.
+
+Until any of these triggers, subscription mode is the preferred surface
+and the codebase optimises for it (`via-cc` provenance, human-paced
+review loop, no batch-job infrastructure).
+
+The migration is mechanical, not architectural: `packages/importers` is
+already split between mapper and writer (Phase 2 Task 4), and the
+`assisted_by` format already distinguishes `via-cc`, `via-api`, and
+`via-dashboard`. Only the writer-shell swaps. See ADR-010 in
+`/docs/DECISIONS.md`.
