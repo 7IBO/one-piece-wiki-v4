@@ -127,6 +127,35 @@ Do canon sources contradict each other?
   └── disputed
 ```
 
+## Epistemic status vs review status
+
+These are independent concepts. Conflating them is a frequent mistake.
+
+| Concept            | Tracks                            | Lives in                  |
+| ------------------ | --------------------------------- | ------------------------- |
+| `epistemic_status` | In-universe truth of the value    | The fiction               |
+| `review_status`    | Whether a human checked the entry | The contributor workflow  |
+
+`review_status` is **not an epistemic concept**. It does not affect what
+the wiki claims to be true in-universe; it only tracks human attention
+to the entry. A value can simultaneously be:
+
+- `epistemic_status: "confirmed"` (in-universe truth: settled) and
+  `review_status: "not_reviewed"` (no human has yet checked the data
+  entry). The wiki asserts the truth; no editor has verified the
+  assertion.
+- `epistemic_status: "disputed"` (canon disagrees) and
+  `review_status: "reviewed"` (a human has checked that the entry
+  correctly reflects the canon dispute).
+
+Spoiler filtering, narrative rendering, and inference rules read
+`epistemic_status` and ignore `review_status` entirely. `review_status`
+is read only by the dashboard's "needs attention" queue and by CI
+gates.
+
+See `/docs/DATA_MODEL.md` § "Provenance and review status" for the full
+definition of `review_status` and its sibling qualifier `assisted_by`.
+
 ## Common patterns
 
 ### False death and reveal
