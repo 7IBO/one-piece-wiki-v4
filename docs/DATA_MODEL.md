@@ -56,9 +56,9 @@ query date.
 
 ```json
 "bounty": [
-  { "value": 30000000,    "since": "manga-chapter:119", "epistemic_status": "true" },
-  { "value": 100000000,   "since": "manga-chapter:432", "epistemic_status": "true" },
-  { "value": 3000000000,  "since": "manga-chapter:1058", "epistemic_status": "true" }
+  { "value": 30000000,   "since": "manga-chapter:119"  },
+  { "value": 100000000,  "since": "manga-chapter:432"  },
+  { "value": 3000000000, "since": "manga-chapter:1058" }
 ]
 ```
 
@@ -204,29 +204,25 @@ Detailed in `/docs/I18N_STRATEGY.md`.
   "type": "character",
   "schema_version": 1,
   "slug": "monkey-d-luffy",
-  "slug_history": [],
   "canonical_name_key": "character.luffy.name.canonical",
   "properties": {
     "name": [
       {
         "value_key": "character.luffy.name.short",
         "since": "manga-chapter:1",
-        "name_type": "common",
-        "epistemic_status": "true"
+        "name_type": "common"
       },
       {
         "value_key": "character.luffy.name.full",
         "since": "manga-chapter:100",
-        "name_type": "full_name",
-        "epistemic_status": "true"
+        "name_type": "full_name"
       }
     ],
     "epithet": [
       {
         "value_key": "character.luffy.epithet.straw-hat",
         "since": "manga-chapter:98",
-        "given_by": "context:newspapers",
-        "epistemic_status": "true"
+        "given_by": "context:newspapers"
       }
     ],
     "bounty": [
@@ -239,7 +235,7 @@ Detailed in `/docs/I18N_STRATEGY.md`.
       { "value": 3000000000, "since": "manga-chapter:1053", "source": "manga-chapter:1053" }
     ],
     "status": [
-      { "value": "alive", "since": "manga-chapter:1", "epistemic_status": "true" }
+      { "value": "alive", "since": "manga-chapter:1" }
     ]
   },
   "relations": [
@@ -256,8 +252,7 @@ Detailed in `/docs/I18N_STRATEGY.md`.
       "type": "ate-fruit",
       "target": "devil-fruit:gomu-gomu",
       "qualifiers": {
-        "since": "manga-chapter:1",
-        "epistemic_status": "true"
+        "since": "manga-chapter:1"
       }
     },
     {
@@ -294,8 +289,7 @@ Detailed in `/docs/I18N_STRATEGY.md`.
       {
         "value_key": "devil-fruit.gomu-gomu.name.common",
         "since": "manga-chapter:1",
-        "name_type": "common",
-        "epistemic_status": "true"
+        "name_type": "common"
       },
       {
         "value_key": "devil-fruit.gomu-gomu.name.true",
@@ -333,8 +327,7 @@ Detailed in `/docs/I18N_STRATEGY.md`.
       "type": "eaten-by",
       "target": "character:luffy",
       "qualifiers": {
-        "since": "manga-chapter:1",
-        "epistemic_status": "true"
+        "since": "manga-chapter:1"
       }
     }
   ]

@@ -335,6 +335,30 @@ checked in CI. Configuration in `dprint.json` at the root.
 Width: 100 columns. Semicolons: yes. Quotes: single. Trailing commas: all
 where valid.
 
+## Entity JSON
+
+Conventions for files under `/data/universes/<u>/entities/**/*.json`.
+The structural rules (field order, `$schema` first, 2-space indent) are in
+`/docs/SCHEMA_SPEC.md`; the rules below are content-style rules that the
+spec does not enforce.
+
+- **Omit fields equal to their schema default.** A field whose value
+  matches the Zod default for that property MUST NOT appear in the entity
+  JSON. The most common cases:
+  - `"slug_history": []` — omit; the default is `[]`.
+  - `"epistemic_status": "true"` — omit on any property entry or relation
+    qualifier; the default is `"true"`.
+  - Any property-type-declared qualifier with a `default` value matching
+    the entry (e.g. `"loyalty_status": "member"` on a `member-of`
+    relation).
+- **Format scripts enforce this.** `bun run format:data` normalises every
+  entity JSON file: strips default-equal fields, reorders fields to match
+  the schema declaration order, and is part of the pre-commit hook. A PR
+  with default-equal fields fails CI.
+- **Rationale.** Diffs stay minimal and readable. When a default changes
+  in a schema migration, only the entities that *actively* override it
+  show up in the diff — making review of behaviour changes possible.
+
 ## Testing
 
 ### Unit tests
