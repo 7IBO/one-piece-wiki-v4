@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "canon-scopes",
+  "schema_version": 1,
+  "values": {
+    "manga": { "labels": { "en": "Manga", "fr": "Manga" } },
+    "anime": { "labels": { "en": "Anime", "fr": "Anime" } },
+    "anime_filler": { "labels": { "en": "Anime filler", "fr": "Hors-série anime" } },
+    "film_canon": { "labels": { "en": "Canon film", "fr": "Film canon" } },
+    "film_non_canon": { "labels": { "en": "Non-canon film", "fr": "Film hors canon" } },
+    "sbs": { "labels": { "en": "SBS", "fr": "SBS" } },
+    "databook": { "labels": { "en": "Databook", "fr": "Databook" } },
+    "live_action": { "labels": { "en": "Live action", "fr": "Adaptation en prise de vue réelle" } },
+    "crossover": { "labels": { "en": "Crossover", "fr": "Crossover" } },
+    "video_game": { "labels": { "en": "Video game", "fr": "Jeu vidéo" } }
+  }
+}

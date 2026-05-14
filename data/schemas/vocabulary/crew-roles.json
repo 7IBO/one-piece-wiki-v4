@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "crew-roles",
+  "schema_version": 1,
+  "values": {
+    "captain": { "labels": { "en": "Captain", "fr": "Capitaine" } },
+    "first_mate": { "labels": { "en": "First Mate", "fr": "Second" } },
+    "navigator": { "labels": { "en": "Navigator", "fr": "Navigateur" } },
+    "cook": { "labels": { "en": "Cook", "fr": "Cuisinier" } },
+    "doctor": { "labels": { "en": "Doctor", "fr": "Docteur" } },
+    "archaeologist": { "labels": { "en": "Archaeologist", "fr": "Archéologue" } },
+    "shipwright": { "labels": { "en": "Shipwright", "fr": "Charpentier" } },
+    "musician": { "labels": { "en": "Musician", "fr": "Musicien" } },
+    "sniper": { "labels": { "en": "Sniper", "fr": "Tireur d'élite" } },
+    "helmsman": { "labels": { "en": "Helmsman", "fr": "Barreur" } }
+  }
+}

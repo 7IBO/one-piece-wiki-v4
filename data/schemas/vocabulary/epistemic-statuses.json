@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "epistemic-statuses",
+  "schema_version": 1,
+  "values": {
+    "true": { "labels": { "en": "True", "fr": "Vrai" } },
+    "confirmed": { "labels": { "en": "Confirmed", "fr": "Confirmé" } },
+    "believed_by_world": { "labels": { "en": "Believed by the world", "fr": "Cru par le monde" } },
+    "believed_by_characters": {
+      "labels": { "en": "Believed by specific characters", "fr": "Cru par des personnages" }
+    },
+    "revealed_to_reader": {
+      "labels": { "en": "Revealed to the reader", "fr": "Révélé au lecteur" }
+    },
+    "rumored": { "labels": { "en": "Rumored", "fr": "Rumeur" } },
+    "implied": { "labels": { "en": "Implied", "fr": "Sous-entendu" } },
+    "retconned": { "labels": { "en": "Retconned", "fr": "Modifié rétroactivement" } },
+    "disputed": { "labels": { "en": "Disputed", "fr": "Contesté" } }
+  }
+}

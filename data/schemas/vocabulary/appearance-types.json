@@ -1,0 +1,22 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "appearance-types",
+  "schema_version": 1,
+  "values": {
+    "full": { "labels": { "en": "Full appearance", "fr": "Apparition complète" } },
+    "silhouette": { "labels": { "en": "Silhouette", "fr": "Silhouette" } },
+    "partial": { "labels": { "en": "Partial", "fr": "Partielle" } },
+    "mentioned": { "labels": { "en": "Mentioned", "fr": "Mentionné" } },
+    "named_only": { "labels": { "en": "Named only", "fr": "Nom seulement" } },
+    "flashback": { "labels": { "en": "Flashback", "fr": "Flashback" } },
+    "cover_story": { "labels": { "en": "Cover story", "fr": "Aventure de couverture" } },
+    "recap": { "labels": { "en": "Recap", "fr": "Récapitulatif" } },
+    "vision": { "labels": { "en": "Vision", "fr": "Vision" } },
+    "photograph": { "labels": { "en": "Photograph", "fr": "Photographie" } },
+    "portrait": { "labels": { "en": "Portrait", "fr": "Portrait" } },
+    "corpse": { "labels": { "en": "Corpse", "fr": "Cadavre" } },
+    "imagined": { "labels": { "en": "Imagined", "fr": "Imaginé" } },
+    "narrator_only": { "labels": { "en": "Narrator only", "fr": "Narrateur seulement" } },
+    "revelation": { "labels": { "en": "Revelation", "fr": "Révélation" } }
+  }
+}

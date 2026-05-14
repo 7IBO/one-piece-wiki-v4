@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "event-subtypes",
+  "schema_version": 1,
+  "values": {
+    "battle": { "labels": { "en": "Battle", "fr": "Bataille" } },
+    "death": { "labels": { "en": "Death", "fr": "Mort" } },
+    "presumed_death": { "labels": { "en": "Presumed death", "fr": "Mort présumée" } },
+    "recruitment": { "labels": { "en": "Recruitment", "fr": "Recrutement" } },
+    "revelation": { "labels": { "en": "Revelation", "fr": "Révélation" } },
+    "bounty_change": { "labels": { "en": "Bounty change", "fr": "Changement de prime" } },
+    "alliance_formed": { "labels": { "en": "Alliance formed", "fr": "Alliance formée" } },
+    "awakening": { "labels": { "en": "Awakening", "fr": "Éveil" } }
+  }
+}

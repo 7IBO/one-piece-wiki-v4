@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "name-types",
+  "schema_version": 1,
+  "values": {
+    "common": { "labels": { "en": "Common name", "fr": "Nom courant" } },
+    "full_name": { "labels": { "en": "Full name", "fr": "Nom complet" } },
+    "true_name": { "labels": { "en": "True name", "fr": "Vrai nom" } },
+    "epithet": { "labels": { "en": "Epithet", "fr": "Surnom" } },
+    "nickname": { "labels": { "en": "Nickname", "fr": "Sobriquet" } },
+    "alias": { "labels": { "en": "Alias", "fr": "Pseudonyme" } },
+    "codename": { "labels": { "en": "Codename", "fr": "Nom de code" } },
+    "title": { "labels": { "en": "Title", "fr": "Titre" } },
+    "insult": { "labels": { "en": "Insult", "fr": "Insulte" } },
+    "honorific": { "labels": { "en": "Honorific", "fr": "Honorifique" } },
+    "mistranslation": { "labels": { "en": "Mistranslation", "fr": "Erreur de traduction" } }
+  }
+}
