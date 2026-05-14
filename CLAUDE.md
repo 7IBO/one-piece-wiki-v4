@@ -34,6 +34,7 @@ If any task touches a specialized area, also read the relevant deep-dive doc:
 - `/docs/BUILD_PIPELINE.md` for JSON → SQLite work
 - `/docs/DASHBOARD_ARCHITECTURE.md` for dashboard work
 - `/docs/I18N_STRATEGY.md` for any translation-related work
+- `/docs/IMAGES.md` for image entities, upload, R2 storage, licensing
 
 ## Non-negotiable rules
 
@@ -110,6 +111,9 @@ If any task touches a specialized area, also read the relevant deep-dive doc:
 - Adding a new dependency without justification in the PR description
 - Using `any`, `unknown` without narrowing, or `// @ts-ignore` without an
   inline justification and a follow-up issue link
+- **Implementing anything from `/IDEAS.md` without first moving it into
+  `/docs/ROADMAP.md` and logging an ADR in `/docs/DECISIONS.md`.** IDEAS.md
+  is a parking lot, not a backlog.
 
 ## Definition of done
 
@@ -162,6 +166,10 @@ Wait for explicit human approval before executing the plan.
 - **Ask before refactoring.** Even small architectural shifts must be
   proposed and approved.
 - **Prefer deletion over comment-out.** Dead code is worse than missing code.
+- **If you think of an architectural improvement during a coding task, add
+  it to `/IDEAS.md` and continue with the current scope.** Do not detour
+  to implement it; do not propose it as part of the current task. New
+  ideas leave the current PR untouched.
 
 ## Communication style
 
