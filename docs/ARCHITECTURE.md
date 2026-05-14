@@ -232,6 +232,33 @@ is built in a later phase, with proper SEO, design, and SSG.
   in CI and committed to a release. The exact strategy is documented in
   `/docs/BUILD_PIPELINE.md`.
 
+### R2 storage key convention
+
+Image files use a **flat namespace** in the R2 bucket:
+
+```
+images/<image-slug>.<format>
+```
+
+The `<image-slug>` is the entity's slug (the part after the
+`image:` prefix in its id); `<format>` matches the entity's `format`
+property (`webp`, `jpg`, `png`, `gif`, `avif`, `svg`).
+
+Examples:
+
+```
+images/luffy-bounty-30m.webp
+images/luffy-bounty-3b.webp
+images/luffy-gear-5.webp
+images/straw-hats-marineford-arrival.webp
+images/gomu-gomu-no-mi.png
+```
+
+The layout is deliberately flat. An image can be linked from multiple
+entities (group photos, reused covers), so there is no single
+"owning" entity to nest under. The slug carries the meaning. The full
+image-handling guide is in `/docs/IMAGES.md`.
+
 ## Extensibility
 
 The architecture is designed so adding a new universe (e.g. Naruto) requires
