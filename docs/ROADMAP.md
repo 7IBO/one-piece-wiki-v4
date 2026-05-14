@@ -192,6 +192,38 @@ acts as a development sandbox for the dashboard.
    - If the model breaks, **stop**, fix the data model in
      `/docs/DATA_MODEL.md`, then propagate
 
+4. **First experimental bulk import (10 characters)**
+   - **Source**: a public One Piece data API or dataset, picked at
+     execution time. Candidates: `api.api-onepiece.com`, the OPDB
+     project, the Fandom MediaWiki API. Selection criteria: licence
+     compatible with attribution, machine-readable, covers East Blue
+     arc characters.
+   - **Scope**: 10 named characters from the East Blue arc (working
+     candidate list: Luffy, Zoro, Nami, Usopp, Sanji, Coby, Buggy,
+     Kuro, Krieg, Arlong).
+   - **Procedure**: Claude Code reads source data, maps fields to the
+     wiki schema, produces JSON files under
+     `/data/universes/one-piece/entities/character/`. Every value
+     carries `assisted_by: "claude-<family>-<version>-via-cc"` and
+     `review_status: "auto_imported"`.
+   - Workflow uses `packages/importers` in **stage-to-local mode** for
+     the first run; **PR mode** is exercised once at least one
+     character has been reviewed.
+
+   **Exit criteria**:
+   - 10 character files exist on disk and validate against the
+     generated Zod.
+   - All 10 open cleanly in `apps/preview`.
+   - Every value in every file carries either an `assisted_by`
+     qualifier or a commit-history trail proving human review.
+   - The maintainer has reviewed at least **3 of the 10** files,
+     dropping `assisted_by` and `review_status` (or flipping
+     `review_status` to a non-default value) to validate the
+     human-review loop end-to-end.
+   - A short retrospective is appended to ADR-010 capturing what the
+     review pass surfaced (mismatches, gaps in the source data, prompt
+     issues).
+
 ## Phase 4 — Dashboard (admin-only)
 
 **Goal**: edit data through forms generated from schemas, submit changes as
