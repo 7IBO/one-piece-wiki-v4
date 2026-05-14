@@ -85,6 +85,7 @@ function EntityEditComponent(): JSX.Element {
         </p>
       </div>
       <EntityForm
+        entityId={entity.id}
         entityType={entityType}
         propertyTypes={schemas.propertyTypes}
         vocabularies={schemas.vocabularies}

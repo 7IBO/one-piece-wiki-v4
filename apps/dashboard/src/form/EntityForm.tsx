@@ -33,6 +33,7 @@ import { Trash2 } from 'lucide-react';
 import { Fragment, type JSX, useEffect, useMemo, useState } from 'react';
 import type { SourceRef, Translations } from '../api.ts';
 import { ValueInput, type ValueInputContext, type ValueType } from './inputs.tsx';
+import { useDraftAutosave, useStoredDraft } from './use-draft.ts';
 
 type PropertyEntry = Record<string, unknown>;
 type PropertyValue = PropertyEntry | PropertyEntry[];
@@ -41,6 +42,7 @@ type EntityData = Record<string, unknown> & {
 };
 
 export type EntityFormProps = {
+  entityId: string;
   entityType: EntityTypeSchema;
   propertyTypes: Record<string, PropertyTypeSchema>;
   vocabularies: Record<string, VocabularySchema>;
@@ -79,6 +81,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   const [translations, setTranslations] = useState<Translations>(props.initialTranslations);
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { draft, clear: clearStoredDraft } = useStoredDraft(props.entityId);
 
   const initialDataString = useMemo(() => JSON.stringify(props.initialData), [props.initialData]);
   const initialTranslationsString = useMemo(
@@ -87,6 +90,16 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   );
   const dirty = JSON.stringify(data) !== initialDataString
     || JSON.stringify(translations) !== initialTranslationsString;
+
+  // Did the on-disk draft (if any) contain something genuinely
+  // different from the freshly-loaded initialData? If yes, surface
+  // the restore banner. Stale drafts (saved when the entity was at
+  // the same content as now) are silently dropped.
+  const draftIsRecoverable = draft !== null
+    && (JSON.stringify(draft.data) !== initialDataString
+      || JSON.stringify(draft.translations) !== initialTranslationsString);
+
+  useDraftAutosave(props.entityId, data, translations, dirty);
 
   // Cmd/Ctrl+S to save when dirty.
   useEffect(() => {
@@ -154,11 +167,22 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     setError(null);
     try {
       await props.onSave(data, translations);
+      clearStoredDraft();
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
     } finally {
       setSaving(false);
     }
+  }
+
+  function restoreDraft(): void {
+    if (draft === null) return;
+    setData(draft.data as EntityData);
+    setTranslations(draft.translations);
+  }
+
+  function discardDraft(): void {
+    clearStoredDraft();
   }
 
   const sinceCtx: ValueInputContext = {
@@ -169,6 +193,29 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
 
   return (
     <div className='space-y-4 pb-20'>
+      {draftIsRecoverable
+        ? (
+          <Card className='border-amber-500/40 bg-amber-500/5'>
+            <CardContent className='flex flex-wrap items-center justify-between gap-3 py-3'>
+              <div className='text-sm'>
+                <span className='font-medium'>Unsaved draft from a previous session.</span>
+                <span className='text-muted-foreground ml-2 text-xs'>
+                  Saved {draft !== null ? new Date(draft.savedAt).toLocaleString() : ''}
+                </span>
+              </div>
+              <div className='flex gap-2'>
+                <Button type='button' variant='outline' size='sm' onClick={discardDraft}>
+                  Discard
+                </Button>
+                <Button type='button' size='sm' onClick={restoreDraft}>
+                  Restore
+                </Button>
+              </div>
+            </CardContent>
+          </Card>
+        )
+        : null}
+
       {props.entityType.properties.map((decl) => {
         const propertyType = props.propertyTypes[decl.id];
         if (propertyType === undefined) {
