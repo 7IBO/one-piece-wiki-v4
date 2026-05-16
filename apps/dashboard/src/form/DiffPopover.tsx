@@ -246,24 +246,71 @@ function DiffRow(
  * to a real value shows up as a single `−∅` row paired with `+`
  * rows on the right.
  */
+/** Hard cap on visible diff rows before we add a "N more lines"
+ *  truncation marker. ~30 rows × ~14px line-height ≈ 20rem, which
+ *  matches the popover's max-h budget without scrolling. Past this,
+ *  showing more lines just turns the popover into a wall of text the
+ *  contributor has to scroll past to get back to the save bar. */
+const MAX_DIFF_LINES = 30;
+
 function SplitDiff({ before, after }: { before: string; after: string; }): JSX.Element {
   const chunks = useMemo(() => diffLines(before, after, { newlineIsToken: false }), [
     before,
     after,
   ]);
-  const rows = useMemo(() => collapseUnchanged(pairChunks(chunks), 3), [chunks]);
+  const { rows, truncated } = useMemo(() => {
+    const paired = pairChunks(chunks);
+    const collapsed = collapseUnchanged(paired, 3);
+    return capLines(collapsed, MAX_DIFF_LINES);
+  }, [chunks]);
 
   return (
     <div className='border-border bg-muted/30 mt-1.5 ml-4 overflow-hidden rounded-[3px] border'>
-      <div className='max-h-[20rem] overflow-auto font-mono text-[10px] leading-snug'>
+      <div className='max-h-[24rem] overflow-auto font-mono text-[10px] leading-snug'>
         <table className='w-full table-fixed border-collapse'>
           <tbody>
             {rows.map((row, i) => <SplitRow key={i} row={row} />)}
+            {truncated > 0
+              ? (
+                <tr className='text-muted-foreground/70 bg-muted/20 border-t'>
+                  <td colSpan={2} className='px-2 py-1 text-center italic text-[10px]'>
+                    ⋯ {truncated} more line{truncated > 1 ? 's' : ''}{' '}
+                    hidden — open the PR for the full diff
+                  </td>
+                </tr>
+              )
+              : null}
           </tbody>
         </table>
       </div>
     </div>
   );
+}
+
+/**
+ * Cap the rendered diff at `max` rows. We bias the cut toward keeping
+ * the head of the diff (which usually holds the most relevant change —
+ * properties are pretty-printed JSON in source order, so the first
+ * delta is the property name / value the contributor edited). The tail
+ * collapses into a single "N more lines hidden" placeholder. Lines
+ * already collapsed by `collapseUnchanged` count toward the cap as 1
+ * each, so a diff with many short unchanged hunks still fits.
+ */
+function capLines(
+  rows: readonly SplitRowData[],
+  max: number,
+): { readonly rows: readonly SplitRowData[]; readonly truncated: number; } {
+  if (rows.length <= max) return { rows, truncated: 0 };
+  // Reserve one row slot for the truncation marker so the visible
+  // total stays ≤ max — matters more on tight viewports than on
+  // saving one row in the diff itself.
+  const keep = Math.max(1, max - 1);
+  let removed = 0;
+  for (let i = keep; i < rows.length; i++) {
+    const r = rows[i]!;
+    removed += r.kind === 'collapsed' ? r.count : 1;
+  }
+  return { rows: rows.slice(0, keep), truncated: removed };
 }
 
 type ChunkLine = { kind: '+' | '-' | ' '; text: string; };
@@ -311,23 +358,25 @@ function Cell(
   return (
     <td className={`w-1/2 align-top ${tone} ${side === 'left' ? 'border-r' : ''}`}>
       {
-        /* One flex parent owns the vertical padding so the gutter and
-          text share an exact top baseline. Previously the gutter span
-          had `pl-1 pr-1` and the text span had `py-0.5` — that 2px
-          asymmetry pushed the text down a hair and made -/+ look
-          misaligned, worst on wrapped multi-line values. `items-start`
-          keeps the marker pinned to the first text line when content
-          wraps; leading-snug on both spans guarantees identical line
-          height. */
+        /* CSS Grid (not flex) so the gutter column and the text
+          column share an explicit per-row baseline track. Flex on a
+          row with one short span + one wrapping span made the inline
+          line-boxes drift relative to each other (the short span's
+          baseline sat at the box centre, the wrapping span's first
+          baseline sat at the top), which read as the -/+ marker
+          floating mid-line vs the text sitting on top.
+          `auto-rows-[1.45em]` + the same `line-height` everywhere
+          keeps each text row a fixed multiple of the font size, so
+          the marker and the text line up exactly. */
       }
-      <div className='flex items-start gap-0 py-0.5 pr-1'>
+      <div className='grid grid-cols-[1rem_1fr] py-0.5 pr-1 leading-[1.45]'>
         <span
-          className='select-none opacity-60 w-4 shrink-0 text-center leading-snug'
+          className='select-none opacity-60 text-center'
           aria-hidden='true'
         >
           {gutter}
         </span>
-        <span className='whitespace-pre-wrap break-words flex-1 min-w-0 leading-snug'>
+        <span className='whitespace-pre-wrap break-words min-w-0'>
           {line.text}
         </span>
       </div>
