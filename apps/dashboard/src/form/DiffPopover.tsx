@@ -14,8 +14,8 @@
  */
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { ArrowRight } from 'lucide-react';
-import { type JSX, useMemo } from 'react';
+import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
+import { type JSX, useMemo, useState } from 'react';
 import type { Translations } from '../api';
 import { type Locale, useT } from './locale';
 
@@ -24,11 +24,12 @@ type EntityData = Record<string, unknown>;
 /**
  * Two flavours per diff cell:
  *  - `summary` is the truncated single-line preview shown in the row
- *  - `full`   is the pretty-printed version revealed on hover (multi-
- *             line JSON for objects/arrays, plain string otherwise)
+ *  - `full`   is the pretty-printed payload revealed when the row is
+ *             expanded (multi-line JSON for objects/arrays, plain
+ *             string with wrapping otherwise)
  *
- * Splitting them up-front keeps the hover render trivial: no
- * re-formatting on mouse-enter, no layout shift.
+ * Splitting them up-front keeps render trivial: no re-formatting on
+ * each toggle, no layout thrash.
  */
 type DiffCell = {
   readonly summary: string;
@@ -163,6 +164,15 @@ function DiffSection(
   );
 }
 
+/**
+ * One row of the property/translation diff. When either before or
+ * after is truncated, the whole row becomes click-to-expand: the
+ * compact one-line preview stays in place, and a `<pre>` of the
+ * pretty-printed before/after appears beneath it. Inline expansion
+ * (no portal, no absolute-positioned tooltip) sidesteps the
+ * popover's scroll-container clipping that broke the earlier
+ * hover-card approach.
+ */
 function DiffRow(
   { label, before, after }: {
     label: React.ReactNode;
@@ -170,65 +180,100 @@ function DiffRow(
     after: DiffCell;
   },
 ): JSX.Element {
+  const expandable = before.full !== before.summary || after.full !== after.summary;
+  const [open, setOpen] = useState(false);
+
+  const beforeIsEmpty = before.summary === '∅';
+  const afterIsEmpty = after.summary === '∅';
+
   return (
     <li className='py-1.5'>
-      <p className='text-foreground mb-0.5 truncate text-[11px] font-medium'>{label}</p>
-      <div className='flex items-center gap-1.5 text-[11px]'>
-        <DiffCellView cell={before} variant='before' />
+      <button
+        type='button'
+        className={`flex w-full items-center gap-1 text-left ${
+          expandable ? 'hover:text-foreground/90 cursor-pointer' : 'cursor-default'
+        }`}
+        onClick={() => {
+          if (expandable) setOpen((v) => !v);
+        }}
+        aria-expanded={expandable ? open : undefined}
+        disabled={!expandable}
+      >
+        {expandable
+          ? (open
+            ? <ChevronDown className='size-3 shrink-0 opacity-50' />
+            : <ChevronRight className='size-3 shrink-0 opacity-50' />)
+          : <span className='size-3 shrink-0' aria-hidden='true' />}
+        <span className='text-foreground min-w-0 flex-1 truncate text-[11px] font-medium'>
+          {label}
+        </span>
+      </button>
+      <div className='ml-4 mt-0.5 flex items-center gap-1.5 text-[11px]'>
+        <span
+          className={`min-w-0 max-w-[10rem] flex-1 truncate font-mono text-[10px] ${
+            beforeIsEmpty ? 'text-muted-foreground italic' : 'line-through opacity-70'
+          }`}
+        >
+          {before.summary}
+        </span>
         <ArrowRight className='size-3 shrink-0 opacity-50' />
-        <DiffCellView cell={after} variant='after' />
+        <span
+          className={`min-w-0 flex-1 truncate font-mono text-[10px] ${
+            afterIsEmpty ? 'text-muted-foreground italic' : 'text-emerald-500'
+          }`}
+        >
+          {after.summary}
+        </span>
       </div>
+      {expandable && open
+        ? (
+          <div className='mt-1.5 ml-4 grid grid-cols-1 gap-1.5 sm:grid-cols-2'>
+            <ExpandedCell
+              label={'−'}
+              value={before.full}
+              tone='before'
+              isEmpty={beforeIsEmpty}
+            />
+            <ExpandedCell
+              label={'+'}
+              value={after.full}
+              tone='after'
+              isEmpty={afterIsEmpty}
+            />
+          </div>
+        )
+        : null}
     </li>
   );
 }
 
-/**
- * One diff cell with a hover-revealed pretty-printed payload. The
- * native `title` attribute can't render multi-line JSON readably (the
- * browser collapses whitespace and caps the width), so we render our
- * own popover absolutely-positioned beneath the cell.
- *
- * The popover is purely CSS-driven (group-hover/focus-within) — no
- * extra state, no JS listeners, no re-flow on hover. Hidden by
- * default + only mounted into the layout when `full` actually
- * differs from `summary` (i.e. there's extra content to reveal),
- * so short values stay tooltip-free.
- */
-function DiffCellView({
-  cell,
-  variant,
+function ExpandedCell({
+  label,
+  value,
+  tone,
+  isEmpty,
 }: {
-  cell: DiffCell;
-  variant: 'before' | 'after';
+  label: string;
+  value: string;
+  tone: 'before' | 'after';
+  isEmpty: boolean;
 }): JSX.Element {
-  const isEmpty = cell.summary === '∅';
-  const hasMore = !isEmpty && cell.full !== cell.summary;
-  const baseClass = variant === 'before'
-    ? 'max-w-[10rem] flex-1 truncate font-mono text-[10px] '
-      + (isEmpty ? 'text-muted-foreground italic' : 'line-through opacity-70')
-    : 'flex-1 truncate font-mono text-[10px] '
-      + (isEmpty ? 'text-muted-foreground italic' : 'text-emerald-500');
+  const toneClass = isEmpty
+    ? 'text-muted-foreground italic'
+    : tone === 'before'
+    ? 'text-foreground/70 line-through decoration-1 decoration-foreground/40'
+    : 'text-emerald-500';
   return (
-    <span
-      className={`group/cell relative min-w-0 ${hasMore ? 'cursor-help' : ''}`}
-      tabIndex={hasMore ? 0 : -1}
-    >
-      <span className={baseClass}>{cell.summary}</span>
-      {hasMore
-        ? (
-          <span
-            role='tooltip'
-            className={`pointer-events-none invisible absolute z-50 opacity-0 transition-opacity duration-100 group-hover/cell:visible group-hover/cell:opacity-100 group-focus-within/cell:visible group-focus-within/cell:opacity-100 ${
-              variant === 'before' ? 'left-0' : 'right-0'
-            } bottom-full mb-1 max-h-[20rem] w-[24rem] overflow-auto rounded-[4px] border bg-popover text-popover-foreground p-2 shadow-lg`}
-          >
-            <pre className='whitespace-pre-wrap break-words font-mono text-[10px] leading-tight m-0'>
-              {cell.full}
-            </pre>
-          </span>
-        )
-        : null}
-    </span>
+    <div className='border-border bg-muted/30 rounded-[3px] border p-2'>
+      <p className='text-muted-foreground mb-1 text-[9px] font-mono uppercase tracking-wider'>
+        {label}
+      </p>
+      <pre
+        className={`m-0 max-h-[16rem] overflow-auto whitespace-pre-wrap break-words font-mono text-[10px] leading-tight ${toneClass}`}
+      >
+        {value}
+      </pre>
+    </div>
   );
 }
 
