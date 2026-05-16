@@ -304,12 +304,12 @@ gated to the listed GitHub admin set.
 
 The four tiers:
 
-| Tier            | Identity                                 | Writes         | Co-authored-by                 | Rate-limit handle | Auto-merge |
-| --------------- | ---------------------------------------- | -------------- | ------------------------------ | ----------------- | ---------- |
-| **Anonymous**   | none                                     | yes            | none (bot identity only)       | client IP         | never      |
-| **Contributor** | GitHub login, not admin                  | yes            | contributor login + `@mention` | login             | never      |
-| **Admin**       | GitHub login in `ADMIN_GITHUB_USERNAMES` | yes            | admin login                    | login (high cap)  | yes        |
-| **Moderator**   | same login, calling `/api/admin/*`       | merge / reject | n/a                            | login             | n/a        |
+| Tier            | Identity                                 | Writes         | PR attribution                                   | Rate-limit handle | Auto-merge |
+| --------------- | ---------------------------------------- | -------------- | ------------------------------------------------ | ----------------- | ---------- |
+| **Anonymous**   | none                                     | yes            | optional self-chosen nickname (plain text, no @) | client IP         | never      |
+| **Contributor** | GitHub login, not admin                  | yes            | login + `@mention` + `Co-authored-by`            | login             | never      |
+| **Admin**       | GitHub login in `ADMIN_GITHUB_USERNAMES` | yes            | login + `@mention` + `Co-authored-by`            | login (high cap)  | yes        |
+| **Moderator**   | same login, calling `/api/admin/*`       | merge / reject | n/a                                              | login             | n/a        |
 
 The four-tier framing is conceptual; in code only **session
 present + admin?** is checked per endpoint:
@@ -319,9 +319,15 @@ present + admin?** is checked per endpoint:
 - **Admin endpoints (`/api/admin/promote`, `/api/admin/reject`)**
   require `session !== null && isAdmin(cfg, session.login)`.
 - **Anonymous PRs** open via the GitHub App with NO
-  `Co-authored-by` trailer; PR body marks "Anonymous contribution"
-  - a hashed IP fingerprint (no raw IP stored) so the admin can
-    correlate spam patterns when triaging the queue.
+  `Co-authored-by` trailer. The dashboard prompts for an optional
+  self-chosen nickname in the save bar (persisted to
+  `localStorage` so a returning contributor types it once); the
+  nickname is surfaced verbatim in the PR body as plain text
+  (never with `@` — it isn't a GitHub handle). When the nickname
+  is empty the PR body just says "Anonymous contribution". The
+  client IP is used only in-memory for rate-limiting +
+  `BLOCKED_IPS` matching — no IP-derived value is ever written to
+  the PR or to disk.
 
 Anti-abuse surface:
 

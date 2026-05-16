@@ -100,6 +100,29 @@ Wikipedia-style: the barrier to "I want to fix one typo" should
 be near-zero, and PR review remains the gate that prevents bad
 data from landing.
 
+**Anonymous attribution — revised**: the first 7.2 implementation
+embedded a salted-SHA hash of the source IP in the PR body for
+spam correlation. Reviewed and pulled back over privacy concerns
+(hashed IPs are still personal data under EU law if the salt is
+reachable). Replaced with a **self-chosen optional nickname**
+prompted in the save bar when no GitHub session is attached. The
+nickname is:
+
+- a plain string the contributor types in (or doesn't);
+- persisted to localStorage so a returning anonymous contributor
+  doesn't have to re-type;
+- surfaced in the PR body verbatim with NO `@` prefix so it can't
+  be mistaken for a GitHub handle;
+- length-capped (32 chars) and character-set restricted (letters /
+  digits / dash / underscore / dot / space) server-side.
+
+The dashboard server still uses the client IP for in-memory
+rate-limiting + the `BLOCKED_IPS` kill-switch, but no IP-derived
+value ever leaves the process. Spam correlation degrades from
+"two PRs from same IP hash" to "two PRs from same self-chosen
+nickname" — weaker, but a determined spammer rotates IPs anyway,
+and the simpler model has zero personal-data surface.
+
 Tiers become four, not three:
 
 | Tier              | Identity                                  | Writes         | Co-authored-by  | Auto-merge eligible |
@@ -117,9 +140,9 @@ Consequences of opening to anonymous writes:
   env vars; abusive IPs get blocklisted.
 - **`Co-authored-by` skipped** when the writer is anonymous. The
   PR is fully attributed to the GitHub App's bot identity. PR
-  body still notes "Anonymous contribution" + a hashed IP
-  fingerprint so the admin can correlate spam patterns without
-  storing raw IPs.
+  body shows the contributor's self-chosen nickname (if any) as a
+  plain string — never as `@nickname`. See "Anonymous
+  attribution — revised" below for why we don't use IP hashes.
 - **`BLOCKED_GITHUB_USERNAMES`** no longer covers the abuse
   surface alone; it still works for authenticated trolls but
   anonymous abuse needs the IP rate-limit + a `BLOCKED_IPS` env

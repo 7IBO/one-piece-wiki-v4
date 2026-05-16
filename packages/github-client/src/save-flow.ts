@@ -10,9 +10,10 @@
  *     `Co-authored-by: <login> <id+login@users.noreply.github.com>`
  *     trailer; the PR body `@mention`s the contributor.
  *   - **Anonymous** (no session) — no trailer at all (PR is
- *     bot-authored only); PR body declares "Anonymous contribution"
- *     with the hashed-IP fingerprint passed by the caller, for spam
- *     correlation without storing raw IPs.
+ *     bot-authored only). The PR body shows the optional
+ *     self-chosen `anonymousNickname` as a plain string (NO `@`
+ *     prefix — it isn't a GitHub handle). No identifying
+ *     metadata (IP, fingerprint, etc.) is stored or surfaced.
  *
  * Steps:
  * 1. Read the entity file from main; capture its SHA.
@@ -54,11 +55,10 @@ export type SaveRequest = {
   /** Numeric user id, paired with login for the noreply email
    *  trailer. Null when anonymous. */
   readonly contributorId: number | null;
-  /** Short hash of the client IP (e.g. SHA-256 truncated to 8 hex
-   *  chars). Only used when `contributorLogin` is null — surfaces
-   *  in the PR body so the admin can correlate spam without us
-   *  storing raw IPs anywhere. */
-  readonly anonymousFingerprint?: string;
+  /** Self-chosen display name for anonymous contributions. Surfaces
+   *  in the PR body verbatim with NO `@` prefix (it isn't a GitHub
+   *  handle). Ignored when `contributorLogin` is non-null. */
+  readonly anonymousNickname?: string;
   readonly extraFiles?: readonly ExtraFile[];
 };
 
@@ -131,21 +131,26 @@ export async function submitEntityEdit(
 
   const fileLines = [request.path, ...extraPaths].map((p) => `- \`${p}\``);
   const anonymous = request.contributorLogin === null;
+  const nickname = request.anonymousNickname?.trim() ?? '';
 
+  // PR body header:
+  //  - Authenticated: "Submitted by @login via the dashboard."
+  //  - Anonymous with nickname: "Submitted by **Nickname** (anonymous)…"
+  //  - Anonymous without nickname: "Anonymous contribution via…"
+  // The nickname is rendered as bold plain text — never with `@`,
+  // so a reviewer can't confuse it for a GitHub handle.
   const headerLine = anonymous
-    ? `**Anonymous contribution** via the dashboard${
-      request.anonymousFingerprint !== undefined
-        ? ` — source fingerprint \`${request.anonymousFingerprint}\``
-        : ''
-    }.`
+    ? (nickname !== ''
+      ? `Submitted by **${nickname}** (anonymous, via the dashboard).`
+      : `**Anonymous contribution** via the dashboard.`)
     : `Submitted by @${request.contributorLogin} via the dashboard.`;
 
   const footer = anonymous
     ? [
       `---`,
       `_This pull request was opened anonymously through the dashboard._`,
-      `_The fingerprint above is a one-way hash of the source IP — same hash_`,
-      `_= same source — used by admins to correlate spam patterns._`,
+      `_The displayed name is self-chosen by the contributor and is_`,
+      `_not verified — treat it as a label, not an identity._`,
       `_The commit author is the dashboard bot; no \`Co-authored-by\` is set._`,
     ]
     : [

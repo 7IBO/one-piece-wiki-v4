@@ -29,7 +29,7 @@ import {
   submitEntityEdit,
 } from '@onepiece-wiki/github-client';
 import { loadEntities, loadSchemas, validateCatalogue } from '@onepiece-wiki/schema-engine';
-import { createHash, randomBytes } from 'node:crypto';
+import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { promoteAndMergePR, rejectAndCleanupPR } from './admin-promote.ts';
@@ -410,13 +410,35 @@ async function handleGetEntity(type: string, slug: string): Promise<Response> {
   return json({ id: entity.id, type, slug, data: entity.data, sha, translations });
 }
 
+/**
+ * Validate + normalize a self-chosen anonymous nickname. Returns
+ * the trimmed value if acceptable, null if absent / empty, or a
+ * string error message if the value violates the rules.
+ *
+ * Rules:
+ *  - 1-32 chars after trim
+ *  - Letters / digits / dash / underscore / dot / space only
+ *    (deliberately no @ to avoid being mistaken for a GitHub handle)
+ *  - No control chars, no HTML
+ */
+function normalizeNickname(raw: unknown): string | null | { error: string; } {
+  if (raw === undefined || raw === null) return null;
+  if (typeof raw !== 'string') return { error: 'nickname must be a string' };
+  const trimmed = raw.trim();
+  if (trimmed === '') return null;
+  if (trimmed.length > 32) return { error: 'nickname too long (max 32 chars)' };
+  if (!/^[\p{L}\p{N}._\- ]+$/u.test(trimmed)) {
+    return { error: 'nickname may contain letters, digits, dash, underscore, dot, space only' };
+  }
+  return trimmed;
+}
+
 async function handleSaveEntity(
   cfg: GitHubAppConfig,
   session: Session | null,
   type: string,
   slug: string,
   req: Request,
-  clientIpAddr: string,
 ): Promise<Response> {
   let body: unknown;
   try {
@@ -431,9 +453,16 @@ async function handleSaveEntity(
     data?: Record<string, unknown>;
     sha?: string | null;
     translations?: Partial<Record<Locale, Record<string, string>>>;
+    /** Self-chosen display name for anonymous contributions. Ignored
+     *  when the request carries a session (the login wins). */
+    anonymousNickname?: unknown;
   };
   if (payload.data === undefined || typeof payload.data !== 'object' || payload.data === null) {
     return badRequest('Body.data must be the entity object.');
+  }
+  const nick = session === null ? normalizeNickname(payload.anonymousNickname) : null;
+  if (nick !== null && typeof nick === 'object') {
+    return badRequest(nick.error);
   }
 
   const snap = await snapshot();
@@ -469,9 +498,9 @@ async function handleSaveEntity(
 
   // Anonymous contributors get no `Co-authored-by` (the bot is the
   // sole author). Authenticated contributors get full attribution.
-  // We add a hashed IP fingerprint to the PR body for ANY anonymous
-  // contribution so the admin can spot abuse patterns (same hash
-  // = same source IP) without us storing raw IPs anywhere.
+  // Optional self-chosen `anonymousNickname` is surfaced as a plain
+  // string in the PR body — NO @ prefix so it's never mistaken for
+  // a GitHub handle.
   const octokit = await installationClient(cfg);
   try {
     const pr = await submitEntityEdit(octokit, cfg, {
@@ -481,9 +510,7 @@ async function handleSaveEntity(
       expectedSha: payload.sha ?? null,
       contributorLogin: session?.login ?? null,
       contributorId: session?.userId ?? null,
-      ...(session === null
-        ? { anonymousFingerprint: hashIp(clientIpAddr) }
-        : {}),
+      ...(typeof nick === 'string' ? { anonymousNickname: nick } : {}),
       extraFiles,
     });
     return json({ ok: true, pr });
@@ -493,22 +520,6 @@ async function handleSaveEntity(
     }
     throw err;
   }
-}
-
-/**
- * One-way hash of an IP for the PR body fingerprint. SHA-256
- * truncated to 8 hex chars — enough to correlate "same source"
- * across PRs, narrow enough that a recovered hash isn't a privacy
- * leak. Salted with a per-deploy secret if available to defeat
- * rainbow tables.
- */
-function hashIp(ip: string): string {
-  const salt = process.env['ANON_FINGERPRINT_SALT'] ?? 'one-piece-wiki-default-salt';
-  const h = createHash('sha256');
-  h.update(salt);
-  h.update(':');
-  h.update(ip);
-  return h.digest('hex').slice(0, 8);
 }
 
 function handleAuthLogin(cfg: GitHubAppConfig): Response {
@@ -923,7 +934,7 @@ const server = Bun.serve({
               );
             }
           }
-          return await handleSaveEntity(config, session, type, slug, req, ip);
+          return await handleSaveEntity(config, session, type, slug, req);
         }
       }
 

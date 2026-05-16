@@ -219,10 +219,20 @@ export const api = {
     data: Record<string, unknown>,
     sha: string | null,
     translations: Translations,
+    /** Optional self-chosen display name for anonymous contributions.
+     *  Ignored server-side when the caller has a GitHub session. */
+    anonymousNickname?: string,
   ): Promise<SaveResult> {
     const result = await postJson<SaveResult>(
       `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`,
-      { data, sha, translations },
+      {
+        data,
+        sha,
+        translations,
+        ...(anonymousNickname !== undefined && anonymousNickname !== ''
+          ? { anonymousNickname }
+          : {}),
+      },
     );
     invalidateAfterSave();
     return result;

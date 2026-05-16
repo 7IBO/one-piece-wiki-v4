@@ -104,6 +104,13 @@ const UI_STRINGS = {
   requiredMissing: { en: 'required missing', fr: 'requis manquants' },
   required: { en: 'required', fr: 'requis' },
   optional: { en: 'optional', fr: 'optionnel' },
+  // Anonymous nickname (when no GitHub login)
+  nickname: { en: 'Nickname', fr: 'Pseudo' },
+  nicknamePlaceholder: { en: 'Your name (optional)', fr: 'Votre pseudo (optionnel)' },
+  nicknameHelp: {
+    en: 'Shown on the PR. No GitHub account needed.',
+    fr: 'Affiché sur la PR. Pas besoin de compte GitHub.',
+  },
   // Section labels (FORM_SECTIONS)
   sectionIdentity: { en: 'Identity & naming', fr: 'Identité & noms' },
   sectionNumbers: { en: 'Numbers', fr: 'Nombres' },
