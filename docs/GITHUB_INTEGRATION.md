@@ -269,6 +269,68 @@ For local development without hitting GitHub on every save:
 
 This keeps the inner loop fast.
 
+## Auto-merge for trusted dashboard PRs
+
+The dashboard opens every edit as a labelled PR (`edit` + `via-dashboard`)
+authored by the GitHub App bot. The human contributor is recorded as
+`Co-authored-by` on every commit (see `packages/github-client/src/save-flow.ts`).
+
+To eliminate the "open dashboard → save → wait for someone to click
+Merge" friction for trusted maintainers, the workflow at
+`.github/workflows/auto-merge-dashboard.yml` enables GitHub's native
+auto-merge (squash) on any dashboard PR whose co-author appears in the
+`AUTO_MERGE_ADMINS` repo secret.
+
+Once auto-merge is enabled, GitHub merges the PR automatically the
+moment CI passes — so the maintainer's edit lands on `main` within ~30
+seconds of clicking Save in the dashboard, without ever leaving the
+dashboard.
+
+### Setup
+
+1. **Repo Settings → Secrets and variables → Actions → New repository
+   secret.** Name: `AUTO_MERGE_ADMINS`, value: comma-separated GitHub
+   logins (e.g. `7IBO,other-trusted-user`). Logins are matched
+   case-insensitively against the `Co-authored-by` trailer.
+2. **Repo Settings → General → Pull Requests.** Enable both:
+   - **Allow auto-merge**
+   - **Allow squash merging**
+3. (Strongly recommended) **Repo Settings → Branches → Branch
+   protection rules → main.** Add the rule and tick **Require status
+   checks to pass before merging** → select `Lint, typecheck, validate,
+   test` (the CI job). Auto-merge will then wait for CI before merging,
+   so a broken edit can never reach `main`.
+
+### Trust model
+
+The workflow only auto-merges when **all** of:
+
+- PR carries the `via-dashboard` label (only the dashboard's save flow
+  applies it), AND
+- the PR is not a draft, AND
+- at least one commit has a `Co-authored-by:` trailer whose login is
+  in `AUTO_MERGE_ADMINS`, AND
+- CI eventually passes (enforced by branch protection — without it,
+  GitHub's auto-merge will fire as soon as merge is possible).
+
+External contributors editing via fork get the normal manual review
+flow. Removing a username from `AUTO_MERGE_ADMINS` revokes their
+auto-merge privilege immediately, without revoking their dashboard
+access (the two are separate: `ADMIN_GITHUB_USERNAMES` controls who can
+log into the dashboard; `AUTO_MERGE_ADMINS` controls whose PRs skip
+review).
+
+## Local development
+
+For local development without hitting GitHub on every save:
+
+- A `LOCAL_FS_MODE=true` env var makes the dashboard write to the local
+  `/data` directory instead of GitHub
+- A `git diff` view in the dashboard shows pending local changes
+- A "publish" button optionally still opens a real PR
+
+This keeps the inner loop fast.
+
 ## Secrets management
 
 - `.env.example` documents required env vars

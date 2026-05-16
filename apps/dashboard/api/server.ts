@@ -32,6 +32,7 @@ import { loadEntities, loadSchemas, validateCatalogue } from '@onepiece-wiki/sch
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { ALLOWED_IMAGE_TYPES, presignUpload, r2Config } from './r2.ts';
 import {
   buildCookie,
   clearCookie,
@@ -60,6 +61,23 @@ try {
 }
 
 const oauthStates = new Set<string>();
+
+// Set once when we detect the GitHub App is not installed on the data
+// repo (a normal early-stage state). After that, getFile/openPR calls
+// short-circuit and the API stops spamming the console with 404s on
+// every entity load.
+let githubInstallMissing = false;
+
+function looksLikeMissingInstallation(err: unknown): boolean {
+  if (!(err instanceof Error)) return false;
+  const m = err.message;
+  if (!m.includes('Not Found') && !m.includes('404')) return false;
+  // The App-installation lookup hits one of several Octokit endpoints
+  // whose error message mentions `installation` somewhere — either in
+  // the request path (/repos/.../installation) or the docs link
+  // (#get-a-repository-installation-for-the-authenticated-app).
+  return m.includes('installation');
+}
 
 type CatalogueSnapshot = Awaited<ReturnType<typeof snapshot>>;
 
@@ -137,11 +155,100 @@ async function findEntity(snap: CatalogueSnapshot, type: string, slug: string) {
   return undefined;
 }
 
+/**
+ * Pull the most recent value_key from an entity's most "name-like"
+ * property. Tries `name` first, then `title_key` (used by chapters).
+ * Works whether the property is historical (array) or not.
+ */
+function nameKeyFor(data: Record<string, unknown>): string | null {
+  const props = data['properties'];
+  if (props === null || typeof props !== 'object') return null;
+  for (const candidate of ['name', 'title_key'] as const) {
+    const raw = (props as Record<string, unknown>)[candidate];
+    if (raw === null || raw === undefined) continue;
+    const entries = Array.isArray(raw) ? raw : [raw];
+    for (let i = entries.length - 1; i >= 0; i--) {
+      const entry = entries[i];
+      if (entry !== null && typeof entry === 'object') {
+        const v = (entry as Record<string, unknown>)['value_key']
+          ?? (entry as Record<string, unknown>)['value'];
+        if (typeof v === 'string' && v.length > 0) return v;
+      }
+    }
+  }
+  return null;
+}
+
+const SOURCE_TYPE_IDS: ReadonlySet<string> = new Set([
+  'manga-chapter',
+  'anime-episode',
+  'film',
+  'sbs',
+  'databook',
+]);
+
+/**
+ * Synthetic display fallback when no `name`/`title_key` translation
+ * exists. Source-type entities (chapters, episodes, films…) get
+ * `null` here so the source picker can render `number — title`
+ * cleanly (the type label lives outside the input). Non-source
+ * entities fall back to a pretty-printed slug so the picker has
+ * something readable.
+ */
+function syntheticDisplayName(
+  entity: { id: string; type: string; data: Record<string, unknown>; },
+): { en: string | null; fr: string | null; } {
+  if (SOURCE_TYPE_IDS.has(entity.type)) {
+    return { en: null, fr: null };
+  }
+  const slug = String(entity.data['slug'] ?? '');
+  if (slug !== '') {
+    const pretty = slug
+      .split('-')
+      .map((p) => p.charAt(0).toUpperCase() + p.slice(1))
+      .join(' ');
+    return { en: pretty, fr: pretty };
+  }
+  return { en: null, fr: null };
+}
+
+/**
+ * Pre-load every entity's en/fr display name. Loaded once per request
+ * via snapshot(). Keyed by entity id. Falls back to `null` per locale
+ * if the translation is missing — callers should default to slug.
+ */
+async function buildDisplayNames(
+  snap: CatalogueSnapshot,
+): Promise<Map<string, { en: string | null; fr: string | null; }>> {
+  const map = new Map<string, { en: string | null; fr: string | null; }>();
+  // Group by (type, fileBase) so we read each translations file once.
+  const tasks: Promise<void>[] = [];
+  for (const entity of snap.entities.values()) {
+    const fileBase = entity.id.split(':')[1] ?? '';
+    const key = nameKeyFor(entity.data);
+    tasks.push((async () => {
+      const fallback = syntheticDisplayName(entity);
+      if (key === null) {
+        map.set(entity.id, fallback);
+        return;
+      }
+      const trs = await readTranslationsFor(entity.type, fileBase);
+      map.set(entity.id, {
+        en: trs.en[key] ?? fallback.en,
+        fr: trs.fr[key] ?? fallback.fr,
+      });
+    })());
+  }
+  await Promise.all(tasks);
+  return map;
+}
+
 async function handleSchemas(): Promise<Response> {
   const snap = await snapshot();
   return json({
     entityTypes: Object.fromEntries(snap.validated.entityTypes),
     propertyTypes: Object.fromEntries(snap.validated.propertyTypes),
+    relationTypes: Object.fromEntries(snap.validated.relationTypes),
     vocabularies: Object.fromEntries(snap.validated.vocabularies),
   });
 }
@@ -167,6 +274,7 @@ function chapterNumber(entity: { id: string; data: Record<string, unknown>; }): 
 
 async function handleSources(): Promise<Response> {
   const snap = await snapshot();
+  const names = await buildDisplayNames(snap);
   const sources = [...snap.entities.values()]
     .filter((e) => SOURCE_TYPES.has(e.type))
     .map((e) => ({
@@ -174,6 +282,7 @@ async function handleSources(): Promise<Response> {
       type: e.type,
       slug: e.data['slug'],
       number: chapterNumber(e),
+      displayName: names.get(e.id) ?? { en: null, fr: null },
     }))
     .sort((a, b) => {
       if (a.type !== b.type) return a.type.localeCompare(b.type);
@@ -214,6 +323,7 @@ async function handleI18nKeys(): Promise<Response> {
 
 async function handleListEntities(type: string): Promise<Response> {
   const snap = await snapshot();
+  const names = await buildDisplayNames(snap);
   const list = [...snap.entities.values()]
     .filter((e) => e.type === type)
     .map((e) => ({
@@ -221,9 +331,46 @@ async function handleListEntities(type: string): Promise<Response> {
       type: e.type,
       slug: e.data['slug'],
       canonical_name_key: e.data['canonical_name_key'] ?? null,
+      displayName: names.get(e.id) ?? { en: null, fr: null },
     }))
-    .sort((a, b) => String(a.slug).localeCompare(String(b.slug)));
+    .sort((a, b) => {
+      const an = names.get(a.id)?.en ?? String(a.slug);
+      const bn = names.get(b.id)?.en ?? String(b.slug);
+      return an.localeCompare(bn);
+    });
   return json(list);
+}
+
+/**
+ * Bulk-edit "table" view payload. Returns every entity of the given
+ * type with its full `data` and per-locale translations bundled in.
+ * Deliberately skips per-entity GitHub SHA lookups — fetching one
+ * blob per entity would scale poorly for a 1000-row table and is
+ * unnecessary in practice: the save endpoint accepts `sha: null` and
+ * the table view trades optimistic-locking for bulk speed (the
+ * single-entity editor still uses SHA-locked saves).
+ */
+async function handleTableEntities(type: string): Promise<Response> {
+  const snap = await snapshot();
+  const ofType = [...snap.entities.values()].filter((e) => e.type === type);
+  // Read each entity's translations in parallel — they're disk reads
+  // from the local checkout, not network calls.
+  const rows = await Promise.all(
+    ofType.map(async (e) => {
+      const slug = String(e.data['slug'] ?? '');
+      const fileBase = e.id.split(':')[1] ?? slug;
+      const translations = await readTranslationsFor(type, fileBase);
+      return {
+        id: e.id,
+        type,
+        slug,
+        data: e.data,
+        translations,
+      };
+    }),
+  );
+  rows.sort((a, b) => a.slug.localeCompare(b.slug));
+  return json({ entities: rows });
 }
 
 async function handleGetEntity(type: string, slug: string): Promise<Response> {
@@ -234,15 +381,26 @@ async function handleGetEntity(type: string, slug: string): Promise<Response> {
   const fileBase = entity.id.split(':')[1] ?? slug;
 
   let sha: string | null = null;
-  if (config !== null) {
+  if (config !== null && !githubInstallMissing) {
     try {
       const octokit = await installationClient(config);
       const file = await getFile(octokit, config, dataPath(type, fileBase));
       sha = file?.sha ?? null;
     } catch (err) {
-      process.stderr.write(
-        `getFile failed for ${entity.id}: ${err instanceof Error ? err.message : String(err)}\n`,
-      );
+      if (looksLikeMissingInstallation(err)) {
+        githubInstallMissing = true;
+        process.stderr.write(
+          `[dashboard API] GitHub App not installed on ${config.dataRepo.owner}/${config.dataRepo.repo}.\n`
+            + `  → Install it from https://github.com/settings/apps to enable SHA tracking and the save flow.\n`
+            + `  Read endpoints continue to work; this warning is shown once.\n`,
+        );
+      } else {
+        process.stderr.write(
+          `[dashboard API] getFile failed for ${entity.id}: ${
+            err instanceof Error ? err.message : String(err)
+          }\n`,
+        );
+      }
     }
   }
 
@@ -315,6 +473,7 @@ async function handleSaveEntity(
       newContent,
       expectedSha: payload.sha ?? null,
       contributorLogin: session.login,
+      contributorId: session.userId,
       extraFiles,
     });
     return json({ ok: true, pr });
@@ -370,6 +529,51 @@ function handleAuthLogout(): Response {
   });
 }
 
+/**
+ * Mint a presigned PUT URL on R2 for the browser to upload an image
+ * directly. Auth-gated to admins so randoms can't burn through the
+ * bucket quota. Returns { uploadUrl, publicUrl, key, expiresIn, maxBytes }.
+ */
+async function handlePresignUpload(req: Request): Promise<Response> {
+  const cfg = r2Config();
+  if (cfg === null) {
+    return serviceUnavailable(
+      'R2 not configured. Set R2_* vars in apps/dashboard/.env.local.',
+    );
+  }
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch (err) {
+    return badRequest(`Invalid JSON: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  if (body === null || typeof body !== 'object') {
+    return badRequest('Body must be { filename, contentType, sizeBytes }.');
+  }
+  const { filename, contentType, sizeBytes } = body as {
+    filename?: unknown;
+    contentType?: unknown;
+    sizeBytes?: unknown;
+  };
+  if (typeof filename !== 'string' || filename === '') {
+    return badRequest('filename must be a non-empty string.');
+  }
+  if (typeof contentType !== 'string' || !ALLOWED_IMAGE_TYPES.has(contentType)) {
+    return badRequest(
+      `contentType must be one of: ${[...ALLOWED_IMAGE_TYPES].join(', ')}.`,
+    );
+  }
+  if (typeof sizeBytes !== 'number' || !Number.isInteger(sizeBytes) || sizeBytes <= 0) {
+    return badRequest('sizeBytes must be a positive integer.');
+  }
+  try {
+    const result = await presignUpload(cfg, { filename, contentType, sizeBytes });
+    return json(result);
+  } catch (err) {
+    return badRequest(err instanceof Error ? err.message : String(err));
+  }
+}
+
 const server = Bun.serve({
   port: PORT,
   hostname: '127.0.0.1',
@@ -390,12 +594,24 @@ const server = Bun.serve({
       if (req.method === 'GET' && path === '/api/auth/me') return handleAuthMe(session);
       if (req.method === 'POST' && path === '/api/auth/logout') return handleAuthLogout();
 
+      if (req.method === 'POST' && path === '/api/uploads/presign') {
+        if (session === null) return unauthorized('Sign in via /api/auth/login first.');
+        return await handlePresignUpload(req);
+      }
+
       if (req.method === 'GET' && path === '/api/schemas') return await handleSchemas();
       if (req.method === 'GET' && path === '/api/sources') return await handleSources();
       if (req.method === 'GET' && path === '/api/i18n-keys') return await handleI18nKeys();
       const listMatch = /^\/api\/entities\/([^/]+)$/.exec(path);
       if (req.method === 'GET' && listMatch !== null) {
         return await handleListEntities(listMatch[1]!);
+      }
+
+      // Match BEFORE the per-entity regex so `/api/entities/foo/table`
+      // doesn't end up looking up a `foo` entity with slug "table".
+      const tableMatch = /^\/api\/entities\/([^/]+)\/table$/.exec(path);
+      if (req.method === 'GET' && tableMatch !== null) {
+        return await handleTableEntities(tableMatch[1]!);
       }
 
       const entityMatch = /^\/api\/entities\/([^/]+)\/([^/]+)$/.exec(path);

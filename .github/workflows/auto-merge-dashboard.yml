@@ -1,0 +1,137 @@
+# Auto-merge dashboard-submitted PRs from trusted admins.
+#
+# When the dashboard opens a PR (label `via-dashboard`), the commit is
+# authored by the GitHub App bot and the human contributor is recorded
+# as `Co-authored-by`. For a friction-free editing experience, this
+# workflow:
+#
+#   1. Reads the Co-authored-by trailer from the PR's commits.
+#   2. Checks the co-author against the AUTO_MERGE_ADMINS repo secret
+#      (comma-separated GitHub usernames).
+#   3. If matched AND the CI workflow succeeded, enables GitHub's
+#      native auto-merge (squash) on the PR.
+#
+# Result: admin dashboard edits land on `main` within seconds of CI
+# turning green, without anyone clicking "Merge". Untrusted users'
+# edits still require a manual review.
+#
+# Configuration:
+#   - Repo Settings → Secrets → Actions → AUTO_MERGE_ADMINS
+#     Value: comma-separated logins, e.g. `7IBO,other-admin`
+#   - Repo Settings → General → Pull Requests
+#     Enable: "Allow auto-merge"  AND  "Allow squash merging"
+#   - (Optional) Branch protection on `main` requiring CI to pass.
+
+name: Auto-merge dashboard PRs
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, labeled, ready_for_review]
+  check_suite:
+    types: [completed]
+  workflow_run:
+    workflows: [CI]
+    types: [completed]
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  auto-merge:
+    name: Enable auto-merge for trusted dashboard PRs
+    runs-on: ubuntu-latest
+    if: |
+      (github.event_name == 'pull_request_target' &&
+       contains(github.event.pull_request.labels.*.name, 'via-dashboard')) ||
+      (github.event_name == 'check_suite') ||
+      (github.event_name == 'workflow_run' &&
+       github.event.workflow_run.conclusion == 'success')
+    steps:
+      - name: Identify candidate PRs
+        id: prs
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const event = context.eventName;
+            let prs = [];
+            if (event === 'pull_request_target') {
+              prs = [context.payload.pull_request];
+            } else if (event === 'check_suite') {
+              prs = context.payload.check_suite.pull_requests ?? [];
+            } else if (event === 'workflow_run') {
+              prs = context.payload.workflow_run.pull_requests ?? [];
+            }
+            // Filter to dashboard PRs only.
+            const eligible = [];
+            for (const pr of prs) {
+              const full = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+              });
+              const labels = (full.data.labels ?? []).map((l) => l.name);
+              if (!labels.includes('via-dashboard')) continue;
+              if (full.data.state !== 'open') continue;
+              if (full.data.draft) continue;
+              eligible.push(full.data);
+            }
+            core.setOutput('prs', JSON.stringify(eligible.map((p) => p.number)));
+            core.info(`Eligible PRs: ${eligible.map((p) => p.number).join(', ') || 'none'}`);
+
+      - name: Enable auto-merge on each eligible PR
+        if: steps.prs.outputs.prs != '[]'
+        uses: actions/github-script@v7
+        env:
+          ADMINS: ${{ secrets.AUTO_MERGE_ADMINS }}
+        with:
+          script: |
+            const adminsRaw = process.env.ADMINS ?? '';
+            const admins = new Set(
+              adminsRaw.split(',').map((s) => s.trim().toLowerCase()).filter(Boolean),
+            );
+            if (admins.size === 0) {
+              core.warning('AUTO_MERGE_ADMINS is empty — no PRs will auto-merge.');
+              return;
+            }
+            const prNumbers = JSON.parse('${{ steps.prs.outputs.prs }}');
+            for (const number of prNumbers) {
+              // Fetch the PR's commits and inspect Co-authored-by trailers.
+              const commits = await github.rest.pulls.listCommits({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: number,
+              });
+              const coAuthors = new Set();
+              for (const c of commits.data) {
+                const msg = c.commit.message ?? '';
+                for (const m of msg.matchAll(/Co-authored-by:\s*([^\s<]+)/gi)) {
+                  coAuthors.add(m[1].toLowerCase());
+                }
+              }
+              const trusted = [...coAuthors].some((a) => admins.has(a));
+              if (!trusted) {
+                core.info(`PR #${number}: no admin co-author (saw: ${[...coAuthors].join(', ') || 'none'}). Skipping.`);
+                continue;
+              }
+              const { data: pr } = await github.rest.pulls.get({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: number,
+              });
+              if (pr.auto_merge !== null) {
+                core.info(`PR #${number}: auto-merge already enabled.`);
+                continue;
+              }
+              // Enable native auto-merge via GraphQL (REST has no endpoint).
+              const enable = await github.graphql(
+                `mutation($pullRequestId: ID!) {
+                   enablePullRequestAutoMerge(input: {
+                     pullRequestId: $pullRequestId,
+                     mergeMethod: SQUASH
+                   }) { pullRequest { number } }
+                 }`,
+                { pullRequestId: pr.node_id },
+              );
+              core.info(`PR #${number}: auto-merge enabled (squash).`);
+            }

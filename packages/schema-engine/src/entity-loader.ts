@@ -27,11 +27,20 @@ const I18nKeyString = z.string().regex(
   /^[a-z0-9]+(?:[-_][a-z0-9]+)*(?:\.[a-z0-9]+(?:[-_][a-z0-9]+)*)+$/,
 );
 
+// `since` / `until` / `source` accept either a single source ref or
+// an array. The array form lets a single value entry cite multiple
+// mediums simultaneously (e.g. manga chapter + anime episode that
+// adapt the same moment) without forcing the maintainer to duplicate
+// the entry. The build pipeline normalises both forms to "the set of
+// reachable sources" via the `adapted-by` relation, so the choice
+// here is purely an authoring convenience.
+const SourceRefOrList = z.union([EntityId, z.array(EntityId).min(1)]);
+
 const BaseQualifierBag = z
   .object({
-    since: EntityId.optional(),
-    until: EntityId.optional(),
-    source: EntityId.optional(),
+    since: SourceRefOrList.optional(),
+    until: SourceRefOrList.optional(),
+    source: SourceRefOrList.optional(),
     epistemic_status: EpistemicStatus.optional(),
     actual_value: z.unknown().optional(),
     event: EntityId.optional(),
@@ -258,6 +267,13 @@ export function resolveEntityReferences(
   const errors: EntityReferenceError[] = [];
   const isEntityRef = (value: unknown): value is string =>
     typeof value === 'string' && /^[a-z0-9-]+:[a-z0-9-]+$/.test(value);
+  // `since` / `until` / `source` accept a single ref or an array. Walk
+  // both shapes so reference-resolution covers both.
+  const refOrRefList = (value: unknown): readonly string[] => {
+    if (isEntityRef(value)) return [value];
+    if (Array.isArray(value)) return value.filter(isEntityRef);
+    return [];
+  };
 
   for (const entity of entities.values()) {
     const data = entity.data as { properties?: Record<string, unknown>; relations?: unknown[]; };
@@ -272,14 +288,15 @@ export function resolveEntityReferences(
           const record = entry as Record<string, unknown>;
           const refTargets = ['since', 'until', 'source', 'event'] as const;
           for (const field of refTargets) {
-            const ref = record[field];
-            if (isEntityRef(ref) && !entities.has(ref)) {
-              errors.push({
-                code: 'ENTITY_REFERENCE_NOT_FOUND',
-                source: entity.id,
-                path: `properties.${propertyId}[${index}].${field}`,
-                target: ref,
-              });
+            for (const ref of refOrRefList(record[field])) {
+              if (!entities.has(ref)) {
+                errors.push({
+                  code: 'ENTITY_REFERENCE_NOT_FOUND',
+                  source: entity.id,
+                  path: `properties.${propertyId}[${index}].${field}`,
+                  target: ref,
+                });
+              }
             }
           }
           if (
@@ -314,17 +331,18 @@ export function resolveEntityReferences(
         const qualifiers = record['qualifiers'];
         if (qualifiers !== null && qualifiers !== undefined && typeof qualifiers === 'object') {
           for (const [key, qValue] of Object.entries(qualifiers as Record<string, unknown>)) {
-            if (
-              (key === 'since' || key === 'until' || key === 'source' || key === 'event')
-              && typeof qValue === 'string'
-              && !entities.has(qValue)
-            ) {
-              errors.push({
-                code: 'ENTITY_REFERENCE_NOT_FOUND',
-                source: entity.id,
-                path: `relations[${index}].qualifiers.${key}`,
-                target: qValue,
-              });
+            if (key !== 'since' && key !== 'until' && key !== 'source' && key !== 'event') {
+              continue;
+            }
+            for (const ref of refOrRefList(qValue)) {
+              if (!entities.has(ref)) {
+                errors.push({
+                  code: 'ENTITY_REFERENCE_NOT_FOUND',
+                  source: entity.id,
+                  path: `relations[${index}].qualifiers.${key}`,
+                  target: ref,
+                });
+              }
             }
           }
         }
