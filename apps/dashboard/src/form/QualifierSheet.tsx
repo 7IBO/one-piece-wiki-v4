@@ -195,8 +195,20 @@ export function QualifierSheet(p: QualifierSheetProps): JSX.Element {
               // Layered above the catcher; pointer-events disabled
               // when closed so the off-screen panel doesn't intercept
               // clicks that should reach the page behind.
-              className={`bg-background text-foreground fixed inset-y-0 right-0 z-50 flex w-full max-w-[28rem] flex-col border-l shadow-xl outline-none transition-transform duration-150 ease-out ${
-                open ? 'translate-x-0' : 'pointer-events-none translate-x-full'
+              //
+              // Border + shadow are gated on `open`: every EntryCard
+              // mounts its own QualifierSheet so an entity with N
+              // entries leaves N off-screen panels in the DOM at
+              // translate-x-full. Each one's `shadow-xl` is a soft
+              // blur that EXTENDS PAST the element bounds — N of them
+              // stack on the viewport's right edge and leak a faint
+              // rounded smudge through the scrollbar gutter. Drop the
+              // shadow when closed (no depth cue needed off-screen)
+              // and the smudge goes away.
+              className={`bg-background text-foreground fixed inset-y-0 right-0 z-50 flex w-full max-w-[28rem] flex-col outline-none transition-transform duration-150 ease-out ${
+                open
+                  ? 'translate-x-0 border-l shadow-xl'
+                  : 'pointer-events-none translate-x-full'
               }`}
               // GPU-promoted layer keeps the shadow + slide animation
               // off the main thread; without this, scrolling the form

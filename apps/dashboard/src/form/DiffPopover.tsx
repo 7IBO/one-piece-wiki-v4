@@ -492,7 +492,7 @@ function DiffRowSummary({
         {after.summary}
       </span>
       <ArrowRight
-        className='bg-card text-muted-foreground absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70'
+        className='text-muted-foreground absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 opacity-70'
         aria-hidden='true'
       />
     </div>
