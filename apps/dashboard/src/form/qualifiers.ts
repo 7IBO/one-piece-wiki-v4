@@ -147,12 +147,19 @@ export const COMMON_QUALIFIERS: Record<string, QualifierDef> = {
   },
   // Used by name/epithet — who gave this name to the entity. Locked
   // to characters: bystander events / chapters don't "give" names.
+  // Multi: a name/epithet can be coined by several people simultaneously
+  // (the crew agreeing on a nickname, or two characters using it
+  // independently before it becomes canon). The schema engine's
+  // BaseQualifierBag passthrough accepts both the legacy single-string
+  // shape and the new array — existing JSON keeps validating and
+  // migrates to the array form on next save through the form.
   given_by: {
     id: 'given_by',
     label: 'Given by',
     valueType: 'entity_ref',
     entityTypeFilter: ['character'],
-    description: 'Character who gave the name.',
+    multi: true,
+    description: 'Character(s) who gave the name.',
   },
   // Used by name/epithet — short prose context (battlefield speech,
   // bounty poster, etc.). Free-form string.

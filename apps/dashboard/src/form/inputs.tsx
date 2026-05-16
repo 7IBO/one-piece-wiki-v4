@@ -489,7 +489,15 @@ export function MultiEntityRefInput(
         />
       </div>
       <PopoverContent
-        className='w-(--anchor-width) min-w-[var(--anchor-width,20rem)] p-0'
+        // The trigger is a tiny inline "Add" button (~60px wide) when
+        // there are no chips yet, so anchoring the popover to the
+        // trigger via `w-(--anchor-width)` collapses it to a useless
+        // sliver — visible as a "bug" on qualifiers like
+        // `believed_by` / `known_truth_by` / `given_by` where the
+        // trigger never grows. Use a fixed width that's wide enough
+        // to show the searchable name list, clamped to the viewport
+        // for mobile.
+        className='w-[24rem] max-w-[calc(100vw-2rem)] p-0'
         align='start'
       >
         <Command shouldFilter={false}>
