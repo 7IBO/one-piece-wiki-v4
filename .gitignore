@@ -1,6 +1,10 @@
 # Per-machine Claude Code permissions
 .claude/settings.local.json
 
+# Claude Code agent worktrees (created by /agent and similar — each is
+# its own git clone, never meant to be tracked by the parent).
+.claude/worktrees/
+
 # Dependencies
 node_modules/
 bun.lockb

@@ -14,8 +14,8 @@
  */
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { diffLines, diffWordsWithSpace } from 'diff';
-import { ChevronDown, ChevronRight } from 'lucide-react';
+import { diffLines } from 'diff';
+import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
 import { type JSX, useMemo, useState } from 'react';
 import type { Translations } from '../api';
 import { type Locale, useT } from './locale';
@@ -557,15 +557,12 @@ function DiffRowHeader({
 }
 
 /**
- * Compact preview beneath the property label. Renders an inline
- * word-diff so the contributor sees the actual change start in
- * place, with strikethrough on the removed tokens and a green
- * highlight on the added tokens. Word-diff is computed on the
- * *compact* (single-line) form of each value so we don't end up
- * tokenising indentation / newlines. The whole thing truncates to
- * `MAX_PREVIEW_CHARS`; for cell-shaped values (∅ on one side, real
- * content on the other) we skip the diff entirely and just render
- * the non-empty side with the appropriate marker.
+ * Compact "before → after" row beneath the property label. Two
+ * columns share the same 50/50 grid as the SplitDiff table below
+ * so the visual column boundary stays consistent whether the row
+ * is collapsed or expanded. Removed side gets a strikethrough +
+ * dimmed tint; added side gets the emerald tint. The directional
+ * arrow sits centred on the boundary so it doesn't steal width.
  */
 function DiffRowSummary({
   before,
@@ -579,134 +576,29 @@ function DiffRowSummary({
   afterIsEmpty: boolean;
 }): JSX.Element {
   return (
-    <div className='ml-4 font-mono text-[10px] leading-snug'>
-      <InlineWordDiff
-        before={before.summary}
-        after={after.summary}
-        beforeIsEmpty={beforeIsEmpty}
-        afterIsEmpty={afterIsEmpty}
+    <div className='ml-4 relative grid grid-cols-2 items-center text-[11px]'>
+      <span
+        className={`min-w-0 truncate pr-3 font-mono text-[10px] ${
+          beforeIsEmpty
+            ? 'text-muted-foreground italic'
+            : 'text-destructive/80 line-through decoration-from-font'
+        }`}
+      >
+        {before.summary}
+      </span>
+      <span
+        className={`min-w-0 truncate pl-3 font-mono text-[10px] ${
+          afterIsEmpty ? 'text-muted-foreground italic' : 'text-emerald-500'
+        }`}
+      >
+        {after.summary}
+      </span>
+      <ArrowRight
+        className='text-muted-foreground absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 opacity-70'
+        aria-hidden='true'
       />
     </div>
   );
-}
-
-const MAX_PREVIEW_CHARS = 140;
-
-/**
- * One-line inline diff: removed tokens get a strikethrough + red
- * tint, added tokens get the emerald tint, unchanged context is
- * dimmed. We compute on `diffWordsWithSpace` (word-level with
- * whitespace as standalone tokens) which keeps the output readable
- * for both prose and compact JSON values.
- *
- * Truncation strategy:
- *  - If both sides have content, render parts in order. Once we
- *    exceed MAX_PREVIEW_CHARS, append a `…` placeholder.
- *  - If the first change is past the cap, slice the preview to
- *    start a few chars before that change so the contributor
- *    actually sees what edited (otherwise long unchanged prefixes
- *    push the change out of view).
- */
-function InlineWordDiff(
-  { before, after, beforeIsEmpty, afterIsEmpty }: {
-    before: string;
-    after: string;
-    beforeIsEmpty: boolean;
-    afterIsEmpty: boolean;
-  },
-): JSX.Element {
-  if (beforeIsEmpty && afterIsEmpty) {
-    return <span className='text-muted-foreground italic'>∅</span>;
-  }
-  if (beforeIsEmpty) {
-    return (
-      <span className='text-emerald-500'>
-        <span className='text-muted-foreground/60 mr-1'>+</span>
-        {truncate(after, MAX_PREVIEW_CHARS)}
-      </span>
-    );
-  }
-  if (afterIsEmpty) {
-    return (
-      <span className='text-destructive line-through decoration-from-font'>
-        <span className='text-muted-foreground/60 no-underline mr-1'>−</span>
-        {truncate(before, MAX_PREVIEW_CHARS)}
-      </span>
-    );
-  }
-
-  const parts = diffWordsWithSpace(before, after);
-  // Find first changed part; if it's deep into the string, slice
-  // the prefix so the change stays visible inside the cap.
-  let firstChangeCharIdx = 0;
-  for (const p of parts) {
-    if (p.added || p.removed) break;
-    firstChangeCharIdx += p.value.length;
-  }
-  const contextLead = 12;
-  const skipBefore = Math.max(0, firstChangeCharIdx - contextLead);
-  const showLeadingEllipsis = skipBefore > 0;
-
-  let used = 0;
-  let charsToSkip = skipBefore;
-  const out: JSX.Element[] = [];
-  if (showLeadingEllipsis) {
-    out.push(
-      <span key='lead' className='text-muted-foreground/60'>…</span>,
-    );
-  }
-  for (let i = 0; i < parts.length; i++) {
-    if (used >= MAX_PREVIEW_CHARS) {
-      out.push(
-        <span key='trail' className='text-muted-foreground/60'>…</span>,
-      );
-      break;
-    }
-    const p = parts[i]!;
-    let text = p.value;
-    if (charsToSkip > 0) {
-      // Skip unchanged prefix bytes until we hit our window. Only
-      // unchanged parts get skipped — added/removed always render
-      // (we want them visible).
-      if (!p.added && !p.removed) {
-        if (text.length <= charsToSkip) {
-          charsToSkip -= text.length;
-          continue;
-        }
-        text = text.slice(charsToSkip);
-        charsToSkip = 0;
-      } else {
-        charsToSkip = 0;
-      }
-    }
-    const remaining = MAX_PREVIEW_CHARS - used;
-    if (text.length > remaining) text = text.slice(0, remaining);
-    used += text.length;
-    if (p.removed) {
-      out.push(
-        <span
-          key={i}
-          className='text-destructive line-through decoration-from-font'
-        >
-          {text}
-        </span>,
-      );
-    } else if (p.added) {
-      out.push(
-        <span key={i} className='text-emerald-500'>{text}</span>,
-      );
-    } else {
-      out.push(
-        <span key={i} className='text-muted-foreground'>{text}</span>,
-      );
-    }
-  }
-  return <>{out}</>;
-}
-
-function truncate(s: string, max: number): string {
-  if (s.length <= max) return s;
-  return `${s.slice(0, max - 1)}…`;
 }
 
 function RelationDiffRow({ diff }: { diff: RelationDiff; }): JSX.Element {
