@@ -8,6 +8,140 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-015 — Open contributions with two-stage R2 + admin moderation queue
+
+**Date**: 2026-05-16
+
+**Context**: Phase 4 ships a dashboard that's effectively
+admin-only — the OAuth callback rejects any login not in
+`ADMIN_GITHUB_USERNAMES`. The maintainer wants to accept
+contributions from anyone with a GitHub account: data edits AND
+image uploads, with validation gated by a small admin set
+(currently the maintainer alone, login `7IBO`).
+
+Three concerns immediately surface:
+
+1. **Identity / authorization.** Today's binary "in the list or
+   out" check needs to become a tier system: visitors (read-only),
+   contributors (open PRs that must be reviewed), admins (review +
+   merge + block other contributors). Anonymous contributions
+   would be a spam vector; GitHub OAuth as the identity layer keeps
+   the cost of trolling non-zero.
+
+2. **Image storage.** The current pipeline puts every PUT
+   immediately on the public R2 CDN. With non-admins uploading,
+   that means unvetted content is publicly accessible the instant
+   the upload finishes, even if the maintainer never approves it.
+   Worse, R2 has no lifecycle rule on the bucket, so closed PRs
+   leave orphan bytes forever.
+
+3. **Review surface.** GitHub's PR UI shows JSON diffs and image
+   links but not a rendered preview of the entity post-merge nor a
+   visual preview of staged images. The dashboard already computes
+   a structured `DiffPopover` for unsaved changes; that same
+   renderer can drive an admin-only `/admin/queue` route for
+   triaging the backlog.
+
+**Options considered**:
+
+- **A — Stay admin-only.** Forever. Reject the request; rely on
+  trusted maintainers only. Solves the moderation problem by
+  refusing to have one. Caps the project's contributor pool at
+  whoever the maintainer trusts directly. Not what the maintainer
+  asked for.
+
+- **B — Open + naive (no two-stage, no queue).** Drop the admin
+  check on auth, let contributors hit the existing
+  `/api/uploads/presign` and `/api/entities/:type/:slug` endpoints,
+  rely entirely on PR review on GitHub. Cheap to implement but
+  publishes raw uploads to the public CDN immediately and gives
+  the maintainer no batch-review tooling.
+
+- **C — Open + two-stage R2 + custom admin queue** (the
+  recommendation). Three auth tiers in code, two R2 prefixes
+  (`pending/` private + `images/` public), promotion driven by PR
+  merge webhook, custom moderation UI for the admin. Split into
+  four shippable sub-phases (see ROADMAP Phase 7).
+
+- **D — C + active content moderation** (NSFW / copyright /
+  fingerprinting). Adds an automated check service to every
+  upload, blocking submission past a threshold. Extra cost
+  (monetary + latency + false-positive handling). Overkill for an
+  invite-only community-of-readers scale; revisit when contributor
+  growth makes it warranted.
+
+**Choice**: C, with the staging-prefix variant rather than
+two-bucket. Phase 0 (lock admin set to `7IBO`) is config-only and
+ships immediately; the remaining sub-phases (7.1 R2 two-stage, 7.2
+auth opening, 7.3 admin queue) ship in order.
+
+**Rationale**:
+
+- **Three tiers, not two**: a contributor IS materially different
+  from an admin (can propose, can't approve) and pretending
+  otherwise pushes the moderation problem onto manual GitHub PR
+  triage, which the maintainer has correctly identified as
+  insufficient.
+- **Two-stage storage**: separating "uploaded" from "approved
+  bytes" mirrors how every CMS handles user-generated content
+  (WordPress media library has pending status, Notion has draft
+  blocks, etc.). It's the cheapest mechanism that gives the
+  maintainer the option to NOT publish without manual cleanup.
+- **PR as the source of truth**: even with a custom admin UI, the
+  merge action goes through the GitHub API. PRs stay
+  reviewable / commentable / revertable through the normal GitHub
+  surface, and a power user (the maintainer) can bypass the
+  queue UI and review on GitHub directly when convenient.
+- **Phased rollout**: each sub-phase is shippable independently
+  and reverses the risk cleanly:
+  - 7.0 (lock admin set) is reversible by changing an env var.
+  - 7.1 (two-stage R2) is invisible to admin users (they still
+    upload normally; staged + promoted in their merge flow).
+  - 7.2 (open auth) is the moment the surface gets exposed; can be
+    rolled back to admin-only by re-adding the
+    `ADMIN_GITHUB_USERNAMES` check on `/auth/me`.
+  - 7.3 (admin queue UI) is purely additive — GitHub PR review
+    remains the fallback.
+- **Defer active moderation (Option D) explicitly**: trust the
+  admin + PR review for the foreseeable contributor scale.
+  Revisit when (a) contributor count > 20 OR (b) the first
+  inappropriate-upload incident makes the case.
+
+**Consequences**:
+
+- A new R2 prefix `pending/` requires a lifecycle rule (auto-purge
+  > 14 days) and a webhook-driven promotion workflow. Both add
+  > ops surface area, but the alternative is orphan bytes paid for
+  > forever.
+- The dashboard auth check shifts from "is this user in
+  `ADMIN_GITHUB_USERNAMES`" to "what tier is this user", changing
+  the session shape. `Phase 7.2` is the breaking change moment —
+  every write endpoint needs to know which tier the caller has.
+- The admin queue route at `/admin/queue` introduces a new
+  authorization gate that doesn't exist today (any authenticated
+  user is currently treated as admin by virtue of being in the
+  list). Going forward the dashboard MUST consult the
+  `tier === 'admin'` check on every admin-only route.
+- The data model gains a transient URL scheme `staging://<key>`
+  on the image entity's `url` property. This is a frontend-level
+  encoding only — by the time the entity hits `main`, the URL is
+  rewritten to the public CDN form via the promotion workflow's
+  follow-up commit. Documented in DATA_MODEL.md when 7.1 ships.
+- `auto-merge-dashboard.yml` is tightened: contributor PRs never
+  auto-merge regardless of CI status. Admins still benefit from
+  auto-merge for their own work.
+- IDEAS.md "AI-assisted editing + external-source ingest" entry
+  (Fandom / api-onepiece.com) interacts with this work: external
+  ingest would naturally use the contributor flow (`assisted_by`
+  attribution + admin review), but is NOT a prerequisite. Each
+  ships independently.
+- The work is sized at ~10 working days total (0.5 + 2 + 3 + 5)
+  spread over a calendar quarter. The maintainer can pause
+  between sub-phases without leaving the codebase in a broken
+  state — each sub-phase ends at a green build.
+
+---
+
 ## ADR-014 — Split Phase 4 into sub-phases; ship 4.1 (local dashboard) first
 
 **Date**: 2026-05-14

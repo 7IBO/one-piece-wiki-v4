@@ -96,6 +96,50 @@ Phase 4 dashboard (Phase 1 has no UI; images entered by hand).
    reference resolves, licence is non-empty, attribution is
    non-empty.
 
+## Two-stage storage (phase 7)
+
+Per ADR-015, when the dashboard opens to non-admin contributors the
+storage layer splits in two:
+
+| Prefix     | Visibility           | Who writes                 | Lifecycle                                            |
+| ---------- | -------------------- | -------------------------- | ---------------------------------------------------- |
+| `pending/` | private, signed URLs | every authenticated upload | auto-purge > 14 days; promoted to `images/` on merge |
+| `images/`  | public CDN           | promotion workflow only    | permanent                                            |
+
+Mechanism:
+
+- `apps/dashboard/api/r2.ts` `presignUpload()` writes to `pending/`
+  (was `images/` before). Object key shape is unchanged.
+- New `presignRead(key, ttlSec=60)` returns a short-lived signed
+  GET URL; the dashboard renders staged images via
+  `/api/preview/:key` which 302s to the signed URL.
+- The entity JSON stores the staged reference as
+  `staging://<key>` on the `url` property. This is a transient
+  encoding only; nothing on `main` ever contains it.
+- GitHub Actions `promote-images.yml` is triggered on push to main
+  containing image-entity changes. It:
+  - Parses any `staging://` references introduced by the merge.
+  - S3-copies `pending/<key>` → `images/<key>`.
+  - Opens a follow-up commit on `main` rewriting `staging://<key>`
+    → the canonical `https://images.…/<key>` URL.
+  - Best-effort deletes the `pending/` source (idempotent: the
+    14-day lifecycle is the safety net).
+- An R2 bucket lifecycle rule deletes anything in `pending/` older
+  than 14 days, covering closed-without-merge PRs and abandoned
+  uploads.
+
+Consequences for downstream code:
+
+- Read pipelines (preview app, public app) only ever see canonical
+  `https://images.…/<key>` URLs — they don't need to know about
+  `staging://`.
+- Build pipeline (`packages/db-builder`) MUST reject entity JSON
+  containing `staging://` URLs; CI fails the PR before merge if
+  the promotion workflow hasn't yet rewritten them. This protects
+  against a half-applied promote.
+- Admin queue UI uses `/api/preview/...` for the staged previews;
+  admins never have to think about the prefix difference.
+
 ## Spoiler handling
 
 Two filters apply when deciding whether to render an image:

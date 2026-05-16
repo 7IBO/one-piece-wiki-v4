@@ -405,17 +405,113 @@ dashboard.
 
 ## Phase 7 — Community opening
 
-**Goal**: open editing to non-admin contributors.
+**Goal**: open editing to non-admin contributors. Anyone with a
+GitHub account can propose changes (data + images); a small admin
+set (currently `7IBO`) reviews and merges.
+
+The Phase 4 dashboard treats every signed-in user as an admin,
+gated only by `ADMIN_GITHUB_USERNAMES`. Phase 7 introduces a real
+authorization model with three tiers (visitor / contributor / admin),
+a two-stage R2 storage so unvetted images never go public, and an
+admin moderation queue.
+
+See ADR-015 for the decision detail.
 
 **Exit criteria**:
 
-- GitHub OAuth login for any user
-- Submission UX guides users through the form
-- Moderation queue
-- Contributor attribution
+- Three-tier auth (visitor / contributor / admin) lives in code, not
+  just in the admin allow-list.
+- Any GitHub-authenticated user can open a PR via the dashboard;
+  PRs are attributed to the contributor via Co-authored-by + PR-body
+  `@mention`.
+- Image uploads from non-admins land in a private R2 staging prefix
+  with signed-URL reads only; the public CDN bucket receives the
+  bytes only when the admin merges the PR.
+- Admin dashboard at `/admin/queue` lists every open PR touching
+  `data/**` with: contributor, structured diff (reusing the
+  `DiffPopover` renderer server-side), staged image previews,
+  merge / request-changes / close actions.
+- Rate limits per contributor (max N open PRs, max M uploads/hour,
+  max P files per PR), `BLOCKED_GITHUB_USERNAMES` env var to revoke
+  abusive accounts without code changes.
+- Auto-merge workflow only auto-merges PRs co-authored by an admin;
+  contributor PRs always wait for explicit admin merge.
 
-This phase is intentionally deferred until data quality is high and the
-schema is stable, to avoid spam and corruption during the formative period.
+### Sub-phases
+
+Per ADR-015 the work splits into four shippable sub-phases:
+
+#### Phase 7.0 — Lock down admin set (config-only)
+
+- Reduce `ADMIN_GITHUB_USERNAMES` to `7IBO` (current sole admin).
+- Add a `BLOCKED_GITHUB_USERNAMES` env-var placeholder (read but
+  empty by default) so Phase 7.2 can ship without an env-shape
+  change.
+- Update `.env.example` to make the default explicit.
+- **Exit**: only `7IBO` can sign into the dashboard today; the
+  config surface for tier expansion is in place.
+
+#### Phase 7.1 — Two-stage R2 storage
+
+- New `pending/` prefix (or sibling bucket) on R2: private, no public
+  domain, accessed only via short-lived signed read URLs.
+- `apps/dashboard/api/r2.ts`: `presignUpload()` writes to `pending/`;
+  new `presignRead(key, ttlSec)` returns a signed GET URL.
+- `apps/dashboard/api/server.ts`: new `/api/preview/:key` route signs
+  a read URL and 302s to it (used by `<img src>` in the dashboard
+  - admin queue).
+- New value-encoding `staging://<key>` on the entity `url` property
+  → dashboard renders via `/api/preview/...`; downstream code knows
+  this is "draft only".
+- GitHub Actions workflow `promote-images.yml` triggered on PR merge
+  to main:
+  - Parses `staging://...` references in the merged diff.
+  - Calls `apps/dashboard/api/promote.ts` (or equivalent worker)
+    that S3-copies `pending/key` → `images/key` and opens a
+    follow-up commit rewriting `staging://key` → the public URL.
+  - Best-effort delete of the `pending/` object after promotion.
+- R2 lifecycle rule: anything in `pending/` older than 14 days is
+  auto-purged (covers slow reviews; protects against orphans).
+- **Exit**: an admin uploading an image goes through `pending/`,
+  the PR merges, the image lands on the public CDN automatically.
+  PR closed without merge → `pending/` object purged by lifecycle
+  rule.
+
+#### Phase 7.2 — Open auth to contributors
+
+- Dashboard OAuth flow accepts any GitHub user (drop the
+  `ADMIN_GITHUB_USERNAMES` check on `auth/me`).
+- New session shape exposes `tier: 'admin' | 'contributor'`.
+- `BLOCKED_GITHUB_USERNAMES` honoured: 403 on every write endpoint
+  for blocked logins.
+- `submitEntityEdit` PR body now `@mention`s the contributor and
+  the Co-authored-by trailer credits them. Admin contributions are
+  unchanged.
+- Per-contributor rate limits: max 10 open PRs at once, max 50
+  uploads / hour, max 25 files / PR (knobs as env vars).
+- Auto-merge workflow tightened: only PRs whose Co-authored-by
+  matches an admin auto-merge.
+- **Exit**: a contributor signs in, edits an entity, opens a PR
+  attributed to them; admin sees it in the GitHub PR list. No
+  custom admin UI yet — admin reviews on GitHub directly.
+
+#### Phase 7.3 — Admin moderation queue
+
+- New gated route `/admin/queue` (403 for non-admins).
+- Lists every open PR touching `data/**` with: contributor identity,
+  age, branch, status checks pass/fail, file count.
+- Per-PR detail view: structured diff (reuses the `DiffPopover`
+  computation server-side so the rendering matches the editor),
+  staged image previews via `/api/preview/...`, raw GitHub PR link.
+- Action buttons (call GitHub API server-side):
+  - "Approve & merge" → squash-merge (triggers promote-images).
+  - "Request changes" → comment + draft state.
+  - "Close" → close without merging (lifecycle purges staged
+    assets).
+- Block-contributor shortcut writes to a server-side allow-list
+  store (Phase 7.4 if/when this needs to outgrow env vars).
+- **Exit**: admin can triage the whole queue without leaving the
+  dashboard. GitHub PRs remain the source of truth.
 
 ## Phase 8+ — Beyond
 

@@ -281,13 +281,68 @@ const navItems = entityTypes.map((et) => ({
 
 Adding a new entity type adds it to the menu automatically.
 
-## Authentication (phase 1)
+## Authentication (phase 1 — admin-only)
 
 - A GitHub App is installed on the data repo
 - Admin users authenticate via GitHub OAuth (App permissions)
 - An env var `ADMIN_GITHUB_USERNAMES` lists allowed users
 - Sessions are server-side (JWT in HTTP-only cookie)
 - All write paths verify the session
+
+This is intentionally a binary tier: every signed-in user has the
+same powers as the maintainer. It works because the allow-list is
+short and trusted.
+
+## Authentication (phase 7 — three-tier model)
+
+Per ADR-015, Phase 7 expands the auth surface to three tiers so
+anyone with a GitHub account can propose changes without granting
+them merge powers. The three tiers:
+
+| Tier            | Identity                                 | Can                                                                       |
+| --------------- | ---------------------------------------- | ------------------------------------------------------------------------- |
+| **Visitor**     | not signed in                            | read-only (browse data, no dashboard write)                               |
+| **Contributor** | GitHub-authenticated, any login          | propose changes (auto-opens a PR), upload images to staging               |
+| **Admin**       | GitHub login in `ADMIN_GITHUB_USERNAMES` | everything Contributor can do + review/merge PRs + promote images + block |
+
+Implementation skeleton:
+
+- Session payload gains `tier: 'admin' | 'contributor'`; resolved at
+  OAuth callback time from `ADMIN_GITHUB_USERNAMES`.
+- Write endpoints check `session !== null` (any tier) for the action
+  surface; admin-only routes (`/admin/queue`,
+  `/api/admin/*`) additionally require `tier === 'admin'`.
+- `BLOCKED_GITHUB_USERNAMES` env var: any login matched there is
+  rejected at every write endpoint (403). Operates as a fast revoke
+  without code change.
+- Contributor PRs are opened by the GitHub App with the contributor's
+  Co-authored-by trailer + `@mention` in the PR body. They NEVER
+  auto-merge regardless of CI green (see Phase 7.2 in ROADMAP).
+- Per-contributor rate limits (max 10 open PRs, max 50 uploads/hour,
+  max 25 files/PR) tunable as env vars.
+
+## Admin moderation queue (phase 7.3)
+
+Route `/admin/queue` (admin-only). Lists every open PR touching
+`data/**` with: contributor identity, age, branch, CI status, file
+count. Per-PR detail uses the same `DiffPopover` rendering as the
+editor (structured property / translation / relation diff) plus
+preview thumbnails for any staged image referenced via the
+`staging://` URL scheme (signed by `/api/preview/:key`).
+
+Actions delegate to the GitHub API server-side:
+
+- **Approve & merge** → squash-merge. Triggers `promote-images.yml`
+  which copies referenced `pending/` keys to `images/` and opens a
+  follow-up commit rewriting `staging://` URLs.
+- **Request changes** → comment + mark PR as draft.
+- **Close** → close without merge; R2 lifecycle purges the staged
+  bytes after 14 days.
+- **Block contributor** → adds the login to a server-side store
+  consulted by `BLOCKED_GITHUB_USERNAMES` resolution.
+
+The custom UI is sugar on top of the GitHub API; the admin can
+always review on GitHub directly.
 
 ## GitHub integration
 
