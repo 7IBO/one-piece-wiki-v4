@@ -206,39 +206,62 @@ function entries(value: PropertyValue | undefined): PropertyEntry[] {
 }
 
 /**
- * "Empty" = no semantic content the user has actually typed. Used by:
+ * "Empty" = no semantic content anywhere on the entry. Used by:
  *  - the property sidebar's `filled` badge, so revealing an optional
  *    property without typing anything doesn't flip it to "filled"
  *  - the `dirty` / diff comparison, so the same reveal doesn't show
  *    up as an unsaved change
  *
- * For non-localizable properties: empty if `value` is undefined/null
- * or an empty string. (Numbers, booleans, dates etc. are never empty
- * once set — a literal `0` or `false` is real content.)
+ * The rule is "any meaningful content keeps the entry": value present,
+ * translation present (for localizable), OR any qualifier (since,
+ * source, assisted_by, review_status, …) carrying a real value. An
+ * entry stub freshly inserted by the sidebar reveal has none of those
+ * — just `{value: ''}` or `{value_key: 'auto.generated.0'}` and maybe
+ * an empty `since: ''` — so it correctly reports empty.
  *
- * For localizable properties: the entry carries a `value_key` (auto-
- * generated on reveal) that points into `translations`. We treat the
- * entry as empty iff NO locale has a non-empty translation for that
- * key. Otherwise the bare key is just a placeholder.
+ * Previously this short-circuited on "no translation = empty" for
+ * localizable entries, which incorrectly stripped legitimate entries
+ * that had qualifiers (since, assisted_by, …) but no translation yet
+ * — typical of importer-seeded data. The result was a phantom
+ * "added" diff appearing the moment the user typed the missing
+ * translation: the entry "reappeared" with all its qualifiers, even
+ * though those values were unchanged on disk.
  */
 function isEntryEmpty(
   entry: PropertyEntry,
   propertyType: PropertyTypeSchema,
   translations: Translations,
 ): boolean {
+  const valueField = propertyType.localizable ? 'value_key' : 'value';
+
+  // Value side: a real value (or a translated value_key) keeps the
+  // entry alive on its own.
   if (propertyType.localizable) {
     const key = entry['value_key'];
-    if (typeof key !== 'string' || key === '') return true;
-    const en = translations.en[key] ?? '';
-    const fr = translations.fr[key] ?? '';
-    return en === '' && fr === '';
+    if (typeof key === 'string' && key !== '') {
+      const en = translations.en[key] ?? '';
+      const fr = translations.fr[key] ?? '';
+      if (en !== '' || fr !== '') return false;
+    }
+  } else {
+    const v = entry['value'];
+    if (v !== undefined && v !== null) {
+      if (typeof v !== 'string') return false; // numbers, booleans, arrays, objects
+      if (v !== '') return false;
+    }
   }
-  const v = entry['value'];
-  if (v === undefined || v === null) return true;
-  if (typeof v === 'string') return v === '';
-  // Numbers (incl. 0), booleans (incl. false), arrays, objects all
-  // count as real content.
-  return false;
+
+  // Value is empty/absent — but a populated qualifier still means
+  // "this is a real entry the user (or an importer) cared about".
+  for (const [k, v] of Object.entries(entry)) {
+    if (k === valueField) continue;
+    if (v === undefined || v === null) continue;
+    if (typeof v === 'string' && v === '') continue;
+    if (Array.isArray(v) && v.length === 0) continue;
+    return false;
+  }
+
+  return true;
 }
 
 /**
