@@ -101,3 +101,155 @@ or when conflicts on the same entity become frequent.
 
 Not architectural — the data model doesn't need to change. It's a UX
 investment in `apps/dashboard`.
+
+## In-app schema admin panel
+
+A dashboard page where maintainers can edit entity-type, property-type
+and relation-type schemas without hand-editing JSON in
+`/data/schemas`. Today changing `valid_to_types` on a relation (or
+adding a new property to an entity type) means: open the JSON, edit
+by hand, save, re-run validation. Risky and gate-kept by JSON
+familiarity.
+
+Surface would include:
+
+- Entity type editor: rename, edit labels, add/remove properties,
+  reorder, mark required, edit `valid_to_types` on relations the
+  type can have.
+- Property type editor: value_type, value_constraints, declared
+  qualifiers, default qualifiers, label translations.
+- Relation type editor: directionality, valid_from/to types,
+  qualifiers, label active/inverse forms.
+- Vocabulary editor: enum values + per-locale labels.
+
+Save flow: schema files are still the source of truth, so the panel
+opens a PR per change (same flow as entity edits). Schema mutations
+are far higher-stakes than entity edits (downstream code, types,
+build pipeline) so the PR needs CI to pass before merge — schema
+admin edits should NEVER auto-merge.
+
+**Prerequisites before promoting to roadmap:**
+
+1. Schema migration story (`schema_version` bumps + per-entity
+   migrations) — currently informal.
+2. A clear list of which schema fields are safe vs. dangerous to
+   change at runtime (rename property id ⇒ rewrite every entity).
+3. RBAC: schema editing is admin-only, distinct from data editing.
+
+Related forward-pointer: when the table view (`/types/:type/table`)
+gets popular, the schema admin panel is the natural next layer up —
+let maintainers fix the schema as easily as they fix data.
+
+## AI-assisted editing + external-source ingest
+
+Two related capabilities the dashboard could grow:
+
+### 1. AI assistant inside the dashboard
+
+A side panel that talks to an LLM (Claude / GPT) and can:
+
+- Suggest values for empty fields ("you have no `epithet` for this
+  character — Fandom lists 'Pirate King's right hand'; apply?").
+- Translate name/description fields between locales when one side is
+  filled and the other isn't.
+- Summarize prose narratives into structured `personality_traits` /
+  `abilities` lists.
+- Sanity-check edits ("you set status=alive but the latest
+  `died_at_chapter` is set — was that intentional?").
+- Bulk-propose edits across an entity type ("fill missing `gender`
+  on 47 characters") with a per-suggestion accept/reject UI.
+
+Each AI suggestion becomes a normal form edit — same draft +
+PR flow, same Co-authored-by attribution, same review path. The
+LLM never bypasses the schema or the PR gate. `assisted_by`
+qualifier on touched entries records which agent generated the
+value, so contributors can later filter / sweep AI-touched data.
+
+**Wiring:** server-side proxy (API key never reaches the browser),
+streaming responses to the panel, token + cost telemetry per
+session, hard cap per maintainer per day.
+
+### 2. External-source ingest
+
+Pull data from the existing One Piece corpus on the web. Two
+priority sources:
+
+- **Fandom (One Piece Wiki)** — `https://onepiece.fandom.com`
+  - Structured fields via MediaWiki API + DBpedia-style
+    infoboxes (bounty, devil fruit, crew, status…).
+  - Unstructured prose (history, abilities, trivia) for narrative
+    drafting, with the LLM extracting structured candidates.
+  - Image licensing is fair-use Wikia content — image ingest stays
+    OUT of scope; only metadata + text.
+- **api-onepiece.com** — `https://api.api-onepiece.com/v2/<resource>/<locale>`
+  - Examples:
+    `https://api.api-onepiece.com/v2/luffy-techniques/fr`,
+    `https://api.api-onepiece.com/v2/locates/fr`
+  - Coverage skews to characters / fruits / techniques.
+  - Quality varies: useful as a candidate-pool, not a source of
+    truth. Every imported field needs maintainer confirmation
+    before it lands.
+
+**Ingest UI:** an "Import from external" affordance on every
+entity edit page that opens a side-by-side diff (external value vs
+current value) per matching field. Maintainer picks per-field
+import. Each imported value's `source` qualifier records the
+external URL so provenance is auditable; PR description lists
+which fields came from which source.
+
+**Translation duty:** never overwrite an existing translated value;
+external sources fill _only_ missing locale slots.
+
+### Prerequisites before promoting to roadmap
+
+1. `assisted_by` qualifier vocabulary needs entries for the
+   anticipated AI agents (claude, gpt-4o, gemini, …) — currently
+   the qualifier is free-form text.
+2. Image / fair-use story for Fandom (we explicitly punt on this
+   here — text + structured only).
+3. Rate-limit + caching layer for external HTTP calls; failures
+   degrade silently rather than blocking edit flows.
+4. Per-source confidence weights so the LLM doesn't treat
+   api-onepiece.com data as canonical when Fandom disagrees.
+5. Hard rule: external ingest NEVER auto-merges. PR review is the
+   only path to landing imported data, period.
+
+## Generic field dependencies / derived fields
+
+Today the form has one hand-coded derivation: uploading an image
+through `ImageUpload` auto-fills `format` (from MIME type) and
+`image_width` / `image_height` (decoded in-browser). The hook lives
+on `EntryValue` and uses a dedicated `setEmptyProperty` plumbed from
+`EntityForm` — clean for one case, doesn't scale to N.
+
+What "generic" would look like:
+
+- A schema-level `derives` block on property declarations:
+  ```json
+  {
+    "id": "format",
+    "derives": { "from": "url", "via": "image-meta:format" }
+  }
+  ```
+- A small registry of named derivers (`image-meta:format`,
+  `image-meta:width`, `slug:prettify`, `iso-date:year`, …) the form
+  resolves at update time.
+- Apply rule: derived fields only set when currently empty (same
+  guard as today's image flow), so manual overrides win.
+- Derived state is opt-out per field via a tiny eye-toggle on the
+  cell — useful for the rare case where a maintainer really wants
+  `format: gif` on a PNG (e.g. mis-named asset).
+
+**Prerequisites before promoting to roadmap:**
+
+1. Settle the deriver naming + namespacing (probably `<source>:<op>`
+   like the example) and decide if maintainers can define new ones
+   per-project or if it's a built-in closed set.
+2. Resolve cyclic dependency handling — A derives from B, B from A
+   should error at schema-load, not at runtime.
+3. Decide on derivation timing: on every change, or only when the
+   source field transitions from empty to set (the latter avoids
+   live re-derivation flicker while typing).
+4. The table view (`/types/<type>/table`) needs to honour derivers
+   too — bulk-saving 50 rows after uploading 50 images should fill
+   the format column without 50 manual clicks.
