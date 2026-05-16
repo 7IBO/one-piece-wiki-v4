@@ -156,6 +156,10 @@ const UI_STRINGS = {
   nicknameRequired: { en: 'Please type a nickname.', fr: 'Saisissez un pseudo.' },
   signingIn: { en: 'Signing in…', fr: 'Connexion…' },
   signedInToastTitle: { en: 'Signed in.', fr: 'Connecté.' },
+  validationFailed: {
+    en: 'Validation failed',
+    fr: 'Validation échouée',
+  },
   // My contributions panel
   contributionsTitle: { en: 'Your open contributions', fr: 'Vos contributions en cours' },
   contributionsSubtitle: {

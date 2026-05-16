@@ -105,6 +105,40 @@ async function getJson<T>(path: string): Promise<T> {
   return (await response.json()) as T;
 }
 
+/**
+ * Structured error thrown on a non-2xx response from a POST. Code
+ * paths that need to inspect the server's error payload (e.g.
+ * validation issues for per-field highlighting) match on this class;
+ * everything else still gets a readable `.message`.
+ */
+export class ApiError extends Error {
+  override readonly name = 'ApiError';
+  constructor(
+    readonly status: number,
+    message: string,
+    readonly payload: Record<string, unknown> | null,
+  ) {
+    super(message);
+  }
+}
+
+export type ValidationIssue = { readonly path: readonly string[]; readonly message: string; };
+
+/** Type-guard for the structured `validation_failed` payload. */
+export function validationIssues(err: unknown): readonly ValidationIssue[] | null {
+  if (!(err instanceof ApiError) || err.payload === null) return null;
+  if (err.payload['code'] !== 'validation_failed') return null;
+  const raw = err.payload['issues'];
+  if (!Array.isArray(raw)) return null;
+  return raw.filter(
+    (i): i is ValidationIssue =>
+      i !== null
+      && typeof i === 'object'
+      && Array.isArray((i as { path?: unknown; }).path)
+      && typeof (i as { message?: unknown; }).message === 'string',
+  );
+}
+
 async function postJson<T>(path: string, body: unknown): Promise<T> {
   const response = await fetch(path, {
     method: 'POST',
@@ -114,7 +148,19 @@ async function postJson<T>(path: string, body: unknown): Promise<T> {
   });
   if (!response.ok) {
     const text = await response.text();
-    throw new Error(`${response.status} ${response.statusText}: ${text}`);
+    let payload: Record<string, unknown> | null = null;
+    try {
+      const parsed = JSON.parse(text) as unknown;
+      if (parsed !== null && typeof parsed === 'object') {
+        payload = parsed as Record<string, unknown>;
+      }
+    } catch {
+      // text wasn't JSON — fall through with payload null.
+    }
+    const message = payload !== null && typeof payload['error'] === 'string'
+      ? (payload['error'] as string)
+      : `${response.status} ${response.statusText}: ${text}`;
+    throw new ApiError(response.status, message, payload);
   }
   return (await response.json()) as T;
 }

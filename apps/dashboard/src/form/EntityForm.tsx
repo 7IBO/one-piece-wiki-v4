@@ -23,9 +23,9 @@ import type {
   RelationTypeSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
-import { Globe, MoreHorizontal, Plus, X } from 'lucide-react';
+import { AlertCircle, Globe, MoreHorizontal, Plus, X } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
-import type { SourceRef, Translations } from '../api';
+import { type SourceRef, type Translations, validationIssues } from '../api';
 import { useCurrentUser } from '../auth';
 import { DiffPopover } from './DiffPopover';
 import { ImageUpload } from './ImageUpload';
@@ -489,9 +489,36 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     });
   }
 
+  /**
+   * Per-property server validation errors from the last save attempt.
+   * Keyed by property id (the second segment of the Zod path, e.g.
+   * `["properties","bounty","0","value"]` → `bounty`). Cleared on
+   * the next dirty change so the maintainer isn't yelled at after
+   * fixing the typo.
+   */
+  const [fieldErrors, setFieldErrors] = useState<Record<string, readonly string[]>>({});
+  const [topLevelErrors, setTopLevelErrors] = useState<readonly string[]>([]);
+
+  // Clear errors when the user starts editing again — keeping a stale
+  // red ring around a property the user just corrected is hostile.
+  // Compares stringified data via the existing memo for cheapness.
+  const errorClearMemo = useRef(currentDataString);
+  useEffect(() => {
+    if (currentDataString !== errorClearMemo.current) {
+      errorClearMemo.current = currentDataString;
+      if (Object.keys(fieldErrors).length > 0 || topLevelErrors.length > 0) {
+        setFieldErrors({});
+        setTopLevelErrors([]);
+      }
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentDataString]);
+
   async function handleSave(): Promise<void> {
     setSaving(true);
     setError(null);
+    setFieldErrors({});
+    setTopLevelErrors([]);
     try {
       // Send the normalised payload — strips entries the user revealed
       // but never filled in (e.g. clicked the sidebar then changed
@@ -501,7 +528,33 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
       await props.onSave(currentDataNormalized, translations);
       clearStoredDraft();
     } catch (err) {
-      setError(err instanceof Error ? err.message : String(err));
+      const issues = validationIssues(err);
+      if (issues !== null) {
+        // Map structured Zod issues onto fields. `path[0]` is always
+        // 'properties' for property errors; `path[1]` is the
+        // property id. Anything else (id/type/slug/$schema/root)
+        // surfaces as a top-level banner instead of trying to
+        // attribute it to a field that doesn't exist in the UI.
+        const byProperty: Record<string, string[]> = {};
+        const topLevel: string[] = [];
+        for (const issue of issues) {
+          const formatted = issue.message;
+          if (issue.path[0] === 'properties' && typeof issue.path[1] === 'string') {
+            const id = issue.path[1];
+            const subPath = issue.path.slice(2).join('.');
+            const prefix = subPath === '' ? '' : `${subPath}: `;
+            (byProperty[id] ??= []).push(`${prefix}${formatted}`);
+          } else {
+            const p = issue.path.join('.') || '<root>';
+            topLevel.push(`${p}: ${formatted}`);
+          }
+        }
+        setFieldErrors(byProperty);
+        setTopLevelErrors(topLevel);
+        setError(null); // top-banner is already covered by topLevelErrors
+      } else {
+        setError(err instanceof Error ? err.message : String(err));
+      }
     } finally {
       setSaving(false);
     }
@@ -669,6 +722,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         fallbackName={fallbackName}
         showSchemaDetails={showSchemaDetails}
         locale={locale}
+        {...(fieldErrors[decl.id] !== undefined ? { errors: fieldErrors[decl.id]! } : {})}
         onUpdate={(eIdx, next) => updateEntry(decl.id, propertyType.historical, eIdx, next)}
         onAdd={() => addEntry(decl.id, propertyType)}
         onRemove={(eIdx) => removeEntry(decl.id, propertyType, eIdx)}
@@ -690,6 +744,26 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
 
   return (
     <div className='pb-24'>
+      {topLevelErrors.length > 0
+        ? (
+          <div
+            role='alert'
+            className='border-destructive/40 bg-destructive/5 text-destructive mb-4 rounded-[3px] border px-3 py-2'
+          >
+            <p className='mb-1 text-[11px] font-semibold uppercase tracking-wide'>
+              {t('validationFailed')}
+            </p>
+            <ul className='space-y-0.5 text-[11px]'>
+              {topLevelErrors.map((msg, i) => (
+                <li key={i} className='flex items-start gap-1'>
+                  <AlertCircle className='mt-[1px] size-3 shrink-0' aria-hidden='true' />
+                  <span>{msg}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+        : null}
       {
         /* Compact "restored from draft" hint — data is already applied
           by the auto-apply effect, so no Restore button is needed.
@@ -905,6 +979,11 @@ type PropertyRowProps = {
   fallbackName?: string | undefined;
   showSchemaDetails: boolean;
   locale: Locale;
+  /** Server-side Zod errors attached to this property (sub-path
+   *  prefixed when the error targets a specific entry/qualifier).
+   *  Renders as a red ring + bullet list under the entries. Undefined
+   *  / empty = no error to show. */
+  errors?: readonly string[];
   onUpdate: (idx: number, next: PropertyEntry) => void;
   onAdd: () => void;
   onRemove: (idx: number) => void;
@@ -931,12 +1010,19 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   void summariseProperty;
 
   const isRequiredMissing = p.required && p.entries.length === 0;
+  const hasError = (p.errors?.length ?? 0) > 0;
+  // The error ring beats the required-missing ring — a server-rejected
+  // value is a hard blocker the maintainer must look at first, before
+  // worrying about missing optionals or required-empty hints.
+  const ringClass = hasError
+    ? 'bg-destructive/5 ring-1 ring-destructive/40 ring-inset'
+    : isRequiredMissing
+    ? 'bg-amber-500/5 ring-1 ring-amber-500/30 ring-inset'
+    : '';
   return (
     <div
       id={p.anchorId}
-      className={`scroll-mt-20 rounded-[3px] px-3 py-2.5 transition-colors ${
-        isRequiredMissing ? 'bg-amber-500/5 ring-1 ring-amber-500/30 ring-inset' : ''
-      }`}
+      className={`scroll-mt-20 rounded-[3px] px-3 py-2.5 transition-colors ${ringClass}`}
     >
       <div className='mb-1.5 flex items-baseline gap-2'>
         <Label
@@ -1032,6 +1118,21 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
               : null}
           </div>
         )}
+      {hasError
+        ? (
+          <ul className='text-destructive mt-1.5 space-y-0.5 text-[11px]'>
+            {p.errors!.map((msg, i) => (
+              <li key={i} className='flex items-start gap-1'>
+                <AlertCircle
+                  className='mt-[1px] size-3 shrink-0'
+                  aria-hidden='true'
+                />
+                <span>{msg}</span>
+              </li>
+            ))}
+          </ul>
+        )
+        : null}
     </div>
   );
 }

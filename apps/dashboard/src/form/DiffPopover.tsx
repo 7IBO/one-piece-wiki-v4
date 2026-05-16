@@ -14,6 +14,7 @@
  */
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { diffLines } from 'diff';
 import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
 import { type JSX, useMemo, useState } from 'react';
 import type { Translations } from '../api';
@@ -224,25 +225,112 @@ function DiffRow(
           </div>
         )}
       {expandable && open
-        ? (
-          <div className='mt-1.5 ml-4 grid grid-cols-1 gap-1.5 sm:grid-cols-2'>
-            <ExpandedCell
-              label={'−'}
-              value={before.full}
-              tone='before'
-              isEmpty={beforeIsEmpty}
-            />
-            <ExpandedCell
-              label={'+'}
-              value={after.full}
-              tone='after'
-              isEmpty={afterIsEmpty}
-            />
-          </div>
-        )
+        ? <UnifiedDiff before={before.full} after={after.full} />
         : null}
     </li>
   );
+}
+
+/**
+ * GitHub-style unified diff. Splits before/after into lines, runs an
+ * LCS line diff via `diff.diffLines`, and renders the result with
+ * `-` / `+` / ` ` gutters. Context lines (unchanged) are dimmed so
+ * the changed lines pop. Up to ~3 context lines of unchanged content
+ * are kept around each change hunk; everything else collapses.
+ *
+ * `∅` placeholders (rendered when the value is absent) come through
+ * unchanged from the cell's `full` string. The diff library still
+ * handles them — a transition from `∅` to a real value shows up as
+ * a single `−ø` line followed by `+`-marked content lines.
+ */
+function UnifiedDiff({ before, after }: { before: string; after: string; }): JSX.Element {
+  // Memoising on the string identity is enough — both come from the
+  // same useMemo upstream, so they're stable for the popover's
+  // lifetime. Recomputing in the closed state is cheap; the gating
+  // happens at the parent (`expandable && open`).
+  const chunks = useMemo(() => diffLines(before, after, { newlineIsToken: false }), [
+    before,
+    after,
+  ]);
+  const lines: { kind: '+' | '-' | ' '; text: string; }[] = [];
+  for (const chunk of chunks) {
+    const kind = chunk.added ? '+' : chunk.removed ? '-' : ' ';
+    // diffLines returns trailing-newline-inclusive chunks; split
+    // and drop the empty tail so we don't render a phantom blank
+    // line for a chunk that ends on `\n`.
+    const parts = chunk.value.split('\n');
+    if (parts.length > 1 && parts[parts.length - 1] === '') parts.pop();
+    for (const text of parts) lines.push({ kind, text });
+  }
+  // Collapse runs of >5 unchanged lines down to 2+ellipsis+2 so a
+  // large diff stays readable. (Pretty-JSON entities are typically
+  // small enough not to hit this, but `markdown` fields can.)
+  const collapsed = collapseUnchanged(lines, 3);
+  return (
+    <div className='border-border bg-muted/30 mt-1.5 ml-4 overflow-hidden rounded-[3px] border'>
+      <pre className='m-0 max-h-[20rem] overflow-auto font-mono text-[10px] leading-snug'>
+        {collapsed.map((line, i) => (
+          <div
+            key={i}
+            className={line.kind === '+'
+              ? 'bg-emerald-500/10 text-emerald-500'
+              : line.kind === '-'
+              ? 'bg-destructive/10 text-destructive'
+              : line.kind === '…'
+              ? 'text-muted-foreground/50 italic'
+              : 'text-muted-foreground'}
+          >
+            <span
+              className='inline-block w-4 select-none text-center opacity-60'
+              aria-hidden='true'
+            >
+              {line.kind === '…' ? '⋯' : line.kind}
+            </span>
+            <span className='whitespace-pre-wrap break-words'>{line.text}</span>
+          </div>
+        ))}
+      </pre>
+    </div>
+  );
+}
+
+/**
+ * Drop interior unchanged lines from long runs, keeping `context`
+ * lines on either side of each change. Returns a new array — input
+ * untouched. The placeholder `kind === '…'` row stands in for the
+ * collapsed block; renderers should treat it as a visual marker, not
+ * real content.
+ */
+function collapseUnchanged(
+  lines: readonly { kind: '+' | '-' | ' '; text: string; }[],
+  context: number,
+): readonly { kind: '+' | '-' | ' ' | '…'; text: string; }[] {
+  const out: { kind: '+' | '-' | ' ' | '…'; text: string; }[] = [];
+  let i = 0;
+  while (i < lines.length) {
+    if (lines[i]!.kind !== ' ') {
+      out.push(lines[i]!);
+      i++;
+      continue;
+    }
+    // Walk forward through the unchanged run.
+    let j = i;
+    while (j < lines.length && lines[j]!.kind === ' ') j++;
+    const runLen = j - i;
+    const isLeading = i === 0;
+    const isTrailing = j === lines.length;
+    if (runLen <= context * 2 || isLeading || isTrailing) {
+      // Short run, or at the file boundary — keep everything (we can
+      // safely show all of it; chopping at boundaries looks weird).
+      for (let k = i; k < j; k++) out.push(lines[k]!);
+    } else {
+      for (let k = i; k < i + context; k++) out.push(lines[k]!);
+      out.push({ kind: '…', text: `(${runLen - context * 2} unchanged lines)` });
+      for (let k = j - context; k < j; k++) out.push(lines[k]!);
+    }
+    i = j;
+  }
+  return out;
 }
 
 function DiffRowHeader({
@@ -296,36 +384,6 @@ function DiffRowSummary({
       >
         {after.summary}
       </span>
-    </div>
-  );
-}
-
-function ExpandedCell({
-  label,
-  value,
-  tone,
-  isEmpty,
-}: {
-  label: string;
-  value: string;
-  tone: 'before' | 'after';
-  isEmpty: boolean;
-}): JSX.Element {
-  const toneClass = isEmpty
-    ? 'text-muted-foreground italic'
-    : tone === 'before'
-    ? 'text-foreground/70 line-through decoration-1 decoration-foreground/40'
-    : 'text-emerald-500';
-  return (
-    <div className='border-border bg-muted/30 rounded-[3px] border p-2'>
-      <p className='text-muted-foreground mb-1 text-[9px] font-mono uppercase tracking-wider'>
-        {label}
-      </p>
-      <pre
-        className={`m-0 max-h-[16rem] overflow-auto whitespace-pre-wrap break-words font-mono text-[10px] leading-tight ${toneClass}`}
-      >
-        {value}
-      </pre>
     </div>
   );
 }

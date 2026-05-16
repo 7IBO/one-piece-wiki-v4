@@ -509,10 +509,24 @@ async function handleSaveEntity(
   }
   const validation = entitySchema.safeParse(payload.data);
   if (!validation.success) {
-    const issues = validation.error.errors.map((issue) =>
-      `${issue.path.join('.') || '<root>'}: ${issue.message}`
+    // Return structured issues so the dashboard can highlight the
+    // exact field(s) in red instead of dumping a sentence at the
+    // top of the form. Each issue: { path: ['properties','bounty',0,'value'],
+    // message: 'Expected number, received string' }.
+    const issues = validation.error.errors.map((issue) => ({
+      path: issue.path.map((p) => String(p)),
+      message: issue.message,
+    }));
+    const summary = issues.map((i) => `${i.path.join('.') || '<root>'}: ${i.message}`)
+      .join('; ');
+    return json(
+      {
+        error: `Entity validation failed: ${summary}`,
+        code: 'validation_failed',
+        issues,
+      },
+      400,
     );
-    return badRequest(`Entity validation failed: ${issues.join('; ')}`);
   }
 
   const fileBase = entity.id.split(':')[1] ?? slug;
