@@ -64,6 +64,24 @@ export type SaveRequest = {
    *  `contributorLogin` is non-null. */
   readonly anonymousNickname?: string;
   readonly extraFiles?: readonly ExtraFile[];
+  /**
+   * When set, skip the "create branch + open PR" steps and append a
+   * commit to this existing PR's head branch instead. Powers the
+   * resume-editing flow (ADR-016 deferred → done): a contributor with
+   * an in-flight PR for this entity keeps editing on that same PR
+   * rather than opening N parallel PRs on the same file.
+   *
+   * The caller has already verified the PR is open + owned by the
+   * current session (via `findOpenPRForEntity`); this function trusts
+   * that check and doesn't re-validate. If the branch has been deleted
+   * upstream between the lookup and the write, GitHub returns 404 on
+   * the writeFile call and the dashboard surfaces the failure.
+   */
+  readonly existingPR?: {
+    readonly number: number;
+    readonly htmlUrl: string;
+    readonly headBranch: string;
+  };
 };
 
 function safeBranchSegment(value: string): string {
@@ -84,7 +102,48 @@ export async function submitEntityEdit(
   octokit: Octokit,
   config: GitHubAppConfig,
   request: SaveRequest,
-): Promise<OpenedPR> {
+): Promise<OpenedPR & { reused: boolean; }> {
+  // Resume-editing branch: skip ALL the branch/PR scaffolding and
+  // append commits to the existing PR's head branch. The optimistic-
+  // lock check still runs — but against the branch's tip, not main —
+  // so a parallel push to the same branch from another tab is caught.
+  if (request.existingPR !== undefined) {
+    const branch = request.existingPR.headBranch;
+    const onBranch = await getFile(octokit, config, request.path, branch);
+    if (onBranch !== null && request.expectedSha !== null && onBranch.sha !== request.expectedSha) {
+      throw new OptimisticLockError(request.path, request.expectedSha, onBranch.sha);
+    }
+    await writeFile(
+      octokit,
+      config,
+      branch,
+      request.path,
+      request.newContent,
+      onBranch?.sha ?? null,
+      commitMessage(`Edit ${request.entityId}`),
+    );
+    for (const file of request.extraFiles ?? []) {
+      // eslint-disable-next-line no-await-in-loop
+      const existing = await getFile(octokit, config, file.path, branch);
+      // eslint-disable-next-line no-await-in-loop
+      await writeFile(
+        octokit,
+        config,
+        branch,
+        file.path,
+        file.content,
+        existing?.sha ?? null,
+        commitMessage(`Update ${file.path}`),
+      );
+    }
+    return {
+      number: request.existingPR.number,
+      htmlUrl: request.existingPR.htmlUrl,
+      headBranch: branch,
+      reused: true,
+    };
+  }
+
   const current = await getFile(octokit, config, request.path);
   if (current !== null) {
     if (request.expectedSha !== null && current.sha !== request.expectedSha) {
@@ -151,7 +210,7 @@ export async function submitEntityEdit(
       `_body (no \`Co-authored-by\` trailers — see ADR-016)._`,
     ];
 
-  return openPullRequest(octokit, config, {
+  const opened = await openPullRequest(octokit, config, {
     headBranch: branch,
     title: `Edit ${request.entityId}`,
     body: [
@@ -167,4 +226,5 @@ export async function submitEntityEdit(
     ].join('\n'),
     labels: anonymous ? ['edit', 'via-dashboard', 'anonymous'] : ['edit', 'via-dashboard'],
   });
+  return { ...opened, reused: false };
 }

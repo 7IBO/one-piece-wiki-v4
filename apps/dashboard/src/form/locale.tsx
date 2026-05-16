@@ -168,6 +168,18 @@ const UI_STRINGS = {
   },
   contributionsRefresh: { en: 'Refresh', fr: 'Rafraîchir' },
   contributionsOpenPr: { en: 'Open the PR on GitHub', fr: 'Ouvrir la PR sur GitHub' },
+  // Resume editing
+  resumePRBanner: {
+    en:
+      'Resuming your in-progress PR #{n}. Every save will add a commit to it instead of opening a new PR.',
+    fr:
+      "Reprise de votre PR #{n} en cours. Chaque sauvegarde ajoute un commit dessus au lieu d'ouvrir une nouvelle PR.",
+  },
+  toastPrOpened: { en: 'PR #{n} opened', fr: 'PR #{n} ouverte' },
+  toastCommitAdded: {
+    en: 'Commit added to PR #{n}',
+    fr: 'Commit ajouté à la PR #{n}',
+  },
   // Section labels (FORM_SECTIONS)
   sectionIdentity: { en: 'Identity & naming', fr: 'Identité & noms' },
   sectionNumbers: { en: 'Numbers', fr: 'Nombres' },

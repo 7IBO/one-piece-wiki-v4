@@ -28,6 +28,7 @@
 import {
   authorizeUrl,
   exchangeCode,
+  findOpenPRForEntity,
   getFile,
   type GitHubAppConfig,
   installationClient,
@@ -381,19 +382,94 @@ async function handleTableEntities(type: string): Promise<Response> {
   return json({ entities: rows });
 }
 
-async function handleGetEntity(type: string, slug: string): Promise<Response> {
+async function handleGetEntity(
+  type: string,
+  slug: string,
+  session: DashboardSession | null,
+): Promise<Response> {
   const snap = await snapshot();
   const entity = await findEntity(snap, type, slug);
   if (entity === undefined) return notFound(`No entity of type ${type} with slug ${slug}`);
 
   const fileBase = entity.id.split(':')[1] ?? slug;
 
+  // Resume-editing detection: if the session has an open PR on this
+  // entity, surface that PR's payload (not main's) so the contributor
+  // resumes from where they left off. `resumePR` carries the PR
+  // metadata so the frontend can render a banner and the save flow
+  // knows to append a commit instead of opening a new PR.
+  let resumePR:
+    | { number: number; htmlUrl: string; headBranch: string; }
+    | null = null;
   let sha: string | null = null;
+  let data: Record<string, unknown> = entity.data;
+  let translationsOverride: Record<Locale, Record<string, string>> | null = null;
+
   if (config !== null && !githubInstallMissing) {
     try {
       const octokit = await installationClient(config);
-      const file = await getFile(octokit, config, dataPath(type, fileBase));
-      sha = file?.sha ?? null;
+      if (session !== null) {
+        try {
+          const identity = session.kind === 'github'
+            ? { kind: 'github' as const, login: session.login }
+            : { kind: 'anonymous' as const, nickname: session.nickname };
+          const open = session.kind === 'anonymous' && session.nickname === ''
+            ? null
+            : await findOpenPRForEntity(octokit, config, identity, entity.id);
+          if (open !== null) {
+            resumePR = {
+              number: open.number,
+              htmlUrl:
+                `https://github.com/${config.dataRepo.owner}/${config.dataRepo.repo}/pull/${open.number}`,
+              headBranch: open.headBranch,
+            };
+            // Pull the entity file off the PR branch. If the file
+            // hasn't been touched on the branch (the PR only changed
+            // translations or extras), getFile returns the same blob
+            // as main — totally fine, the contributor sees their
+            // last-known good state.
+            const onBranch = await getFile(
+              octokit,
+              config,
+              dataPath(type, fileBase),
+              open.headBranch,
+            );
+            if (onBranch !== null) {
+              sha = onBranch.sha;
+              try {
+                const parsed = JSON.parse(onBranch.content) as unknown;
+                if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
+                  data = parsed as Record<string, unknown>;
+                }
+              } catch {
+                // Malformed JSON on the branch — fall back to main's
+                // version. Rare; would mean the contributor pushed
+                // invalid content outside the dashboard.
+              }
+              translationsOverride = await readTranslationsFromBranch(
+                octokit,
+                config,
+                type,
+                fileBase,
+                open.headBranch,
+              );
+            }
+          }
+        } catch (err) {
+          // Resume lookup failed (search API timeout, etc.) — fall
+          // through with main's content. Don't surface the error;
+          // the regular read path is still useful.
+          process.stderr.write(
+            `[resume-pr] lookup failed for ${entity.id}: ${
+              err instanceof Error ? err.message : String(err)
+            }\n`,
+          );
+        }
+      }
+      if (sha === null) {
+        const file = await getFile(octokit, config, dataPath(type, fileBase));
+        sha = file?.sha ?? null;
+      }
     } catch (err) {
       if (looksLikeMissingInstallation(err)) {
         githubInstallMissing = true;
@@ -412,9 +488,49 @@ async function handleGetEntity(type: string, slug: string): Promise<Response> {
     }
   }
 
-  const translations = await readTranslationsFor(type, fileBase);
+  const translations = translationsOverride ?? await readTranslationsFor(type, fileBase);
 
-  return json({ id: entity.id, type, slug, data: entity.data, sha, translations });
+  return json({
+    id: entity.id,
+    type,
+    slug,
+    data,
+    sha,
+    translations,
+    ...(resumePR !== null ? { resumePR } : {}),
+  });
+}
+
+/**
+ * Read translation files for the entity off a PR branch. Mirrors
+ * `readTranslationsFor` (which reads the local filesystem) but goes
+ * through Octokit so we see the contributor's in-flight translation
+ * edits. Returns the same `{en, fr}` shape; missing files become
+ * empty objects so the form can render every key.
+ */
+async function readTranslationsFromBranch(
+  octokit: Awaited<ReturnType<typeof installationClient>>,
+  cfg: GitHubAppConfig,
+  type: string,
+  fileBase: string,
+  branch: string,
+): Promise<Record<Locale, Record<string, string>>> {
+  const out = { en: {}, fr: {} } as Record<Locale, Record<string, string>>;
+  for (const locale of LOCALES) {
+    // eslint-disable-next-line no-await-in-loop
+    const f = await getFile(octokit, cfg, translationsPath(locale, type, fileBase), branch);
+    if (f === null) continue;
+    try {
+      const parsed = JSON.parse(f.content) as unknown;
+      if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
+        out[locale] = parsed as Record<string, string>;
+      }
+    } catch {
+      // Malformed — leave empty for this locale. Same forgiving
+      // behaviour as the local-file reader.
+    }
+  }
+  return out;
 }
 
 /**
@@ -557,6 +673,39 @@ async function handleSaveEntity(
   // nicknames are bold plain text with NO `@` so they can never be
   // mistaken for a GitHub handle.
   const octokit = await installationClient(cfg);
+  // Resume-editing routing: if this contributor already has an open
+  // PR for this entity, add a commit to that PR's branch instead of
+  // opening a parallel PR. Lookup runs server-side using the session
+  // identity (cookie) — no client param to spoof.
+  let existingPR:
+    | { number: number; htmlUrl: string; headBranch: string; }
+    | undefined;
+  if (session.kind === 'github' || (session.kind === 'anonymous' && session.nickname !== '')) {
+    try {
+      const identity = session.kind === 'github'
+        ? { kind: 'github' as const, login: session.login }
+        : { kind: 'anonymous' as const, nickname: session.nickname };
+      const open = await findOpenPRForEntity(octokit, cfg, identity, entity.id);
+      if (open !== null) {
+        existingPR = {
+          number: open.number,
+          htmlUrl:
+            `https://github.com/${cfg.dataRepo.owner}/${cfg.dataRepo.repo}/pull/${open.number}`,
+          headBranch: open.headBranch,
+        };
+      }
+    } catch (err) {
+      // Resume lookup is best-effort. If it fails (search index lag,
+      // rate limit, …) we fall through to opening a new PR — at worst
+      // the contributor ends up with two PRs on the same entity,
+      // which the admin can dedup by merging one.
+      process.stderr.write(
+        `[resume-pr] save-lookup failed for ${entity.id}: ${
+          err instanceof Error ? err.message : String(err)
+        }\n`,
+      );
+    }
+  }
   try {
     const pr = await submitEntityEdit(octokit, cfg, {
       entityId: entity.id,
@@ -567,6 +716,7 @@ async function handleSaveEntity(
       contributorId: session.kind === 'github' ? session.userId : null,
       ...(anonymousNickname !== null ? { anonymousNickname } : {}),
       extraFiles,
+      ...(existingPR !== undefined ? { existingPR } : {}),
     });
     return json({ ok: true, pr });
   } catch (err) {
@@ -1122,7 +1272,7 @@ const server = Bun.serve({
       const entityMatch = /^\/api\/entities\/([^/]+)\/([^/]+)$/.exec(path);
       if (entityMatch !== null) {
         const [, type = '', slug = ''] = entityMatch;
-        if (req.method === 'GET') return await handleGetEntity(type, slug);
+        if (req.method === 'GET') return await handleGetEntity(type, slug, session);
         if (req.method === 'POST') {
           if (config === null) return serviceUnavailable(`Save disabled: ${configError}`);
           // A session is required to save — even the anonymous flow

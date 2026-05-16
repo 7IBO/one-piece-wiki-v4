@@ -338,6 +338,59 @@ export async function listOpenContributions(
   return out;
 }
 
+/**
+ * Find a single open PR opened by `identity` that targets `entityId`,
+ * if any. Powers the "resume editing" flow: when a contributor revisits
+ * an entity they already have a PR open for, reads load from the PR
+ * branch and writes append commits to the same branch (rather than
+ * opening a parallel PR — see ADR-016 deferred, ADR-017).
+ *
+ * Returns `null` when no such PR exists. Returns the most recently
+ * updated PR if more than one matches (shouldn't normally happen, but
+ * resilient to legacy PRs from before resume-editing landed).
+ */
+export async function findOpenPRForEntity(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  identity:
+    | { kind: 'github'; login: string; }
+    | { kind: 'anonymous'; nickname: string; },
+  entityId: string,
+): Promise<PullRequestDetail | null> {
+  const repoQ = `repo:${config.dataRepo.owner}/${config.dataRepo.repo}`;
+  // Title carries the entity id verbatim (`Edit type:slug` per
+  // save-flow). Title search is more selective than body substring
+  // and avoids the bullet-format coupling we use in
+  // `listOpenContributions` — a contributor with several open PRs
+  // can be probed entity-by-entity without filtering client-side.
+  const contribTerm = identity.kind === 'github'
+    ? `"- @${identity.login}"`
+    : `"**${identity.nickname}**"`;
+  const labelTerm = identity.kind === 'github' ? 'label:via-dashboard' : 'label:anonymous';
+  const titleTerm = `"Edit ${entityId}" in:title`;
+  const query = `${repoQ} is:pr is:open ${labelTerm} ${contribTerm} ${titleTerm}`;
+
+  const { data } = await octokit.search.issuesAndPullRequests({
+    q: query,
+    per_page: 5,
+    sort: 'updated',
+    order: 'desc',
+  });
+  // Title-exact filter on the client side (GitHub's search is fuzzy
+  // around punctuation; we want a strict match on the canonical form).
+  const expectedTitle = `Edit ${entityId}`;
+  for (const item of data.items) {
+    if ((item.title ?? '') !== expectedTitle) continue;
+    // Fetch the full PR to get head branch + SHA — search API only
+    // returns the Issue shape.
+    // eslint-disable-next-line no-await-in-loop
+    const pr = await getPullRequest(octokit, config, item.number);
+    if (pr.state !== 'open' || pr.merged) continue;
+    return pr;
+  }
+  return null;
+}
+
 export class OptimisticLockError extends Error {
   override readonly name = 'OptimisticLockError';
   constructor(

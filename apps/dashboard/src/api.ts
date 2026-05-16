@@ -37,6 +37,18 @@ export type EntityDetail = {
   readonly data: Record<string, unknown>;
   readonly sha: string | null;
   readonly translations: Translations;
+  /**
+   * Present when the current session already has an open PR on this
+   * entity. The `data` + `translations` above are read off the PR's
+   * head branch (not main), so the contributor resumes from their
+   * in-flight state. The next save appends a commit to this PR
+   * instead of opening a new one — see ADR-016 / save-flow.ts.
+   */
+  readonly resumePR?: {
+    readonly number: number;
+    readonly htmlUrl: string;
+    readonly headBranch: string;
+  };
 };
 
 export type TableEntity = {
@@ -53,7 +65,14 @@ export type TableResponse = {
 
 export type SaveResult = {
   readonly ok: true;
-  readonly pr: { readonly number: number; readonly htmlUrl: string; readonly headBranch: string; };
+  readonly pr: {
+    readonly number: number;
+    readonly htmlUrl: string;
+    readonly headBranch: string;
+    /** True when the save appended a commit to an already-open PR
+     *  (resume-editing path); false when a fresh PR was opened. */
+    readonly reused: boolean;
+  };
 };
 
 export type SchemaCatalogue = {

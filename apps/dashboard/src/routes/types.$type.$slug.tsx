@@ -2,12 +2,12 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ChevronLeft } from 'lucide-react';
+import { ChevronLeft, ExternalLink, GitPullRequest } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type EntityDetail, type SchemaCatalogue, type SourceRef } from '../api';
 import { EntityForm } from '../form/EntityForm';
-import { useLocale } from '../form/locale';
+import { useLocale, useT } from '../form/locale';
 
 export const Route = createFileRoute('/types/$type/$slug')({
   component: EntityEditComponent,
@@ -47,6 +47,7 @@ function resolveDisplayName(entity: EntityDetail, locale: 'en' | 'fr'): string |
 function EntityEditComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
+  const t = useT();
   const [entity, setEntity] = useState<EntityDetail | null>(null);
   const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
   const [sources, setSources] = useState<readonly SourceRef[]>([]);
@@ -138,6 +139,26 @@ function EntityEditComponent(): JSX.Element {
             )}
         </div>
       </div>
+      {entity.resumePR !== undefined
+        ? (
+          <div className='border-primary/40 bg-primary/5 flex flex-wrap items-center gap-2 rounded-[3px] border px-3 py-2 text-xs'>
+            <GitPullRequest className='text-primary size-4 shrink-0' />
+            <span className='text-foreground'>
+              {t('resumePRBanner').replace('{n}', String(entity.resumePR.number))}
+            </span>
+            <a
+              href={entity.resumePR.htmlUrl}
+              target='_blank'
+              rel='noreferrer'
+              className='text-muted-foreground hover:text-foreground ml-auto inline-flex items-center gap-1 text-[11px]'
+              title={t('contributionsOpenPr')}
+            >
+              PR #{entity.resumePR.number}
+              <ExternalLink className='size-3' />
+            </a>
+          </div>
+        )
+        : null}
       <EntityForm
         entityId={entity.id}
         entityType={entityType}
@@ -157,10 +178,17 @@ function EntityEditComponent(): JSX.Element {
             entity.sha,
             translations,
           );
-          toast.success(`PR #${result.pr.number} opened`, {
+          // Different copy for the resume path so the contributor
+          // knows the commit went onto their existing PR — important
+          // because the PR number is unchanged from before, which
+          // would otherwise look like the save failed to do anything.
+          const title = result.pr.reused
+            ? t('toastCommitAdded').replace('{n}', String(result.pr.number))
+            : t('toastPrOpened').replace('{n}', String(result.pr.number));
+          toast.success(title, {
             description: result.pr.htmlUrl,
             action: {
-              label: 'Open PR',
+              label: t('contributionsOpenPr'),
               onClick: () => globalThis.open(result.pr.htmlUrl, '_blank'),
             },
           });

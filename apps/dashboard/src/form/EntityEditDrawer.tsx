@@ -233,10 +233,13 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
                     entity.sha,
                     translations,
                   );
-                  toast.success(`PR #${result.pr.number} opened`, {
+                  const title = result.pr.reused
+                    ? t('toastCommitAdded').replace('{n}', String(result.pr.number))
+                    : t('toastPrOpened').replace('{n}', String(result.pr.number));
+                  toast.success(title, {
                     description: result.pr.htmlUrl,
                     action: {
-                      label: 'Open PR',
+                      label: t('contributionsOpenPr'),
                       onClick: () => globalThis.open(result.pr.htmlUrl, '_blank'),
                     },
                   });

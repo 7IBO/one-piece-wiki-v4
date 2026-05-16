@@ -181,14 +181,30 @@ once, in the PR body's `Contributors` section:
   `- @login` substring; both filter to PRs labelled `via-dashboard`
   so coincidental body matches don't leak.
 
-**Out of scope, deferred to a follow-up**: "resume editing" — i.e.
-clicking an open contribution loads the PR-branch version of the
-entity and subsequent saves push commits to the same branch instead
-of opening a new PR. The current panel just deep-links to the entity
-page (which loads from `main`), so re-saving creates a fresh PR. The
-plumbing (`getPullRequest`, branch SHA tracking) is already in place;
-the missing piece is a `?fromPR=<n>` route param and a "branch-aware"
-save path in `submitEntityEdit`.
+**Resume editing — shipped** (this section was previously marked
+"deferred to a follow-up"; that follow-up landed). When a contributor
+revisits an entity they already have an open PR on, the dashboard:
+
+- detects the open PR via `findOpenPRForEntity(octokit, cfg, identity,
+  entityId)` — title-exact `Edit <type>:<slug>` + the `via-dashboard`
+  / `anonymous` label + the contributor's bullet (`- @login` or
+  `**Pseudo**`);
+- serves `data` + `translations` off the PR's head branch on
+  `GET /api/entities/:type/:slug` so the form opens on the in-flight
+  state, not on `main`;
+- routes `POST /api/entities/:type/:slug` saves through the new
+  `existingPR` mode of `submitEntityEdit`, which skips `createBranch`
+  - `openPullRequest` and just appends a commit to the existing head
+    branch;
+- returns `{pr.reused: true}` so the dashboard's toast says
+  "Commit ajouté à PR #N" instead of "PR #N ouverte" and a banner
+  at the top of the entity page links the user to the open PR.
+
+The "1 PR per entity per contributor" invariant is preserved: a
+contributor cannot accidentally fan out parallel PRs by editing the
+same entity twice. The lookup is best-effort — if GitHub's search
+index lags or the call fails, the server falls back to opening a new
+PR rather than blocking the save.
 
 ---
 

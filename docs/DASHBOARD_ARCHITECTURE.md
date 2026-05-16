@@ -364,9 +364,19 @@ Backed by `GET /api/me/contributions` which calls
 - The GitHub search query targets the data repo with
   `label:via-dashboard` (and `label:anonymous` for anonymous
   contributors) PLUS a body substring (`- @login` or `**Pseudo**`).
-- Each row deep-links to the entity page. Clicking does NOT yet
-  resume editing on the existing PR's branch — that's deferred,
-  see ADR-016 "Out of scope". Re-saving today opens a fresh PR.
+- Each row deep-links to the entity page. The server detects the
+  open PR for the current session on the entity load and serves the
+  PR-branch content (not main's), so the contributor resumes from
+  their in-flight state. Subsequent saves on that entity append a
+  commit to the existing PR rather than opening a new one — the
+  "1 PR per entity per contributor" invariant holds without the
+  contributor having to think about it.
+- A blue banner on the entity page surfaces the open PR number +
+  links out to GitHub: "Resuming your in-progress PR #N. Every save
+  will add a commit to it instead of opening a new PR."
+- The save toast switches from "PR #N opened" to "Commit added to
+  PR #N" in the resume case so the contributor knows the save did
+  something even though the PR number is unchanged.
 
 Refresh is manual. The GitHub search index has a few-second lag, so
 a freshly-opened PR may not appear on the next reload; a "Refresh"
