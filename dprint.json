@@ -23,7 +23,10 @@
     "**/dist",
     "**/build",
     "**/.turbo",
-    "packages/schemas/generated"
+    "**/.output",
+    "**/.tanstack",
+    "packages/schemas/generated",
+    "apps/dashboard/src/routeTree.gen.ts"
   ],
   "plugins": [
     "https://plugins.dprint.dev/typescript-0.93.4.wasm",

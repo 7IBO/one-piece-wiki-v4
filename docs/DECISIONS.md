@@ -8,6 +8,122 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-018 — Migrate dashboard from Vite + standalone Bun API to TanStack Start
+
+**Date**: 2026-05-17
+
+**Context**: The dashboard had drifted from the stack declared in
+CLAUDE.md ("Web framework: TanStack Start") to a Vite-SPA + sidecar
+Bun process. Two consequences:
+
+- **Vercel deploys broken.** Vite emits static files; the Bun API
+  process has no host in a Vercel project. Hitting `/api/*` on a
+  deployed build returned 404 because the SPA fallback shipped
+  HTML for routes the SPA didn't know about.
+- **Two dev processes.** `concurrently` ran `vite` + `bun --hot
+  api/server.ts` in parallel, with a Vite proxy mapping `/api/*`
+  to `127.0.0.1:4101`. If either crashed the other limped along,
+  and on Windows the IPv4/IPv6 resolution of `localhost`
+  occasionally broke the proxy silently.
+
+The user explicitly asked to "migrate to option B" (TanStack Start)
+to unblock Vercel deployment and re-align with the stated stack.
+
+**Options**:
+
+- A — **Server functions (`createServerFn`).** Convert every
+  `/api/*` handler into a TanStack Start server function called
+  from React via RPC. Removes the HTTP boundary; `api.ts`'s
+  `fetch('/api/foo')` calls become `myServerFn({data})`. Refactor
+  touches every endpoint + every caller.
+- B — **Server routes (`createFileRoute('/api/foo')({server:
+  {handlers: {GET, POST}}})`).** File-based HTTP handlers
+  alongside UI routes. The frontend keeps using `fetch('/api/foo')`
+  unchanged. Refactor is one catch-all file + auto-generation
+  wiring; everything else moves.
+- C — Drop Start entirely, keep two hosts (Vite on Vercel + Bun
+  somewhere else). Cheap deploy, eternal dual-stack maintenance.
+
+**Choice**: B (server routes), with a minimal-diff approach: a
+single catch-all `src/routes/api/$.ts` that forwards every
+`/api/*` request to the existing `handleApiRequest` export of
+`apps/dashboard/api/server.ts`. ~15 endpoints stay in one file
+with shared rate-limit map, session guards and admin checks; only
+the entrypoint changed.
+
+**Rationale**:
+
+- Matches the docs at
+  https://tanstack.com/start/latest/docs/framework/react/guide/server-routes
+  verbatim. The official `examples/react/start-basic` template uses
+  the same `tanstackStart() + nitro()` pair and the same
+  `createFileRoute(...)({server:{handlers}})` pattern we now have.
+- Preserves the HTTP frontier (curlable endpoints, clean separation
+  between API contract and UI code) that Option A would have
+  dissolved.
+- Auto-generated `routeTree.gen.ts` carries the type augmentation
+  that makes `server: {handlers}` a valid option on
+  `createFileRoute` — the hand-maintained tree we had pre-migration
+  was the reason an initial attempt at this migration typechecked
+  as "server does not exist". Letting the plugin own the file
+  unblocks the API.
+- Nitro produces a Vercel-compatible `.output/` bundle out of the
+  box; `bun run build` then `node .output/server/index.mjs` runs
+  the SSR + API server with zero per-platform configuration.
+
+**Consequences**:
+
+- New deps: `@tanstack/react-start@^1.168`, `nitro@^3` (devDep).
+  Bumped `@tanstack/react-router` to ^1.170.
+- New plugins in `vite.config.ts`: `tanstackStart({ srcDirectory:
+  'src' })` and `nitro()`. Order matters: `tailwindcss` →
+  `tanstackStart` → `react` → `nitro` (mirrors the official
+  template).
+- Scripts collapsed: `dev` is now `vite dev` (no more
+  `concurrently`); `build` is `vite build` (emits SPA + Nitro
+  server bundle); `start` is `node .output/server/index.mjs`.
+- Files removed: `apps/dashboard/index.html`, `src/main.tsx`,
+  the hand-maintained `src/routeTree.gen.ts`. The plugin
+  regenerates `routeTree.gen.ts` on every save under `src/routes/`.
+- Files added:
+  - `src/router.tsx` exporting `getRouter()` (Start hook).
+  - `src/routes/api/$.ts` — splat catch-all whose `server.handlers`
+    forward every method to `handleApiRequest`.
+  - `__root.tsx` now uses `shellComponent: RootDocument` returning
+    a full `<html>`/`<body>`; the original app chrome moves into
+    an `AppChrome` child that takes `children` (the matched route's
+    output).
+- `api/server.ts` refactored: the inner `Bun.serve({ fetch })`
+  body is now the exported `handleApiRequest(req)`. The standalone
+  `Bun.serve` is gated on `import.meta.main` so `bun api/server.ts`
+  still works for debug scripts.
+- Cross-runtime fix: `import.meta.dir` (Bun-only) → a `HERE`
+  helper that prefers `import.meta.dirname` then falls back to
+  `fileURLToPath(import.meta.url)`. Without this fix, the Nitro
+  SSR bundle blew up at import time with "paths[0] must be a
+  string" because Node doesn't populate `import.meta.dir`.
+- Backwards-compat tax: `dev:api-legacy` script kept around for
+  anyone who still wants `bun --hot api/server.ts` standalone.
+
+**Vercel deploy — caveat that didn't ship in this ADR**: the
+SSR-bundled server reads `data/universes/**/entities/*.json` at
+runtime via `node:fs/promises`. Vercel serverless functions don't
+share a filesystem with the build artefact, so the entity JSONs
+need to either be (a) bundled into the function output, (b)
+fetched from GitHub at runtime, or (c) replaced by the pre-built
+SQLite from the data pipeline. Out of scope for this ADR; tracked
+in `/IDEAS.md` for now.
+
+**SPA-only routes**: setting `defaultSsr: false` on the router is
+NOT supported in the installed Start version (option doesn't exist
+on `RouterConstructorOptions`). The dashboard renders SSR by
+default; pages that depend on browser-only globals (`window`,
+`localStorage`, `BroadcastChannel`) already guard with
+`typeof window !== 'undefined'` checks and `useEffect`-deferred
+access, so SSR works without further changes.
+
+---
+
 ## ADR-017 — Revert better-auth, keep stateless signed-cookie sessions
 
 **Date**: 2026-05-16

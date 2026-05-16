@@ -13,6 +13,10 @@ bun.lockb
 dist/
 build/
 .turbo/
+# TanStack Start / Nitro build output (apps/dashboard)
+.output/
+.nitro/
+.tanstack/
 
 # Generated schemas
 packages/schemas/generated/

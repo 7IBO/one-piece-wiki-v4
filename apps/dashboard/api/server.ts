@@ -47,13 +47,25 @@ import {
 } from '@onepiece-wiki/schema-engine';
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
 import { promoteAndMergePR, rejectAndCleanupPR } from './admin-promote.ts';
 import { type DashboardSession, readDashboardSession } from './auth.ts';
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
 import { buildCookie, clearCookie, newAnonymousSession, newGithubSession } from './session.ts';
 
-const REPO_ROOT = resolve(import.meta.dir, '..', '..', '..');
+/**
+ * Cross-runtime module dir. Bun exposes `import.meta.dir` but the
+ * Nitro/Vite SSR bundle runs under Node where it's undefined; standard
+ * `import.meta.dirname` is Node ≥20.11 and not always populated when
+ * the module is loaded via the SSR module runner. Fall back to
+ * `fileURLToPath(import.meta.url)` for the resilient path.
+ */
+const HERE = (import.meta as { dirname?: string; dir?: string; }).dirname
+  ?? (import.meta as { dirname?: string; dir?: string; }).dir
+  ?? dirname(fileURLToPath(import.meta.url));
+
+const REPO_ROOT = resolve(HERE, '..', '..', '..');
 const UNIVERSE = 'one-piece';
 const PORT = Number(process.env['DASHBOARD_API_PORT'] ?? '4101');
 const PUBLIC_BASE_URL = process.env['DASHBOARD_PUBLIC_URL'] ?? 'http://localhost:4100';
@@ -1139,182 +1151,199 @@ async function handleAdminReject(
   }
 }
 
-const server = Bun.serve({
-  port: PORT,
-  hostname: '127.0.0.1',
-  async fetch(req, server) {
-    const url = new URL(req.url);
-    const path = url.pathname.replace(/\/+$/, '') || '/';
-    const session = readDashboardSession(req);
+/**
+ * Single fetch handler for every `/api/*` request. Exported so the
+ * TanStack Start catch-all route (`src/routes/api/$.ts`, ADR-018)
+ * can delegate to it — keeps the routing table, guards and
+ * rate-limit map in one place. The legacy Bun.serve at the bottom
+ * is gated on `import.meta.main` so the file stays usable as a
+ * standalone process for debug scripts.
+ */
+export async function handleApiRequest(req: Request): Promise<Response> {
+  const url = new URL(req.url);
+  const path = url.pathname.replace(/\/+$/, '') || '/';
+  const session = readDashboardSession(req);
 
-    // Connecting-socket fallback for the rare local case where
-    // X-Forwarded-For isn't set. In deployed env the reverse
-    // proxy always supplies XFF, so this is just a safety net.
-    const socketIp = server.requestIP(req)?.address ?? '0.0.0.0';
-    const ip = clientIp(req, socketIp);
+  // No connecting-socket fallback: this now runs inside the unified
+  // Vite/Start server, no Bun.serve `server.requestIP(req)` available.
+  // Vercel/Nitro always sets X-Forwarded-For in production, so the
+  // `0.0.0.0` fallback only kicks in for unguarded local edge cases
+  // — buckets unknown-IP traffic together, which is the right
+  // fail-safe (don't let unset XFF disable the limiter).
+  const ip = clientIp(req, '0.0.0.0');
 
-    // Anonymous abuse kill-switch — global, before any routing.
-    // Reading a blocked IP's GET is still allowed (read endpoints
-    // are public anyway); only write paths are gated below via
-    // the rate limiter + the explicit isBlockedIp() guard.
-    if (isBlockedIp(ip)) {
-      // Don't reveal anything about the block — return a generic
-      // 403 to make scraping the blocklist boring.
-      if (req.method !== 'GET') {
-        return new Response(JSON.stringify({ error: 'Forbidden.' }), {
-          status: 403,
-          headers: { 'content-type': 'application/json' },
-        });
-      }
+  // Anonymous abuse kill-switch — global, before any routing.
+  // Reading a blocked IP's GET is still allowed (read endpoints
+  // are public anyway); only write paths are gated below via
+  // the rate limiter + the explicit isBlockedIp() guard.
+  if (isBlockedIp(ip)) {
+    // Don't reveal anything about the block — return a generic
+    // 403 to make scraping the blocklist boring.
+    if (req.method !== 'GET') {
+      return new Response(JSON.stringify({ error: 'Forbidden.' }), {
+        status: 403,
+        headers: { 'content-type': 'application/json' },
+      });
+    }
+  }
+
+  /**
+   * Stable rate-limit bucket key. GitHub identity is the login
+   * (immutable across sign-outs); anonymous identity is the
+   * self-chosen nickname (changeable, but a contributor reusing
+   * the same nickname keeps the same bucket — which is the right
+   * UX for someone with a stable pseudo). Falls back to IP when
+   * no session at all (read-only traffic that shouldn't hit
+   * write paths anyway).
+   */
+  function rateLimitKey(): string {
+    if (session === null) return `ip:${ip}`;
+    if (session.kind === 'github') return `gh:${session.login.toLowerCase()}`;
+    return `anon:${session.nickname.toLowerCase()}`;
+  }
+
+  function isAdminSession(): boolean {
+    return session !== null
+      && session.kind === 'github'
+      && config !== null
+      && isAdmin(config, session.login);
+  }
+
+  try {
+    // ── Auth (stateless signed cookies — ADR-017) ──
+    if (req.method === 'GET' && path === '/api/auth/login/github') {
+      if (config === null) return serviceUnavailable(`Auth disabled: ${configError}`);
+      return handleGithubLogin(config);
+    }
+    if (req.method === 'GET' && path === '/api/auth/callback/github') {
+      if (config === null) return serviceUnavailable(`Auth disabled: ${configError}`);
+      return await handleGithubCallback(config, url);
+    }
+    if (req.method === 'POST' && path === '/api/auth/anonymous') {
+      return await handleAnonymousSignIn(req);
+    }
+    if (req.method === 'POST' && path === '/api/auth/sign-out') {
+      return handleSignOut();
+    }
+    if (req.method === 'GET' && path === '/api/auth/me') return handleAuthMe(session);
+
+    if (req.method === 'GET' && path === '/api/me/contributions') {
+      if (config === null) return json({ contributions: [] });
+      return await handleMyContributions(config, session);
     }
 
-    /**
-     * Stable rate-limit bucket key. GitHub identity is the login
-     * (immutable across sign-outs); anonymous identity is the
-     * self-chosen nickname (changeable, but a contributor reusing
-     * the same nickname keeps the same bucket — which is the right
-     * UX for someone with a stable pseudo). Falls back to IP when
-     * no session at all (read-only traffic that shouldn't hit
-     * write paths anyway).
-     */
-    function rateLimitKey(): string {
-      if (session === null) return `ip:${ip}`;
-      if (session.kind === 'github') return `gh:${session.login.toLowerCase()}`;
-      return `anon:${session.nickname.toLowerCase()}`;
+    if (req.method === 'POST' && path === '/api/uploads/presign') {
+      // Anonymous + contributor + admin all may upload (to staging).
+      // Admin gets no rate-limit; everyone else is bucketed.
+      if (!isAdminSession()) {
+        if (rateLimitHit('upload', rateLimitKey(), ANON_UPLOAD_LIMIT)) {
+          return new Response(
+            JSON.stringify({
+              error: `Rate limit reached (${ANON_UPLOAD_LIMIT}/hour). Try again later.`,
+            }),
+            { status: 429, headers: { 'content-type': 'application/json' } },
+          );
+        }
+      }
+      return await handlePresignUpload(req);
     }
 
-    function isAdminSession(): boolean {
-      return session !== null
-        && session.kind === 'github'
-        && config !== null
-        && isAdmin(config, session.login);
+    // GET /api/preview/<key>... — signed redirect for staged R2
+    // objects. The key may contain slashes (e.g. pending/foo.png)
+    // so we slice off the route prefix manually rather than using
+    // a one-segment regex.
+    if (req.method === 'GET' && path.startsWith('/api/preview/')) {
+      const key = decodeURIComponent(path.slice('/api/preview/'.length));
+      return await handlePreviewImage(session, key);
     }
 
-    try {
-      // ── Auth (stateless signed cookies — ADR-017) ──
-      if (req.method === 'GET' && path === '/api/auth/login/github') {
-        if (config === null) return serviceUnavailable(`Auth disabled: ${configError}`);
-        return handleGithubLogin(config);
-      }
-      if (req.method === 'GET' && path === '/api/auth/callback/github') {
-        if (config === null) return serviceUnavailable(`Auth disabled: ${configError}`);
-        return await handleGithubCallback(config, url);
-      }
-      if (req.method === 'POST' && path === '/api/auth/anonymous') {
-        return await handleAnonymousSignIn(req);
-      }
-      if (req.method === 'POST' && path === '/api/auth/sign-out') {
-        return handleSignOut();
-      }
-      if (req.method === 'GET' && path === '/api/auth/me') return handleAuthMe(session);
+    // POST /api/admin/promote — approve a PR carrying staged
+    // images (promote bytes pending/→images/, rewrite URLs,
+    // squash-merge). Admin-only.
+    if (req.method === 'POST' && path === '/api/admin/promote') {
+      if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
+      if (session === null) return unauthorized('Sign in first.');
+      return await handleAdminPromote(config, session, req);
+    }
 
-      if (req.method === 'GET' && path === '/api/me/contributions') {
-        if (config === null) return json({ contributions: [] });
-        return await handleMyContributions(config, session);
-      }
+    // POST /api/admin/reject — close PR + delete staged objects.
+    if (req.method === 'POST' && path === '/api/admin/reject') {
+      if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
+      if (session === null) return unauthorized('Sign in first.');
+      return await handleAdminReject(config, session, req);
+    }
 
-      if (req.method === 'POST' && path === '/api/uploads/presign') {
-        // Anonymous + contributor + admin all may upload (to staging).
-        // Admin gets no rate-limit; everyone else is bucketed.
+    if (req.method === 'GET' && path === '/api/schemas') return await handleSchemas();
+    if (req.method === 'GET' && path === '/api/sources') return await handleSources();
+    if (req.method === 'GET' && path === '/api/i18n-keys') return await handleI18nKeys();
+    const listMatch = /^\/api\/entities\/([^/]+)$/.exec(path);
+    if (req.method === 'GET' && listMatch !== null) {
+      return await handleListEntities(listMatch[1]!);
+    }
+
+    // Match BEFORE the per-entity regex so `/api/entities/foo/table`
+    // doesn't end up looking up a `foo` entity with slug "table".
+    const tableMatch = /^\/api\/entities\/([^/]+)\/table$/.exec(path);
+    if (req.method === 'GET' && tableMatch !== null) {
+      return await handleTableEntities(tableMatch[1]!);
+    }
+
+    const entityMatch = /^\/api\/entities\/([^/]+)\/([^/]+)$/.exec(path);
+    if (entityMatch !== null) {
+      const [, type = '', slug = ''] = entityMatch;
+      if (req.method === 'GET') return await handleGetEntity(type, slug, session);
+      if (req.method === 'POST') {
+        if (config === null) return serviceUnavailable(`Save disabled: ${configError}`);
+        // A session is required to save — even the anonymous flow
+        // creates a session at /login. This simplifies attribution
+        // (the contributor identity is always on the session) and
+        // closes a fingerprinting hole (no more nicknames smuggled
+        // in the request body).
+        if (session === null) {
+          return unauthorized('Sign in (anonymous or GitHub) before saving.');
+        }
         if (!isAdminSession()) {
-          if (rateLimitHit('upload', rateLimitKey(), ANON_UPLOAD_LIMIT)) {
+          if (rateLimitHit('save', rateLimitKey(), ANON_WRITE_LIMIT)) {
             return new Response(
               JSON.stringify({
-                error: `Rate limit reached (${ANON_UPLOAD_LIMIT}/hour). Try again later.`,
+                error: `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
               }),
               { status: 429, headers: { 'content-type': 'application/json' } },
             );
           }
         }
-        return await handlePresignUpload(req);
+        return await handleSaveEntity(config, session, type, slug, req);
       }
-
-      // GET /api/preview/<key>... — signed redirect for staged R2
-      // objects. The key may contain slashes (e.g. pending/foo.png)
-      // so we slice off the route prefix manually rather than using
-      // a one-segment regex.
-      if (req.method === 'GET' && path.startsWith('/api/preview/')) {
-        const key = decodeURIComponent(path.slice('/api/preview/'.length));
-        return await handlePreviewImage(session, key);
-      }
-
-      // POST /api/admin/promote — approve a PR carrying staged
-      // images (promote bytes pending/→images/, rewrite URLs,
-      // squash-merge). Admin-only.
-      if (req.method === 'POST' && path === '/api/admin/promote') {
-        if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
-        if (session === null) return unauthorized('Sign in first.');
-        return await handleAdminPromote(config, session, req);
-      }
-
-      // POST /api/admin/reject — close PR + delete staged objects.
-      if (req.method === 'POST' && path === '/api/admin/reject') {
-        if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
-        if (session === null) return unauthorized('Sign in first.');
-        return await handleAdminReject(config, session, req);
-      }
-
-      if (req.method === 'GET' && path === '/api/schemas') return await handleSchemas();
-      if (req.method === 'GET' && path === '/api/sources') return await handleSources();
-      if (req.method === 'GET' && path === '/api/i18n-keys') return await handleI18nKeys();
-      const listMatch = /^\/api\/entities\/([^/]+)$/.exec(path);
-      if (req.method === 'GET' && listMatch !== null) {
-        return await handleListEntities(listMatch[1]!);
-      }
-
-      // Match BEFORE the per-entity regex so `/api/entities/foo/table`
-      // doesn't end up looking up a `foo` entity with slug "table".
-      const tableMatch = /^\/api\/entities\/([^/]+)\/table$/.exec(path);
-      if (req.method === 'GET' && tableMatch !== null) {
-        return await handleTableEntities(tableMatch[1]!);
-      }
-
-      const entityMatch = /^\/api\/entities\/([^/]+)\/([^/]+)$/.exec(path);
-      if (entityMatch !== null) {
-        const [, type = '', slug = ''] = entityMatch;
-        if (req.method === 'GET') return await handleGetEntity(type, slug, session);
-        if (req.method === 'POST') {
-          if (config === null) return serviceUnavailable(`Save disabled: ${configError}`);
-          // A session is required to save — even the anonymous flow
-          // creates a session at /login. This simplifies attribution
-          // (the contributor identity is always on the session) and
-          // closes a fingerprinting hole (no more nicknames smuggled
-          // in the request body).
-          if (session === null) {
-            return unauthorized('Sign in (anonymous or GitHub) before saving.');
-          }
-          if (!isAdminSession()) {
-            if (rateLimitHit('save', rateLimitKey(), ANON_WRITE_LIMIT)) {
-              return new Response(
-                JSON.stringify({
-                  error: `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
-                }),
-                { status: 429, headers: { 'content-type': 'application/json' } },
-              );
-            }
-          }
-          return await handleSaveEntity(config, session, type, slug, req);
-        }
-      }
-
-      return notFound(path);
-    } catch (err) {
-      const message = err instanceof Error ? err.message : String(err);
-      process.stderr.write(`API error on ${req.method} ${path}: ${message}\n`);
-      return new Response(JSON.stringify({ error: message }), {
-        status: 500,
-        headers: { 'content-type': 'application/json' },
-      });
     }
-  },
-});
 
-process.stdout.write(
-  `dashboard API running at http://${server.hostname}:${server.port}\n`
-    + (config !== null
-      ? `  data repo: ${config.dataRepo.owner}/${config.dataRepo.repo}\n`
-        + `  admins: ${config.adminUsernames.join(', ') || '(none)'}\n`
-      : `  GitHub App config NOT loaded; auth + save endpoints return 503.\n`),
-);
+    return notFound(path);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`API error on ${req.method} ${path}: ${message}\n`);
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+}
+
+// Legacy standalone entrypoint — kept for `bun api/server.ts` direct
+// invocation (debug scripts, IDE quick-runs). `bun run dev` no longer
+// hits this branch; TanStack Start mounts handleApiRequest via the
+// catch-all server route in src/routes/api/$.ts.
+if (import.meta.main) {
+  const srv = Bun.serve({
+    port: PORT,
+    hostname: '127.0.0.1',
+    fetch: handleApiRequest,
+  });
+  process.stdout.write(
+    `dashboard API (legacy standalone) at http://${srv.hostname}:${srv.port}\n`
+      + (config !== null
+        ? `  data repo: ${config.dataRepo.owner}/${config.dataRepo.repo}\n`
+          + `  admins: ${config.adminUsernames.join(', ') || '(none)'}\n`
+        : `  GitHub App config NOT loaded; auth + save endpoints return 503.\n`),
+  );
+}
 
 void REPO_ROOT;

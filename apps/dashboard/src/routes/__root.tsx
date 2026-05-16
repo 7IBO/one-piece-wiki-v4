@@ -1,25 +1,64 @@
+/// <reference types="vite/client" />
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
-import { createRootRoute, Link, Outlet, useNavigate } from '@tanstack/react-router';
-import { type JSX } from 'react';
+import { createRootRoute, HeadContent, Link, Scripts, useNavigate } from '@tanstack/react-router';
+import { type JSX, type ReactNode } from 'react';
 import { AppSidebar } from '../AppSidebar';
 import { auth, useCurrentUser } from '../auth';
 import { DraftsIndicator } from '../DraftsIndicator';
 import { EntityDrawerProvider } from '../form/EntityDrawerProvider';
 import { LocaleProvider } from '../form/locale';
 import { LocaleSwitcher } from '../LocaleSwitcher';
+import appCss from '../styles.css?url';
+
+// `?url` import: Vite emits a real `<link rel="stylesheet">` in the
+// generated HTML head instead of bundling the CSS into a JS module.
+// The link is then referenced in `head.links` below so it's part of
+// the initial HTML response (no flash of unstyled content).
 
 export const Route = createRootRoute({
-  component: RootComponent,
+  head: () => ({
+    meta: [
+      { charSet: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { title: 'Dashboard — One Piece Wiki' },
+    ],
+    links: [{ rel: 'stylesheet', href: appCss }],
+  }),
+  shellComponent: RootDocument,
 });
 
-function RootComponent(): JSX.Element {
+/**
+ * HTML document shell — TanStack Start calls this with the route
+ * tree as `children`. We render `<html>` + `<body>` here (Start
+ * requires it; rendering them inside route components is forbidden),
+ * then mount the app chrome inside.
+ *
+ * `HeadContent` flushes the accumulated <head> (meta, links, scripts)
+ * from every matched route's `head()` return. `Scripts` emits the
+ * hydration bootstrap + module preloads.
+ */
+function RootDocument({ children }: { children: ReactNode; }): JSX.Element {
+  return (
+    <html lang='en'>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <AppChrome>{children}</AppChrome>
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
+function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
   const { user, loaded } = useCurrentUser();
   const navigate = useNavigate();
 
-  // Surfaced label: @login for GitHub, plain Pseudo for anonymous.
-  // Wrapping inline below makes the difference visible to a reviewer
-  // glancing at a screenshot.
+  // @login for GitHub, plain Pseudo for anonymous. Wrapping inline
+  // makes the difference obvious to a reviewer glancing at a
+  // screenshot.
   const userLabel = user === null
     ? null
     : user.kind === 'github'
@@ -60,9 +99,6 @@ function RootComponent(): JSX.Element {
                       variant='outline'
                       onClick={async () => {
                         await auth.signOut();
-                        // Force a full re-render so useCurrentUser
-                        // re-fetches and the header collapses back
-                        // to the "Sign in" link cleanly.
                         await navigate({ to: '/login' });
                       }}
                     >
@@ -77,7 +113,12 @@ function RootComponent(): JSX.Element {
               <AppSidebar />
             </aside>
             <main className='min-w-0 px-6 py-6'>
-              <Outlet />
+              {
+                /* `children` is the matched route's output (Start's
+                  shellComponent contract — replaces the explicit
+                  <Outlet /> we had pre-migration). */
+              }
+              {children}
             </main>
           </div>
           <Toaster richColors closeButton position='top-right' />

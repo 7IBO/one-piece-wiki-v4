@@ -21,7 +21,20 @@
  */
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 import { readFileSync, writeFileSync } from 'node:fs';
-import { resolve } from 'node:path';
+import { dirname, resolve } from 'node:path';
+import { fileURLToPath } from 'node:url';
+
+/**
+ * Module dir, compatible with both Bun (which exposes `import.meta.dir`
+ * but where `import.meta.dirname` may or may not be present depending
+ * on version) and standard Node ESM (where `import.meta.dirname` is
+ * canonical Node ≥20.11 and `import.meta.dir` is undefined). Falls
+ * back to deriving from `import.meta.url` so this file imports cleanly
+ * from a Nitro/Vite SSR bundle where neither convenience field is set.
+ */
+const HERE = (import.meta as { dirname?: string; dir?: string; }).dirname
+  ?? (import.meta as { dirname?: string; dir?: string; }).dir
+  ?? dirname(fileURLToPath(import.meta.url));
 
 const COOKIE_NAME = 'opw_session';
 // 30-day rolling cookie. Long enough that a sporadic contributor
@@ -58,9 +71,9 @@ function loadSessionSecret(): string {
       'SESSION_SECRET must be set in production. Generate with `openssl rand -base64 32`.',
     );
   }
-  // Dev cache file alongside the API source. `import.meta.dir` points
-  // at `apps/dashboard/api` so we resolve one level up.
-  const cachePath = resolve(import.meta.dir, '..', '.dev-session-secret');
+  // Dev cache file alongside the API source. `HERE` points at
+  // `apps/dashboard/api` so we resolve one level up.
+  const cachePath = resolve(HERE, '..', '.dev-session-secret');
   try {
     const cached = readFileSync(cachePath, 'utf8').trim();
     if (cached.length >= 32) return cached;
