@@ -457,11 +457,27 @@ function pairChunks(
 }
 
 /**
- * Collapse runs of >`context*2` paired-unchanged rows down to a
- * single "(N unchanged lines)" placeholder, keeping `context`
- * rows on either side of each edit hunk. Boundary runs (at the
- * very start or end) are left untouched — chopping them looks
- * weird and they're usually small anyway.
+ * Collapse unchanged-context runs aggressively — the popover is for
+ * "show me what I'm about to commit", not "let me browse the whole
+ * file". For each run of unchanged rows:
+ *
+ *  - **Leading boundary** (run starts at row 0): keep only the
+ *    LAST `context` rows (the ones touching the first change).
+ *    Anything above that is unchanged file headers / sibling
+ *    properties the contributor didn't touch — useless noise.
+ *  - **Trailing boundary** (run ends at the last row): mirror —
+ *    keep only the FIRST `context` rows touching the last change.
+ *  - **Interior run** > `context*2`: keep `context` rows on each
+ *    side of the change, collapse the middle.
+ *  - **Short run** ≤ `context*2`: keep everything (no point
+ *    collapsing 4 rows into a 1-row placeholder).
+ *
+ * Previous behaviour skipped collapsing at boundaries on the
+ * theory that "chopping them looks weird"; in practice it meant a
+ * single-line edit on a 200-line pretty-JSON file dumped 199 grey
+ * lines into the popover before the contributor saw the actual
+ * change. Boundary collapse fixes that without changing the visual
+ * grammar.
  */
 function collapseUnchanged(
   rows: readonly SplitRowData[],
@@ -480,10 +496,34 @@ function collapseUnchanged(
     let j = i;
     while (j < rows.length && isUnchanged(rows[j]!)) j++;
     const runLen = j - i;
-    const atBoundary = i === 0 || j === rows.length;
-    if (runLen <= context * 2 || atBoundary) {
+    const isLeading = i === 0;
+    const isTrailing = j === rows.length;
+
+    if (runLen <= context) {
+      // Tiny run — keep all, no placeholder.
+      for (let k = i; k < j; k++) out.push(rows[k]!);
+    } else if (isLeading && isTrailing) {
+      // The entire diff is unchanged context (no changes at all).
+      // Shouldn't happen because we only render when dirty, but
+      // be defensive and keep nothing — let the empty-state copy
+      // in the parent handle it.
+      out.push({ kind: 'collapsed', count: runLen });
+    } else if (isLeading) {
+      // Top of the diff — chop the head, keep `context` rows
+      // adjacent to the first change.
+      out.push({ kind: 'collapsed', count: runLen - context });
+      for (let k = j - context; k < j; k++) out.push(rows[k]!);
+    } else if (isTrailing) {
+      // Bottom — keep `context` rows after the last change, chop
+      // the tail.
+      for (let k = i; k < i + context; k++) out.push(rows[k]!);
+      out.push({ kind: 'collapsed', count: runLen - context });
+    } else if (runLen <= context * 2) {
+      // Short interior run — keep everything; collapsing would
+      // save zero rows once you account for the placeholder.
       for (let k = i; k < j; k++) out.push(rows[k]!);
     } else {
+      // Standard interior collapse — context rows on each side.
       for (let k = i; k < i + context; k++) out.push(rows[k]!);
       out.push({ kind: 'collapsed', count: runLen - context * 2 });
       for (let k = j - context; k < j; k++) out.push(rows[k]!);
