@@ -85,8 +85,22 @@ export function DraftsIndicator(): JSX.Element | null {
           // click). Skip silently — `refresh()` at the end picks it up.
           continue;
         }
+        // Merge the draft over the entity's canonical envelope. The
+        // server rejects payloads where `data.id` / `data.type` /
+        // `data.slug` don't match the URL, and some older drafts —
+        // or drafts written by a future form that strips immutables
+        // — would otherwise fail with a confusing "data.id must
+        // equal …" error. Drafts only ever mutate `properties` and
+        // `relations`; everything else comes from the entity on disk.
+        const merged: Record<string, unknown> = {
+          ...entity.data,
+          ...draft.data,
+          id: entity.id,
+          type: entity.type,
+          slug: entity.slug,
+        };
         // eslint-disable-next-line no-await-in-loop
-        await api.saveEntity(type, slug, draft.data, entity.sha, draft.translations);
+        await api.saveEntity(type, slug, merged, entity.sha, draft.translations);
         // eslint-disable-next-line no-await-in-loop
         await clearDraft(id);
         opened += 1;

@@ -442,7 +442,34 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
       draftApplied.current = true; // user started editing; bail.
       return;
     }
-    setData(draft.data as EntityData);
+    // Overlay the canonical envelope (id/type/slug/$schema/schema_version)
+    // from the entity on disk over the draft. Drafts only ever mutate
+    // properties + relations + translations; everything else is
+    // immutable per the data model. An older draft missing those
+    // fields — or carrying a stale envelope (schema_version bump,
+    // pre-rename slug …) — would otherwise fail the server's
+    // `data.id must equal …` check on save. Force-write the immutables
+    // last so they always win over whatever the draft happened to
+    // serialise.
+    const restored = draft.data as EntityData;
+    const initial = props.initialData as EntityData & {
+      id?: unknown;
+      type?: unknown;
+      slug?: unknown;
+      $schema?: unknown;
+      schema_version?: unknown;
+    };
+    setData({
+      ...initial,
+      ...restored,
+      id: initial.id,
+      type: initial.type,
+      slug: initial.slug,
+      ...(initial.$schema !== undefined ? { $schema: initial.$schema } : {}),
+      ...(initial.schema_version !== undefined
+        ? { schema_version: initial.schema_version }
+        : {}),
+    });
     setTranslations(draft.translations);
     draftApplied.current = true;
     // eslint-disable-next-line react-hooks/exhaustive-deps
