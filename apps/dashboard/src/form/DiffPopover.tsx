@@ -310,14 +310,24 @@ function Cell(
   const gutter = line.kind === '-' ? '-' : line.kind === '+' ? '+' : ' ';
   return (
     <td className={`w-1/2 align-top ${tone} ${side === 'left' ? 'border-r' : ''}`}>
-      <div className='flex'>
+      {
+        /* One flex parent owns the vertical padding so the gutter and
+          text share an exact top baseline. Previously the gutter span
+          had `pl-1 pr-1` and the text span had `py-0.5` — that 2px
+          asymmetry pushed the text down a hair and made -/+ look
+          misaligned, worst on wrapped multi-line values. `items-start`
+          keeps the marker pinned to the first text line when content
+          wraps; leading-snug on both spans guarantees identical line
+          height. */
+      }
+      <div className='flex items-start gap-0 py-0.5 pr-1'>
         <span
-          className='select-none opacity-60 pl-1 pr-1 w-4 text-center shrink-0'
+          className='select-none opacity-60 w-4 shrink-0 text-center leading-snug'
           aria-hidden='true'
         >
           {gutter}
         </span>
-        <span className='whitespace-pre-wrap break-words flex-1 pr-1 py-0.5'>
+        <span className='whitespace-pre-wrap break-words flex-1 min-w-0 leading-snug'>
           {line.text}
         </span>
       </div>
