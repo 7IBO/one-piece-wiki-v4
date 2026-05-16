@@ -1,12 +1,20 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "arc",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": { "en": "Arc", "fr": "Arc" },
   "url_segment": "arcs",
   "properties": [
-    { "id": "name", "required": true, "historical": false, "localizable": true }
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "arc_subtype", "required": false, "historical": false, "localizable": false },
+    { "id": "narrative_key", "required": false, "historical": false, "localizable": true }
   ],
-  "allowed_relations": ["part-of-arc", "depicted-by"],
+  "allowed_relations": [
+    "part-of-saga",
+    "contains-chapter",
+    "features-characters",
+    "set-in",
+    "depicted-by"
+  ],
   "ui_hint": { "icon": "compass", "group": "narrative" }
 }

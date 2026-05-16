@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "oda_supervised",
+  "schema_version": 1,
+  "labels": { "en": "Oda-supervised", "fr": "Supervisé par Oda" },
+  "value_type": "boolean",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["film"]
+}

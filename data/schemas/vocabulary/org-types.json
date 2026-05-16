@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "org-types",
+  "schema_version": 1,
+  "values": {
+    "marine": { "labels": { "en": "Marine", "fr": "Marine" } },
+    "world_government_branch": {
+      "labels": { "en": "World Government branch", "fr": "Branche du Gouvernement mondial" }
+    },
+    "cipher_pol": { "labels": { "en": "Cipher Pol", "fr": "Cipher Pol" } },
+    "revolutionary": { "labels": { "en": "Revolutionary", "fr": "Révolutionnaire" } },
+    "secret_society": { "labels": { "en": "Secret society", "fr": "Société secrète" } },
+    "royal_court": { "labels": { "en": "Royal court", "fr": "Cour royale" } },
+    "merchant_guild": { "labels": { "en": "Merchant guild", "fr": "Guilde marchande" } },
+    "religious_order": { "labels": { "en": "Religious order", "fr": "Ordre religieux" } }
+  }
+}

@@ -1,17 +1,25 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "event",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": { "en": "Event", "fr": "Évènement" },
   "url_segment": "events",
   "properties": [
     { "id": "event_subtype", "required": true, "historical": false, "localizable": false },
-    { "id": "name", "required": true, "historical": false, "localizable": true }
+    { "id": "name", "required": true, "historical": false, "localizable": true },
+    { "id": "narrative_key", "required": false, "historical": false, "localizable": true },
+    { "id": "first_source", "required": false, "historical": false, "localizable": false },
+    { "id": "last_source", "required": false, "historical": false, "localizable": false },
+    { "id": "primary_location", "required": false, "historical": false, "localizable": false },
+    { "id": "is_public", "required": false, "historical": false, "localizable": false }
   ],
   "allowed_relations": [
     "participant",
-    "part-of-arc",
     "caused-death-of",
+    "occurs-during-arc",
+    "caused-by-event",
+    "causes-event",
+    "set-in",
     "depicted-by"
   ],
   "ui_hint": { "icon": "flag", "group": "events" }

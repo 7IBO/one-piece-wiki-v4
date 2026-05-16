@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "total_bounty",
+  "schema_version": 1,
+  "labels": { "en": "Total bounty", "fr": "Prime totale" },
+  "value_type": "number",
+  "value_constraints": { "min": 0, "step": 1000000 },
+  "unit": "berry",
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": ["crew"],
+  "default_qualifiers": ["since", "source"]
+}

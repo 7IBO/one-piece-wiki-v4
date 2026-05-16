@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "weapon",
+  "schema_version": 2,
+  "labels": { "en": "Weapon", "fr": "Arme" },
+  "url_segment": "weapons",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "weapon_type", "required": true, "historical": false, "localizable": false },
+    { "id": "weapon_grade", "required": false, "historical": false, "localizable": false },
+    { "id": "description_key", "required": false, "historical": false, "localizable": true }
+  ],
+  "allowed_relations": ["wielded-by", "forged-by", "depicted-by"],
+  "ui_hint": { "icon": "sword", "group": "objects" }
+}

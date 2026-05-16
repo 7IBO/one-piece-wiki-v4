@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "genders",
+  "schema_version": 1,
+  "values": {
+    "male": { "labels": { "en": "Male", "fr": "Masculin" } },
+    "female": { "labels": { "en": "Female", "fr": "Féminin" } },
+    "non_binary": { "labels": { "en": "Non-binary", "fr": "Non binaire" } },
+    "not_applicable": { "labels": { "en": "Not applicable", "fr": "Non applicable" } },
+    "unknown": { "labels": { "en": "Unknown", "fr": "Inconnu" } }
+  }
+}

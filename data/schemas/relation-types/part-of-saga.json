@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "part-of-saga",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Part of saga", "inverse": "Contains arc" },
+    "fr": { "active": "Partie de la saga", "inverse": "Contient l'arc" }
+  },
+  "valid_from_types": ["arc"],
+  "valid_to_types": ["saga"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true
+}

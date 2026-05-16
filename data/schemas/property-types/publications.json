@@ -1,0 +1,33 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "publications",
+  "schema_version": 1,
+  "labels": { "en": "Publications", "fr": "Publications" },
+  "value_type": "date",
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": [
+    "manga-chapter",
+    "anime-episode",
+    "film",
+    "sbs",
+    "databook"
+  ],
+  "default_qualifiers": ["country"],
+  "allowed_qualifiers": [
+    {
+      "id": "country",
+      "value_type": "enum",
+      "enum_ref": "publication-countries",
+      "required": true
+    },
+    {
+      "id": "translation_variant",
+      "value_type": "enum",
+      "enum_ref": "translation-variants",
+      "required": false
+    }
+  ],
+  "ui_hint": { "display_format": "date_per_country" }
+}

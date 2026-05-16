@@ -7,6 +7,8 @@
     "dead": { "labels": { "en": "Dead", "fr": "Mort" } },
     "presumed_dead": { "labels": { "en": "Presumed dead", "fr": "Présumé mort" } },
     "missing": { "labels": { "en": "Missing", "fr": "Disparu" } },
+    "in_hiding": { "labels": { "en": "In hiding", "fr": "En cachette" } },
+    "incapacitated": { "labels": { "en": "Incapacitated", "fr": "Hors de combat" } },
     "unknown": { "labels": { "en": "Unknown", "fr": "Inconnu" } }
   }
 }

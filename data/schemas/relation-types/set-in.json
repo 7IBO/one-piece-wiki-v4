@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "set-in",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Set in", "inverse": "Setting of" },
+    "fr": { "active": "Se déroule à", "inverse": "Cadre de" }
+  },
+  "valid_from_types": ["event", "arc"],
+  "valid_to_types": ["location"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true
+}

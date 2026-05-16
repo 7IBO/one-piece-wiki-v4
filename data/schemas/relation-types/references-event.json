@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "references-event",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "References event", "inverse": "Referenced by source" },
+    "fr": { "active": "Référence l'évènement", "inverse": "Référencé par la source" }
+  },
+  "valid_from_types": ["manga-chapter", "anime-episode", "film", "sbs", "databook"],
+  "valid_to_types": ["event"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true
+}

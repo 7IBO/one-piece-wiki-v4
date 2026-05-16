@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "publication-countries",
+  "schema_version": 1,
+  "values": {
+    "jp": { "labels": { "en": "Japan", "fr": "Japon" } },
+    "fr": { "labels": { "en": "France", "fr": "France" } },
+    "us": { "labels": { "en": "United States", "fr": "États-Unis" } },
+    "uk": { "labels": { "en": "United Kingdom", "fr": "Royaume-Uni" } },
+    "de": { "labels": { "en": "Germany", "fr": "Allemagne" } },
+    "es": { "labels": { "en": "Spain", "fr": "Espagne" } },
+    "it": { "labels": { "en": "Italy", "fr": "Italie" } },
+    "br": { "labels": { "en": "Brazil", "fr": "Brésil" } },
+    "kr": { "labels": { "en": "South Korea", "fr": "Corée du Sud" } },
+    "cn": { "labels": { "en": "China", "fr": "Chine" } },
+    "tw": { "labels": { "en": "Taiwan", "fr": "Taïwan" } },
+    "global": { "labels": { "en": "Global", "fr": "Mondial" } }
+  }
+}

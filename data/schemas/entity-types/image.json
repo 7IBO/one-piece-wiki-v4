@@ -1,30 +1,21 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "image",
-  "schema_version": 1,
-  "labels": {
-    "en": "Image",
-    "fr": "Image"
-  },
+  "schema_version": 2,
+  "labels": { "en": "Image", "fr": "Image" },
   "url_segment": "images",
   "properties": [
     { "id": "url", "required": true, "historical": true, "localizable": false },
     { "id": "caption_key", "required": false, "historical": true, "localizable": true },
+    { "id": "alt_text_key", "required": true, "historical": true, "localizable": true },
     { "id": "license", "required": true, "historical": false, "localizable": false },
     { "id": "attribution", "required": true, "historical": false, "localizable": false },
     { "id": "source_origin", "required": false, "historical": false, "localizable": false },
-    { "id": "width", "required": false, "historical": false, "localizable": false },
-    { "id": "height", "required": false, "historical": false, "localizable": false },
+    { "id": "image_width", "required": false, "historical": false, "localizable": false },
+    { "id": "image_height", "required": false, "historical": false, "localizable": false },
     { "id": "format", "required": true, "historical": false, "localizable": false },
-    { "id": "spoiler_since", "required": true, "historical": false, "localizable": false },
-    { "id": "alt_text_key", "required": true, "historical": false, "localizable": true }
+    { "id": "spoiler_since", "required": true, "historical": false, "localizable": false }
   ],
-  "allowed_relations": [
-    "depicted-by",
-    "sourced-from"
-  ],
-  "ui_hint": {
-    "icon": "image",
-    "group": "media"
-  }
+  "allowed_relations": ["depicts", "sourced-from"],
+  "ui_hint": { "icon": "image", "group": "media" }
 }

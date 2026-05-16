@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "features-characters",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Features characters", "inverse": "Featured in arc" },
+    "fr": { "active": "Met en scène les personnages", "inverse": "Apparaît dans l'arc" }
+  },
+  "valid_from_types": ["arc"],
+  "valid_to_types": ["character"],
+  "qualifiers": [
+    { "id": "role", "value_type": "string", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true
+}

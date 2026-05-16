@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "databook-subtypes",
+  "schema_version": 1,
+  "values": {
+    "vivre_card": { "labels": { "en": "Vivre Card", "fr": "Vivre Card" } },
+    "magazine": { "labels": { "en": "Magazine", "fr": "Magazine" } },
+    "guide_volume": { "labels": { "en": "Guide volume", "fr": "Guide" } },
+    "yellow": { "labels": { "en": "Yellow", "fr": "Jaune" } },
+    "green": { "labels": { "en": "Green", "fr": "Vert" } },
+    "blue": { "labels": { "en": "Blue", "fr": "Bleu" } },
+    "red": { "labels": { "en": "Red", "fr": "Rouge" } },
+    "gold": { "labels": { "en": "Gold", "fr": "Or" } },
+    "silver": { "labels": { "en": "Silver", "fr": "Argent" } }
+  }
+}

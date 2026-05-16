@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "weapon-grades",
+  "schema_version": 1,
+  "values": {
+    "supreme_grade": { "labels": { "en": "Supreme Grade", "fr": "Sabre suprême" } },
+    "great_grade": { "labels": { "en": "Great Grade", "fr": "Grand sabre" } },
+    "skillful_grade": { "labels": { "en": "Skillful Grade", "fr": "Sabre habile" } },
+    "unranked": { "labels": { "en": "Unranked", "fr": "Non classé" } },
+    "legendary": { "labels": { "en": "Legendary", "fr": "Légendaire" } },
+    "cursed": { "labels": { "en": "Cursed", "fr": "Maudit" } }
+  }
+}

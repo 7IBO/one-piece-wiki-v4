@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "has-member",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Has member", "inverse": "Member of" },
+    "fr": { "active": "A pour membre", "inverse": "Membre de" }
+  },
+  "valid_from_types": ["crew", "organization"],
+  "valid_to_types": ["character"],
+  "qualifiers": [
+    {
+      "id": "role",
+      "value_type": "enum",
+      "enum_ref": "crew-roles",
+      "required": false
+    },
+    { "id": "since", "value_type": "source_ref", "required": false },
+    { "id": "until", "value_type": "source_ref", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": false,
+  "historical": true
+}

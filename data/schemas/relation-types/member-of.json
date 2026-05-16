@@ -7,11 +7,17 @@
     "fr": { "active": "Membre de", "inverse": "Membres" }
   },
   "valid_from_types": ["character"],
-  "valid_to_types": ["crew"],
+  "valid_to_types": ["crew", "organization"],
   "qualifiers": [
-    { "id": "role", "value_type": "enum", "enum_ref": "crew-roles", "required": true },
+    { "id": "role", "value_type": "enum", "enum_ref": "crew-roles", "required": false },
     { "id": "since", "value_type": "source_ref", "required": true },
-    { "id": "until", "value_type": "source_ref", "required": false }
+    { "id": "until", "value_type": "source_ref", "required": false },
+    {
+      "id": "loyalty_status",
+      "value_type": "enum",
+      "enum_ref": "loyalty-statuses",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,

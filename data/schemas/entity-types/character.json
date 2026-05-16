@@ -1,22 +1,42 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "character",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": { "en": "Character", "fr": "Personnage" },
   "url_segment": "characters",
   "properties": [
     { "id": "name", "required": true, "historical": true, "localizable": true },
     { "id": "epithet", "required": false, "historical": true, "localizable": true },
     { "id": "bounty", "required": false, "historical": true, "localizable": false },
-    { "id": "status", "required": true, "historical": true, "localizable": false }
+    { "id": "age", "required": false, "historical": true, "localizable": false },
+    { "id": "height", "required": false, "historical": true, "localizable": false },
+    { "id": "weight", "required": false, "historical": true, "localizable": false },
+    { "id": "birthday", "required": false, "historical": false, "localizable": false },
+    { "id": "blood_type", "required": false, "historical": false, "localizable": false },
+    { "id": "gender", "required": false, "historical": false, "localizable": false },
+    { "id": "haki_types", "required": false, "historical": true, "localizable": false },
+    { "id": "status", "required": true, "historical": true, "localizable": false },
+    { "id": "birthplace", "required": false, "historical": false, "localizable": false },
+    { "id": "description_key", "required": false, "historical": false, "localizable": true }
   ],
   "allowed_relations": [
     "member-of",
     "ate-fruit",
+    "uses-technique",
+    "wields-weapon",
     "family-of",
-    "features",
-    "participant",
+    "ally-of",
+    "enemy-of",
+    "mentor-of",
+    "mentored-by",
+    "bears-title",
+    "belongs-to-race",
+    "born-in",
+    "resides-in",
+    "captains",
+    "pilots",
+    "participated-in",
     "depicted-by"
   ],
-  "ui_hint": { "icon": "user", "group": "people" }
+  "ui_hint": { "icon": "user", "group": "people", "color": "blue" }
 }

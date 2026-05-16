@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "arc-subtypes",
+  "schema_version": 1,
+  "values": {
+    "introductory": { "labels": { "en": "Introductory", "fr": "Introductif" } },
+    "training": { "labels": { "en": "Training", "fr": "Entraînement" } },
+    "exploration": { "labels": { "en": "Exploration", "fr": "Exploration" } },
+    "war": { "labels": { "en": "War", "fr": "Guerre" } },
+    "mystery": { "labels": { "en": "Mystery", "fr": "Mystère" } },
+    "political": { "labels": { "en": "Political", "fr": "Politique" } },
+    "tournament": { "labels": { "en": "Tournament", "fr": "Tournoi" } },
+    "flashback": { "labels": { "en": "Flashback", "fr": "Flashback" } },
+    "cover_story": { "labels": { "en": "Cover story", "fr": "Histoire de couverture" } }
+  }
+}

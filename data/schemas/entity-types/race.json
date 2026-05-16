@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "race",
+  "schema_version": 2,
+  "labels": { "en": "Race", "fr": "Race" },
+  "url_segment": "races",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "description_key", "required": false, "historical": false, "localizable": true },
+    { "id": "lifespan", "required": false, "historical": false, "localizable": false },
+    { "id": "average_height", "required": false, "historical": false, "localizable": false }
+  ],
+  "allowed_relations": ["has-member-race", "originates-from", "depicted-by"],
+  "ui_hint": { "icon": "users", "group": "concepts" }
+}

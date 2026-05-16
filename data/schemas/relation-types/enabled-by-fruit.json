@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "enabled-by-fruit",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Enabled by fruit", "inverse": "Enables technique" },
+    "fr": { "active": "Permis par le fruit", "inverse": "Permet la technique" }
+  },
+  "valid_from_types": ["technique"],
+  "valid_to_types": ["devil-fruit"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true
+}

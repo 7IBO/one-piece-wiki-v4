@@ -1,0 +1,28 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "appears-in",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Appears in", "inverse": "Features" },
+    "fr": { "active": "Apparaît dans", "inverse": "Met en scène" }
+  },
+  "valid_from_types": [
+    "character",
+    "crew",
+    "devil-fruit",
+    "concept",
+    "title",
+    "event"
+  ],
+  "valid_to_types": ["manga-chapter", "anime-episode", "film", "sbs", "databook"],
+  "qualifiers": [
+    {
+      "id": "appearance_type",
+      "value_type": "enum",
+      "enum_ref": "appearance-types",
+      "required": false
+    }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": false
+}

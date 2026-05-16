@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "film",
+  "schema_version": 2,
+  "labels": { "en": "Film", "fr": "Film" },
+  "url_segment": "films",
+  "properties": [
+    { "id": "title_key", "required": true, "historical": false, "localizable": true },
+    { "id": "released_at_jp", "required": true, "historical": false, "localizable": false },
+    { "id": "publications", "required": false, "historical": true, "localizable": false },
+    { "id": "runtime_minutes", "required": true, "historical": false, "localizable": false },
+    { "id": "canon_scope", "required": true, "historical": false, "localizable": false },
+    { "id": "oda_supervised", "required": false, "historical": false, "localizable": false },
+    { "id": "director", "required": false, "historical": false, "localizable": false },
+    { "id": "canonical_elements", "required": false, "historical": false, "localizable": false }
+  ],
+  "allowed_relations": ["features", "depicted-by"],
+  "ui_hint": { "icon": "clapperboard", "group": "sources" }
+}

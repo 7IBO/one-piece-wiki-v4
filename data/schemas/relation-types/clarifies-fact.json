@@ -1,0 +1,29 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "clarifies-fact",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Clarifies fact", "inverse": "Clarified in" },
+    "fr": { "active": "Clarifie le fait", "inverse": "Clarifié dans" }
+  },
+  "valid_from_types": ["sbs", "databook"],
+  "valid_to_types": [
+    "character",
+    "crew",
+    "devil-fruit",
+    "location",
+    "organization",
+    "ship",
+    "weapon",
+    "technique",
+    "concept",
+    "title",
+    "race",
+    "event"
+  ],
+  "qualifiers": [
+    { "id": "property_name", "value_type": "string", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true
+}

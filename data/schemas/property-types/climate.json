@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "climate",
+  "schema_version": 1,
+  "labels": { "en": "Climate", "fr": "Climat" },
+  "value_type": "i18n_key",
+  "historical": false,
+  "localizable": true,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["location"]
+}

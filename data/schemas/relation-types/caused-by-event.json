@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "caused-by-event",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Caused by event", "inverse": "Causes event" },
+    "fr": { "active": "Causé par l'évènement", "inverse": "Cause l'évènement" }
+  },
+  "valid_from_types": ["event"],
+  "valid_to_types": ["event"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true
+}

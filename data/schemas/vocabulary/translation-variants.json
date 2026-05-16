@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "translation-variants",
+  "schema_version": 1,
+  "values": {
+    "viz": { "labels": { "en": "Viz Media (EN)", "fr": "Viz Media (EN)" } },
+    "glenat": { "labels": { "en": "Glénat (FR)", "fr": "Glénat (FR)" } },
+    "kana": { "labels": { "en": "Kana (FR)", "fr": "Kana (FR)" } },
+    "official_dub_en": { "labels": { "en": "Official dub (EN)", "fr": "Doublage officiel (EN)" } },
+    "official_dub_fr": { "labels": { "en": "Official dub (FR)", "fr": "Doublage officiel (FR)" } },
+    "fan_translation": { "labels": { "en": "Fan translation", "fr": "Traduction de fans" } }
+  }
+}

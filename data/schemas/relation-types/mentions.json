@@ -1,0 +1,27 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "mentions",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Mentions", "inverse": "Mentioned in" },
+    "fr": { "active": "Mentionne", "inverse": "Mentionné dans" }
+  },
+  "valid_from_types": ["sbs", "databook"],
+  "valid_to_types": [
+    "character",
+    "crew",
+    "devil-fruit",
+    "location",
+    "organization",
+    "ship",
+    "weapon",
+    "technique",
+    "concept",
+    "title",
+    "race",
+    "event"
+  ],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true
+}

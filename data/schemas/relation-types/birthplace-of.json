@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "birthplace-of",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Birthplace of", "inverse": "Born in" },
+    "fr": { "active": "Lieu de naissance de", "inverse": "Né à" }
+  },
+  "valid_from_types": ["location"],
+  "valid_to_types": ["character"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": false
+}

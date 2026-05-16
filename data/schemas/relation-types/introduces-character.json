@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "introduces-character",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Introduces character", "inverse": "Introduced in" },
+    "fr": { "active": "Introduit le personnage", "inverse": "Introduit dans" }
+  },
+  "valid_from_types": ["manga-chapter", "anime-episode", "film", "sbs", "databook"],
+  "valid_to_types": ["character"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "saga",
+  "schema_version": 2,
+  "labels": { "en": "Saga", "fr": "Saga" },
+  "url_segment": "sagas",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "saga_number", "required": true, "historical": false, "localizable": false },
+    { "id": "narrative_key", "required": false, "historical": false, "localizable": true }
+  ],
+  "allowed_relations": ["contains-arc"],
+  "ui_hint": { "icon": "library", "group": "narrative" }
+}

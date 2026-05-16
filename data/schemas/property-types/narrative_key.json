@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "narrative_key",
+  "schema_version": 1,
+  "labels": { "en": "Narrative", "fr": "Récit" },
+  "value_type": "i18n_key",
+  "historical": true,
+  "localizable": true,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["event", "arc", "saga"],
+  "default_qualifiers": ["since"],
+  "ui_hint": { "input_widget": "textarea" }
+}

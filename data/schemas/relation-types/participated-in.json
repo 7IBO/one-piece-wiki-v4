@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "participated-in",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Participated in", "inverse": "Participants" },
+    "fr": { "active": "A participé à", "inverse": "Participants" }
+  },
+  "valid_from_types": ["character", "crew", "organization"],
+  "valid_to_types": ["event"],
+  "qualifiers": [
+    { "id": "side", "value_type": "string", "required": false },
+    { "id": "role", "value_type": "string", "required": false },
+    { "id": "outcome", "value_type": "string", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": false,
+  "historical": true
+}

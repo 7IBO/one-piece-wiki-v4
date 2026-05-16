@@ -1,0 +1,23 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "location",
+  "schema_version": 2,
+  "labels": { "en": "Location", "fr": "Lieu" },
+  "url_segment": "locations",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "location_subtype", "required": true, "historical": false, "localizable": false },
+    { "id": "climate", "required": false, "historical": false, "localizable": true },
+    { "id": "population", "required": false, "historical": true, "localizable": false },
+    { "id": "description_key", "required": false, "historical": false, "localizable": true }
+  ],
+  "allowed_relations": [
+    "part-of-location",
+    "contains-location",
+    "birthplace-of",
+    "home-of",
+    "ruled-by",
+    "depicted-by"
+  ],
+  "ui_hint": { "icon": "map-pin", "group": "places" }
+}

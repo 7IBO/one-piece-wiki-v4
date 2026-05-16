@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "replaced-by",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Replaced by", "inverse": "Replaces" },
+    "fr": { "active": "Remplacé par", "inverse": "Remplace" }
+  },
+  "valid_from_types": ["ship"],
+  "valid_to_types": ["ship"],
+  "qualifiers": [
+    { "id": "since", "value_type": "source_ref", "required": false }
+  ],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": false
+}

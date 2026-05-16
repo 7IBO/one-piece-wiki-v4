@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "crew_capacity",
+  "schema_version": 1,
+  "labels": { "en": "Crew capacity", "fr": "Capacité d'équipage" },
+  "value_type": "number",
+  "value_constraints": { "min": 0, "step": 1 },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["ship"]
+}

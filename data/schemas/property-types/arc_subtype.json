@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "arc_subtype",
+  "schema_version": 1,
+  "labels": { "en": "Arc subtype", "fr": "Sous-type d'arc" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "arc-subtypes" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["arc"]
+}

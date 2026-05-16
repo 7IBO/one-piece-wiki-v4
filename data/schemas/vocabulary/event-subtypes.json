@@ -7,9 +7,18 @@
     "death": { "labels": { "en": "Death", "fr": "Mort" } },
     "presumed_death": { "labels": { "en": "Presumed death", "fr": "Mort présumée" } },
     "recruitment": { "labels": { "en": "Recruitment", "fr": "Recrutement" } },
+    "separation": { "labels": { "en": "Separation", "fr": "Séparation" } },
     "revelation": { "labels": { "en": "Revelation", "fr": "Révélation" } },
     "bounty_change": { "labels": { "en": "Bounty change", "fr": "Changement de prime" } },
     "alliance_formed": { "labels": { "en": "Alliance formed", "fr": "Alliance formée" } },
-    "awakening": { "labels": { "en": "Awakening", "fr": "Éveil" } }
+    "alliance_broken": { "labels": { "en": "Alliance broken", "fr": "Alliance rompue" } },
+    "awakening": { "labels": { "en": "Awakening", "fr": "Éveil" } },
+    "transformation": { "labels": { "en": "Transformation", "fr": "Transformation" } },
+    "capture": { "labels": { "en": "Capture", "fr": "Capture" } },
+    "escape": { "labels": { "en": "Escape", "fr": "Évasion" } },
+    "declaration": { "labels": { "en": "Declaration", "fr": "Déclaration" } },
+    "coronation": { "labels": { "en": "Coronation", "fr": "Couronnement" } },
+    "execution": { "labels": { "en": "Execution", "fr": "Exécution" } },
+    "betrayal": { "labels": { "en": "Betrayal", "fr": "Trahison" } }
   }
 }

@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "has-member-race",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Has member of race", "inverse": "Belongs to race" },
+    "fr": { "active": "A pour membre de race", "inverse": "Appartient à la race" }
+  },
+  "valid_from_types": ["race"],
+  "valid_to_types": ["character"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": false
+}

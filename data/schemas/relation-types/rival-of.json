@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "rival-of",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Rival of", "inverse": "Rivals" },
+    "fr": { "active": "Rival de", "inverse": "Rivaux" }
+  },
+  "valid_from_types": ["character"],
+  "valid_to_types": ["character"],
+  "qualifiers": [
+    { "id": "since", "value_type": "source_ref", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": true
+}

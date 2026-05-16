@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "volume",
+  "schema_version": 1,
+  "labels": { "en": "Volume", "fr": "Tome" },
+  "value_type": "string",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["manga-chapter", "sbs"]
+}

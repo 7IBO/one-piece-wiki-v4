@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "contains-chapter",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Contains chapter", "inverse": "Part of arc" },
+    "fr": { "active": "Contient le chapitre", "inverse": "Partie de l'arc" }
+  },
+  "valid_from_types": ["arc"],
+  "valid_to_types": ["manga-chapter", "anime-episode"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": false
+}

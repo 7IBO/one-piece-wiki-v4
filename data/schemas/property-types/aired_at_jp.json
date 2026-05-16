@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "aired_at_jp",
+  "schema_version": 1,
+  "labels": { "en": "Aired in Japan", "fr": "Diffusé au Japon" },
+  "value_type": "date",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["anime-episode"]
+}

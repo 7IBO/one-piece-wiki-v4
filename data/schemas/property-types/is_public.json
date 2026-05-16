@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "is_public",
+  "schema_version": 1,
+  "labels": { "en": "Public knowledge", "fr": "Connaissance publique" },
+  "value_type": "boolean",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["event"]
+}

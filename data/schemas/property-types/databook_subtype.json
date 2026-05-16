@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "databook_subtype",
+  "schema_version": 1,
+  "labels": { "en": "Databook subtype", "fr": "Sous-type de databook" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "databook-subtypes" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["databook"]
+}

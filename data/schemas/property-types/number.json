@@ -8,5 +8,5 @@
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,
-  "applies_to_entity_types": ["manga-chapter"]
+  "applies_to_entity_types": ["manga-chapter", "anime-episode"]
 }

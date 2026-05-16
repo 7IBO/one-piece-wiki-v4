@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "blood_type",
+  "schema_version": 2,
+  "labels": { "en": "Blood type", "fr": "Groupe sanguin" },
+  "value_type": "string",
+  "value_constraints": { "pattern": "^(A|B|AB|O|F|S|X|XF)[+-]?$" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["character"]
+}

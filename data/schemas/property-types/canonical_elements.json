@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "canonical_elements",
+  "schema_version": 1,
+  "labels": { "en": "Canonical elements", "fr": "Éléments canon" },
+  "value_type": "string",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["film"],
+  "ui_hint": { "input_widget": "string_array" }
+}

@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "contains-location",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Contains location", "inverse": "Part of location" },
+    "fr": { "active": "Contient le lieu", "inverse": "Partie du lieu" }
+  },
+  "valid_from_types": ["location"],
+  "valid_to_types": ["location"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": false
+}

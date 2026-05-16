@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "cover_image",
+  "schema_version": 1,
+  "labels": { "en": "Cover image", "fr": "Image de couverture" },
+  "value_type": "entity_ref",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["manga-chapter"]
+}

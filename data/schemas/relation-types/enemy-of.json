@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "enemy-of",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Enemy of", "inverse": "Enemies" },
+    "fr": { "active": "Ennemi de", "inverse": "Ennemis" }
+  },
+  "valid_from_types": ["character", "crew", "organization"],
+  "valid_to_types": ["character", "crew", "organization"],
+  "qualifiers": [
+    { "id": "since", "value_type": "source_ref", "required": false },
+    { "id": "until", "value_type": "source_ref", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": true
+}

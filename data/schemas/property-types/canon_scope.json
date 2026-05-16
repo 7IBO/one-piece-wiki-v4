@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "canon_scope",
+  "schema_version": 1,
+  "labels": { "en": "Canon scope", "fr": "Portée canon" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "canon-scopes" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": [
+    "manga-chapter",
+    "anime-episode",
+    "film",
+    "sbs",
+    "databook"
+  ]
+}
