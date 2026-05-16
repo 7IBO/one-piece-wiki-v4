@@ -46,11 +46,11 @@ import {
   validateCatalogue,
 } from '@onepiece-wiki/schema-engine';
 import { randomBytes } from 'node:crypto';
-import { readFile } from 'node:fs/promises';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promoteAndMergePR, rejectAndCleanupPR } from './admin-promote.ts';
 import { type DashboardSession, readDashboardSession } from './auth.ts';
+import { dashboardDataSource } from './data-source.ts';
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
 import { buildCookie, clearCookie, newAnonymousSession, newGithubSession } from './session.ts';
 
@@ -103,12 +103,14 @@ function looksLikeMissingInstallation(err: unknown): boolean {
 type CatalogueSnapshot = Awaited<ReturnType<typeof snapshot>>;
 
 async function snapshot() {
-  const catalogue = await loadSchemas();
+  // `dashboardDataSource` is fs in dev (live JSON), in-memory Vite
+  // bundle in prod (data tree shipped inside the function — ADR-019).
+  const catalogue = await loadSchemas(dashboardDataSource);
   const validated = validateCatalogue(catalogue);
   if (catalogue.errors.length > 0 || validated.errors.length > 0) {
     throw new Error('Schema catalogue has errors. Run bun run schema:check.');
   }
-  const loaded = await loadEntities(validated);
+  const loaded = await loadEntities(validated, dashboardDataSource);
   if (loaded.errors.length > 0) {
     throw new Error('Entity files have errors. Run bun run validate.');
   }
@@ -157,13 +159,15 @@ async function readTranslationsFor(
   for (const locale of LOCALES) {
     const path = resolve(REPO_ROOT, translationsPath(locale, type, fileBase));
     try {
-      const text = await readFile(path, 'utf8');
+      // eslint-disable-next-line no-await-in-loop
+      const text = await dashboardDataSource.readTextFile(path);
+      if (text === null) continue;
       const parsed = JSON.parse(text) as unknown;
       if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
         out[locale] = parsed as Record<string, string>;
       }
     } catch {
-      // missing file → empty translations for this locale; that's fine.
+      // malformed file → empty translations for this locale; that's fine.
     }
   }
   return out;

@@ -17,9 +17,9 @@ import {
   Slug,
   ValueType,
 } from '@onepiece-wiki/schemas';
-import { readdir, readFile } from 'node:fs/promises';
 import { basename, join } from 'node:path';
 import { z } from 'zod';
+import { type DataSource, fsDataSource } from './data-source.ts';
 import type { ValidatedCatalogue } from './meta-validator.ts';
 import { UNIVERSES_DIR } from './paths.ts';
 
@@ -160,46 +160,38 @@ export type LoadedEntities = {
   readonly errors: readonly EntityValidationError[];
 };
 
-async function listSubdirectories(dir: string): Promise<string[]> {
-  try {
-    const entries = await readdir(dir, { withFileTypes: true });
-    return entries.filter((entry) => entry.isDirectory()).map((entry) => entry.name).sort();
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
-    throw error;
-  }
-}
-
-async function listJsonFilesShallow(dir: string): Promise<string[]> {
-  try {
-    const entries = await readdir(dir, { withFileTypes: true });
-    return entries
-      .filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
-      .map((entry) => join(dir, entry.name))
-      .sort();
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
-    throw error;
-  }
-}
-
-export async function loadEntities(catalogue: ValidatedCatalogue): Promise<LoadedEntities> {
+export async function loadEntities(
+  catalogue: ValidatedCatalogue,
+  source: DataSource = fsDataSource,
+): Promise<LoadedEntities> {
   const errors: EntityValidationError[] = [];
   const entities = new Map<string, LoadedEntity>();
 
-  const universes = await listSubdirectories(UNIVERSES_DIR);
+  const universes = await source.listSubdirectories(UNIVERSES_DIR);
   for (const universe of universes) {
     const entitiesRoot = join(UNIVERSES_DIR, universe, 'entities');
-    const typeDirs = await listSubdirectories(entitiesRoot);
+    // eslint-disable-next-line no-await-in-loop
+    const typeDirs = await source.listSubdirectories(entitiesRoot);
     for (const typeDir of typeDirs) {
       const entitySchema = buildEntitySchema(typeDir, catalogue);
       const typedDirPath = join(entitiesRoot, typeDir);
-      const files = await listJsonFilesShallow(typedDirPath);
+      // eslint-disable-next-line no-await-in-loop
+      const files = await source.listJsonFiles(typedDirPath);
 
       for (const filePath of files) {
         let raw: unknown;
         try {
-          raw = JSON.parse(await readFile(filePath, 'utf8'));
+          // eslint-disable-next-line no-await-in-loop
+          const text = await source.readTextFile(filePath);
+          if (text === null) {
+            errors.push({
+              code: 'READ_FAILED',
+              path: filePath,
+              message: 'File not found.',
+            });
+            continue;
+          }
+          raw = JSON.parse(text);
         } catch (error) {
           errors.push({
             code: error instanceof SyntaxError ? 'JSON_PARSE_FAILED' : 'READ_FAILED',

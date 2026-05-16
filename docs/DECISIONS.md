@@ -8,6 +8,115 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-019 — Bundle `/data` into the dashboard SSR output for serverless deploys
+
+**Date**: 2026-05-17
+
+**Context**: ADR-018 migrated the dashboard to TanStack Start +
+Nitro, producing a `.output/server/index.mjs` Node bundle that
+runs on Vercel. First deploy attempt crashed: the API handler
+calls `loadSchemas()` / `loadEntities()` from `@onepiece-wiki/
+schema-engine`, which `node:fs.readdir` and `node:fs.readFile`
+the `data/universes/**/*.json` tree at runtime. Vercel serverless
+functions don't have access to repo source files — the bundler
+only ships what's imported.
+
+Side effect at module init: the dashboard's `apps/dashboard/api/
+server.ts` was also calling `loadConfig()` eagerly which tried to
+read a `.pem` file from disk. Same root cause — fs-based config
+on a no-fs platform.
+
+**Options**:
+
+- A — **Bundle `data/` as static assets and read via HTTP at
+  runtime** through Nitro's `publicAssets`. Adds a network hop
+  per read and exposes the raw JSONs publicly. Wrong shape for
+  a private editing tool.
+- B — **Fetch from GitHub at runtime** via Octokit's
+  `repos.getContent`. Adds latency + rate-limit risk for every
+  page load. Defeats the "snapshot of main" model.
+- C — **Bundle `data/` into the SSR JS** via Vite's
+  `import.meta.glob('../../../data/**/*.json', {eager:true,
+  query:'?raw'})`, then feed the resulting in-memory map to a
+  custom `DataSource` adapter. The schema-engine's loaders read
+  from that source instead of `node:fs`. Each Vercel function
+  carries its own copy of the data tree, refreshed on every
+  deploy.
+
+**Choice**: C.
+
+**Rationale**:
+
+- **Read-only data on the dashboard side.** Every dashboard read
+  (schemas, entity lists, single entities, translations) is a
+  snapshot of `main`. Writes always go through GitHub PRs, never
+  touch the local filesystem. So a snapshot-on-deploy model is
+  semantically correct — no live writes to miss.
+- **Vite already compiles + bundles JS for the SSR output.**
+  Adding ~few hundred KB of JSON to that bundle (gzipped) is
+  cheap compared to the ~700KB of `@aws-sdk/client-s3` already
+  shipping in the same bundle.
+- **One-line conditional in the dashboard** (`PROD ? bundle :
+  fs`). Schema-engine consumers outside the dashboard (CLI,
+  build pipeline) keep using the fs default unchanged.
+- **No new dependency.** `import.meta.glob` is built into Vite,
+  `inMemoryDataSource` is ~40 lines in `schema-engine`.
+
+**Consequences**:
+
+- New file `packages/schema-engine/src/data-source.ts` exports:
+  - `DataSource` interface (`listJsonFiles`, `readTextFile`,
+    `listSubdirectories` — the subset of `node:fs/promises` the
+    loaders actually call).
+  - `fsDataSource` — default implementation reading from the
+    real filesystem. Preserves the original behaviour for every
+    CLI and the build pipeline.
+  - `inMemoryDataSource(files: Record<absPath, string>)` —
+    builds a source from a pre-loaded path-to-content map.
+    Used by the dashboard's Vite-glob path.
+- `loadSchemas` and `loadEntities` gain an optional `source:
+  DataSource = fsDataSource` parameter. Backward compatible —
+  every existing call still works.
+- New file `apps/dashboard/api/data-source.ts` exports
+  `dashboardDataSource`, picked at module load:
+  - `import.meta.env.PROD === true` → calls `import.meta.glob`,
+    normalises the relative keys back to absolute REPO_ROOT
+    paths, wraps in `inMemoryDataSource`.
+  - Otherwise → `fsDataSource` (dev + legacy `bun api/server.ts`
+    standalone).
+- `apps/dashboard/api/server.ts` passes `dashboardDataSource` to
+  both `loadSchemas` and `loadEntities`, and uses
+  `dashboardDataSource.readTextFile` for translation lookups
+  (the only direct `node:fs.readFile` call left in the file).
+  `node:fs/promises` import dropped entirely.
+- `vite.config.ts` picks the Nitro preset via env: `vercel`
+  when `VERCEL` is set (Vercel always sets it on build), else
+  `node-server` for local + VPS. `NITRO_PRESET` env overrides
+  both.
+- `vercel.json` at the repo root: `buildCommand=bun install &&
+  bun run -F @onepiece-wiki/dashboard build`,
+  `outputDirectory=apps/dashboard/.output`, `framework=null`
+  (we use Vercel's Build Output API v3 via Nitro, no
+  framework auto-detect).
+- `.env.example` documents the
+  `GITHUB_APP_PRIVATE_KEY_PATH` (local) vs
+  `GITHUB_APP_PRIVATE_KEY` (inline, Vercel) split. The loader
+  already supported the inline form; the comment makes the
+  Vercel path discoverable.
+
+**Refresh model**: any edit merged to `main` on the data repo
+re-triggers Vercel's build → new SSR bundle → new in-memory
+data snapshot. Latency from "PR merged" to "dashboard updated"
+is whatever the Vercel build takes (~30s for the first build,
+faster on subsequent if Turbo cache hits).
+
+**What this ADR doesn't unblock yet**: the GitHub App webhook
+(if/when we wire one) needs a stable HTTPS endpoint — which
+Vercel provides — but the webhook handler isn't built yet.
+Tracked in ROADMAP Phase 7+.
+
+---
+
 ## ADR-018 — Migrate dashboard from Vite + standalone Bun API to TanStack Start
 
 **Date**: 2026-05-17

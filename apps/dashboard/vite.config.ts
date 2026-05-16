@@ -27,12 +27,20 @@ import { nitro } from 'nitro/vite';
 import path from 'node:path';
 import { defineConfig } from 'vite';
 
+// Deploy preset: Vercel auto-detects `VERCEL` in its build env.
+// Locally / on a VPS we fall back to Nitro's `node-server` so
+// `bun run start` produces a `.output/server/index.mjs` runnable
+// under plain `node`. Override via `NITRO_PRESET` for everything
+// else (Cloudflare, AWS, etc.) without touching this file. ADR-019.
+const nitroPreset = process.env['NITRO_PRESET']
+  ?? (process.env['VERCEL'] !== undefined ? 'vercel' : 'node-server');
+
 export default defineConfig({
   plugins: [
     tailwindcss(),
     tanstackStart({ srcDirectory: 'src' }),
     react(),
-    nitro(),
+    nitro({ config: { preset: nitroPreset } }),
   ],
   resolve: {
     alias: {

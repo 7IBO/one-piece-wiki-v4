@@ -3,9 +3,14 @@
  * a typed catalogue grouped by file kind. Performs no semantic checks —
  * that's the meta-validator's job. File-system errors and JSON parse
  * errors are caught and accumulated.
+ *
+ * Sourcing is pluggable via `DataSource` (ADR-019) so the dashboard's
+ * SSR bundle can swap in a Vite-glob source and ship the data tree
+ * inside a Vercel function — CLIs and the build pipeline still use
+ * the fs default unchanged.
  */
-import { readdir, readFile } from 'node:fs/promises';
-import { basename, join } from 'node:path';
+import { basename } from 'node:path';
+import { type DataSource, fsDataSource } from './data-source.ts';
 import {
   ENTITY_TYPES_DIR,
   PROPERTY_TYPES_DIR,
@@ -33,33 +38,29 @@ export type SchemaCatalogue = {
   readonly errors: readonly LoadError[];
 };
 
-async function listJsonFiles(dir: string): Promise<string[]> {
-  try {
-    const entries = await readdir(dir, { withFileTypes: true });
-    return entries
-      .filter((entry) => entry.isFile() && entry.name.endsWith('.json'))
-      .map((entry) => join(dir, entry.name))
-      .sort();
-  } catch (error) {
-    if ((error as NodeJS.ErrnoException).code === 'ENOENT') return [];
-    throw error;
-  }
-}
-
-async function loadDir(dir: string, errors: LoadError[]): Promise<LoadedFile[]> {
-  const files = await listJsonFiles(dir);
+async function loadDir(
+  source: DataSource,
+  dir: string,
+  errors: LoadError[],
+): Promise<LoadedFile[]> {
+  const files = await source.listJsonFiles(dir);
   const loaded: LoadedFile[] = [];
 
   for (const path of files) {
-    let text: string;
+    let text: string | null;
     try {
-      text = await readFile(path, 'utf8');
+      // eslint-disable-next-line no-await-in-loop
+      text = await source.readTextFile(path);
     } catch (error) {
       errors.push({
         code: 'READ_FAILED',
         path,
         message: error instanceof Error ? error.message : String(error),
       });
+      continue;
+    }
+    if (text === null) {
+      errors.push({ code: 'READ_FAILED', path, message: 'File not found.' });
       continue;
     }
 
@@ -82,13 +83,13 @@ async function loadDir(dir: string, errors: LoadError[]): Promise<LoadedFile[]> 
   return loaded;
 }
 
-export async function loadSchemas(): Promise<SchemaCatalogue> {
+export async function loadSchemas(source: DataSource = fsDataSource): Promise<SchemaCatalogue> {
   const errors: LoadError[] = [];
   const [entityTypes, propertyTypes, relationTypes, vocabularies] = await Promise.all([
-    loadDir(ENTITY_TYPES_DIR, errors),
-    loadDir(PROPERTY_TYPES_DIR, errors),
-    loadDir(RELATION_TYPES_DIR, errors),
-    loadDir(VOCABULARY_DIR, errors),
+    loadDir(source, ENTITY_TYPES_DIR, errors),
+    loadDir(source, PROPERTY_TYPES_DIR, errors),
+    loadDir(source, RELATION_TYPES_DIR, errors),
+    loadDir(source, VOCABULARY_DIR, errors),
   ]);
 
   return { entityTypes, propertyTypes, relationTypes, vocabularies, errors };
