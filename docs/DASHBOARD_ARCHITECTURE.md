@@ -293,33 +293,57 @@ This is intentionally a binary tier: every signed-in user has the
 same powers as the maintainer. It works because the allow-list is
 short and trusted.
 
-## Authentication (phase 7 — three-tier model)
+## Authentication (phase 7 — four-tier model with anonymous writes)
 
-Per ADR-015, Phase 7 expands the auth surface to three tiers so
-anyone with a GitHub account can propose changes without granting
-them merge powers. The three tiers:
+Per ADR-015 (revised), Phase 7 opens dashboard writes to
+**anyone**, with or without a GitHub account. The login is
+optional — when present it gives the contributor a `Co-authored-by`
+trailer + `@mention`; when absent the PR is bot-authored only.
+Admin powers (review / merge / reject / promote images) remain
+gated to the listed GitHub admin set.
 
-| Tier            | Identity                                 | Can                                                                       |
-| --------------- | ---------------------------------------- | ------------------------------------------------------------------------- |
-| **Visitor**     | not signed in                            | read-only (browse data, no dashboard write)                               |
-| **Contributor** | GitHub-authenticated, any login          | propose changes (auto-opens a PR), upload images to staging               |
-| **Admin**       | GitHub login in `ADMIN_GITHUB_USERNAMES` | everything Contributor can do + review/merge PRs + promote images + block |
+The four tiers:
 
-Implementation skeleton:
+| Tier            | Identity                                 | Writes         | Co-authored-by                 | Rate-limit handle | Auto-merge |
+| --------------- | ---------------------------------------- | -------------- | ------------------------------ | ----------------- | ---------- |
+| **Anonymous**   | none                                     | yes            | none (bot identity only)       | client IP         | never      |
+| **Contributor** | GitHub login, not admin                  | yes            | contributor login + `@mention` | login             | never      |
+| **Admin**       | GitHub login in `ADMIN_GITHUB_USERNAMES` | yes            | admin login                    | login (high cap)  | yes        |
+| **Moderator**   | same login, calling `/api/admin/*`       | merge / reject | n/a                            | login             | n/a        |
 
-- Session payload gains `tier: 'admin' | 'contributor'`; resolved at
-  OAuth callback time from `ADMIN_GITHUB_USERNAMES`.
-- Write endpoints check `session !== null` (any tier) for the action
-  surface; admin-only routes (`/admin/queue`,
-  `/api/admin/*`) additionally require `tier === 'admin'`.
-- `BLOCKED_GITHUB_USERNAMES` env var: any login matched there is
-  rejected at every write endpoint (403). Operates as a fast revoke
-  without code change.
-- Contributor PRs are opened by the GitHub App with the contributor's
-  Co-authored-by trailer + `@mention` in the PR body. They NEVER
-  auto-merge regardless of CI green (see Phase 7.2 in ROADMAP).
-- Per-contributor rate limits (max 10 open PRs, max 50 uploads/hour,
-  max 25 files/PR) tunable as env vars.
+The four-tier framing is conceptual; in code only **session
+present + admin?** is checked per endpoint:
+
+- **No write surface requires a session.** `POST /api/entities/*`
+  and `POST /api/uploads/presign` work for everyone.
+- **Admin endpoints (`/api/admin/promote`, `/api/admin/reject`)**
+  require `session !== null && isAdmin(cfg, session.login)`.
+- **Anonymous PRs** open via the GitHub App with NO
+  `Co-authored-by` trailer; PR body marks "Anonymous contribution"
+  - a hashed IP fingerprint (no raw IP stored) so the admin can
+    correlate spam patterns when triaging the queue.
+
+Anti-abuse surface:
+
+- **Per-IP rate-limit** for anonymous traffic (in-memory token
+  bucket; resets on server restart, which is fine for the
+  current single-instance dev/early-prod target). Tunable env
+  vars:
+  - `ANON_WRITE_LIMIT_PER_HOUR=10` (PR opens per IP per hour)
+  - `ANON_UPLOAD_LIMIT_PER_HOUR=20` (R2 presigns per IP per hour)
+- **Per-login rate-limit** for contributors (separate, higher
+  caps); admin tier exempt.
+- **`BLOCKED_GITHUB_USERNAMES`** still blocks authenticated trolls.
+- **`BLOCKED_IPS`** new env var, comma-separated, blocks anonymous
+  abuse without a code change. Matched against the
+  `X-Forwarded-For` first-hop or the connecting socket address.
+- **Captcha** (Cloudflare Turnstile or similar) is deferred until
+  the IP rate-limit demonstrably stops being enough.
+
+The auto-merge workflow's existing rule (must find an admin login
+in `Co-authored-by`) covers the auto-merge gate naturally:
+anonymous PRs have NO trailer, contributor PRs trail a non-admin
+login, neither qualifies.
 
 ## Admin moderation queue (phase 7.3)
 

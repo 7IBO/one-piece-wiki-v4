@@ -29,7 +29,7 @@ import {
   submitEntityEdit,
 } from '@onepiece-wiki/github-client';
 import { loadEntities, loadSchemas, validateCatalogue } from '@onepiece-wiki/schema-engine';
-import { randomBytes } from 'node:crypto';
+import { createHash, randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { promoteAndMergePR, rejectAndCleanupPR } from './admin-promote.ts';
@@ -412,10 +412,11 @@ async function handleGetEntity(type: string, slug: string): Promise<Response> {
 
 async function handleSaveEntity(
   cfg: GitHubAppConfig,
-  session: Session,
+  session: Session | null,
   type: string,
   slug: string,
   req: Request,
+  clientIpAddr: string,
 ): Promise<Response> {
   let body: unknown;
   try {
@@ -466,6 +467,11 @@ async function handleSaveEntity(
     });
   }
 
+  // Anonymous contributors get no `Co-authored-by` (the bot is the
+  // sole author). Authenticated contributors get full attribution.
+  // We add a hashed IP fingerprint to the PR body for ANY anonymous
+  // contribution so the admin can spot abuse patterns (same hash
+  // = same source IP) without us storing raw IPs anywhere.
   const octokit = await installationClient(cfg);
   try {
     const pr = await submitEntityEdit(octokit, cfg, {
@@ -473,8 +479,11 @@ async function handleSaveEntity(
       path,
       newContent,
       expectedSha: payload.sha ?? null,
-      contributorLogin: session.login,
-      contributorId: session.userId,
+      contributorLogin: session?.login ?? null,
+      contributorId: session?.userId ?? null,
+      ...(session === null
+        ? { anonymousFingerprint: hashIp(clientIpAddr) }
+        : {}),
       extraFiles,
     });
     return json({ ok: true, pr });
@@ -484,6 +493,22 @@ async function handleSaveEntity(
     }
     throw err;
   }
+}
+
+/**
+ * One-way hash of an IP for the PR body fingerprint. SHA-256
+ * truncated to 8 hex chars — enough to correlate "same source"
+ * across PRs, narrow enough that a recovered hash isn't a privacy
+ * leak. Salted with a per-deploy secret if available to defeat
+ * rainbow tables.
+ */
+function hashIp(ip: string): string {
+  const salt = process.env['ANON_FINGERPRINT_SALT'] ?? 'one-piece-wiki-default-salt';
+  const h = createHash('sha256');
+  h.update(salt);
+  h.update(':');
+  h.update(ip);
+  return h.digest('hex').slice(0, 8);
 }
 
 function handleAuthLogin(cfg: GitHubAppConfig): Response {
@@ -501,8 +526,17 @@ async function handleAuthCallback(cfg: GitHubAppConfig, url: URL): Promise<Respo
   if (!oauthStates.delete(state)) return badRequest('Invalid OAuth state.');
 
   const user = await exchangeCode(cfg, code);
-  if (!isAdmin(cfg, user.login)) {
-    return new Response(`User @${user.login} is not in ADMIN_GITHUB_USERNAMES.`, {
+  // Revised per ADR-015: any GitHub user can authenticate; the
+  // admin check moves to per-endpoint (`isAdmin(cfg, session.login)`
+  // on /api/admin/*). Non-admin sessions just get the contributor
+  // tier — they can write, and their PRs carry Co-authored-by
+  // attribution + an @mention.
+  //
+  // BLOCKED_GITHUB_USERNAMES is the kick-switch for authenticated
+  // trolls — checked here to reject the session at issuance so a
+  // blocked login can't even hold a cookie.
+  if (isBlockedLogin(user.login)) {
+    return new Response(`User @${user.login} is blocked.`, {
       status: 403,
       headers: { 'content-type': 'text/plain' },
     });
@@ -517,6 +551,69 @@ async function handleAuthCallback(cfg: GitHubAppConfig, url: URL): Promise<Respo
     },
   });
 }
+
+/**
+ * Comma-separated env var → Set<string>. Used by both
+ * BLOCKED_GITHUB_USERNAMES and BLOCKED_IPS. Trims + lowercases
+ * entries so casing / whitespace mistakes in the env don't
+ * silently weaken the blocklist.
+ */
+function parseBlocklistEnv(name: string): ReadonlySet<string> {
+  const raw = process.env[name];
+  if (raw === undefined || raw === '') return new Set();
+  return new Set(raw.split(',').map((s) => s.trim().toLowerCase()).filter((s) => s !== ''));
+}
+
+const blockedLogins = parseBlocklistEnv('BLOCKED_GITHUB_USERNAMES');
+const blockedIps = parseBlocklistEnv('BLOCKED_IPS');
+
+function isBlockedLogin(login: string): boolean {
+  return blockedLogins.has(login.trim().toLowerCase());
+}
+
+function isBlockedIp(ip: string): boolean {
+  return blockedIps.has(ip.trim().toLowerCase());
+}
+
+/**
+ * Best-effort client IP. Prefer the first hop of X-Forwarded-For
+ * (set by reverse proxies / Vercel) since the connecting socket
+ * is the proxy itself in deployed environments. Fall back to the
+ * raw connection address when no header is present (local dev).
+ */
+function clientIp(req: Request, fallback: string): string {
+  const xff = req.headers.get('x-forwarded-for');
+  if (xff !== null) {
+    const first = xff.split(',')[0]?.trim();
+    if (first !== undefined && first !== '') return first;
+  }
+  return fallback;
+}
+
+/**
+ * Cheap in-memory token bucket. One counter per (bucket, key),
+ * windowed by the hour. Resets on server restart — acceptable for
+ * Phase 7.2 (single-instance dev/early-prod); upgrade to a shared
+ * store (KV / Redis) when the dashboard scales horizontally.
+ */
+type RateBucket = { hourStartMs: number; count: number; };
+const rateState = new Map<string, RateBucket>();
+
+function rateLimitHit(bucket: string, key: string, limitPerHour: number): boolean {
+  const composite = `${bucket}:${key}`;
+  const now = Date.now();
+  const hourMs = 60 * 60 * 1000;
+  const current = rateState.get(composite);
+  if (current === undefined || now - current.hourStartMs >= hourMs) {
+    rateState.set(composite, { hourStartMs: now, count: 1 });
+    return false;
+  }
+  current.count += 1;
+  return current.count > limitPerHour;
+}
+
+const ANON_WRITE_LIMIT = Number(process.env['ANON_WRITE_LIMIT_PER_HOUR'] ?? '10');
+const ANON_UPLOAD_LIMIT = Number(process.env['ANON_UPLOAD_LIMIT_PER_HOUR'] ?? '20');
 
 function handleAuthMe(session: Session | null): Response {
   if (session === null) return unauthorized('Not signed in.');
@@ -711,10 +808,31 @@ async function handleAdminReject(
 const server = Bun.serve({
   port: PORT,
   hostname: '127.0.0.1',
-  async fetch(req) {
+  async fetch(req, server) {
     const url = new URL(req.url);
     const path = url.pathname.replace(/\/+$/, '') || '/';
     const session = parse(readCookie(req));
+
+    // Connecting-socket fallback for the rare local case where
+    // X-Forwarded-For isn't set. In deployed env the reverse
+    // proxy always supplies XFF, so this is just a safety net.
+    const socketIp = server.requestIP(req)?.address ?? '0.0.0.0';
+    const ip = clientIp(req, socketIp);
+
+    // Anonymous abuse kill-switch — global, before any routing.
+    // Reading a blocked IP's GET is still allowed (read endpoints
+    // are public anyway); only write paths are gated below via
+    // the rate limiter + the explicit isBlockedIp() guard.
+    if (isBlockedIp(ip)) {
+      // Don't reveal anything about the block — return a generic
+      // 403 to make scraping the blocklist boring.
+      if (req.method !== 'GET') {
+        return new Response(JSON.stringify({ error: 'Forbidden.' }), {
+          status: 403,
+          headers: { 'content-type': 'application/json' },
+        });
+      }
+    }
 
     try {
       if (req.method === 'GET' && path === '/api/auth/login') {
@@ -729,7 +847,20 @@ const server = Bun.serve({
       if (req.method === 'POST' && path === '/api/auth/logout') return handleAuthLogout();
 
       if (req.method === 'POST' && path === '/api/uploads/presign') {
-        if (session === null) return unauthorized('Sign in via /api/auth/login first.');
+        // Anonymous + contributor + admin all may upload (to staging).
+        // Admin gets no rate-limit; non-admins are bucketed by their
+        // identity handle (login when present, otherwise IP).
+        if (session === null || !isAdmin(config!, session.login)) {
+          const key = session?.login ?? `ip:${ip}`;
+          if (rateLimitHit('upload', key, ANON_UPLOAD_LIMIT)) {
+            return new Response(
+              JSON.stringify({
+                error: `Rate limit reached (${ANON_UPLOAD_LIMIT}/hour). Try again later.`,
+              }),
+              { status: 429, headers: { 'content-type': 'application/json' } },
+            );
+          }
+        }
         return await handlePresignUpload(req);
       }
 
@@ -779,8 +910,20 @@ const server = Bun.serve({
         if (req.method === 'GET') return await handleGetEntity(type, slug);
         if (req.method === 'POST') {
           if (config === null) return serviceUnavailable(`Save disabled: ${configError}`);
-          if (session === null) return unauthorized('Sign in via /api/auth/login first.');
-          return await handleSaveEntity(config, session, type, slug, req);
+          // Writes open to everyone — anonymous + contributor + admin.
+          // Admin bypasses rate-limit; others bucketed by login or IP.
+          if (session === null || !isAdmin(config, session.login)) {
+            const key = session?.login ?? `ip:${ip}`;
+            if (rateLimitHit('save', key, ANON_WRITE_LIMIT)) {
+              return new Response(
+                JSON.stringify({
+                  error: `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
+                }),
+                { status: 429, headers: { 'content-type': 'application/json' } },
+              );
+            }
+          }
+          return await handleSaveEntity(config, session, type, slug, req, ip);
         }
       }
 

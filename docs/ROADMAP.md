@@ -484,23 +484,35 @@ Per ADR-015 the work splits into four shippable sub-phases:
   one operation. PR rejected → `pending/` object deleted
   immediately + lifecycle as belt-and-suspenders.
 
-#### Phase 7.2 — Open auth to contributors
+#### Phase 7.2 — Open writes to anyone (anonymous + authenticated)
 
-- Dashboard OAuth flow accepts any GitHub user (drop the
-  `ADMIN_GITHUB_USERNAMES` check on `auth/me`).
-- New session shape exposes `tier: 'admin' | 'contributor'`.
-- `BLOCKED_GITHUB_USERNAMES` honoured: 403 on every write endpoint
-  for blocked logins.
-- `submitEntityEdit` PR body now `@mention`s the contributor and
-  the Co-authored-by trailer credits them. Admin contributions are
-  unchanged.
-- Per-contributor rate limits: max 10 open PRs at once, max 50
-  uploads / hour, max 25 files / PR (knobs as env vars).
-- Auto-merge workflow tightened: only PRs whose Co-authored-by
-  matches an admin auto-merge.
-- **Exit**: a contributor signs in, edits an entity, opens a PR
-  attributed to them; admin sees it in the GitHub PR list. No
-  custom admin UI yet — admin reviews on GitHub directly.
+Revised per ADR-015 "Anonymous writes" section: writes do NOT
+require GitHub login. Login is opt-in for attribution.
+
+- Dashboard OAuth flow drops the
+  `ADMIN_GITHUB_USERNAMES` rejection on `/auth/callback`; login
+  becomes an optional identity-attach.
+- Write endpoints (`POST /api/entities/*`,
+  `POST /api/uploads/presign`) accept `session === null`.
+- `submitEntityEdit` accepts `contributorLogin: string | null`.
+  When non-null, the PR opens with `Co-authored-by:
+  <login>@users.noreply.github.com` + `@mention` in the body.
+  When null, no trailer at all — PR is bot-authored — and the
+  body says "Anonymous contribution" with a hashed IP
+  fingerprint for correlation.
+- New env vars + in-memory rate limiter:
+  - `ANON_WRITE_LIMIT_PER_HOUR=10` per IP for save endpoints.
+  - `ANON_UPLOAD_LIMIT_PER_HOUR=20` per IP for presigns.
+  - `BLOCKED_IPS=` comma-separated list, 403 on every write.
+- `BLOCKED_GITHUB_USERNAMES` still honoured for authenticated
+  trolls (admins can also block by IP via env var).
+- Auto-merge workflow unchanged: it already requires an admin
+  `Co-authored-by` so neither anonymous nor non-admin contributor
+  PRs ever auto-merge.
+- **Exit**: anyone visiting the dashboard can edit an entity
+  and open a PR (anonymously or with login attribution); admin
+  sees them in the GitHub PR list AND in `/admin/queue` (7.3).
+  Rate-limit prevents drive-by spam at modest scale.
 
 #### Phase 7.3 — Admin moderation queue
 

@@ -3,16 +3,16 @@
  *
  * Authorship model: every commit and the PR itself are made by the
  * GitHub App's installation token, so the bot is the listed author.
- * The human maintainer is credited via two mechanisms:
+ * Contributor attribution depends on whether the dashboard caller
+ * is authenticated:
  *
- *   1. **Commit `Co-authored-by:` trailers** — GitHub recognises this
- *      and shows the user as co-author of each commit, attributes the
- *      contribution to their graph, and surfaces them in the PR's
- *      "Co-authored-by" footer. Format:
- *      `Co-authored-by: <login> <id+login@users.noreply.github.com>`.
- *
- *   2. **PR body** — the user is `@mention`'d at the top so reviewers
- *      see who submitted the change and the user gets notifications.
+ *   - **Authenticated** (contributor or admin) — commits carry a
+ *     `Co-authored-by: <login> <id+login@users.noreply.github.com>`
+ *     trailer; the PR body `@mention`s the contributor.
+ *   - **Anonymous** (no session) — no trailer at all (PR is
+ *     bot-authored only); PR body declares "Anonymous contribution"
+ *     with the hashed-IP fingerprint passed by the caller, for spam
+ *     correlation without storing raw IPs.
  *
  * Steps:
  * 1. Read the entity file from main; capture its SHA.
@@ -23,7 +23,8 @@
  * 5. Write each additional file (typically translations) to the same
  *    branch, one commit per file. Each file's pre-existing SHA is
  *    fetched first; new files are created without a SHA.
- * 6. Open a PR labelled "edit" + "via-dashboard".
+ * 6. Open a PR labelled "edit" + "via-dashboard" (+ "anonymous"
+ *    when the contributor is null).
  *
  * Returns the opened PR.
  */
@@ -48,8 +49,16 @@ export type SaveRequest = {
   readonly path: string;
   readonly newContent: string;
   readonly expectedSha: string | null;
-  readonly contributorLogin: string;
-  readonly contributorId: number;
+  /** GitHub login of the contributor, or null for anonymous edits. */
+  readonly contributorLogin: string | null;
+  /** Numeric user id, paired with login for the noreply email
+   *  trailer. Null when anonymous. */
+  readonly contributorId: number | null;
+  /** Short hash of the client IP (e.g. SHA-256 truncated to 8 hex
+   *  chars). Only used when `contributorLogin` is null — surfaces
+   *  in the PR body so the admin can correlate spam without us
+   *  storing raw IPs anywhere. */
+  readonly anonymousFingerprint?: string;
   readonly extraFiles?: readonly ExtraFile[];
 };
 
@@ -66,7 +75,14 @@ function coAuthoredByTrailer(login: string, id: number): string {
   return `Co-authored-by: ${login} <${id}+${login}@users.noreply.github.com>`;
 }
 
-function commitMessage(subject: string, login: string, id: number): string {
+function commitMessage(
+  subject: string,
+  login: string | null,
+  id: number | null,
+): string {
+  // Anonymous: bare subject — no trailer. The GitHub App is the
+  // sole author of the commit; nothing to credit.
+  if (login === null || id === null) return `${subject}\n`;
   return `${subject}\n\n${coAuthoredByTrailer(login, id)}\n`;
 }
 
@@ -93,16 +109,14 @@ export async function submitEntityEdit(
     request.path,
     request.newContent,
     current?.sha ?? null,
-    commitMessage(
-      `Edit ${request.entityId}`,
-      request.contributorLogin,
-      request.contributorId,
-    ),
+    commitMessage(`Edit ${request.entityId}`, request.contributorLogin, request.contributorId),
   );
 
   const extraPaths: string[] = [];
   for (const file of request.extraFiles ?? []) {
+    // eslint-disable-next-line no-await-in-loop
     const existing = await getFile(octokit, config, file.path, branch);
+    // eslint-disable-next-line no-await-in-loop
     await writeFile(
       octokit,
       config,
@@ -110,34 +124,51 @@ export async function submitEntityEdit(
       file.path,
       file.content,
       existing?.sha ?? null,
-      commitMessage(
-        `Update ${file.path}`,
-        request.contributorLogin,
-        request.contributorId,
-      ),
+      commitMessage(`Update ${file.path}`, request.contributorLogin, request.contributorId),
     );
     extraPaths.push(file.path);
   }
 
   const fileLines = [request.path, ...extraPaths].map((p) => `- \`${p}\``);
+  const anonymous = request.contributorLogin === null;
+
+  const headerLine = anonymous
+    ? `**Anonymous contribution** via the dashboard${
+      request.anonymousFingerprint !== undefined
+        ? ` — source fingerprint \`${request.anonymousFingerprint}\``
+        : ''
+    }.`
+    : `Submitted by @${request.contributorLogin} via the dashboard.`;
+
+  const footer = anonymous
+    ? [
+      `---`,
+      `_This pull request was opened anonymously through the dashboard._`,
+      `_The fingerprint above is a one-way hash of the source IP — same hash_`,
+      `_= same source — used by admins to correlate spam patterns._`,
+      `_The commit author is the dashboard bot; no \`Co-authored-by\` is set._`,
+    ]
+    : [
+      `---`,
+      `_This pull request was opened by the dashboard bot on behalf of`,
+      `@${request.contributorLogin}. The contributor is credited as`,
+      `\`Co-authored-by\` on every commit so their GitHub account`,
+      `appears on the contribution graph._`,
+    ];
 
   return openPullRequest(octokit, config, {
     headBranch: branch,
     title: `Edit ${request.entityId}`,
     body: [
-      `Submitted by @${request.contributorLogin} via the dashboard.`,
+      headerLine,
       ``,
       `**Entity:** \`${request.entityId}\``,
       ``,
       `**Files changed:**`,
       ...fileLines,
       ``,
-      `---`,
-      `_This pull request was opened by the dashboard bot on behalf of`,
-      `@${request.contributorLogin}. The contributor is credited as`,
-      `\`Co-authored-by\` on every commit so their GitHub account`,
-      `appears on the contribution graph._`,
+      ...footer,
     ].join('\n'),
-    labels: ['edit', 'via-dashboard'],
+    labels: anonymous ? ['edit', 'via-dashboard', 'anonymous'] : ['edit', 'via-dashboard'],
   });
 }

@@ -92,6 +92,50 @@ later) in one server module. The build guard in
 `packages/schema-engine/src/cli/validate.ts` remains, so any
 out-of-band merge still fails CI before bad data lands.
 
+**Anonymous writes — revised**: the maintainer revised the auth
+model again before 7.2 shipped: **unauthenticated users CAN
+write** (modify data + upload images). Drops the GitHub-login
+prerequisite that Option B explicitly rejected. The rationale is
+Wikipedia-style: the barrier to "I want to fix one typo" should
+be near-zero, and PR review remains the gate that prevents bad
+data from landing.
+
+Tiers become four, not three:
+
+| Tier              | Identity                                  | Writes         | Co-authored-by  | Auto-merge eligible |
+| ----------------- | ----------------------------------------- | -------------- | --------------- | ------------------- |
+| **Anonymous**     | none                                      | yes            | none (bot only) | never               |
+| **Contributor**   | GitHub-authenticated, any login           | yes            | contributor     | never               |
+| **Admin (write)** | login in `ADMIN_GITHUB_USERNAMES`         | yes            | admin           | yes                 |
+| **Admin (mod)**   | same login, calling admin queue endpoints | merge / reject | n/a             | n/a                 |
+
+Consequences of opening to anonymous writes:
+
+- **Rate-limit per IP** for anonymous saves + presign-upload (the
+  dashboard's only handle on identity). Defaults: 10 anonymous
+  PRs / hour / IP, 20 anonymous uploads / hour / IP. Tunable as
+  env vars; abusive IPs get blocklisted.
+- **`Co-authored-by` skipped** when the writer is anonymous. The
+  PR is fully attributed to the GitHub App's bot identity. PR
+  body still notes "Anonymous contribution" + a hashed IP
+  fingerprint so the admin can correlate spam patterns without
+  storing raw IPs.
+- **`BLOCKED_GITHUB_USERNAMES`** no longer covers the abuse
+  surface alone; it still works for authenticated trolls but
+  anonymous abuse needs the IP rate-limit + a `BLOCKED_IPS` env
+  var (also added). Defer captcha (Cloudflare Turnstile or
+  similar) until volume forces it.
+- **Auto-merge workflow** already requires an admin
+  `Co-authored-by` to fire — anonymous PRs naturally don't
+  qualify. No workflow change needed.
+- **Image uploads stay staging-only** until the admin promotes
+  via the queue UI. The anonymity tier doesn't change the
+  storage model; it just lowers the bar to _upload to the
+  staging area_.
+
+The build guard + dashboard-driven promotion remain the canonical
+"nothing reaches main without admin OK" path, anonymity or not.
+
 **Rationale**:
 
 - **Three tiers, not two**: a contributor IS materially different
