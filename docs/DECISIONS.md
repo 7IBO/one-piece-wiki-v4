@@ -75,6 +75,23 @@ two-bucket. Phase 0 (lock admin set to `7IBO`) is config-only and
 ships immediately; the remaining sub-phases (7.1 R2 two-stage, 7.2
 auth opening, 7.3 admin queue) ship in order.
 
+**Promotion path — revised**: the initial 7.1 implementation
+shipped with a GitHub Actions workflow (`promote-images.yml`)
+triggered on push to main. That was replaced before any production
+use with a **dashboard-driven** promotion: the
+`/api/admin/promote` endpoint encapsulates the full
+"copy bytes + rewrite URLs on the PR branch + squash-merge"
+sequence, called from the admin queue UI (Phase 7.3) or, until
+that ships, directly by the maintainer. Rationale: a single admin
+(7IBO) means GitHub's review UI isn't where merges happen — the
+queue UI is. Driving promotion from the queue removes a class of
+race (merge-but-promote-hasn't-run-yet), keeps the bytes off the
+public CDN until an explicit human OK, and centralises the
+"validation/transformation" surface (resize, optimize, NSFW
+later) in one server module. The build guard in
+`packages/schema-engine/src/cli/validate.ts` remains, so any
+out-of-band merge still fails CI before bad data lands.
+
 **Rationale**:
 
 - **Three tiers, not two**: a contributor IS materially different

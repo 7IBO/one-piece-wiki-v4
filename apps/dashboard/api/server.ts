@@ -32,6 +32,7 @@ import { loadEntities, loadSchemas, validateCatalogue } from '@onepiece-wiki/sch
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
+import { promoteAndMergePR, rejectAndCleanupPR } from './admin-promote.ts';
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
 import {
   buildCookie,
@@ -607,6 +608,106 @@ async function handlePreviewImage(session: Session | null, key: string): Promise
   }
 }
 
+/**
+ * Admin-only: approve a PR carrying staged images. Promotes the
+ * staged R2 objects, rewrites `staging://` URLs on the PR head
+ * branch, and squash-merges. See `admin-promote.ts` for the
+ * detailed flow.
+ *
+ * Body: `{ prNumber: number }`.
+ */
+async function handleAdminPromote(
+  cfg: GitHubAppConfig,
+  session: Session,
+  req: Request,
+): Promise<Response> {
+  if (!isAdmin(cfg, session.login)) {
+    return new Response(JSON.stringify({ error: 'Admin only.' }), {
+      status: 403,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+  const r2 = r2Config();
+  if (r2 === null) {
+    return serviceUnavailable(
+      'R2 not configured. Set R2_* vars in apps/dashboard/.env.local.',
+    );
+  }
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch (err) {
+    return badRequest(`Invalid JSON: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  const prNumber = (body as { prNumber?: unknown; }).prNumber;
+  if (typeof prNumber !== 'number' || !Number.isInteger(prNumber) || prNumber <= 0) {
+    return badRequest('prNumber must be a positive integer.');
+  }
+  try {
+    const octokit = await installationClient(cfg);
+    const outcome = await promoteAndMergePR({
+      octokit,
+      cfg,
+      r2,
+      prNumber,
+      approverLogin: session.login,
+    });
+    return json(outcome);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`[admin-promote] PR #${prNumber} failed: ${message}\n`);
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+}
+
+/**
+ * Admin-only: reject a PR (close without merging) + delete the
+ * staged R2 objects it introduced. Body: `{ prNumber: number }`.
+ */
+async function handleAdminReject(
+  cfg: GitHubAppConfig,
+  session: Session,
+  req: Request,
+): Promise<Response> {
+  if (!isAdmin(cfg, session.login)) {
+    return new Response(JSON.stringify({ error: 'Admin only.' }), {
+      status: 403,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+  const r2 = r2Config();
+  if (r2 === null) {
+    return serviceUnavailable(
+      'R2 not configured. Set R2_* vars in apps/dashboard/.env.local.',
+    );
+  }
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch (err) {
+    return badRequest(`Invalid JSON: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  const prNumber = (body as { prNumber?: unknown; }).prNumber;
+  if (typeof prNumber !== 'number' || !Number.isInteger(prNumber) || prNumber <= 0) {
+    return badRequest('prNumber must be a positive integer.');
+  }
+  try {
+    const octokit = await installationClient(cfg);
+    const outcome = await rejectAndCleanupPR({ octokit, cfg, r2, prNumber });
+    return json(outcome);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`[admin-reject] PR #${prNumber} failed: ${message}\n`);
+    return new Response(JSON.stringify({ error: message }), {
+      status: 500,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+}
+
 const server = Bun.serve({
   port: PORT,
   hostname: '127.0.0.1',
@@ -639,6 +740,22 @@ const server = Bun.serve({
       if (req.method === 'GET' && path.startsWith('/api/preview/')) {
         const key = decodeURIComponent(path.slice('/api/preview/'.length));
         return await handlePreviewImage(session, key);
+      }
+
+      // POST /api/admin/promote — approve a PR carrying staged
+      // images (promote bytes pending/→images/, rewrite URLs,
+      // squash-merge). Admin-only.
+      if (req.method === 'POST' && path === '/api/admin/promote') {
+        if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
+        if (session === null) return unauthorized('Sign in via /api/auth/login first.');
+        return await handleAdminPromote(config, session, req);
+      }
+
+      // POST /api/admin/reject — close PR + delete staged objects.
+      if (req.method === 'POST' && path === '/api/admin/reject') {
+        if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
+        if (session === null) return unauthorized('Sign in via /api/auth/login first.');
+        return await handleAdminReject(config, session, req);
       }
 
       if (req.method === 'GET' && path === '/api/schemas') return await handleSchemas();

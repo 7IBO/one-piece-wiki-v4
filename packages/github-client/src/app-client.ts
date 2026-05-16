@@ -7,6 +7,11 @@ import { createAppAuth } from '@octokit/auth-app';
 import { Octokit } from '@octokit/rest';
 import type { GitHubAppConfig } from './config.ts';
 
+// Re-export so consumers of @onepiece-wiki/github-client can
+// type-annotate Octokit instances without depending on
+// @octokit/rest directly (the dep is private to this package).
+export type { Octokit };
+
 let cachedInstallationId: number | undefined;
 
 async function resolveInstallationId(config: GitHubAppConfig): Promise<number> {

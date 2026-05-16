@@ -116,27 +116,36 @@ Mechanism:
 - The entity JSON stores the staged reference as
   `staging://<key>` on the `url` property. This is a transient
   encoding only; nothing on `main` ever contains it.
-- GitHub Actions `promote-images.yml` is triggered on push to main
-  containing image-entity changes. It:
-  - Parses any `staging://` references introduced by the merge.
-  - S3-copies `pending/<key>` → `images/<key>`.
-  - Opens a follow-up commit on `main` rewriting `staging://<key>`
-    → the canonical `https://images.…/<key>` URL.
-  - Best-effort deletes the `pending/` source (idempotent: the
-    14-day lifecycle is the safety net).
+- **Promotion is dashboard-driven, not workflow-driven** (see ADR-015
+  "Promotion path — revised"). The admin clicks Approve in the
+  queue UI (Phase 7.3) → `POST /api/admin/promote { prNumber }` →
+  `apps/dashboard/api/admin-promote.ts` runs the full sequence in
+  one transaction:
+  1. Read PR + every changed image entity file from the PR head.
+  2. Collect all `staging://pending/<key>` references.
+  3. S3-copy each `pending/<key>` → `images/<key>` on R2.
+  4. Push a single rewrite commit per touched file on the PR head
+     branch (Co-authored-by the approver).
+  5. Squash-merge the PR via the GitHub API.
+  6. Best-effort delete the `pending/` sources.
+- **Reject path**: `POST /api/admin/reject { prNumber }` →
+  `rejectAndCleanupPR()` closes the PR + deletes the staged
+  objects it introduced.
 - An R2 bucket lifecycle rule deletes anything in `pending/` older
-  than 14 days, covering closed-without-merge PRs and abandoned
-  uploads.
+  than 14 days, covering abandoned uploads, race-deleted sources,
+  and any pending PRs the admin neither approves nor rejects.
 
 Consequences for downstream code:
 
 - Read pipelines (preview app, public app) only ever see canonical
   `https://images.…/<key>` URLs — they don't need to know about
   `staging://`.
-- Build pipeline (`packages/db-builder`) MUST reject entity JSON
-  containing `staging://` URLs; CI fails the PR before merge if
-  the promotion workflow hasn't yet rewritten them. This protects
-  against a half-applied promote.
+- Build pipeline (`packages/schema-engine`'s `bun run validate`)
+  rejects entity JSON containing `staging://` URLs; CI fails any
+  PR that reaches `main` without going through
+  `/api/admin/promote`. This protects against a half-applied
+  promote OR an admin who tried to merge from the GitHub UI
+  directly.
 - Admin queue UI uses `/api/preview/...` for the staged previews;
   admins never have to think about the prefix difference.
 

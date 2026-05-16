@@ -463,19 +463,26 @@ Per ADR-015 the work splits into four shippable sub-phases:
 - New value-encoding `staging://<key>` on the entity `url` property
   → dashboard renders via `/api/preview/...`; downstream code knows
   this is "draft only".
-- GitHub Actions workflow `promote-images.yml` triggered on PR merge
-  to main:
-  - Parses `staging://...` references in the merged diff.
-  - Calls `apps/dashboard/api/promote.ts` (or equivalent worker)
-    that S3-copies `pending/key` → `images/key` and opens a
-    follow-up commit rewriting `staging://key` → the public URL.
-  - Best-effort delete of the `pending/` object after promotion.
+- **Promotion is dashboard-driven** (see ADR-015 "Promotion path
+  — revised"). The bytes never move until an explicit admin
+  Approve in the queue UI (Phase 7.3) → server endpoint
+  `POST /api/admin/promote` calls `apps/dashboard/api/admin-promote.ts`:
+  S3-copies `pending/key` → `images/key`, pushes a rewrite commit
+  on the PR head branch, squash-merges via the GitHub API,
+  best-effort deletes the `pending/` source.
+- A symmetric `POST /api/admin/reject` closes the PR and deletes
+  the staged sources it introduced.
 - R2 lifecycle rule: anything in `pending/` older than 14 days is
-  auto-purged (covers slow reviews; protects against orphans).
-- **Exit**: an admin uploading an image goes through `pending/`,
-  the PR merges, the image lands on the public CDN automatically.
-  PR closed without merge → `pending/` object purged by lifecycle
-  rule.
+  auto-purged (covers abandoned uploads + races where the explicit
+  delete failed).
+- Build guard in `packages/schema-engine/src/cli/validate.ts` fails
+  CI on any `staging://` URL surviving in `main`, so an admin who
+  tried to merge a PR directly on GitHub (bypassing the dashboard)
+  doesn't ship broken URLs.
+- **Exit**: an admin uploading an image goes through `pending/`;
+  approving the PR via dashboard promotes the bytes + merges in
+  one operation. PR rejected → `pending/` object deleted
+  immediately + lifecycle as belt-and-suspenders.
 
 #### Phase 7.2 — Open auth to contributors
 

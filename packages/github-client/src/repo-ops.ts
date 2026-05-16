@@ -161,6 +161,97 @@ export async function openPullRequest(
   };
 }
 
+/**
+ * Read a PR's metadata + file list. Used by the admin moderation
+ * flow to enumerate what's about to be merged (touched paths, head
+ * branch, head sha) so the dashboard can compute its own structured
+ * diff + image staging set before approval.
+ */
+export type PullRequestDetail = {
+  readonly number: number;
+  readonly headBranch: string;
+  readonly headSha: string;
+  readonly baseBranch: string;
+  readonly title: string;
+  readonly body: string;
+  readonly state: 'open' | 'closed';
+  readonly merged: boolean;
+  readonly authorLogin: string;
+  readonly files: readonly { path: string; status: string; }[];
+};
+
+export async function getPullRequest(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  prNumber: number,
+): Promise<PullRequestDetail> {
+  const { data: pr } = await octokit.pulls.get({
+    owner: config.dataRepo.owner,
+    repo: config.dataRepo.repo,
+    pull_number: prNumber,
+  });
+  const { data: files } = await octokit.pulls.listFiles({
+    owner: config.dataRepo.owner,
+    repo: config.dataRepo.repo,
+    pull_number: prNumber,
+    per_page: 300,
+  });
+  return {
+    number: pr.number,
+    headBranch: pr.head.ref,
+    headSha: pr.head.sha,
+    baseBranch: pr.base.ref,
+    title: pr.title,
+    body: pr.body ?? '',
+    state: pr.state === 'closed' ? 'closed' : 'open',
+    merged: pr.merged ?? false,
+    authorLogin: pr.user?.login ?? '',
+    files: files.map((f) => ({ path: f.filename, status: f.status })),
+  };
+}
+
+/**
+ * Squash-merge a PR. Used by the dashboard's admin approve flow
+ * AFTER the staged images have been promoted + the URLs rewritten
+ * on the PR branch — so the merged commit on `main` never contains
+ * a `staging://` URL.
+ */
+export async function mergePullRequest(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  prNumber: number,
+  options: { title?: string; message?: string; } = {},
+): Promise<{ merged: boolean; sha: string; }> {
+  const { data } = await octokit.pulls.merge({
+    owner: config.dataRepo.owner,
+    repo: config.dataRepo.repo,
+    pull_number: prNumber,
+    merge_method: 'squash',
+    ...(options.title !== undefined ? { commit_title: options.title } : {}),
+    ...(options.message !== undefined ? { commit_message: options.message } : {}),
+  });
+  return { merged: data.merged, sha: data.sha };
+}
+
+/**
+ * Close a PR without merging. Used by the admin "Reject" flow; the
+ * caller is responsible for cleaning up any staged R2 objects the
+ * PR introduced (the R2 lifecycle rule on `pending/` is the safety
+ * net for missed deletes).
+ */
+export async function closePullRequest(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  prNumber: number,
+): Promise<void> {
+  await octokit.pulls.update({
+    owner: config.dataRepo.owner,
+    repo: config.dataRepo.repo,
+    pull_number: prNumber,
+    state: 'closed',
+  });
+}
+
 export class OptimisticLockError extends Error {
   override readonly name = 'OptimisticLockError';
   constructor(
