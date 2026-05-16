@@ -46,37 +46,51 @@ const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
  * Resolve the HMAC secret used to sign session cookies. Three paths:
  *
  *  1. `SESSION_SECRET` env var is set → use it. Required in prod;
- *     the server refuses to start without it (no silent fallback to
- *     an in-memory random in production).
+ *     the server refuses to actually serve traffic without it (no
+ *     silent fallback to an in-memory random in production).
  *  2. Dev only, env var unset → read a cached secret from
  *     `apps/dashboard/.dev-session-secret` (gitignored). Generated on
- *     first run, reused on every `bun --hot` reload so the maintainer
- *     doesn't get logged out every time they save a file.
+ *     first run, reused on every `bun --hot` / Vite HMR reload so the
+ *     maintainer doesn't get logged out every time they save a file.
  *  3. The dev file can't be read or written → fall back to a process-
  *     local random. Cookies survive within the process but die on
  *     restart (best-effort; this branch shouldn't happen in normal
  *     setups).
  *
- * Why a file rather than an env default: `bun --hot` re-evaluates
- * top-level module code on every change, so `randomBytes(32)` would
- * be re-rolled and the previous cookie would fail HMAC verification.
- * The file gives stable bytes that survive reload + restart, the only
- * downside being one extra read at boot.
+ * Lazy + memoised: the first `sign()` call triggers resolution, not
+ * module load. Without this, evaluating `session.ts` during the
+ * Vite/Nitro SSR build (where `NODE_ENV=production` is set even
+ * though we're not actually serving traffic) throws and kills the
+ * build. Now the build completes, and a misconfigured prod *runtime*
+ * still fails loudly on the first request.
+ *
+ * Why a file rather than an env default in dev: bun --hot / Vite HMR
+ * re-evaluates top-level module code on every change, so a process-
+ * local `randomBytes(32)` would be re-rolled and the previous cookie
+ * would fail HMAC verification. The file gives stable bytes that
+ * survive reload + restart, the only downside being one extra read
+ * at first sign/verify.
  */
-function loadSessionSecret(): string {
+let cachedSecret: string | null = null;
+function getSessionSecret(): string {
+  if (cachedSecret !== null) return cachedSecret;
   const envSecret = process.env['SESSION_SECRET'];
-  if (envSecret !== undefined && envSecret !== '') return envSecret;
+  if (envSecret !== undefined && envSecret !== '') {
+    cachedSecret = envSecret;
+    return cachedSecret;
+  }
   if (process.env['NODE_ENV'] === 'production') {
     throw new Error(
       'SESSION_SECRET must be set in production. Generate with `openssl rand -base64 32`.',
     );
   }
-  // Dev cache file alongside the API source. `HERE` points at
-  // `apps/dashboard/api` so we resolve one level up.
   const cachePath = resolve(HERE, '..', '.dev-session-secret');
   try {
     const cached = readFileSync(cachePath, 'utf8').trim();
-    if (cached.length >= 32) return cached;
+    if (cached.length >= 32) {
+      cachedSecret = cached;
+      return cachedSecret;
+    }
   } catch {
     // missing / unreadable — fall through to write a new one.
   }
@@ -94,10 +108,9 @@ function loadSessionSecret(): string {
       }); cookies will not survive restart.\n`,
     );
   }
-  return fresh;
+  cachedSecret = fresh;
+  return cachedSecret;
 }
-
-const SECRET = loadSessionSecret();
 
 export type Session =
   | {
@@ -130,7 +143,7 @@ function base64UrlDecode(value: string): string {
 }
 
 function sign(payload: string): string {
-  return createHmac('sha256', SECRET).update(payload).digest('base64url');
+  return createHmac('sha256', getSessionSecret()).update(payload).digest('base64url');
 }
 
 function constantTimeEquals(a: string, b: string): boolean {
