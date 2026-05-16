@@ -5,16 +5,18 @@
  * generator's machinery.
  */
 import { createRootRoute, createRoute } from '@tanstack/react-router';
-import { Route as RootRoute } from './routes/__root.tsx';
-import { Route as IndexRoute } from './routes/index.tsx';
-import { Route as EntityEditRoute } from './routes/types.$type.$slug.tsx';
-import { Route as TypeListRoute } from './routes/types.$type.tsx';
+import { Route as RootRoute } from './routes/__root';
+import { Route as IndexRoute } from './routes/index';
+import { Route as TypeListRoute } from './routes/types.$type';
+import { Route as EntityEditRoute } from './routes/types.$type.$slug';
+import { Route as TableRoute } from './routes/types.$type.table';
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': { parentRoute: typeof RootRoute; };
     '/types/$type': { parentRoute: typeof RootRoute; };
     '/types/$type/$slug': { parentRoute: typeof RootRoute; };
+    '/types/$type/table': { parentRoute: typeof RootRoute; };
   }
 }
 
@@ -33,9 +35,17 @@ const entityEditRoute = EntityEditRoute.update({
   getParentRoute: () => RootRoute,
 } as never);
 
+// Registered BEFORE the $slug route so `/types/$type/table` resolves
+// to the bulk view instead of an entity with slug "table".
+const tableRoute = TableRoute.update({
+  path: '/types/$type/table',
+  getParentRoute: () => RootRoute,
+} as never);
+
 export const routeTree = RootRoute.addChildren([
   indexRoute,
   typeListRoute,
+  tableRoute,
   entityEditRoute,
 ]);
 

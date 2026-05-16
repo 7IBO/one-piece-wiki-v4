@@ -1,24 +1,85 @@
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { type JSX, useEffect, useState } from 'react';
-import { api, type EntityRef } from '../api.ts';
+import { ArrowDown, ArrowUp, Search, Table2 } from 'lucide-react';
+import { type JSX, useDeferredValue, useEffect, useMemo, useState } from 'react';
+import { api, type EntityRef, type SchemaCatalogue } from '../api';
+import { useLocale, useT } from '../form/locale';
 
 export const Route = createFileRoute('/types/$type')({
   component: TypeListComponent,
 });
 
+type SortKey = 'name' | 'slug' | 'id';
+type SortDir = 'asc' | 'desc';
+
 function TypeListComponent(): JSX.Element {
   const { type } = Route.useParams() as { type: string; };
+  const locale = useLocale();
+  const t = useT();
   const [list, setList] = useState<EntityRef[] | null>(null);
+  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [sortKey, setSortKey] = useState<SortKey>('name');
+  const [sortDir, setSortDir] = useState<SortDir>('asc');
+  const deferredQuery = useDeferredValue(query);
 
   useEffect(() => {
     setList(null);
-    api.listEntities(type).then(setList).catch((e: unknown) => {
-      setError(e instanceof Error ? e.message : String(e));
-    });
+    setQuery('');
+    Promise.all([api.listEntities(type), api.schemas()])
+      .then(([l, s]) => {
+        setList(l);
+        setSchemas(s);
+      })
+      .catch((e: unknown) => {
+        setError(e instanceof Error ? e.message : String(e));
+      });
   }, [type]);
+
+  const entityTypeLabel = useMemo(() => {
+    if (schemas === null) return type;
+    const et = schemas.entityTypes[type];
+    return et?.labels[locale] ?? et?.labels.en ?? type;
+  }, [schemas, type, locale]);
+
+  const display = useMemo(() => {
+    if (list === null) return null;
+    const q = deferredQuery.trim().toLowerCase();
+    const filtered = q === ''
+      ? list
+      : list.filter((e) => {
+        const name = e.displayName[locale] ?? e.displayName.en ?? '';
+        return name.toLowerCase().includes(q)
+          || e.slug.toLowerCase().includes(q)
+          || e.id.toLowerCase().includes(q);
+      });
+    const sortFn = (a: EntityRef, b: EntityRef): number => {
+      const av = sortKey === 'name'
+        ? (a.displayName[locale] ?? a.displayName.en ?? a.slug)
+        : sortKey === 'slug'
+        ? a.slug
+        : a.id;
+      const bv = sortKey === 'name'
+        ? (b.displayName[locale] ?? b.displayName.en ?? b.slug)
+        : sortKey === 'slug'
+        ? b.slug
+        : b.id;
+      return av.localeCompare(bv);
+    };
+    const sorted = [...filtered].sort(sortFn);
+    if (sortDir === 'desc') sorted.reverse();
+    return sorted;
+  }, [list, deferredQuery, sortKey, sortDir, locale]);
 
   if (error !== null) {
     return <p className='text-destructive'>Failed: {error}</p>;
@@ -26,36 +87,89 @@ function TypeListComponent(): JSX.Element {
 
   return (
     <div className='space-y-4'>
-      <div>
-        <h1 className='font-mono text-2xl font-semibold tracking-tight'>{type}</h1>
-        <p className='text-muted-foreground text-sm'>
-          {list === null ? 'Loading…' : `${list.length} entities`}
-        </p>
+      <div className='flex items-baseline justify-between gap-3'>
+        <div>
+          <h1 className='text-2xl font-semibold tracking-tight'>
+            {entityTypeLabel}
+          </h1>
+          <p className='text-muted-foreground text-sm'>
+            {list === null
+              ? 'Loading…'
+              : display?.length === list.length
+              ? `${list.length} entities`
+              : `${display?.length ?? 0} of ${list.length} entities`}
+          </p>
+        </div>
+        <Button
+          render={<Link to='/types/$type/table' params={{ type }} />}
+          variant='outline'
+          size='sm'
+          className='gap-1.5'
+        >
+          <Table2 className='size-3.5' />
+          {t('tableView')}
+        </Button>
       </div>
 
-      {list === null ? <Skeleton className='h-64 w-full' /> : (
-        <Card>
-          <CardHeader>
-            <CardTitle className='text-sm font-medium'>Browse</CardTitle>
-          </CardHeader>
-          <CardContent>
-            <ul className='divide-border divide-y'>
-              {list.map((e) => (
-                <li key={e.id} className='py-2'>
+      <div className='bg-background sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b py-2'>
+        <div className='relative flex-1 min-w-64'>
+          <Search className='text-muted-foreground absolute left-2.5 top-1/2 size-4 -translate-y-1/2' />
+          <Input
+            type='search'
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder='Search by name, slug or id…'
+            className='pl-8'
+          />
+        </div>
+        <Select value={sortKey} onValueChange={(v) => setSortKey((v ?? 'name') as SortKey)}>
+          <SelectTrigger className='w-32'>
+            <SelectValue />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value='name'>Name</SelectItem>
+            <SelectItem value='slug'>Slug</SelectItem>
+            <SelectItem value='id'>ID</SelectItem>
+          </SelectContent>
+        </Select>
+        <button
+          type='button'
+          onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
+          className='border-input hover:bg-accent inline-flex size-9 items-center justify-center rounded-md border'
+          aria-label={sortDir === 'asc' ? 'Sort descending' : 'Sort ascending'}
+        >
+          {sortDir === 'asc' ? <ArrowUp className='size-4' /> : <ArrowDown className='size-4' />}
+        </button>
+      </div>
+
+      {list === null
+        ? <Skeleton className='h-64 w-full' />
+        : display === null || display.length === 0
+        ? (
+          <div className='text-muted-foreground rounded-md border border-dashed p-8 text-center text-sm'>
+            {list.length === 0
+              ? 'No entities of this type yet.'
+              : 'No match — try a different search.'}
+          </div>
+        )
+        : (
+          <ul className='divide-border divide-y rounded-md border'>
+            {display.map((e) => {
+              const name = e.displayName[locale] ?? e.displayName.en ?? e.slug;
+              return (
+                <li key={e.id}>
                   <Link
                     to='/types/$type/$slug'
                     params={{ type: e.type, slug: e.slug }}
-                    className='hover:text-primary text-sm'
+                    className='hover:bg-accent/40 block px-4 py-2.5 text-sm font-medium'
                   >
-                    <code className='font-mono'>{e.slug}</code>
-                    <span className='text-muted-foreground ml-2 text-xs'>{e.id}</span>
+                    {name}
                   </Link>
                 </li>
-              ))}
-            </ul>
-          </CardContent>
-        </Card>
-      )}
+              );
+            })}
+          </ul>
+        )}
     </div>
   );
 }

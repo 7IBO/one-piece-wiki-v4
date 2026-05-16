@@ -237,6 +237,35 @@ When the user submits, the SHA is sent. The server checks:
 
 This avoids overwriting another contributor's work.
 
+## Bulk table view
+
+Single-entity editing doesn't scale to "fill in 100 missing French names".
+Route `/types/$type/table` (`apps/dashboard/src/routes/types.$type.table.tsx`)
+renders every entity of a type as a row and a maintainer-chosen set of
+properties as columns.
+
+- Backed by `GET /api/entities/:type/table` which returns all entities of
+  the type with their full `data` + per-locale translations bundled. SHAs
+  are intentionally omitted (one GitHub blob lookup per entity scales
+  poorly); table saves go through `POST /api/entities/:type/:slug` with
+  `sha: null`, trading optimistic locking for bulk speed.
+- Column picker (popover with checkboxes) lets the maintainer choose
+  which properties to show. Default set: name + a couple of localized
+  fields. Choice lives in component state, not persisted yet.
+- Each cell is either inline-editable (string / number / boolean / enum /
+  date / `i18n_key` for localizable properties) or a read-only preview
+  with an "open in drawer" arrow for complex types (entity_ref,
+  source_ref, multi_enum, markdown). Inline edits commit on blur or
+  Enter and tint the cell amber until saved.
+- For localizable properties the cell edits the active-locale
+  translation. Missing `value_key`s are auto-generated as
+  `${entity.id}.${propertyId}` and back-filled into `data.properties`,
+  matching the single-entity form's convention.
+- Save flow: "Save all" iterates dirty rows and calls the existing
+  per-entity save endpoint one at a time, opening one PR per modified
+  entity. Per-row failures are toasted; successful saves invalidate the
+  client cache so a subsequent table refresh sees the latest disk state.
+
 ## Schema-driven menus
 
 The main navigation is generated from the entity types:

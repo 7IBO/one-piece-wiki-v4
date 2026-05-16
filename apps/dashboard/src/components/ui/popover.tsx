@@ -3,8 +3,16 @@ import * as React from 'react';
 
 import { cn } from '@/lib/utils';
 
-function Popover({ ...props }: PopoverPrimitive.Root.Props) {
-  return <PopoverPrimitive.Root data-slot='popover' {...props} />;
+function Popover(
+  props: PopoverPrimitive.Root.Props & { modal?: boolean; },
+) {
+  // Default to non-modal: comboboxes and small pickers shouldn't lock
+  // body scroll. Modal Popovers add `data-scroll-locked` to <body>,
+  // which combined with sticky page chrome causes the visible
+  // scroll position to jump to the top when opened. Pass `modal`
+  // explicitly when a Popover instance should grab focus.
+  const { modal = false, ...rest } = props;
+  return <PopoverPrimitive.Root data-slot='popover' modal={modal} {...rest} />;
 }
 
 function PopoverTrigger({ ...props }: PopoverPrimitive.Trigger.Props) {

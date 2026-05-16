@@ -1,0 +1,252 @@
+/**
+ * UI locale for the dashboard. Drives both the chrome language
+ * (entity-type labels, enum labels, property labels, source titles…)
+ * AND the active translation field in the form. A header switcher
+ * lets the maintainer toggle without leaving the page.
+ *
+ * Initial value: localStorage if set, else browser language, else `en`.
+ * Persisted to localStorage on every change so the choice survives
+ * reloads.
+ */
+import {
+  createContext,
+  type JSX,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from 'react';
+
+export type Locale = 'en' | 'fr';
+export const SUPPORTED_LOCALES: readonly Locale[] = ['en', 'fr'] as const;
+
+const STORAGE_KEY = 'dashboard.locale';
+
+function detectInitialLocale(): Locale {
+  if (typeof window !== 'undefined') {
+    try {
+      const stored = window.localStorage.getItem(STORAGE_KEY);
+      if (stored === 'en' || stored === 'fr') return stored;
+    } catch {
+      // localStorage unavailable; fall through.
+    }
+  }
+  if (typeof navigator === 'undefined') return 'en';
+  const lang = navigator.language.toLowerCase();
+  if (lang.startsWith('fr')) return 'fr';
+  return 'en';
+}
+
+type LocaleContextValue = {
+  readonly locale: Locale;
+  readonly setLocale: (next: Locale) => void;
+};
+
+const LocaleContext = createContext<LocaleContextValue>({
+  locale: 'en',
+  setLocale: () => {/* no-op default; replaced by Provider */},
+});
+
+export function LocaleProvider({ children }: { children: ReactNode; }): JSX.Element {
+  const [locale, setLocaleState] = useState<Locale>(detectInitialLocale);
+  const setLocale = useCallback((next: Locale) => {
+    setLocaleState(next);
+    try {
+      window.localStorage.setItem(STORAGE_KEY, next);
+    } catch {
+      // ignore quota / privacy mode
+    }
+  }, []);
+  useEffect(() => {
+    // Mirror the active locale to <html lang> so screen readers and
+    // browser autofill pick the right language.
+    document.documentElement.lang = locale;
+  }, [locale]);
+  return (
+    <LocaleContext.Provider value={{ locale, setLocale }}>
+      {children}
+    </LocaleContext.Provider>
+  );
+}
+
+export function useLocale(): Locale {
+  return useContext(LocaleContext).locale;
+}
+
+export function useSetLocale(): (next: Locale) => void {
+  return useContext(LocaleContext).setLocale;
+}
+
+/**
+ * Tiny in-line dictionary for chrome strings that form widgets need
+ * (placeholders, button labels). We deliberately avoid a full i18n
+ * runtime — the dictionary is small and lives alongside the code
+ * that uses it.
+ */
+const UI_STRINGS = {
+  pickOne: { en: '— pick one —', fr: '— choisir —' },
+  pickSource: { en: '— pick a source —', fr: '— choisir une source —' },
+  noMatch: { en: 'No match.', fr: 'Aucun résultat.' },
+  loading: { en: 'Loading…', fr: 'Chargement…' },
+  addEntry: { en: 'Add entry', fr: 'Ajouter une entrée' },
+  setValue: { en: 'Set value', fr: 'Définir une valeur' },
+  moreOptions: { en: 'More options', fr: 'Plus d’options' },
+  translations: { en: 'Translations', fr: 'Traductions' },
+  translationsFor: { en: 'Translations of', fr: 'Traductions de' },
+  use: { en: 'Use', fr: 'Utiliser' },
+  cancel: { en: 'Cancel', fr: 'Annuler' },
+  done: { en: 'Done', fr: 'Terminé' },
+  search: { en: 'Search…', fr: 'Rechercher…' },
+  // Property nav
+  propertiesHeader: { en: 'Properties', fr: 'Propriétés' },
+  filledProgress: { en: 'filled', fr: 'remplies' },
+  requiredMissing: { en: 'required missing', fr: 'requis manquants' },
+  required: { en: 'required', fr: 'requis' },
+  optional: { en: 'optional', fr: 'optionnel' },
+  // Section labels (FORM_SECTIONS)
+  sectionIdentity: { en: 'Identity & naming', fr: 'Identité & noms' },
+  sectionNumbers: { en: 'Numbers', fr: 'Nombres' },
+  sectionDates: { en: 'Dates & sources', fr: 'Dates & sources' },
+  sectionCategorical: { en: 'Categorical', fr: 'Catégoriel' },
+  sectionBoolean: { en: 'Yes / no', fr: 'Oui / non' },
+  sectionReferences: { en: 'References', fr: 'Références' },
+  sectionOther: { en: 'Other', fr: 'Autres' },
+  fieldsSingular: { en: 'field', fr: 'champ' },
+  fieldsPlural: { en: 'fields', fr: 'champs' },
+  // Form chrome
+  showSchemaDetails: { en: 'Show schema details', fr: 'Voir les détails du schéma' },
+  hideSchemaDetails: { en: 'Hide schema details', fr: 'Masquer les détails du schéma' },
+  addProperty: { en: 'Add property', fr: 'Ajouter une propriété' },
+  available: { en: 'available', fr: 'disponibles' },
+  noProperties: {
+    en: 'No properties yet — pick one from the sidebar to start.',
+    fr: 'Aucune propriété — choisissez-en une dans la barre latérale.',
+  },
+  // Relations
+  relations: { en: 'Relations', fr: 'Relations' },
+  total: { en: 'total', fr: 'au total' },
+  noRelations: {
+    en: 'No relations yet — pick a type below to add one.',
+    fr: 'Aucune relation — choisissez un type ci-dessous.',
+  },
+  addRelation: { en: 'Add relation', fr: 'Ajouter une relation' },
+  typesAvailable: { en: 'types available', fr: 'types disponibles' },
+  // Save bar / drawer footer
+  unsavedChanges: { en: 'Unsaved changes', fr: 'Modifications non sauvegardées' },
+  saveShortcut: { en: '⌘S to save', fr: '⌘S pour sauvegarder' },
+  noChanges: { en: 'No changes', fr: 'Aucune modification' },
+  openingPr: { en: 'Opening PR…', fr: 'Ouverture de la PR…' },
+  openPr: { en: 'Open PR', fr: 'Ouvrir une PR' },
+  saveAndOpenPr: { en: 'Save & open PR', fr: 'Sauvegarder & ouvrir une PR' },
+  saving: { en: 'Saving…', fr: 'Sauvegarde…' },
+  // Draft banner
+  unsavedDraft: {
+    en: 'Unsaved draft.',
+    fr: 'Brouillon non sauvegardé.',
+  },
+  savedAt: { en: 'Saved', fr: 'Sauvegardé' },
+  discard: { en: 'Discard', fr: 'Annuler' },
+  restore: { en: 'Restore', fr: 'Restaurer' },
+  // Drawer / linked entity
+  fullPage: { en: 'Full page', fr: 'Page complète' },
+  editingType: { en: 'Editing', fr: 'Édition de' },
+  close: { en: 'Close', fr: 'Fermer' },
+  // Source picker extras
+  otherSourceType: { en: 'Other source type', fr: 'Autre type de source' },
+  // Suggestion fallback
+  fromSlug: { en: 'from slug', fr: 'depuis le slug' },
+  // Aria
+  editLinked: {
+    en: 'Edit linked entity in a side panel',
+    fr: 'Éditer l’entité liée dans un panneau',
+  },
+  removeEntry: { en: 'Remove entry', fr: 'Supprimer l’entrée' },
+  removeRelation: { en: 'Remove relation', fr: 'Supprimer la relation' },
+  // Qualifier labels (base + common). Keys map 1:1 to qualifier ids.
+  qSince: { en: 'Since', fr: 'Depuis' },
+  qUntil: { en: 'Until', fr: 'Jusqu’à' },
+  qSource: { en: 'Source', fr: 'Source' },
+  qTarget: { en: 'Target', fr: 'Cible' },
+  qCanonScope: { en: 'Canon scope', fr: 'Portée canon' },
+  qInUniverseDate: { en: 'In-universe date', fr: 'Date in-universe' },
+  qEpistemicStatus: { en: 'Epistemic status', fr: 'Statut épistémique' },
+  qActualValue: { en: 'Actual value', fr: 'Valeur réelle' },
+  qEvent: { en: 'Event', fr: 'Évènement' },
+  qBelievedBy: { en: 'Believed by', fr: 'Cru par' },
+  qKnownTruthBy: { en: 'Known truth by', fr: 'Vérité connue par' },
+  qAssistedBy: { en: 'Assisted by', fr: 'Assisté par' },
+  qReviewStatus: { en: 'Review status', fr: 'Statut de revue' },
+  qRole: { en: 'Role', fr: 'Rôle' },
+  qLoyaltyStatus: { en: 'Loyalty', fr: 'Loyauté' },
+  qAppearanceType: { en: 'Appearance', fr: 'Apparition' },
+  qNameType: { en: 'Name type', fr: 'Type de nom' },
+  qGivenBy: { en: 'Given by', fr: 'Donné par' },
+  qContext: { en: 'Context', fr: 'Contexte' },
+  qIssuedBy: { en: 'Issued by', fr: 'Émis par' },
+  qCoverage: { en: 'Coverage', fr: 'Couverture' },
+  qPropertyName: { en: 'Property name', fr: 'Nom de la propriété' },
+  // Bulk table view
+  tableView: { en: 'Table view', fr: 'Vue tableau' },
+  columns: { en: 'Columns', fr: 'Colonnes' },
+  pickColumns: { en: 'Pick columns', fr: 'Choisir les colonnes' },
+  entity: { en: 'Entity', fr: 'Entité' },
+  empty: { en: 'empty', fr: 'vide' },
+  editInFullForm: { en: 'Edit in full form', fr: 'Éditer dans le formulaire complet' },
+  notEditableInline: { en: 'Not editable inline', fr: 'Non éditable en ligne' },
+  bulkSavePending: { en: 'unsaved changes', fr: 'modifications non sauvegardées' },
+  bulkSaveAll: { en: 'Save all', fr: 'Tout sauvegarder' },
+  bulkSavingProgress: { en: 'Saving', fr: 'Sauvegarde' },
+  bulkSaveDone: { en: 'PRs opened', fr: 'PRs ouvertes' },
+  bulkSaveFailed: { en: 'Some saves failed', fr: 'Certaines sauvegardes ont échoué' },
+  noColumnsSelected: {
+    en: 'Pick at least one column to show.',
+    fr: 'Choisissez au moins une colonne à afficher.',
+  },
+  resetCell: { en: 'Reset', fr: 'Réinitialiser' },
+} as const;
+
+/**
+ * Map a qualifier id to its UI string key. Used by QualifierField to
+ * resolve the label in the active locale without changing the
+ * QualifierDef shape. Unknown ids fall through to humanizeId().
+ */
+const QUALIFIER_LABEL_KEYS: Partial<Record<string, UiStringKey>> = {
+  since: 'qSince',
+  until: 'qUntil',
+  source: 'qSource',
+  target: 'qTarget',
+  canon_scope: 'qCanonScope',
+  in_universe_date: 'qInUniverseDate',
+  epistemic_status: 'qEpistemicStatus',
+  actual_value: 'qActualValue',
+  event: 'qEvent',
+  believed_by: 'qBelievedBy',
+  known_truth_by: 'qKnownTruthBy',
+  assisted_by: 'qAssistedBy',
+  review_status: 'qReviewStatus',
+  role: 'qRole',
+  loyalty_status: 'qLoyaltyStatus',
+  appearance_type: 'qAppearanceType',
+  name_type: 'qNameType',
+  given_by: 'qGivenBy',
+  context: 'qContext',
+  issued_by: 'qIssuedBy',
+  coverage: 'qCoverage',
+  property_name: 'qPropertyName',
+};
+
+export function useQualifierLabel(): (qualifierId: string, fallback: string) => string {
+  const t = useT();
+  return (id, fallback) => {
+    const key = QUALIFIER_LABEL_KEYS[id];
+    return key !== undefined ? t(key) : fallback;
+  };
+}
+
+type UiStringKey = keyof typeof UI_STRINGS;
+
+export function useT(): (key: UiStringKey) => string {
+  const locale = useLocale();
+  return (key) => UI_STRINGS[key][locale] ?? UI_STRINGS[key].en;
+}

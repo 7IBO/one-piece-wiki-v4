@@ -89,7 +89,11 @@ body[data-scroll-locked] {
   --chart-3: oklch(0.439 0 0);
   --chart-4: oklch(0.371 0 0);
   --chart-5: oklch(0.269 0 0);
-  --radius: 0.625rem;
+  /* Sharp, grid-like radius — every shadcn primitive multiplies this
+   * (sm = .6×, md = .8×, lg = 1×). Keeping it small gives the whole
+   * UI a denser "Linear / Notion" feel rather than the rounded
+   * default. Inputs end up with ~3px corners; cards ~5px. */
+  --radius: 0.25rem;
   --sidebar: oklch(0.985 0 0);
   --sidebar-foreground: oklch(0.145 0 0);
   --sidebar-primary: oklch(0.205 0 0);
@@ -140,5 +144,43 @@ body[data-scroll-locked] {
   }
   html {
     @apply font-sans;
+  }
+
+  /* Thin, app-tinted scrollbars everywhere. Default browser
+   * scrollbars (≈17px) eat too much horizontal real estate inside
+   * tight popovers, the table view's sticky columns, and dense
+   * forms. 8px feels like a code editor / file tree — present but
+   * unobtrusive.
+   *
+   * Two implementations side-by-side:
+   *  - Firefox: `scrollbar-width: thin` + `scrollbar-color`.
+   *  - WebKit/Blink: ::-webkit-scrollbar pseudo-elements.
+   *
+   * Colour uses `--muted-foreground` at low opacity so the thumb
+   * matches both light & dark themes for free.
+   */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--muted-foreground) 35%, transparent) transparent;
+  }
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  ::-webkit-scrollbar-thumb {
+    background: color-mix(in oklch, var(--muted-foreground) 35%, transparent);
+    border-radius: 4px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: color-mix(in oklch, var(--muted-foreground) 55%, transparent);
+    background-clip: padding-box;
+  }
+  ::-webkit-scrollbar-corner {
+    background: transparent;
   }
 }

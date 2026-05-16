@@ -2,6 +2,7 @@
 
 import { Command as CommandPrimitive } from 'cmdk';
 import * as React from 'react';
+import { useEffect, useRef } from 'react';
 
 import {
   Dialog,
@@ -67,10 +68,22 @@ function CommandInput({
   className,
   ...props
 }: React.ComponentProps<typeof CommandPrimitive.Input>) {
+  const ref = useRef<HTMLInputElement>(null);
+  // cmdk auto-focuses the search input when mounted; the browser then
+  // calls scrollIntoView on it, which jumps the underlying page even
+  // when the popover already fits in the viewport. Re-focus ourselves
+  // with preventScroll on the next frame to override that behaviour.
+  useEffect(() => {
+    const handle = requestAnimationFrame(() => {
+      ref.current?.focus({ preventScroll: true });
+    });
+    return () => cancelAnimationFrame(handle);
+  }, []);
   return (
     <div data-slot='command-input-wrapper' className='p-1 pb-0'>
       <InputGroup className='h-8! rounded-lg! border-input/30 bg-input/30 shadow-none! *:data-[slot=input-group-addon]:pl-2!'>
         <CommandPrimitive.Input
+          ref={ref}
           data-slot='command-input'
           className={cn(
             'w-full text-sm outline-hidden disabled:cursor-not-allowed disabled:opacity-50',
@@ -94,7 +107,7 @@ function CommandList({
     <CommandPrimitive.List
       data-slot='command-list'
       className={cn(
-        'no-scrollbar max-h-72 scroll-py-1 overflow-x-hidden overflow-y-auto outline-none',
+        'no-scrollbar max-h-80 scroll-py-1 overflow-x-hidden overflow-y-auto p-1 outline-none',
         className,
       )}
       {...props}
@@ -153,7 +166,19 @@ function CommandItem({
     <CommandPrimitive.Item
       data-slot='command-item'
       className={cn(
-        "group/command-item relative flex cursor-default items-center gap-2 rounded-sm px-2 py-1.5 text-sm outline-hidden select-none in-data-[slot=dialog-content]:rounded-lg! data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-selected:bg-muted data-selected:text-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4 data-selected:*:[svg]:text-foreground",
+        // Styled to look identical to <SelectItem> so the two list UIs
+        // feel like the same component. cmdk drives selection via
+        // `data-selected="true"` on the keyboard-active item (mouse
+        // enter also flips it), so we DON'T add a separate `hover:`
+        // rule — it would stack on top of the same-item data-selected
+        // and paint two shades for the same intent.
+        //
+        // IMPORTANT: scope highlight to data-[selected=true] (truthy
+        // value only). cmdk emits BOTH `data-selected="true"` on the
+        // active item AND `data-selected="false"` on every other item,
+        // so the bare `data-selected:` Tailwind variant (attribute
+        // presence, any value) would paint every item as highlighted.
+        "group/command-item relative flex cursor-pointer items-center gap-1.5 rounded-md px-2.5 py-1.5 text-xs outline-hidden select-none in-data-[slot=dialog-content]:rounded-lg! data-[disabled=true]:pointer-events-none data-[disabled=true]:opacity-50 data-[selected=true]:bg-accent data-[selected=true]:text-accent-foreground [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-3.5",
         className,
       )}
       {...props}
@@ -172,7 +197,7 @@ function CommandShortcut({
     <span
       data-slot='command-shortcut'
       className={cn(
-        'ml-auto text-xs tracking-widest text-muted-foreground group-data-selected/command-item:text-foreground',
+        'ml-auto text-xs tracking-widest text-muted-foreground group-data-[selected=true]/command-item:text-foreground',
         className,
       )}
       {...props}
