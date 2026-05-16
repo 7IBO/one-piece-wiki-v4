@@ -457,6 +457,13 @@ function DiffRowHeader({
   );
 }
 
+/**
+ * Compact "before → after" row beneath the property label. Uses the
+ * same 50/50 grid as the SplitDiff table below, so the visual column
+ * boundary stays consistent whether the row is collapsed or expanded.
+ * The directional arrow sits centred on the boundary (absolute-
+ * positioned) so it doesn't steal width from either side.
+ */
 function DiffRowSummary({
   before,
   after,
@@ -469,22 +476,25 @@ function DiffRowSummary({
   afterIsEmpty: boolean;
 }): JSX.Element {
   return (
-    <div className='ml-4 flex items-center gap-1.5 text-[11px]'>
+    <div className='ml-4 relative grid grid-cols-2 items-center text-[11px]'>
       <span
-        className={`min-w-0 max-w-[14rem] flex-1 truncate font-mono text-[10px] ${
+        className={`min-w-0 truncate pr-3 font-mono text-[10px] ${
           beforeIsEmpty ? 'text-muted-foreground italic' : 'line-through opacity-70'
         }`}
       >
         {before.summary}
       </span>
-      <ArrowRight className='size-3 shrink-0 opacity-50' />
       <span
-        className={`min-w-0 flex-1 truncate font-mono text-[10px] ${
+        className={`min-w-0 truncate pl-3 font-mono text-[10px] ${
           afterIsEmpty ? 'text-muted-foreground italic' : 'text-emerald-500'
         }`}
       >
         {after.summary}
       </span>
+      <ArrowRight
+        className='bg-card text-muted-foreground absolute left-1/2 top-1/2 size-3 -translate-x-1/2 -translate-y-1/2 rounded-full opacity-70'
+        aria-hidden='true'
+      />
     </div>
   );
 }
