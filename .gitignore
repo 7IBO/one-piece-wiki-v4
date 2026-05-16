@@ -47,3 +47,9 @@ coverage/
 # ADR-017. Generated on first `bun run dev` so hot-reload doesn't
 # invalidate the cookie. Never committed; never used in production.
 apps/dashboard/.dev-session-secret
+
+# TanStack Start auto-generates the route tree from src/routes/.
+apps/dashboard/src/routeTree.gen.ts
+
+# TanStack Start build artifacts.
+apps/dashboard/.tanstack/

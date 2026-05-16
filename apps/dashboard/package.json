@@ -4,11 +4,10 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "concurrently -k -n vite,api -c blue,green \"vite\" \"bun --hot api/server.ts\"",
-    "dev:vite": "vite",
-    "dev:api": "bun --hot api/server.ts",
+    "dev": "vite",
+    "dev:legacy-api": "bun --hot api/server.ts",
     "build": "vite build",
-    "start": "vite preview",
+    "start": "node dist/server/index.mjs",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

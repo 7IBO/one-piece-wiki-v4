@@ -1,6 +1,13 @@
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
-import { createRootRoute, Link, Outlet, useNavigate } from '@tanstack/react-router';
+import {
+  createRootRoute,
+  HeadContent,
+  Link,
+  Outlet,
+  Scripts,
+  useNavigate,
+} from '@tanstack/react-router';
 import { type JSX } from 'react';
 import { AppSidebar } from '../AppSidebar';
 import { auth, useCurrentUser } from '../auth';
@@ -8,18 +15,37 @@ import { DraftsIndicator } from '../DraftsIndicator';
 import { EntityDrawerProvider } from '../form/EntityDrawerProvider';
 import { LocaleProvider } from '../form/locale';
 import { LocaleSwitcher } from '../LocaleSwitcher';
+import '../styles.css';
 
 export const Route = createRootRoute({
-  component: RootComponent,
+  head: () => ({
+    meta: [
+      { charSet: 'utf-8' },
+      { name: 'viewport', content: 'width=device-width, initial-scale=1' },
+      { title: 'Dashboard — One Piece Wiki' },
+    ],
+  }),
+  component: RootDocument,
 });
 
-function RootComponent(): JSX.Element {
+function RootDocument(): JSX.Element {
+  return (
+    <html lang='en'>
+      <head>
+        <HeadContent />
+      </head>
+      <body>
+        <RootLayout />
+        <Scripts />
+      </body>
+    </html>
+  );
+}
+
+function RootLayout(): JSX.Element {
   const { user, loaded } = useCurrentUser();
   const navigate = useNavigate();
 
-  // Surfaced label: @login for GitHub, plain Pseudo for anonymous.
-  // Wrapping inline below makes the difference visible to a reviewer
-  // glancing at a screenshot.
   const userLabel = user === null
     ? null
     : user.kind === 'github'
@@ -60,9 +86,6 @@ function RootComponent(): JSX.Element {
                       variant='outline'
                       onClick={async () => {
                         await auth.signOut();
-                        // Force a full re-render so useCurrentUser
-                        // re-fetches and the header collapses back
-                        // to the "Sign in" link cleanly.
                         await navigate({ to: '/login' });
                       }}
                     >
