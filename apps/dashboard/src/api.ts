@@ -73,11 +73,31 @@ export type SourceRef = {
 
 export type PresignResult = {
   readonly uploadUrl: string;
-  readonly publicUrl: string;
+  /**
+   * `staging://<key>` placeholder the form stores on the entity
+   * JSON. The promote-images workflow rewrites it to the canonical
+   * public URL after the PR merges. See ADR-015 / Phase 7.1.
+   */
+  readonly stagingUrl: string;
   readonly key: string;
   readonly expiresIn: number;
   readonly maxBytes: number;
 };
+
+/**
+ * Frontend resolver for the `staging://` URL scheme.
+ *  - `staging://pending/foo.png` → `/api/preview/pending/foo.png`
+ *    (signed-redirect endpoint; the browser will follow the 302 to
+ *    a short-lived signed R2 GET URL).
+ *  - Any other URL is returned unchanged — the read pipelines see
+ *    canonical public URLs after merge.
+ */
+export function resolveImageUrl(url: string): string {
+  if (url.startsWith('staging://')) {
+    return `/api/preview/${encodeURI(url.slice('staging://'.length))}`;
+  }
+  return url;
+}
 
 async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(path);
@@ -214,13 +234,15 @@ export const api = {
   },
   /**
    * Ask the API to mint a presigned PUT URL on R2, then PUT the file
-   * bytes from the browser straight to Cloudflare. Returns the final
-   * publicly-served URL the entity JSON should reference.
+   * bytes from the browser straight to Cloudflare. Returns the
+   * `staging://<key>` placeholder the form stores on the entity
+   * JSON; the promote-images workflow rewrites it to the canonical
+   * public URL after the PR merges (see ADR-015 / Phase 7.1).
    */
   async uploadImage(
     file: File,
     onProgress?: (loaded: number, total: number) => void,
-  ): Promise<{ publicUrl: string; key: string; }> {
+  ): Promise<{ stagingUrl: string; key: string; }> {
     const presign = await postJson<PresignResult>('/api/uploads/presign', {
       filename: file.name,
       contentType: file.type,
@@ -252,6 +274,6 @@ export const api = {
         ));
       xhr.send(file);
     });
-    return { publicUrl: presign.publicUrl, key: presign.key };
+    return { stagingUrl: presign.stagingUrl, key: presign.key };
   },
 };

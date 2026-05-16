@@ -32,7 +32,7 @@ import { loadEntities, loadSchemas, validateCatalogue } from '@onepiece-wiki/sch
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { ALLOWED_IMAGE_TYPES, presignUpload, r2Config } from './r2.ts';
+import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
 import {
   buildCookie,
   clearCookie,
@@ -532,7 +532,10 @@ function handleAuthLogout(): Response {
 /**
  * Mint a presigned PUT URL on R2 for the browser to upload an image
  * directly. Auth-gated to admins so randoms can't burn through the
- * bucket quota. Returns { uploadUrl, publicUrl, key, expiresIn, maxBytes }.
+ * bucket quota. Returns { uploadUrl, stagingUrl, key, expiresIn,
+ * maxBytes }. The `stagingUrl` is the `staging://<key>` placeholder
+ * the dashboard stores on the entity JSON until the merge workflow
+ * rewrites it to the canonical public URL (see ADR-015 / Phase 7.1).
  */
 async function handlePresignUpload(req: Request): Promise<Response> {
   const cfg = r2Config();
@@ -574,6 +577,36 @@ async function handlePresignUpload(req: Request): Promise<Response> {
   }
 }
 
+/**
+ * Resolve a `staging://<key>` placeholder to a short-lived signed
+ * GET URL on R2 and 302 to it. The dashboard's `<img src>` hits
+ * this route for staged images so:
+ *   - the signed URL never lands in HTML markup or referrer
+ *     headers (it lives only in the redirect Location header)
+ *   - the URL expires after 60s so a leaked preview link goes
+ *     stale almost immediately
+ *
+ * Auth: any authenticated user. The staged bytes are nominally
+ * private; without a session the route returns 401 so the public
+ * web cannot enumerate `pending/` keys.
+ */
+async function handlePreviewImage(session: Session | null, key: string): Promise<Response> {
+  if (session === null) return unauthorized('Sign in to preview staged images.');
+  const cfg = r2Config();
+  if (cfg === null) {
+    return serviceUnavailable(
+      'R2 not configured. Set R2_* vars in apps/dashboard/.env.local.',
+    );
+  }
+  if (key === '' || key.includes('..')) return badRequest('Invalid key.');
+  try {
+    const signed = await presignRead(cfg, key, 60);
+    return new Response(null, { status: 302, headers: { location: signed } });
+  } catch (err) {
+    return badRequest(err instanceof Error ? err.message : String(err));
+  }
+}
+
 const server = Bun.serve({
   port: PORT,
   hostname: '127.0.0.1',
@@ -597,6 +630,15 @@ const server = Bun.serve({
       if (req.method === 'POST' && path === '/api/uploads/presign') {
         if (session === null) return unauthorized('Sign in via /api/auth/login first.');
         return await handlePresignUpload(req);
+      }
+
+      // GET /api/preview/<key>... — signed redirect for staged R2
+      // objects. The key may contain slashes (e.g. pending/foo.png)
+      // so we slice off the route prefix manually rather than using
+      // a one-segment regex.
+      if (req.method === 'GET' && path.startsWith('/api/preview/')) {
+        const key = decodeURIComponent(path.slice('/api/preview/'.length));
+        return await handlePreviewImage(session, key);
       }
 
       if (req.method === 'GET' && path === '/api/schemas') return await handleSchemas();

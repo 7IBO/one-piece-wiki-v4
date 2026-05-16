@@ -14,7 +14,7 @@
 import { Button } from '@/components/ui/button';
 import { ImagePlus, Loader2, Trash2, Upload } from 'lucide-react';
 import { type JSX, useRef, useState } from 'react';
-import { api } from '../api';
+import { api, resolveImageUrl } from '../api';
 
 /**
  * Metadata the uploader can derive from the picked file. `format`
@@ -109,9 +109,9 @@ export function ImageUpload(
         }),
         decodeDimensions(file),
       ]);
-      onChange(result.publicUrl);
+      onChange(result.stagingUrl);
       onUploaded?.({
-        url: result.publicUrl,
+        url: result.stagingUrl,
         ...(MIME_TO_FORMAT[file.type] !== undefined
           ? { format: MIME_TO_FORMAT[file.type] }
           : {}),
@@ -269,9 +269,12 @@ function ImagePreview({ src }: { src: string; }): JSX.Element {
       </div>
     );
   }
+  // Resolve `staging://` placeholders to the dashboard's signed
+  // preview route so the browser can render unpromoted uploads.
+  const resolved = resolveImageUrl(src);
   return (
     <img
-      src={src}
+      src={resolved}
       alt=''
       className='size-16 shrink-0 rounded object-cover'
       loading='lazy'
