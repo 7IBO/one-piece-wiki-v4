@@ -205,6 +205,73 @@ function entries(value: PropertyValue | undefined): PropertyEntry[] {
   return Array.isArray(value) ? value : [value];
 }
 
+/**
+ * "Empty" = no semantic content the user has actually typed. Used by:
+ *  - the property sidebar's `filled` badge, so revealing an optional
+ *    property without typing anything doesn't flip it to "filled"
+ *  - the `dirty` / diff comparison, so the same reveal doesn't show
+ *    up as an unsaved change
+ *
+ * For non-localizable properties: empty if `value` is undefined/null
+ * or an empty string. (Numbers, booleans, dates etc. are never empty
+ * once set — a literal `0` or `false` is real content.)
+ *
+ * For localizable properties: the entry carries a `value_key` (auto-
+ * generated on reveal) that points into `translations`. We treat the
+ * entry as empty iff NO locale has a non-empty translation for that
+ * key. Otherwise the bare key is just a placeholder.
+ */
+function isEntryEmpty(
+  entry: PropertyEntry,
+  propertyType: PropertyTypeSchema,
+  translations: Translations,
+): boolean {
+  if (propertyType.localizable) {
+    const key = entry['value_key'];
+    if (typeof key !== 'string' || key === '') return true;
+    const en = translations.en[key] ?? '';
+    const fr = translations.fr[key] ?? '';
+    return en === '' && fr === '';
+  }
+  const v = entry['value'];
+  if (v === undefined || v === null) return true;
+  if (typeof v === 'string') return v === '';
+  // Numbers (incl. 0), booleans (incl. false), arrays, objects all
+  // count as real content.
+  return false;
+}
+
+/**
+ * Strip empty entries from each property in `data`. Used to compute a
+ * canonical "shape" for dirty comparison so that revealing an optional
+ * property and then leaving it blank does NOT register as a change.
+ * Properties whose entries all reduce to empty are dropped entirely.
+ * Returns a new object — input is untouched.
+ */
+function stripEmptyProperties(
+  data: EntityData,
+  propertyTypes: Record<string, PropertyTypeSchema>,
+  translations: Translations,
+): EntityData {
+  const props = data.properties;
+  if (props === undefined || props === null) return data;
+  const out: Record<string, PropertyValue> = {};
+  for (const [propertyId, value] of Object.entries(props)) {
+    const pt = propertyTypes[propertyId];
+    // Property declared on no schema → keep verbatim, we don't know
+    // its shape and dropping could lose data.
+    if (pt === undefined) {
+      out[propertyId] = value as PropertyValue;
+      continue;
+    }
+    const list = entries(value as PropertyValue);
+    const kept = list.filter((e) => !isEntryEmpty(e, pt, translations));
+    if (kept.length === 0) continue;
+    out[propertyId] = pt.historical ? kept : (kept[0] ?? {});
+  }
+  return { ...data, properties: out };
+}
+
 function enumValuesFor(
   propertyType: PropertyTypeSchema,
   vocabularies: Record<string, VocabularySchema>,
@@ -270,16 +337,47 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     [props.entityTypes, locale],
   );
 
-  const initialDataString = useMemo(() => JSON.stringify(props.initialData), [props.initialData]);
+  // Normalize before comparing: empty entries (e.g. just-revealed
+  // optional properties the user hasn't typed into yet) are stripped
+  // so they never trigger a "dirty" state or surface as an unsaved
+  // change. See `stripEmptyProperties` for the empty-entry rules.
+  const initialDataNormalized = useMemo(
+    () => stripEmptyProperties(props.initialData, props.propertyTypes, props.initialTranslations),
+    [props.initialData, props.propertyTypes, props.initialTranslations],
+  );
+  const initialDataString = useMemo(
+    () => JSON.stringify(initialDataNormalized),
+    [initialDataNormalized],
+  );
   const initialTranslationsString = useMemo(
     () => JSON.stringify(props.initialTranslations),
     [props.initialTranslations],
   );
-  const dirty = JSON.stringify(data) !== initialDataString
+  const currentDataNormalized = useMemo(
+    () => stripEmptyProperties(data, props.propertyTypes, translations),
+    [data, props.propertyTypes, translations],
+  );
+  const currentDataString = useMemo(
+    () => JSON.stringify(currentDataNormalized),
+    [currentDataNormalized],
+  );
+  const dirty = currentDataString !== initialDataString
     || JSON.stringify(translations) !== initialTranslationsString;
 
+  const draftDataNormalized = useMemo(
+    () =>
+      draft === null
+        ? null
+        : stripEmptyProperties(
+          draft.data as EntityData,
+          props.propertyTypes,
+          draft.translations,
+        ),
+    [draft, props.propertyTypes],
+  );
   const draftIsRecoverable = draft !== null
-    && (JSON.stringify(draft.data) !== initialDataString
+    && draftDataNormalized !== null
+    && (JSON.stringify(draftDataNormalized) !== initialDataString
       || JSON.stringify(draft.translations) !== initialTranslationsString);
 
   useDraftAutosave(props.entityId, data, translations, dirty);
@@ -395,7 +493,12 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     setSaving(true);
     setError(null);
     try {
-      await props.onSave(data, translations);
+      // Send the normalised payload — strips entries the user revealed
+      // but never filled in (e.g. clicked the sidebar then changed
+      // their mind). Sending them as-is would either fail the server-
+      // side Zod (empty string on a non-localizable property) or
+      // pollute the entity JSON with `{ "value": "" }` stubs.
+      await props.onSave(currentDataNormalized, translations);
       clearStoredDraft();
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -491,11 +594,19 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     const section = pt !== undefined
       ? (FORM_SECTIONS.find((s) => s.match(pt)) ?? FORM_SECTIONS[FORM_SECTIONS.length - 1]!)
       : FORM_SECTIONS[FORM_SECTIONS.length - 1]!;
+    // "Filled" iff at least one entry has actual content. An entry
+    // that just exists (e.g. revealed via the sidebar but never typed
+    // into) does NOT count — otherwise revealing then leaving blank
+    // would mark the property as filled, which contradicts the
+    // green-check semantics. See `isEntryEmpty`.
+    const list = entries(data.properties?.[decl.id]);
+    const filled = pt !== undefined
+      && list.some((e) => !isEntryEmpty(e, pt, translations));
     return {
       id: decl.id,
       label,
       required: decl.required ?? false,
-      filled: entries(data.properties?.[decl.id]).length > 0,
+      filled,
       sectionId: section.id,
       sectionLabelKey: section.labelKey,
     };
@@ -725,9 +836,13 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                             pt.labels[locale] ?? pt.labels.en ?? id,
                           ]),
                         )}
-                        initialData={props.initialData}
+                        // Use the same normalised payloads driving
+                        // `dirty` — otherwise revealing an empty
+                        // property would surface as a phantom diff
+                        // ("∅ → [{}]") even though `dirty` is false.
+                        initialData={initialDataNormalized}
                         initialTranslations={props.initialTranslations}
-                        data={data}
+                        data={currentDataNormalized}
                         translations={translations}
                         locale={locale}
                       />

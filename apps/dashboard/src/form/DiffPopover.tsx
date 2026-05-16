@@ -88,7 +88,7 @@ export function DiffPopover(p: {
       <PopoverContent
         align='start'
         side='top'
-        className='w-[28rem] max-h-[60vh] overflow-y-auto p-0'
+        className='w-[min(40rem,calc(100vw-2rem))] max-h-[70vh] overflow-y-auto p-0'
       >
         <div className='border-b px-3 py-2'>
           <p className='text-[10px] font-semibold uppercase tracking-wider'>
@@ -188,43 +188,41 @@ function DiffRow(
 
   return (
     <li className='py-1.5'>
-      <button
-        type='button'
-        className={`flex w-full items-center gap-1 text-left ${
-          expandable ? 'hover:text-foreground/90 cursor-pointer' : 'cursor-default'
-        }`}
-        onClick={() => {
-          if (expandable) setOpen((v) => !v);
-        }}
-        aria-expanded={expandable ? open : undefined}
-        disabled={!expandable}
-      >
-        {expandable
-          ? (open
-            ? <ChevronDown className='size-3 shrink-0 opacity-50' />
-            : <ChevronRight className='size-3 shrink-0 opacity-50' />)
-          : <span className='size-3 shrink-0' aria-hidden='true' />}
-        <span className='text-foreground min-w-0 flex-1 truncate text-[11px] font-medium'>
-          {label}
-        </span>
-      </button>
-      <div className='ml-4 mt-0.5 flex items-center gap-1.5 text-[11px]'>
-        <span
-          className={`min-w-0 max-w-[10rem] flex-1 truncate font-mono text-[10px] ${
-            beforeIsEmpty ? 'text-muted-foreground italic' : 'line-through opacity-70'
-          }`}
-        >
-          {before.summary}
-        </span>
-        <ArrowRight className='size-3 shrink-0 opacity-50' />
-        <span
-          className={`min-w-0 flex-1 truncate font-mono text-[10px] ${
-            afterIsEmpty ? 'text-muted-foreground italic' : 'text-emerald-500'
-          }`}
-        >
-          {after.summary}
-        </span>
-      </div>
+      {
+        /* Whole header (label row + compact before/after) is one big
+          button when the row is expandable, so clicking ANYWHERE in
+          the summary toggles — not just the chevron. Falls back to a
+          plain div when there's nothing to expand, so non-truncated
+          rows don't get a hover-cursor that lies. */
+      }
+      {expandable
+        ? (
+          <button
+            type='button'
+            className='hover:bg-muted/40 -mx-2 flex w-[calc(100%+1rem)] flex-col gap-0.5 rounded-[3px] px-2 py-0.5 text-left'
+            onClick={() => setOpen((v) => !v)}
+            aria-expanded={open}
+          >
+            <DiffRowHeader open={open} expandable label={label} />
+            <DiffRowSummary
+              before={before}
+              after={after}
+              beforeIsEmpty={beforeIsEmpty}
+              afterIsEmpty={afterIsEmpty}
+            />
+          </button>
+        )
+        : (
+          <div>
+            <DiffRowHeader open={false} expandable={false} label={label} />
+            <DiffRowSummary
+              before={before}
+              after={after}
+              beforeIsEmpty={beforeIsEmpty}
+              afterIsEmpty={afterIsEmpty}
+            />
+          </div>
+        )}
       {expandable && open
         ? (
           <div className='mt-1.5 ml-4 grid grid-cols-1 gap-1.5 sm:grid-cols-2'>
@@ -244,6 +242,61 @@ function DiffRow(
         )
         : null}
     </li>
+  );
+}
+
+function DiffRowHeader({
+  open,
+  expandable,
+  label,
+}: {
+  open: boolean;
+  expandable: boolean;
+  label: React.ReactNode;
+}): JSX.Element {
+  return (
+    <div className='flex items-center gap-1'>
+      {expandable
+        ? (open
+          ? <ChevronDown className='size-3 shrink-0 opacity-50' />
+          : <ChevronRight className='size-3 shrink-0 opacity-50' />)
+        : <span className='size-3 shrink-0' aria-hidden='true' />}
+      <span className='text-foreground min-w-0 flex-1 truncate text-[11px] font-medium'>
+        {label}
+      </span>
+    </div>
+  );
+}
+
+function DiffRowSummary({
+  before,
+  after,
+  beforeIsEmpty,
+  afterIsEmpty,
+}: {
+  before: DiffCell;
+  after: DiffCell;
+  beforeIsEmpty: boolean;
+  afterIsEmpty: boolean;
+}): JSX.Element {
+  return (
+    <div className='ml-4 flex items-center gap-1.5 text-[11px]'>
+      <span
+        className={`min-w-0 max-w-[14rem] flex-1 truncate font-mono text-[10px] ${
+          beforeIsEmpty ? 'text-muted-foreground italic' : 'line-through opacity-70'
+        }`}
+      >
+        {before.summary}
+      </span>
+      <ArrowRight className='size-3 shrink-0 opacity-50' />
+      <span
+        className={`min-w-0 flex-1 truncate font-mono text-[10px] ${
+          afterIsEmpty ? 'text-muted-foreground italic' : 'text-emerald-500'
+        }`}
+      >
+        {after.summary}
+      </span>
+    </div>
   );
 }
 
