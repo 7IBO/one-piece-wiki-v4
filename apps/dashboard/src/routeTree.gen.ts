@@ -7,6 +7,7 @@
 import { createRootRoute, createRoute } from '@tanstack/react-router';
 import { Route as RootRoute } from './routes/__root';
 import { Route as IndexRoute } from './routes/index';
+import { Route as LoginRoute } from './routes/login';
 import { Route as TypeListRoute } from './routes/types.$type';
 import { Route as EntityEditRoute } from './routes/types.$type.$slug';
 import { Route as TableRoute } from './routes/types.$type.table';
@@ -14,6 +15,7 @@ import { Route as TableRoute } from './routes/types.$type.table';
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
     '/': { parentRoute: typeof RootRoute; };
+    '/login': { parentRoute: typeof RootRoute; };
     '/types/$type': { parentRoute: typeof RootRoute; };
     '/types/$type/$slug': { parentRoute: typeof RootRoute; };
     '/types/$type/table': { parentRoute: typeof RootRoute; };
@@ -22,6 +24,11 @@ declare module '@tanstack/react-router' {
 
 const indexRoute = IndexRoute.update({
   path: '/',
+  getParentRoute: () => RootRoute,
+} as never);
+
+const loginRoute = LoginRoute.update({
+  path: '/login',
   getParentRoute: () => RootRoute,
 } as never);
 
@@ -44,6 +51,7 @@ const tableRoute = TableRoute.update({
 
 export const routeTree = RootRoute.addChildren([
   indexRoute,
+  loginRoute,
   typeListRoute,
   tableRoute,
   entityEditRoute,

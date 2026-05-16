@@ -295,61 +295,82 @@ short and trusted.
 
 ## Authentication (phase 7 — four-tier model with anonymous writes)
 
-Per ADR-015 (revised), Phase 7 opens dashboard writes to
-**anyone**, with or without a GitHub account. The login is
-optional — when present it gives the contributor a `Co-authored-by`
-trailer + `@mention`; when absent the PR is bot-authored only.
-Admin powers (review / merge / reject / promote images) remain
-gated to the listed GitHub admin set.
+Per ADR-015 + ADR-016 + ADR-017, Phase 7 opens dashboard writes to
+**anyone with a session**, anonymous or GitHub. Auth is a hand-rolled
+stateless signed-cookie layer (HMAC-SHA256, no DB, no external lib —
+ADR-017 reverted the brief better-auth adoption). The cookie carries a
+discriminated union `{kind: 'github' | 'anonymous', ...}`; the route
+handlers project it onto a `DashboardSession` shape via
+`readDashboardSession(req)`. Admin powers (review / merge / reject /
+promote images) remain gated to the listed GitHub admin set.
 
 The four tiers:
 
-| Tier            | Identity                                 | Writes         | PR attribution                                   | Rate-limit handle | Auto-merge |
-| --------------- | ---------------------------------------- | -------------- | ------------------------------------------------ | ----------------- | ---------- |
-| **Anonymous**   | none                                     | yes            | optional self-chosen nickname (plain text, no @) | client IP         | never      |
-| **Contributor** | GitHub login, not admin                  | yes            | login + `@mention` + `Co-authored-by`            | login             | never      |
-| **Admin**       | GitHub login in `ADMIN_GITHUB_USERNAMES` | yes            | login + `@mention` + `Co-authored-by`            | login (high cap)  | yes        |
-| **Moderator**   | same login, calling `/api/admin/*`       | merge / reject | n/a                                              | login             | n/a        |
+| Tier            | Identity                                 | Writes         | PR attribution                           | Rate-limit handle | Auto-merge |
+| --------------- | ---------------------------------------- | -------------- | ---------------------------------------- | ----------------- | ---------- |
+| **Visitor**     | no session                               | none (browse)  | n/a                                      | n/a               | n/a        |
+| **Anonymous**   | better-auth anonymous session            | yes            | bold `**Pseudo**` plain text in PR body  | session userId    | never      |
+| **Contributor** | GitHub login, not admin                  | yes            | `@login` mention in PR body Contributors | session userId    | never      |
+| **Admin**       | GitHub login in `ADMIN_GITHUB_USERNAMES` | yes            | `@login` mention in PR body Contributors | exempt            | yes        |
+| **Moderator**   | same login, calling `/api/admin/*`       | merge / reject | n/a                                      | exempt            | n/a        |
 
-The four-tier framing is conceptual; in code only **session
-present + admin?** is checked per endpoint:
+In code:
 
-- **No write surface requires a session.** `POST /api/entities/*`
-  and `POST /api/uploads/presign` work for everyone.
+- **Write endpoints require a session.** `POST /api/entities/*` and
+  `POST /api/uploads/presign` return 401 for visitors, with the
+  dashboard pointing them at `/login`. Read endpoints stay 100%
+  public.
 - **Admin endpoints (`/api/admin/promote`, `/api/admin/reject`)**
-  require `session !== null && isAdmin(cfg, session.login)`.
-- **Anonymous PRs** open via the GitHub App with NO
-  `Co-authored-by` trailer. The dashboard prompts for an optional
-  self-chosen nickname in the save bar (persisted to
-  `localStorage` so a returning contributor types it once); the
-  nickname is surfaced verbatim in the PR body as plain text
-  (never with `@` — it isn't a GitHub handle). When the nickname
-  is empty the PR body just says "Anonymous contribution". The
-  client IP is used only in-memory for rate-limiting +
-  `BLOCKED_IPS` matching — no IP-derived value is ever written to
-  the PR or to disk.
+  require `session.kind === 'github' && isAdmin(cfg, session.githubLogin)`.
+- **No `Co-authored-by` trailer** is emitted, regardless of tier.
+  The bot is the sole listed commit author; the human is named once
+  in the PR body's `Contributors` section (ADR-016). This means
+  authenticated users no longer see PR commits on their GitHub
+  contribution graph — accepted trade-off.
+- **Anonymous flow**: the contributor signs in at `/login` with a
+  self-chosen pseudo. `POST /api/auth/anonymous` validates the value
+  (1-32 chars, restricted alphabet via `normalizeNickname`) and sets
+  the cookie. No row is allocated server-side — the cookie itself
+  carries `{kind: 'anonymous', nickname, expiresAt}`. The pseudo
+  lands in the PR body as bold plain text — never with `@` — so a
+  reviewer can never confuse the self-chosen label for a real
+  GitHub handle.
 
 Anti-abuse surface:
 
-- **Per-IP rate-limit** for anonymous traffic (in-memory token
-  bucket; resets on server restart, which is fine for the
-  current single-instance dev/early-prod target). Tunable env
-  vars:
-  - `ANON_WRITE_LIMIT_PER_HOUR=10` (PR opens per IP per hour)
-  - `ANON_UPLOAD_LIMIT_PER_HOUR=20` (R2 presigns per IP per hour)
-- **Per-login rate-limit** for contributors (separate, higher
-  caps); admin tier exempt.
-- **`BLOCKED_GITHUB_USERNAMES`** still blocks authenticated trolls.
-- **`BLOCKED_IPS`** new env var, comma-separated, blocks anonymous
-  abuse without a code change. Matched against the
-  `X-Forwarded-For` first-hop or the connecting socket address.
+- **Per-session rate-limit** (in-memory token bucket keyed on the
+  session identity — login for GitHub, pseudo for anonymous;
+  falls back to IP for visitors who somehow hit the rate-limit
+  code path). Tunable env vars:
+  - `ANON_WRITE_LIMIT_PER_HOUR=10` (PR opens per session per hour)
+  - `ANON_UPLOAD_LIMIT_PER_HOUR=20` (R2 presigns per session per hour)
+  - Admins are exempt.
+- **`BLOCKED_GITHUB_USERNAMES`** blocks authenticated trolls — the
+  session cookie still issues but every write returns 403.
+- **`BLOCKED_IPS`** blocks anonymous abuse without a code change.
+  Matched against the `X-Forwarded-For` first-hop or the connecting
+  socket address.
 - **Captcha** (Cloudflare Turnstile or similar) is deferred until
-  the IP rate-limit demonstrably stops being enough.
+  the per-session rate-limit demonstrably stops being enough.
 
-The auto-merge workflow's existing rule (must find an admin login
-in `Co-authored-by`) covers the auto-merge gate naturally:
-anonymous PRs have NO trailer, contributor PRs trail a non-admin
-login, neither qualifies.
+## "Your open contributions" panel (home page)
+
+Section rendered on the home page when a session is present.
+Backed by `GET /api/me/contributions` which calls
+`listOpenContributions(octokit, cfg, identity)`:
+
+- Identity comes from the session — never from a query string, so
+  one user can't peek at another's list.
+- The GitHub search query targets the data repo with
+  `label:via-dashboard` (and `label:anonymous` for anonymous
+  contributors) PLUS a body substring (`- @login` or `**Pseudo**`).
+- Each row deep-links to the entity page. Clicking does NOT yet
+  resume editing on the existing PR's branch — that's deferred,
+  see ADR-016 "Out of scope". Re-saving today opens a fresh PR.
+
+Refresh is manual. The GitHub search index has a few-second lag, so
+a freshly-opened PR may not appear on the next reload; a "Refresh"
+button on the panel covers that case.
 
 ## Admin moderation queue (phase 7.3)
 

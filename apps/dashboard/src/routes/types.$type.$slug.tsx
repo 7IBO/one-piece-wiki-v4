@@ -149,14 +149,13 @@ function EntityEditComponent(): JSX.Element {
         i18nKeys={i18nKeys}
         initialData={entity.data}
         initialTranslations={entity.translations}
-        onSave={async (next, translations, anonymousNickname) => {
+        onSave={async (next, translations) => {
           const result = await api.saveEntity(
             type,
             slug,
             next,
             entity.sha,
             translations,
-            anonymousNickname,
           );
           toast.success(`PR #${result.pr.number} opened`, {
             description: result.pr.htmlUrl,

@@ -169,13 +169,12 @@ export type EntityFormProps = {
   i18nKeys: readonly string[];
   initialData: EntityData;
   initialTranslations: Translations;
-  /** Save the entity. `anonymousNickname` is forwarded to the API
-   *  only when the caller has no GitHub session — server-side it's
-   *  silently ignored if a session is attached. */
+  /** Save the entity. Identity (GitHub login OR anonymous pseudo) now
+   *  travels on the better-auth session cookie set at `/login`, so no
+   *  attribution parameter is needed at the call site. */
   onSave: (
     next: EntityData,
     translations: Translations,
-    anonymousNickname?: string,
   ) => Promise<void>;
   /**
    * Hide the form's built-in fixed save bar — used when the form is
@@ -260,26 +259,12 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   const [error, setError] = useState<string | null>(null);
   const [showSchemaDetails, setShowSchemaDetails] = useState(false);
   const { draft, clear: clearStoredDraft } = useStoredDraft(props.entityId);
-  // Auth state drives whether we show the anonymous nickname input
-  // in the save bar. Anonymous saves use the self-chosen nickname
-  // (persisted to localStorage so power users type it once); logged-
-  // in users get full attribution and the nickname is ignored.
+  // Auth state is only consumed to disable the save button + show a
+  // helpful hint when no session is present (the user must sign in
+  // at `/login`, even as anonymous-with-pseudo, before saving). The
+  // identity itself is on the cookie — nothing to capture in form
+  // state anymore.
   const { user, loaded: userLoaded } = useCurrentUser();
-  const [anonymousNickname, setAnonymousNicknameState] = useState<string>(() => {
-    if (typeof window === 'undefined') return '';
-    try {
-      return window.localStorage.getItem('dashboard.anonymous-nickname') ?? '';
-    } catch {
-      return '';
-    }
-  });
-  function setAnonymousNickname(next: string): void {
-    setAnonymousNicknameState(next);
-    try {
-      if (next === '') window.localStorage.removeItem('dashboard.anonymous-nickname');
-      else window.localStorage.setItem('dashboard.anonymous-nickname', next);
-    } catch { /* ignore quota / privacy mode */ }
-  }
   const entityTypeOpts = useMemo(
     () => entityTypeOptions(props.entityTypes, locale),
     [props.entityTypes, locale],
@@ -410,13 +395,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     setSaving(true);
     setError(null);
     try {
-      // Only forward the nickname when there's no GitHub session.
-      // The server discards it server-side if a session is attached,
-      // but better to not even send it in that case.
-      const nicknameForCall = user === null && anonymousNickname.trim() !== ''
-        ? anonymousNickname.trim()
-        : undefined;
-      await props.onSave(data, translations, nicknameForCall);
+      await props.onSave(data, translations);
       clearStoredDraft();
     } catch (err) {
       setError(err instanceof Error ? err.message : String(err));
@@ -737,27 +716,27 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
               </div>
               <div className='flex items-center gap-2'>
                 {
-                  /* Anonymous nickname input — shown only when there's
-                    no GitHub session. Persists to localStorage so a
-                    returning anonymous contributor doesn't have to
-                    re-type. Never shown to logged-in users (login
-                    provides the identity). */
+                  /* Sign-in prompt — shown when no session is present.
+                    The save button stays disabled until the user picks
+                    a flow (anonymous-with-pseudo OR GitHub) on the
+                    /login page. Identity is no longer captured here. */
                 }
                 {userLoaded && user === null
                   ? (
-                    <input
-                      type='text'
-                      value={anonymousNickname}
-                      onChange={(e) => setAnonymousNickname(e.target.value.slice(0, 32))}
-                      placeholder={t('nicknamePlaceholder')}
-                      maxLength={32}
-                      aria-label={t('nickname')}
-                      title={t('nicknameHelp')}
-                      className='border-input bg-background h-8 w-40 rounded-[3px] border px-2 text-xs placeholder:text-muted-foreground/70 focus:outline-none focus:ring-1 focus:ring-ring'
-                    />
+                    <a
+                      href='/login'
+                      className='text-muted-foreground hover:text-foreground text-[11px] underline-offset-2 hover:underline'
+                      title={t('signInToSave')}
+                    >
+                      {t('signInToSave')}
+                    </a>
                   )
                   : null}
-                <Button type='button' disabled={saving || !dirty} onClick={handleSave}>
+                <Button
+                  type='button'
+                  disabled={saving || !dirty || (userLoaded && user === null)}
+                  onClick={handleSave}
+                >
                   {saving ? t('openingPr') : t('openPr')}
                 </Button>
               </div>

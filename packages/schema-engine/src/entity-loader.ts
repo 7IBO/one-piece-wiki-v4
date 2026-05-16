@@ -91,7 +91,17 @@ function propertyEntrySchema(
   return entry;
 }
 
-function buildEntitySchema(
+/**
+ * Build a Zod schema that fully validates one entity of `entityTypeId`
+ * against the resolved schema catalogue. Re-used at runtime by the
+ * dashboard API to validate save payloads before opening a PR — same
+ * validator the CLI uses on disk, so an edit that passes here is
+ * guaranteed to pass `bun run validate` after the file lands.
+ *
+ * Returns `undefined` when the entity type isn't in the catalogue
+ * (the caller should reject with a 400-style error in that case).
+ */
+export function buildEntitySchema(
   entityTypeId: string,
   catalogue: ValidatedCatalogue,
 ): z.ZodTypeAny | undefined {

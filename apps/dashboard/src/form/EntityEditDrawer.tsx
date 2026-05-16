@@ -225,14 +225,13 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
                 hideSaveBar
                 saveTrigger={saveTrigger}
                 onStatus={setStatus}
-                onSave={async (next, translations, anonymousNickname) => {
+                onSave={async (next, translations) => {
                   const result = await api.saveEntity(
                     p.type,
                     p.slug,
                     next,
                     entity.sha,
                     translations,
-                    anonymousNickname,
                   );
                   toast.success(`PR #${result.pr.number} opened`, {
                     description: result.pr.htmlUrl,

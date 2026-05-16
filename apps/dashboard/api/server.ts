@@ -3,17 +3,25 @@
  *
  * Read endpoints (no auth):
  *   GET  /api/schemas
+ *   GET  /api/sources
+ *   GET  /api/i18n-keys
  *   GET  /api/entities/:type
  *   GET  /api/entities/:type/:slug         { data, sha }
  *
- * Auth:
- *   GET  /api/auth/login                    redirect to GitHub OAuth
- *   GET  /api/auth/callback?code=&state=    exchange + set cookie
- *   GET  /api/auth/me                       { login } or 401
- *   POST /api/auth/logout
+ * Auth (ADR-017 — stateless signed-cookie sessions):
+ *   GET  /api/auth/login/github             302 to GitHub OAuth
+ *   GET  /api/auth/callback/github          exchange + set cookie
+ *   POST /api/auth/anonymous {nickname}     validate + set cookie
+ *   POST /api/auth/sign-out                 clear cookie
+ *   GET  /api/auth/me                       { kind, login|nickname, displayName } or 401
  *
- * Write endpoints (require admin session):
+ * Write endpoints (require a session — anonymous or GitHub):
+ *   POST /api/uploads/presign               mint R2 PUT URL
  *   POST /api/entities/:type/:slug          opens a PR with the edit
+ *
+ * Admin endpoints (require GitHub session in ADMIN_GITHUB_USERNAMES):
+ *   POST /api/admin/promote {prNumber}
+ *   POST /api/admin/reject  {prNumber}
  *
  * Listens on 127.0.0.1:4101. Vite proxies /api/*.
  */
@@ -24,30 +32,31 @@ import {
   type GitHubAppConfig,
   installationClient,
   isAdmin,
+  listOpenContributions,
   loadConfig,
+  type OpenContribution,
   OptimisticLockError,
   submitEntityEdit,
 } from '@onepiece-wiki/github-client';
-import { loadEntities, loadSchemas, validateCatalogue } from '@onepiece-wiki/schema-engine';
+import {
+  buildEntitySchema,
+  loadEntities,
+  loadSchemas,
+  validateCatalogue,
+} from '@onepiece-wiki/schema-engine';
 import { randomBytes } from 'node:crypto';
 import { readFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
 import { promoteAndMergePR, rejectAndCleanupPR } from './admin-promote.ts';
+import { type DashboardSession, readDashboardSession } from './auth.ts';
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
-import {
-  buildCookie,
-  clearCookie,
-  newSession,
-  parse,
-  readCookie,
-  type Session,
-} from './session.ts';
+import { buildCookie, clearCookie, newAnonymousSession, newGithubSession } from './session.ts';
 
 const REPO_ROOT = resolve(import.meta.dir, '..', '..', '..');
 const UNIVERSE = 'one-piece';
 const PORT = Number(process.env['DASHBOARD_API_PORT'] ?? '4101');
 const PUBLIC_BASE_URL = process.env['DASHBOARD_PUBLIC_URL'] ?? 'http://localhost:4100';
-const CALLBACK_URL = `${PUBLIC_BASE_URL}/api/auth/callback`;
+const OAUTH_CALLBACK_URL = `${PUBLIC_BASE_URL}/api/auth/callback/github`;
 
 let config: GitHubAppConfig | null = null;
 let configError: string | null = null;
@@ -60,8 +69,6 @@ try {
     `[dashboard API] Read endpoints will work; auth + save will return 503.\n\n`,
   );
 }
-
-const oauthStates = new Set<string>();
 
 // Set once when we detect the GitHub App is not installed on the data
 // repo (a normal early-stage state). After that, getFile/openPR calls
@@ -435,11 +442,23 @@ function normalizeNickname(raw: unknown): string | null | { error: string; } {
 
 async function handleSaveEntity(
   cfg: GitHubAppConfig,
-  session: Session | null,
+  session: DashboardSession,
   type: string,
   slug: string,
   req: Request,
 ): Promise<Response> {
+  // BLOCKED_GITHUB_USERNAMES kill-switch. The OAuth callback also
+  // rejects blocked logins at session issuance, but checking again
+  // here defends against a blocked login that managed to grab a
+  // cookie before being added to the list — they keep the cookie
+  // but every write fails.
+  if (session.kind === 'github' && isBlockedLogin(session.login)) {
+    return new Response(JSON.stringify({ error: `User @${session.login} is blocked.` }), {
+      status: 403,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+
   let body: unknown;
   try {
     body = await req.json();
@@ -453,16 +472,19 @@ async function handleSaveEntity(
     data?: Record<string, unknown>;
     sha?: string | null;
     translations?: Partial<Record<Locale, Record<string, string>>>;
-    /** Self-chosen display name for anonymous contributions. Ignored
-     *  when the request carries a session (the login wins). */
-    anonymousNickname?: unknown;
   };
   if (payload.data === undefined || typeof payload.data !== 'object' || payload.data === null) {
     return badRequest('Body.data must be the entity object.');
   }
-  const nick = session === null ? normalizeNickname(payload.anonymousNickname) : null;
-  if (nick !== null && typeof nick === 'object') {
-    return badRequest(nick.error);
+  // Nickname now lives on the session (anonymous sign-in set it once);
+  // we no longer read it from the request body. Validate the stored
+  // value defensively in case a future bug lets an invalid value
+  // reach the DB.
+  let anonymousNickname: string | null = null;
+  if (session.kind === 'anonymous') {
+    const checked = normalizeNickname(session.nickname);
+    if (checked !== null && typeof checked === 'object') return badRequest(checked.error);
+    anonymousNickname = checked;
   }
 
   const snap = await snapshot();
@@ -474,6 +496,24 @@ async function handleSaveEntity(
   }
   if (payload.data['type'] !== type) return badRequest(`data.type must equal "${type}".`);
   if (payload.data['slug'] !== slug) return badRequest(`data.slug must equal "${slug}".`);
+
+  // Server-side schema validation — same Zod validator the CLI uses
+  // in `bun run validate`. An edit that passes here is guaranteed to
+  // pass CI once the PR opens. Without this check the API would
+  // happily open a PR for malformed data (wrong value type, missing
+  // required property, unknown property id, …) and the contributor
+  // would only see the failure as a red X on the PR minutes later.
+  const entitySchema = buildEntitySchema(type, snap.validated);
+  if (entitySchema === undefined) {
+    return badRequest(`No schema registered for entity type "${type}".`);
+  }
+  const validation = entitySchema.safeParse(payload.data);
+  if (!validation.success) {
+    const issues = validation.error.errors.map((issue) =>
+      `${issue.path.join('.') || '<root>'}: ${issue.message}`
+    );
+    return badRequest(`Entity validation failed: ${issues.join('; ')}`);
+  }
 
   const fileBase = entity.id.split(':')[1] ?? slug;
   const path = dataPath(type, fileBase);
@@ -496,11 +536,12 @@ async function handleSaveEntity(
     });
   }
 
-  // Anonymous contributors get no `Co-authored-by` (the bot is the
-  // sole author). Authenticated contributors get full attribution.
-  // Optional self-chosen `anonymousNickname` is surfaced as a plain
-  // string in the PR body — NO @ prefix so it's never mistaken for
-  // a GitHub handle.
+  // The dashboard bot is always the sole commit author. The
+  // contributor (GitHub login OR anonymous nickname) is surfaced
+  // only in the PR body's "Contributors" section — no
+  // `Co-authored-by` trailer (revised per ADR-016). Anonymous
+  // nicknames are bold plain text with NO `@` so they can never be
+  // mistaken for a GitHub handle.
   const octokit = await installationClient(cfg);
   try {
     const pr = await submitEntityEdit(octokit, cfg, {
@@ -508,9 +549,9 @@ async function handleSaveEntity(
       path,
       newContent,
       expectedSha: payload.sha ?? null,
-      contributorLogin: session?.login ?? null,
-      contributorId: session?.userId ?? null,
-      ...(typeof nick === 'string' ? { anonymousNickname: nick } : {}),
+      contributorLogin: session.kind === 'github' ? session.login : null,
+      contributorId: session.kind === 'github' ? session.userId : null,
+      ...(anonymousNickname !== null ? { anonymousNickname } : {}),
       extraFiles,
     });
     return json({ ok: true, pr });
@@ -522,45 +563,50 @@ async function handleSaveEntity(
   }
 }
 
-function handleAuthLogin(cfg: GitHubAppConfig): Response {
+/**
+ * JSON projection the frontend reads at `/api/auth/me`. Stable shape
+ * decoupled from the cookie's internal layout so we can change the
+ * cookie format without breaking clients.
+ */
+function projectMe(session: DashboardSession): {
+  kind: 'github' | 'anonymous';
+  login?: string;
+  nickname?: string;
+  displayName: string;
+} {
+  if (session.kind === 'github') {
+    return {
+      kind: 'github',
+      login: session.login,
+      displayName: session.login,
+    };
+  }
+  return {
+    kind: 'anonymous',
+    nickname: session.nickname,
+    displayName: session.nickname,
+  };
+}
+
+/**
+ * OAuth `state` pool. We mint a random string per `/api/auth/login/github`
+ * call, hand it to GitHub as the `state` parameter, then check the
+ * callback returns the same value. Stops CSRF where an attacker tries
+ * to trick a victim into completing GitHub's auth on the attacker's
+ * behalf. Entries auto-expire after 5 minutes so the set doesn't grow.
+ */
+const oauthStates = new Set<string>();
+
+function mintOAuthState(): string {
   const state = randomBytes(16).toString('hex');
   oauthStates.add(state);
   setTimeout(() => oauthStates.delete(state), 5 * 60 * 1000);
-  const url = authorizeUrl(cfg, CALLBACK_URL, state);
-  return new Response(null, { status: 302, headers: { location: url } });
+  return state;
 }
 
-async function handleAuthCallback(cfg: GitHubAppConfig, url: URL): Promise<Response> {
-  const code = url.searchParams.get('code');
-  const state = url.searchParams.get('state');
-  if (code === null || state === null) return badRequest('Missing code or state.');
-  if (!oauthStates.delete(state)) return badRequest('Invalid OAuth state.');
-
-  const user = await exchangeCode(cfg, code);
-  // Revised per ADR-015: any GitHub user can authenticate; the
-  // admin check moves to per-endpoint (`isAdmin(cfg, session.login)`
-  // on /api/admin/*). Non-admin sessions just get the contributor
-  // tier — they can write, and their PRs carry Co-authored-by
-  // attribution + an @mention.
-  //
-  // BLOCKED_GITHUB_USERNAMES is the kick-switch for authenticated
-  // trolls — checked here to reject the session at issuance so a
-  // blocked login can't even hold a cookie.
-  if (isBlockedLogin(user.login)) {
-    return new Response(`User @${user.login} is blocked.`, {
-      status: 403,
-      headers: { 'content-type': 'text/plain' },
-    });
-  }
-
-  const session = newSession(user.login, user.id, user.accessToken);
-  return new Response(null, {
-    status: 302,
-    headers: {
-      location: `${PUBLIC_BASE_URL}/`,
-      'set-cookie': buildCookie(session),
-    },
-  });
+function consumeOAuthState(state: string | null): boolean {
+  if (state === null) return false;
+  return oauthStates.delete(state);
 }
 
 /**
@@ -626,16 +672,126 @@ function rateLimitHit(bucket: string, key: string, limitPerHour: number): boolea
 const ANON_WRITE_LIMIT = Number(process.env['ANON_WRITE_LIMIT_PER_HOUR'] ?? '10');
 const ANON_UPLOAD_LIMIT = Number(process.env['ANON_UPLOAD_LIMIT_PER_HOUR'] ?? '20');
 
-function handleAuthMe(session: Session | null): Response {
+function handleAuthMe(session: DashboardSession | null): Response {
   if (session === null) return unauthorized('Not signed in.');
-  return json({ login: session.login });
+  return json(projectMe(session));
 }
 
-function handleAuthLogout(): Response {
+/**
+ * `GET /api/auth/login/github` — 302 to GitHub's authorize URL with
+ * an anti-CSRF state. The browser comes back to
+ * `/api/auth/callback/github` after the user approves.
+ */
+function handleGithubLogin(cfg: GitHubAppConfig): Response {
+  const state = mintOAuthState();
+  const url = authorizeUrl(cfg, OAUTH_CALLBACK_URL, state);
+  return new Response(null, { status: 302, headers: { location: url } });
+}
+
+/**
+ * `GET /api/auth/callback/github?code&state` — finishes the OAuth
+ * dance: validates `state`, exchanges the code for the user's login +
+ * numeric id, rejects blocked logins, mints a `github`-kind session
+ * cookie, then 302s back to the home page.
+ */
+async function handleGithubCallback(cfg: GitHubAppConfig, url: URL): Promise<Response> {
+  const code = url.searchParams.get('code');
+  const state = url.searchParams.get('state');
+  if (code === null || state === null) return badRequest('Missing code or state.');
+  if (!consumeOAuthState(state)) return badRequest('Invalid OAuth state.');
+
+  const user = await exchangeCode(cfg, code);
+  if (isBlockedLogin(user.login)) {
+    return new Response(`User @${user.login} is blocked.`, {
+      status: 403,
+      headers: { 'content-type': 'text/plain' },
+    });
+  }
+  const session = newGithubSession(user.login, user.id);
+  return new Response(null, {
+    status: 302,
+    headers: {
+      location: `${PUBLIC_BASE_URL}/`,
+      'set-cookie': buildCookie(session),
+    },
+  });
+}
+
+/**
+ * `POST /api/auth/anonymous {nickname}` — validate the self-chosen
+ * pseudo (1-32 chars, restricted alphabet — see `normalizeNickname`),
+ * mint an `anonymous`-kind session cookie, return the projection the
+ * frontend reads from `/api/auth/me`.
+ */
+async function handleAnonymousSignIn(req: Request): Promise<Response> {
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch (err) {
+    return badRequest(`Invalid JSON: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  if (body === null || typeof body !== 'object') {
+    return badRequest('Body must be { nickname }.');
+  }
+  const raw = (body as { nickname?: unknown; }).nickname;
+  const nick = normalizeNickname(raw);
+  if (nick === null) return badRequest('nickname is required.');
+  if (typeof nick === 'object') return badRequest(nick.error);
+  const session = newAnonymousSession(nick);
+  return new Response(JSON.stringify(projectMe(session)), {
+    status: 200,
+    headers: {
+      'content-type': 'application/json',
+      'set-cookie': buildCookie(session),
+    },
+  });
+}
+
+function handleSignOut(): Response {
   return new Response(null, {
     status: 204,
     headers: { 'set-cookie': clearCookie() },
   });
+}
+
+/**
+ * List the current session's open contributions (PRs labelled
+ * `via-dashboard` whose body mentions the contributor). Used by the
+ * "Vos contributions en cours" home section so a returning user
+ * sees their in-flight edits without re-typing anything — the
+ * identity is on the cookie. Returns `[]` for read-only visitors
+ * rather than 401 so the home page renders cleanly even when no
+ * session is present.
+ */
+async function handleMyContributions(
+  cfg: GitHubAppConfig,
+  session: DashboardSession | null,
+): Promise<Response> {
+  if (session === null) return json({ contributions: [] as OpenContribution[] });
+  // Anonymous users with no nickname (signed in but skipped the input
+  // — possible if a future flow short-circuits) get nothing back; the
+  // body match would be ambiguous.
+  if (session.kind === 'anonymous' && session.nickname === '') {
+    return json({ contributions: [] as OpenContribution[] });
+  }
+  try {
+    const octokit = await installationClient(cfg);
+    const list = await listOpenContributions(
+      octokit,
+      cfg,
+      session.kind === 'github'
+        ? { kind: 'github', login: session.login }
+        : { kind: 'anonymous', nickname: session.nickname },
+    );
+    return json({ contributions: list });
+  } catch (err) {
+    // Treat a failed search as "no results" rather than 500 — the
+    // home page should keep rendering even when GitHub is grumpy.
+    process.stderr.write(
+      `[contributions] search failed: ${err instanceof Error ? err.message : String(err)}\n`,
+    );
+    return json({ contributions: [] as OpenContribution[] });
+  }
 }
 
 /**
@@ -699,7 +855,10 @@ async function handlePresignUpload(req: Request): Promise<Response> {
  * private; without a session the route returns 401 so the public
  * web cannot enumerate `pending/` keys.
  */
-async function handlePreviewImage(session: Session | null, key: string): Promise<Response> {
+async function handlePreviewImage(
+  session: DashboardSession | null,
+  key: string,
+): Promise<Response> {
   if (session === null) return unauthorized('Sign in to preview staged images.');
   const cfg = r2Config();
   if (cfg === null) {
@@ -726,10 +885,10 @@ async function handlePreviewImage(session: Session | null, key: string): Promise
  */
 async function handleAdminPromote(
   cfg: GitHubAppConfig,
-  session: Session,
+  session: DashboardSession,
   req: Request,
 ): Promise<Response> {
-  if (!isAdmin(cfg, session.login)) {
+  if (session.kind !== 'github' || !isAdmin(cfg, session.login)) {
     return new Response(JSON.stringify({ error: 'Admin only.' }), {
       status: 403,
       headers: { 'content-type': 'application/json' },
@@ -777,10 +936,10 @@ async function handleAdminPromote(
  */
 async function handleAdminReject(
   cfg: GitHubAppConfig,
-  session: Session,
+  session: DashboardSession,
   req: Request,
 ): Promise<Response> {
-  if (!isAdmin(cfg, session.login)) {
+  if (session.kind !== 'github' || !isAdmin(cfg, session.login)) {
     return new Response(JSON.stringify({ error: 'Admin only.' }), {
       status: 403,
       headers: { 'content-type': 'application/json' },
@@ -822,7 +981,7 @@ const server = Bun.serve({
   async fetch(req, server) {
     const url = new URL(req.url);
     const path = url.pathname.replace(/\/+$/, '') || '/';
-    const session = parse(readCookie(req));
+    const session = readDashboardSession(req);
 
     // Connecting-socket fallback for the rare local case where
     // X-Forwarded-For isn't set. In deployed env the reverse
@@ -845,25 +1004,56 @@ const server = Bun.serve({
       }
     }
 
+    /**
+     * Stable rate-limit bucket key. GitHub identity is the login
+     * (immutable across sign-outs); anonymous identity is the
+     * self-chosen nickname (changeable, but a contributor reusing
+     * the same nickname keeps the same bucket — which is the right
+     * UX for someone with a stable pseudo). Falls back to IP when
+     * no session at all (read-only traffic that shouldn't hit
+     * write paths anyway).
+     */
+    function rateLimitKey(): string {
+      if (session === null) return `ip:${ip}`;
+      if (session.kind === 'github') return `gh:${session.login.toLowerCase()}`;
+      return `anon:${session.nickname.toLowerCase()}`;
+    }
+
+    function isAdminSession(): boolean {
+      return session !== null
+        && session.kind === 'github'
+        && config !== null
+        && isAdmin(config, session.login);
+    }
+
     try {
-      if (req.method === 'GET' && path === '/api/auth/login') {
+      // ── Auth (stateless signed cookies — ADR-017) ──
+      if (req.method === 'GET' && path === '/api/auth/login/github') {
         if (config === null) return serviceUnavailable(`Auth disabled: ${configError}`);
-        return handleAuthLogin(config);
+        return handleGithubLogin(config);
       }
-      if (req.method === 'GET' && path === '/api/auth/callback') {
+      if (req.method === 'GET' && path === '/api/auth/callback/github') {
         if (config === null) return serviceUnavailable(`Auth disabled: ${configError}`);
-        return await handleAuthCallback(config, url);
+        return await handleGithubCallback(config, url);
+      }
+      if (req.method === 'POST' && path === '/api/auth/anonymous') {
+        return await handleAnonymousSignIn(req);
+      }
+      if (req.method === 'POST' && path === '/api/auth/sign-out') {
+        return handleSignOut();
       }
       if (req.method === 'GET' && path === '/api/auth/me') return handleAuthMe(session);
-      if (req.method === 'POST' && path === '/api/auth/logout') return handleAuthLogout();
+
+      if (req.method === 'GET' && path === '/api/me/contributions') {
+        if (config === null) return json({ contributions: [] });
+        return await handleMyContributions(config, session);
+      }
 
       if (req.method === 'POST' && path === '/api/uploads/presign') {
         // Anonymous + contributor + admin all may upload (to staging).
-        // Admin gets no rate-limit; non-admins are bucketed by their
-        // identity handle (login when present, otherwise IP).
-        if (session === null || !isAdmin(config!, session.login)) {
-          const key = session?.login ?? `ip:${ip}`;
-          if (rateLimitHit('upload', key, ANON_UPLOAD_LIMIT)) {
+        // Admin gets no rate-limit; everyone else is bucketed.
+        if (!isAdminSession()) {
+          if (rateLimitHit('upload', rateLimitKey(), ANON_UPLOAD_LIMIT)) {
             return new Response(
               JSON.stringify({
                 error: `Rate limit reached (${ANON_UPLOAD_LIMIT}/hour). Try again later.`,
@@ -889,14 +1079,14 @@ const server = Bun.serve({
       // squash-merge). Admin-only.
       if (req.method === 'POST' && path === '/api/admin/promote') {
         if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
-        if (session === null) return unauthorized('Sign in via /api/auth/login first.');
+        if (session === null) return unauthorized('Sign in first.');
         return await handleAdminPromote(config, session, req);
       }
 
       // POST /api/admin/reject — close PR + delete staged objects.
       if (req.method === 'POST' && path === '/api/admin/reject') {
         if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
-        if (session === null) return unauthorized('Sign in via /api/auth/login first.');
+        if (session === null) return unauthorized('Sign in first.');
         return await handleAdminReject(config, session, req);
       }
 
@@ -921,11 +1111,16 @@ const server = Bun.serve({
         if (req.method === 'GET') return await handleGetEntity(type, slug);
         if (req.method === 'POST') {
           if (config === null) return serviceUnavailable(`Save disabled: ${configError}`);
-          // Writes open to everyone — anonymous + contributor + admin.
-          // Admin bypasses rate-limit; others bucketed by login or IP.
-          if (session === null || !isAdmin(config, session.login)) {
-            const key = session?.login ?? `ip:${ip}`;
-            if (rateLimitHit('save', key, ANON_WRITE_LIMIT)) {
+          // A session is required to save — even the anonymous flow
+          // creates a session at /login. This simplifies attribution
+          // (the contributor identity is always on the session) and
+          // closes a fingerprinting hole (no more nicknames smuggled
+          // in the request body).
+          if (session === null) {
+            return unauthorized('Sign in (anonymous or GitHub) before saving.');
+          }
+          if (!isAdminSession()) {
+            if (rateLimitHit('save', rateLimitKey(), ANON_WRITE_LIMIT)) {
               return new Response(
                 JSON.stringify({
                   error: `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,

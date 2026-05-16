@@ -1,19 +1,21 @@
 /**
  * High-level save flow used by the dashboard.
  *
- * Authorship model: every commit and the PR itself are made by the
- * GitHub App's installation token, so the bot is the listed author.
- * Contributor attribution depends on whether the dashboard caller
- * is authenticated:
+ * Authorship model (revised per ADR-016): every commit and the PR
+ * itself are made by the GitHub App's installation token, so the bot
+ * is the sole listed author on every commit. We deliberately do NOT
+ * emit a `Co-authored-by:` trailer for any flow — the resulting commits
+ * appearing on a contributor's GitHub graph proved confusing in user
+ * testing (anonymous and GitHub-signed-in users both expected the same
+ * presentation), and the trailer is purely cosmetic for a bot-owned
+ * repository where review attribution is what matters.
  *
- *   - **Authenticated** (contributor or admin) — commits carry a
- *     `Co-authored-by: <login> <id+login@users.noreply.github.com>`
- *     trailer; the PR body `@mention`s the contributor.
- *   - **Anonymous** (no session) — no trailer at all (PR is
- *     bot-authored only). The PR body shows the optional
- *     self-chosen `anonymousNickname` as a plain string (NO `@`
- *     prefix — it isn't a GitHub handle). No identifying
- *     metadata (IP, fingerprint, etc.) is stored or surfaced.
+ * The human contributor is mentioned exactly once, in the PR body's
+ * "Contributors" section:
+ *
+ *   - **GitHub** — `@login` so GitHub renders the mention as a link.
+ *   - **Anonymous** — bold plain text `**Pseudo**` (NO `@`) so a
+ *     reviewer cannot confuse the self-chosen label for a real handle.
  *
  * Steps:
  * 1. Read the entity file from main; capture its SHA.
@@ -50,14 +52,16 @@ export type SaveRequest = {
   readonly path: string;
   readonly newContent: string;
   readonly expectedSha: string | null;
-  /** GitHub login of the contributor, or null for anonymous edits. */
+  /** GitHub login of the contributor, or null for anonymous edits.
+   *  Surfaces as `@login` in the PR body's Contributors section. */
   readonly contributorLogin: string | null;
-  /** Numeric user id, paired with login for the noreply email
-   *  trailer. Null when anonymous. */
+  /** Numeric user id, preserved for future use (e.g. potential
+   *  re-enable of Co-authored-by trailers). Null when anonymous. */
   readonly contributorId: number | null;
   /** Self-chosen display name for anonymous contributions. Surfaces
-   *  in the PR body verbatim with NO `@` prefix (it isn't a GitHub
-   *  handle). Ignored when `contributorLogin` is non-null. */
+   *  in the PR body's Contributors section as bold plain text with
+   *  NO `@` prefix (it isn't a GitHub handle). Ignored when
+   *  `contributorLogin` is non-null. */
   readonly anonymousNickname?: string;
   readonly extraFiles?: readonly ExtraFile[];
 };
@@ -67,23 +71,13 @@ function safeBranchSegment(value: string): string {
 }
 
 /**
- * Build the GitHub-recognised commit trailer that credits the human
- * contributor as co-author of a bot-authored commit.
- * https://docs.github.com/en/pull-requests/committing-changes-to-your-project/creating-and-editing-commits/creating-a-commit-with-multiple-authors
+ * Commit subject only — no body, no trailer. ADR-016: the bot is the
+ * sole listed commit author; the human contributor is named once in
+ * the PR body (Contributors section) rather than smeared across every
+ * commit trailer. Keeps `git log` clean and review attribution clear.
  */
-function coAuthoredByTrailer(login: string, id: number): string {
-  return `Co-authored-by: ${login} <${id}+${login}@users.noreply.github.com>`;
-}
-
-function commitMessage(
-  subject: string,
-  login: string | null,
-  id: number | null,
-): string {
-  // Anonymous: bare subject — no trailer. The GitHub App is the
-  // sole author of the commit; nothing to credit.
-  if (login === null || id === null) return `${subject}\n`;
-  return `${subject}\n\n${coAuthoredByTrailer(login, id)}\n`;
+function commitMessage(subject: string): string {
+  return `${subject}\n`;
 }
 
 export async function submitEntityEdit(
@@ -109,7 +103,7 @@ export async function submitEntityEdit(
     request.path,
     request.newContent,
     current?.sha ?? null,
-    commitMessage(`Edit ${request.entityId}`, request.contributorLogin, request.contributorId),
+    commitMessage(`Edit ${request.entityId}`),
   );
 
   const extraPaths: string[] = [];
@@ -124,7 +118,7 @@ export async function submitEntityEdit(
       file.path,
       file.content,
       existing?.sha ?? null,
-      commitMessage(`Update ${file.path}`, request.contributorLogin, request.contributorId),
+      commitMessage(`Update ${file.path}`),
     );
     extraPaths.push(file.path);
   }
@@ -133,39 +127,36 @@ export async function submitEntityEdit(
   const anonymous = request.contributorLogin === null;
   const nickname = request.anonymousNickname?.trim() ?? '';
 
-  // PR body header:
-  //  - Authenticated: "Submitted by @login via the dashboard."
-  //  - Anonymous with nickname: "Submitted by **Nickname** (anonymous)…"
-  //  - Anonymous without nickname: "Anonymous contribution via…"
-  // The nickname is rendered as bold plain text — never with `@`,
-  // so a reviewer can't confuse it for a GitHub handle.
-  const headerLine = anonymous
+  // Contributors section — single source of attribution. We always
+  // emit exactly one bullet so a future "resume editing" flow that
+  // adds commits to an existing PR doesn't accidentally collect
+  // duplicate names (each save reopens the PR body in full).
+  const contributorBullet = anonymous
     ? (nickname !== ''
-      ? `Submitted by **${nickname}** (anonymous, via the dashboard).`
-      : `**Anonymous contribution** via the dashboard.`)
-    : `Submitted by @${request.contributorLogin} via the dashboard.`;
+      ? `- **${nickname}** _(anonymous contributor)_`
+      : `- _Anonymous contributor_`)
+    : `- @${request.contributorLogin}`;
 
   const footer = anonymous
     ? [
       `---`,
-      `_This pull request was opened anonymously through the dashboard._`,
-      `_The displayed name is self-chosen by the contributor and is_`,
-      `_not verified — treat it as a label, not an identity._`,
-      `_The commit author is the dashboard bot; no \`Co-authored-by\` is set._`,
+      `_Opened anonymously through the dashboard. The contributor name_`,
+      `_above is self-chosen and unverified — treat it as a label, not_`,
+      `_an identity. The dashboard bot is the sole commit author._`,
     ]
     : [
       `---`,
-      `_This pull request was opened by the dashboard bot on behalf of`,
-      `@${request.contributorLogin}. The contributor is credited as`,
-      `\`Co-authored-by\` on every commit so their GitHub account`,
-      `appears on the contribution graph._`,
+      `_Opened through the dashboard. The dashboard bot is the sole_`,
+      `_commit author; the contributor is credited only in this PR_`,
+      `_body (no \`Co-authored-by\` trailers — see ADR-016)._`,
     ];
 
   return openPullRequest(octokit, config, {
     headBranch: branch,
     title: `Edit ${request.entityId}`,
     body: [
-      headerLine,
+      `**Contributors**`,
+      contributorBullet,
       ``,
       `**Entity:** \`${request.entityId}\``,
       ``,

@@ -8,6 +8,190 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-017 — Revert better-auth, keep stateless signed-cookie sessions
+
+**Date**: 2026-05-16
+
+**Context**: ADR-016 adopted `better-auth` (with its `anonymous`
+plugin + `github` social provider) and a SQLite session store at
+`apps/dashboard/.auth.db`. Within hours of shipping that, we
+realised the cost / benefit didn't actually work out for our shape:
+
+- **What better-auth gives us that we use**: stable identity in the
+  cookie + `anonymous` plugin convenience. That's it.
+- **What better-auth gives us that we don't use**: server-side
+  session revocation (we have BLOCKED_GITHUB_USERNAMES instead),
+  multi-device session sync (no UI), refresh token management (we
+  don't call the user's GitHub token — writes go through the App
+  installation), `linkAccount` anonymous→GitHub upgrade
+  (not asked for), `/api/auth/get-session` exposed user shape
+  (we override with our own projection anyway).
+- **What better-auth costs us**: a new dependency (~70 transitive
+  packages), a SQLite runtime DB the dashboard now needs to
+  provision + migrate (`bun run auth:migrate`), and — critically —
+  **incompatibility with Vercel-serverless deployment** without
+  swapping the adapter to Turso / Neon / Vercel Postgres.
+
+The user explicitly questioned the DB requirement. After confirming
+that better-auth has no stateless mode — every adapter persists
+user/session/account rows, and the `jwt()` plugin is additive rather
+than a replacement — we decided the trade-off no longer made sense
+for a hobby wiki.
+
+**Options**:
+
+- A — Keep better-auth and accept the SQLite/Turso requirement at
+  deploy time. Pay the dependency cost now to keep flexibility for
+  features we might want later (account linking, multi-device,
+  refresh-token-using OAuth).
+- B — Revert to hand-rolled signed-cookie sessions, extended with a
+  discriminated union (`kind: 'github' | 'anonymous'`) so the
+  anonymous flow doesn't need a separate code path.
+
+**Choice**: B. Revert.
+
+**Rationale**:
+
+- Every user-facing feature shipped under ADR-016 (login page,
+  contributions panel, Contributors PR body, server-side identity,
+  drop Co-authored-by) keeps working unchanged — they were
+  features of OUR code, not of better-auth.
+- The stateless cookie carries `{kind, login|nickname, expiresAt}`,
+  HMAC-signed with `SESSION_SECRET`. That's the entire session
+  layer. ~150 lines in `session.ts`, ~80 lines of OAuth glue in
+  `server.ts`.
+- No runtime DB to provision. Deploys to Vercel serverless with no
+  changes; deploys to a single Bun process on a VPS with no
+  changes; no schema migrations to manage.
+- The features better-auth enables that we sacrifice (revocation,
+  multi-device, account linking) we don't ship anyway. When/if we
+  ever need them, we can re-adopt better-auth — the codebase
+  already knows that shape.
+
+**Consequences**:
+
+- Dependency `better-auth` removed; `@octokit/auth-oauth-user`
+  restored on `packages/github-client` (powers `exchangeCode`).
+- `apps/dashboard/api/session.ts` is back, rewritten with:
+  - Discriminated union `Session = github | anonymous`
+  - `base64url` encoding (RFC-clean, no `+` / `/` to URL-encode in cookies)
+  - `timingSafeEqual` for signature comparison
+  - Production assert: `SESSION_SECRET` is mandatory in
+    `NODE_ENV=production`
+  - 30-day TTL (was 8h) so a sporadic contributor finds their open
+    contributions on return
+- `apps/dashboard/api/auth.ts` is now ~20 lines: a re-export of
+  `Session` as `DashboardSession` + the `readDashboardSession(req)`
+  cookie reader. The route handlers never see the cookie format.
+- New endpoints in `server.ts` (under `/api/auth/*`):
+  - `GET  /api/auth/login/github` (302 to GitHub)
+  - `GET  /api/auth/callback/github` (exchange + cookie + 302 home)
+  - `POST /api/auth/anonymous` (validate pseudo + cookie)
+  - `POST /api/auth/sign-out` (clear cookie)
+  - `GET  /api/auth/me` (projection)
+- Env var rename: `BETTER_AUTH_SECRET` → `SESSION_SECRET`.
+  Anyone who set the better-auth one needs to rename it (a one-line
+  update in `.env.local`).
+- `apps/dashboard/.auth.db*` removed from `.gitignore` (no DB to
+  ignore anymore).
+- ADR-016 stays in the log for historical reference; this entry
+  supersedes it.
+
+---
+
+## ADR-016 — Adopt better-auth; drop hand-rolled session + Co-authored-by trailer
+
+**Date**: 2026-05-16
+
+**Context**: ADR-015 opened writes to unauthenticated visitors via a
+self-chosen pseudo passed in the save body. That worked but had two
+gaps:
+
+1. **No persistent identity across visits.** The pseudo was only a
+   field on each request, so a returning contributor couldn't see
+   "their" in-progress PRs without re-typing the exact same pseudo and
+   the dashboard couldn't pre-fill anything from a prior session.
+2. **Two auth code paths**, neither fully baked: a hand-rolled
+   signed-cookie session (`apps/dashboard/api/session.ts`) for GitHub
+   logins, and the bare-pseudo-in-body path for everyone else.
+
+The user-facing ask was: "I want a login page with anonymous-with-pseudo
+OR GitHub, and I want to come back the next day and find my
+unmerged contributions."
+
+**Options**:
+
+- A — Extend the hand-rolled session: add `kind: 'github' | 'anonymous'`
+  to the cookie, write the pseudo flow ourselves, layer CSRF /
+  session-rotation / token-refresh on top as we discover we need them.
+- B — Adopt `better-auth` (with its `anonymous` plugin + `github`
+  social provider) and delete the hand-rolled session layer.
+
+**Choice**: B (better-auth).
+
+**Rationale**:
+
+- The hand-rolled session covered ~30% of what a real auth lib does
+  (sign + verify cookie). Refresh, rotation, CSRF, multi-device, and
+  account linking would all need to ship as we needed them — death
+  by a thousand cuts.
+- `better-auth`'s `anonymous` plugin gives us a server-issued session
+  for pseudo users with zero PII (no email, no link to an external
+  identity), and its `socialProviders.github` covers OAuth without
+  us needing to wrap `@octokit/auth-oauth-user` ourselves.
+- The "find my open contributions" feature is trivial once identity
+  lives on a stable session cookie — we just search the data repo
+  for PRs whose body mentions the contributor.
+- Cost we accept: one new dependency (~70 transitive packages) and a
+  SQLite session store at `apps/dashboard/.auth.db` (gitignored).
+
+**PR body attribution change** (rolled in here because it ships
+alongside): drop the `Co-authored-by:` trailer entirely. Previously,
+authenticated users got a trailer on every commit so their GitHub
+contribution graph would show the edits. In practice this surfaced as
+"a wall of commits authored by the bot, co-authored by me" which
+nobody found useful, and the asymmetry vs anonymous users (no trailer)
+created an unwanted "first-class vs second-class" reading. The bot is
+now the sole listed author on every commit; the contributor is named
+once, in the PR body's `Contributors` section:
+
+- GitHub: `- @login` (renders as a clickable mention)
+- Anonymous: `- **Pseudo** _(anonymous contributor)_` (bold plain
+  text, NO `@`, so a reviewer can never confuse it for a real handle)
+
+**Consequences**:
+
+- A new SQLite DB at `apps/dashboard/.auth.db` is the dashboard's only
+  stateful storage. Lost = everyone signed out, no data loss otherwise.
+  Schema bootstrapped by `bun run auth:migrate` (programmatic, no CLI
+  toolchain needed — see `api/auth-migrate.ts`).
+- `BETTER_AUTH_SECRET` becomes a required production env var. A dev
+  fallback gets generated at boot so `bun run dev` keeps working out
+  of the box, at the cost of "every restart logs everyone out".
+- Save endpoint now REQUIRES a session (anonymous or GitHub). Visitors
+  who skip the login page see the save button disabled with a
+  "Sign in to save" link. Read endpoints stay 100% public.
+- The hand-rolled OAuth wrappers `authorizeUrl` / `exchangeCode` in
+  `packages/github-client/src/oauth.ts` are deleted along with the
+  `@octokit/auth-oauth-user` dependency. The `isAdmin` allow-list
+  check stays in that file (used in two packages).
+- New endpoint `GET /api/me/contributions` (and the home-page panel
+  consuming it) lists the session's open dashboard-labelled PRs.
+  Anonymous match is `**Pseudo**` substring, GitHub match is
+  `- @login` substring; both filter to PRs labelled `via-dashboard`
+  so coincidental body matches don't leak.
+
+**Out of scope, deferred to a follow-up**: "resume editing" — i.e.
+clicking an open contribution loads the PR-branch version of the
+entity and subsequent saves push commits to the same branch instead
+of opening a new PR. The current panel just deep-links to the entity
+page (which loads from `main`), so re-saving creates a fresh PR. The
+plumbing (`getPullRequest`, branch SHA tracking) is already in place;
+the missing piece is a `?fromPR=<n>` route param and a "branch-aware"
+save path in `submitEntityEdit`.
+
+---
+
 ## ADR-015 — Open contributions with two-stage R2 + admin moderation queue
 
 **Date**: 2026-05-16

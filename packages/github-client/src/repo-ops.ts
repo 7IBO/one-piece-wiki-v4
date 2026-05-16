@@ -252,6 +252,92 @@ export async function closePullRequest(
   });
 }
 
+/**
+ * One open contribution surfaced on the dashboard's "Vos contributions
+ * en cours" section. We deliberately keep the shape tiny — the dashboard
+ * fetches the per-entity payload on click rather than up-front.
+ */
+export type OpenContribution = {
+  readonly prNumber: number;
+  readonly htmlUrl: string;
+  readonly title: string;
+  readonly updatedAt: string;
+  readonly headBranch: string;
+  readonly entityId: string;
+  readonly entityType: string;
+  readonly entitySlug: string;
+};
+
+/**
+ * Find open PRs opened by a specific dashboard contributor. The match
+ * is body-substring based because the PR body is the only canonical
+ * place we record the contributor (no Co-authored-by trailer per
+ * ADR-016). Two flavours:
+ *
+ *   - GitHub login → searches for `\n- @login` (the Contributors
+ *     bullet authored by `save-flow.ts`)
+ *   - Anonymous nickname → searches for `\n- **Nickname**` (the
+ *     bolded plain-text bullet, NO `@`)
+ *
+ * Returns at most `limit` PRs ordered by `updated_at` descending. The
+ * GitHub search index can lag a few seconds behind a fresh PR open —
+ * that's acceptable for a "your recent contributions" panel.
+ */
+export async function listOpenContributions(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  identity:
+    | { kind: 'github'; login: string; }
+    | { kind: 'anonymous'; nickname: string; },
+  limit = 20,
+): Promise<readonly OpenContribution[]> {
+  const repoQ = `repo:${config.dataRepo.owner}/${config.dataRepo.repo}`;
+  // The bullet is unique enough on its own; the `label:` qualifier
+  // narrows the result set so we don't pay for matches on bodies
+  // that happen to contain the login by coincidence (e.g. someone
+  // mentioned by a reviewer in a comment-style PR body).
+  const query = identity.kind === 'github'
+    ? `${repoQ} is:pr is:open label:via-dashboard "- @${identity.login}"`
+    : `${repoQ} is:pr is:open label:anonymous "**${identity.nickname}**"`;
+
+  const { data } = await octokit.search.issuesAndPullRequests({
+    q: query,
+    per_page: Math.min(limit, 50),
+    sort: 'updated',
+    order: 'desc',
+  });
+
+  // Each PR title is `Edit <entityId>` (see save-flow.ts); we parse
+  // it to recover the entity coordinates without an extra round-trip
+  // per PR. Items that don't match the title pattern are skipped —
+  // they were opened outside the dashboard's normal flow.
+  const out: OpenContribution[] = [];
+  for (const item of data.items) {
+    const title = item.title ?? '';
+    const match = /^Edit ([a-z0-9-]+):([a-z0-9-]+)$/.exec(title);
+    if (match === null) continue;
+    const [, entityType = '', entitySlug = ''] = match;
+    if (entityType === '' || entitySlug === '') continue;
+
+    // The search API returns Issues, not PRs — `pull_request.html_url`
+    // is the only canonical PR URL on that payload shape, and the
+    // head branch isn't included. Skip the second round-trip for now;
+    // callers that need the head branch can call `getPullRequest()`
+    // on click (the resume-editing flow does exactly that).
+    out.push({
+      prNumber: item.number,
+      htmlUrl: item.pull_request?.html_url ?? item.html_url,
+      title: title,
+      updatedAt: item.updated_at,
+      headBranch: '',
+      entityId: `${entityType}:${entitySlug}`,
+      entityType,
+      entitySlug,
+    });
+  }
+  return out;
+}
+
 export class OptimisticLockError extends Error {
   override readonly name = 'OptimisticLockError';
   constructor(

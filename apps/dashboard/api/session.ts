@@ -1,37 +1,87 @@
 /**
- * Tiny signed-cookie session. The cookie value is
- *   base64(json) + "." + hex(hmac-sha256(json, SESSION_SECRET))
- * On read we recompute the HMAC and reject mismatches. The session
- * holds the GitHub login + access token + an absolute expiry.
+ * Tiny signed-cookie session. Stateless — the cookie value itself IS
+ * the session; no DB row is allocated. Format:
+ *
+ *   base64url(json) + "." + base64url(hmac-sha256(json, SESSION_SECRET))
+ *
+ * On read we recompute the HMAC and reject mismatches.
+ *
+ * The session is a discriminated union of two flows (ADR-017):
+ *
+ *   - `github`    — GitHub OAuth, login + numeric id captured at the
+ *                   callback. Eligible for the admin allow-list check.
+ *   - `anonymous` — Self-chosen pseudo, no external identity. The pseudo
+ *                   travels in the cookie verbatim; the server validates
+ *                   it once at sign-in via `normalizeNickname`.
  *
  * If SESSION_SECRET isn't set we generate an ephemeral one at startup.
- * That means restarting the API logs everyone out — fine for Phase
- * 4.2; the maintainer can set a stable SESSION_SECRET in .env.local
- * once they want sessions to survive restarts.
+ * That means restarting the API logs everyone out — fine for dev; the
+ * maintainer sets a stable SESSION_SECRET in .env.local for prod (the
+ * server REFUSES to start in production without one).
  */
-import { createHmac, randomBytes } from 'node:crypto';
+import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
 
 const COOKIE_NAME = 'opw_session';
-const SESSION_TTL_MS = 8 * 60 * 60 * 1000;
+// 30-day rolling cookie. Long enough that a sporadic contributor
+// finds their open contributions on return; short enough that an
+// abandoned browser eventually drops the session.
+const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
-const SECRET = process.env['SESSION_SECRET'] ?? randomBytes(32).toString('hex');
+const ENV_SECRET = process.env['SESSION_SECRET'];
+if (
+  (ENV_SECRET === undefined || ENV_SECRET === '')
+  && process.env['NODE_ENV'] === 'production'
+) {
+  throw new Error(
+    'SESSION_SECRET must be set in production. Generate with `openssl rand -base64 32`.',
+  );
+}
+const SECRET = ENV_SECRET ?? randomBytes(32).toString('hex');
 
-export type Session = {
-  readonly login: string;
-  readonly userId: number;
-  readonly accessToken: string;
-  readonly expiresAt: number;
-};
+export type Session =
+  | {
+    readonly kind: 'github';
+    readonly login: string;
+    readonly userId: number;
+    readonly expiresAt: number;
+  }
+  | {
+    readonly kind: 'anonymous';
+    readonly nickname: string;
+    readonly expiresAt: number;
+  };
+
+function base64UrlEncode(value: string): string {
+  return Buffer.from(value, 'utf8')
+    .toString('base64')
+    .replace(/\+/g, '-')
+    .replace(/\//g, '_')
+    .replace(/=+$/, '');
+}
+
+function base64UrlDecode(value: string): string {
+  // Pad back to a multiple of 4 so Buffer's lenient base64 parser
+  // doesn't truncate the last byte.
+  const padded = value + '='.repeat((4 - (value.length % 4)) % 4);
+  return Buffer.from(padded.replace(/-/g, '+').replace(/_/g, '/'), 'base64').toString(
+    'utf8',
+  );
+}
 
 function sign(payload: string): string {
-  return createHmac('sha256', SECRET).update(payload).digest('hex');
+  return createHmac('sha256', SECRET).update(payload).digest('base64url');
+}
+
+function constantTimeEquals(a: string, b: string): boolean {
+  // timingSafeEqual throws on length mismatch — short-circuit so a
+  // crafted cookie can't probe the secret length via timing.
+  if (a.length !== b.length) return false;
+  return timingSafeEqual(Buffer.from(a), Buffer.from(b));
 }
 
 export function serialize(session: Session): string {
-  const json = JSON.stringify(session);
-  const payload = Buffer.from(json, 'utf8').toString('base64');
-  const sig = sign(payload);
-  return `${payload}.${sig}`;
+  const payload = base64UrlEncode(JSON.stringify(session));
+  return `${payload}.${sign(payload)}`;
 }
 
 export function parse(cookieValue: string | null | undefined): Session | null {
@@ -40,15 +90,25 @@ export function parse(cookieValue: string | null | undefined): Session | null {
   if (dot < 0) return null;
   const payload = cookieValue.slice(0, dot);
   const sig = cookieValue.slice(dot + 1);
-  if (sign(payload) !== sig) return null;
-  let session: Session;
+  if (!constantTimeEquals(sign(payload), sig)) return null;
+  let parsed: unknown;
   try {
-    session = JSON.parse(Buffer.from(payload, 'base64').toString('utf8')) as Session;
+    parsed = JSON.parse(base64UrlDecode(payload));
   } catch {
     return null;
   }
-  if (typeof session.expiresAt !== 'number' || session.expiresAt < Date.now()) return null;
-  return session;
+  if (parsed === null || typeof parsed !== 'object') return null;
+  const s = parsed as Partial<Session> & { kind?: unknown; };
+  if (typeof s.expiresAt !== 'number' || s.expiresAt < Date.now()) return null;
+  if (s.kind === 'github') {
+    if (typeof s.login !== 'string' || typeof s.userId !== 'number') return null;
+    return { kind: 'github', login: s.login, userId: s.userId, expiresAt: s.expiresAt };
+  }
+  if (s.kind === 'anonymous') {
+    if (typeof s.nickname !== 'string') return null;
+    return { kind: 'anonymous', nickname: s.nickname, expiresAt: s.expiresAt };
+  }
+  return null;
 }
 
 export function buildCookie(session: Session): string {
@@ -71,11 +131,19 @@ export function readCookie(req: Request): string | null {
   return null;
 }
 
-export function newSession(login: string, userId: number, accessToken: string): Session {
+export function newGithubSession(login: string, userId: number): Session {
   return {
+    kind: 'github',
     login,
     userId,
-    accessToken,
+    expiresAt: Date.now() + SESSION_TTL_MS,
+  };
+}
+
+export function newAnonymousSession(nickname: string): Session {
+  return {
+    kind: 'anonymous',
+    nickname,
     expiresAt: Date.now() + SESSION_TTL_MS,
   };
 }

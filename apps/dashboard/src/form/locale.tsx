@@ -104,13 +104,66 @@ const UI_STRINGS = {
   requiredMissing: { en: 'required missing', fr: 'requis manquants' },
   required: { en: 'required', fr: 'requis' },
   optional: { en: 'optional', fr: 'optionnel' },
-  // Anonymous nickname (when no GitHub login)
+  // Anonymous nickname (used on the /login page now that identity
+  // is captured server-side, not per-form)
   nickname: { en: 'Nickname', fr: 'Pseudo' },
-  nicknamePlaceholder: { en: 'Your name (optional)', fr: 'Votre pseudo (optionnel)' },
+  nicknamePlaceholder: { en: 'Your name', fr: 'Votre pseudo' },
   nicknameHelp: {
     en: 'Shown on the PR. No GitHub account needed.',
     fr: 'Affiché sur la PR. Pas besoin de compte GitHub.',
   },
+  signInToSave: {
+    en: 'Sign in to save',
+    fr: 'Connectez-vous pour sauvegarder',
+  },
+  // Login page
+  loginTitle: { en: 'Contribute to the wiki', fr: 'Contribuer au wiki' },
+  loginExplainer: {
+    en:
+      'Every edit becomes a Pull Request on GitHub, reviewed by a maintainer before publication. Pick how you want to be credited — you can come back later to see, modify, or abandon your contributions.',
+    fr:
+      'Chaque modification devient une Pull Request sur GitHub, examinée par un mainteneur avant publication. Choisissez comment apparaître — vous pourrez revenir plus tard pour voir, modifier ou abandonner vos contributions.',
+  },
+  loginAnonymousTitle: { en: 'With a nickname', fr: 'Avec un pseudo' },
+  loginAnonymousSubtitle: {
+    en: 'No GitHub account needed. Pick a name; it will appear on your PRs.',
+    fr: 'Pas besoin de compte GitHub. Choisissez un pseudo ; il apparaîtra sur vos PRs.',
+  },
+  loginAnonymousCta: { en: 'Continue', fr: 'Continuer' },
+  loginAnonymousFootnote: {
+    en: 'Keep the same nickname on each visit to find your in-progress contributions again.',
+    fr: 'Gardez le même pseudo à chaque visite pour retrouver vos contributions en cours.',
+  },
+  loginGithubTitle: { en: 'With GitHub', fr: 'Avec GitHub' },
+  loginGithubSubtitle: {
+    en: 'Sign in with your GitHub account. Your @handle will be mentioned on the PRs you open.',
+    fr:
+      'Connectez-vous avec votre compte GitHub. Votre @handle sera mentionné sur les PRs que vous ouvrez.',
+  },
+  loginGithubCta: { en: 'Sign in with GitHub', fr: 'Se connecter avec GitHub' },
+  loginGithubFootnote: {
+    en: 'Maintainers (the admin allow-list) also approve PRs and promote images.',
+    fr: 'Les mainteneurs (liste autorisée) valident aussi les PRs et publient les images.',
+  },
+  loginContinueReadOnly: {
+    en: 'Continue without signing in',
+    fr: 'Continuer sans se connecter',
+  },
+  loginReadOnlyHint: {
+    en: 'You can browse everything; saving requires a session.',
+    fr: 'Vous pouvez tout consulter ; sauvegarder nécessite une connexion.',
+  },
+  nicknameRequired: { en: 'Please type a nickname.', fr: 'Saisissez un pseudo.' },
+  signingIn: { en: 'Signing in…', fr: 'Connexion…' },
+  signedInToastTitle: { en: 'Signed in.', fr: 'Connecté.' },
+  // My contributions panel
+  contributionsTitle: { en: 'Your open contributions', fr: 'Vos contributions en cours' },
+  contributionsSubtitle: {
+    en: 'Pull Requests you opened that are still awaiting review.',
+    fr: 'Pull Requests que vous avez ouvertes et qui attendent une revue.',
+  },
+  contributionsRefresh: { en: 'Refresh', fr: 'Rafraîchir' },
+  contributionsOpenPr: { en: 'Open the PR on GitHub', fr: 'Ouvrir la PR sur GitHub' },
   // Section labels (FORM_SECTIONS)
   sectionIdentity: { en: 'Identity & naming', fr: 'Identité & noms' },
   sectionNumbers: { en: 'Numbers', fr: 'Nombres' },

@@ -219,23 +219,36 @@ export const api = {
     data: Record<string, unknown>,
     sha: string | null,
     translations: Translations,
-    /** Optional self-chosen display name for anonymous contributions.
-     *  Ignored server-side when the caller has a GitHub session. */
-    anonymousNickname?: string,
   ): Promise<SaveResult> {
+    // Identity (GitHub login OR anonymous nickname) is read server-side
+    // from the better-auth session cookie — no longer passed in the
+    // body. See `apps/dashboard/api/auth.ts` + ADR-016.
     const result = await postJson<SaveResult>(
       `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}`,
-      {
-        data,
-        sha,
-        translations,
-        ...(anonymousNickname !== undefined && anonymousNickname !== ''
-          ? { anonymousNickname }
-          : {}),
-      },
+      { data, sha, translations },
     );
     invalidateAfterSave();
     return result;
+  },
+  /**
+   * Open PRs opened by the current session (identity inferred from
+   * the cookie). Powers the home page's "Vos contributions en cours"
+   * section — see ADR-016. Returns an empty list (not a 401) when
+   * the visitor isn't signed in, so the home page can render the
+   * section conditionally without branching on auth state.
+   */
+  async myContributions(): Promise<{
+    contributions: readonly {
+      prNumber: number;
+      htmlUrl: string;
+      title: string;
+      updatedAt: string;
+      entityId: string;
+      entityType: string;
+      entitySlug: string;
+    }[];
+  }> {
+    return getJson('/api/me/contributions');
   },
   /** Manually drop every cached response — useful behind a "Refresh" button. */
   invalidateAll(): void {
