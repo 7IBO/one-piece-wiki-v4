@@ -16,10 +16,13 @@
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Link } from '@tanstack/react-router';
-import { Trash2 } from 'lucide-react';
-import { type JSX } from 'react';
+import { Trash2, Upload } from 'lucide-react';
+import { type JSX, useState } from 'react';
+import { toast } from 'sonner';
+import { api } from './api';
+import { useCurrentUser } from './auth';
 import { useLocale, useT } from './form/locale';
-import { clearAllDrafts, clearDraft, useAllDrafts } from './form/use-draft';
+import { clearAllDrafts, clearDraft, readDraft, useAllDrafts } from './form/use-draft';
 
 function relativeTime(savedAt: number, locale: 'en' | 'fr'): string {
   const diff = Date.now() - savedAt;
@@ -35,12 +38,89 @@ export function DraftsIndicator(): JSX.Element | null {
   const { drafts, refresh } = useAllDrafts();
   const locale = useLocale();
   const t = useT();
+  const { user, loaded: userLoaded } = useCurrentUser();
+  const [saving, setSaving] = useState<{ done: number; total: number; } | null>(null);
 
   if (drafts.length === 0) return null;
 
   // Sort newest first so the most-recently touched draft is up top —
   // that's the one the maintainer most likely wants to jump back to.
   const sorted = [...drafts].sort((a, b) => b.savedAt - a.savedAt);
+
+  /**
+   * Walk every persisted draft and open one PR per entity. Each save
+   * is its own PR (per ADR-016 / ADR-017 — the "one PR per entity"
+   * model isn't changing here; this just removes the friction of
+   * having to navigate to each entity individually).
+   *
+   * Intentionally sequential: parallel `api.saveEntity` calls would
+   * race on GitHub's rate limits + produce conflicts when overlapping
+   * translation files land. The progress counter in the button label
+   * gives feedback so the maintainer doesn't think the UI froze.
+   */
+  async function saveAll(): Promise<void> {
+    if (!userLoaded || user === null) {
+      toast.error(t('signInToSave'));
+      return;
+    }
+    if (drafts.length === 0) return;
+    setSaving({ done: 0, total: drafts.length });
+    let opened = 0;
+    const failures: { id: string; message: string; }[] = [];
+    for (const summary of drafts) {
+      const id = summary.entityId;
+      const [type, slug] = id.split(':');
+      if (type === undefined || slug === undefined) {
+        failures.push({ id, message: 'unparseable id' });
+        continue;
+      }
+      try {
+        // eslint-disable-next-line no-await-in-loop
+        const [entity, draft] = await Promise.all([
+          api.getEntity(type, slug),
+          readDraft(id),
+        ]);
+        if (draft === null) {
+          // Stale entry (likely TTL-swept between badge render and
+          // click). Skip silently — `refresh()` at the end picks it up.
+          continue;
+        }
+        // eslint-disable-next-line no-await-in-loop
+        await api.saveEntity(type, slug, draft.data, entity.sha, draft.translations);
+        // eslint-disable-next-line no-await-in-loop
+        await clearDraft(id);
+        opened += 1;
+      } catch (err) {
+        failures.push({
+          id,
+          message: err instanceof Error ? err.message : String(err),
+        });
+      }
+      setSaving((s) => s === null ? null : { done: s.done + 1, total: s.total });
+    }
+    setSaving(null);
+    refresh();
+    if (failures.length === 0) {
+      toast.success(`${opened} ${t('bulkSaveDone')}`);
+      return;
+    }
+    const first = failures[0]!;
+    const hint = /401|unauthorized|sign in/i.test(first.message)
+      ? ` — ${t('signInToSave')}`
+      : /503|app not/i.test(first.message)
+      ? ' — GitHub App not installed on the data repo'
+      : '';
+    toast.error(`${failures.length} ${t('bulkSaveFailed')} (${opened} ok)`, {
+      description: `${first.id}: ${first.message}${hint}${
+        failures.length > 1 ? ` (+${failures.length - 1} more — see console)` : ''
+      }`,
+      duration: 10_000,
+    });
+    for (const f of failures) {
+      // eslint-disable-next-line no-console
+      console.error(`[drafts save-all] ${f.id} failed:`, f.message);
+    }
+  }
 
   return (
     <Popover>
@@ -106,13 +186,34 @@ export function DraftsIndicator(): JSX.Element | null {
             );
           })}
         </ul>
-        {drafts.length > 1
-          ? (
-            <div className='border-t px-3 py-2'>
+        <div className='border-t flex flex-col gap-1.5 px-3 py-2'>
+          {
+            /* Primary action: save every draft as a PR. One PR per
+              entity (the "batch into one PR" path is still a follow-up
+              — see ADR-016 deferred section); this just removes the
+              friction of having to visit each entity manually. */
+          }
+          <Button
+            size='sm'
+            className='h-7 w-full text-[11px]'
+            disabled={saving !== null || (userLoaded && user === null)}
+            onClick={() => {
+              void saveAll();
+            }}
+            title={userLoaded && user === null ? t('signInToSave') : t('bulkSaveAll')}
+          >
+            <Upload className='size-3.5' />
+            {saving !== null
+              ? `${t('bulkSavingProgress')} ${saving.done}/${saving.total}`
+              : `${t('bulkSaveAll')} (${drafts.length})`}
+          </Button>
+          {drafts.length > 1
+            ? (
               <Button
                 variant='outline'
                 size='sm'
                 className='h-7 w-full text-[11px]'
+                disabled={saving !== null}
                 onClick={() => {
                   void clearAllDrafts().then(refresh);
                 }}
@@ -120,9 +221,9 @@ export function DraftsIndicator(): JSX.Element | null {
                 <Trash2 className='size-3.5' />
                 {t('discard')} ({drafts.length})
               </Button>
-            </div>
-          )
-          : null}
+            )
+            : null}
+        </div>
       </PopoverContent>
     </Popover>
   );

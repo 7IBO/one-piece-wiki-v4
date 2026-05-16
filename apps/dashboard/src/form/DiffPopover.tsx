@@ -21,18 +21,32 @@ import { type Locale, useT } from './locale';
 
 type EntityData = Record<string, unknown>;
 
+/**
+ * Two flavours per diff cell:
+ *  - `summary` is the truncated single-line preview shown in the row
+ *  - `full`   is the pretty-printed version revealed on hover (multi-
+ *             line JSON for objects/arrays, plain string otherwise)
+ *
+ * Splitting them up-front keeps the hover render trivial: no
+ * re-formatting on mouse-enter, no layout shift.
+ */
+type DiffCell = {
+  readonly summary: string;
+  readonly full: string;
+};
+
 type PropertyDiff = {
   readonly id: string;
   readonly label: string;
-  readonly before: string;
-  readonly after: string;
+  readonly before: DiffCell;
+  readonly after: DiffCell;
 };
 
 type TranslationDiff = {
   readonly key: string;
   readonly locale: Locale;
-  readonly before: string;
-  readonly after: string;
+  readonly before: DiffCell;
+  readonly after: DiffCell;
 };
 
 type RelationDiff = {
@@ -152,33 +166,69 @@ function DiffSection(
 function DiffRow(
   { label, before, after }: {
     label: React.ReactNode;
-    before: string;
-    after: string;
+    before: DiffCell;
+    after: DiffCell;
   },
 ): JSX.Element {
   return (
     <li className='py-1.5'>
       <p className='text-foreground mb-0.5 truncate text-[11px] font-medium'>{label}</p>
       <div className='flex items-center gap-1.5 text-[11px]'>
-        <span
-          className={`min-w-0 max-w-[10rem] flex-1 truncate font-mono text-[10px] ${
-            before === '∅' ? 'text-muted-foreground italic' : 'line-through opacity-70'
-          }`}
-          title={before}
-        >
-          {before}
-        </span>
+        <DiffCellView cell={before} variant='before' />
         <ArrowRight className='size-3 shrink-0 opacity-50' />
-        <span
-          className={`min-w-0 flex-1 truncate font-mono text-[10px] ${
-            after === '∅' ? 'text-muted-foreground italic' : 'text-emerald-500'
-          }`}
-          title={after}
-        >
-          {after}
-        </span>
+        <DiffCellView cell={after} variant='after' />
       </div>
     </li>
+  );
+}
+
+/**
+ * One diff cell with a hover-revealed pretty-printed payload. The
+ * native `title` attribute can't render multi-line JSON readably (the
+ * browser collapses whitespace and caps the width), so we render our
+ * own popover absolutely-positioned beneath the cell.
+ *
+ * The popover is purely CSS-driven (group-hover/focus-within) — no
+ * extra state, no JS listeners, no re-flow on hover. Hidden by
+ * default + only mounted into the layout when `full` actually
+ * differs from `summary` (i.e. there's extra content to reveal),
+ * so short values stay tooltip-free.
+ */
+function DiffCellView({
+  cell,
+  variant,
+}: {
+  cell: DiffCell;
+  variant: 'before' | 'after';
+}): JSX.Element {
+  const isEmpty = cell.summary === '∅';
+  const hasMore = !isEmpty && cell.full !== cell.summary;
+  const baseClass = variant === 'before'
+    ? 'max-w-[10rem] flex-1 truncate font-mono text-[10px] '
+      + (isEmpty ? 'text-muted-foreground italic' : 'line-through opacity-70')
+    : 'flex-1 truncate font-mono text-[10px] '
+      + (isEmpty ? 'text-muted-foreground italic' : 'text-emerald-500');
+  return (
+    <span
+      className={`group/cell relative min-w-0 ${hasMore ? 'cursor-help' : ''}`}
+      tabIndex={hasMore ? 0 : -1}
+    >
+      <span className={baseClass}>{cell.summary}</span>
+      {hasMore
+        ? (
+          <span
+            role='tooltip'
+            className={`pointer-events-none invisible absolute z-50 opacity-0 transition-opacity duration-100 group-hover/cell:visible group-hover/cell:opacity-100 group-focus-within/cell:visible group-focus-within/cell:opacity-100 ${
+              variant === 'before' ? 'left-0' : 'right-0'
+            } bottom-full mb-1 max-h-[20rem] w-[24rem] overflow-auto rounded-[4px] border bg-popover text-popover-foreground p-2 shadow-lg`}
+          >
+            <pre className='whitespace-pre-wrap break-words font-mono text-[10px] leading-tight m-0'>
+              {cell.full}
+            </pre>
+          </span>
+        )
+        : null}
+    </span>
   );
 }
 
@@ -229,9 +279,9 @@ function computeDiff(p: {
   const currProps = (p.data['properties'] as Record<string, unknown> | undefined) ?? {};
   const propKeys = new Set([...Object.keys(initProps), ...Object.keys(currProps)]);
   for (const key of propKeys) {
-    const before = formatValue(initProps[key]);
-    const after = formatValue(currProps[key]);
-    if (before !== after) {
+    const before = formatCell(initProps[key]);
+    const after = formatCell(currProps[key]);
+    if (before.full !== after.full) {
       propertyDiffs.push({
         id: key,
         label: p.propertyLabels[key] ?? key,
@@ -254,8 +304,8 @@ function computeDiff(p: {
         translationDiffs.push({
           locale,
           key,
-          before: before === '' ? '∅' : before,
-          after: after === '' ? '∅' : after,
+          before: stringCell(before),
+          after: stringCell(after),
         });
       }
     }
@@ -302,15 +352,39 @@ function diffRelations(initial: unknown, current: unknown): readonly RelationDif
   return out;
 }
 
-/** Compact JSON-ish rendering for diff cells. `∅` for empty/absent. */
-function formatValue(v: unknown): string {
-  if (v === undefined || v === null) return '∅';
-  if (typeof v === 'string') return v === '' ? '∅' : v;
-  if (typeof v === 'number' || typeof v === 'boolean') return String(v);
-  try {
-    const s = JSON.stringify(v);
-    return s.length > 120 ? `${s.slice(0, 117)}…` : s;
-  } catch {
-    return String(v);
+/**
+ * Build a `{summary, full}` cell for a property value. `summary` is
+ * the truncated single-line preview that fits in the row; `full` is
+ * the pretty-printed payload revealed on hover when it actually
+ * differs from the summary.
+ *
+ * `∅` is used for empty/absent values so a deleted property or a
+ * cleared string is visually distinct from an empty array `[]`.
+ */
+function formatCell(v: unknown): DiffCell {
+  if (v === undefined || v === null) return { summary: '∅', full: '∅' };
+  if (typeof v === 'string') {
+    return stringCell(v);
   }
+  if (typeof v === 'number' || typeof v === 'boolean') {
+    const s = String(v);
+    return { summary: s, full: s };
+  }
+  let compact: string;
+  let pretty: string;
+  try {
+    compact = JSON.stringify(v);
+    pretty = JSON.stringify(v, null, 2);
+  } catch {
+    const s = String(v);
+    return { summary: s, full: s };
+  }
+  const summary = compact.length > 120 ? `${compact.slice(0, 117)}…` : compact;
+  return { summary, full: pretty };
+}
+
+function stringCell(v: string): DiffCell {
+  if (v === '') return { summary: '∅', full: '∅' };
+  const summary = v.length > 120 ? `${v.slice(0, 117)}…` : v;
+  return { summary, full: v };
 }
