@@ -20,6 +20,8 @@
  * server REFUSES to start in production without one).
  */
 import { createHmac, randomBytes, timingSafeEqual } from 'node:crypto';
+import { readFileSync, writeFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 
 const COOKIE_NAME = 'opw_session';
 // 30-day rolling cookie. Long enough that a sporadic contributor
@@ -27,16 +29,62 @@ const COOKIE_NAME = 'opw_session';
 // abandoned browser eventually drops the session.
 const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
 
-const ENV_SECRET = process.env['SESSION_SECRET'];
-if (
-  (ENV_SECRET === undefined || ENV_SECRET === '')
-  && process.env['NODE_ENV'] === 'production'
-) {
-  throw new Error(
-    'SESSION_SECRET must be set in production. Generate with `openssl rand -base64 32`.',
-  );
+/**
+ * Resolve the HMAC secret used to sign session cookies. Three paths:
+ *
+ *  1. `SESSION_SECRET` env var is set → use it. Required in prod;
+ *     the server refuses to start without it (no silent fallback to
+ *     an in-memory random in production).
+ *  2. Dev only, env var unset → read a cached secret from
+ *     `apps/dashboard/.dev-session-secret` (gitignored). Generated on
+ *     first run, reused on every `bun --hot` reload so the maintainer
+ *     doesn't get logged out every time they save a file.
+ *  3. The dev file can't be read or written → fall back to a process-
+ *     local random. Cookies survive within the process but die on
+ *     restart (best-effort; this branch shouldn't happen in normal
+ *     setups).
+ *
+ * Why a file rather than an env default: `bun --hot` re-evaluates
+ * top-level module code on every change, so `randomBytes(32)` would
+ * be re-rolled and the previous cookie would fail HMAC verification.
+ * The file gives stable bytes that survive reload + restart, the only
+ * downside being one extra read at boot.
+ */
+function loadSessionSecret(): string {
+  const envSecret = process.env['SESSION_SECRET'];
+  if (envSecret !== undefined && envSecret !== '') return envSecret;
+  if (process.env['NODE_ENV'] === 'production') {
+    throw new Error(
+      'SESSION_SECRET must be set in production. Generate with `openssl rand -base64 32`.',
+    );
+  }
+  // Dev cache file alongside the API source. `import.meta.dir` points
+  // at `apps/dashboard/api` so we resolve one level up.
+  const cachePath = resolve(import.meta.dir, '..', '.dev-session-secret');
+  try {
+    const cached = readFileSync(cachePath, 'utf8').trim();
+    if (cached.length >= 32) return cached;
+  } catch {
+    // missing / unreadable — fall through to write a new one.
+  }
+  const fresh = randomBytes(32).toString('hex');
+  try {
+    writeFileSync(cachePath, fresh, { mode: 0o600 });
+    process.stderr.write(
+      `[session] generated a dev SESSION_SECRET cached at ${cachePath} — `
+        + `set SESSION_SECRET in .env.local to override.\n`,
+    );
+  } catch (err) {
+    process.stderr.write(
+      `[session] failed to persist dev secret (${
+        err instanceof Error ? err.message : String(err)
+      }); cookies will not survive restart.\n`,
+    );
+  }
+  return fresh;
 }
-const SECRET = ENV_SECRET ?? randomBytes(32).toString('hex');
+
+const SECRET = loadSessionSecret();
 
 export type Session =
   | {

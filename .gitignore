@@ -42,3 +42,8 @@ coverage/
 
 # Local temp files for commit message editing
 .commit-msg.tmp
+
+# Cached dev session HMAC secret (apps/dashboard/api/session.ts) — see
+# ADR-017. Generated on first `bun run dev` so hot-reload doesn't
+# invalidate the cookie. Never committed; never used in production.
+apps/dashboard/.dev-session-secret

@@ -225,108 +225,209 @@ function DiffRow(
           </div>
         )}
       {expandable && open
-        ? <UnifiedDiff before={before.full} after={after.full} />
+        ? <SplitDiff before={before.full} after={after.full} />
         : null}
     </li>
   );
 }
 
 /**
- * GitHub-style unified diff. Splits before/after into lines, runs an
- * LCS line diff via `diff.diffLines`, and renders the result with
- * `-` / `+` / ` ` gutters. Context lines (unchanged) are dimmed so
- * the changed lines pop. Up to ~3 context lines of unchanged content
- * are kept around each change hunk; everything else collapses.
+ * GitHub-style "Split" diff. Two columns: removed on the left,
+ * added on the right, unchanged context paired on the same row.
+ * Consecutive `removed`+`added` chunks are zipped row-by-row so a
+ * 3-line edit on a 3-line block lines up visually; mismatched
+ * counts get null cells on the shorter side.
  *
- * `∅` placeholders (rendered when the value is absent) come through
- * unchanged from the cell's `full` string. The diff library still
- * handles them — a transition from `∅` to a real value shows up as
- * a single `−ø` line followed by `+`-marked content lines.
+ * Runs of >`context*2` unchanged lines collapse to "(N unchanged
+ * lines)" with the head/tail kept around each change.
+ *
+ * `∅` placeholders come through unchanged from the cell's `full`
+ * string. The diff library handles them — a transition from `∅`
+ * to a real value shows up as a single `−∅` row paired with `+`
+ * rows on the right.
  */
-function UnifiedDiff({ before, after }: { before: string; after: string; }): JSX.Element {
-  // Memoising on the string identity is enough — both come from the
-  // same useMemo upstream, so they're stable for the popover's
-  // lifetime. Recomputing in the closed state is cheap; the gating
-  // happens at the parent (`expandable && open`).
+function SplitDiff({ before, after }: { before: string; after: string; }): JSX.Element {
   const chunks = useMemo(() => diffLines(before, after, { newlineIsToken: false }), [
     before,
     after,
   ]);
-  const lines: { kind: '+' | '-' | ' '; text: string; }[] = [];
-  for (const chunk of chunks) {
-    const kind = chunk.added ? '+' : chunk.removed ? '-' : ' ';
-    // diffLines returns trailing-newline-inclusive chunks; split
-    // and drop the empty tail so we don't render a phantom blank
-    // line for a chunk that ends on `\n`.
-    const parts = chunk.value.split('\n');
-    if (parts.length > 1 && parts[parts.length - 1] === '') parts.pop();
-    for (const text of parts) lines.push({ kind, text });
-  }
-  // Collapse runs of >5 unchanged lines down to 2+ellipsis+2 so a
-  // large diff stays readable. (Pretty-JSON entities are typically
-  // small enough not to hit this, but `markdown` fields can.)
-  const collapsed = collapseUnchanged(lines, 3);
+  const rows = useMemo(() => collapseUnchanged(pairChunks(chunks), 3), [chunks]);
+
   return (
     <div className='border-border bg-muted/30 mt-1.5 ml-4 overflow-hidden rounded-[3px] border'>
-      <pre className='m-0 max-h-[20rem] overflow-auto font-mono text-[10px] leading-snug'>
-        {collapsed.map((line, i) => (
-          <div
-            key={i}
-            className={line.kind === '+'
-              ? 'bg-emerald-500/10 text-emerald-500'
-              : line.kind === '-'
-              ? 'bg-destructive/10 text-destructive'
-              : line.kind === '…'
-              ? 'text-muted-foreground/50 italic'
-              : 'text-muted-foreground'}
-          >
-            <span
-              className='inline-block w-4 select-none text-center opacity-60'
-              aria-hidden='true'
-            >
-              {line.kind === '…' ? '⋯' : line.kind}
-            </span>
-            <span className='whitespace-pre-wrap break-words'>{line.text}</span>
-          </div>
-        ))}
-      </pre>
+      <div className='max-h-[20rem] overflow-auto font-mono text-[10px] leading-snug'>
+        <table className='w-full table-fixed border-collapse'>
+          <tbody>
+            {rows.map((row, i) => <SplitRow key={i} row={row} />)}
+          </tbody>
+        </table>
+      </div>
     </div>
   );
 }
 
+type ChunkLine = { kind: '+' | '-' | ' '; text: string; };
+type SplitRowData =
+  | {
+    readonly kind: 'paired';
+    readonly left: ChunkLine | null;
+    readonly right: ChunkLine | null;
+  }
+  | { readonly kind: 'collapsed'; readonly count: number; };
+
+function SplitRow({ row }: { row: SplitRowData; }): JSX.Element {
+  if (row.kind === 'collapsed') {
+    return (
+      <tr className='text-muted-foreground/60 bg-muted/10'>
+        <td
+          colSpan={2}
+          className='px-2 py-0.5 text-center italic text-[10px]'
+        >
+          ⋯ {row.count} unchanged line{row.count > 1 ? 's' : ''}
+        </td>
+      </tr>
+    );
+  }
+  return (
+    <tr>
+      <Cell line={row.left} side='left' />
+      <Cell line={row.right} side='right' />
+    </tr>
+  );
+}
+
+function Cell(
+  { line, side }: { line: ChunkLine | null; side: 'left' | 'right'; },
+): JSX.Element {
+  if (line === null) {
+    return <td className='bg-muted/10 w-1/2 align-top' aria-hidden='true' />;
+  }
+  const tone = line.kind === '-'
+    ? 'bg-destructive/10 text-destructive'
+    : line.kind === '+'
+    ? 'bg-emerald-500/10 text-emerald-500'
+    : 'text-muted-foreground';
+  const gutter = line.kind === '-' ? '-' : line.kind === '+' ? '+' : ' ';
+  return (
+    <td className={`w-1/2 align-top ${tone} ${side === 'left' ? 'border-r' : ''}`}>
+      <div className='flex'>
+        <span
+          className='select-none opacity-60 pl-1 pr-1 w-4 text-center shrink-0'
+          aria-hidden='true'
+        >
+          {gutter}
+        </span>
+        <span className='whitespace-pre-wrap break-words flex-1 pr-1 py-0.5'>
+          {line.text}
+        </span>
+      </div>
+    </td>
+  );
+}
+
 /**
- * Drop interior unchanged lines from long runs, keeping `context`
- * lines on either side of each change. Returns a new array — input
- * untouched. The placeholder `kind === '…'` row stands in for the
- * collapsed block; renderers should treat it as a visual marker, not
- * real content.
+ * Turn the diff library's chunk stream into paired rows. The
+ * library returns chunks in source order, so consecutive
+ * `removed`+`added` chunks naturally represent a single edit
+ * block — we zip them line-by-line. Unchanged chunks become
+ * identical rows on both sides. Lone removed/added become
+ * one-sided rows (the other side gets `null` → blank cell).
  */
-function collapseUnchanged(
-  lines: readonly { kind: '+' | '-' | ' '; text: string; }[],
-  context: number,
-): readonly { kind: '+' | '-' | ' ' | '…'; text: string; }[] {
-  const out: { kind: '+' | '-' | ' ' | '…'; text: string; }[] = [];
+function splitChunkLines(value: string): string[] {
+  const parts = value.split('\n');
+  // diff library returns trailing-newline-inclusive chunks; drop the
+  // empty tail so we don't emit a phantom blank line.
+  if (parts.length > 1 && parts[parts.length - 1] === '') parts.pop();
+  return parts;
+}
+
+function pairChunks(
+  chunks: readonly { added?: boolean; removed?: boolean; value: string; }[],
+): readonly SplitRowData[] {
+  const out: SplitRowData[] = [];
   let i = 0;
-  while (i < lines.length) {
-    if (lines[i]!.kind !== ' ') {
-      out.push(lines[i]!);
+  while (i < chunks.length) {
+    const c = chunks[i]!;
+    const isRemoved = c.removed === true;
+    const isAdded = c.added === true;
+    if (!isRemoved && !isAdded) {
+      // Unchanged context — same content both sides.
+      for (const text of splitChunkLines(c.value)) {
+        out.push({
+          kind: 'paired',
+          left: { kind: ' ', text },
+          right: { kind: ' ', text },
+        });
+      }
       i++;
       continue;
     }
-    // Walk forward through the unchanged run.
+    if (isRemoved) {
+      const removedLines = splitChunkLines(c.value);
+      const next = chunks[i + 1];
+      if (next !== undefined && next.added === true) {
+        // Edit block — zip the removed lines with the added ones.
+        const addedLines = splitChunkLines(next.value);
+        const max = Math.max(removedLines.length, addedLines.length);
+        for (let j = 0; j < max; j++) {
+          const l = j < removedLines.length ? removedLines[j]! : undefined;
+          const r = j < addedLines.length ? addedLines[j]! : undefined;
+          out.push({
+            kind: 'paired',
+            left: l !== undefined ? { kind: '-', text: l } : null,
+            right: r !== undefined ? { kind: '+', text: r } : null,
+          });
+        }
+        i += 2;
+        continue;
+      }
+      // Lone removal — left only.
+      for (const text of removedLines) {
+        out.push({ kind: 'paired', left: { kind: '-', text }, right: null });
+      }
+      i++;
+      continue;
+    }
+    // Lone addition — right only.
+    for (const text of splitChunkLines(c.value)) {
+      out.push({ kind: 'paired', left: null, right: { kind: '+', text } });
+    }
+    i++;
+  }
+  return out;
+}
+
+/**
+ * Collapse runs of >`context*2` paired-unchanged rows down to a
+ * single "(N unchanged lines)" placeholder, keeping `context`
+ * rows on either side of each edit hunk. Boundary runs (at the
+ * very start or end) are left untouched — chopping them looks
+ * weird and they're usually small anyway.
+ */
+function collapseUnchanged(
+  rows: readonly SplitRowData[],
+  context: number,
+): readonly SplitRowData[] {
+  const out: SplitRowData[] = [];
+  const isUnchanged = (r: SplitRowData): boolean =>
+    r.kind === 'paired' && r.left?.kind === ' ' && r.right?.kind === ' ';
+  let i = 0;
+  while (i < rows.length) {
+    if (!isUnchanged(rows[i]!)) {
+      out.push(rows[i]!);
+      i++;
+      continue;
+    }
     let j = i;
-    while (j < lines.length && lines[j]!.kind === ' ') j++;
+    while (j < rows.length && isUnchanged(rows[j]!)) j++;
     const runLen = j - i;
-    const isLeading = i === 0;
-    const isTrailing = j === lines.length;
-    if (runLen <= context * 2 || isLeading || isTrailing) {
-      // Short run, or at the file boundary — keep everything (we can
-      // safely show all of it; chopping at boundaries looks weird).
-      for (let k = i; k < j; k++) out.push(lines[k]!);
+    const atBoundary = i === 0 || j === rows.length;
+    if (runLen <= context * 2 || atBoundary) {
+      for (let k = i; k < j; k++) out.push(rows[k]!);
     } else {
-      for (let k = i; k < i + context; k++) out.push(lines[k]!);
-      out.push({ kind: '…', text: `(${runLen - context * 2} unchanged lines)` });
-      for (let k = j - context; k < j; k++) out.push(lines[k]!);
+      for (let k = i; k < i + context; k++) out.push(rows[k]!);
+      out.push({ kind: 'collapsed', count: runLen - context * 2 });
+      for (let k = j - context; k < j; k++) out.push(rows[k]!);
     }
     i = j;
   }
