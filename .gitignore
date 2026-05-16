@@ -39,3 +39,6 @@ Thumbs.db
 
 # Coverage
 coverage/
+
+# Local temp files for commit message editing
+.commit-msg.tmp
