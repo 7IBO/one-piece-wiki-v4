@@ -21,9 +21,13 @@
     "check:references": "bun packages/schema-engine/src/cli/check-references.ts",
     "format:data": "bun packages/schema-engine/src/cli/format-data.ts",
     "build:data": "bun packages/db-builder/src/cli/build.ts",
-    "dashboard:dev": "bun --filter @onepiece-wiki/dashboard dev"
+    "dashboard:dev": "bun --filter @onepiece-wiki/dashboard dev",
+    "check:frontend-extensions": "bun scripts/check-frontend-extensions.ts",
+    "fix:frontend-extensions": "bun scripts/strip-frontend-extensions.ts",
+    "setup:r2-cors": "bun scripts/setup-r2-cors.ts"
   },
   "devDependencies": {
+    "@aws-sdk/client-s3": "3.1048.0",
     "@commitlint/cli": "^19.5.0",
     "@commitlint/config-conventional": "^19.5.0",
     "@types/bun": "^1.1.13",

@@ -7,6 +7,14 @@ pre-commit:
     lint:
       glob: '*.{ts,tsx}'
       run: bun run lint {staged_files}
+    # Dashboard frontend (apps/dashboard/src/**) must import without
+    # .ts/.tsx extensions — Vite resolves extension-less, and the
+    # repo-wide convention keeps imports clean. Bun-runtime trees
+    # (api/, packages/) are unaffected; the script filters staged
+    # files to the frontend tree itself.
+    frontend-extensions:
+      glob: 'apps/dashboard/src/**/*.{ts,tsx}'
+      run: bun run scripts/check-frontend-extensions.ts {staged_files}
 
 commit-msg:
   commands:
