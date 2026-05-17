@@ -22,6 +22,8 @@
     "format:data": "bun packages/schema-engine/src/cli/format-data.ts",
     "build:data": "bun packages/db-builder/src/cli/build.ts",
     "dashboard:dev": "bun --filter @onepiece-wiki/dashboard dev",
+    "dashboard:build": "bun --filter @onepiece-wiki/dashboard build",
+    "dashboard:vercel-build": "bun --filter @onepiece-wiki/dashboard vercel-build",
     "check:frontend-extensions": "bun scripts/check-frontend-extensions.ts",
     "fix:frontend-extensions": "bun scripts/strip-frontend-extensions.ts",
     "setup:r2-cors": "bun scripts/setup-r2-cors.ts"
