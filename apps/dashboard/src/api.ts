@@ -283,6 +283,29 @@ export const api = {
     entityDetailCache.set(key, promise);
     return promise;
   },
+  /**
+   * Open a PR creating a brand-new entity of the given type
+   * (ADR-020). The server validates slug format + global
+   * uniqueness server-side; the frontend pre-checks against the
+   * cached `listEntities(type)` for instant feedback but the
+   * server's check is the only source of truth.
+   *
+   * Throws `ApiError` with status 409 if the slug is already taken
+   * (race with another contributor's just-merged PR).
+   */
+  async createEntity(
+    type: string,
+    slug: string,
+    data: Record<string, unknown>,
+    translations: Translations,
+  ): Promise<SaveResult> {
+    const result = await postJson<SaveResult>(
+      `/api/entities/${encodeURIComponent(type)}`,
+      { slug, data, translations },
+    );
+    invalidateAfterSave();
+    return result;
+  },
   async saveEntity(
     type: string,
     slug: string,

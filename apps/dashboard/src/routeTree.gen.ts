@@ -15,6 +15,7 @@ import { Route as TypesTypeRouteImport } from './routes/types.$type'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
 import { Route as TypesTypeIndexRouteImport } from './routes/types.$type.index'
 import { Route as TypesTypeTableRouteImport } from './routes/types.$type.table'
+import { Route as TypesTypeNewRouteImport } from './routes/types.$type.new'
 import { Route as TypesTypeSlugRouteImport } from './routes/types.$type.$slug'
 
 const LoginRoute = LoginRouteImport.update({
@@ -47,6 +48,11 @@ const TypesTypeTableRoute = TypesTypeTableRouteImport.update({
   path: '/table',
   getParentRoute: () => TypesTypeRoute,
 } as any)
+const TypesTypeNewRoute = TypesTypeNewRouteImport.update({
+  id: '/new',
+  path: '/new',
+  getParentRoute: () => TypesTypeRoute,
+} as any)
 const TypesTypeSlugRoute = TypesTypeSlugRouteImport.update({
   id: '/$slug',
   path: '/$slug',
@@ -59,6 +65,7 @@ export interface FileRoutesByFullPath {
   '/api/$': typeof ApiSplatRoute
   '/types/$type': typeof TypesTypeRouteWithChildren
   '/types/$type/$slug': typeof TypesTypeSlugRoute
+  '/types/$type/new': typeof TypesTypeNewRoute
   '/types/$type/table': typeof TypesTypeTableRoute
   '/types/$type/': typeof TypesTypeIndexRoute
 }
@@ -67,6 +74,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/api/$': typeof ApiSplatRoute
   '/types/$type/$slug': typeof TypesTypeSlugRoute
+  '/types/$type/new': typeof TypesTypeNewRoute
   '/types/$type/table': typeof TypesTypeTableRoute
   '/types/$type': typeof TypesTypeIndexRoute
 }
@@ -77,6 +85,7 @@ export interface FileRoutesById {
   '/api/$': typeof ApiSplatRoute
   '/types/$type': typeof TypesTypeRouteWithChildren
   '/types/$type/$slug': typeof TypesTypeSlugRoute
+  '/types/$type/new': typeof TypesTypeNewRoute
   '/types/$type/table': typeof TypesTypeTableRoute
   '/types/$type/': typeof TypesTypeIndexRoute
 }
@@ -88,6 +97,7 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/types/$type'
     | '/types/$type/$slug'
+    | '/types/$type/new'
     | '/types/$type/table'
     | '/types/$type/'
   fileRoutesByTo: FileRoutesByTo
@@ -96,6 +106,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/api/$'
     | '/types/$type/$slug'
+    | '/types/$type/new'
     | '/types/$type/table'
     | '/types/$type'
   id:
@@ -105,6 +116,7 @@ export interface FileRouteTypes {
     | '/api/$'
     | '/types/$type'
     | '/types/$type/$slug'
+    | '/types/$type/new'
     | '/types/$type/table'
     | '/types/$type/'
   fileRoutesById: FileRoutesById
@@ -160,6 +172,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TypesTypeTableRouteImport
       parentRoute: typeof TypesTypeRoute
     }
+    '/types/$type/new': {
+      id: '/types/$type/new'
+      path: '/new'
+      fullPath: '/types/$type/new'
+      preLoaderRoute: typeof TypesTypeNewRouteImport
+      parentRoute: typeof TypesTypeRoute
+    }
     '/types/$type/$slug': {
       id: '/types/$type/$slug'
       path: '/$slug'
@@ -172,12 +191,14 @@ declare module '@tanstack/react-router' {
 
 interface TypesTypeRouteChildren {
   TypesTypeSlugRoute: typeof TypesTypeSlugRoute
+  TypesTypeNewRoute: typeof TypesTypeNewRoute
   TypesTypeTableRoute: typeof TypesTypeTableRoute
   TypesTypeIndexRoute: typeof TypesTypeIndexRoute
 }
 
 const TypesTypeRouteChildren: TypesTypeRouteChildren = {
   TypesTypeSlugRoute: TypesTypeSlugRoute,
+  TypesTypeNewRoute: TypesTypeNewRoute,
   TypesTypeTableRoute: TypesTypeTableRoute,
   TypesTypeIndexRoute: TypesTypeIndexRoute,
 }

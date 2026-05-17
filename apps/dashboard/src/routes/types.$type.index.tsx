@@ -9,7 +9,7 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowDown, ArrowUp, Search, Table2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Plus, Search, Table2 } from 'lucide-react';
 import { type JSX, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { api, type EntityRef, type SchemaCatalogue } from '../api';
 import { useLocale, useT } from '../form/locale';
@@ -100,15 +100,26 @@ function TypeListComponent(): JSX.Element {
               : `${display?.length ?? 0} of ${list.length} entities`}
           </p>
         </div>
-        <Button
-          render={<Link to='/types/$type/table' params={{ type }} />}
-          variant='outline'
-          size='sm'
-          className='gap-1.5'
-        >
-          <Table2 className='size-3.5' />
-          {t('tableView')}
-        </Button>
+        <div className='flex items-center gap-2'>
+          <Button
+            render={<Link to='/types/$type/new' params={{ type }} />}
+            variant='default'
+            size='sm'
+            className='gap-1.5'
+          >
+            <Plus className='size-3.5' />
+            New
+          </Button>
+          <Button
+            render={<Link to='/types/$type/table' params={{ type }} />}
+            variant='outline'
+            size='sm'
+            className='gap-1.5'
+          >
+            <Table2 className='size-3.5' />
+            {t('tableView')}
+          </Button>
+        </div>
       </div>
 
       <div className='bg-background sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b py-2'>
