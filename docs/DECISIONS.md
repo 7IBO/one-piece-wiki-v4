@@ -8,6 +8,153 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-021 — Bulk per-source cast saves (one PR, many entity files)
+
+**Date**: 2026-05-17
+
+**Context**: The apparitions hub (per-source cast manager at
+`/sources/$type/$slug`) lets a contributor add/remove N characters
+from a single chapter, episode, film, etc. The natural unit of edit
+is the **source**, but the actual mutations land on N separate
+character (/devil-fruit/crew/…) entity files — each gains, loses, or
+re-qualifies an `appears-in` relation. Every existing save flow in
+`packages/github-client` keys the PR off a single entity (`Edit
+character:luffy` → one entity's files in one PR). Reusing that flow
+N times would open N parallel PRs for what the contributor sees as
+one action.
+
+**Options**:
+
+- A — **Loop `submitEntityEdit` once per touched entity.** N PRs per
+  cast change. Trivial to ship, terrible to review (mass of PRs all
+  titled differently, no grouping).
+- B — **Single PR, single commit, source-titled** — extend
+  `commitMultipleFiles` (already used for entity + translations) to
+  carry N _independent_ entity files in one commit, then open one PR
+  titled `[DATA] Update cast of <sourceId>`.
+- C — **Server-side queue that batches per source per N seconds** and
+  opens one PR per batch. Solves the problem but adds a stateful
+  worker — incompatible with our stateless-functions deployment model.
+
+**Choice**: B.
+
+**Rationale**:
+
+- The Git Data API path (`commitMultipleFiles`) already handles
+  N-file commits cleanly — same blob/tree/commit dance, just N
+  blob entries instead of two. No new primitive.
+- PR title reflects the contributor's mental model ("I changed
+  Chapter 1's cast"), not the storage model ("I touched 5 character
+  files"). Reviewer sees the cast change as a unit.
+- Optimistic-lock check generalises naturally: per-file SHA check
+  before commit, surface all conflicting paths in a 409 so the UI
+  can prompt "reload the cast page".
+
+**Consequences**:
+
+- New flow `submitSourceCastEdit` in `packages/github-client/src/
+  save-flow.ts` — branch `cast/<source-id>/<ts>`, message `Update
+  cast of <sourceId>`, PR title `[DATA] Update cast of <sourceId>`,
+  body lists each touched entity + diff blocks (reusing
+  `renderDiffBlock`). Adds new label `apparitions` alongside `edit`
+  / `via-dashboard` / `area:data`.
+- New server endpoints in `apps/dashboard/api/server.ts`:
+  - `GET /api/sources/:type/:slug/cast` — reverse-scan the in-memory
+    catalogue for `appears-in` relations targeting this source,
+    return grouped by entity type.
+  - `POST /api/sources/:type/:slug/cast` — bulk apply
+    `{add: [...], remove: [...]}` against the catalogue snapshot,
+    validate every resulting entity, hand the file list to
+    `submitSourceCastEdit`.
+- **Deferred for v1**: resume-PR for cast saves (each save opens a
+  fresh PR). The existing `findOpenPRForEntity` is keyed by
+  `entityId` and won't match a source-titled PR. Acceptable —
+  apparitions edits are typically one-shot ("I just watched the
+  episode; here's everyone in it") rather than incremental.
+- **Conflict UX**: if 2 contributors edit the same cast and their
+  diffs touch the same character file, the 2nd save returns a 409
+  citing the conflicting paths. The UI surfaces a toast + a
+  "Refresh cast" affordance. Same SHA-based primitive as
+  `OptimisticLockError`, just plural.
+
+---
+
+## ADR-020 — Entity creation from the dashboard
+
+**Date**: 2026-05-17
+
+**Context**: Phase 4's roadmap line item #3 listed a `/types/:type/
+new` route from the start, but it was never wired — the dashboard
+today only edits entities that already exist on disk. Adding a new
+character means hand-writing the JSON file and committing as a
+maintainer, which blocks every contribution scenario that isn't an
+edit of something extant.
+
+The flow is mechanically close to entity edit (same form, same
+schema validation, same PR-via-`submitEntityEdit` pipeline) except
+for two new wrinkles: the file doesn't exist yet (no `expectedSha`),
+and the slug must be validated for both format and uniqueness
+**before** the PR is opened.
+
+**Options**:
+
+- A — **Treat creation as a special form of edit** with
+  `expectedSha: null` and rely on the existing `submitEntityEdit`
+  to do the right thing on a missing file. Slug uniqueness checked
+  server-side against the in-memory catalogue snapshot before the
+  Git Data API write.
+- B — **Dedicated `createEntity` server flow** (separate PR title,
+  separate label) so review tooling can filter "new" vs "edit"
+  contributions distinctly.
+
+**Choice**: A with a label refinement.
+
+**Rationale**:
+
+- `submitEntityEdit` already handles the "file doesn't exist"
+  branch correctly — `getFile` returns null on 404, the
+  `expectedSha !== null` guard short-circuits, `commitMultipleFiles`
+  uses the Git Data API which creates blobs/trees unconditionally.
+  No `packages/github-client` changes required.
+- A second label `new-entity` (alongside `edit`, `via-dashboard`,
+  `area:data`) gives review tooling the discrimination capability
+  without forking the save path. Reviewers can also distinguish via
+  the PR title (`[DATA] Create character:foo` vs `[DATA] Edit
+  character:foo`).
+
+**Consequences**:
+
+- New endpoint `POST /api/entities/:type` in `apps/dashboard/api/
+  server.ts`. Body shape mirrors `PUT /api/entities/:id`'s `payload`
+  - `translations`, plus an explicit `slug` field. Validation:
+  * kebab-case via `SlugSchema`
+  * uniqueness via in-memory snapshot scan
+  * data shape via `buildEntitySchema(type, …).safeParse`
+- `submitEntityEdit` called with `expectedSha: null` and a new
+  optional `commitVerb: 'Create' | 'Edit'` so the PR title reads
+  `[DATA] Create character:foo` rather than `[DATA] Edit
+  character:foo`. Label `new-entity` added when verb is `Create`.
+- New route `apps/dashboard/src/routes/types.$type.new.tsx` —
+  wraps `EntityForm` with blank initial state + new `SlugInput`
+  component (live regex + uniqueness check via TanStack Query).
+- "+ New" button on `types.$type.index.tsx` next to the table-view
+  link. Mobile-friendly per the same primitives as the rest of the
+  contribution surface (`MobileSheet`-aware, ≥44px touch target).
+- **Catalogue snapshot lag** (per ADR-019): the new entity won't
+  appear in the dashboard's bundled data source until Vercel
+  rebuilds. After PR opens, the UI surfaces a banner — "Your entity
+  is in PR #N; it'll appear in the catalogue after merge + deploy"
+  — instead of redirecting blindly to `/types/$type/$slug` (which
+  would 404 until the next deploy).
+- **Slug-conflict-with-open-PR** (rare): the snapshot is built from
+  `main`, so a slug claimed by an in-flight PR but not merged yet
+  won't fail the uniqueness check. The Git Data API write will
+  succeed (different branch), but the second contributor's PR will
+  conflict on merge with a clear file-already-exists error.
+  Acceptable for v1 — no silent corruption, just a merge prompt.
+
+---
+
 ## ADR-019 — Bundle `/data` into the dashboard SSR output for serverless deploys
 
 **Date**: 2026-05-17

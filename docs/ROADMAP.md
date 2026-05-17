@@ -6,7 +6,7 @@ demonstrably working and reviewed.**
 
 Current phase is tracked at the top of this file. Update it as you progress.
 
-> **Current phase**: 4.2 — GitHub-integrated dashboard (code shipped; awaits maintainer's first end-to-end PR test)
+> **Current phase**: 4.3 — Contribution surface expansion (entity creation + apparitions hub + mobile triage). 4.2 shipped end-to-end (admin PR flow verified on prod).
 
 ## Phase 1 — Foundations
 
@@ -336,6 +336,53 @@ GitHub PRs.
    - **Deferred to a later phase**: replacing the manual paste-flow
      with a direct API call. Triggered by the criteria in the
      "AI scale-up criteria" section at the bottom of this file.
+
+## Phase 4.3 — Contribution surface expansion
+
+**Goal**: broaden what a contributor can do through the dashboard
+beyond "edit a known entity". Three independent slices, each
+shippable on its own.
+
+**Exit criteria**:
+
+- A non-admin contributor can create a brand-new entity (character,
+  chapter, devil-fruit, …) via the dashboard and land it as a PR.
+- A contributor can edit the **cast of a single source** (a chapter,
+  episode, film) from one screen — bulk-add/remove apparitions and
+  ship a single PR that touches every affected entity file.
+- Every entity that is _not_ a source surfaces an **Apparitions tab**
+  showing its `appears-in` relations grouped by source-type.
+- The contribution surface is mobile-first throughout (no desktop-
+  only affordances on the new pages).
+
+### Tasks
+
+1. **Entity creation flow** (ADR-020)
+   - `POST /api/entities/:type` server endpoint
+   - `SlugInput` component (regex + uniqueness validation)
+   - `/types/$type/new` route reusing `EntityForm`
+   - "+ New" button on the per-type list page
+   - Post-create banner ("PR opened — visible after deploy")
+
+2. **Per-source cast manager** (ADR-021)
+   - `GET /api/sources/:type/:slug/cast` (reverse-scan)
+   - `POST /api/sources/:type/:slug/cast` (bulk apply)
+   - `submitSourceCastEdit` in `packages/github-client`
+   - `/sources/$type/$slug` route, grouped by entity type
+   - `/sources` index + sidebar nav entry
+
+3. **Per-entity apparitions tab**
+   - Tab strip on `/types/$type/$slug` (hidden for source types)
+   - `/types/$type/$slug/apparitions` sub-route
+   - Source-type-grouped view of the entity's `appears-in` relations
+   - Mutations go through the existing `submitEntityEdit` (entity-owned)
+
+4. **Mobile follow-ups** (deferred from the mobile-triage PR)
+   - Bottom tab bar on mobile (5 slots, replaces sidebar below `md`)
+   - Audit AWS SDK isolation from the SSR bundle (presign-upload
+     is the only consumer; bundle leak documented in IDEAS.md)
+   - Container query primitives in `tailwind.config` for components
+     that render in both full-page and drawer contexts
 
 ## Phase 5 — Referential and schema management
 
