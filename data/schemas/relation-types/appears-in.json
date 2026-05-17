@@ -12,7 +12,13 @@
     "devil-fruit",
     "concept",
     "title",
-    "event"
+    "event",
+    "ship",
+    "technique",
+    "weapon",
+    "location",
+    "organization",
+    "race"
   ],
   "valid_to_types": ["manga-chapter", "anime-episode", "film", "sbs", "databook"],
   "qualifiers": [

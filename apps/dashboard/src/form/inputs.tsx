@@ -458,9 +458,11 @@ export function MultiEntityRefInput(
         disabled === true && 'opacity-50',
       )}
     >
-      {list.length === 0 && !open
-        ? <span className='text-muted-foreground px-0.5 text-xs'>{t('pickOne')}</span>
-        : null}
+      {
+        /* No left-side placeholder: the trigger button on the right
+         already says "— choisir —" when the selection is empty, so
+         rendering the same string on both sides looked like a bug. */
+      }
       {list.map((fullId) => {
         const [, slug] = fullId.split(':');
         const meta = lookup.get(fullId);
