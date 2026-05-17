@@ -271,6 +271,30 @@ encode this. The qualifier `appearance_type` (main / secondary /
 flashback / cameo …) is already part of the schema. We just need
 two UI surfaces over the existing data.
 
+### Architectural constraint — sources ARE entities
+
+Sources (`manga-chapter`, `anime-episode`, `film`, `sbs`,
+`databook`) are themselves entities in `data/.../entities/`. We
+do NOT want to break the existing entity edit flow for them:
+
+- The cast-manager surface lives at a DIFFERENT route from the
+  entity editor (`/sources/$type/$slug` vs `/types/$type/$slug`)
+  so source-entities still get the full schema-driven form
+  unchanged.
+- The "Apparitions" surface on the entity edit page must NOT
+  render for entities whose type is in `SOURCE_TYPE_IDS` (already
+  defined in `apps/dashboard/api/server.ts`). Sources are the
+  destinations of apparitions, never the origin — `appears-in`
+  isn't even a valid relation from a source type per the schema's
+  `valid_from_types`. Showing an "Apparitions: 0" empty state on
+  a chapter's edit page would be visually wrong and confusing.
+- For non-source entities, the Apparitions block lives in its own
+  TAB or sub-page (`/types/character/luffy/apparitions`) — NOT
+  inline on the main edit page. The main page stays focused on
+  property + relation editing. A small badge on the tab header
+  (`Apparitions · 47`) gives the count without polluting the
+  default view.
+
 ### Surface 1 — per-source cast (the killer feature)
 
 Route: `/sources/$type/$slug` (e.g. `/sources/manga-chapter/1`).
@@ -321,13 +345,19 @@ Frontend:
 
 ### Surface 2 — per-entity apparitions timeline
 
-Route: `/types/$type/$slug` (current entity edit page) — add a
-new "Apparitions" tab/section.
+Route: `/types/$type/$slug/apparitions` — a separate sub-page,
+NOT inlined on the main entity edit page (see "Architectural
+constraint" above). The main edit page gets a tab strip near the
+top:
 
-Today: the Relations section shows `appears-in` mixed with every
-other relation type. Tedious to scan.
+```
+[ Edit ] [ Apparitions · 47 ] [ Relations · 12 ]
+```
 
-New section above the generic Relations list:
+The Apparitions tab is hidden entirely when the entity type is a
+source. Today the Relations section shows `appears-in` mixed
+with every other relation type — tedious to scan. The sub-page
+shows ONLY `appears-in` relations, grouped by source-type tabs:
 
 ```
 Apparitions  (12 total — 8 manga · 3 anime · 1 film)
@@ -362,8 +392,16 @@ Same data, different lens — still mutates the entity's own
 ### Effort
 
 - ~1 day server (cast endpoints + bulk save)
-- ~1.5 days frontend (sources page + apparitions section on entity)
+- ~1.5 days frontend (sources page + apparitions sub-page on
+  entity), assuming mobile-first primitives are in place
 - ~0.5 day routing + sidebar nav entry
+
+**Mobile-first is mandatory for this feature**, not an
+after-the-fact pass. The cast manager is the contribution
+surface most likely to be used on a phone (the contributor is
+literally watching the episode they're cataloguing). Bulk-pick
+of N characters has to work with a thumb. See "Mobile-first
+dashboard UX hardening" below for the primitives needed first.
 
 Prerequisite ADR (when promoted): document the bulk-save shape
 since "1 PR touching N entity files" is a new flow distinct from
@@ -385,6 +423,13 @@ the same kind of PR-via-dashboard contribution as edits.
 
 - "+ New" button on each type's list page (`/types/character` →
   next to "Table view"). Goes to `/types/$type/new`.
+- **Mobile-friendly from day one** — see the "Mobile-first
+  dashboard UX hardening" entry below. Slug input + form must
+  work one-handed on a phone (touch targets, no hover-only
+  affordances, sheet-based pickers). The expected primary
+  contributor for new entities is the same audience as for
+  edits: someone watching the source media and adding the
+  missing character/episode/etc on the spot.
 - New route renders the EntityForm pre-filled with:
   - `id: ''` (computed from slug)
   - `type: '<type>'` (from URL param)
@@ -458,3 +503,145 @@ the same kind of PR-via-dashboard contribution as edits.
 2. Decide on the post-create flow: redirect-to-edit (assumes the
    PR merges quickly) vs banner-and-stay (handles the real case
    where review takes hours).
+
+---
+
+## Mobile-first dashboard UX hardening
+
+Current dashboard is laid out for a desktop maintainer at a
+keyboard: 16rem fixed sidebar, multi-column popovers, hover-
+based affordances, dense forms designed for ~1280px+ viewports.
+The expected primary contributor workflow is the opposite —
+someone watching an episode on their phone, pausing every few
+minutes to log "Luffy used X technique against Y character in
+this scene." This needs a top-to-bottom UX pass before opening
+contributions to non-power-users.
+
+### Inventory of what breaks below ~768px today
+
+1. **AppSidebar** is hidden via `lg:block` — no replacement on
+   mobile, so the entity-type list is unreachable from any page
+   that isn't `/`. Effectively the user is stuck on whichever
+   page they landed on.
+2. **EntityForm save bar** is `fixed bottom-0` with `lg:left-64`
+   to offset the sidebar. On mobile it covers the bottom of the
+   page content but doesn't account for safe-area insets
+   (notched phones eat the Save button).
+3. **PropertyNav** (left rail with section progress + jump links)
+   is also `lg:block`-hidden. A 60-property entity becomes one
+   long scroll with no overview.
+4. **Popovers** (Base UI `Popover`) render anchored to triggers
+   with arrow positioning. On a 360px-wide screen, the
+   MultiEntityRefInput popover (24rem fixed) overflows the
+   viewport and triggers horizontal scroll. SourceRefInput's
+   nested type-picker has the same issue.
+5. **QualifierSheet** is already a side-drawer but at
+   `max-w-[28rem]` it takes almost the full mobile viewport
+   without leaving an obvious "close" affordance reachable with
+   thumb.
+6. **EntityEditDrawer** (right-side panel for linked entities)
+   slides in at `max-w-[64rem]` — on mobile that's the whole
+   screen, but there's no swipe-to-close gesture and the
+   close button sits in the top-right corner (unreachable
+   one-handed on a 6.7" phone).
+7. **Login page** is `sm:grid-cols-2`. Below that breakpoint it
+   stacks correctly but the long explainer text + dual sections
+   means a contributor has to scroll past the GitHub section to
+   reach "Continue without signing in" at the bottom.
+8. **DraftsIndicator + LocaleSwitcher + Sign-in** in the header
+   compete for horizontal space — they all collapse to icons-
+   only at < 640px but the dropdowns they trigger then overflow.
+9. **Sonner toasts** at `position='top-right'` are fine on
+   desktop, awkward on mobile (cover the Save button after a
+   `noOp` save). Should be `top-center` on small viewports.
+10. **DiffPopover** is `w-[min(40rem,calc(100vw-2rem))]` — the
+    viewport clamp works, but the per-row 50/50 split becomes
+    cramped under ~400px. Unified-instead-of-split mode would
+    read better on phone.
+
+### Architectural moves
+
+1. **Adopt a "container query" mindset, not viewport-only.** Most
+   components shouldn't care about the window — they should react
+   to their container width via `@container` queries (Tailwind v4
+   supports `@xs:`, `@md:` etc. via the `@tailwindcss/container-
+   queries` plugin). E.g. EntityForm rendered inside
+   EntityEditDrawer should narrow gracefully without consulting
+   `window.matchMedia`.
+2. **Sheet primitive on mobile, Popover on desktop.** Add a
+   `<MobileSheet>` component (slide-up bottom drawer) wrapped in
+   a `usePopoverOrSheet` hook that picks based on viewport. Apply
+   to: MultiEntityRefInput, SourceRefInput, QualifierSheet,
+   DraftsIndicator, MyContributions. Native iOS/Android pattern;
+   thumb-friendly.
+3. **Bottom nav on mobile, sidebar on desktop.** AppSidebar →
+   render its links as a fixed bottom tab bar below ~768px. 5
+   slots max (Entities · Drafts · Apparitions · My PRs · Account).
+4. **PropertyNav → collapsible sticky header on mobile.** A "Jump
+   to section…" select at the top of the form instead of the
+   side rail. Same data, different layout.
+5. **Save bar respects `env(safe-area-inset-bottom)`.** Add
+   `pb-[env(safe-area-inset-bottom)]` to the fixed bar.
+6. **Touch targets ≥ 44px.** Audit `size-icon` buttons (currently
+   24-28px). Easy win in `Button` variants.
+7. **Service Worker / offline drafts**. Drafts already live in
+   IndexedDB; add a service worker that caches the SPA shell +
+   API responses for the last viewed entity so a flaky train ride
+   doesn't cost the contributor their session.
+
+### Performance budget (mobile-first)
+
+Current bundle sizes (from the last Vite build):
+
+- `_libs/@aws-sdk/client-s3+[...].mjs` — **733 KB** (165 KB gzip)
+  ⚠️ shipped server-only but bundled in the SSR chunk
+- `_libs/@tanstack/react-router+[...].mjs` — 649 KB (135 KB gzip)
+- `_libs/@base-ui/react+[...].mjs` — 408 KB (88 KB gzip)
+- Client routes are decently small (10–25 KB each)
+
+**Action items:**
+
+- Make the AWS SDK truly server-only (it's used only in
+  presign-upload). Today it leaks into the SSR bundle because
+  `r2.ts` is imported from `server.ts` and Vite's tree-shake
+  doesn't isolate it from any browser-bundled neighbour. Audit.
+- Lazy-load the table view (`types.$type.table.tsx`) — biggest
+  client route at 24 KB. Split via dynamic import.
+- Pre-bundled data (ADR-019) inflates the SSR by ~80 KB today.
+  At 1000+ entities this becomes significant. The same
+  router-A.mjs chunk would balloon. Threshold to revisit:
+  ~500 KB raw data → switch to fetch-on-demand from GitHub.
+
+### Concrete first PR (when promoted)
+
+A "mobile triage" PR that ships the highest-impact fixes only:
+
+1. AppSidebar → bottom nav on mobile (route changes still work).
+2. Save bar safe-area inset.
+3. MobileSheet for ONE popover (MultiEntityRefInput) as a
+   reference implementation.
+4. Sonner toaster position-by-viewport.
+5. Button min-touch-size audit.
+
+Everything else (container queries, service worker, perf budget)
+gets its own follow-up. Ship one visible mobile improvement
+before deep-refactoring.
+
+### Effort
+
+- ~1 day for the triage PR above (high impact, low risk).
+- ~3 days for the full sheet/popover swap + bottom nav + tabs.
+- ~1 day per "deeper" item (service worker, container queries
+  migration, performance budget enforcement in CI).
+
+### Prerequisites before promoting to roadmap
+
+1. Pick the bottom-nav library (Base UI doesn't ship a Tab Bar
+   primitive — could be a custom 80-line component, or pull in
+   `vaul` / `@radix-ui/react-tabs` etc.).
+2. Decide what "mobile" means concretely — Tailwind's `md`
+   breakpoint (768px), or detect by pointer-coarse + max-width
+   together (catches small-screen-mouse vs large-screen-touch).
+3. Budget for usability testing on real phones — at least
+   one round with the maintainer on an iPhone + an Android
+   mid-range before opening to contributors.
