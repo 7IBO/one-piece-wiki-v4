@@ -391,6 +391,117 @@ export async function findOpenPRForEntity(
   return null;
 }
 
+/**
+ * Atomically commit multiple file changes in a single commit.
+ *
+ * Uses the Git Data API (blob → tree → commit → ref) rather than
+ * `repos.createOrUpdateFileContents`, which only handles one file at
+ * a time and produces one commit per call. The Data API lets us:
+ *
+ *  - bundle the entity JSON + N translation files in one commit per
+ *    save, instead of one per file (much cleaner PR log);
+ *  - skip the commit entirely when every file's content matches what
+ *    the branch already has, so a "save with no actual changes"
+ *    doesn't pollute the PR with empty commits.
+ *
+ * Steps:
+ *  1. Resolve the branch tip → commit SHA → tree SHA.
+ *  2. For each (path, content), check the existing blob at that path
+ *     on the tree. If the content matches, skip — don't queue a
+ *     change.
+ *  3. If nothing changed, return `{ created: false }` and DON'T
+ *     touch the branch.
+ *  4. Otherwise: create one new blob per changed file, build a new
+ *     tree with those blobs replacing the originals (base_tree
+ *     keeps everything else), create a commit pointing at the new
+ *     tree with the previous commit as parent, fast-forward the
+ *     branch ref.
+ *
+ * GitHub's `repos.createOrUpdateFileContents` always creates a
+ * commit even when the bytes are identical (it doesn't dedup). The
+ * Git Data API gives us the necessary control.
+ */
+export async function commitMultipleFiles(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  options: {
+    readonly branch: string;
+    readonly message: string;
+    readonly files: readonly { readonly path: string; readonly content: string; }[];
+  },
+): Promise<{ readonly created: boolean; readonly commitSha?: string; }> {
+  // 1. Branch tip.
+  const { data: ref } = await octokit.git.getRef({
+    owner: config.dataRepo.owner,
+    repo: config.dataRepo.repo,
+    ref: `heads/${options.branch}`,
+  });
+  const parentCommitSha = ref.object.sha;
+  const { data: parentCommit } = await octokit.git.getCommit({
+    owner: config.dataRepo.owner,
+    repo: config.dataRepo.repo,
+    commit_sha: parentCommitSha,
+  });
+  const baseTreeSha = parentCommit.tree.sha;
+
+  // 2. Filter out unchanged files.
+  const changed: { path: string; content: string; }[] = [];
+  for (const file of options.files) {
+    // eslint-disable-next-line no-await-in-loop
+    const existing = await getFile(octokit, config, file.path, options.branch);
+    if (existing !== null && existing.content === file.content) continue;
+    changed.push({ path: file.path, content: file.content });
+  }
+  if (changed.length === 0) {
+    return { created: false };
+  }
+
+  // 3. Create one blob per changed file. Sequential so a transient
+  // 5xx fails fast instead of pummeling GitHub with parallel writes.
+  const blobs: { path: string; sha: string; }[] = [];
+  for (const file of changed) {
+    // eslint-disable-next-line no-await-in-loop
+    const { data: blob } = await octokit.git.createBlob({
+      owner: config.dataRepo.owner,
+      repo: config.dataRepo.repo,
+      content: Buffer.from(file.content, 'utf8').toString('base64'),
+      encoding: 'base64',
+    });
+    blobs.push({ path: file.path, sha: blob.sha });
+  }
+
+  // 4. New tree on top of base_tree — only the changed blobs are
+  // overridden, everything else is inherited from baseTreeSha.
+  const { data: tree } = await octokit.git.createTree({
+    owner: config.dataRepo.owner,
+    repo: config.dataRepo.repo,
+    base_tree: baseTreeSha,
+    tree: blobs.map((b) => ({
+      path: b.path,
+      mode: '100644',
+      type: 'blob',
+      sha: b.sha,
+    })),
+  });
+
+  // 5. Commit + fast-forward ref.
+  const { data: commit } = await octokit.git.createCommit({
+    owner: config.dataRepo.owner,
+    repo: config.dataRepo.repo,
+    message: options.message,
+    tree: tree.sha,
+    parents: [parentCommitSha],
+  });
+  await octokit.git.updateRef({
+    owner: config.dataRepo.owner,
+    repo: config.dataRepo.repo,
+    ref: `heads/${options.branch}`,
+    sha: commit.sha,
+  });
+
+  return { created: true, commitSha: commit.sha };
+}
+
 export class OptimisticLockError extends Error {
   override readonly name = 'OptimisticLockError';
   constructor(

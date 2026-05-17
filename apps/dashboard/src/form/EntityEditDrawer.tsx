@@ -233,6 +233,11 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
                     entity.sha,
                     translations,
                   );
+                  if (result.pr.noOp) {
+                    toast.info(t('toastNoOp'));
+                    p.onOpenChange(false);
+                    return;
+                  }
                   const title = result.pr.reused
                     ? t('toastCommitAdded').replace('{n}', String(result.pr.number))
                     : t('toastPrOpened').replace('{n}', String(result.pr.number));

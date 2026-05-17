@@ -180,6 +180,10 @@ const UI_STRINGS = {
     en: 'Commit added to PR #{n}',
     fr: 'Commit ajouté à la PR #{n}',
   },
+  toastNoOp: {
+    en: "Nothing to save — the entity already matches what's on the repo.",
+    fr: "Rien à enregistrer — l'entité correspond déjà à ce qui est sur le repo.",
+  },
   // Section labels (FORM_SECTIONS)
   sectionIdentity: { en: 'Identity & naming', fr: 'Identité & noms' },
   sectionNumbers: { en: 'Numbers', fr: 'Nombres' },

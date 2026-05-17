@@ -72,6 +72,11 @@ export type SaveResult = {
     /** True when the save appended a commit to an already-open PR
      *  (resume-editing path); false when a fresh PR was opened. */
     readonly reused: boolean;
+    /** True when the resolved content matched what's already on the
+     *  branch (or main) — no commit was created and `number`/`htmlUrl`
+     *  may be 0/empty. UI should show "nothing to save" instead of
+     *  "PR opened" / "commit added". */
+    readonly noOp: boolean;
   };
 };
 

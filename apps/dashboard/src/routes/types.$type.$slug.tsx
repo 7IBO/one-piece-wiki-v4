@@ -178,6 +178,13 @@ function EntityEditComponent(): JSX.Element {
             entity.sha,
             translations,
           );
+          if (result.pr.noOp) {
+            // Resolved content matched on disk — server didn't open
+            // a PR / didn't push a commit. Without this branch the
+            // toast would say "PR #0 opened" which is misleading.
+            toast.info(t('toastNoOp'));
+            return;
+          }
           // Different copy for the resume path so the contributor
           // knows the commit went onto their existing PR — important
           // because the PR number is unchanged from before, which
