@@ -185,7 +185,7 @@ function EntityEditComponent(): JSX.Element {
                 className='gap-1.5'
               >
                 <Users className='size-3.5' />
-                Manage cast
+                {t('castManage')}
               </Button>
             </div>
           )
@@ -204,7 +204,7 @@ function EntityEditComponent(): JSX.Element {
                 className='gap-1.5'
               >
                 <Film className='size-3.5' />
-                Apparitions
+                {t('apparitionsButton')}
               </Button>
             </div>
           )

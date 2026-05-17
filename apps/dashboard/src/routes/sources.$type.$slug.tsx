@@ -32,7 +32,7 @@ import { type JSX, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type CastEntry, type CastResponse, type SchemaCatalogue } from '../api';
 import { MultiEntityRefInput } from '../form/inputs';
-import { useLocale } from '../form/locale';
+import { useLocale, useT } from '../form/locale';
 
 export const Route = createFileRoute('/sources/$type/$slug')({
   component: SourceCastComponent,
@@ -69,6 +69,7 @@ function buildInitialState(cast: CastResponse['cast']): WorkingState {
 function SourceCastComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
+  const t = useT();
   const navigate = useNavigate();
 
   const [cast, setCast] = useState<CastResponse | null>(null);
@@ -146,32 +147,10 @@ function SourceCastComponent(): JSX.Element {
   }, [working]);
   const dirty = added.length > 0 || removed.length > 0;
 
-  function toggleAdd(entityId: string): void {
-    setWorking((prev) => {
-      const current = new Set(prev.current);
-      if (current.has(entityId)) {
-        current.delete(entityId);
-      } else {
-        current.add(entityId);
-        // Seed minimal meta — the real display name comes when the
-        // catalogue refetches after save, but until then "id-only"
-        // chip is acceptable.
-        if (!prev.meta.has(entityId)) {
-          const [t = '', s = ''] = entityId.split(':');
-          const meta = new Map(prev.meta);
-          meta.set(entityId, {
-            entityId,
-            entityType: t,
-            slug: s,
-            displayName: { en: null, fr: null },
-            qualifiers: {},
-          });
-          return { ...prev, current, meta };
-        }
-      }
-      return { ...prev, current };
-    });
-  }
+  // No standalone toggleAdd — every add/remove flows through the
+  // per-group MultiEntityRefInput below (or the per-row remove
+  // button). Keeping a second affordance was dead code that only
+  // existed because v1 sketched a click-to-toggle list.
   function removeCast(entityId: string): void {
     setWorking((prev) => {
       const current = new Set(prev.current);
@@ -195,13 +174,13 @@ function SourceCastComponent(): JSX.Element {
         remove: removed,
       });
       if (result.pr.noOp) {
-        toast.info('Nothing changed.');
+        toast.info(t('nothingChanged'));
         return;
       }
-      toast.success(`Cast PR opened (#${result.pr.number})`, {
+      toast.success(t('castPrOpened').replace('{n}', String(result.pr.number)), {
         description: result.pr.htmlUrl,
         action: {
-          label: 'Open',
+          label: t('openPr'),
           onClick: () => globalThis.open(result.pr.htmlUrl, '_blank'),
         },
       });
@@ -210,7 +189,7 @@ function SourceCastComponent(): JSX.Element {
       setWorking((prev) => ({ ...prev, initial: new Set(prev.current) }));
     } catch (err) {
       const message = err instanceof Error ? err.message : String(err);
-      toast.error(`Save failed: ${message}`);
+      toast.error(t('saveFailed').replace('{message}', message));
     } finally {
       setSaving(false);
     }
@@ -242,7 +221,7 @@ function SourceCastComponent(): JSX.Element {
         </Button>
         <div className='mt-1 flex flex-wrap items-center gap-2'>
           <h1 className='text-xl font-semibold tracking-tight'>
-            Cast — {cast.source.slug}
+            {t('castTitle').replace('{slug}', String(cast.source.slug))}
           </h1>
           <Badge variant='secondary' className='font-mono text-[10px]'>
             {cast.source.id}
@@ -254,18 +233,18 @@ function SourceCastComponent(): JSX.Element {
             className='ml-auto gap-1 text-[11px]'
           >
             <Pencil className='size-3' />
-            Edit source
+            {t('castEditSource')}
           </Button>
         </div>
         <p className='text-muted-foreground mt-1 text-xs'>
-          One PR per save will be opened, touching every entity whose apparitions change.
+          {t('castSaveHint')}
         </p>
       </div>
 
       {allowedCastTypes.length === 0
         ? (
           <p className='text-destructive text-sm'>
-            The `appears-in` relation schema is missing or has no `valid_from_types`.
+            {t('appearsInMissing')}
           </p>
         )
         : (
@@ -287,7 +266,10 @@ function SourceCastComponent(): JSX.Element {
                     {entries.length === 0
                       ? (
                         <li className='text-muted-foreground px-3 py-3 text-xs'>
-                          No {typeLabel(castType).toLowerCase()} listed yet.
+                          {t('castNoneOfType').replace(
+                            '{type}',
+                            typeLabel(castType).toLowerCase(),
+                          )}
                         </li>
                       )
                       : entries.map((e) => {
@@ -319,7 +301,7 @@ function SourceCastComponent(): JSX.Element {
                               size='icon'
                               className='ml-auto'
                               onClick={() => removeCast(e.entityId)}
-                              aria-label='Remove from cast'
+                              aria-label={t('removeFromCast')}
                             >
                               <X className='size-4' />
                             </Button>
@@ -349,11 +331,13 @@ function SourceCastComponent(): JSX.Element {
                             if (!updated.has(id)) {
                               updated.add(id);
                               if (!meta.has(id)) {
-                                const [t = '', s = ''] = id.split(':');
+                                // Local names: don't shadow the outer `t`
+                                // (translation function).
+                                const [etype = '', eslug = ''] = id.split(':');
                                 meta.set(id, {
                                   entityId: id,
-                                  entityType: t,
-                                  slug: s,
+                                  entityType: etype,
+                                  slug: eslug,
                                   displayName: { en: null, fr: null },
                                   qualifiers: {},
                                 });
@@ -367,10 +351,6 @@ function SourceCastComponent(): JSX.Element {
                           }
                           return { ...prev, current: updated, meta };
                         });
-                        // Touch the toggleAdd reference to keep ESLint happy
-                        // about it being declared but only used through the
-                        // multi input on this page.
-                        void toggleAdd;
                       }}
                       entityTypes={entityTypes}
                       restrictTo={[castType]}
@@ -392,7 +372,9 @@ function SourceCastComponent(): JSX.Element {
             style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0.75rem)' }}
           >
             <p className='text-muted-foreground text-xs'>
-              {added.length} to add · {removed.length} to remove
+              {t('castDiffSummary')
+                .replace('{add}', String(added.length))
+                .replace('{remove}', String(removed.length))}
             </p>
             <div className='ml-auto flex items-center gap-2'>
               <Button
@@ -401,7 +383,7 @@ function SourceCastComponent(): JSX.Element {
                 disabled={saving}
                 onClick={() => setWorking((prev) => ({ ...prev, current: new Set(prev.initial) }))}
               >
-                Reset
+                {t('reset')}
               </Button>
               <Button
                 size='sm'
@@ -410,7 +392,7 @@ function SourceCastComponent(): JSX.Element {
                   void save();
                 }}
               >
-                {saving ? 'Saving…' : 'Save cast'}
+                {saving ? t('saving') : t('saveCast')}
               </Button>
             </div>
           </div>

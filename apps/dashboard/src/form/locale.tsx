@@ -284,6 +284,57 @@ const UI_STRINGS = {
     fr: 'Choisissez au moins une colonne à afficher.',
   },
   resetCell: { en: 'Reset', fr: 'Réinitialiser' },
+  // Apparitions hub (ADR-021) — both per-source cast manager and
+  // per-entity apparitions sub-page.
+  apparitionsTitle: { en: 'Apparitions of {slug}', fr: 'Apparitions de {slug}' },
+  apparitionsButton: { en: 'Apparitions', fr: 'Apparitions' },
+  apparitionsCountTotal: { en: '{n} total', fr: '{n} au total' },
+  apparitionsEmpty: {
+    en: 'No apparitions recorded yet.',
+    fr: 'Aucune apparition enregistrée pour le moment.',
+  },
+  apparitionsNotApplicable: {
+    en: "{type} entities don't carry apparitions — `appears-in` doesn't accept them as origin.",
+    fr:
+      "Les entités {type} ne portent pas d'apparitions — la relation `appears-in` ne les accepte pas comme origine.",
+  },
+  apparitionsHint: {
+    en: 'Add or remove apparitions below — saving opens a single PR editing this entity.',
+    fr:
+      'Ajoutez ou supprimez des apparitions ci-dessous — la sauvegarde ouvre une seule PR sur cette entité.',
+  },
+  castTitle: { en: 'Cast — {slug}', fr: 'Distribution — {slug}' },
+  castManage: { en: 'Manage cast', fr: 'Gérer la distribution' },
+  castEditSource: { en: 'Edit source', fr: 'Éditer la source' },
+  castSaveHint: {
+    en: 'One PR per save will be opened, touching every entity whose apparitions change.',
+    fr: 'Une PR par sauvegarde sera ouverte, touchant chaque entité dont les apparitions changent.',
+  },
+  castNoneOfType: { en: 'No {type} listed yet.', fr: 'Aucun(e) {type} pour le moment.' },
+  castDiffSummary: {
+    en: '{add} to add · {remove} to remove',
+    fr: '{add} à ajouter · {remove} à supprimer',
+  },
+  reset: { en: 'Reset', fr: 'Annuler' },
+  saveCast: { en: 'Save cast', fr: 'Sauvegarder la distribution' },
+  saveApparitions: { en: 'Save apparitions', fr: 'Sauvegarder les apparitions' },
+  // `saving` + `openPr` already defined earlier in the table (used by
+  // the entity edit save flow). Reused here for the cast / apparitions
+  // toasts so the contributor sees consistent copy.
+  nothingChanged: { en: 'Nothing changed.', fr: 'Aucun changement.' },
+  saveFailed: { en: 'Save failed: {message}', fr: 'Échec de la sauvegarde : {message}' },
+  castPrOpened: { en: 'Cast PR opened (#{n})', fr: 'PR de distribution ouverte (#{n})' },
+  apparitionsPrOpened: {
+    en: 'Apparitions PR opened (#{n})',
+    fr: "PR d'apparitions ouverte (#{n})",
+  },
+  removeFromCast: { en: 'Remove from cast', fr: 'Retirer de la distribution' },
+  removeApparition: { en: 'Remove apparition', fr: 'Retirer cette apparition' },
+  backToEntity: { en: 'Back to entity', fr: "Retour à l'entité" },
+  appearsInMissing: {
+    en: 'The `appears-in` relation schema is missing or has no `valid_from_types`.',
+    fr: "Le schéma `appears-in` est absent ou n'a pas de `valid_from_types`.",
+  },
 } as const;
 
 /**
