@@ -7,7 +7,7 @@
     "dev": "vite",
     "build": "vite build",
     "vercel-build": "vite build && node scripts/build-vercel.mjs",
-    "start": "node dist/server/index.mjs",
+    "start": "node dist/server/server.js",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

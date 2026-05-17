@@ -127,7 +127,9 @@ import { fileURLToPath } from 'node:url';
 const here = dirname(fileURLToPath(import.meta.url));
 process.env.DATA_ROOT ??= resolve(here, 'data');
 
-const { default: server } = await import('./server/index.mjs');
+// TanStack Start v1.167+ emits the SSR entry at dist/server/server.js
+// (not index.mjs — that name is reserved for the rsbuild variant).
+const { default: server } = await import('./server/server.js');
 
 export default function handler(request) {
   return server.fetch(request);
