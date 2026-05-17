@@ -5,7 +5,6 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "dev:legacy-api": "bun --hot api/server.ts",
     "build": "vite build",
     "vercel-build": "vite build && node scripts/build-vercel.mjs",
     "start": "node dist/server/index.mjs",

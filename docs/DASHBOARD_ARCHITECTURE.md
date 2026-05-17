@@ -453,3 +453,74 @@ CI runs validate + build on every PR; if it fails, the PR shows red.
 - Persisting state on the server without auth
 - Skipping Zod validation on the server because "the client already
   validated"
+
+## Deployment (Vercel)
+
+See ADR-018 for the migration from the legacy Vite-SPA + Bun.serve
+split runtime. Current shape:
+
+- `vite build` produces `dist/client/` (browser assets) and
+  `dist/server/index.mjs` (Node SSR + API handler).
+- `bun run vercel-build` runs that, then
+  `scripts/build-vercel.mjs` assembles the Vercel Build Output API
+  layout under `apps/dashboard/.vercel/output/`:
+
+  ```
+  .vercel/output/
+    config.json
+    static/                ← dist/client/
+    functions/
+      _render.func/
+        .vc-config.json    runtime: nodejs22.x
+        package.json       { "type": "module" }
+        index.mjs          wrapper: sets DATA_ROOT, imports server
+        server/            dist/server/
+        data/              repo data/ (catalogue reads)
+  ```
+
+- The wrapper sets `process.env.DATA_ROOT` to its own bundled
+  `./data/` directory before importing the server bundle, so
+  `packages/schema-engine/src/paths.ts` and
+  `apps/dashboard/src/server/catalogue.ts` resolve `data/**` without
+  relying on `import.meta.url` (which inside a Vercel function
+  resolves to a path with no meaningful relation to the repo).
+
+Vercel project settings:
+
+- **Root Directory**: `apps/dashboard`
+- **Install Command**: default (`bun install` walks up to the
+  workspace root via `bun.lockb`)
+- **Build Command**: `bun run vercel-build` (already in `package.json`)
+- **Output Directory**: leave blank — Vercel auto-detects
+  `.vercel/output/`
+
+Required env vars at deploy:
+
+- `SESSION_SECRET` — refuses to start in prod without it.
+- `DASHBOARD_PUBLIC_URL` — Vercel-assigned origin, no trailing
+  slash. Used for the OAuth callback URL (`<base>/api/auth/callback/github`).
+- `GITHUB_APP_ID`, `GITHUB_APP_CLIENT_ID`, `GITHUB_APP_CLIENT_SECRET`.
+- `GITHUB_APP_PRIVATE_KEY` — **inline** PEM contents. The
+  `_PATH` variant doesn't work on Vercel (no filesystem to read
+  from). Multi-line and `\n`-escaped single-line both accepted.
+- `DATA_REPO` — `owner/repo` of the target data repo.
+- `ADMIN_GITHUB_USERNAMES` — comma-separated logins with admin tier.
+
+Optional:
+
+- `R2_*` (R2_ACCOUNT_ID, R2_ACCESS_KEY_ID, R2_SECRET_ACCESS_KEY,
+  R2_BUCKET, R2_PUBLIC_BASE_URL, R2_MAX_UPLOAD_BYTES) — image
+  uploads return 503 without these.
+- `BLOCKED_GITHUB_USERNAMES`, `BLOCKED_IPS` — comma-separated
+  kill-switches.
+- `ANON_WRITE_LIMIT_PER_HOUR` (10), `ANON_UPLOAD_LIMIT_PER_HOUR` (20).
+
+Stateful-but-not-shared caveats on serverless:
+
+- OAuth `state` parameter is signed HMAC (stateless), so `/login`
+  and `/callback` may land on different function instances. The
+  5-minute TTL is enforced via the signed payload, not memory.
+- Rate-limit counters live in process memory per function instance.
+  Vercel keeps functions warm-ish so this provides partial
+  protection; a determined abuser could cycle cold starts. Upgrade
+  path: Vercel KV / Upstash Redis when needed.

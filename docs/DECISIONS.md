@@ -8,6 +8,115 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-018 — Migrate dashboard from Vite SPA + Bun.serve to TanStack Start
+
+**Date**: 2026-05-17
+
+**Context**: The dashboard had `@tanstack/react-start` in `package.json`
+since project setup but never used it. The actual runtime was a Vite
+SPA (`vite build` → `dist/`) served alongside a separate `Bun.serve`
+API on port 4101, with Vite proxying `/api/*` to it during dev. This
+worked on a long-lived VPS process but didn't deploy to Vercel: the
+SPA build had no server entry, the Bun process used `bun:sqlite`-era
+APIs and `import.meta.dir`, and `/api/*` 404'd on prod because there
+was no function backing it.
+
+The `CLAUDE.md` "Stack (imposed)" section lists TanStack Start, so
+the divergence was also a documented-vs-actual mismatch that had
+been quietly accumulating.
+
+The trigger was a real Vercel deploy attempt that produced the
+expected 404 on `/api/schemas`.
+
+**Options**:
+
+- A — Stay on the Vite SPA. Wrap the Bun handler in a single Vercel
+  catch-all serverless function (`apps/dashboard/api/[...path].ts`)
+  that re-exposes `Bun.serve`'s `fetch` callback under Node. Smallest
+  diff, debt stays.
+- B — Migrate to TanStack Start as the imposed stack says. File-based
+  API routes (`createFileRoute('/api/foo')({ server: { handlers } })`),
+  one entry per endpoint, real SSR for the UI, Build Output API for
+  Vercel.
+
+**Choice**: B. Migrate.
+
+**Rationale**:
+
+- The `CLAUDE.md` rule "do not invent — propose adding to the doc
+  first" cuts the other way too: when the doc imposes something the
+  code isn't doing, the code must catch up or the doc must change.
+  Start was in the dependencies; using it costs nothing extra.
+- File-based API routes match the file-based UI routes the dashboard
+  already uses. Sharing the route tree means one place to look up a
+  URL → handler, no separate Bun.serve string-match routing.
+- Start's pruner (`pruneServerOnlySubtrees`) drops route files whose
+  config has only `{ server }` from the client bundle automatically.
+  Nothing to mark by hand.
+- The OAuth state set + rate-limiter Map were the only stateful bits
+  of the Bun server. The set is now HMAC-signed stateless; the
+  rate-limiter stays in-memory per-instance (same compromise as
+  before, with the same Vercel-KV upgrade path noted in code).
+- Build Output API skips the need for a framework preset Vercel
+  doesn't ship for Start. A ~150-line postbuild assembles
+  `.vercel/output/` from the Start build's `dist/client` + `dist/server`.
+
+**Consequences**:
+
+- Routes moved from a single 1300-line `apps/dashboard/api/server.ts`
+  to 13 thin files under `apps/dashboard/src/routes/api.*.ts` (one
+  per endpoint + the splat `api.preview.$.ts`). Each file is the only
+  place its URL is defined.
+- Helpers moved out of the legacy server file into focused modules
+  under `apps/dashboard/src/server/`:
+  - `catalogue.ts` — snapshot + display names + JSON response helpers
+  - `session.ts` — HMAC cookie (lift of `api/session.ts`, Node-clean)
+  - `oauth-state.ts` — HMAC-signed state (replaces in-memory `Set`)
+  - `nickname.ts`, `blocklist.ts`, `rate-limit.ts`, `github.ts`
+  - `r2.ts`, `admin-promote.ts` (copies of the legacy `api/` versions)
+- `apps/dashboard/api/` deleted entirely.
+- `import.meta.dir` (Bun-only) eliminated; replaced by
+  `fileURLToPath(import.meta.url)` everywhere. `bun:sqlite` was never
+  used in the dashboard runtime; no change there.
+- New env var `DATA_ROOT` honored by `packages/schema-engine/src/paths.ts`
+  and `apps/dashboard/src/server/catalogue.ts`. Set by the Vercel
+  postbuild to point at the bundled `data/` copy next to the function.
+  Unset in dev → file-relative resolution unchanged.
+- New script `apps/dashboard/scripts/build-vercel.mjs` writes the
+  Build Output API layout to `apps/dashboard/.vercel/output/`. Invoked
+  by `bun run vercel-build` (`vite build && node scripts/build-vercel.mjs`).
+- New shape for the GitHub App private key on Vercel: paste the PEM
+  contents inline in `GITHUB_APP_PRIVATE_KEY` (Vercel has no
+  filesystem to read a `.pem` from via the `_PATH` variant). The dev
+  flow on disk via `GITHUB_APP_PRIVATE_KEY_PATH` keeps working.
+- The dev script `bun run dev:legacy-api` is gone — there's no legacy
+  to fall back on. `bun run dev` runs Start (Vite plugin), which now
+  serves both SPA and API from the same process.
+- OAuth state is stateless: signed HMAC payload of
+  `{ nonce, expiresAt }` with a 5-minute TTL. Replay within the
+  5-minute window is theoretically possible (the legacy in-memory
+  variant consumed the state on first use); accepted for Phase 7.2.
+  Tightening would require a KV (Vercel KV / Upstash) — noted inline.
+- Rate-limit counters stay per-function-instance. Vercel keeps
+  warm-ish, so partial protection in practice; a determined abuser
+  could cycle cold-starts. Same note: upgrade to KV if abuse appears.
+
+**Deployment steps (Vercel)**:
+
+1. Project → "Root Directory" = `apps/dashboard`.
+2. Install Command stays default (`bun install` walks up to the
+   workspace root automatically).
+3. Build Command = `bun run vercel-build` (set in `package.json`).
+4. Output Directory: leave blank — Vercel auto-detects
+   `.vercel/output/` when present.
+5. Env vars: at minimum `SESSION_SECRET`, `DASHBOARD_PUBLIC_URL`,
+   `GITHUB_APP_ID`, `GITHUB_APP_CLIENT_ID`, `GITHUB_APP_CLIENT_SECRET`,
+   `GITHUB_APP_PRIVATE_KEY` (inline), `DATA_REPO`,
+   `ADMIN_GITHUB_USERNAMES`. R2 vars optional (uploads return 503
+   without them).
+
+---
+
 ## ADR-017 — Revert better-auth, keep stateless signed-cookie sessions
 
 **Date**: 2026-05-16
