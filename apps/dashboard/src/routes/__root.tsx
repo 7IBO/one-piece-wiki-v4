@@ -14,6 +14,7 @@ import { Menu } from 'lucide-react';
 import { type JSX, type ReactNode, useEffect, useState } from 'react';
 import { AppSidebar } from '../AppSidebar';
 import { auth, useCurrentUser } from '../auth';
+import { BottomNav } from '../BottomNav';
 import { DraftsIndicator } from '../DraftsIndicator';
 import { EntityDrawerProvider } from '../form/EntityDrawerProvider';
 import { LocaleProvider } from '../form/locale';
@@ -153,15 +154,24 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
             <aside className='border-border bg-card/30 sticky top-[57px] hidden h-[calc(100vh-57px)] overflow-y-auto border-r lg:block'>
               <AppSidebar />
             </aside>
-            <main className='min-w-0 px-4 py-4 sm:px-6 sm:py-6'>
+            <main className='min-w-0 px-4 py-4 pb-20 sm:px-6 sm:py-6 lg:pb-6'>
               {
                 /* `children` is the matched route's output (Start's
                   shellComponent contract — replaces the explicit
-                  <Outlet /> we had pre-migration). */
+                  <Outlet /> we had pre-migration).
+                  `pb-20` reserves space for the mobile BottomNav so
+                  fixed footers (entity save bar, cast save bar) don't
+                  stack underneath it. `lg:pb-6` drops the inset on
+                  desktop where the BottomNav is hidden. */
               }
               {children}
             </main>
           </div>
+          {
+            /* Mobile-only persistent tab bar. Hidden at lg: where the
+             sidebar takes over. See BottomNav.tsx for the slot list. */
+          }
+          <BottomNav />
           <Toaster richColors closeButton position='top-right' />
         </div>
       </EntityDrawerProvider>

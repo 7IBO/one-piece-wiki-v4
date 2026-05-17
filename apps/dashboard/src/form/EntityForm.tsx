@@ -924,7 +924,9 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
             // pb-[env(safe-area-inset-bottom)] lifts the bar above
             // the home-indicator on notched phones. `max(...)` keeps
             // the original 0.75rem padding when the inset is 0.
-            className='border-border bg-background/95 fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur lg:left-[16rem]'
+            // `bottom-14` clears the mobile BottomNav (~3.5rem). On
+            // desktop the BottomNav is hidden so we drop back to 0.
+            className='border-border bg-background/95 fixed bottom-14 left-0 right-0 z-40 border-t backdrop-blur lg:bottom-0 lg:left-[16rem]'
             style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' }}
           >
             <div className='mx-auto flex w-full max-w-[100rem] items-center justify-between gap-3 px-6 py-3'>

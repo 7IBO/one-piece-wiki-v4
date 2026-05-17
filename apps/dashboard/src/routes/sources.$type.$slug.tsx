@@ -385,7 +385,10 @@ function SourceCastComponent(): JSX.Element {
       {dirty
         ? (
           <div
-            className='border-border bg-background fixed inset-x-0 bottom-0 z-20 flex items-center gap-3 border-t px-4 py-3 sm:px-6 lg:left-64'
+            // bottom-14 clears the mobile BottomNav; lg:bottom-0 +
+            // lg:left-64 returns to the desktop layout once the
+            // sidebar takes over.
+            className='border-border bg-background fixed inset-x-0 bottom-14 z-20 flex items-center gap-3 border-t px-4 py-3 sm:px-6 lg:bottom-0 lg:left-64'
             style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0.75rem)' }}
           >
             <p className='text-muted-foreground text-xs'>
