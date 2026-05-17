@@ -22,17 +22,25 @@
  * through Vite so `import.meta.env` is undefined there — the
  * `?? false` keeps it on the fs path.
  */
-import { type DataSource, fsDataSource, inMemoryDataSource } from '@onepiece-wiki/schema-engine';
-import { dirname, resolve } from 'node:path';
-import { fileURLToPath } from 'node:url';
+import {
+  type DataSource,
+  fsDataSource,
+  inMemoryDataSource,
+  REPO_ROOT,
+} from '@onepiece-wiki/schema-engine';
 
-/** Repo root resolved at module load. Same trick as elsewhere — Bun's
- *  `import.meta.dir`, Node's `import.meta.dirname`, then fileURLToPath
- *  as the universal fallback. */
-const HERE = (import.meta as { dirname?: string; dir?: string; }).dirname
-  ?? (import.meta as { dirname?: string; dir?: string; }).dir
-  ?? dirname(fileURLToPath(import.meta.url));
-const REPO_ROOT = resolve(HERE, '..', '..', '..').replace(/\\/g, '/');
+/**
+ * Critical: reuse schema-engine's `REPO_ROOT` constant instead of
+ * computing our own from `import.meta.url`. Both packages get
+ * bundled into the SSR output but each lands at a different position
+ * in the module graph, so computing two REPO_ROOTs independently
+ * produces two different absolute prefixes that don't agree — the
+ * loaders then ask for paths that aren't in the in-memory map and
+ * the catalogues come back empty. Importing the shared constant
+ * guarantees both sides round-trip the same paths regardless of
+ * bundle layout.
+ */
+const NORMALISED_REPO_ROOT = REPO_ROOT.replace(/\\/g, '/');
 
 /**
  * Vite resolves `import.meta.glob` patterns at build time. We grab
@@ -72,9 +80,11 @@ function buildBundleSource(): DataSource {
   const files: Record<string, string> = {};
   for (const [k, v] of Object.entries(raw)) {
     // k looks like '../../../data/schemas/entity-types/character.json'.
-    // Strip the leading '../' segments, then prepend REPO_ROOT.
+    // Strip the leading '../' segments, then prepend the shared
+    // REPO_ROOT (schema-engine's constant) so the keys exactly match
+    // the absolute paths the loaders construct on the read side.
     const rel = k.replace(/^(\.\.\/)+/, '');
-    const absKey = `${REPO_ROOT}/${rel}`;
+    const absKey = `${NORMALISED_REPO_ROOT}/${rel}`;
     files[absKey] = v;
   }
   return inMemoryDataSource(files);
