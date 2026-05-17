@@ -25,7 +25,27 @@
  * forgets to use the dashboard and merges manually on GitHub, CI
  * fails before bad data reaches `main`.
  */
-import { CopyObjectCommand, DeleteObjectCommand, S3Client } from '@aws-sdk/client-s3';
+// AWS SDK is loaded lazily — see r2.ts for the rationale. Promote
+// + reject endpoints are admin-only and rare, so paying the import
+// cost on first invocation is the right tradeoff.
+import type { S3Client } from '@aws-sdk/client-s3';
+
+type AdminSdk = {
+  S3Client: typeof import('@aws-sdk/client-s3').S3Client;
+  CopyObjectCommand: typeof import('@aws-sdk/client-s3').CopyObjectCommand;
+  DeleteObjectCommand: typeof import('@aws-sdk/client-s3').DeleteObjectCommand;
+};
+let adminSdkCache: AdminSdk | null = null;
+async function loadAdminSdk(): Promise<AdminSdk> {
+  if (adminSdkCache !== null) return adminSdkCache;
+  const s3 = await import('@aws-sdk/client-s3');
+  adminSdkCache = {
+    S3Client: s3.S3Client,
+    CopyObjectCommand: s3.CopyObjectCommand,
+    DeleteObjectCommand: s3.DeleteObjectCommand,
+  };
+  return adminSdkCache;
+}
 import {
   closePullRequest,
   getFile,
@@ -37,8 +57,9 @@ import {
 } from '@onepiece-wiki/github-client';
 import { parseStagingUrl, publicKeyFor, type R2Config } from './r2.ts';
 
-function r2Client(cfg: R2Config): S3Client {
-  return new S3Client({
+async function r2Client(cfg: R2Config): Promise<S3Client> {
+  const sdk = await loadAdminSdk();
+  return new sdk.S3Client({
     region: 'auto',
     endpoint: `https://${cfg.accountId}.r2.cloudflarestorage.com`,
     credentials: {
@@ -111,14 +132,15 @@ export async function promoteAndMergePR(args: {
 
   // Copy pending/* → images/* on R2 BEFORE rewriting the JSON. If
   // any copy fails we throw and the rewrites + merge don't happen.
-  const s3 = r2Client(args.r2);
+  const sdk = await loadAdminSdk();
+  const s3 = await r2Client(args.r2);
   const promoted: { stagingKey: string; publicKey: string; }[] = [];
   for (const stagingKey of stagingKeys) {
     const publicKey = publicKeyFor(stagingKey);
     if (publicKey === stagingKey) continue; // not under pending/
     // eslint-disable-next-line no-await-in-loop
     await s3.send(
-      new CopyObjectCommand({
+      new sdk.CopyObjectCommand({
         Bucket: args.r2.bucket,
         CopySource: `${args.r2.bucket}/${stagingKey}`,
         Key: publicKey,
@@ -168,7 +190,7 @@ export async function promoteAndMergePR(args: {
   for (const { stagingKey } of promoted) {
     try {
       // eslint-disable-next-line no-await-in-loop
-      await s3.send(new DeleteObjectCommand({ Bucket: args.r2.bucket, Key: stagingKey }));
+      await s3.send(new sdk.DeleteObjectCommand({ Bucket: args.r2.bucket, Key: stagingKey }));
     } catch (err) {
       process.stderr.write(
         `[admin-promote] non-fatal: failed to delete ${stagingKey}: ${
@@ -217,12 +239,13 @@ export async function rejectAndCleanupPR(args: {
 
   await closePullRequest(args.octokit, args.cfg, args.prNumber);
 
-  const s3 = r2Client(args.r2);
+  const sdk = await loadAdminSdk();
+  const s3 = await r2Client(args.r2);
   const deletedKeys: string[] = [];
   for (const key of stagingKeys) {
     try {
       // eslint-disable-next-line no-await-in-loop
-      await s3.send(new DeleteObjectCommand({ Bucket: args.r2.bucket, Key: key }));
+      await s3.send(new sdk.DeleteObjectCommand({ Bucket: args.r2.bucket, Key: key }));
       deletedKeys.push(key);
     } catch (err) {
       process.stderr.write(

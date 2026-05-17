@@ -12,9 +12,41 @@
  * return 503 ServiceUnavailable. Read endpoints and the GitHub-save
  * flow are unaffected.
  */
-import { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
-import { getSignedUrl } from '@aws-sdk/s3-request-presigner';
+// AWS SDK is imported LAZILY (dynamic import) to keep its ~700 KB
+// of code out of the cold-start path of every dashboard SSR request.
+// 99 % of traffic (entity reads, schemas, cast pages, the save flow)
+// never touches R2; only the /api/uploads/presign + /api/preview/*
+// + admin-promote endpoints do, and they're the only callers below
+// that pay the load cost. The first hit pays the import, subsequent
+// hits reuse `sdkCache`.
+//
+// `type`-only imports stay eager (they're erased at compile time and
+// don't pull the runtime modules into the bundle's main chunk).
+import type { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
 import { randomBytes } from 'node:crypto';
+
+type SdkBundle = {
+  S3Client: typeof import('@aws-sdk/client-s3').S3Client;
+  PutObjectCommand: typeof import('@aws-sdk/client-s3').PutObjectCommand;
+  GetObjectCommand: typeof import('@aws-sdk/client-s3').GetObjectCommand;
+  getSignedUrl: typeof import('@aws-sdk/s3-request-presigner').getSignedUrl;
+};
+
+let sdkCache: SdkBundle | null = null;
+async function loadSdk(): Promise<SdkBundle> {
+  if (sdkCache !== null) return sdkCache;
+  const [s3, presigner] = await Promise.all([
+    import('@aws-sdk/client-s3'),
+    import('@aws-sdk/s3-request-presigner'),
+  ]);
+  sdkCache = {
+    S3Client: s3.S3Client,
+    PutObjectCommand: s3.PutObjectCommand,
+    GetObjectCommand: s3.GetObjectCommand,
+    getSignedUrl: presigner.getSignedUrl,
+  };
+  return sdkCache;
+}
 
 /**
  * Two-stage storage (ADR-015 / Phase 7.1).
@@ -86,9 +118,10 @@ export function r2Config(): R2Config | null {
 
 let clientCache: S3Client | null = null;
 
-function r2Client(cfg: R2Config): S3Client {
+async function r2Client(cfg: R2Config): Promise<S3Client> {
   if (clientCache !== null) return clientCache;
-  clientCache = new S3Client({
+  const sdk = await loadSdk();
+  clientCache = new sdk.S3Client({
     region: 'auto',
     endpoint: `https://${cfg.accountId}.r2.cloudflarestorage.com`,
     credentials: {
@@ -206,13 +239,14 @@ export async function presignUpload(
   }
   const key = buildObjectKey(args.filename);
   const expiresIn = 60 * 5;
-  const command = new PutObjectCommand({
+  const sdk = await loadSdk();
+  const command = new sdk.PutObjectCommand({
     Bucket: cfg.bucket,
     Key: key,
     ContentType: args.contentType,
     ContentLength: args.sizeBytes,
   });
-  const uploadUrl = await getSignedUrl(r2Client(cfg), command, { expiresIn });
+  const uploadUrl = await sdk.getSignedUrl(await r2Client(cfg), command, { expiresIn });
   return {
     uploadUrl,
     stagingUrl: stagingUrl(key),
@@ -236,9 +270,10 @@ export async function presignRead(
   key: string,
   ttlSec: number = 60,
 ): Promise<string> {
-  const command = new GetObjectCommand({
+  const sdk = await loadSdk();
+  const command = new sdk.GetObjectCommand({
     Bucket: cfg.bucket,
     Key: key,
   });
-  return await getSignedUrl(r2Client(cfg), command, { expiresIn: ttlSec });
+  return await sdk.getSignedUrl(await r2Client(cfg), command, { expiresIn: ttlSec });
 }
