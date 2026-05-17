@@ -1,0 +1,22 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "event-roles",
+  "schema_version": 1,
+  "values": {
+    "subject": { "labels": { "en": "Subject", "fr": "Sujet" } },
+    "combatant": { "labels": { "en": "Combatant", "fr": "Combattant" } },
+    "commander": { "labels": { "en": "Commander", "fr": "Commandant" } },
+    "leader": { "labels": { "en": "Leader", "fr": "Leader" } },
+    "supporter": { "labels": { "en": "Supporter", "fr": "Soutien" } },
+    "rescuer": { "labels": { "en": "Rescuer", "fr": "Sauveteur" } },
+    "target": { "labels": { "en": "Target", "fr": "Cible" } },
+    "victim": { "labels": { "en": "Victim", "fr": "Victime" } },
+    "captive": { "labels": { "en": "Captive", "fr": "Captif" } },
+    "witness": { "labels": { "en": "Witness", "fr": "Témoin" } },
+    "observer": { "labels": { "en": "Observer", "fr": "Observateur" } },
+    "antagonist": { "labels": { "en": "Antagonist", "fr": "Antagoniste" } },
+    "mediator": { "labels": { "en": "Mediator", "fr": "Médiateur" } },
+    "ally": { "labels": { "en": "Ally", "fr": "Allié" } },
+    "narrator": { "labels": { "en": "Narrator", "fr": "Narrateur" } }
+  }
+}

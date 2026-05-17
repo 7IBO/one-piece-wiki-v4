@@ -1,0 +1,32 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "event-sides",
+  "schema_version": 1,
+  "values": {
+    "marines": { "labels": { "en": "Marines", "fr": "Marines" } },
+    "world_government": { "labels": { "en": "World Government", "fr": "Gouvernement mondial" } },
+    "cipher_pol": { "labels": { "en": "Cipher Pol", "fr": "Cipher Pol" } },
+    "pirates": { "labels": { "en": "Pirates", "fr": "Pirates" } },
+    "whitebeard_pirates": {
+      "labels": { "en": "Whitebeard Pirates", "fr": "Équipage de Barbe Blanche" }
+    },
+    "whitebeard_allies": {
+      "labels": { "en": "Whitebeard allies", "fr": "Alliés de Barbe Blanche" }
+    },
+    "straw_hat_pirates": {
+      "labels": { "en": "Straw Hat Pirates", "fr": "Équipage du Chapeau de paille" }
+    },
+    "blackbeard_pirates": {
+      "labels": { "en": "Blackbeard Pirates", "fr": "Équipage de Barbe Noire" }
+    },
+    "shichibukai": { "labels": { "en": "Shichibukai", "fr": "Shichibukai" } },
+    "yonko": { "labels": { "en": "Yonko", "fr": "Yonko" } },
+    "revolutionary_army": {
+      "labels": { "en": "Revolutionary Army", "fr": "Armée révolutionnaire" }
+    },
+    "civilians": { "labels": { "en": "Civilians", "fr": "Civils" } },
+    "captive": { "labels": { "en": "Captive", "fr": "Captif" } },
+    "neutral": { "labels": { "en": "Neutral", "fr": "Neutre" } },
+    "other": { "labels": { "en": "Other", "fr": "Autre" } }
+  }
+}

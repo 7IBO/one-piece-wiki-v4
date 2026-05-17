@@ -13,7 +13,7 @@
     {
       "type": "participant",
       "target": "character:luffy",
-      "qualifiers": { "side": "whitebeard-allies", "role": "rescuer", "outcome": "survived" }
+      "qualifiers": { "side": "whitebeard_allies", "role": "rescuer", "outcome": "survived" }
     },
     {
       "type": "participant",

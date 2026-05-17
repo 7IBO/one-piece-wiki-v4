@@ -8,6 +8,55 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-022 — Close `participant` qualifiers as enums
+
+**Date**: 2026-05-17
+
+**Context**: The `participant` relation type (event → character/crew)
+declared its three qualifiers — `role`, `side`, `outcome` — as
+`value_type: "string"`, so the dashboard rendered them as plain text
+inputs. Contributors had no autocomplete, no validation, and no
+guidance on what values were already in use across the corpus. In
+practice the existing data already used a closed-ish vocabulary:
+`rescuer`, `survived`, `subject`, `awakened`, `captive`, `killed`
+plus one inconsistency (`whitebeard-allies` with a hyphen vs.
+snake_case everywhere else).
+
+**Choice**: Promote the three qualifiers to `value_type: "enum"`
+backed by three new vocabularies under
+`data/schemas/vocabulary/`:
+
+- `event-roles` (subject, combatant, rescuer, captive, …)
+- `event-sides` (marines, whitebeard_allies, shichibukai, …)
+- `event-outcomes` (survived, killed, awakened, captured, …)
+
+Existing data migrated: `whitebeard-allies` → `whitebeard_allies`
+to match the snake_case enum convention used by every other
+vocabulary in the catalogue.
+
+**Rationale**: free-string qualifiers don't scale — every
+contributor invents their own term and the data becomes
+ungroupable. Closed enums give the dashboard a dropdown (with
+French + English labels), let the schema flag typos at validation,
+and keep the value space discoverable. The 15–18 values per
+vocabulary cover every existing usage with room for the next few
+arcs without further schema changes.
+
+**Consequences**:
+
+- Three new files under `data/schemas/vocabulary/`.
+- `data/schemas/relation-types/participant.json` switches qualifier
+  `value_type` from `string` to `enum` + adds `enum_ref`.
+- `data/.../entities/event/battle-of-marineford.json` gets a one-character
+  data migration (hyphen → underscore).
+- `bun run validate` passes (30 entities still green).
+- **Open question for later**: `side: "captive"` is semantically more
+  of a role than a side. The current data shape is preserved, but a
+  follow-up could re-classify Ace as
+  `side: whitebeard_pirates, role: captive`. Out of scope here.
+
+---
+
 ## ADR-021 — Bulk per-source cast saves (one PR, many entity files)
 
 **Date**: 2026-05-17

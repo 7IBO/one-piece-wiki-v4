@@ -1,0 +1,25 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "event-outcomes",
+  "schema_version": 1,
+  "values": {
+    "victorious": { "labels": { "en": "Victorious", "fr": "Victorieux" } },
+    "defeated": { "labels": { "en": "Defeated", "fr": "Vaincu" } },
+    "survived": { "labels": { "en": "Survived", "fr": "A survécu" } },
+    "killed": { "labels": { "en": "Killed", "fr": "Tué" } },
+    "captured": { "labels": { "en": "Captured", "fr": "Capturé" } },
+    "escaped": { "labels": { "en": "Escaped", "fr": "S'est échappé" } },
+    "rescued": { "labels": { "en": "Rescued", "fr": "Secouru" } },
+    "wounded": { "labels": { "en": "Wounded", "fr": "Blessé" } },
+    "withdrew": { "labels": { "en": "Withdrew", "fr": "S'est retiré" } },
+    "exiled": { "labels": { "en": "Exiled", "fr": "Exilé" } },
+    "promoted": { "labels": { "en": "Promoted", "fr": "Promu" } },
+    "demoted": { "labels": { "en": "Demoted", "fr": "Rétrogradé" } },
+    "awakened": { "labels": { "en": "Awakened", "fr": "Éveillé" } },
+    "revealed": { "labels": { "en": "Revealed", "fr": "Révélé" } },
+    "transformed": { "labels": { "en": "Transformed", "fr": "Transformé" } },
+    "joined": { "labels": { "en": "Joined", "fr": "A rejoint" } },
+    "left": { "labels": { "en": "Left", "fr": "A quitté" } },
+    "unresolved": { "labels": { "en": "Unresolved", "fr": "Non résolu" } }
+  }
+}
