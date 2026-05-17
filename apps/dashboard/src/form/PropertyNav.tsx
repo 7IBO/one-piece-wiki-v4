@@ -20,6 +20,10 @@ export function propertyAnchorId(propertyId: string): string {
   return `prop-${propertyId}`;
 }
 
+export function relationAnchorId(relationTypeId: string): string {
+  return `rel-${relationTypeId}`;
+}
+
 export type NavEntry = {
   readonly id: string;
   readonly label: string;
@@ -35,7 +39,13 @@ export type NavEntry = {
     | 'sectionCategorical'
     | 'sectionBoolean'
     | 'sectionReferences'
-    | 'sectionOther';
+    | 'sectionOther'
+    | 'sectionRelations';
+  /** 'property' (default) or 'relation' — drives the anchor prefix
+   *  (`prop-` vs `rel-`) and disables the reveal-on-click behaviour
+   *  for relations (which don't have a hidden/optional state in the
+   *  form). */
+  readonly kind?: 'property' | 'relation';
 };
 
 type PropertyNavProps = {
@@ -71,13 +81,18 @@ export function PropertyNav(p: PropertyNavProps): JSX.Element {
           .filter((r) => r.isIntersecting)
           .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
         if (visible.length === 0) return;
-        const id = visible[0]!.target.id.replace(/^prop-/, '');
+        // Strip either prefix; the local entry whose id matches the
+        // remainder becomes active. Two prefixes (`prop-` / `rel-`)
+        // share the same observer so relations stay highlighted as
+        // the user scrolls through the Relations section.
+        const id = visible[0]!.target.id.replace(/^(prop|rel)-/, '');
         setActiveId(id);
       },
       { rootMargin: '-30% 0px -55% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] },
     );
     for (const e of p.entries) {
-      const el = document.getElementById(propertyAnchorId(e.id));
+      const anchor = e.kind === 'relation' ? relationAnchorId(e.id) : propertyAnchorId(e.id);
+      const el = document.getElementById(anchor);
       if (el !== null) observer.observe(el);
     }
     return () => observer.disconnect();
@@ -85,11 +100,17 @@ export function PropertyNav(p: PropertyNavProps): JSX.Element {
 
   function handleClick(entry: NavEntry, ev: ReactMouseEvent): void {
     ev.preventDefault();
-    if (!entry.filled && !entry.required) {
+    // Reveal only applies to optional/empty PROPERTIES — relations
+    // are always rendered (or rendered after pick from the "+ Add
+    // relation" combobox), so a click there is pure-scroll.
+    if (entry.kind !== 'relation' && !entry.filled && !entry.required) {
       p.onReveal(entry.id);
     }
+    const anchor = entry.kind === 'relation'
+      ? relationAnchorId(entry.id)
+      : propertyAnchorId(entry.id);
     requestAnimationFrame(() => {
-      const el = document.getElementById(propertyAnchorId(entry.id));
+      const el = document.getElementById(anchor);
       if (el !== null) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
     p.onPick?.(entry.id);
@@ -166,10 +187,13 @@ export function PropertyNav(p: PropertyNavProps): JSX.Element {
               <ul className='space-y-0.5'>
                 {g.items.map((entry) => {
                   const isActive = activeId === entry.id;
+                  const anchor = entry.kind === 'relation'
+                    ? relationAnchorId(entry.id)
+                    : propertyAnchorId(entry.id);
                   return (
-                    <li key={entry.id}>
+                    <li key={`${entry.kind ?? 'property'}-${entry.id}`}>
                       <a
-                        href={`#${propertyAnchorId(entry.id)}`}
+                        href={`#${anchor}`}
                         onClick={(ev) => handleClick(entry, ev)}
                         className={`flex items-center gap-2 rounded px-2 py-1 text-xs transition-colors ${
                           isActive

@@ -119,12 +119,16 @@ export function BottomNav(): JSX.Element | null {
             >
               {
                 /* Filled background on the "+" so it reads as the
-                 primary contribution affordance. Mobile contributors
-                 watching an episode want this to feel like the action
-                 button it is. */
+                 primary contribution affordance — but contained
+                 inside the nav bar (no FAB overflow). The earlier
+                 `-mt-3 size-9` lifted the circle above the bar and
+                 read as a misplaced FAB to contributors; matching
+                 the other slots' visual height while keeping the
+                 filled bg + shadow gives the same "primary action"
+                 cue without the overflow. */
               }
-              <span className='bg-primary text-primary-foreground -mt-3 inline-flex size-9 items-center justify-center rounded-full shadow-md'>
-                <Plus className='size-5' aria-hidden />
+              <span className='bg-primary text-primary-foreground inline-flex size-7 items-center justify-center rounded-full shadow-sm'>
+                <Plus className='size-4' aria-hidden />
               </span>
               <span>New</span>
             </button>

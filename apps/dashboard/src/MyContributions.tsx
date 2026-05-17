@@ -129,19 +129,19 @@ export function MyContributions(): JSX.Element {
             {items.map((c) => (
               <li
                 key={c.prNumber}
-                className='flex items-center justify-between gap-3 py-2 text-sm'
+                className='flex flex-col gap-1 py-2 text-sm sm:flex-row sm:items-center sm:justify-between sm:gap-3'
               >
                 <Link
                   to='/types/$type/$slug'
                   params={{ type: c.entityType, slug: c.entitySlug }}
-                  className='text-foreground hover:underline'
+                  className='text-foreground hover:underline min-w-0 truncate'
                 >
                   <span className='text-muted-foreground text-[11px] uppercase tracking-wide'>
                     {c.entityType}
                   </span>{' '}
                   {c.entitySlug}
                 </Link>
-                <div className='text-muted-foreground flex items-center gap-3 text-xs'>
+                <div className='text-muted-foreground flex shrink-0 items-center gap-3 text-xs'>
                   <a
                     href={c.htmlUrl}
                     target='_blank'
