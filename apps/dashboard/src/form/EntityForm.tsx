@@ -16,6 +16,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
+import { MobileSheet, MobileSheetContent, MobileSheetTrigger } from '@/components/ui/mobile-sheet';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import type {
   EntityTypeSchema,
@@ -23,7 +24,7 @@ import type {
   RelationTypeSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
-import { AlertCircle, Globe, MoreHorizontal, Plus, X } from 'lucide-react';
+import { AlertCircle, Globe, ListTreeIcon, MoreHorizontal, Plus, X } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { type SourceRef, type Translations, validationIssues } from '../api';
 import { useCurrentUser } from '../auth';
@@ -834,7 +835,15 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         : null}
 
       <div className='grid grid-cols-1 gap-5 lg:grid-cols-[14rem_1fr]'>
-        <aside className='lg:sticky lg:top-4 lg:self-start'>
+        {
+          /* Section nav lives in the sticky aside on desktop. On mobile
+            (< lg) the aside is hidden — the same nav is reachable via
+            the `<MobileSectionsTrigger>` button rendered above the form
+            content, which opens it inside a bottom sheet. Keeping the
+            two surfaces driven by the same `<PropertyNav>` avoids
+            duplicating the IntersectionObserver + grouping logic. */
+        }
+        <aside className='hidden lg:sticky lg:top-4 lg:block lg:self-start'>
           <PropertyNav
             entries={navEntries}
             onReveal={(id) => reveal(id)}
@@ -842,7 +851,11 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         </aside>
 
         <div className='min-w-0 space-y-3'>
-          <div className='flex justify-end'>
+          <div className='flex items-center justify-between gap-2 lg:justify-end'>
+            <MobileSectionsTrigger
+              entries={navEntries}
+              onReveal={(id) => reveal(id)}
+            />
             <Button
               type='button'
               variant='ghost'
@@ -859,7 +872,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
               const sections = groupBySection(visible, props.propertyTypes);
               let globalIdx = 0;
               return (
-                <div className='space-y-5'>
+                <div className='space-y-3 sm:space-y-5'>
                   {sections.map((s) => (
                     <section key={s.id}>
                       <header className='border-border mb-2 flex items-baseline justify-between border-b pb-1'>
@@ -938,9 +951,10 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
             // pb-[env(safe-area-inset-bottom)] lifts the bar above
             // the home-indicator on notched phones. `max(...)` keeps
             // the original 0.75rem padding when the inset is 0.
-            // `bottom-14` clears the mobile BottomNav (~3.5rem). On
-            // desktop the BottomNav is hidden so we drop back to 0.
-            className='border-border bg-background/95 fixed bottom-14 left-0 right-0 z-40 border-t backdrop-blur lg:bottom-0 lg:left-[16rem]'
+            // `bottom-0` everywhere: the BottomNav hides itself on
+            // routes that render this save bar (see BottomNav.tsx
+            // `hasSaveBar`), so the two never share screen space.
+            className='border-border bg-background/95 fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur lg:left-[16rem]'
             style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' }}
           >
             <div className='mx-auto flex w-full max-w-[100rem] items-center justify-between gap-3 px-6 py-3'>
@@ -965,7 +979,11 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                         translations={translations}
                         locale={locale}
                       />
-                      <span className='text-muted-foreground text-[10px]'>
+                      {
+                        /* ⌘S shortcut is keyboard-only — hidden on
+                          coarse pointers (touch) where it's misleading. */
+                      }
+                      <span className='text-muted-foreground hidden text-[10px] [@media(pointer:fine)]:inline'>
                         · {t('saveShortcut')}
                       </span>
                     </>
@@ -1067,7 +1085,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   return (
     <div
       id={p.anchorId}
-      className={`scroll-mt-20 rounded-[3px] px-3 py-2.5 transition-colors ${ringClass}`}
+      className={`scroll-mt-20 rounded-[3px] py-2 transition-colors sm:py-2.5 ${ringClass}`}
     >
       <div className='mb-1.5 flex items-baseline gap-2'>
         <Label
@@ -1254,7 +1272,7 @@ function EntryCard(p: EntryCardProps): JSX.Element {
   const setQualifierCount = setIds.size;
 
   return (
-    <div className='border-input/70 bg-card/40 relative flex flex-col gap-1.5 rounded-[3px] border p-2'>
+    <div className='border-input/70 bg-card/40 relative flex flex-col gap-1.5 rounded-[3px] border p-1.5 pr-9 sm:p-2 sm:pr-10'>
       {
         /* Destructive ✕ pinned top-right alone, well away from any
           neutral affordance — accidental clicks on the remove button
@@ -1275,7 +1293,12 @@ function EntryCard(p: EntryCardProps): JSX.Element {
         )
         : null}
 
-      <div className='pr-12'>
+      {
+        /* Right-padding for the absolute ✕ button lives on the
+          outer card (`pr-9 sm:pr-10`) so the SINCE row + qualifiers
+          below share the same content width as the value row. */
+      }
+      <div>
         <EntryValue
           propertyType={p.propertyType}
           valueType={p.valueType}
@@ -1540,42 +1563,54 @@ function LocalizedValueField(p: {
 
   return (
     <div className='space-y-1'>
-      <div className='flex items-center gap-1.5'>
-        <div className='border-input bg-background flex h-8 flex-1 items-stretch overflow-hidden rounded-[3px] border focus-within:border-ring'>
-          <span className='bg-muted/60 text-muted-foreground border-input flex w-7 shrink-0 items-center justify-center border-r font-mono text-[10px] uppercase'>
-            {locale}
-          </span>
-          <input
-            type='text'
-            value={activeValue}
-            onChange={(e) => p.onTranslate(locale, i18nKey, e.target.value)}
-            placeholder={placeholder}
-            disabled={i18nKey === ''}
-            className='flex-1 min-w-0 bg-transparent px-2 text-xs placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
-          />
-        </div>
-
-        {/* Translations popover — globe + count badge. */}
+      {
+        /* Single bordered row: locale prefix · input · globe-count suffix.
+          The globe was previously a sibling button outside the input
+          border, which made the EN row's right edge sit ~50px left of
+          the SINCE pickers and broke visual alignment. Inlining the
+          globe inside the same border keeps all rows flush-right. */
+      }
+      <div className='border-input bg-background flex h-8 items-stretch overflow-hidden rounded-[3px] border focus-within:border-ring'>
+        <span className='bg-muted/60 text-muted-foreground border-input flex w-7 shrink-0 items-center justify-center border-r font-mono text-[10px] uppercase'>
+          {locale}
+        </span>
+        <input
+          type='text'
+          value={activeValue}
+          onChange={(e) => p.onTranslate(locale, i18nKey, e.target.value)}
+          placeholder={placeholder}
+          disabled={i18nKey === ''}
+          className='flex-1 min-w-0 bg-transparent px-2 text-xs placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+        />
+        {
+          /* Translations popover trigger — pinned right inside the same
+            bordered row. Behaviour unchanged (Popover/PopoverContent
+            wiring is identical to the previous sibling-button form). */
+        }
         <Popover>
           <PopoverTrigger
             render={
-              <Button
+              <button
                 type='button'
-                variant='outline'
-                className='h-8 shrink-0 gap-1 px-1.5 text-muted-foreground whitespace-nowrap'
+                className='bg-muted/40 text-muted-foreground hover:bg-muted/60 border-input flex shrink-0 items-center gap-1 border-l px-2 text-[10px] font-medium tabular-nums leading-none transition-colors'
                 aria-label={t('translations')}
                 title={`${t('translations')} · ${filledCount}/${totalLocales}`}
               />
             }
           >
             <Globe className='size-3.5' />
-            <span className='text-[10px] font-medium tabular-nums leading-none'>
+            <span>
               {filledCount}/{totalLocales}
             </span>
           </PopoverTrigger>
           <PopoverContent align='end' side='bottom' className='w-80 max-w-[calc(100vw-2rem)] p-3'>
-            <div className='mb-2 flex items-center gap-1.5'>
-              <Globe className='text-muted-foreground size-3.5' />
+            {
+              /* No leading icon: it pushed the heading 20px right of
+                the input boxes below, making the popover look
+                misaligned. The popover trigger already shows the
+                globe — repeating it inside is noise. */
+            }
+            <div className='mb-2 flex items-center'>
               <span className='text-[11px] font-semibold uppercase tracking-wide'>
                 {t('translations')}
               </span>
@@ -1707,5 +1742,51 @@ function QualifierField(p: QualifierFieldProps): JSX.Element {
       </div>
       {p.trailing ?? null}
     </div>
+  );
+}
+
+/**
+ * Mobile-only trigger that opens the `<PropertyNav>` inside a bottom
+ * sheet. Hidden at `lg:` (where the sticky aside takes over).
+ *
+ * Shows a compact summary ("Sections · N/M") so the contributor sees
+ * progress at a glance without scrolling. Tapping a row inside the
+ * sheet runs `onReveal` (same callback as the desktop aside) and
+ * closes the sheet so the user lands directly on the form section
+ * they picked.
+ */
+function MobileSectionsTrigger(
+  { entries, onReveal }: { entries: readonly NavEntry[]; onReveal: (id: string) => void; },
+): JSX.Element {
+  const t = useT();
+  const [open, setOpen] = useState(false);
+  const filled = entries.filter((e) => e.filled).length;
+  return (
+    <MobileSheet open={open} onOpenChange={setOpen}>
+      <MobileSheetTrigger
+        render={
+          <Button
+            type='button'
+            variant='outline'
+            size='sm'
+            className='h-7 gap-1.5 px-2 text-xs lg:hidden'
+          />
+        }
+      >
+        <ListTreeIcon className='size-3.5' />
+        <span>
+          {t('sections')} · {filled}/{entries.length}
+        </span>
+      </MobileSheetTrigger>
+      <MobileSheetContent title={t('sections')} description={t('jumpToSection')}>
+        <div className='px-3 py-3'>
+          <PropertyNav
+            entries={entries}
+            onReveal={onReveal}
+            onPick={() => setOpen(false)}
+          />
+        </div>
+      </MobileSheetContent>
+    </MobileSheet>
   );
 }

@@ -401,7 +401,7 @@ function TableComponent(): JSX.Element {
           render={<Link to='/types/$type' params={{ type }} />}
           variant='ghost'
           size='sm'
-          className='text-muted-foreground -ml-2 h-6 px-1.5 text-[11px]'
+          className='text-muted-foreground -ml-1.5 h-6 px-1.5 text-[11px]'
         >
           <ChevronLeft className='size-3' />
           {entityTypeLabel}

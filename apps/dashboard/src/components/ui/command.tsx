@@ -135,8 +135,12 @@ function CommandGroup({
   return (
     <CommandPrimitive.Group
       data-slot='command-group'
+      // `p-0` (was `p-1`): combined with `CommandList`'s p-1 the
+      // double-indent pushed items 8px right of the search input,
+      // which read as a misaligned popover. Items now share the
+      // list's left edge.
       className={cn(
-        'overflow-hidden p-1 text-foreground **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground',
+        'overflow-hidden p-0 text-foreground **:[[cmdk-group-heading]]:px-2 **:[[cmdk-group-heading]]:py-1.5 **:[[cmdk-group-heading]]:text-xs **:[[cmdk-group-heading]]:font-medium **:[[cmdk-group-heading]]:text-muted-foreground',
         className,
       )}
       {...props}

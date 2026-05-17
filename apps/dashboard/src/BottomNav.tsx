@@ -32,7 +32,7 @@ import { AppSidebar } from './AppSidebar';
 import { auth, useCurrentUser } from './auth';
 import { useLocale } from './form/locale';
 
-export function BottomNav(): JSX.Element {
+export function BottomNav(): JSX.Element | null {
   const location = useLocation();
   const { user, loaded } = useCurrentUser();
   const locale = useLocale();
@@ -55,6 +55,17 @@ export function BottomNav(): JSX.Element {
   }, [location.pathname]);
 
   const isHome = location.pathname === '/';
+
+  // Routes where a sticky save bar is rendered (EntityForm, cast
+  // manager, apparitions editor, entity creation). On those pages the
+  // save bar is the primary action and the BottomNav was visually
+  // competing — the centred "+" FAB popped up next to the save
+  // button and made the bottom of the screen feel cluttered. Hiding
+  // the nav keeps the focus on the edit flow; users still have the
+  // header (hamburger + search + locale) to navigate away.
+  const hasSaveBar = /^\/(types|sources)\/[^/]+\/[^/]+/.test(location.pathname)
+    || /^\/types\/[^/]+\/new$/.test(location.pathname);
+  if (hasSaveBar) return null;
 
   // Type list for the "+ New" picker. Sorted alphabetically; the
   // first-time experience prioritises "find the type" over "remember

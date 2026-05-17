@@ -451,77 +451,93 @@ export function MultiEntityRefInput(
   // chips you just selected. The sheet covers up to 85vh with a
   // proper close affordance + safe-area inset.
   const useSheet = useShouldUseSheet();
-  const list_ui = (
-    <div
-      className={cn(
-        'border-input bg-background flex min-h-8 flex-wrap items-center gap-1 rounded-[3px] border px-1.5 py-1',
-        disabled === true && 'opacity-50',
-      )}
-    >
-      {
-        /* No left-side placeholder: the trigger button on the right
-         already says "— choisir —" when the selection is empty, so
-         rendering the same string on both sides looked like a bug. */
-      }
-      {list.map((fullId) => {
-        const [, slug] = fullId.split(':');
-        const meta = lookup.get(fullId);
-        const label = meta?.name ?? slug ?? fullId;
-        return (
-          <span
-            key={fullId}
-            className='bg-muted text-foreground inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px]'
-          >
-            <span className='truncate max-w-[12rem]'>{label}</span>
-            <button
-              type='button'
-              className='hover:text-destructive shrink-0'
-              onClick={(e) => {
-                e.preventDefault();
-                e.stopPropagation();
-                removeOne(fullId);
-              }}
-              aria-label={t('removeEntry')}
-              disabled={disabled === true}
-            >
-              <X className='size-3' />
-            </button>
-          </span>
-        );
-      })}
-      {useSheet
-        ? (
-          <MobileSheetTrigger
-            render={
-              <button
-                type='button'
-                disabled={disabled === true}
-                aria-expanded={open}
-                className='text-muted-foreground hover:bg-accent hover:text-foreground ml-auto inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px] disabled:opacity-50'
-              />
-            }
-          >
-            <span>{list.length === 0 ? t('pickOne') : t('addEntry')}</span>
-            <ChevronsUpDown className='size-3 opacity-50' />
-          </MobileSheetTrigger>
-        )
-        : (
-          <PopoverTrigger
-            render={
-              <button
-                type='button'
-                disabled={disabled === true}
-                aria-expanded={open}
-                className='text-muted-foreground hover:bg-accent hover:text-foreground ml-auto inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px] disabled:opacity-50'
-              />
-            }
-          >
-            <span>{list.length === 0 ? t('pickOne') : t('addEntry')}</span>
-            <ChevronsUpDown className='size-3 opacity-50' />
-          </PopoverTrigger>
-        )}
-    </div>
+
+  // Trigger affordance — two shapes:
+  //  - **Empty**: full-width button styled like a Select trigger. The
+  //    previous design rendered an "input border" div with a tiny
+  //    right-aligned text button inside, leaving most of the row dead
+  //    space; contributors thought the field was broken.
+  //  - **Populated**: small `+ Add` button on the right of the chip
+  //    container — keeps the chips as the visual focal point.
+  const triggerLabel = list.length === 0 ? t('pickOne') : t('addEntry');
+  const triggerClassName = list.length === 0
+    ? 'border-input bg-background text-muted-foreground hover:bg-accent/40 hover:text-foreground flex h-8 w-full items-center justify-between gap-2 rounded-[3px] border px-2 text-xs disabled:opacity-50'
+    : 'text-muted-foreground hover:bg-accent hover:text-foreground ml-auto inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px] disabled:opacity-50';
+  const triggerContent = (
+    <>
+      <span>{triggerLabel}</span>
+      <ChevronsUpDown className={list.length === 0 ? 'size-3.5 opacity-50' : 'size-3 opacity-50'} />
+    </>
   );
+  const trigger = useSheet
+    ? (
+      <MobileSheetTrigger
+        render={
+          <button
+            type='button'
+            disabled={disabled === true}
+            aria-expanded={open}
+            className={triggerClassName}
+          />
+        }
+      >
+        {triggerContent}
+      </MobileSheetTrigger>
+    )
+    : (
+      <PopoverTrigger
+        render={
+          <button
+            type='button'
+            disabled={disabled === true}
+            aria-expanded={open}
+            className={triggerClassName}
+          />
+        }
+      >
+        {triggerContent}
+      </PopoverTrigger>
+    );
+
+  const list_ui = list.length === 0
+    // Empty: the trigger IS the row — no chip container around it.
+    ? trigger
+    : (
+      <div
+        className={cn(
+          'border-input bg-background flex min-h-8 flex-wrap items-center gap-1 rounded-[3px] border px-1.5 py-1',
+          disabled === true && 'opacity-50',
+        )}
+      >
+        {list.map((fullId) => {
+          const [, slug] = fullId.split(':');
+          const meta = lookup.get(fullId);
+          const label = meta?.name ?? slug ?? fullId;
+          return (
+            <span
+              key={fullId}
+              className='bg-muted text-foreground inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px]'
+            >
+              <span className='truncate max-w-[12rem]'>{label}</span>
+              <button
+                type='button'
+                className='hover:text-destructive shrink-0'
+                onClick={(e) => {
+                  e.preventDefault();
+                  e.stopPropagation();
+                  removeOne(fullId);
+                }}
+                aria-label={t('removeEntry')}
+                disabled={disabled === true}
+              >
+                <X className='size-3' />
+              </button>
+            </span>
+          );
+        })}
+        {trigger}
+      </div>
+    );
   const picker = (
     <Command shouldFilter={false}>
       <MultiEntityList
@@ -854,11 +870,14 @@ export function MultiSourceRefInput(
   const allTypes = Object.keys(SOURCE_TYPE_LABELS);
   const addableTypes = allTypes.filter((t) => !availableTypes.includes(t));
 
-  // Pack two pickers per row by default — chapter + anime episode is
+  // Pack two pickers per row on sm+ — chapter + anime episode is
   // the canonical pair and they sit comfortably side-by-side in the
-  // ~28rem sheet and on the main form. A single picker spans the
-  // row instead of looking orphaned at 50% width.
-  const cols = availableTypes.length <= 1 ? 'grid-cols-1' : 'grid-cols-2';
+  // ~28rem sheet and on the main form. Below sm we always stack:
+  // 50%-each on a 320px-ish EntryCard left the inputs cramped (no
+  // room for the chapter number and dropdown caret).
+  const cols = availableTypes.length <= 1
+    ? 'grid-cols-1'
+    : 'grid-cols-1 sm:grid-cols-2';
 
   return (
     <div className='space-y-1.5'>
