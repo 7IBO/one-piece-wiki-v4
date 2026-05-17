@@ -72,18 +72,45 @@ const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
  * at first sign/verify.
  */
 let cachedSecret: string | null = null;
+let warnedServerless = false;
+
+function isServerless(): boolean {
+  // Heuristic for "this is actually a serverless deploy", as opposed
+  // to "Vite/Nitro inlined NODE_ENV=production into the bundle while
+  // the user is just running it locally to smoke-test". Both
+  // platforms set their own env var on the runtime.
+  return process.env['VERCEL'] !== undefined
+    || process.env['AWS_LAMBDA_FUNCTION_NAME'] !== undefined
+    || process.env['CF_PAGES'] !== undefined;
+}
+
 function getSessionSecret(): string {
   if (cachedSecret !== null) return cachedSecret;
+
   const envSecret = process.env['SESSION_SECRET'];
   if (envSecret !== undefined && envSecret !== '') {
     cachedSecret = envSecret;
     return cachedSecret;
   }
-  if (process.env['NODE_ENV'] === 'production') {
-    throw new Error(
-      'SESSION_SECRET must be set in production. Generate with `openssl rand -base64 32`.',
+
+  // Serverless without SESSION_SECRET set is broken-by-design:
+  // every cold start gets a fresh random, so cookies break across
+  // requests routed to different instances. We loudly warn — once
+  // — and fall through to the random so reads still work. Writes
+  // / auth flows will visibly fail on the contributor's side.
+  if (isServerless() && !warnedServerless) {
+    warnedServerless = true;
+    process.stderr.write(
+      '[session] WARNING: SESSION_SECRET is not set on a serverless '
+        + 'platform. Cookies will not survive across cold starts — '
+        + 'every contributor effectively gets a new session per request. '
+        + 'Set SESSION_SECRET in the platform env to fix.\n',
     );
   }
+
+  // Try the dev cache file first — works for `bun run dev`, the
+  // legacy `bun api/server.ts`, AND `node .output/server/index.mjs`
+  // (the local prod-bundle smoke test). Survives reload + restart.
   const cachePath = resolve(HERE, '..', '.dev-session-secret');
   try {
     const cached = readFileSync(cachePath, 'utf8').trim();
