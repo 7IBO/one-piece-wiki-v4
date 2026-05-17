@@ -91,6 +91,56 @@ function safeBranchSegment(value: string): string {
 }
 
 /**
+ * Triage a PR by what it touches:
+ *  - `data`  → only JSON files under `/data/` (entity edits, translations, narratives)
+ *  - `dev`   → only code / config / docs (apps, packages, docs, .github, root configs)
+ *  - `mixed` → both (rare from the dashboard, common from manual PRs that
+ *              ship a code change AND an opportunistic data tweak)
+ *
+ * Drives PR title prefix + labels so reviewers can filter the PR list
+ * by area without opening each one. The matcher is path-based and
+ * intentionally simple — a leading `data/` (or a `/data/` segment to
+ * tolerate monorepo nesting) counts as data, everything else is dev.
+ */
+export type PrArea = 'data' | 'dev' | 'mixed';
+
+export function classifyArea(paths: readonly string[]): PrArea {
+  let hasData = false;
+  let hasDev = false;
+  for (const p of paths) {
+    const norm = p.replace(/\\/g, '/').replace(/^\/+/, '');
+    const isData = norm.startsWith('data/') || norm.includes('/data/');
+    if (isData) hasData = true;
+    else hasDev = true;
+  }
+  if (hasData && hasDev) return 'mixed';
+  if (hasData) return 'data';
+  return 'dev';
+}
+
+function titlePrefix(area: PrArea): string {
+  switch (area) {
+    case 'data':
+      return '[DATA]';
+    case 'dev':
+      return '[DEV]';
+    case 'mixed':
+      return '[DATA+DEV]';
+  }
+}
+
+function areaLabels(area: PrArea): readonly string[] {
+  switch (area) {
+    case 'data':
+      return ['area:data'];
+    case 'dev':
+      return ['area:dev'];
+    case 'mixed':
+      return ['area:data', 'area:dev'];
+  }
+}
+
+/**
  * Commit subject only — no body, no trailer. ADR-016: the bot is the
  * sole listed commit author; the human contributor is named once in
  * the PR body (Contributors section) rather than smeared across every
@@ -185,10 +235,16 @@ export async function submitEntityEdit(
   });
 
   const extraPaths = (request.extraFiles ?? []).map((f) => f.path);
-  const fileLines = [request.path, ...extraPaths].map((p) => `- \`${p}\``);
+  const allPaths = [request.path, ...extraPaths];
+  const fileLines = allPaths.map((p) => `- \`${p}\``);
   const anonymous = request.contributorLogin === null;
   const nickname = request.anonymousNickname?.trim() ?? '';
   const diffBlock = renderDiffBlock(commit.changes);
+  // Compute the area from the actual file set rather than assuming
+  // "dashboard always edits data" — leaves the door open for code
+  // tweaks shipped through this flow (and forces consistency between
+  // title prefix and labels).
+  const area = classifyArea(allPaths);
 
   // Contributors section — single source of attribution. We always
   // emit exactly one bullet so a future "resume editing" flow that
@@ -216,7 +272,10 @@ export async function submitEntityEdit(
 
   const opened = await openPullRequest(octokit, config, {
     headBranch: branch,
-    title: `Edit ${request.entityId}`,
+    // Title prefix tells reviewers at a glance whether this PR is
+    // content (`[DATA]`) or infrastructure (`[DEV]`). Matches the
+    // `area:*` labels below so filtering works either way.
+    title: `${titlePrefix(area)} Edit ${request.entityId}`,
     body: [
       `**Contributors**`,
       contributorBullet,
@@ -229,7 +288,12 @@ export async function submitEntityEdit(
       ...(diffBlock !== null ? [diffBlock, ``] : []),
       ...footer,
     ].join('\n'),
-    labels: anonymous ? ['edit', 'via-dashboard', 'anonymous'] : ['edit', 'via-dashboard'],
+    labels: [
+      'edit',
+      'via-dashboard',
+      ...(anonymous ? ['anonymous'] : []),
+      ...areaLabels(area),
+    ],
   });
   return { ...opened, reused: false, noOp: false };
 }

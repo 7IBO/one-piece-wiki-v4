@@ -1,0 +1,146 @@
+# Triage every PR by area: data vs dev.
+#
+# Dashboard-opened PRs already arrive with the right prefix + labels
+# (see packages/github-client/src/save-flow.ts), so this workflow is
+# mainly for MANUAL PRs — someone opening one from `gh pr create` or
+# the GitHub UI. It walks the PR's changed files, classifies the PR,
+# and applies the matching label + title prefix.
+#
+# Classification rule (matches `classifyArea()` in save-flow.ts):
+#   - file under `data/` (or `*/data/*`)  → counts as data
+#   - everything else                      → counts as dev
+#   - both present                         → mixed
+#
+# Labels applied: `area:data` and/or `area:dev`. Removed when no
+# longer accurate (e.g. someone force-pushes a code-only delta onto
+# a previously-mixed PR). Title prefix is only added if missing —
+# we never overwrite an existing `[…]` prefix the author chose.
+
+name: PR area label
+
+on:
+  pull_request_target:
+    types: [opened, synchronize, reopened, edited]
+
+permissions:
+  contents: read
+  pull-requests: write
+
+concurrency:
+  group: pr-area-label-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  label:
+    name: Classify and label PR
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      - name: Classify and apply
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const pr = context.payload.pull_request;
+            if (pr === undefined) {
+              core.info('No PR in payload; skipping.');
+              return;
+            }
+
+            // Walk the PR's changed files (paginated — large PRs may
+            // exceed the default 30 per page).
+            const files = await github.paginate(
+              github.rest.pulls.listFiles,
+              {
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                per_page: 100,
+              },
+            );
+
+            let hasData = false;
+            let hasDev = false;
+            for (const f of files) {
+              const norm = f.filename.replace(/\\/g, '/').replace(/^\/+/, '');
+              const isData = norm.startsWith('data/') || norm.includes('/data/');
+              if (isData) hasData = true;
+              else hasDev = true;
+            }
+
+            const area = hasData && hasDev
+              ? 'mixed'
+              : hasData ? 'data' : hasDev ? 'dev' : null;
+            if (area === null) {
+              core.info('PR has no changed files; nothing to label.');
+              return;
+            }
+            const wantLabels = area === 'mixed'
+              ? ['area:data', 'area:dev']
+              : area === 'data' ? ['area:data'] : ['area:dev'];
+            const prefix = area === 'mixed'
+              ? '[DATA+DEV]'
+              : area === 'data' ? '[DATA]' : '[DEV]';
+
+            // Reconcile labels: add the ones we want, remove stale
+            // `area:*` labels that don't apply anymore. Leave all
+            // non-area:* labels alone.
+            const current = (pr.labels ?? []).map((l) => l.name);
+            const stale = current.filter((n) =>
+              n.startsWith('area:') && !wantLabels.includes(n)
+            );
+            const toAdd = wantLabels.filter((n) => !current.includes(n));
+
+            for (const name of stale) {
+              try {
+                await github.rest.issues.removeLabel({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  issue_number: pr.number,
+                  name,
+                });
+                core.info(`Removed stale label: ${name}`);
+              } catch (err) {
+                if (err.status !== 404) throw err;
+              }
+            }
+            if (toAdd.length > 0) {
+              await github.rest.issues.addLabels({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                issue_number: pr.number,
+                labels: toAdd,
+              });
+              core.info(`Added labels: ${toAdd.join(', ')}`);
+            }
+
+            // Add the title prefix if the title doesn't already start
+            // with a bracketed tag. We only respect tags whose content
+            // is one of the area sentinels — `[FOO]` for an unrelated
+            // tag still gets prefixed (e.g. `[DATA] [WIP] …`) so the
+            // area is always visible.
+            const knownAreaTags = new Set(['DATA', 'DEV', 'DATA+DEV', 'DEV+DATA']);
+            const m = pr.title.match(/^\[([^\]]+)\]/);
+            const hasAreaTag = m !== null && knownAreaTags.has(m[1].toUpperCase());
+            if (!hasAreaTag) {
+              const newTitle = `${prefix} ${pr.title}`;
+              if (newTitle !== pr.title) {
+                await github.rest.pulls.update({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  pull_number: pr.number,
+                  title: newTitle,
+                });
+                core.info(`Updated title to: ${newTitle}`);
+              }
+            } else if (m[1].toUpperCase() !== prefix.slice(1, -1)) {
+              // Title says one area, files say another — author probably
+              // changed scope mid-PR. Replace the prefix.
+              const newTitle = pr.title.replace(/^\[[^\]]+\]\s*/, `${prefix} `);
+              await github.rest.pulls.update({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                pull_number: pr.number,
+                title: newTitle,
+              });
+              core.info(`Corrected area prefix to: ${newTitle}`);
+            }
