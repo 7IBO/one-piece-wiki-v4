@@ -253,3 +253,208 @@ What "generic" would look like:
 4. The table view (`/types/<type>/table`) needs to honour derivers
    too — bulk-saving 50 rows after uploading 50 images should fill
    the format column without 50 manual clicks.
+
+---
+
+## Apparitions hub (per-source cast manager + per-entity timeline)
+
+Goal: make "who appears where" data quick to enter and easy to
+audit. Today an entity's `appears-in` relations live deep in the
+entity's relations editor, one at a time. The cast of a given
+chapter has no UI surface at all — you'd have to scan every
+character entity's relations array to find them.
+
+**Data model: no schema change needed.** The
+`appears-in` relation (character → manga-chapter, et al.) and its
+inverse-inferred `features` (manga-chapter → character) already
+encode this. The qualifier `appearance_type` (main / secondary /
+flashback / cameo …) is already part of the schema. We just need
+two UI surfaces over the existing data.
+
+### Surface 1 — per-source cast (the killer feature)
+
+Route: `/sources/$type/$slug` (e.g. `/sources/manga-chapter/1`).
+
+Layout:
+
+```
+┌────────────────────────────────────────────────────────────┐
+│  Chapter 1 — Romance Dawn                                  │
+│  〔manga-chapter:1〕                          [Edit chapter]│
+├────────────────────────────────────────────────────────────┤
+│  Cast                                                       │
+│  ─ Characters (3) ──────────────────────  [+ Add character]│
+│    ✓ Monkey D. Luffy        appearance: main        [×]    │
+│    ✓ Coby                   appearance: main        [×]    │
+│    ✓ Alvida                 appearance: main        [×]    │
+│  ─ Devil fruits (1) ──────────────────────  [+ Add fruit] │
+│    ✓ Gomu Gomu no Mi        appearance: introduced  [×]    │
+│  ─ Crews (0)                              [+ Add crew]    │
+│  ─ Concepts (0)                           [+ Add concept] │
+└────────────────────────────────────────────────────────────┘
+```
+
+Server side:
+
+- New endpoint `GET /api/sources/:type/:slug/cast` — reverse-
+  scans every entity in the catalogue for `relations[]` whose
+  `type === 'appears-in'` AND `target === '<type>:<slug>'`,
+  groups by entity-type. The catalogue snapshot is in-memory
+  already (data-source bundle), so this is fast even at 10k
+  entities.
+- New endpoint `POST /api/sources/:type/:slug/cast` —
+  bulk mutation: `{ add: [{entityId, qualifiers}], remove:
+  [entityId] }`. Server applies each delta to the appropriate
+  entity JSON, then commits **all touched entity files in ONE
+  commit via `commitMultipleFiles`** (already built for the
+  per-save flow). Single PR titled "Add 5 / remove 1 cast entry
+  on manga-chapter:1", body listing each entity touched.
+
+Frontend:
+
+- `src/routes/sources.$type.$slug.tsx` — list cast, group by
+  entity-type, inline qualifier edits, bulk add via
+  `MultiEntityRefInput` already in `inputs.tsx` (works exactly
+  like `believed_by`).
+- Same Save UX as the entity editor (dirty indicator, save bar,
+  toast).
+
+### Surface 2 — per-entity apparitions timeline
+
+Route: `/types/$type/$slug` (current entity edit page) — add a
+new "Apparitions" tab/section.
+
+Today: the Relations section shows `appears-in` mixed with every
+other relation type. Tedious to scan.
+
+New section above the generic Relations list:
+
+```
+Apparitions  (12 total — 8 manga · 3 anime · 1 film)
+┌─ Manga ─────────────────────────────────────────────┐
+│ ▢ ch. 1   Romance Dawn      main                    │
+│ ▢ ch. 4   Pirate Captain Buggy Arc   main           │
+│ ▢ ch. 96  Loguetown          flashback              │
+│ …                                                    │
+└─────────────────────────────────────────────────────┘
+┌─ Anime ─────────────────────────────────────────────┐
+│ ▢ ep. 1   I'm Luffy!         main                   │
+│ …                                                    │
+└─────────────────────────────────────────────────────┘
+```
+
+Same data, different lens — still mutates the entity's own
+`relations[]`, no new endpoint.
+
+### Edge cases worth solving early
+
+1. **Dedup**: adding the same target twice → server-side coalesces
+   silently (last-write-wins on qualifiers).
+2. **Removing the last apparition**: optionally prune the relation
+   array entry instead of leaving an empty placeholder.
+3. **Auto-bound`since`**: when adding a cast entry from source page
+   X, default the `since` qualifier of the new `appears-in` to X.
+4. **Cross-tab race**: two contributors editing the same chapter's
+   cast at once would both open a PR. Each PR touches different
+   entity files most of the time → both merge cleanly. Same files
+   → optimistic-lock conflict (already wired).
+
+### Effort
+
+- ~1 day server (cast endpoints + bulk save)
+- ~1.5 days frontend (sources page + apparitions section on entity)
+- ~0.5 day routing + sidebar nav entry
+
+Prerequisite ADR (when promoted): document the bulk-save shape
+since "1 PR touching N entity files" is a new flow distinct from
+"1 PR touching 1 entity's files".
+
+---
+
+## Creating new entities from the dashboard
+
+Today: the dashboard only edits entities that already exist on
+disk. Adding a new character / chapter / devil-fruit means
+hand-writing a JSON file in `data/...` and committing — a
+maintainer-only operation.
+
+**Goal**: a "+ New entity" affordance that makes entity creation
+the same kind of PR-via-dashboard contribution as edits.
+
+### UX
+
+- "+ New" button on each type's list page (`/types/character` →
+  next to "Table view"). Goes to `/types/$type/new`.
+- New route renders the EntityForm pre-filled with:
+  - `id: ''` (computed from slug)
+  - `type: '<type>'` (from URL param)
+  - `slug: ''` (user input)
+  - `schema_version: <current>`
+  - `properties: {}` (empty; required ones flagged red in the
+    sidebar — already wired)
+  - `relations: []`
+- Slug input above the form, with live validation:
+  - kebab-case regex
+  - uniqueness check via `api.listEntities(type)` (cached)
+  - red border + inline error if invalid / taken
+- Save button disabled until slug is valid + at least required
+  properties filled (same dirty/error logic as edit, just initial
+  state is "everything missing")
+
+### Server
+
+- New endpoint `POST /api/entities/:type` (no slug in URL — slug
+  comes from body).
+- Validates:
+  - slug format (Slug schema brand from `@onepiece-wiki/schemas`)
+  - slug uniqueness (entity doesn't already exist in catalogue)
+  - data shape via the same `buildEntitySchema(type, ...).safeParse`
+    we already run on edit
+- Constructs the file path
+  `data/universes/<u>/entities/<type>/<slug>.json` and any
+  translation files, then `commitMultipleFiles` + `openPullRequest`.
+  Same flow as edit, just `path` is brand-new.
+- Returns the same `SaveResult` shape so the frontend handler is
+  shared.
+
+### Frontend wiring
+
+- `src/routes/types.$type.new.tsx` — wraps EntityForm with the
+  blank initial state + slug input.
+- After PR opens, redirect to `/types/$type/$slug` so the
+  contributor can continue editing (resume-PR flow kicks in on
+  next save).
+
+### Edge cases
+
+1. **What if Vercel build hasn't picked up the new entity yet?**
+   The dashboard's bundled data source won't know about it until
+   the next deploy. The contributor will see a "no entity found"
+   if they refresh the entity page. Mitigation: after the PR
+   opens, surface a "Your entity is in PR #N — it'll appear on the
+   dashboard after merge + deploy" banner instead of redirecting.
+2. **Slug already exists in a closed/merged PR but not on main yet**
+   — the catalogue snapshot is from main, so we won't see it. The
+   server's slug-uniqueness check passes, the new PR conflicts on
+   `data/.../$slug.json` with the open PR. Real-world impact:
+   second contributor's PR fails to merge with a clear conflict;
+   no data corruption. Acceptable.
+3. **i18n keys**: localizable properties auto-generate
+   `<type>.<slug>.<prop>.<idx>` keys (already done by `makeI18nKey`
+   in EntityForm). Works unchanged on a brand-new entity.
+
+### Effort
+
+- ~0.5 day server (one endpoint, mostly mirrors handleSaveEntity)
+- ~0.5 day frontend (route + slug input component + post-create
+  redirect)
+
+### Prerequisites before promoting to roadmap
+
+1. Settle whether anonymous contributors can create entities or
+   only edit existing ones. Lower-cost moderation if creation is
+   GitHub-only; broader contribution surface if open. Currently
+   leaning "open by default since anon edits already work".
+2. Decide on the post-create flow: redirect-to-edit (assumes the
+   PR merges quickly) vs banner-and-stay (handles the real case
+   where review takes hours).
