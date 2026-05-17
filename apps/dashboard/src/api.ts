@@ -95,6 +95,24 @@ export type SourceRef = {
   readonly displayName: DisplayName;
 };
 
+export type CastEntry = {
+  readonly entityId: string;
+  readonly entityType: string;
+  readonly slug: string;
+  readonly displayName: DisplayName;
+  readonly qualifiers: Record<string, unknown>;
+};
+
+export type CastGroup = {
+  readonly entityType: string;
+  readonly entries: readonly CastEntry[];
+};
+
+export type CastResponse = {
+  readonly source: { readonly id: string; readonly type: string; readonly slug: string; };
+  readonly cast: readonly CastGroup[];
+};
+
 export type PresignResult = {
   readonly uploadUrl: string;
   /**
@@ -282,6 +300,36 @@ export const api = {
     });
     entityDetailCache.set(key, promise);
     return promise;
+  },
+  /**
+   * Reverse-scan apparitions for a source entity (ADR-021). Returns
+   * the cast grouped by entity-type, each entry with its display
+   * name + `appears-in` qualifiers (typically `{appearance_type}`).
+   */
+  async getCast(type: string, slug: string): Promise<CastResponse> {
+    return getJson<CastResponse>(
+      `/api/sources/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/cast`,
+    );
+  },
+  /**
+   * Bulk-apply a cast change to a source. Opens one PR titled
+   * `[DATA] Update cast of <sourceId>` touching N entity files.
+   * Server-side coalesces add+remove (last write wins on qualifiers).
+   */
+  async saveCast(
+    type: string,
+    slug: string,
+    change: {
+      add: { entityId: string; qualifiers?: Record<string, unknown>; }[];
+      remove: string[];
+    },
+  ): Promise<SaveResult> {
+    const result = await postJson<SaveResult>(
+      `/api/sources/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/cast`,
+      change,
+    );
+    invalidateAfterSave();
+    return result;
   },
   /**
    * Open a PR creating a brand-new entity of the given type

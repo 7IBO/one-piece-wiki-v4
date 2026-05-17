@@ -2,7 +2,7 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ChevronLeft, ExternalLink, GitPullRequest } from 'lucide-react';
+import { ChevronLeft, ExternalLink, Film, GitPullRequest, Users } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type EntityDetail, type SchemaCatalogue, type SourceRef } from '../api';
@@ -99,6 +99,22 @@ function EntityEditComponent(): JSX.Element {
     return <p className='text-destructive'>No entity-type schema for {type}.</p>;
   }
 
+  // Apparitions hub (ADR-021) hooks. Derived from the schema rather
+  // than hard-coded so a future relation-schema change doesn't need
+  // a UI patch.
+  //  - SOURCE TYPES (anything listed in `appears-in.valid_to_types`)
+  //    get a "Manage cast" button — they're the destination of
+  //    apparitions, never the origin.
+  //  - APPARITION-CAPABLE TYPES (`valid_from_types`) get an
+  //    "Apparitions" link to their per-entity timeline sub-page.
+  const appearsIn = schemas.relationTypes['appears-in'];
+  // `valid_*_types` is typed as branded `Slug[]`; widen to plain
+  // `string[]` for the `.includes(type)` check.
+  const validTo = (appearsIn?.valid_to_types ?? []) as readonly string[];
+  const validFrom = (appearsIn?.valid_from_types ?? []) as readonly string[];
+  const isSourceType = validTo.includes(type);
+  const canHaveApparitions = validFrom.includes(type);
+
   return (
     <div className='space-y-4'>
       <div className='border-border border-b pb-3'>
@@ -138,6 +154,50 @@ function EntityEditComponent(): JSX.Element {
               </Badge>
             )}
         </div>
+        {
+          /* Apparitions hub entry-points (ADR-021). Mutually
+            exclusive: a type is either a source destination or a
+            potential apparition origin, never both. */
+        }
+        {isSourceType
+          ? (
+            <div className='mt-2'>
+              <Button
+                render={
+                  <Link
+                    to='/sources/$type/$slug'
+                    params={{ type, slug }}
+                  />
+                }
+                variant='outline'
+                size='sm'
+                className='gap-1.5'
+              >
+                <Users className='size-3.5' />
+                Manage cast
+              </Button>
+            </div>
+          )
+          : canHaveApparitions
+          ? (
+            <div className='mt-2'>
+              <Button
+                render={
+                  <Link
+                    to='/types/$type/$slug/apparitions'
+                    params={{ type, slug }}
+                  />
+                }
+                variant='outline'
+                size='sm'
+                className='gap-1.5'
+              >
+                <Film className='size-3.5' />
+                Apparitions
+              </Button>
+            </div>
+          )
+          : null}
       </div>
       {entity.resumePR !== undefined
         ? (
