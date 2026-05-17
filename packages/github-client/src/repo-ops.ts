@@ -421,6 +421,13 @@ export async function findOpenPRForEntity(
  * commit even when the bytes are identical (it doesn't dedup). The
  * Git Data API gives us the necessary control.
  */
+export type FileChange = {
+  readonly path: string;
+  readonly status: 'added' | 'modified';
+  readonly before: string | null;
+  readonly after: string;
+};
+
 export async function commitMultipleFiles(
   octokit: Octokit,
   config: GitHubAppConfig,
@@ -429,7 +436,14 @@ export async function commitMultipleFiles(
     readonly message: string;
     readonly files: readonly { readonly path: string; readonly content: string; }[];
   },
-): Promise<{ readonly created: boolean; readonly commitSha?: string; }> {
+): Promise<{
+  readonly created: boolean;
+  readonly commitSha?: string;
+  /** Per-file before/after for every file that actually changed in
+   *  this commit (excludes no-ops). Used by `submitEntityEdit` to
+   *  build the PR body diff block. */
+  readonly changes: readonly FileChange[];
+}> {
   // 1. Branch tip.
   const { data: ref } = await octokit.git.getRef({
     owner: config.dataRepo.owner,
@@ -444,16 +458,24 @@ export async function commitMultipleFiles(
   });
   const baseTreeSha = parentCommit.tree.sha;
 
-  // 2. Filter out unchanged files.
+  // 2. Filter out unchanged files, capturing before/after for the
+  // ones that do change.
   const changed: { path: string; content: string; }[] = [];
+  const changes: FileChange[] = [];
   for (const file of options.files) {
     // eslint-disable-next-line no-await-in-loop
     const existing = await getFile(octokit, config, file.path, options.branch);
     if (existing !== null && existing.content === file.content) continue;
     changed.push({ path: file.path, content: file.content });
+    changes.push({
+      path: file.path,
+      status: existing === null ? 'added' : 'modified',
+      before: existing?.content ?? null,
+      after: file.content,
+    });
   }
   if (changed.length === 0) {
-    return { created: false };
+    return { created: false, changes: [] };
   }
 
   // 3. Create one blob per changed file. Sequential so a transient
@@ -499,7 +521,7 @@ export async function commitMultipleFiles(
     sha: commit.sha,
   });
 
-  return { created: true, commitSha: commit.sha };
+  return { created: true, commitSha: commit.sha, changes };
 }
 
 export class OptimisticLockError extends Error {

@@ -32,10 +32,12 @@
  * Returns the opened PR.
  */
 import type { Octokit } from '@octokit/rest';
+import { createPatch } from 'diff';
 import type { GitHubAppConfig } from './config.ts';
 import {
   commitMultipleFiles,
   createBranch,
+  type FileChange,
   getFile,
   type OpenedPR,
   openPullRequest,
@@ -176,7 +178,7 @@ export async function submitEntityEdit(
   const branch = `edit/${safeBranchSegment(request.entityId)}/${ts}`;
   await createBranch(octokit, config, branch);
 
-  await commitMultipleFiles(octokit, config, {
+  const commit = await commitMultipleFiles(octokit, config, {
     branch,
     message: commitMessage(`Edit ${request.entityId}`),
     files: allFiles,
@@ -186,6 +188,7 @@ export async function submitEntityEdit(
   const fileLines = [request.path, ...extraPaths].map((p) => `- \`${p}\``);
   const anonymous = request.contributorLogin === null;
   const nickname = request.anonymousNickname?.trim() ?? '';
+  const diffBlock = renderDiffBlock(commit.changes);
 
   // Contributors section — single source of attribution. We always
   // emit exactly one bullet so a future "resume editing" flow that
@@ -223,11 +226,73 @@ export async function submitEntityEdit(
       `**Files changed:**`,
       ...fileLines,
       ``,
+      ...(diffBlock !== null ? [diffBlock, ``] : []),
       ...footer,
     ].join('\n'),
     labels: anonymous ? ['edit', 'via-dashboard', 'anonymous'] : ['edit', 'via-dashboard'],
   });
   return { ...opened, reused: false, noOp: false };
+}
+
+/**
+ * Render a per-file unified diff block as Markdown, each file inside
+ * its own GitHub-native `<details>` collapse. Goes into the PR body
+ * so a reviewer scrolling the PR sees the actual content delta
+ * without having to flip to the Files tab.
+ *
+ * Per-file safeguards:
+ *  - Truncate any single patch at MAX_PATCH_CHARS so a giant
+ *    translation file doesn't blow the PR body's 65k char limit.
+ *  - Skip files whose patch comes out empty (defensive — shouldn't
+ *    happen since `commitMultipleFiles` already dropped no-ops).
+ *  - Wrap each patch in a ```diff fence so GitHub colours added /
+ *    removed lines.
+ *
+ * Returns `null` when there's nothing to render (no changes / all
+ * truncated to empty) so the caller can skip the section entirely.
+ */
+const MAX_PATCH_CHARS = 12_000;
+function renderDiffBlock(changes: readonly FileChange[]): string | null {
+  if (changes.length === 0) return null;
+  const blocks: string[] = ['**Changes**', ''];
+  for (const change of changes) {
+    const before = change.before ?? '';
+    const patch = createPatch(
+      change.path,
+      before,
+      change.after,
+      change.status === 'added' ? '(new file)' : 'before',
+      'after',
+      { context: 3 },
+    );
+    if (patch.trim() === '') continue;
+    const truncated = patch.length > MAX_PATCH_CHARS;
+    const body = truncated
+      ? `${patch.slice(0, MAX_PATCH_CHARS)}\n… (truncated — see the Files tab for full diff)`
+      : patch;
+    // `open` on the first <details> so the reviewer doesn't have
+    // to click to see the typical "one entity, one translation"
+    // pair; subsequent files start collapsed to keep the PR body
+    // scrollable.
+    const isFirst = blocks.length === 2;
+    const summary = change.status === 'added'
+      ? `\`${change.path}\` _(new)_`
+      : `\`${change.path}\``;
+    blocks.push(
+      `<details${isFirst ? ' open' : ''}>`,
+      `<summary>${summary}</summary>`,
+      ``,
+      '```diff',
+      body,
+      '```',
+      `</details>`,
+      ``,
+    );
+  }
+  // If every block got skipped (all patches empty after the loop)
+  // there's no real content to render — only the heading. Drop it.
+  if (blocks.length <= 2) return null;
+  return blocks.join('\n').trimEnd();
 }
 
 /**
