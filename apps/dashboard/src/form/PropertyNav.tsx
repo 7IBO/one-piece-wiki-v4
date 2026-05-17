@@ -42,6 +42,10 @@ type PropertyNavProps = {
   entries: readonly NavEntry[];
   /** Called when the user clicks a hidden (empty + optional) property. */
   onReveal: (propertyId: string) => void;
+  /** Optional: called after every click (filled, required, or hidden).
+   *  Used by the mobile bottom-sheet wrapper to close itself once the
+   *  user has picked a section. Desktop usage leaves it undefined. */
+  onPick?: (propertyId: string) => void;
 };
 
 type Group = {
@@ -88,6 +92,7 @@ export function PropertyNav(p: PropertyNavProps): JSX.Element {
       const el = document.getElementById(propertyAnchorId(entry.id));
       if (el !== null) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
+    p.onPick?.(entry.id);
   }
 
   // Group entries by sectionId, preserving the order they first

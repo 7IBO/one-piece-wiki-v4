@@ -215,6 +215,21 @@ const UI_STRINGS = {
   // Save bar / drawer footer
   unsavedChanges: { en: 'Unsaved changes', fr: 'Modifications non sauvegardées' },
   saveShortcut: { en: '⌘S to save', fr: '⌘S pour sauvegarder' },
+  sections: { en: 'Sections', fr: 'Sections' },
+  jumpToSection: { en: 'Jump to a section', fr: 'Aller à une section' },
+  apparitionSearchPlaceholder: {
+    en: 'Filter by chapter / episode / slug…',
+    fr: 'Filtrer par chapitre / épisode / slug…',
+  },
+  removeAll: { en: 'Remove all', fr: 'Tout retirer' },
+  confirmRemoveAll: { en: 'Remove all {n}?', fr: 'Retirer les {n} ?' },
+  rangeView: { en: 'Range view', fr: 'Vue par plages' },
+  chipView: { en: 'List view', fr: 'Vue par liste' },
+  rangeHint: {
+    en: 'Comma-separated numbers and `A-B` ranges. Example: 1, 5-10, 96, 432-450.',
+    fr: 'Nombres et plages `A-B` séparés par des virgules. Exemple : 1, 5-10, 96, 432-450.',
+  },
+  applyRange: { en: 'Apply', fr: 'Appliquer' },
   noChanges: { en: 'No changes', fr: 'Aucune modification' },
   openingPr: { en: 'Opening PR…', fr: 'Ouverture de la PR…' },
   openPr: { en: 'Open PR', fr: 'Ouvrir une PR' },
