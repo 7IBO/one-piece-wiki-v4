@@ -55,6 +55,12 @@ const Toaster = ({ ...props }: ToasterProps) => {
         '--border-radius': 'var(--radius)',
       } as React.CSSProperties}
       mobileOffset={{ bottom: '5rem' }}
+      // Default toast duration bumped to 10s — Sonner's stock 4s is
+      // too short to read a multi-line error toast, which was the
+      // common complaint ("I see a red flash but no time to read it").
+      // Per-call `duration: …` overrides this, so explicit values
+      // (e.g. `Infinity` in DraftsIndicator) still win.
+      duration={10_000}
       {...props}
       position={isMobile ? 'bottom-center' : (props.position ?? 'bottom-right')}
       toastOptions={{

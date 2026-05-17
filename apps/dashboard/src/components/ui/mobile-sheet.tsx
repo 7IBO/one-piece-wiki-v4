@@ -49,14 +49,16 @@ export function MobileSheetContent({
   return (
     <DialogPrimitive.Portal>
       {
-        /* No `backdrop-blur` — on dark themes the blur snapping off
-          at close time reads as a black/grey flash before the page
-          settles back to its normal contrast. A flat translucent
-          overlay fades cleanly without that perception. Opacity also
-          knocked from /30 to /20 so the page underneath remains more
-          visible during the slide-down. */
+        /* `backdrop-blur-sm` softens the page behind the sheet. The
+          earlier comment in this file flagged a perceptual "flash"
+          on close — that was tied to a 100ms fade-out that snapped
+          the blur off faster than the eye reads it as a transition.
+          We keep the blur AND stretch the close fade to 200ms so the
+          blur loses strength alongside the opacity dissolve, which
+          avoids the snap. Bg lifted to /30 because lower opacity +
+          blur reads as smudge rather than a real overlay. */
       }
-      <DialogPrimitive.Backdrop className='fixed inset-0 z-50 bg-black/20 data-open:animate-in data-open:fade-in-0 data-open:duration-150 data-closed:animate-out data-closed:fade-out-0 data-closed:duration-100' />
+      <DialogPrimitive.Backdrop className='fixed inset-0 z-50 bg-black/30 backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-open:duration-150 data-closed:animate-out data-closed:fade-out-0 data-closed:duration-200' />
       <DialogPrimitive.Popup
         className={
           // Slide up from the bottom; the data-open / data-closed

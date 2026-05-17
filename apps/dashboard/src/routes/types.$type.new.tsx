@@ -228,6 +228,12 @@ function EntityCreateComponent(): JSX.Element {
             i18nKeys={i18nKeys}
             initialData={initialData}
             initialTranslations={initialTranslations}
+            // Show only required properties — the contributor fills
+            // the bare minimum, ships a PR, then keeps editing on the
+            // full edit page (which auto-loads the open PR via
+            // `resumePR`, so optional fields and relations land as
+            // commits on the same branch).
+            requiredOnly
             onSave={async (next, translations) => {
               setCreating(true);
               try {
@@ -247,12 +253,16 @@ function EntityCreateComponent(): JSX.Element {
                     },
                   },
                 );
-                // Best-effort nudge back to the type list — the new
-                // entity won't appear there until after deploy, but
-                // the contributor can keep creating siblings without
-                // re-typing the slug field. They can also stay on
-                // this page (banner above) to inspect the PR link.
-                await navigate({ to: '/types/$type', params: { type } });
+                // Redirect to the full edit page so the contributor
+                // can fill the optional properties + relations. The
+                // page hits `getEntity`, which the server resolves
+                // off the just-opened PR branch (resumePR codepath),
+                // so subsequent saves append commits to the same PR
+                // instead of opening a new one.
+                await navigate({
+                  to: '/types/$type/$slug',
+                  params: { type, slug },
+                });
               } finally {
                 setCreating(false);
               }

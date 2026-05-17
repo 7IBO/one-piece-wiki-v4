@@ -195,6 +195,15 @@ export type EntityFormProps = {
    * render its own save button label/disabled state.
    */
   onStatus?: (status: { dirty: boolean; saving: boolean; error: string | null; }) => void;
+  /**
+   * Minimal editing surface — used by the entity-creation route. Only
+   * required properties are rendered; the "+ Add property" combobox,
+   * the relations editor, and the section-jump nav are all hidden so
+   * the contributor can fill the bare minimum, ship a PR, then keep
+   * editing on the full /types/$type/$slug page (which loads the
+   * just-opened PR via the `resumePR` codepath).
+   */
+  requiredOnly?: boolean;
 };
 
 function getValueField(propertyType: PropertyTypeSchema): 'value' | 'value_key' {
@@ -675,11 +684,20 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   for (const decl of props.entityType.properties) {
     const required = decl.required ?? false;
     const hasContent = entries(data.properties?.[decl.id]).length > 0;
+    if (props.requiredOnly === true) {
+      // Required-only mode: ignore "has content" so optional fields
+      // pre-seeded by the creation route (e.g. the canonical_name
+      // prefill) don't pull additional rows into view.
+      if (required) visible.push(decl);
+      // `hidden` stays empty so the "+ Add property" picker doesn't
+      // render — see the `hidden.length > 0` guard below.
+      continue;
+    }
     if (required || hasContent) visible.push(decl);
     else hidden.push(decl);
   }
 
-  const navEntries: NavEntry[] = props.entityType.properties.map((decl) => {
+  const propertyNavEntries: NavEntry[] = props.entityType.properties.map((decl) => {
     const pt = props.propertyTypes[decl.id];
     const label = pt?.labels[locale] ?? pt?.labels.en ?? decl.id;
     const section = pt !== undefined
@@ -700,8 +718,44 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
       filled,
       sectionId: section.id,
       sectionLabelKey: section.labelKey,
+      kind: 'property' as const,
     };
   });
+
+  // Relation nav entries — every relation type allowed on this entity
+  // type gets a row, marked "filled" if at least one relation of that
+  // type has a populated target. Skipped entirely in requiredOnly mode
+  // (creation form), where the RelationsEditor itself is hidden.
+  const relationNavEntries: NavEntry[] = useMemo(() => {
+    if (props.requiredOnly === true) return [];
+    const rels = (data['relations'] as readonly RelationEntry[] | undefined) ?? [];
+    const out: NavEntry[] = [];
+    for (const typeIdBranded of props.entityType.allowed_relations) {
+      const typeId = String(typeIdBranded);
+      const rt = props.relationTypes[typeId];
+      if (rt === undefined) continue;
+      const label = rt.labels[locale]?.active ?? rt.labels.en.active ?? typeId;
+      const filled = rels.some((r) => r.type === typeId && r.target !== '');
+      out.push({
+        id: typeId,
+        label,
+        required: false,
+        filled,
+        sectionId: 'relations',
+        sectionLabelKey: 'sectionRelations',
+        kind: 'relation',
+      });
+    }
+    return out;
+  }, [
+    props.entityType.allowed_relations,
+    props.relationTypes,
+    data,
+    locale,
+    props.requiredOnly,
+  ]);
+
+  const navEntries: NavEntry[] = [...propertyNavEntries, ...relationNavEntries];
 
   function reveal(propertyId: string): void {
     const pt = props.propertyTypes[propertyId];
@@ -834,28 +888,42 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         )
         : null}
 
-      <div className='grid grid-cols-1 gap-5 lg:grid-cols-[14rem_1fr]'>
+      <div
+        className={props.requiredOnly === true
+          ? 'grid grid-cols-1 gap-5'
+          : 'grid grid-cols-1 gap-5 lg:grid-cols-[14rem_1fr]'}
+      >
         {
           /* Section nav lives in the sticky aside on desktop. On mobile
             (< lg) the aside is hidden — the same nav is reachable via
             the `<MobileSectionsTrigger>` button rendered above the form
             content, which opens it inside a bottom sheet. Keeping the
             two surfaces driven by the same `<PropertyNav>` avoids
-            duplicating the IntersectionObserver + grouping logic. */
+            duplicating the IntersectionObserver + grouping logic.
+            Hidden entirely in `requiredOnly` mode — the surface is
+            too small to need a section jumper. */
         }
-        <aside className='hidden lg:sticky lg:top-4 lg:block lg:self-start'>
-          <PropertyNav
-            entries={navEntries}
-            onReveal={(id) => reveal(id)}
-          />
-        </aside>
+        {props.requiredOnly === true
+          ? null
+          : (
+            <aside className='hidden lg:sticky lg:top-4 lg:block lg:self-start'>
+              <PropertyNav
+                entries={navEntries}
+                onReveal={(id) => reveal(id)}
+              />
+            </aside>
+          )}
 
         <div className='min-w-0 space-y-3'>
           <div className='flex items-center justify-between gap-2 lg:justify-end'>
-            <MobileSectionsTrigger
-              entries={navEntries}
-              onReveal={(id) => reveal(id)}
-            />
+            {props.requiredOnly === true
+              ? null
+              : (
+                <MobileSectionsTrigger
+                  entries={navEntries}
+                  onReveal={(id) => reveal(id)}
+                />
+              )}
             <Button
               type='button'
               variant='ghost'
@@ -922,21 +990,25 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
             )
             : null}
 
-          <RelationsEditor
-            entityType={props.entityType}
-            relationTypes={props.relationTypes}
-            vocabularies={props.vocabularies}
-            valueCtx={{
-              enumValues: [],
-              sources: props.sources,
-              i18nKeys: props.i18nKeys,
-              entityTypes: entityTypeOpts,
-            }}
-            relations={(data['relations'] as RelationEntry[] | undefined) ?? []}
-            onChange={(next) => {
-              setData((prev) => ({ ...prev, relations: next }));
-            }}
-          />
+          {props.requiredOnly === true
+            ? null
+            : (
+              <RelationsEditor
+                entityType={props.entityType}
+                relationTypes={props.relationTypes}
+                vocabularies={props.vocabularies}
+                valueCtx={{
+                  enumValues: [],
+                  sources: props.sources,
+                  i18nKeys: props.i18nKeys,
+                  entityTypes: entityTypeOpts,
+                }}
+                relations={(data['relations'] as RelationEntry[] | undefined) ?? []}
+                onChange={(next) => {
+                  setData((prev) => ({ ...prev, relations: next }));
+                }}
+              />
+            )}
         </div>
       </div>
 
@@ -1272,33 +1344,16 @@ function EntryCard(p: EntryCardProps): JSX.Element {
   const setQualifierCount = setIds.size;
 
   return (
-    <div className='border-input/70 bg-card/40 relative flex flex-col gap-1.5 rounded-[3px] border p-1.5 pr-9 sm:p-2 sm:pr-10'>
+    <div className='border-input/70 bg-card/40 relative flex flex-col gap-1.5 rounded-[3px] border p-1.5 sm:p-2'>
       {
-        /* Destructive ✕ pinned top-right alone, well away from any
-          neutral affordance — accidental clicks on the remove button
-          were too easy when it sat next to the more-options trigger. */
+        /* ✕ is absolute top-right INSIDE the card. To stop it from
+          cutting into the qualifier rows below (DEPUIS / CHAPITRE
+          pickers), we DON'T pad the whole card — instead the value
+          row alone carries `pr-7` so the input + globe leave a 28px
+          gutter for the X. Qualifier rows render with full card
+          width and reach the same right edge as the X. */
       }
-      {p.showRemove
-        ? (
-          <Button
-            type='button'
-            variant='ghost'
-            size='icon'
-            className='absolute right-0.5 top-0.5 size-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10'
-            onClick={p.onRemove}
-            aria-label={t('removeEntry')}
-          >
-            <X className='size-3' />
-          </Button>
-        )
-        : null}
-
-      {
-        /* Right-padding for the absolute ✕ button lives on the
-          outer card (`pr-9 sm:pr-10`) so the SINCE row + qualifiers
-          below share the same content width as the value row. */
-      }
-      <div>
+      <div className='pr-7'>
         <EntryValue
           propertyType={p.propertyType}
           valueType={p.valueType}
@@ -1381,6 +1436,21 @@ function EntryCard(p: EntryCardProps): JSX.Element {
               );
             }}
           />
+        )
+        : null}
+
+      {p.showRemove
+        ? (
+          <Button
+            type='button'
+            variant='ghost'
+            size='icon'
+            className='absolute right-1 top-1 size-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10'
+            onClick={p.onRemove}
+            aria-label={t('removeEntry')}
+          >
+            <X className='size-3' />
+          </Button>
         )
         : null}
     </div>
@@ -1592,14 +1662,14 @@ function LocalizedValueField(p: {
             render={
               <button
                 type='button'
-                className='bg-muted/40 text-muted-foreground hover:bg-muted/60 border-input flex shrink-0 items-center gap-1 border-l px-2 text-[10px] font-medium tabular-nums leading-none transition-colors'
+                className='bg-muted/40 text-muted-foreground hover:bg-muted/60 border-input flex h-full shrink-0 items-center justify-center gap-1 self-stretch border-l px-2 text-[10px] font-medium tabular-nums transition-colors'
                 aria-label={t('translations')}
                 title={`${t('translations')} · ${filledCount}/${totalLocales}`}
               />
             }
           >
-            <Globe className='size-3.5' />
-            <span>
+            <Globe className='size-3.5 shrink-0' />
+            <span className='leading-none'>
               {filledCount}/{totalLocales}
             </span>
           </PopoverTrigger>
@@ -1619,26 +1689,40 @@ function LocalizedValueField(p: {
               </span>
             </div>
             <div className='space-y-1.5'>
-              {SUPPORTED_LOCALES.map((loc) => (
-                <div
-                  key={loc}
-                  className={`border-input bg-background flex h-8 items-stretch overflow-hidden rounded-[3px] border focus-within:border-ring ${
-                    loc === locale ? 'ring-1 ring-primary/40' : ''
-                  }`}
-                >
-                  <span className='bg-muted/60 text-muted-foreground border-input flex w-7 shrink-0 items-center justify-center border-r font-mono text-[10px] uppercase'>
-                    {loc}
-                  </span>
-                  <input
-                    type='text'
-                    value={valueAt(loc)}
-                    onChange={(e) => p.onTranslate(loc, i18nKey, e.target.value)}
-                    placeholder={fallbackValue !== null ? fallbackValue.text : ''}
-                    disabled={i18nKey === ''}
-                    className='flex-1 min-w-0 bg-transparent px-2 text-xs placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
-                  />
-                </div>
-              ))}
+              {SUPPORTED_LOCALES.map((loc) => {
+                const filled = valueAt(loc) !== '';
+                return (
+                  <div
+                    key={loc}
+                    className={`border-input bg-background flex h-8 items-stretch overflow-hidden rounded-[3px] border focus-within:border-ring ${
+                      loc === locale ? 'ring-1 ring-primary/40' : ''
+                    }`}
+                  >
+                    <span className='bg-muted/60 text-muted-foreground border-input relative flex w-7 shrink-0 items-center justify-center border-r font-mono text-[10px] uppercase'>
+                      {loc}
+                      {
+                        /* Tiny filled/empty dot so a contributor scanning
+                          the popover sees at a glance which locales still
+                          need work — critical when there are 5–10 of them. */
+                      }
+                      <span
+                        aria-hidden='true'
+                        className={`absolute right-0.5 top-0.5 size-1 rounded-full ${
+                          filled ? 'bg-emerald-500' : 'bg-muted-foreground/40'
+                        }`}
+                      />
+                    </span>
+                    <input
+                      type='text'
+                      value={valueAt(loc)}
+                      onChange={(e) => p.onTranslate(loc, i18nKey, e.target.value)}
+                      placeholder={fallbackValue !== null ? fallbackValue.text : ''}
+                      disabled={i18nKey === ''}
+                      className='flex-1 min-w-0 bg-transparent px-2 text-xs placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+                    />
+                  </div>
+                );
+              })}
             </div>
           </PopoverContent>
         </Popover>

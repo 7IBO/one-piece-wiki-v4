@@ -192,6 +192,7 @@ const UI_STRINGS = {
   sectionBoolean: { en: 'Yes / no', fr: 'Oui / non' },
   sectionReferences: { en: 'References', fr: 'Références' },
   sectionOther: { en: 'Other', fr: 'Autres' },
+  sectionRelations: { en: 'Relations', fr: 'Relations' },
   fieldsSingular: { en: 'field', fr: 'champ' },
   fieldsPlural: { en: 'fields', fr: 'champs' },
   // Form chrome
@@ -240,6 +241,18 @@ const UI_STRINGS = {
     en: 'Unsaved draft.',
     fr: 'Brouillon non sauvegardé.',
   },
+  // Cross-page drafts surface (home section + per-type list indicator)
+  draftsTitle: { en: 'Drafts in progress', fr: 'Brouillons en cours' },
+  draftsSubtitle: {
+    en: 'Local edits not yet sent as a PR. Stored in this browser.',
+    fr: 'Modifications locales non envoyées en PR. Stockées dans ce navigateur.',
+  },
+  draftsResume: { en: 'Resume', fr: 'Reprendre' },
+  draftsThisType: {
+    en: '{n} draft(s) in this type — click any row to resume.',
+    fr: '{n} brouillon(s) dans ce type — cliquez pour reprendre.',
+  },
+  draftBadge: { en: 'Draft', fr: 'Brouillon' },
   savedAt: { en: 'Saved', fr: 'Sauvegardé' },
   discard: { en: 'Discard', fr: 'Annuler' },
   restore: { en: 'Restore', fr: 'Restaurer' },
@@ -281,6 +294,11 @@ const UI_STRINGS = {
   qIssuedBy: { en: 'Issued by', fr: 'Émis par' },
   qCoverage: { en: 'Coverage', fr: 'Couverture' },
   qPropertyName: { en: 'Property name', fr: 'Nom de la propriété' },
+  // Entity list page sort
+  sortBy: { en: 'Sort by', fr: 'Trier par' },
+  sortByName: { en: 'Name', fr: 'Nom' },
+  sortBySlug: { en: 'Slug', fr: 'Slug' },
+  sortById: { en: 'ID', fr: 'ID' },
   // Bulk table view
   tableView: { en: 'Table view', fr: 'Vue tableau' },
   columns: { en: 'Columns', fr: 'Colonnes' },

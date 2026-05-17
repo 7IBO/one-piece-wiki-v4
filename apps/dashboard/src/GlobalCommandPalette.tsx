@@ -21,8 +21,8 @@
  * network round-trip.
  */
 import { useNavigate } from '@tanstack/react-router';
-import { FileQuestionIcon, SearchIcon } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useState } from 'react';
+import { ClockIcon, FileQuestionIcon, SearchIcon } from 'lucide-react';
+import { type JSX, useCallback, useEffect, useMemo, useState } from 'react';
 import { api, type EntityRef, type SchemaCatalogue } from './api';
 import {
   Command,
@@ -32,9 +32,34 @@ import {
   CommandInput,
   CommandItem,
   CommandList,
-  CommandShortcut,
 } from './components/ui/command';
 import { useLocale } from './form/locale';
+import { useAllDrafts } from './form/use-draft';
+
+const RECENT_STORAGE_KEY = 'dashboard.commandPalette.recent';
+const RECENT_LIMIT = 5;
+
+function readRecent(): readonly string[] {
+  if (typeof window === 'undefined') return [];
+  try {
+    const raw = window.localStorage.getItem(RECENT_STORAGE_KEY);
+    if (raw === null) return [];
+    const parsed = JSON.parse(raw) as unknown;
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((x): x is string => typeof x === 'string').slice(0, RECENT_LIMIT);
+  } catch {
+    return [];
+  }
+}
+
+function writeRecent(next: readonly string[]): void {
+  if (typeof window === 'undefined') return;
+  try {
+    window.localStorage.setItem(RECENT_STORAGE_KEY, JSON.stringify(next.slice(0, RECENT_LIMIT)));
+  } catch {
+    // quota / privacy mode — ignore.
+  }
+}
 
 type Indexed = {
   readonly ref: EntityRef;
@@ -64,6 +89,18 @@ export function GlobalCommandPalette(): JSX.Element {
   const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
   const [entities, setEntities] = useState<readonly EntityRef[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [query, setQuery] = useState('');
+  const [recentIds, setRecentIds] = useState<readonly string[]>(() => readRecent());
+  const { drafts } = useAllDrafts();
+  const draftIds = useMemo(() => new Set(drafts.map((d) => d.entityId)), [drafts]);
+
+  const pushRecent = useCallback((id: string) => {
+    setRecentIds((prev) => {
+      const next = [id, ...prev.filter((x) => x !== id)].slice(0, RECENT_LIMIT);
+      writeRecent(next);
+      return next;
+    });
+  }, []);
 
   // ⌘K / Ctrl-K toggles. We capture inside any focused input too —
   // cmdk owns the modal once open, so the only risk is hijacking
@@ -104,6 +141,11 @@ export function GlobalCommandPalette(): JSX.Element {
         setEntities(lists.flat());
       } catch (err) {
         if (cancelled) return;
+        // Mirror to console so the maintainer can fish the full
+        // stack out of devtools even if the dialog closes before
+        // they read the inline message.
+        // eslint-disable-next-line no-console
+        console.error('[command-palette] catalogue load failed', err);
         setError(err instanceof Error ? err.message : String(err));
       } finally {
         if (!cancelled) setLoading(false);
@@ -123,7 +165,9 @@ export function GlobalCommandPalette(): JSX.Element {
       // Concatenate the searchable surface — cmdk fuzzy-matches on a
       // single string, so we include every angle a contributor might
       // type: locale-aware name, EN name, FR name, id (`type:slug`),
-      // bare slug.
+      // bare slug. IDs stay in the haystack (so power users can still
+      // type `arc:east-blue`) but are no longer rendered next to the
+      // label — the visible row is name-only.
       const searchable = [
         label,
         ref.displayName.en ?? '',
@@ -134,6 +178,18 @@ export function GlobalCommandPalette(): JSX.Element {
       return { ref, label, searchable, typeLabel };
     });
   }, [entities, schemas, locale]);
+
+  // Recent entities — looked up by id from the indexed list so they
+  // share the same label/typeLabel resolution and pick up locale
+  // changes. Ids that no longer exist (entity merged or renamed) are
+  // silently dropped from the rendered list.
+  const recentItems = useMemo<readonly Indexed[]>(() => {
+    if (indexed.length === 0) return [];
+    const byId = new Map(indexed.map((it) => [it.ref.id, it] as const));
+    return recentIds
+      .map((id) => byId.get(id))
+      .filter((it): it is Indexed => it !== undefined);
+  }, [recentIds, indexed]);
 
   // Group entries by entity type so the dropdown surfaces a section
   // header per type. The labels come from the schema; the group key
@@ -153,12 +209,16 @@ export function GlobalCommandPalette(): JSX.Element {
   }, [indexed]);
 
   const handleSelect = (ref: EntityRef): void => {
+    pushRecent(ref.id);
     setOpen(false);
+    setQuery('');
     void navigate({
       to: '/types/$type/$slug',
       params: { type: ref.type, slug: ref.slug },
     });
   };
+
+  const queryIsEmpty = query.trim() === '';
 
   return (
     <CommandDialog
@@ -179,7 +239,11 @@ export function GlobalCommandPalette(): JSX.Element {
           it themselves (see also `combobox.tsx:108`). */
       }
       <Command>
-        <CommandInput placeholder='Search by name, slug, or id…' />
+        <CommandInput
+          value={query}
+          onValueChange={setQuery}
+          placeholder='Search by name, slug, or id…'
+        />
         {
           /* Shorter on mobile so the dialog feels like a panel, not a
           sheet — caps at 50vh, scrolls internally if there are more. */
@@ -205,22 +269,65 @@ export function GlobalCommandPalette(): JSX.Element {
                     <span>No matching entity in the catalogue.</span>
                   </div>
                 </CommandEmpty>
-                {groups.map(([type, { label, items }]) => (
-                  <CommandGroup key={type} heading={label}>
-                    {items.map((it) => (
-                      <CommandItem
-                        key={it.ref.id}
-                        value={it.searchable}
-                        onSelect={() => handleSelect(it.ref)}
-                      >
-                        <span className='truncate'>{it.label}</span>
-                        <CommandShortcut className='ml-auto truncate font-mono text-[10px]'>
-                          {it.ref.id}
-                        </CommandShortcut>
-                      </CommandItem>
-                    ))}
-                  </CommandGroup>
-                ))}
+                {queryIsEmpty && recentItems.length > 0
+                  ? (
+                    <CommandGroup heading={locale === 'fr' ? 'Récents' : 'Recent'}>
+                      {recentItems.map((it) => {
+                        const hasDraft = draftIds.has(it.ref.id);
+                        return (
+                          <CommandItem
+                            // Stable `recent-` key prefix so the same
+                            // entity can appear once in Recent and once
+                            // in its type group without React key clashes.
+                            key={`recent-${it.ref.id}`}
+                            value={`recent-${it.ref.id}`}
+                            onSelect={() => handleSelect(it.ref)}
+                          >
+                            <ClockIcon className='text-muted-foreground size-3.5' />
+                            <span className='truncate'>{it.label}</span>
+                            {hasDraft
+                              ? (
+                                <span
+                                  aria-hidden='true'
+                                  className='inline-block size-1.5 shrink-0 rounded-full bg-amber-500'
+                                />
+                              )
+                              : null}
+                            <span className='text-muted-foreground ml-auto shrink-0 text-[10px] uppercase tracking-wide'>
+                              {it.typeLabel}
+                            </span>
+                          </CommandItem>
+                        );
+                      })}
+                    </CommandGroup>
+                  )
+                  : null}
+                {queryIsEmpty && recentItems.length > 0
+                  ? null
+                  : groups.map(([type, { label, items }]) => (
+                    <CommandGroup key={type} heading={label}>
+                      {items.map((it) => {
+                        const hasDraft = draftIds.has(it.ref.id);
+                        return (
+                          <CommandItem
+                            key={it.ref.id}
+                            value={it.searchable}
+                            onSelect={() => handleSelect(it.ref)}
+                          >
+                            <span className='truncate'>{it.label}</span>
+                            {hasDraft
+                              ? (
+                                <span
+                                  aria-hidden='true'
+                                  className='ml-auto inline-block size-1.5 shrink-0 rounded-full bg-amber-500'
+                                />
+                              )
+                              : null}
+                          </CommandItem>
+                        );
+                      })}
+                    </CommandGroup>
+                  ))}
               </>
             )}
         </CommandList>
