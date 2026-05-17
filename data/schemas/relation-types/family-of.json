@@ -9,7 +9,12 @@
   "valid_from_types": ["character"],
   "valid_to_types": ["character"],
   "qualifiers": [
-    { "id": "relation_kind", "value_type": "string", "required": true },
+    {
+      "id": "relation_kind",
+      "value_type": "enum",
+      "enum_ref": "family-relations",
+      "required": true
+    },
     { "id": "known_publicly_since", "value_type": "source_ref", "required": false }
   ],
   "allow_multiple_concurrent": true,

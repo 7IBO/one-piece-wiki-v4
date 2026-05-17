@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "depiction-periods",
+  "schema_version": 1,
+  "values": {
+    "infancy": { "labels": { "en": "Infancy", "fr": "Petite enfance" } },
+    "childhood": { "labels": { "en": "Childhood", "fr": "Enfance" } },
+    "adolescence": { "labels": { "en": "Adolescence", "fr": "Adolescence" } },
+    "young_adulthood": { "labels": { "en": "Young adulthood", "fr": "Jeune adulte" } },
+    "adulthood": { "labels": { "en": "Adulthood", "fr": "Âge adulte" } },
+    "elderly": { "labels": { "en": "Elderly", "fr": "Personne âgée" } },
+    "pre_timeskip": { "labels": { "en": "Pre-timeskip", "fr": "Avant l'ellipse" } },
+    "post_timeskip": { "labels": { "en": "Post-timeskip", "fr": "Après l'ellipse" } },
+    "flashback": { "labels": { "en": "Flashback", "fr": "Flashback" } },
+    "current": { "labels": { "en": "Current", "fr": "Actuel" } },
+    "transformed": { "labels": { "en": "Transformed state", "fr": "État transformé" } },
+    "alternate_form": { "labels": { "en": "Alternate form", "fr": "Forme alternative" } }
+  }
+}

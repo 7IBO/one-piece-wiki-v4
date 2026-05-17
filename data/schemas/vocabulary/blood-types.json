@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "blood-types",
+  "schema_version": 1,
+  "values": {
+    "A_plus": { "labels": { "en": "A+", "fr": "A+" } },
+    "A_minus": { "labels": { "en": "A-", "fr": "A-" } },
+    "B_plus": { "labels": { "en": "B+", "fr": "B+" } },
+    "B_minus": { "labels": { "en": "B-", "fr": "B-" } },
+    "AB_plus": { "labels": { "en": "AB+", "fr": "AB+" } },
+    "AB_minus": { "labels": { "en": "AB-", "fr": "AB-" } },
+    "O_plus": { "labels": { "en": "O+", "fr": "O+" } },
+    "O_minus": { "labels": { "en": "O-", "fr": "O-" } },
+    "F": { "labels": { "en": "F (fishman)", "fr": "F (homme-poisson)" } },
+    "S": { "labels": { "en": "S (sky islander)", "fr": "S (habitant du ciel)" } },
+    "X": { "labels": { "en": "X (giant)", "fr": "X (géant)" } },
+    "XF": { "labels": { "en": "XF (rare)", "fr": "XF (rare)" } }
+  }
+}

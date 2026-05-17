@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "adaptation-coverage",
+  "schema_version": 1,
+  "values": {
+    "full": { "labels": { "en": "Full adaptation", "fr": "Adaptation complète" } },
+    "partial": { "labels": { "en": "Partial adaptation", "fr": "Adaptation partielle" } },
+    "summary": { "labels": { "en": "Summary", "fr": "Résumé" } },
+    "expanded": {
+      "labels": { "en": "Expanded with original content", "fr": "Élargi avec du contenu original" }
+    },
+    "compressed": { "labels": { "en": "Compressed", "fr": "Condensé" } },
+    "reordered": { "labels": { "en": "Reordered", "fr": "Réorganisé" } },
+    "filler_added": { "labels": { "en": "Filler added", "fr": "Hors-série ajouté" } },
+    "scene_added": { "labels": { "en": "Scene added", "fr": "Scène ajoutée" } },
+    "scene_omitted": { "labels": { "en": "Scene omitted", "fr": "Scène omise" } },
+    "loose": { "labels": { "en": "Loosely based", "fr": "Librement adapté" } }
+  }
+}

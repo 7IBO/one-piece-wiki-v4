@@ -9,9 +9,24 @@
   "valid_from_types": ["character", "crew", "organization"],
   "valid_to_types": ["event"],
   "qualifiers": [
-    { "id": "side", "value_type": "string", "required": false },
-    { "id": "role", "value_type": "string", "required": false },
-    { "id": "outcome", "value_type": "string", "required": false }
+    {
+      "id": "side",
+      "value_type": "enum",
+      "enum_ref": "event-sides",
+      "required": false
+    },
+    {
+      "id": "role",
+      "value_type": "enum",
+      "enum_ref": "event-roles",
+      "required": false
+    },
+    {
+      "id": "outcome",
+      "value_type": "enum",
+      "enum_ref": "event-outcomes",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": false,

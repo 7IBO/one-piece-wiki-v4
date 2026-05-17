@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "arc-roles",
+  "schema_version": 1,
+  "values": {
+    "protagonist": { "labels": { "en": "Protagonist", "fr": "Protagoniste" } },
+    "antagonist": { "labels": { "en": "Antagonist", "fr": "Antagoniste" } },
+    "deuteragonist": { "labels": { "en": "Deuteragonist", "fr": "Deutéragoniste" } },
+    "supporting": { "labels": { "en": "Supporting", "fr": "Personnage secondaire" } },
+    "mentor": { "labels": { "en": "Mentor", "fr": "Mentor" } },
+    "ally": { "labels": { "en": "Ally", "fr": "Allié" } },
+    "rival": { "labels": { "en": "Rival", "fr": "Rival" } },
+    "villain": { "labels": { "en": "Villain", "fr": "Méchant" } },
+    "henchman": { "labels": { "en": "Henchman", "fr": "Sbire" } },
+    "victim": { "labels": { "en": "Victim", "fr": "Victime" } },
+    "narrator": { "labels": { "en": "Narrator", "fr": "Narrateur" } },
+    "cameo": { "labels": { "en": "Cameo", "fr": "Caméo" } },
+    "background": { "labels": { "en": "Background", "fr": "Arrière-plan" } }
+  }
+}

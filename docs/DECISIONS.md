@@ -8,6 +8,73 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-023 — Audit + close every reasonable `string` qualifier as an enum
+
+**Date**: 2026-05-17
+
+**Context**: ADR-022 spotted that the `participant` relation's
+qualifiers were declared as `value_type: "string"`, defaulting them
+to a useless free-text input. A sweep of every other schema file
+turned up the same anti-pattern on six more sites — all with
+closed-set semantics (blood type, family relation kind, depiction
+period, arc role, adaptation coverage, image source origin) that
+should never have been free strings.
+
+**Audit result** (each row = one schema upgrade):
+
+| Schema                               | Field                     | Old `value_type` | New  | Vocabulary                                                      |
+| ------------------------------------ | ------------------------- | ---------------- | ---- | --------------------------------------------------------------- |
+| `property-types/blood_type`          | value                     | string + regex   | enum | `blood-types`                                                   |
+| `property-types/source_origin`       | value                     | string           | enum | `source-origins`                                                |
+| `relation-types/family-of`           | `relation_kind`           | string           | enum | `family-relations`                                              |
+| `relation-types/features-characters` | `role`                    | string           | enum | `arc-roles`                                                     |
+| `relation-types/adapts`              | `coverage`                | string           | enum | `adaptation-coverage`                                           |
+| `relation-types/depicted-by`         | `period`                  | string           | enum | `depiction-periods`                                             |
+| `relation-types/participated-in`     | `side`, `role`, `outcome` | string           | enum | reuse `event-sides`/`event-roles`/`event-outcomes` from ADR-022 |
+
+`participated-in` is the inverse direction of `participant` (same
+event-participation semantics) — reusing the ADR-022 vocabularies
+keeps the value space consistent across both directions.
+
+**Choice**: promote all seven sites; create six new vocabularies
+(the seventh row is a vocab reuse). All values have FR + EN labels.
+
+**Rationale**: same as ADR-022, scaled across the whole catalogue.
+Closed enums give the dashboard a dropdown, gate-keep typos at
+validation, and make the value space discoverable to contributors
+who don't know what other PRs have already chosen as the canonical
+spelling.
+
+**Deliberately left as string** (after audit):
+
+- `attribution`, `director`, `url`, `volume` — legitimately freeform
+  (proper nouns, URLs, free text).
+- `birthday` — keeps its regex constraint (`MM-DD`); an enum of 366
+  values would be wrong.
+- `depicted-by.context`, `name.context`, `epithet.context` —
+  freeform narrative ("during the Marineford speech"); not enum-able.
+- `clarifies-fact.property_name` — points at a property id in the
+  schema registry, not a vocabulary value. An enum here would force
+  manual sync every time a property is added/removed; better solved
+  by a future autocomplete UI than by a vocabulary.
+- `canonical_elements` — ambiguous semantics (no existing data, no
+  doc), deferred until the field's contract is settled.
+
+**Consequences**:
+
+- Six new vocabulary files under `data/schemas/vocabulary/`
+  (blood-types, source-origins, family-relations, arc-roles,
+  adaptation-coverage, depiction-periods).
+- Seven schema files modified (two properties, five relations).
+- `blood_type`'s `schema_version` bumped 2 → 3, `source_origin`'s
+  bumped 1 → 2 (semantic change to `value_type`).
+- One existing data value already matched its new enum
+  (`relation_kind: "sworn_brother"`); no other migration needed.
+- `bun run validate` passes (30 entities still green).
+- `bun run schema:check`: 30 → 36 vocabularies.
+
+---
+
 ## ADR-022 — Close `participant` qualifiers as enums
 
 **Date**: 2026-05-17

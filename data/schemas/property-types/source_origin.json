@@ -1,9 +1,10 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
   "id": "source_origin",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": { "en": "Source origin", "fr": "Origine de la source" },
-  "value_type": "string",
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "source-origins" },
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,

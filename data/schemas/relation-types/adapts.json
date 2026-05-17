@@ -9,7 +9,12 @@
   "valid_from_types": ["anime-episode", "film"],
   "valid_to_types": ["manga-chapter", "arc"],
   "qualifiers": [
-    { "id": "coverage", "value_type": "string", "required": false }
+    {
+      "id": "coverage",
+      "value_type": "enum",
+      "enum_ref": "adaptation-coverage",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": false

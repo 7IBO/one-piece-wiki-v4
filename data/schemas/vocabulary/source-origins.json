@@ -1,0 +1,28 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "source-origins",
+  "schema_version": 1,
+  "values": {
+    "manga_panel": { "labels": { "en": "Manga panel", "fr": "Planche manga" } },
+    "manga_cover": { "labels": { "en": "Manga cover", "fr": "Couverture manga" } },
+    "manga_color_spread": { "labels": { "en": "Manga color spread", "fr": "Double page couleur" } },
+    "anime_screenshot": { "labels": { "en": "Anime screenshot", "fr": "Capture anime" } },
+    "anime_promotional": {
+      "labels": { "en": "Anime promotional art", "fr": "Visuel promotionnel anime" }
+    },
+    "film_screenshot": { "labels": { "en": "Film screenshot", "fr": "Capture film" } },
+    "film_promotional": {
+      "labels": { "en": "Film promotional art", "fr": "Visuel promotionnel film" }
+    },
+    "databook": { "labels": { "en": "Databook art", "fr": "Visuel databook" } },
+    "sbs": { "labels": { "en": "SBS sketch", "fr": "Croquis SBS" } },
+    "official_merchandise": {
+      "labels": { "en": "Official merchandise", "fr": "Goodies officiels" }
+    },
+    "official_website": { "labels": { "en": "Official website", "fr": "Site officiel" } },
+    "video_game": { "labels": { "en": "Video game", "fr": "Jeu vidéo" } },
+    "live_action": { "labels": { "en": "Live action", "fr": "Prise de vue réelle" } },
+    "fan_art": { "labels": { "en": "Fan art", "fr": "Fan art" } },
+    "other": { "labels": { "en": "Other", "fr": "Autre" } }
+  }
+}

@@ -9,7 +9,7 @@
   "valid_from_types": ["arc"],
   "valid_to_types": ["character"],
   "qualifiers": [
-    { "id": "role", "value_type": "string", "required": false }
+    { "id": "role", "value_type": "enum", "enum_ref": "arc-roles", "required": false }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true
