@@ -70,46 +70,49 @@ export const fsDataSource: DataSource = {
 };
 
 /**
- * Build a DataSource from an in-memory `Record<absolutePath, string>`
- * of pre-read file contents. The dashboard's prod build feeds this
- * with the result of `import.meta.glob('/data/**\/*.json',
- * { eager: true, query: '?raw', import: 'default' })`, after
- * normalising the glob keys to absolute paths.
+ * Build a DataSource from an in-memory map of pre-read file contents.
+ *
+ * Keys + lookup paths are both normalised to their `data/...`
+ * suffix internally. This sidesteps the fragility of "two
+ * REPO_ROOTs computed at different bundle depths might disagree":
+ * as long as every key and every lookup contains `/data/` somewhere,
+ * we trim everything before it and match on the relative form. The
+ * dashboard's prod build feeds glob output keyed by relative paths
+ * like `../../../data/schemas/...`; the loaders ask for absolute
+ * paths like `/var/task/...../data/schemas/...`. Both normalise to
+ * the same `data/schemas/...` key.
  *
  * Directory queries derive from the file keys: a "subdirectory" of
  * `dir` is the unique set of next-path-segments that appear in any
- * key prefixed by `dir/`. No real filesystem is consulted, so this
- * works equally well in Node and in a browser sandbox.
+ * key under `dir/`. No real filesystem is consulted, so this works
+ * equally well in Node and in a browser sandbox.
  */
 export function inMemoryDataSource(files: Record<string, string>): DataSource {
-  const keys = Object.keys(files).map(normalise);
-  const fileSet = new Map(keys.map((k) => [k, files[denormalise(k, files)]]));
-
-  function under(dir: string): string[] {
-    const prefix = ensureTrailingSlash(normalise(dir));
-    return keys.filter((k) => k.startsWith(prefix));
+  const normalised: Record<string, string> = {};
+  for (const [k, v] of Object.entries(files)) {
+    normalised[toDataRelative(k)] = v;
   }
+  const keys = Object.keys(normalised);
 
   return {
     async listJsonFiles(dir) {
-      const prefix = ensureTrailingSlash(normalise(dir));
+      const prefix = ensureTrailingSlash(toDataRelative(dir));
       const out: string[] = [];
       for (const k of keys) {
         if (!k.startsWith(prefix)) continue;
         const rest = k.slice(prefix.length);
-        // direct child only (no further slash) AND ends in .json
         if (!rest.includes('/') && rest.endsWith('.json')) out.push(k);
       }
       return out.sort();
     },
     async readTextFile(path) {
-      const norm = normalise(path);
-      return fileSet.get(norm) ?? null;
+      return normalised[toDataRelative(path)] ?? null;
     },
     async listSubdirectories(dir) {
-      const prefix = ensureTrailingSlash(normalise(dir));
+      const prefix = ensureTrailingSlash(toDataRelative(dir));
       const dirs = new Set<string>();
-      for (const k of under(dir)) {
+      for (const k of keys) {
+        if (!k.startsWith(prefix)) continue;
         const rest = k.slice(prefix.length);
         const slash = rest.indexOf('/');
         if (slash > 0) dirs.add(rest.slice(0, slash));
@@ -119,16 +122,21 @@ export function inMemoryDataSource(files: Record<string, string>): DataSource {
   };
 }
 
-function normalise(p: string): string {
-  return p.replace(/\\/g, '/');
+/**
+ * Strip everything before the last occurrence of `/data/` from
+ * `path` so we end up with a clean `data/...` suffix. Falls back
+ * to the verbatim (slash-normalised) path if `/data/` isn't found
+ * — that path won't match anything in the map and lookups will
+ * correctly return null / [].
+ */
+function toDataRelative(path: string): string {
+  const norm = path.replace(/\\/g, '/');
+  const idx = norm.lastIndexOf('/data/');
+  if (idx >= 0) return norm.slice(idx + 1);
+  if (norm.startsWith('data/')) return norm;
+  return norm;
 }
-function denormalise(k: string, files: Record<string, string>): string {
-  // Files may have been keyed with backslashes originally (Windows).
-  // Try the normalised key first, fall back to the raw form.
-  if (files[k] !== undefined) return k;
-  const alt = k.replace(/\//g, '\\');
-  return files[alt] !== undefined ? alt : k;
-}
+
 function ensureTrailingSlash(s: string): string {
   return s.endsWith('/') ? s : `${s}/`;
 }

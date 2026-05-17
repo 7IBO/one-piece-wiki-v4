@@ -22,25 +22,13 @@
  * through Vite so `import.meta.env` is undefined there — the
  * `?? false` keeps it on the fs path.
  */
-import {
-  type DataSource,
-  fsDataSource,
-  inMemoryDataSource,
-  REPO_ROOT,
-} from '@onepiece-wiki/schema-engine';
+import { type DataSource, fsDataSource, inMemoryDataSource } from '@onepiece-wiki/schema-engine';
 
-/**
- * Critical: reuse schema-engine's `REPO_ROOT` constant instead of
- * computing our own from `import.meta.url`. Both packages get
- * bundled into the SSR output but each lands at a different position
- * in the module graph, so computing two REPO_ROOTs independently
- * produces two different absolute prefixes that don't agree — the
- * loaders then ask for paths that aren't in the in-memory map and
- * the catalogues come back empty. Importing the shared constant
- * guarantees both sides round-trip the same paths regardless of
- * bundle layout.
- */
-const NORMALISED_REPO_ROOT = REPO_ROOT.replace(/\\/g, '/');
+// No REPO_ROOT juggling: `inMemoryDataSource` normalises both stored
+// keys and lookup paths to their `data/...` suffix, so absolute
+// prefixes (which can diverge between the dashboard and schema-engine
+// bundles in Vite/Nitro output) don't have to agree. We just hand
+// the glob output straight in.
 
 /**
  * Vite resolves `import.meta.glob` patterns at build time. We grab
@@ -64,9 +52,11 @@ const NORMALISED_REPO_ROOT = REPO_ROOT.replace(/\\/g, '/');
  */
 function buildBundleSource(): DataSource {
   // Glob keys arrive as `../../../data/schemas/...` (relative form
-  // Vite gives back when the pattern is relative). Normalise each
-  // to an absolute path under REPO_ROOT so the schema-engine
-  // loaders can construct + pass absolute paths transparently.
+  // Vite gives back when the pattern is relative). `inMemoryDataSource`
+  // normalises any key/path containing `/data/...` down to its
+  // `data/...` suffix internally, so we can pass them through as-is —
+  // no absolute-path reconstruction needed (and no risk of mismatch
+  // with the loaders' own absolute paths after bundling).
   const raw = (import.meta as {
     glob: <T>(
       pattern: string,
@@ -77,17 +67,7 @@ function buildBundleSource(): DataSource {
     query: '?raw',
     import: 'default',
   });
-  const files: Record<string, string> = {};
-  for (const [k, v] of Object.entries(raw)) {
-    // k looks like '../../../data/schemas/entity-types/character.json'.
-    // Strip the leading '../' segments, then prepend the shared
-    // REPO_ROOT (schema-engine's constant) so the keys exactly match
-    // the absolute paths the loaders construct on the read side.
-    const rel = k.replace(/^(\.\.\/)+/, '');
-    const absKey = `${NORMALISED_REPO_ROOT}/${rel}`;
-    files[absKey] = v;
-  }
-  return inMemoryDataSource(files);
+  return inMemoryDataSource(raw);
 }
 
 // Vite's `import.meta.env.PROD` is `true` exclusively in the
