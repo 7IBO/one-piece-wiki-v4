@@ -17,6 +17,7 @@
  *
  * Write endpoints (require a session — anonymous or GitHub):
  *   POST /api/uploads/presign               mint R2 PUT URL
+ *   POST /api/entities/:type                opens a PR creating a new entity
  *   POST /api/entities/:type/:slug          opens a PR with the edit
  *
  * Admin endpoints (require GitHub session in ADMIN_GITHUB_USERNAMES):
@@ -45,6 +46,7 @@ import {
   loadSchemas,
   validateCatalogue,
 } from '@onepiece-wiki/schema-engine';
+import { Slug as SlugSchema } from '@onepiece-wiki/schemas';
 import { randomBytes } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -570,6 +572,154 @@ function normalizeNickname(raw: unknown): string | null | { error: string; } {
     return { error: 'nickname may contain letters, digits, dash, underscore, dot, space only' };
   }
   return trimmed;
+}
+
+/**
+ * Open a PR creating a brand-new entity (ADR-020). Mirrors
+ * `handleSaveEntity` except:
+ *  - slug comes from the body (no `:slug` URL segment)
+ *  - validated for kebab-case format + global uniqueness in the
+ *    in-memory catalogue snapshot before any GitHub call
+ *  - `verb: 'create'` so the PR title says "Create" and the
+ *    `new-entity` label is added
+ *  - resume-PR lookup is skipped (no existing PR can possibly
+ *    target an entity that doesn't exist yet)
+ *
+ * Sources lag: the new entity won't show in the catalogue read
+ * endpoints until Vercel rebuilds with the merged file. The
+ * frontend surfaces a "your entity is in PR #N" banner instead
+ * of redirecting blindly to the not-yet-loaded entity page.
+ */
+async function handleCreateEntity(
+  cfg: GitHubAppConfig,
+  session: DashboardSession,
+  type: string,
+  req: Request,
+): Promise<Response> {
+  if (session.kind === 'github' && isBlockedLogin(session.login)) {
+    return new Response(JSON.stringify({ error: `User @${session.login} is blocked.` }), {
+      status: 403,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch (err) {
+    return badRequest(`Invalid JSON: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  if (body === null || typeof body !== 'object') {
+    return badRequest('Body must be an object with { slug, data, translations? }.');
+  }
+  const payload = body as {
+    slug?: string;
+    data?: Record<string, unknown>;
+    translations?: Partial<Record<Locale, Record<string, string>>>;
+  };
+  if (typeof payload.slug !== 'string' || payload.slug.length === 0) {
+    return badRequest('Body.slug must be a non-empty string.');
+  }
+  // Slug format check first — cheapest, no I/O.
+  const slugParse = SlugSchema.safeParse(payload.slug);
+  if (!slugParse.success) {
+    const msg = slugParse.error.errors[0]?.message ?? 'Invalid slug.';
+    return badRequest(`slug: ${msg}`);
+  }
+  const slug = slugParse.data;
+  if (payload.data === undefined || typeof payload.data !== 'object' || payload.data === null) {
+    return badRequest('Body.data must be the entity object.');
+  }
+
+  let anonymousNickname: string | null = null;
+  if (session.kind === 'anonymous') {
+    const checked = normalizeNickname(session.nickname);
+    if (checked !== null && typeof checked === 'object') return badRequest(checked.error);
+    anonymousNickname = checked;
+  }
+
+  const snap = await snapshot();
+  // Schema must exist for the requested type — otherwise nothing
+  // downstream would validate the payload.
+  if (snap.validated.entityTypes.get(type) === undefined) {
+    return badRequest(`No schema registered for entity type "${type}".`);
+  }
+  // Uniqueness check against the in-memory catalogue. Same scan as
+  // `findEntity` but as a boolean.
+  const existing = await findEntity(snap, type, slug);
+  if (existing !== undefined) {
+    return conflict(`Entity ${type}:${slug} already exists.`, '');
+  }
+
+  const entityId = `${type}:${slug}`;
+  // The form may or may not have set id/type/slug. Force them to the
+  // computed values so the contributor can't mint an inconsistent
+  // entity (e.g. slug in URL ≠ slug in data).
+  const data = { ...payload.data, id: entityId, type, slug };
+
+  const entitySchema = buildEntitySchema(type, snap.validated);
+  if (entitySchema === undefined) {
+    return badRequest(`No schema registered for entity type "${type}".`);
+  }
+  const validation = entitySchema.safeParse(data);
+  if (!validation.success) {
+    const issues = validation.error.errors.map((issue) => ({
+      path: issue.path.map((p) => String(p)),
+      message: issue.message,
+    }));
+    const summary = issues.map((i) => `${i.path.join('.') || '<root>'}: ${i.message}`)
+      .join('; ');
+    return json(
+      { error: `Entity validation failed: ${summary}`, code: 'validation_failed', issues },
+      400,
+    );
+  }
+
+  const path = dataPath(type, slug);
+  const newContent = `${JSON.stringify(data, null, 2)}\n`;
+
+  const extraFiles: { path: string; content: string; }[] = [];
+  for (const locale of LOCALES) {
+    const map = payload.translations?.[locale];
+    if (map === undefined) continue;
+    const filtered: Record<string, string> = {};
+    for (const [k, v] of Object.entries(map)) {
+      if (typeof v === 'string' && v.length > 0) filtered[k] = v;
+    }
+    if (Object.keys(filtered).length === 0) continue;
+    extraFiles.push({
+      path: translationsPath(locale, type, slug),
+      content: `${JSON.stringify(filtered, null, 2)}\n`,
+    });
+  }
+
+  const octokit = await installationClient(cfg);
+  try {
+    const pr = await submitEntityEdit(octokit, cfg, {
+      entityId,
+      path,
+      newContent,
+      // No expected SHA — the file doesn't exist yet. submitEntityEdit
+      // handles this: getFile returns null, the SHA check is skipped,
+      // commitMultipleFiles uses the Git Data API which creates blobs
+      // unconditionally.
+      expectedSha: null,
+      contributorLogin: session.kind === 'github' ? session.login : null,
+      contributorId: session.kind === 'github' ? session.userId : null,
+      ...(anonymousNickname !== null ? { anonymousNickname } : {}),
+      extraFiles,
+      verb: 'create',
+    });
+    return json({ ok: true, pr });
+  } catch (err) {
+    if (err instanceof OptimisticLockError) {
+      // Race: someone else's PR opened in the milliseconds between
+      // our uniqueness check and the file write, and was somehow
+      // already merged. Vanishingly rare in practice.
+      return conflict(err.message, err.currentSha);
+    }
+    throw err;
+  }
 }
 
 async function handleSaveEntity(
@@ -1281,8 +1431,28 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     if (req.method === 'GET' && path === '/api/sources') return await handleSources();
     if (req.method === 'GET' && path === '/api/i18n-keys') return await handleI18nKeys();
     const listMatch = /^\/api\/entities\/([^/]+)$/.exec(path);
-    if (req.method === 'GET' && listMatch !== null) {
-      return await handleListEntities(listMatch[1]!);
+    if (listMatch !== null) {
+      if (req.method === 'GET') return await handleListEntities(listMatch[1]!);
+      // POST /api/entities/:type — create a brand-new entity of this
+      // type (ADR-020). Same auth + rate-limit guards as the per-slug
+      // save endpoint below.
+      if (req.method === 'POST') {
+        if (config === null) return serviceUnavailable(`Save disabled: ${configError}`);
+        if (session === null) {
+          return unauthorized('Sign in (anonymous or GitHub) before creating an entity.');
+        }
+        if (!isAdminSession()) {
+          if (rateLimitHit('save', rateLimitKey(), ANON_WRITE_LIMIT)) {
+            return new Response(
+              JSON.stringify({
+                error: `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
+              }),
+              { status: 429, headers: { 'content-type': 'application/json' } },
+            );
+          }
+        }
+        return await handleCreateEntity(config, session, listMatch[1]!, req);
+      }
     }
 
     // Match BEFORE the per-entity regex so `/api/entities/foo/table`

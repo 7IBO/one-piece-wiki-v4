@@ -84,6 +84,18 @@ export type SaveRequest = {
     readonly htmlUrl: string;
     readonly headBranch: string;
   };
+  /**
+   * Whether this save is creating a brand-new entity file vs editing
+   * an existing one. Defaults to `'edit'`. Drives:
+   *  - PR title verb: `Create` vs `Edit`
+   *  - Extra label `new-entity` when `'create'`
+   *  - Commit-subject verb (same word as the PR title)
+   *
+   * See ADR-020. The actual save mechanics are identical — the Git
+   * Data API path already handles missing files; this flag is purely
+   * for human-facing labelling.
+   */
+  readonly verb?: 'create' | 'edit';
 };
 
 function safeBranchSegment(value: string): string {
@@ -117,6 +129,11 @@ export async function submitEntityEdit(
     { path: request.path, content: request.newContent },
     ...(request.extraFiles ?? []).map((f) => ({ path: f.path, content: f.content })),
   ];
+  // Title verb capitalisation — `Create character:luffy` vs
+  // `Edit character:luffy`. Default to `edit` so every caller that
+  // doesn't pass `verb` keeps the historical phrasing.
+  const verb = request.verb ?? 'edit';
+  const verbTitle = verb === 'create' ? 'Create' : 'Edit';
 
   // Resume-editing branch: skip ALL branch/PR scaffolding, append
   // one commit (or zero, if no-op) to the existing PR's head branch.
@@ -128,6 +145,9 @@ export async function submitEntityEdit(
     if (onBranch !== null && request.expectedSha !== null && onBranch.sha !== request.expectedSha) {
       throw new OptimisticLockError(request.path, request.expectedSha, onBranch.sha);
     }
+    // Resume always says "Edit" — by the time a contributor's adding
+    // commits to an existing PR, the entity exists on that branch
+    // even if the PR was originally a Create.
     const result = await commitMultipleFiles(octokit, config, {
       branch,
       message: commitMessage(`Edit ${request.entityId}`),
@@ -175,12 +195,15 @@ export async function submitEntityEdit(
   }
 
   const ts = new Date().toISOString().replace(/[:.TZ]/g, '').slice(0, 14);
-  const branch = `edit/${safeBranchSegment(request.entityId)}/${ts}`;
+  // Branch prefix matches the verb so `git branch --list` reads
+  // naturally (`create/character-luffy/…` vs `edit/character-buggy/…`).
+  const branchPrefix = verb === 'create' ? 'create' : 'edit';
+  const branch = `${branchPrefix}/${safeBranchSegment(request.entityId)}/${ts}`;
   await createBranch(octokit, config, branch);
 
   const commit = await commitMultipleFiles(octokit, config, {
     branch,
-    message: commitMessage(`Edit ${request.entityId}`),
+    message: commitMessage(`${verbTitle} ${request.entityId}`),
     files: allFiles,
   });
 
@@ -222,7 +245,7 @@ export async function submitEntityEdit(
     // workflow instead. Keeping the prefix hard-coded here makes
     // that contract explicit: if a future feature ever wants this
     // flow to commit code, the prefix must be revisited.
-    title: `[DATA] Edit ${request.entityId}`,
+    title: `[DATA] ${verbTitle} ${request.entityId}`,
     body: [
       `**Contributors**`,
       contributorBullet,
@@ -236,9 +259,13 @@ export async function submitEntityEdit(
       ...footer,
     ].join('\n'),
     labels: [
+      // `edit` is kept as a coarse "this PR came from the editor"
+      // marker for both create + edit flows. `new-entity` adds the
+      // finer-grained distinction for create.
       'edit',
       'via-dashboard',
       'area:data',
+      ...(verb === 'create' ? ['new-entity'] : []),
       ...(anonymous ? ['anonymous'] : []),
     ],
   });
