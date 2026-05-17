@@ -200,6 +200,20 @@ function getValueField(propertyType: PropertyTypeSchema): 'value' | 'value_key' 
   return propertyType.localizable ? 'value_key' : 'value';
 }
 
+/**
+ * Default value for a freshly-added entry. The shape MUST match the
+ * value_type so the server-side Zod validator accepts it on save —
+ * otherwise the user can `Add entry → Save` for a number/boolean
+ * property and trip "Expected number, received string" without ever
+ * touching the input.
+ */
+function emptyValueFor(valueType: PropertyTypeSchema['value_type']): unknown {
+  if (valueType === 'number') return 0;
+  if (valueType === 'boolean') return false;
+  if (valueType === 'multi_enum') return [];
+  return '';
+}
+
 function entries(value: PropertyValue | undefined): PropertyEntry[] {
   if (value === undefined) return [];
   return Array.isArray(value) ? value : [value];
@@ -473,7 +487,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
           new Set(list.map((e) => String(e[valueField] ?? ''))),
         ),
       }
-      : { [valueField]: '' };
+      : { [valueField]: emptyValueFor(propertyType.value_type) };
     if (propertyType.historical) entry['since'] = '';
     list.push(entry);
     setEntries(propertyId, propertyType.historical, list);
