@@ -23,17 +23,23 @@ export const LOCALES = ['en', 'fr'] as const;
 export type Locale = typeof LOCALES[number];
 
 /**
- * Repo root resolved from this file's location. `src/server/` lives
- * three levels under `apps/dashboard/`, which itself is two levels
- * under the repo root — so `../../../../..` from here.
+ * Repo root used to resolve `data/**` reads.
  *
- * Kept as a function so the Vercel build's static analysis doesn't
- * try to pre-resolve `import.meta.url` at module init when the URL
- * scheme isn't yet known (the file lands inside `dist/server/` after
- * bundling; the relative offset to `/data` may need adjusting at
- * deploy time — see Phase E).
+ *  1. `DATA_ROOT` env override → the parent of the data dir. The
+ *     Vercel postbuild sets this so the bundled function can locate
+ *     the data copy it ships alongside (the bundle's `import.meta.url`
+ *     resolves somewhere inside `.vercel/output/functions/` that bears
+ *     no relation to the source repo layout).
+ *  2. Otherwise: five levels above this file. `src/server/` is three
+ *     levels under `apps/dashboard/`, itself two levels under the repo
+ *     root.
+ *
+ * Kept as a function so the resolution runs per-call rather than at
+ * module load — useful in tests that flip the env between cases.
  */
 export function repoRoot(): string {
+  const envRoot = process.env['DATA_ROOT'];
+  if (envRoot !== undefined && envRoot !== '') return resolve(envRoot, '..');
   const here = fileURLToPath(import.meta.url);
   return resolve(here, '..', '..', '..', '..', '..');
 }
