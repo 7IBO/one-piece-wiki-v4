@@ -19,6 +19,8 @@
  *   POST /api/uploads/presign               mint R2 PUT URL
  *   POST /api/entities/:type                opens a PR creating a new entity
  *   POST /api/entities/:type/:slug          opens a PR with the edit
+ *   GET  /api/sources/:type/:slug/cast      reverse-scan apparitions on a source
+ *   POST /api/sources/:type/:slug/cast      bulk add/remove cast → single PR
  *
  * Admin endpoints (require GitHub session in ADMIN_GITHUB_USERNAMES):
  *   POST /api/admin/promote {prNumber}
@@ -39,6 +41,7 @@ import {
   type OpenContribution,
   OptimisticLockError,
   submitEntityEdit,
+  submitSourceCastEdit,
 } from '@onepiece-wiki/github-client';
 import {
   buildEntitySchema,
@@ -572,6 +575,231 @@ function normalizeNickname(raw: unknown): string | null | { error: string; } {
     return { error: 'nickname may contain letters, digits, dash, underscore, dot, space only' };
   }
   return trimmed;
+}
+
+/**
+ * Per-source cast index (ADR-021). Reverse-scan every entity in
+ * the in-memory snapshot for `appears-in` relations targeting this
+ * source, group the matches by entity-type, return display names so
+ * the cast page can render `Monkey D. Luffy — main` rows without an
+ * extra round-trip. The catalogue scan is O(entities × relations);
+ * fine at our current ~1k entities (per ADR-019 risk note).
+ */
+async function handleGetCast(type: string, slug: string): Promise<Response> {
+  const snap = await snapshot();
+  // The source must exist + be a source type. We don't 404 on
+  // non-source types because the schema's `valid_to_types` already
+  // guards this, but we surface it as an obvious error.
+  if (!SOURCE_TYPE_IDS.has(type)) {
+    return badRequest(
+      `Type "${type}" is not a source type — cast lookup is only valid for chapters, episodes, films, etc.`,
+    );
+  }
+  const source = await findEntity(snap, type, slug);
+  if (source === undefined) return notFound(`No source of type ${type} with slug ${slug}`);
+
+  // Resolve display names once for the whole catalogue (cached I/O).
+  // The cast page renders rows like "Monkey D. Luffy — main" without
+  // a per-character extra fetch.
+  const names = await buildDisplayNames(snap);
+
+  type CastEntry = {
+    entityId: string;
+    entityType: string;
+    slug: string;
+    displayName: { en: string | null; fr: string | null; };
+    qualifiers: Record<string, unknown>;
+  };
+  const byType = new Map<string, CastEntry[]>();
+  for (const entity of snap.entities.values()) {
+    const relations = entity.data['relations'];
+    if (!Array.isArray(relations)) continue;
+    for (const rel of relations as Array<Record<string, unknown>>) {
+      if (rel['type'] !== 'appears-in') continue;
+      if (rel['target'] !== source.id) continue;
+      const list = byType.get(entity.type) ?? [];
+      list.push({
+        entityId: entity.id,
+        entityType: entity.type,
+        slug: String(entity.data['slug'] ?? ''),
+        displayName: names.get(entity.id) ?? { en: null, fr: null },
+        qualifiers: (rel['qualifiers'] as Record<string, unknown> | undefined) ?? {},
+      });
+      byType.set(entity.type, list);
+    }
+  }
+  // Stable shape — alphabetic entity-type buckets, alphabetic
+  // entities within each bucket. Lets the UI render without sorting.
+  const grouped = Array.from(byType.entries())
+    .sort(([a], [b]) => a.localeCompare(b))
+    .map(([entityType, entries]) => ({
+      entityType,
+      entries: entries.slice().sort((a, b) => {
+        const an = a.displayName.en ?? a.slug;
+        const bn = b.displayName.en ?? b.slug;
+        return an.localeCompare(bn);
+      }),
+    }));
+  return json({
+    source: {
+      id: source.id,
+      type: source.type,
+      slug: source.data['slug'] ?? slug,
+    },
+    cast: grouped,
+  });
+}
+
+/**
+ * Bulk apply a cast change to a source — ADR-021. Body:
+ *   { add: [{ entityId, qualifiers?: {…} }], remove: [entityId] }
+ *
+ * For each touched entity, we:
+ *   - look up its current JSON via the data source (snapshot)
+ *   - patch its `relations[]` (dedup-by-target on add, filter-by-
+ *     target on remove — both keyed on the `appears-in` type so
+ *     other relation types are untouched)
+ *   - validate the patched entity against its schema
+ *
+ * Then we hand the (path, content) pairs to `submitSourceCastEdit`,
+ * which lands them as ONE commit + ONE PR titled by the source. The
+ * conflict detection is per-file SHA — but in v1 the GET endpoint
+ * doesn't return SHAs, so we pass `expectedSha: null` and rely on
+ * GitHub's merge-time conflict detection. Documented in ADR-021.
+ */
+async function handleSaveCast(
+  cfg: GitHubAppConfig,
+  session: DashboardSession,
+  type: string,
+  slug: string,
+  req: Request,
+): Promise<Response> {
+  if (session.kind === 'github' && isBlockedLogin(session.login)) {
+    return new Response(JSON.stringify({ error: `User @${session.login} is blocked.` }), {
+      status: 403,
+      headers: { 'content-type': 'application/json' },
+    });
+  }
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch (err) {
+    return badRequest(`Invalid JSON: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  if (body === null || typeof body !== 'object') {
+    return badRequest('Body must be an object with { add?, remove? }.');
+  }
+  const payload = body as {
+    add?: Array<{ entityId?: string; qualifiers?: Record<string, unknown>; }>;
+    remove?: string[];
+  };
+  const add = Array.isArray(payload.add) ? payload.add : [];
+  const remove = Array.isArray(payload.remove) ? payload.remove : [];
+  if (add.length === 0 && remove.length === 0) {
+    return badRequest('Nothing to do — `add` and `remove` are both empty.');
+  }
+
+  let anonymousNickname: string | null = null;
+  if (session.kind === 'anonymous') {
+    const checked = normalizeNickname(session.nickname);
+    if (checked !== null && typeof checked === 'object') return badRequest(checked.error);
+    anonymousNickname = checked;
+  }
+
+  const snap = await snapshot();
+  if (!SOURCE_TYPE_IDS.has(type)) {
+    return badRequest(`Type "${type}" is not a source type.`);
+  }
+  const source = await findEntity(snap, type, slug);
+  if (source === undefined) return notFound(`No source of type ${type} with slug ${slug}`);
+
+  // Coalesce: an entity in both add+remove → net add (last-write-wins
+  // on qualifiers per ADR-021 edge case 1). Build a per-entity plan.
+  type Plan =
+    | { op: 'add'; qualifiers: Record<string, unknown>; }
+    | { op: 'remove'; };
+  const plans = new Map<string, Plan>();
+  for (const id of remove) {
+    if (typeof id === 'string' && id.length > 0) plans.set(id, { op: 'remove' });
+  }
+  for (const item of add) {
+    if (typeof item.entityId !== 'string' || item.entityId.length === 0) continue;
+    plans.set(item.entityId, {
+      op: 'add',
+      qualifiers: item.qualifiers ?? {},
+    });
+  }
+
+  // Walk each plan: load entity, patch relations, validate.
+  const castFiles: Array<{ path: string; content: string; expectedSha: null; }> = [];
+  for (const [entityId, plan] of plans) {
+    const [entityType, entitySlug] = entityId.split(':') as [string, string];
+    if (entityType === undefined || entitySlug === undefined) {
+      return badRequest(`Malformed entityId "${entityId}" — expected "<type>:<slug>".`);
+    }
+    // eslint-disable-next-line no-await-in-loop
+    const entity = await findEntity(snap, entityType, entitySlug);
+    if (entity === undefined) {
+      return badRequest(`No entity ${entityId} in the catalogue.`);
+    }
+    const relations = Array.isArray(entity.data['relations'])
+      ? (entity.data['relations'] as Array<Record<string, unknown>>)
+      : [];
+
+    const filtered = relations.filter((r) =>
+      !(r['type'] === 'appears-in' && r['target'] === source.id)
+    );
+
+    const nextRelations = plan.op === 'remove'
+      ? filtered
+      : [...filtered, {
+        type: 'appears-in',
+        target: source.id,
+        // Only include the qualifiers key when there's actually something
+        // in it — an empty object would clutter the diff for no reason.
+        ...(Object.keys(plan.qualifiers).length > 0
+          ? { qualifiers: plan.qualifiers }
+          : {}),
+      }];
+
+    const nextData = { ...entity.data, relations: nextRelations };
+    const entitySchema = buildEntitySchema(entityType, snap.validated);
+    if (entitySchema === undefined) {
+      return badRequest(`No schema registered for entity type "${entityType}".`);
+    }
+    const validation = entitySchema.safeParse(nextData);
+    if (!validation.success) {
+      const summary = validation.error.errors
+        .map((i) => `${entityId} → ${i.path.join('.') || '<root>'}: ${i.message}`)
+        .join('; ');
+      return json(
+        { error: `Cast validation failed: ${summary}`, code: 'validation_failed' },
+        400,
+      );
+    }
+
+    castFiles.push({
+      path: dataPath(entityType, entitySlug),
+      content: `${JSON.stringify(nextData, null, 2)}\n`,
+      expectedSha: null,
+    });
+  }
+
+  const octokit = await installationClient(cfg);
+  // MultiFileLockError isn't caught here in v1 — we pass expectedSha
+  // null on every file, so the conflict detection inside
+  // submitSourceCastEdit is a no-op. If/when the GET endpoint starts
+  // returning per-entity SHAs and the UI plumbs them through, surface
+  // the conflict here as a 409 with the list of paths.
+  const pr = await submitSourceCastEdit(octokit, cfg, {
+    sourceId: source.id,
+    files: castFiles,
+    contributorLogin: session.kind === 'github' ? session.login : null,
+    contributorId: session.kind === 'github' ? session.userId : null,
+    ...(anonymousNickname !== null ? { anonymousNickname } : {}),
+  });
+  return json({ ok: true, pr });
 }
 
 /**
@@ -1430,6 +1658,31 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     if (req.method === 'GET' && path === '/api/schemas') return await handleSchemas();
     if (req.method === 'GET' && path === '/api/sources') return await handleSources();
     if (req.method === 'GET' && path === '/api/i18n-keys') return await handleI18nKeys();
+
+    // Per-source cast (apparitions hub — ADR-021).
+    const castMatch = /^\/api\/sources\/([^/]+)\/([^/]+)\/cast$/.exec(path);
+    if (castMatch !== null) {
+      const [, srcType = '', srcSlug = ''] = castMatch;
+      if (req.method === 'GET') return await handleGetCast(srcType, srcSlug);
+      if (req.method === 'POST') {
+        if (config === null) return serviceUnavailable(`Save disabled: ${configError}`);
+        if (session === null) {
+          return unauthorized('Sign in (anonymous or GitHub) before editing cast.');
+        }
+        if (!isAdminSession()) {
+          if (rateLimitHit('save', rateLimitKey(), ANON_WRITE_LIMIT)) {
+            return new Response(
+              JSON.stringify({
+                error: `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
+              }),
+              { status: 429, headers: { 'content-type': 'application/json' } },
+            );
+          }
+        }
+        return await handleSaveCast(config, session, srcType, srcSlug, req);
+      }
+    }
+
     const listMatch = /^\/api\/entities\/([^/]+)$/.exec(path);
     if (listMatch !== null) {
       if (req.method === 'GET') return await handleListEntities(listMatch[1]!);

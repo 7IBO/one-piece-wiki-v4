@@ -273,6 +273,144 @@ export async function submitEntityEdit(
 }
 
 /**
+ * Plural version of `OptimisticLockError` for the bulk cast-edit
+ * flow (ADR-021). When N entity files are being updated at once and
+ * any of their SHAs have moved on `main` since the snapshot was
+ * built, we want the caller to see ALL conflicting paths at once
+ * rather than fail-fast on the first mismatch — the UI then prompts
+ * "refresh the cast page" instead of "retry-loop one file at a time".
+ */
+export class MultiFileLockError extends Error {
+  override readonly name = 'MultiFileLockError';
+  constructor(readonly conflicts: readonly { path: string; expected: string; current: string; }[]) {
+    super(
+      `Optimistic lock failed on ${conflicts.length} file(s): ${
+        conflicts.map((c) => c.path).join(', ')
+      }`,
+    );
+  }
+}
+
+export type CastFile = {
+  readonly path: string;
+  readonly content: string;
+  /** SHA the contributor's snapshot was built from. Null when the
+   *  contributor's snapshot didn't have this file (rare — would mean
+   *  they're adding a relation to an entity that itself was created
+   *  after their page load). */
+  readonly expectedSha: string | null;
+};
+
+export type SourceCastRequest = {
+  /** The source entity that owns the cast change (e.g. `manga-chapter:1`).
+   *  Drives the PR title, the branch name, and the commit subject. */
+  readonly sourceId: string;
+  readonly files: readonly CastFile[];
+  /** Same contributor attribution as `SaveRequest`. */
+  readonly contributorLogin: string | null;
+  readonly contributorId: number | null;
+  readonly anonymousNickname?: string;
+};
+
+/**
+ * Bulk cast-of-a-source edit — ADR-021. Touches N entity files in
+ * ONE commit and ONE PR titled by the source rather than the file
+ * owners. Used by the per-source cast manager at
+ * `/sources/$type/$slug`: a contributor adds/removes M characters
+ * from a chapter, the server patches each character's `relations[]`
+ * to add/remove the `appears-in` to that chapter, and this function
+ * lands the whole bundle as one reviewable unit.
+ *
+ * Optimistic locking is per-file and plural — any SHA mismatch
+ * collects into a `MultiFileLockError` listing every conflicting
+ * path, so the UI surfaces "5 files conflicted, refresh" instead
+ * of looping one-at-a-time.
+ *
+ * No `existingPR` / resume path in v1 — apparitions edits are
+ * typically one-shot. Documented as deferred in ADR-021.
+ */
+export async function submitSourceCastEdit(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  request: SourceCastRequest,
+): Promise<OpenedPR & { noOp: boolean; }> {
+  if (request.files.length === 0) {
+    return { number: 0, htmlUrl: '', headBranch: '', noOp: true };
+  }
+
+  // Pre-check every file's SHA against main. Collect ALL conflicts
+  // before throwing — the UI wants a complete list, not the first
+  // hit.
+  const conflicts: { path: string; expected: string; current: string; }[] = [];
+  for (const file of request.files) {
+    if (file.expectedSha === null) continue;
+    // eslint-disable-next-line no-await-in-loop
+    const onMain = await getFile(octokit, config, file.path);
+    if (onMain === null) continue; // file gone — treated as "create" by commitMultipleFiles
+    if (onMain.sha !== file.expectedSha) {
+      conflicts.push({ path: file.path, expected: file.expectedSha, current: onMain.sha });
+    }
+  }
+  if (conflicts.length > 0) throw new MultiFileLockError(conflicts);
+
+  const ts = new Date().toISOString().replace(/[:.TZ]/g, '').slice(0, 14);
+  const branch = `cast/${safeBranchSegment(request.sourceId)}/${ts}`;
+  await createBranch(octokit, config, branch);
+
+  const commit = await commitMultipleFiles(octokit, config, {
+    branch,
+    message: commitMessage(`Update cast of ${request.sourceId}`),
+    files: request.files.map((f) => ({ path: f.path, content: f.content })),
+  });
+
+  // Every file already matched main? commitMultipleFiles short-circuited
+  // and we have a branch pointing at the base. Skip opening a PR.
+  if (!commit.created) {
+    return { number: 0, htmlUrl: '', headBranch: branch, noOp: true };
+  }
+
+  const anonymous = request.contributorLogin === null;
+  const nickname = request.anonymousNickname?.trim() ?? '';
+  const diffBlock = renderDiffBlock(commit.changes);
+  const contributorBullet = anonymous
+    ? (nickname !== ''
+      ? `- **${nickname}** _(anonymous contributor)_`
+      : `- _Anonymous contributor_`)
+    : `- @${request.contributorLogin}`;
+
+  const fileLines = request.files.map((f) => `- \`${f.path}\``);
+
+  const opened = await openPullRequest(octokit, config, {
+    headBranch: branch,
+    title: `[DATA] Update cast of ${request.sourceId}`,
+    body: [
+      `**Contributors**`,
+      contributorBullet,
+      ``,
+      `**Source:** \`${request.sourceId}\``,
+      ``,
+      `**Files changed (${request.files.length}):**`,
+      ...fileLines,
+      ``,
+      ...(diffBlock !== null ? [diffBlock, ``] : []),
+      `---`,
+      `_Cast change opened through the dashboard's per-source apparitions_`,
+      `_manager. One commit, one PR, N entity files — see ADR-021._`,
+    ].join('\n'),
+    labels: [
+      'edit',
+      'via-dashboard',
+      'area:data',
+      // `apparitions` is the discriminator that lets review tooling
+      // tell a cast bulk-edit from a single-entity edit.
+      'apparitions',
+      ...(anonymous ? ['anonymous'] : []),
+    ],
+  });
+  return { ...opened, noOp: false };
+}
+
+/**
  * Render a per-file unified diff block as Markdown, each file inside
  * its own GitHub-native `<details>` collapse. Goes into the PR body
  * so a reviewer scrolling the PR sees the actual content delta
