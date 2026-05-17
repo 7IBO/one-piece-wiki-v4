@@ -920,7 +920,13 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
           // `right-0 left-0` on mobile (no sidebar shown), `lg:left-64`
           // (= 16rem, matching the sidebar grid column width in
           // __root.tsx) on desktop pushes the bar past the sidebar.
-          <div className='border-border bg-background/95 fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur lg:left-[16rem]'>
+          <div
+            // pb-[env(safe-area-inset-bottom)] lifts the bar above
+            // the home-indicator on notched phones. `max(...)` keeps
+            // the original 0.75rem padding when the inset is 0.
+            className='border-border bg-background/95 fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur lg:left-[16rem]'
+            style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' }}
+          >
             <div className='mx-auto flex w-full max-w-[100rem] items-center justify-between gap-3 px-6 py-3'>
               <div className='text-muted-foreground text-xs flex items-center gap-2'>
                 {dirty

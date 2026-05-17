@@ -22,6 +22,27 @@ body[data-scroll-locked] {
   margin-right: 0 !important;
 }
 
+/* Mobile touch-target floor. The Button variants in `button.tsx`
+ * go down to 24px (icon-xs) for desktop density, which is too small
+ * to hit reliably with a thumb. WCAG asks for 44px, Material for
+ * 48dp; 36px is the de-facto industry minimum that doesn't fight
+ * dense layouts (matches Shadcn defaults).
+ *
+ * Scoped to `pointer: coarse` so a mouse-using desktop user keeps
+ * the compact buttons. Tablet/phone touch users get the larger hit
+ * box without us having to ship a per-component refactor. Padding
+ * isn't bumped — the inner glyph stays sized for the visual class,
+ * the surrounding click area just gets bigger via min-* + flex
+ * centring inherited from the button base. */
+@media (pointer: coarse) {
+  button,
+  [role='button'],
+  a[data-slot='button'] {
+    min-height: 36px;
+    min-width: 36px;
+  }
+}
+
 @theme inline {
   --font-heading: var(--font-sans);
   --font-sans: 'Geist Variable', sans-serif;

@@ -22,6 +22,12 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
+import {
+  MobileSheet,
+  MobileSheetContent,
+  MobileSheetTrigger,
+  useShouldUseSheet,
+} from '@/components/ui/mobile-sheet';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
@@ -437,85 +443,126 @@ export function MultiEntityRefInput(
   // throws a hydration error in strict mode. The outer container is a
   // styled div that looks like an input border; only the small "Add"
   // affordance to the right is the actual popover trigger.
-  return (
-    <Popover open={open} onOpenChange={setOpen}>
-      <div
-        className={cn(
-          'border-input bg-background flex min-h-8 flex-wrap items-center gap-1 rounded-[3px] border px-1.5 py-1',
-          disabled === true && 'opacity-50',
-        )}
-      >
-        {list.length === 0 && !open
-          ? <span className='text-muted-foreground px-0.5 text-xs'>{t('pickOne')}</span>
-          : null}
-        {list.map((fullId) => {
-          const [, slug] = fullId.split(':');
-          const meta = lookup.get(fullId);
-          const label = meta?.name ?? slug ?? fullId;
-          return (
-            <span
-              key={fullId}
-              className='bg-muted text-foreground inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px]'
-            >
-              <span className='truncate max-w-[12rem]'>{label}</span>
-              <button
-                type='button'
-                className='hover:text-destructive shrink-0'
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  removeOne(fullId);
-                }}
-                aria-label={t('removeEntry')}
-                disabled={disabled === true}
-              >
-                <X className='size-3' />
-              </button>
-            </span>
-          );
-        })}
-        <PopoverTrigger
-          render={
+  //
+  // Mobile branch: on coarse-pointer devices we render the picker
+  // inside a bottom-sheet (MobileSheet) instead of a Popover. The
+  // Popover's small fixed-width content is unusable on a 360px
+  // viewport — overflows the screen, hard to tap, can't see the
+  // chips you just selected. The sheet covers up to 85vh with a
+  // proper close affordance + safe-area inset.
+  const useSheet = useShouldUseSheet();
+  const list_ui = (
+    <div
+      className={cn(
+        'border-input bg-background flex min-h-8 flex-wrap items-center gap-1 rounded-[3px] border px-1.5 py-1',
+        disabled === true && 'opacity-50',
+      )}
+    >
+      {list.length === 0 && !open
+        ? <span className='text-muted-foreground px-0.5 text-xs'>{t('pickOne')}</span>
+        : null}
+      {list.map((fullId) => {
+        const [, slug] = fullId.split(':');
+        const meta = lookup.get(fullId);
+        const label = meta?.name ?? slug ?? fullId;
+        return (
+          <span
+            key={fullId}
+            className='bg-muted text-foreground inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px]'
+          >
+            <span className='truncate max-w-[12rem]'>{label}</span>
             <button
               type='button'
+              className='hover:text-destructive shrink-0'
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                removeOne(fullId);
+              }}
+              aria-label={t('removeEntry')}
               disabled={disabled === true}
-              aria-expanded={open}
-              className='text-muted-foreground hover:bg-accent hover:text-foreground ml-auto inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px] disabled:opacity-50'
             >
-              <span>{list.length === 0 ? t('pickOne') : t('addEntry')}</span>
-              <ChevronsUpDown className='size-3 opacity-50' />
+              <X className='size-3' />
             </button>
-          }
-        />
-      </div>
-      <PopoverContent
-        // The trigger is a tiny inline "Add" button (~60px wide) when
-        // there are no chips yet, so anchoring the popover to the
-        // trigger via `w-(--anchor-width)` collapses it to a useless
-        // sliver — visible as a "bug" on qualifiers like
-        // `believed_by` / `known_truth_by` / `given_by` where the
-        // trigger never grows. Use a fixed width that's wide enough
-        // to show the searchable name list, clamped to the viewport
-        // for mobile.
-        className='w-[24rem] max-w-[calc(100vw-2rem)] p-0'
-        align='start'
-      >
-        <Command shouldFilter={false}>
-          <MultiEntityList
-            allowedTypes={allowedTypes}
-            entriesByType={entriesByType}
-            selectedSet={selectedSet}
-            locale={locale}
-            loading={loading}
-            noMatchText={t('noMatch')}
-            loadingText={t('loading')}
-            searchPlaceholder={t('search')}
-            onToggle={toggle}
-          />
-        </Command>
-      </PopoverContent>
-    </Popover>
+          </span>
+        );
+      })}
+      {useSheet
+        ? (
+          <MobileSheetTrigger
+            render={
+              <button
+                type='button'
+                disabled={disabled === true}
+                aria-expanded={open}
+                className='text-muted-foreground hover:bg-accent hover:text-foreground ml-auto inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px] disabled:opacity-50'
+              />
+            }
+          >
+            <span>{list.length === 0 ? t('pickOne') : t('addEntry')}</span>
+            <ChevronsUpDown className='size-3 opacity-50' />
+          </MobileSheetTrigger>
+        )
+        : (
+          <PopoverTrigger
+            render={
+              <button
+                type='button'
+                disabled={disabled === true}
+                aria-expanded={open}
+                className='text-muted-foreground hover:bg-accent hover:text-foreground ml-auto inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px] disabled:opacity-50'
+              />
+            }
+          >
+            <span>{list.length === 0 ? t('pickOne') : t('addEntry')}</span>
+            <ChevronsUpDown className='size-3 opacity-50' />
+          </PopoverTrigger>
+        )}
+    </div>
   );
+  const picker = (
+    <Command shouldFilter={false}>
+      <MultiEntityList
+        allowedTypes={allowedTypes}
+        entriesByType={entriesByType}
+        selectedSet={selectedSet}
+        locale={locale}
+        loading={loading}
+        noMatchText={t('noMatch')}
+        loadingText={t('loading')}
+        searchPlaceholder={t('search')}
+        onToggle={toggle}
+      />
+    </Command>
+  );
+  return useSheet
+    ? (
+      <MobileSheet open={open} onOpenChange={setOpen}>
+        {list_ui}
+        <MobileSheetContent title={t('addEntry')}>
+          {picker}
+        </MobileSheetContent>
+      </MobileSheet>
+    )
+    : (
+      <Popover open={open} onOpenChange={setOpen}>
+        {list_ui}
+        <PopoverContent
+          // The trigger is a tiny inline "Add" button (~60px wide) when
+          // there are no chips yet, so anchoring the popover to the
+          // trigger via `w-(--anchor-width)` collapses it to a useless
+          // sliver — visible as a "bug" on qualifiers like
+          // `believed_by` / `known_truth_by` / `given_by` where the
+          // trigger never grows. Use a fixed width that's wide enough
+          // to show the searchable name list, clamped to the viewport
+          // for mobile.
+          className='w-[24rem] max-w-[calc(100vw-2rem)] p-0'
+          align='start'
+        >
+          {picker}
+        </PopoverContent>
+      </Popover>
+    );
 }
 
 const MULTI_ROW_HEIGHT = 28;

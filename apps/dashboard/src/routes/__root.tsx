@@ -1,8 +1,17 @@
 /// <reference types="vite/client" />
 import { Button } from '@/components/ui/button';
+import { MobileSheet, MobileSheetContent, MobileSheetTrigger } from '@/components/ui/mobile-sheet';
 import { Toaster } from '@/components/ui/sonner';
-import { createRootRoute, HeadContent, Link, Scripts, useNavigate } from '@tanstack/react-router';
-import { type JSX, type ReactNode } from 'react';
+import {
+  createRootRoute,
+  HeadContent,
+  Link,
+  Scripts,
+  useLocation,
+  useNavigate,
+} from '@tanstack/react-router';
+import { Menu } from 'lucide-react';
+import { type JSX, type ReactNode, useEffect, useState } from 'react';
 import { AppSidebar } from '../AppSidebar';
 import { auth, useCurrentUser } from '../auth';
 import { DraftsIndicator } from '../DraftsIndicator';
@@ -55,6 +64,15 @@ function RootDocument({ children }: { children: ReactNode; }): JSX.Element {
 function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
   const { user, loaded } = useCurrentUser();
   const navigate = useNavigate();
+  const location = useLocation();
+  const [mobileNavOpen, setMobileNavOpen] = useState(false);
+
+  // Close the mobile nav sheet on route change — without this it
+  // stays open after the user taps a type link, hiding the
+  // navigated-to content.
+  useEffect(() => {
+    setMobileNavOpen(false);
+  }, [location.pathname]);
 
   // @login for GitHub, plain Pseudo for anonymous. Wrapping inline
   // makes the difference obvious to a reviewer glancing at a
@@ -69,13 +87,36 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
     <LocaleProvider>
       <EntityDrawerProvider>
         <div className='bg-background text-foreground grid min-h-screen grid-rows-[auto_1fr] antialiased'>
-          <header className='border-border bg-card sticky top-0 z-30 flex items-center gap-6 border-b px-6 py-3'>
+          <header className='border-border bg-card sticky top-0 z-30 flex items-center gap-3 border-b px-4 py-2 sm:gap-6 sm:px-6 sm:py-3'>
+            {
+              /* Hamburger — only visible below the lg breakpoint where
+                the sidebar disappears. Opens the same AppSidebar
+                inside a bottom-sheet so the entity-type browser stays
+                reachable on mobile. */
+            }
+            <MobileSheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
+              <MobileSheetTrigger
+                render={
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    aria-label='Open navigation'
+                    className='lg:hidden -ml-1'
+                  />
+                }
+              >
+                <Menu className='size-4' />
+              </MobileSheetTrigger>
+              <MobileSheetContent title='Navigate'>
+                <AppSidebar />
+              </MobileSheetContent>
+            </MobileSheet>
             <Link
               to='/'
               className='text-foreground text-sm font-semibold no-underline'
             >
               One Piece Wiki
-              <span className='text-muted-foreground ml-2 text-[11px] font-normal'>
+              <span className='text-muted-foreground ml-2 hidden text-[11px] font-normal sm:inline'>
                 Dashboard
               </span>
             </Link>
@@ -112,7 +153,7 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
             <aside className='border-border bg-card/30 sticky top-[57px] hidden h-[calc(100vh-57px)] overflow-y-auto border-r lg:block'>
               <AppSidebar />
             </aside>
-            <main className='min-w-0 px-6 py-6'>
+            <main className='min-w-0 px-4 py-4 sm:px-6 sm:py-6'>
               {
                 /* `children` is the matched route's output (Start's
                   shellComponent contract — replaces the explicit
