@@ -35,6 +35,7 @@ If any task touches a specialized area, also read the relevant deep-dive doc:
 - `/docs/DASHBOARD_ARCHITECTURE.md` for dashboard work
 - `/docs/I18N_STRATEGY.md` for any translation-related work
 - `/docs/IMAGES.md` for image entities, upload, R2 storage, licensing
+- `/docs/PUBLIC_API_DESIGN.md` for anything touching the future public REST API, wire formats, SDK API surface, or API versioning (design-only, not yet implemented — cf. ADR-025)
 
 ## Non-negotiable rules
 

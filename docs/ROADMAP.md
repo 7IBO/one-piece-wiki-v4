@@ -579,14 +579,77 @@ require GitHub login. Login is opt-in for attribution.
 - **Exit**: admin can triage the whole queue without leaving the
   dashboard. GitHub PRs remain the source of truth.
 
-## Phase 8+ — Beyond
+## Phase 8 — Public REST API v1 (designed, deferred)
+
+**Status**: designed in `/docs/PUBLIC_API_DESIGN.md`, ratified by
+ADR-025, **not scheduled for implementation**. Listed here so the
+ordering is explicit: this phase cannot start before ADR-024 Phase B
+(typed SDK with discriminated union over entity types) is done,
+because the API serializers cannot be implemented cleanly against
+the current `Record<string, unknown>` SDK surface.
+
+**Goal**: a versioned, anti-spoiler-aware REST API that third parties
+(YouTubers, fan apps, Discord bots, mobile clients) can integrate
+against, with a stable contract and automated OpenAPI.
+
+**Exit criteria** (when scheduled):
+
+- `apps/api` workspace deployed independently of `apps/dashboard`
+- `packages/api-v1` package owns the frozen v1 wire format
+- `/api/v1/entities`, `/vocabularies`, `/narratives`, `/search`,
+  `/health`, `/openapi.json`, `/docs` all live and OpenAPI-documented
+- Anti-spoiler: every content endpoint requires `?progression=` and
+  filters values, relations, and existence accordingly
+- Translations resolved server-side when `?lang=` supplied (both
+  `value_key` and resolved `value` returned)
+- `bun run api:impact` script + lefthook pre-commit + CI gate
+  blocking schema PRs that break any active adapter
+- `packages/api-v1/CHANGELOG.md` covers every change since v1.0.0
+- Spectral OpenAPI lint green in CI
+- Generated client compiles against the real API in a CI round-trip
+  test
+- Two-major-live policy documented and enforced (v1 stays live until
+  18 months after v2 ships)
+
+**Sub-phases** (each = 1 PR mergeable into a long-lived
+`feat/public-api-v1` integration branch):
+
+1. **Doc-only** (already shipped in ADR-025's PR)
+2. **SDK camelCase** — extension of ADR-024 Phase A: emit a parallel
+   camelCase view of the generated Zod schemas; row mappers convert
+3. **Foundation** — `apps/api` workspace, routing, error envelope,
+   rate-limit middleware, health endpoint
+4. **Wire-format v1** — `packages/api-v1` skeleton, per-resource
+   adapters, round-trip tests
+5. **Read endpoints** — entities, vocabularies, narratives, listing,
+   search
+6. **i18n resolution** — `value_key` → text pipeline, fallback rules,
+   vocabulary labels
+7. **OpenAPI + docs** — printer, Redoc static, Spectral lint,
+   generated-client round-trip test
+8. **Versioning + monitoring** — impact analyzer, CHANGELOG
+   enforcement, observability
+
+**Blocking dependencies before scheduling**:
+
+- ADR-024 Phase B done (typed SDK)
+- The 14 open questions in `/docs/PUBLIC_API_DESIGN.md` § "Open
+  questions" each have a ratifying ADR
+
+**Anti-pattern**: do not start the implementation of any sub-phase
+before the open questions are closed. The cost of re-doing wire-format
+decisions after the first byte is shipped is asymmetric — the API is
+a contract, not a refactor target.
+
+## Phase 9+ — Beyond
 
 Areas under consideration but not scheduled:
 
 - **Knowledge graph** (per-character knowledge of facts)
 - **Mystery / theory** entity types
 - **Visualization tools** (timelines, relationship graphs, bounty charts)
-- **Public API** (REST or GraphQL) for third-party consumers
+- **GraphQL surface** on top of the REST API once concrete consumer
+  demand emerges
 - **Cross-universe** (Naruto, Bleach, …)
 - **Mobile apps**
 
