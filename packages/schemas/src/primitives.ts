@@ -39,6 +39,18 @@ export const I18nKey = z
   .transform((value) => value as Brand<string, 'I18nKey'>);
 export type I18nKey = z.infer<typeof I18nKey>;
 
+// ISO 8601 calendar date, restricted to YYYY-MM-DD. Months 01-12, days
+// 01-31 (calendar arithmetic — e.g. 31 February — is not validated; only
+// the surface format is). Branded so downstream chronology utilities
+// cannot accept arbitrary strings without an explicit parse/cast.
+const ISO_DATE = /^\d{4}-(?:0[1-9]|1[0-2])-(?:0[1-9]|[12]\d|3[01])$/;
+
+export const IsoDate = z
+  .string()
+  .regex(ISO_DATE, 'IsoDate must be YYYY-MM-DD with valid month and day surface ranges.')
+  .transform((value) => value as Brand<string, 'IsoDate'>);
+export type IsoDate = z.infer<typeof IsoDate>;
+
 export const Locale = z.enum(['en', 'fr']);
 export type Locale = z.infer<typeof Locale>;
 export const LOCALES: readonly Locale[] = ['en', 'fr'] as const;

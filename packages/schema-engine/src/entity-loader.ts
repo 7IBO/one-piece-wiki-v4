@@ -12,6 +12,7 @@ import {
   type CanonScope,
   EntityId,
   EpistemicStatus,
+  IsoDate,
   type Locale,
   ReviewStatus,
   Slug,
@@ -66,7 +67,7 @@ function valueSchemaFor(valueType: ValueType): z.ZodTypeAny {
     case 'multi_enum':
       return z.array(z.string());
     case 'date':
-      return z.string();
+      return IsoDate;
     case 'entity_ref':
       return EntityId;
     case 'source_ref':
