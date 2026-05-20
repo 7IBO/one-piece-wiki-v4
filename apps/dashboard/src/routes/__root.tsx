@@ -18,6 +18,7 @@ import { BottomNav } from '../BottomNav';
 import { DraftsIndicator } from '../DraftsIndicator';
 import { EntityDrawerProvider } from '../form/EntityDrawerProvider';
 import { LocaleProvider } from '../form/locale';
+import { CommandPaletteTrigger, GlobalCommandPalette } from '../GlobalCommandPalette';
 import { LocaleSwitcher } from '../LocaleSwitcher';
 import appCss from '../styles.css?url';
 
@@ -88,7 +89,7 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
     <LocaleProvider>
       <EntityDrawerProvider>
         <div className='bg-background text-foreground grid min-h-screen grid-rows-[auto_1fr] antialiased'>
-          <header className='border-border bg-card sticky top-0 z-30 flex items-center gap-3 border-b px-4 py-2 sm:gap-6 sm:px-6 sm:py-3'>
+          <header className='border-border bg-card sticky top-0 z-30 flex items-center gap-3 border-b px-3 py-2 sm:gap-6 sm:px-6 sm:py-3'>
             {
               /* Hamburger — only visible below the lg breakpoint where
                 the sidebar disappears. Opens the same AppSidebar
@@ -114,14 +115,15 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
             </MobileSheet>
             <Link
               to='/'
-              className='text-foreground text-sm font-semibold no-underline'
+              className='text-foreground text-sm font-semibold no-underline whitespace-nowrap'
             >
               One Piece Wiki
               <span className='text-muted-foreground ml-2 hidden text-[11px] font-normal sm:inline'>
                 Dashboard
               </span>
             </Link>
-            <div className='ml-auto flex items-center gap-3 text-xs'>
+            <div className='ml-auto flex items-center gap-1.5 text-xs sm:gap-3'>
+              <CommandPaletteTrigger />
               <DraftsIndicator />
               <LocaleSwitcher />
               {!loaded ? null : user === null
@@ -135,10 +137,18 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
                 )
                 : (
                   <>
-                    <span className='text-muted-foreground'>{userLabel}</span>
+                    {
+                      /* User label + Sign out are mobile-noisy — both
+                        are reachable from the BottomNav "Account" tab.
+                        We keep the Sign out affordance on screens that
+                        don't render BottomNav (the lg+ desktop too),
+                        but drop it below sm to free header width. */
+                    }
+                    <span className='text-muted-foreground hidden sm:inline'>{userLabel}</span>
                     <Button
                       size='sm'
                       variant='outline'
+                      className='hidden sm:inline-flex'
                       onClick={async () => {
                         await auth.signOut();
                         await navigate({ to: '/login' });
@@ -154,7 +164,7 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
             <aside className='border-border bg-card/30 sticky top-[57px] hidden h-[calc(100vh-57px)] overflow-y-auto border-r lg:block'>
               <AppSidebar />
             </aside>
-            <main className='min-w-0 px-4 py-4 pb-20 sm:px-6 sm:py-6 lg:pb-6'>
+            <main className='min-w-0 px-3 py-4 pb-20 sm:px-6 sm:py-6 lg:pb-6'>
               {
                 /* `children` is the matched route's output (Start's
                   shellComponent contract — replaces the explicit
@@ -172,7 +182,8 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
              sidebar takes over. See BottomNav.tsx for the slot list. */
           }
           <BottomNav />
-          <Toaster richColors closeButton position='top-right' />
+          <GlobalCommandPalette />
+          <Toaster closeButton />
         </div>
       </EntityDrawerProvider>
     </LocaleProvider>

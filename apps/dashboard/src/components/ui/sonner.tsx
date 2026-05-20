@@ -11,10 +11,9 @@ import { Toaster as Sonner, type ToasterProps } from 'sonner';
 
 /**
  * Tracks whether the viewport is "mobile-shaped" so we can swap
- * toast positioning. Top-right is fine on desktop; on a 360px phone
- * it stacks the toast under the header AND covers the right side of
- * the form (notch + thumb reach). `top-center` keeps the toast in
- * the user's visual focus and out of the way of action buttons.
+ * toast positioning. Bottom-right on desktop (Linear-style); on
+ * mobile we shift to bottom-center and offset above the BottomNav
+ * (~60px + safe-area) to avoid covering the primary tab bar.
  */
 function useIsMobileViewport(breakpointPx = 640): boolean {
   const [isMobile, setIsMobile] = useState(false);
@@ -33,10 +32,14 @@ const Toaster = ({ ...props }: ToasterProps) => {
   const { theme = 'system' } = useTheme();
   const isMobile = useIsMobileViewport();
 
+  // Linear-style: neutral popover surface for every toast variant.
+  // `richColors` is intentionally off so success/info/warning all look
+  // identical to a default notification — only `error` keeps a
+  // semantic accent (red border + red icon), surfaced via the
+  // `toastOptions.classNames.error` hook below.
   return (
     <Sonner
       theme={theme as ToasterProps['theme']}
-      position={isMobile ? 'top-center' : (props.position ?? 'top-right')}
       className='toaster group'
       icons={{
         success: <CircleCheckIcon className='size-4' />,
@@ -51,12 +54,24 @@ const Toaster = ({ ...props }: ToasterProps) => {
         '--normal-border': 'var(--border)',
         '--border-radius': 'var(--radius)',
       } as React.CSSProperties}
+      mobileOffset={{ bottom: '5rem' }}
+      // Default toast duration bumped to 10s — Sonner's stock 4s is
+      // too short to read a multi-line error toast, which was the
+      // common complaint ("I see a red flash but no time to read it").
+      // Per-call `duration: …` overrides this, so explicit values
+      // (e.g. `Infinity` in DraftsIndicator) still win.
+      duration={10_000}
+      {...props}
+      position={isMobile ? 'bottom-center' : (props.position ?? 'bottom-right')}
       toastOptions={{
         classNames: {
           toast: 'cn-toast',
+          // Only error gets a semantic accent — neutral everywhere else.
+          error:
+            '!border-destructive/40 [&_[data-icon]]:!text-destructive [&_[data-content]_[data-title]]:!text-destructive',
         },
+        ...props.toastOptions,
       }}
-      {...props}
     />
   );
 };

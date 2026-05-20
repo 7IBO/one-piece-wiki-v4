@@ -63,6 +63,75 @@ When a slug changes (rename, disambiguation), the old slug is appended to
 - Plural when the folder represents a collection
   (`packages/schemas`, `apps`)
 
+### Wire formats and SDK conventions
+
+Different surfaces use different conventions for the **same data**.
+The rule that resolves the apparent contradiction:
+
+> Keys chosen by **code** can flip convention between surfaces.
+> Keys chosen by **data** are immutable on every surface.
+
+| Surface                                               | Meta keys (code-defined)             | IDs (data-defined) | Enum values (data-defined) |
+| ----------------------------------------------------- | ------------------------------------ | ------------------ | -------------------------- |
+| On-disk JSON in `/data/**`                            | `snake_case`                         | unchanged          | unchanged                  |
+| SQLite columns                                        | `snake_case`                         | unchanged          | unchanged                  |
+| Generated Zod schemas (`packages/schemas/generated/`) | `snake_case`                         | unchanged          | unchanged                  |
+| **Future** wire (REST API v1)                         | `snake_case`                         | unchanged          | unchanged                  |
+| **Future** TypeScript SDK (`packages/sdk`)            | `camelCase`                          | unchanged          | unchanged                  |
+| URLs / path segments                                  | `kebab-case` (matches `url_segment`) | n/a                | n/a                        |
+| HTTP headers                                          | `Pascal-Case` (HTTP convention)      | n/a                | n/a                        |
+
+**Code-defined meta keys** are framework concepts: `schema_version`,
+`epistemic_status`, `since_source`, `canonical_name_key`,
+`entry_index`, `slug_history`, etc. They are chosen by us, so we can
+re-case them when crossing into TypeScript code.
+
+**Data-defined IDs** are content: property IDs like `bounty`,
+`blood_type`, `haki_types`; qualifier IDs like `issued_by`,
+`name_type`; entity-type IDs like `character`, `devil-fruit`;
+vocabulary IDs like `blood-types`; vocabulary values like `A_plus`,
+`confirmed`, `believed_by_world`. They are chosen by schema authors
+in `/data/schemas/`. Renaming them would mean renaming user data and
+would break PRs, search indexes, and external integrations — so they
+stay as-is on every surface.
+
+Concrete examples:
+
+```ts
+// Future SDK (camelCase meta, snake_case property IDs preserved)
+const luffy = client.getEntity('character:luffy');
+luffy.canonicalNameKey; // meta key, camelCased
+luffy.properties.blood_type?.value; // property ID, immutable
+luffy.properties.blood_type?.value; // "F" — enum value, immutable
+luffy.properties.bounty[0].sinceSource; // meta key, camelCased
+luffy.properties.bounty[0].issued_by; // qualifier ID, immutable
+```
+
+```json
+// Future REST API (snake_case meta, snake_case property IDs preserved)
+{
+  "canonical_name_key": "character.luffy.name",
+  "properties": {
+    "bounty": [{
+      "value": 3000000000,
+      "since_source": "manga-chapter:1058",
+      "issued_by": "organization:world-government"
+    }]
+  }
+}
+```
+
+The mapping `snake_case` (wire/data) ↔ `camelCase` (SDK) happens at
+exactly **one location**: the SDK's row mappers
+(`mapEntity` / `mapProperty` / `mapRelation` in
+`packages/sdk/src/client.ts`). Nowhere else in the codebase should
+this conversion happen.
+
+The full design for the future public REST API — request shape,
+anti-spoiler enforcement, versioning, wire-format adapters — lives
+in `/docs/PUBLIC_API_DESIGN.md`. The architectural decision is
+recorded as ADR-025 in `/docs/DECISIONS.md`.
+
 ## TypeScript
 
 ### Compiler options

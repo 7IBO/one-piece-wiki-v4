@@ -5,10 +5,13 @@
  * Each entry links to /types/<id> and highlights when the current
  * route matches.
  */
+import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link, useLocation } from '@tanstack/react-router';
+import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { LogIn, LogOut } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
 import { api, type SchemaCatalogue } from './api';
+import { auth, useCurrentUser } from './auth';
 import { useLocale } from './form/locale';
 
 const GROUP_LABELS: Record<string, { en: string; fr: string; }> = {
@@ -52,6 +55,8 @@ type GroupedType = {
 export function AppSidebar(): JSX.Element {
   const locale = useLocale();
   const location = useLocation();
+  const navigate = useNavigate();
+  const { user, loaded: userLoaded } = useCurrentUser();
   const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
 
   useEffect(() => {
@@ -135,6 +140,55 @@ export function AppSidebar(): JSX.Element {
           </ul>
         </div>
       ))}
+      {
+        /* Mobile-only Account block: the header strips user-label +
+          Sign out below sm to free width, and the BottomNav (with its
+          Account tab) hides itself on save-bar routes — so the
+          hamburger sheet is the only mobile path to sign out from an
+          entity edit page. Hidden at lg+ where the header already
+          carries both affordances. */
+      }
+      {userLoaded
+        ? (
+          <div className='border-border mt-2 border-t pt-3 lg:hidden'>
+            <p className='text-muted-foreground mb-1 px-2 text-[10px] font-semibold uppercase tracking-wide'>
+              Account
+            </p>
+            {user === null
+              ? (
+                <Link
+                  to='/login'
+                  className='text-muted-foreground hover:bg-accent/40 hover:text-foreground flex items-center gap-2 rounded-md px-2 py-1.5 text-sm no-underline'
+                >
+                  <LogIn className='size-4' />
+                  <span>Sign in</span>
+                </Link>
+              )
+              : (
+                <div className='px-2 pb-2'>
+                  <p className='text-foreground mb-1 text-sm font-medium truncate'>
+                    {user.kind === 'github' ? `@${user.login}` : user.nickname}
+                  </p>
+                  <p className='text-muted-foreground mb-2 text-[11px]'>
+                    {user.kind === 'github' ? 'GitHub' : 'Anonymous'}
+                  </p>
+                  <Button
+                    variant='outline'
+                    size='sm'
+                    className='w-full gap-1.5'
+                    onClick={async () => {
+                      await auth.signOut();
+                      await navigate({ to: '/login' });
+                    }}
+                  >
+                    <LogOut className='size-3.5' />
+                    Sign out
+                  </Button>
+                </div>
+              )}
+          </div>
+        )
+        : null}
     </nav>
   );
 }

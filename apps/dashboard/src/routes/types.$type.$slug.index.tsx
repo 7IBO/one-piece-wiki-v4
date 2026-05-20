@@ -78,7 +78,15 @@ function EntityEditComponent(): JSX.Element {
         setSources(src);
         setI18nKeys(keys);
       })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
+      .catch((e: unknown) => {
+        // Mirror to console so the full stack stays readable after
+        // the user navigates away — the inline `<p>Failed: …</p>`
+        // disappears on the next route change and the message is
+        // lost otherwise.
+        // eslint-disable-next-line no-console
+        console.error(`[entity:${type}/${slug}] load failed`, e);
+        setError(e instanceof Error ? e.message : String(e));
+      });
   }, [type, slug]);
 
   const displayName = useMemo(
@@ -133,34 +141,42 @@ function EntityEditComponent(): JSX.Element {
           render={<Link to='/types/$type' params={{ type }} />}
           variant='ghost'
           size='sm'
-          className='text-muted-foreground -ml-2 h-6 px-1.5 text-[11px]'
+          className='text-muted-foreground -ml-1.5 h-6 px-1.5 text-[11px]'
         >
           <ChevronLeft className='size-3' />
           {entityTypeLabel}
         </Button>
-        <div className='mt-1 flex flex-wrap items-center gap-2'>
+        <div className='mt-1 flex flex-wrap items-center gap-x-2 gap-y-1'>
           {displayName !== null
             ? (
               <>
-                <h1 className='text-xl font-semibold tracking-tight'>{displayName}</h1>
-                <span className='text-muted-foreground font-mono text-[10px]'>
+                <h1 className='min-w-0 flex-1 truncate text-xl font-semibold tracking-tight'>
+                  {displayName}
+                </h1>
+                <span className='text-muted-foreground min-w-0 max-w-full truncate font-mono text-[10px] basis-full sm:basis-auto'>
                   {entity.id}
                 </span>
               </>
             )
             : (
-              <h1 className='text-xl font-semibold tracking-tight font-mono text-muted-foreground'>
+              <h1 className='min-w-0 flex-1 truncate text-xl font-semibold tracking-tight font-mono text-muted-foreground'>
                 {entity.id}
               </h1>
             )}
           {entity.sha !== null
             ? (
-              <Badge variant='secondary' className='ml-auto font-mono text-[10px]'>
+              <Badge
+                variant='secondary'
+                className='ml-auto w-fit shrink-0 font-mono text-[10px]'
+              >
                 {entity.sha.slice(0, 7)}
               </Badge>
             )
             : (
-              <Badge variant='outline' className='text-amber-500 ml-auto text-[10px]'>
+              <Badge
+                variant='outline'
+                className='text-amber-500 ml-auto w-fit shrink-0 text-[10px]'
+              >
                 not on GitHub yet
               </Badge>
             )}

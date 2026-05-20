@@ -36,6 +36,7 @@ import {
   type ValueType,
 } from './inputs';
 import { type Locale, useLocale, useQualifierLabel, useT } from './locale';
+import { relationAnchorId } from './PropertyNav';
 import { QualifierSheet } from './QualifierSheet';
 
 export type RelationEntry = {
@@ -209,26 +210,40 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
               const rt = p.relationTypes[typeId];
               const groupEntries = groupedByType.get(typeId) ?? [];
               const multi = rt?.allow_multiple_concurrent === true;
+              // Anchor lives on the LI wrapper so PropertyNav's
+              // scroll-to (`rel-{typeId}`) lands at this group's
+              // top edge, with scroll-mt-20 to clear the sticky
+              // header chrome — same offset the property anchors
+              // use upstream.
               if (multi && rt !== undefined) {
                 // Multi-concurrent: chips per target, each with its
                 // own qualifier sheet (since/until/source/event/…)
                 // so a relation that changes over chapters can carry
                 // its temporal scope per entry.
                 return (
-                  <MultiTargetRelationGroup
+                  <li
                     key={`group-${typeId}`}
-                    relationType={rt}
-                    groupEntries={groupEntries}
-                    valueCtx={p.valueCtx}
-                    vocabularies={p.vocabularies}
-                    onAddTarget={(target) => add(typeId, target)}
-                    onRemoveAt={(index) => remove(index)}
-                    onSetQualifierAt={(index, qid, v) => setQualifier(index, qid, v)}
-                  />
+                    id={relationAnchorId(typeId)}
+                    className='scroll-mt-20'
+                  >
+                    <MultiTargetRelationGroup
+                      relationType={rt}
+                      groupEntries={groupEntries}
+                      valueCtx={p.valueCtx}
+                      vocabularies={p.vocabularies}
+                      onAddTarget={(target) => add(typeId, target)}
+                      onRemoveAt={(index) => remove(index)}
+                      onSetQualifierAt={(index, qid, v) => setQualifier(index, qid, v)}
+                    />
+                  </li>
                 );
               }
               return (
-                <li key={`detailed-${typeId}`} className='space-y-2'>
+                <li
+                  key={`detailed-${typeId}`}
+                  id={relationAnchorId(typeId)}
+                  className='space-y-2 scroll-mt-20'
+                >
                   {groupEntries.map(({ entry, index }) => (
                     <RelationCard
                       key={`${entry.type}-${index}`}

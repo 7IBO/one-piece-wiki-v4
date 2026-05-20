@@ -22,6 +22,8 @@
  */
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
+import { Input } from '@/components/ui/input';
+import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, GitPullRequest } from 'lucide-react';
@@ -31,6 +33,7 @@ import { api, type SchemaCatalogue, type SourceRef } from '../api';
 import { EntityForm } from '../form/EntityForm';
 import { useLocale } from '../form/locale';
 import { SlugInput } from '../form/SlugInput';
+import { slugify } from '../lib/slugify';
 
 export const Route = createFileRoute('/types/$type/new')({
   component: EntityCreateComponent,
@@ -46,13 +49,28 @@ function EntityCreateComponent(): JSX.Element {
   const [i18nKeys, setI18nKeys] = useState<readonly string[]>([]);
   const [error, setError] = useState<string | null>(null);
 
+  // Two-field gate, in order: (1) display name (EN), (2) slug.
+  // The slug auto-derives from the name via `slugify` until the user
+  // edits the slug input directly — that flips `slugTouched` and the
+  // auto-sync stops, so they can override "monkey-d-luffy" → "luffy"
+  // without the next keystroke in the name field clobbering it.
+  // EN is canonical because slugs MUST be English-ASCII (see
+  // `packages/schemas/src/primitives.ts` SLUG regex).
+  const [nameEn, setNameEn] = useState('');
   const [slug, setSlug] = useState('');
+  const [slugTouched, setSlugTouched] = useState(false);
   const [slugValid, setSlugValid] = useState(false);
+  useEffect(() => {
+    if (slugTouched) return;
+    setSlug(slugify(nameEn));
+  }, [nameEn, slugTouched]);
   // The slug doubles as a React key on EntityForm so changing it
   // mid-flow remounts the form (and discards in-progress edits).
   // This is the lesser evil — keeping the form mounted means i18n
   // keys baked from the old slug would leak into the saved entity.
-  // Contributors learn fast: pick the slug first.
+  // The two-field gate above means the user only sees the form once
+  // both fields are settled, so this remount-on-slug-change rarely
+  // bites in practice.
   const [creating, setCreating] = useState(false);
   const [openedPR, setOpenedPR] = useState<{ number: number; htmlUrl: string; } | null>(
     null,
@@ -74,16 +92,29 @@ function EntityCreateComponent(): JSX.Element {
     return et?.labels[locale] ?? et?.labels.en ?? type;
   }, [schemas, type, locale]);
 
-  // Blank initial entity. Required properties are flagged red in the
-  // EntityForm sidebar (existing behaviour), so the contributor has
-  // a clear todo list without us needing to seed anything here.
+  // The display name typed in the gate above is pre-seeded into the
+  // form's first `name` entry so the user doesn't type it twice. The
+  // i18n key shape (`type.slug.name.0`) mirrors `makeI18nKey` in
+  // EntityForm for the first entry of a historical property. Once the
+  // form is mounted, the name lives inside EntityForm's state — this
+  // seeding is one-shot at mount time only (gated by `key={slug}`).
+  const nameKey = `${type}.${slug}.name.0`;
   const initialData = useMemo(
-    () => ({ id: `${type}:${slug}`, type, slug, properties: {}, relations: [] }),
-    [type, slug],
+    () => ({
+      id: `${type}:${slug}`,
+      type,
+      slug,
+      properties: nameEn !== '' ? { name: [{ value_key: nameKey }] } : {},
+      relations: [],
+    }),
+    [type, slug, nameEn, nameKey],
   );
   const initialTranslations = useMemo(
-    () => ({ en: {}, fr: {} }),
-    [],
+    () => ({
+      en: nameEn !== '' ? { [nameKey]: nameEn } : {},
+      fr: {},
+    }),
+    [nameEn, nameKey],
   );
 
   if (error !== null) {
@@ -109,7 +140,7 @@ function EntityCreateComponent(): JSX.Element {
           render={<Link to='/types/$type' params={{ type }} />}
           variant='ghost'
           size='sm'
-          className='text-muted-foreground -ml-2 h-6 px-1.5 text-[11px]'
+          className='text-muted-foreground -ml-1.5 h-6 px-1.5 text-[11px]'
         >
           <ChevronLeft className='size-3' />
           {entityTypeLabel}
@@ -146,20 +177,40 @@ function EntityCreateComponent(): JSX.Element {
         )
         : null}
 
-      <div className='max-w-xl'>
+      <div className='max-w-xl space-y-4'>
+        <div className='space-y-1.5'>
+          <Label htmlFor='entity-name-en'>Name (English)</Label>
+          <Input
+            id='entity-name-en'
+            value={nameEn}
+            onChange={(e) => setNameEn(e.target.value)}
+            placeholder='e.g. Monkey D. Luffy'
+            disabled={creating || openedPR !== null}
+            autoComplete='off'
+            spellCheck={false}
+          />
+          <p className='text-muted-foreground text-xs'>
+            The slug below is derived from this name automatically — you can override it.
+          </p>
+        </div>
         <SlugInput
           type={type}
           value={slug}
-          onChange={setSlug}
+          onChange={(next) => {
+            setSlug(next);
+            setSlugTouched(true);
+          }}
           onValidChange={setSlugValid}
           disabled={creating || openedPR !== null}
         />
       </div>
 
-      {!slugValid
+      {nameEn === '' || !slugValid
         ? (
           <div className='text-muted-foreground rounded-md border border-dashed p-8 text-center text-sm'>
-            Pick a valid, unused slug above to start editing the entity's properties and relations.
+            {nameEn === ''
+              ? "Type the entity's name above to start editing its properties and relations."
+              : 'Pick a valid, unused slug above to continue.'}
           </div>
         )
         : (
@@ -177,6 +228,12 @@ function EntityCreateComponent(): JSX.Element {
             i18nKeys={i18nKeys}
             initialData={initialData}
             initialTranslations={initialTranslations}
+            // Show only required properties — the contributor fills
+            // the bare minimum, ships a PR, then keeps editing on the
+            // full edit page (which auto-loads the open PR via
+            // `resumePR`, so optional fields and relations land as
+            // commits on the same branch).
+            requiredOnly
             onSave={async (next, translations) => {
               setCreating(true);
               try {
@@ -196,12 +253,16 @@ function EntityCreateComponent(): JSX.Element {
                     },
                   },
                 );
-                // Best-effort nudge back to the type list — the new
-                // entity won't appear there until after deploy, but
-                // the contributor can keep creating siblings without
-                // re-typing the slug field. They can also stay on
-                // this page (banner above) to inspect the PR link.
-                await navigate({ to: '/types/$type', params: { type } });
+                // Redirect to the full edit page so the contributor
+                // can fill the optional properties + relations. The
+                // page hits `getEntity`, which the server resolves
+                // off the just-opened PR branch (resumePR codepath),
+                // so subsequent saves append commits to the same PR
+                // instead of opening a new one.
+                await navigate({
+                  to: '/types/$type/$slug',
+                  params: { type, slug },
+                });
               } finally {
                 setCreating(false);
               }

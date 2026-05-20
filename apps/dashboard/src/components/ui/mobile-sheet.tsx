@@ -48,7 +48,17 @@ export function MobileSheetContent({
 }): JSX.Element {
   return (
     <DialogPrimitive.Portal>
-      <DialogPrimitive.Backdrop className='fixed inset-0 z-50 bg-black/30 backdrop-blur-[2px] data-open:animate-in data-open:fade-in-0 data-closed:animate-out data-closed:fade-out-0 duration-100' />
+      {
+        /* `backdrop-blur-sm` softens the page behind the sheet. The
+          earlier comment in this file flagged a perceptual "flash"
+          on close — that was tied to a 100ms fade-out that snapped
+          the blur off faster than the eye reads it as a transition.
+          We keep the blur AND stretch the close fade to 200ms so the
+          blur loses strength alongside the opacity dissolve, which
+          avoids the snap. Bg lifted to /30 because lower opacity +
+          blur reads as smudge rather than a real overlay. */
+      }
+      <DialogPrimitive.Backdrop className='fixed inset-0 z-50 bg-black/30 backdrop-blur-sm data-open:animate-in data-open:fade-in-0 data-open:duration-150 data-closed:animate-out data-closed:fade-out-0 data-closed:duration-200' />
       <DialogPrimitive.Popup
         className={
           // Slide up from the bottom; the data-open / data-closed
@@ -56,7 +66,13 @@ export function MobileSheetContent({
           // tailwindcss-animate drive the transition cleanly. The
           // `pb-[env(safe-area-inset-bottom)]` keeps the scroll
           // area clear of the home-indicator on iPhones.
-          `bg-background text-foreground fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[85vh] w-full max-w-[40rem] flex-col rounded-t-[1rem] border-t shadow-2xl outline-none data-open:animate-in data-open:slide-in-from-bottom data-closed:animate-out data-closed:slide-out-to-bottom duration-150 ease-out ${className}`
+          // Open: slide UP from bottom (entrance has natural motion).
+          // Close: fade out only (no slide). Sliding the popup off-screen
+          // briefly drags a dark `bg-background` panel + shadow + top
+          // border across the page, which on dark theme reads as a
+          // "page refresh / black flash" against the underlying content.
+          // A simple opacity dissolve avoids that whole class of issue.
+          `bg-background text-foreground fixed inset-x-0 bottom-0 z-50 mx-auto flex max-h-[85vh] w-full max-w-[40rem] flex-col rounded-t-[1rem] border-t shadow-2xl outline-none data-open:animate-in data-open:slide-in-from-bottom data-open:duration-150 data-closed:animate-out data-closed:fade-out-0 data-closed:duration-100 ease-out ${className}`
         }
         style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' }}
       >

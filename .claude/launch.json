@@ -1,0 +1,17 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "dashboard",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["--filter", "@onepiece-wiki/dashboard", "dev"],
+      "port": 4100
+    },
+    {
+      "name": "preview",
+      "runtimeExecutable": "bun",
+      "runtimeArgs": ["--filter", "@onepiece-wiki/preview", "dev"],
+      "port": 4000
+    }
+  ]
+}

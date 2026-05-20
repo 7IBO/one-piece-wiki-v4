@@ -8,7 +8,7 @@ Format: append new entries at the top.
 
 ---
 
-## ADR-024 — Bulk ingest from Fandom EN + TMDB; split `appearance_type` into two axes
+## ADR-026 — Bulk ingest from Fandom EN + TMDB; split `appearance_type` into two axes
 
 **Date**: 2026-05-17
 
@@ -227,7 +227,7 @@ run):
   the new property + relation qualifier shapes automatically
   (schema-driven). No manual table edits.
 
-**Out of scope for ADR-024**:
+**Out of scope for ADR-026**:
 
 - Mirroring TMDB stills to R2 (hotlinked in 3.5; mirror is a
   later phase).
@@ -239,6 +239,282 @@ run):
 - Cross-universe expansion.
 - Replacing Claude Code with the Anthropic API for bulk runs
   — see ADR-010 for the migration triggers.
+
+---
+
+## ADR-025 — Public REST API with versioned wire-format adapters (design only, deferred)
+
+**Date**: 2026-05-19
+
+**Status**: design-only. Implementation deferred — no code change in
+this ADR. See `/docs/PUBLIC_API_DESIGN.md` for the full design and
+`/docs/ROADMAP.md` for the deferred phase placement.
+
+**Context**: ARCHITECTURE.md flags a public API as a future concern
+("becomes relevant when third parties want to consume the data — a
+likely demand from YouTubers, fan apps"). Before the SDK refactor of
+Phase B (cf. ADR-024) lands, we want the API design pinned down so
+that the type-safety chain, the SDK conventions, and the future API
+surface are co-designed — not retrofitted later under pressure.
+
+The core tensions the API design must resolve:
+
+1. **Data evolves continuously** in `/data/schemas/` and `/data/universes/`
+   (ADR-023 added six vocabularies in one PR; ADR-020 ships new
+   entity types; future contributors will keep doing this).
+   **API contracts must stay stable** for committed versions — third
+   parties pin to a version and expect it to work for months.
+2. **Anti-spoiler invariant** is non-negotiable: the API cannot leak
+   facts beyond the consumer's stated progression. Client-side
+   filtering disqualified by design.
+3. **TypeScript SDK ergonomics** want camelCase; the on-disk data
+   model and REST industry standard want snake_case. A single
+   "canonical" naming convention forced on every surface loses one
+   side.
+
+**Options considered**:
+
+1. **No versioning — single API surface that follows the data.** Every
+   schema change is a potential breaking change. Disqualified: makes
+   third-party integration practically impossible.
+
+2. **Major-only versioning, `/api/v1/`, `/v2/`, …** Each major freezes
+   the wire format. Simple but every additive change costs a major
+   bump and a 12-month deprecation cycle. Too rigid for a wiki where
+   schema-additive changes happen monthly.
+
+3. **Full semver `MAJOR.MINOR.PATCH`, URL carries MAJOR only,
+   `MINOR.PATCH` in headers + archived OpenAPI snapshots.** Matches
+   industry standard (GitHub, Stripe, Twilio). Allows additive growth
+   without breaking pinned clients. **Chosen.**
+
+4. **GraphQL.** Powerful query model but cache-hostile, DoS surface,
+   resolver complexity. Deferred — REST first, GraphQL evaluated
+   when concrete consumer demand surfaces.
+
+**Choice**: Full semver REST API with **versioned wire-format
+adapters** as the architectural primitive.
+
+Key design tenets (full detail in `/docs/PUBLIC_API_DESIGN.md`):
+
+- **URL prefix = MAJOR only.** `/api/v1/`, `/api/v2/`. MINOR and
+  PATCH live in `X-API-Version` response headers and in archived
+  OpenAPI snapshots under `docs/api-versions/v1/openapi-1.4.2.json`
+  etc.
+- **One `packages/api-vN/` package per active MAJOR.** Each package
+  pins the wire-format at its release date and translates the
+  current data into that frozen shape. Append-only within a major
+  (new optional fields ok, removals require a new major).
+- **Four drift strategies** for handling data changes against a
+  pinned adapter: `ignore` (new field invisible to v1), `alias`
+  (rename projected through), `freeze` (deprecated field returns
+  sentinel + `Warning` header), `hard fail` (PR blocked until human
+  decision).
+- **Impact analyzer** (`bun run api:impact`, pre-commit + CI) diffs
+  schema changes against every active adapter and classifies impact.
+  Breaking changes without resolution block the PR. This is the
+  mechanism that converts "fear of breaking the API" into mechanical
+  verification.
+- **Two-major-live policy.** At any time only `current` and
+  `previous` MAJOR are served. Older majors are sunsetted with 18
+  months notice via RFC 8594 `Sunset` headers. Caps maintenance at
+  two adapter packages.
+- **Wire format vs SDK convention split** (resolves tension #3):
+  - **Wire (REST)**: `snake_case` for meta keys + immutable IDs for
+    properties/qualifiers/vocab values. Mirrors on-disk JSON and
+    SQLite columns. Matches REST industry standard.
+  - **TypeScript SDK**: `camelCase` for meta keys + immutable IDs
+    for properties/qualifiers/vocab values. Generated alongside the
+    snake_case Zod schemas of ADR-024 Phase A.
+  - The SDK exposes the same camelCase API whether backed by
+    SQLite (`createClient`) or HTTP (`createHttpClient`).
+- **Translations resolved server-side** when `?lang=` is supplied.
+  Both `value_key` and resolved `value` are returned, side by side,
+  so clients can debug missing translations and re-render on locale
+  switch without refetch.
+- **OpenAPI auto-generated** from the same schema-engine generator
+  (extension of ADR-024 Phase A). Snapshot archived per MINOR. Lint
+  in CI with Spectral. Round-trip test: generated client must
+  compile against a real running API.
+
+**Rationale**:
+
+- The adapter pattern lets data and API evolve at independent
+  cadences. Maintainers can ship `/data/schemas/` changes without
+  thinking about API semantics most of the time (the analyzer flags
+  the cases where they must).
+- Two-major-live policy bounds maintenance burden. Without it, a
+  long-lived API accumulates versions indefinitely.
+- The wire/SDK convention split eliminates a class of mistakes
+  (`entity_id` vs `entityId`) at the boundary that matters (the
+  consumer's code) without compromising the on-disk model.
+- Resolving translations server-side cuts the consumer's job in
+  half — they don't need to ship the translation catalogue, just
+  call the API with `?lang=fr`.
+
+**Consequences if/when implemented**:
+
+- New workspace `apps/api` (or routes group inside
+  `apps/dashboard`, to decide at Phase 1 of implementation).
+- New workspace `packages/api-v1/` containing the first frozen wire
+  format. Adapters live as TS code, not declarative config (to
+  reconsider after experience).
+- New script `bun run api:impact`, wired into lefthook pre-commit
+  and CI.
+- New CI gate: PRs touching `packages/api-v*/src/` must update
+  `packages/api-v*/CHANGELOG.md`.
+- New doc `/docs/PUBLIC_API_DESIGN.md` — the design reference (this
+  ADR's companion).
+- ROADMAP entry replacing the "Public API" line in Phase 8+ with a
+  proper deferred phase.
+- Phase B of ADR-024 (typed SDK) becomes a hard dependency — the
+  API serializers cannot be implemented cleanly against the current
+  `Record<string, unknown>` SDK surface.
+- 14 open questions remain (cf. `/docs/PUBLIC_API_DESIGN.md` §
+  "Open questions"). They must be answered before phase 1
+  implementation can start.
+
+**Implementation guard**: this ADR is design-only. No code in this
+PR. Before any `packages/api-*` package is created, a new ADR will
+ratify the answers to the open questions and the choice of
+integration branch.
+
+---
+
+## ADR-024 — End-to-end type-safe SDK from generated Zod schemas
+
+**Date**: 2026-05-19
+
+**Context**: The schema → SQLite → SDK chain validates aggressively at
+the **write** boundary (every JSON file in `/data/universes/**` is run
+through a Zod schema synthesised at runtime by
+`packages/schema-engine/src/entity-loader.ts`). But at the **read**
+boundary the type system collapses: the SDK in
+`packages/sdk/src/client.ts` returns `Record<string, unknown>` for
+`EntityRecord.data`, `PropertyRecord.value`, and
+`RelationRecord.qualifiers`. Consequence: `apps/dashboard/src/api.ts`
+and `apps/preview/views.ts` re-extract every property field by name
+with zero compile-time safety, violating CLAUDE.md's "no property name
+is hardcoded in application code" rule in spirit (the names are
+hardcoded — they're just not checked).
+
+The information needed to type the read side already exists in
+`/data/schemas/**.json`. It just isn't propagated. Before building the
+public wiki app (Phase 6+), the chain needs to be closed so app code
+gets `data.bounty[0].value: number` instead of casting.
+
+**Options considered**:
+
+1. **Re-validate at read with the runtime mapper.** Reuse
+   `buildEntitySchema(typeId, catalogue)` in the SDK, call `.parse()`
+   on every row. Safe but pays the Zod cost on every read, and forces
+   the public app to ship the meta-validator + the entire schema
+   catalogue at runtime. Inconsistent with Architecture invariant #3
+   ("performance at read time" via build-time precomputation).
+
+2. **Hand-author types per entity type.** Cheapest implementation, but
+   guarantees drift the first time a property is added without a code
+   change. Violates the "schemas are data, not code" invariant.
+
+3. **Generate static Zod schemas at build time, derive types via
+   `z.infer`.** Schema-engine already emits ID arrays under
+   `packages/schemas/generated/`; extend it to emit one Zod object per
+   property-type, entity-type, and vocabulary. The SDK and apps `import
+   type` from the generated files — zero runtime cost. The same Zod
+   schemas remain available as runtime values for the dashboard's RHF
+   form resolvers and for opt-in integration tests. **Chosen.**
+
+**Choice**: Phase A of a three-phase refactor (Phases B and C deferred
+to follow-up ADRs once Phase A lands and proves itself).
+
+Phase A delivers the generator changes only — no SDK surface change
+yet. It establishes the type vocabulary that Phase B will consume:
+
+- New branded primitive `IsoDate` in
+  `packages/schemas/src/primitives.ts` (regex `YYYY-MM-DD`, valid
+  surface ranges). All `value_type: 'date'` property entries map to
+  this brand at both compile time (the generator) and runtime
+  (`entity-loader.ts:valueSchemaFor` switched from `z.string()` to
+  `IsoDate`).
+- New emitted file `packages/schemas/generated/vocabularies.ts` — one
+  Zod enum per vocabulary file (`BloodTypesEnum`, `NameTypesEnum`, …)
+  plus a `VocabularyValues` index keyed by vocabulary id and a
+  `VocabularyValueOf<V>` generic.
+- New emitted file `packages/schemas/generated/property-values.ts` —
+  one Zod schema per property-type covering a single historisable
+  entry (`BountyEntry`, `NameEntry`, …). Localizable property-types
+  use `value_key: I18nKey`; others use `value: <typed>`. Universal
+  qualifiers (`since`, `until`, `source`, `epistemic_status`,
+  `event`, …) are flattened on the entry to mirror the on-disk
+  shape. Property-specific qualifiers from `allowed_qualifiers` are
+  added with the right enum/ref typing.
+- New emitted file `packages/schemas/generated/entities.ts` — one Zod
+  schema per entity-type covering the full on-disk JSON
+  (`CharacterData`, `DevilFruitData`, …) plus an `EntityDataSchemas`
+  index, an `EntityTypeId` union, and a discriminated `EntityDataMap`
+  keyed by the entity-type id (matching `SDK.EntityRecord.type`).
+- Relations stay generically typed at the entity level
+  (`qualifiers: z.record(z.string(), z.unknown())`). A per-relation
+  qualifier file is deferred to Phase B — adding 68 discriminated
+  union branches to every entity blew up IDE perf in early
+  experiments for very little gain. Narrowing happens at the call
+  site instead.
+
+The new printers live under
+`packages/schema-engine/src/printers/` (one file per output) and share
+a `value-type-to-zod.ts` helper that maps `ValueType` + constraints
+to a Zod expression printed as a TypeScript source string. The
+runtime mapper in `entity-loader.ts` stays in lockstep — both honour
+`date → IsoDate` and the same enum-ref Pascal-casing.
+
+**Rationale**:
+
+- The emitted files are pure Zod, so `z.infer` gives types for free
+  and the same schemas are reusable for dashboard form validation
+  (RHF + `@hookform/resolvers/zod`) without re-authoring shapes.
+- Types-only imports erase at compile time, so the public app pays
+  zero runtime cost for type safety. The dashboard pays the Zod cost
+  it would have paid anyway for form validation.
+- The discriminated `EntityDataMap.type` literal (`z.literal('character')`,
+  etc.) means a URL param of type `string` narrows naturally with
+  `if (entity.type === 'character')` — no custom helper needed.
+- Generated files stay git-ignored (already configured in
+  `.gitignore`), matching the existing `generated/index.ts` policy.
+  CI runs `bun run schema:generate` before typecheck.
+
+**Phase B** (deferred, separate ADR): refactor the SDK to be generic
+over `EntityTypeId`, return discriminated `EntityRecord` unions, and
+migrate `apps/dashboard/src/api.ts` + `apps/preview/views.ts` to
+typed access. Adds an integration test that loads a built `.db` and
+asserts `client.getEntity<'character'>('character:luffy').data.bounty?.[0].value`
+is `number` at compile time.
+
+**Phase C** (deferred, separate ADR): emit a build-time schema hash
+into a `meta` table in SQLite and into a `GENERATED_SCHEMA_HASH`
+constant; SDK exposes `client.schemaHash` and an `assertCompatibleWith`
+helper so apps fail fast on artefact/code drift instead of silently
+returning malformed rows.
+
+**Consequences**:
+
+- Three new emitted files under `packages/schemas/generated/`
+  (vocabularies.ts, property-values.ts, entities.ts). Existing
+  `index.ts` extended to re-export them. All git-ignored.
+- New branded `IsoDate` primitive exported from
+  `@onepiece-wiki/schemas`. All four `value_type: "date"` properties
+  (`aired_at_jp`, `publications`, `published_at_jp`,
+  `released_at_jp`) now reject malformed dates; verified existing
+  data is already `YYYY-MM-DD`.
+- `entity-loader.ts` switched `date` runtime mapping from `z.string()`
+  to `IsoDate` (in lockstep with the printer).
+- Two new test files in `packages/schema-engine/__tests__/`: unit
+  tests for the value-type printer and a generator smoke test that
+  imports the emitted files and asserts a representative
+  `BountyEntry` and `CharacterData` round-trip.
+- All 11 packages typecheck clean; `bun test packages/sdk` (8 tests)
+  and `bun test packages/schema-engine` (11 tests) pass; lint clean.
+- No SDK consumer change in this ADR — the new files are not
+  imported anywhere yet. Phase B will hook them in.
 
 ---
 
