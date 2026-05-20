@@ -235,6 +235,123 @@ acts as a development sandbox for the dashboard.
      review pass surfaced (mismatches, gaps in the source data, prompt
      issues).
 
+## Phase 3.5 — Fandom EN + TMDB bulk ingest
+
+**Goal**: populate the entire One Piece corpus from two external
+sources so the public web app (Phase 6) has real data to render.
+Scope, source mapping, model deltas and rationale are fully spelled
+out in **ADR-026** — this section lists the build order.
+
+**Scheduling**: starts after Phase 4.3 ships. The bulk ingest will
+produce thousands of `auto_imported` entities and is unusable
+without the 4.3 contribution-surface tools (entity creation flow,
+per-source cast manager, per-entity apparitions tab) that humans
+will need to triage the output.
+
+**Locale scope**: EN + FR only for `translations/<locale>/...json`
+files. The 24 additional locales reachable via `langlinks` are
+deferred to Phase 6.
+
+**Exit criteria**:
+
+- ≥ 90 % of catalogued Fandom entities present with at least
+  skeleton data and a valid Zod-parsed shape.
+- 100 % of imported values carry `assisted_by` + `review_status:
+  "auto_imported"`.
+- The build pipeline produces a SQLite the preview app reads
+  without errors.
+- Re-running any importer produces a diff PR, not a blind
+  overwrite — idempotence demonstrated end-to-end on at least
+  one entity type.
+- A retrospective documents how many composite-qualifier cases
+  the parser missed, which entity types yielded the worst
+  auto-imports, and which epistemic patches were necessary
+  beyond Fandom's text.
+
+### Tasks
+
+1. **Importer hardening** (foundation, blocks every other task)
+   - Implement PR mode in `packages/importers` (Phase 2 shipped
+     dry-run only).
+   - Raw-snapshot store under `data/imports/raw/<source>/<key>.json`,
+     gitignored at the directory level so re-runs are auditable
+     locally without polluting commit history.
+   - Per-source clients: `fandom` (MediaWiki API + rate-limit-aware
+     batcher with a project `User-Agent`), `tmdb` (REST client with
+     the Phase 3.5 read token).
+   - Shared parser library: PortableInfobox → JSON, Qref →
+     structured citation, "Characters in Order of Appearance"
+     section → ordered list with qualifier composites and aliases
+     (per ADR-026).
+
+2. **Schema deltas** (ADR-026 § "Consequences")
+   - New: `external_refs` property type, `aired_at_fr` property
+     type, `appearance-modifiers` vocabulary.
+   - Modified: `appearance-types` vocabulary (reduced), `features`
+     relation (extended valid_from / valid_to + new qualifier),
+     `appears-in` relation (new qualifier), `image-licenses`
+     vocabulary (`tmdb-attribution`), `anime-episode` entity type
+     (`aired_at_fr` reference).
+   - Scripted migration of any existing entity carrying a
+     deprecated `appearance_type` value.
+   - Docs propagation: `DATA_MODEL.md`, `SCHEMA_SPEC.md`,
+     `I18N_STRATEGY.md`.
+
+3. **TMDB anime-episode pipeline**
+   - Ingest all 1 181 episode skeletons: `number`, `aired_at_jp`,
+     `runtime_minutes`, `canon_scope`, `external_refs.tmdb_id`,
+     `title_key`.
+   - Translation files for EN + FR: episode title + overview
+     in `translations/<locale>/anime-episode/...json` (overview
+     stored as i18n value, not as a narrative file, because TMDB
+     overviews are short and editorial).
+   - One `image` entity per episode (still hotlinked to TMDB CDN,
+     `license: tmdb-attribution`, `attribution` populated).
+   - Season → arc relation derived from TMDB season grouping
+     (cross-checked against Fandom arc pages in Task 4).
+
+4. **Fandom arc + saga pipeline**
+   - Ingest all ~25 arcs and ~9 sagas with `prev` / `next`
+     chaining.
+   - Canon-vs-filler split from `Saga Box.Filler Arcs` section
+     and `Arc Box.type` value.
+   - Reconcile TMDB season names with Fandom arc names; emit a
+     mismatch report.
+
+5. **Fandom devil-fruit pipeline**
+   - ~250 fruits. Exercises the double-classification pattern
+     (Gomu Gomu no Mi: believed-paramecia → confirmed-mythical-zoan)
+     end-to-end as a smoke test for the epistemic axis.
+
+6. **Fandom character pipeline**
+   - ~1 500 named characters. Qref-driven historisation
+     extractor lives here (bounty progression, status, epithet
+     changes).
+
+7. **Fandom manga-chapter pipeline**
+   - ~1 130 chapters. Includes the `adapts` relation back to
+     `anime-episode` via `Episode Box.chapter`, and the
+     `CharTable` parser for chapter-level character lists.
+
+8. **Episode enrichment from Fandom**
+   - Merge `charDebut`, `locationDebut`, `techDebut`,
+     `devilfruitDebut`, `filler` flag, dub airdates into the
+     TMDB-seeded episode entities. Emit `features` relations
+     with `is_first_appearance: true` where applicable.
+
+9. **Crew + location + event pipelines**
+   - Smaller entity types in volume but reuse the same
+     extraction pattern.
+
+10. **Epistemic patches**
+    - Hand-maintained `data/imports/epistemic-patches.json`
+      applied as a final pass. Encodes the ~50 known reveals,
+      retcons and false identities that Fandom describes flat
+      (Sabo alive after Marineford, Gomu Gomu = Nika, Imu's
+      identity, Bonney = adult Jewelry, etc.). Without this
+      pass the model's epistemic axis stays empty for auto-
+      imported data.
+
 ## Phase 4 — Dashboard (admin-only)
 
 **Goal**: edit data through forms generated from schemas, submit changes as
