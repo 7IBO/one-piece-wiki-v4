@@ -645,3 +645,136 @@ before deep-refactoring.
 3. Budget for usability testing on real phones — at least
    one round with the maintainer on an iPhone + an Android
    mid-range before opening to contributors.
+
+## Public-app feature parking lot (from ADR-027 strategic pass)
+
+The following entries surfaced during the 2026-05-21 strategic
+conversation that produced ADR-027. None are in Phase 6 scope; they
+are forward pointers for Phase 6.x add-ons, post-launch iterations,
+or Phase 9+ work. Promote individually if and when the public app
+soft launch surfaces real demand.
+
+### Comparison view (two entities side-by-side)
+
+A `/compare?a=character:luffy&b=character:zoro` route showing two
+entities' historisable values aligned on a shared timeline (bounty
+curves, fruit awakenings, technique unlocks, status changes). Spoiler
+cursor respected on both sides. Cheap to build once Phase 6.1
+character template is in.
+
+### Power ranking per chapter
+
+Data-driven power ordering of named characters at each chapter,
+combining derivable signals (bounty, demonstrated feats, defeated
+opponents) with optional fan-vote weighting (post-DB-introduction).
+Settles the eternal "is X stronger than Y at this point?" debate
+with a sourced, time-aware chart. The pure-data version is buildable
+without a DB; the voted version is not.
+
+### Embed widgets
+
+A `<one-piece-card character="luffy">` custom element loadable from
+a single `<script>` tag. Lets forums, blogs and Discord bot
+operators embed a small card with avatar + current bounty + epithet.
+Cards linkable to the canonical page. Generates inbound traffic
+without exposing copyable bulk content.
+
+### Today-in-One-Piece-history
+
+"On this day, N years ago: chapter 432 published / episode 1071
+aired / Marineford ended in the timeline". Daily auto-generated
+card, embeddable, RSS-friendly. Low cost once Phase 6.5 OG-image
+infrastructure exists; social-media-friendly.
+
+### Cross-medium reading mode
+
+A reader-mode toggle on chapter pages showing the corresponding
+anime episode metadata (and vice versa) inline, with a "play the
+adaptation" CTA. Surfaces what each medium adds or omits relative
+to the other. Especially valuable around filler arcs.
+
+### Cover-story parallel narrative
+
+Surface cover stories (Buggy's Crew adventures, Marines insanity,
+Stelly's rise, CP9's afterlives) as their own first-class narrative
+thread separable from the main chapter flow. Most readers never
+realise these narratives exist coherently; offering them as a
+navigable thread is a competitive-distinctive feature on top of
+the in-universe document entity type (already filed at the top of
+this file).
+
+### PWA + offline reading
+
+Add a service worker so visitors can mark entity pages for offline
+reading. Useful in transit. Low marginal cost once Phase 6 is
+built.
+
+### Print / PDF export per page
+
+A "save as PDF" button producing a clean, ad-free PDF of an
+entity. Fan zines, wiki enthusiasts and educators will use this.
+SEO-tangential but signal-rich for power users.
+
+### Voice-actor data per dub
+
+JP / EN / FR / DE / IT / ES voice cast per character, with episode
+ranges. Partially captured in Fandom infoboxes already. New entity
+types `voice-actor` and `voice-cast` (relation) needed. Phase 9+
+when the audience demands it.
+
+### Translation contribution UI
+
+A dedicated `/translate` track for non-developer contributors:
+shows a queue of untranslated `i18n_key` values, presents the EN
+text, allows a one-click submission opening a PR labeled
+`translation`. Lower barrier to entry than the schema-driven
+entity form for FR speakers who want to help without learning the
+data model.
+
+### Reader pirate-captain profile
+
+Opt-in account (post-launch, post-DB-introduction) representing
+the reader as a fictional pirate captain with a bounty computed
+from their contribution stats. Light gamification — bounty
+increases per merged PR, per reviewed entity, per added image.
+Avoids leveling/XP fatigue.
+
+### Discord-rich-embed integration
+
+Rich embed previews on Discord pastes of any entity URL with a
+custom OG image + key facts. Phase 6.5 OG-image work is the
+prerequisite.
+
+### Easter eggs per arc
+
+Subtle visual treats: Wano arc shows a floating sakura petal
+animation, Thriller Bark a faint mist effect, Skypiea cloud-light
+backdrops. Triggered by cursor location, always dismissible.
+
+### Cross-reference auto-tagging in long-form prose
+
+When narrative prose is rendered, any explicit `[[character:luffy]]`
+link becomes a typed inline link with hover preview. Beyond that,
+detect bare-text mentions of known entities ("the captain", "the
+straw hats") and offer (not auto-apply) tagging suggestions to
+editors via the dashboard.
+
+### Recently revealed events feed
+
+A `/timeline/recent-reveals` listing the latest in-universe
+revelations (Joy Boy as Luffy, Saturn's identity, Imu's role),
+ordered by publication date of the revealing source. Driven
+entirely by the `epistemic_status: revealed_to_reader` markers we
+already encode. Pure data work, no DB.
+
+### Power-couple / family-tree exploration
+
+Visual exploration of the relation graph rooted on a character.
+Partially planned via Phase 6.4 relation graphs; promote to
+dedicated view when family-tree queries become a frequent referral
+pattern.
+
+### Mobile app + push notifications
+
+A native or wrapped-PWA mobile app with push notifications on new
+chapter / episode publication. Deferred to Phase 9+ at earliest.
