@@ -26,7 +26,8 @@
     "dashboard:dev": "bun --filter @onepiece-wiki/dashboard dev",
     "check:frontend-extensions": "bun scripts/check-frontend-extensions.ts",
     "fix:frontend-extensions": "bun scripts/strip-frontend-extensions.ts",
-    "setup:r2-cors": "bun scripts/setup-r2-cors.ts"
+    "setup:r2-cors": "bun scripts/setup-r2-cors.ts",
+    "doctor": "react-doctor --no-dead-code"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "3.1048.0",
@@ -38,6 +39,7 @@
     "knip": "^5.0.0",
     "lefthook": "^1.10.0",
     "oxlint": "^0.15.0",
+    "react-doctor": "0.5.2",
     "turbo": "^2.3.0",
     "typescript": "^5.7.0",
     "vitest": "^2.1.0"
