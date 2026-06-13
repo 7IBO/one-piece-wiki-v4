@@ -1,11 +1,12 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "arc",
-  "schema_version": 2,
+  "schema_version": 3,
   "labels": { "en": "Arc", "fr": "Arc" },
   "url_segment": "arcs",
   "properties": [
     { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "arc_number", "required": false, "historical": false, "localizable": false },
     { "id": "arc_subtype", "required": false, "historical": false, "localizable": false },
     { "id": "narrative_key", "required": false, "historical": false, "localizable": true }
   ],

@@ -17,6 +17,8 @@
     "corpse": { "labels": { "en": "Corpse", "fr": "Cadavre" } },
     "imagined": { "labels": { "en": "Imagined", "fr": "Imaginé" } },
     "narrator_only": { "labels": { "en": "Narrator only", "fr": "Narrateur seulement" } },
-    "revelation": { "labels": { "en": "Revelation", "fr": "Révélation" } }
+    "revelation": { "labels": { "en": "Revelation", "fr": "Révélation" } },
+    "wanted_poster": { "labels": { "en": "Wanted poster", "fr": "Avis de recherche" } },
+    "eyecatcher": { "labels": { "en": "Eyecatcher", "fr": "Eyecatch" } }
   }
 }

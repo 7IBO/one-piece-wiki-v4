@@ -29,6 +29,9 @@
     },
     "arc": {
       "properties": {
+        "arc_number": {
+          "required": false
+        },
         "arc_subtype": {
           "required": false
         },
@@ -610,6 +613,12 @@
       "enum_ref": null,
       "historical": false,
       "localizable": true
+    },
+    "arc_number": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
     },
     "arc_subtype": {
       "value_type": "enum",
@@ -2216,6 +2225,7 @@
     "appearance-types": [
       "corpse",
       "cover_story",
+      "eyecatcher",
       "flashback",
       "full",
       "imagined",
@@ -2228,7 +2238,8 @@
       "recap",
       "revelation",
       "silhouette",
-      "vision"
+      "vision",
+      "wanted_poster"
     ],
     "arc-roles": [
       "ally",
@@ -2272,6 +2283,7 @@
       "live_action",
       "manga",
       "sbs",
+      "semi_canon",
       "video_game"
     ],
     "canonicity-tiers": [

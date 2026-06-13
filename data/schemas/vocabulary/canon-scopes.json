@@ -10,6 +10,7 @@
     "film_non_canon": { "labels": { "en": "Non-canon film", "fr": "Film hors canon" } },
     "sbs": { "labels": { "en": "SBS", "fr": "SBS" } },
     "databook": { "labels": { "en": "Databook", "fr": "Databook" } },
+    "semi_canon": { "labels": { "en": "Semi-canon", "fr": "Semi-canon" } },
     "live_action": { "labels": { "en": "Live action", "fr": "Adaptation en prise de vue réelle" } },
     "crossover": { "labels": { "en": "Crossover", "fr": "Crossover" } },
     "video_game": { "labels": { "en": "Video game", "fr": "Jeu vidéo" } }

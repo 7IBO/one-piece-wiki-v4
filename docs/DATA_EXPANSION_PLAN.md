@@ -25,11 +25,14 @@ rule stands — concepts land in `DATA_MODEL.md` and an ADR _before_ code).
 - **Status**: in progress. Shipped so far: C2 (ADR-041), C3 (ADR-043), C4
   (ADR-039), C6 (ADR-040), C7-core (ADR-044), C9a (ADR-045: location
   region/status + crew territorial control), materials (ADR-046: `material`
-  entity + `made-of` + Seastone's `nullifies_devil_fruits`), plus the
-  cross-cutting relation epistemic axis (ADR-037) and the `check:compat`
-  lockfile (ADR-042). Remaining: C8 (sources / volumes / SBS-QA / databook-cards
-  / cover-stories — absorbs C7's deferred source/media enrichment, theme-song,
-  adaptation many-to-many), **C9-rest** (race/concept additions,
+  entity + `made-of` + Seastone's `nullifies_devil_fruits`), C8a (ADR-047:
+  `semi_canon` tier + `wanted_poster`/`eyecatcher` appearance types + `arc_number`
+  ordinal), plus the cross-cutting relation epistemic axis (ADR-037) and the
+  `check:compat` lockfile (ADR-042). Remaining: **C8-rest** (the `volume`
+  tankōbon entity — needs an expand→migrate→contract on the legacy `volume`
+  string property; `sbs-qa` + `databook-card` entities; non-linear
+  `adapts`/`adapted-by`; `theme-song` + C7's deferred source/media enrichment),
+  **C9-rest** (race/concept additions,
   ancient-weapon/artifact, event enrichment, `era` entity + the `[D]` structured
   in-universe temporal value), C5 (fighting-styles/Haki/techniques), C1
   (naming/i18n editions — invasive, done last). The materials cluster covered
@@ -200,6 +203,14 @@ relations, and the `adapts`/`adapted-by` many-to-many.
 | `adapts`/`adapted-by` many-to-many | non-linear mapping (Ep1↔Ch2, Ch1↔Ep4; one chapter → several episodes) + `anime_original_content` flag + page-level source anchoring                                         | `[B]`    |
 
 ### C8 — Volumes, SBS Q&A, databook cards, cover-story arcs
+
+**Shipped (ADR-047, C8a):** `canon-scopes += semi_canon` (the canon-≠-spoiler
+tier, §1.4), `appearance-types += wanted_poster/eyecatcher`, and `arc_number`
+(global arc ordinal). Cover-story arcs need **no** new entity — they are `arc`s
+with `arc_subtype: cover_story` (already in the vocab). **Remaining:** the
+`volume` tankōbon entity (requires expand→migrate→contract on the legacy free-text
+`volume` property on `manga-chapter`/`sbs`), `sbs-qa` + `databook-card` entities,
+non-linear `adapts`/`adapted-by`, and `theme-song`.
 
 | Change                         | Detail                                                                                                                                                              | Tag   |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
