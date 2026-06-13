@@ -9,5 +9,11 @@
       { "value_key": "crew.straw-hat-pirates.name", "since": "manga-chapter:1" }
     ]
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "depicted-by",
+      "target": "image:straw-hats-group",
+      "qualifiers": { "role": "group_photo" }
+    }
+  ]
 }

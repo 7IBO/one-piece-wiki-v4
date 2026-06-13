@@ -9,7 +9,7 @@
     "name": [{ "value_key": "event.battle-of-marineford.name", "since": "manga-chapter:550" }]
   },
   "relations": [
-    { "type": "part-of-arc", "target": "arc:marineford" },
+    { "type": "occurs-during-arc", "target": "arc:marineford" },
     {
       "type": "participant",
       "target": "character:luffy",

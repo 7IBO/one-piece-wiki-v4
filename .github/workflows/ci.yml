@@ -54,6 +54,9 @@ jobs:
       - name: Reference check
         run: bun run check:references
 
+      - name: Coherence check
+        run: bun run check:coherence
+
       - name: Test
         run: bun run test
 

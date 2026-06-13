@@ -34,5 +34,11 @@
       }
     ]
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "depicted-by",
+      "target": "image:gomu-gomu-no-mi",
+      "qualifiers": { "role": "primary_portrait" }
+    }
+  ]
 }

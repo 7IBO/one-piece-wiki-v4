@@ -14,11 +14,5 @@
     "spoiler_since": { "value": "manga-chapter:1" },
     "alt_text_key": { "value_key": "image.gomu-gomu-no-mi.alt" }
   },
-  "relations": [
-    {
-      "type": "depicted-by",
-      "target": "devil-fruit:gomu-gomu",
-      "qualifiers": { "role": "primary_portrait" }
-    }
-  ]
+  "relations": []
 }

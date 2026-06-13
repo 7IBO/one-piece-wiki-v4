@@ -126,10 +126,14 @@ describe('Phase 2 end-to-end', () => {
     expect(chapter1Member.length).toBe(1);
   });
 
-  it('handles a reused image (group photo) with multiple depicted-by inverses', () => {
+  it('handles a reused image (group photo) depicted by multiple entities', () => {
+    // Schema-correct model (depicted-by valid_from = depicting entities,
+    // valid_to = image): the crew + the two characters each hold
+    // `depicted-by -> image:straw-hats-group`, so the image has three
+    // incoming, non-inferred depicted-by relations (the reuse pattern).
     const groupRelations = client.getRelations('image:straw-hats-group', 'incoming');
     const depictedBy = groupRelations.filter((r) =>
-      r.relation_type === 'depicted-by.inverse' && r.is_inferred
+      r.relation_type === 'depicted-by' && !r.is_inferred
     );
     expect(depictedBy.length).toBe(3);
   });

@@ -48,6 +48,16 @@
       "type": "family-of",
       "target": "character:sabo",
       "qualifiers": { "relation_kind": "sworn_brother" }
+    },
+    {
+      "type": "depicted-by",
+      "target": "image:luffy-primary-portrait",
+      "qualifiers": { "role": "primary_portrait" }
+    },
+    {
+      "type": "depicted-by",
+      "target": "image:straw-hats-group",
+      "qualifiers": { "role": "group_photo" }
     }
   ]
 }

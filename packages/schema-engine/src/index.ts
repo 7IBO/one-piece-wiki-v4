@@ -1,3 +1,4 @@
+export * from './coherence.ts';
 export * from './data-source.ts';
 export * from './entity-loader.ts';
 export * from './generator.ts';
