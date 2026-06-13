@@ -787,6 +787,18 @@ Per ADR-015 the work splits into four shippable sub-phases:
 
 #### Phase 7.1 — Two-stage R2 storage
 
+> **Status — code landed early.** The two-stage R2 plumbing already
+> shipped on `main` alongside the Phase 4.x dashboard work, ahead of
+> Phase 7's formal start: `apps/dashboard/api/r2.ts`
+> (`presignUpload` + `presignRead`), `apps/dashboard/api/admin-promote.ts`
+> (dashboard-driven promote **and** reject), the `/api/preview/:key`,
+> `/api/admin/promote`, `/api/admin/reject` endpoints in `server.ts`,
+> the `staging://` value encoding, and the `staging://` build guard in
+> `packages/schema-engine/src/cli/validate.ts`. What remains for a
+> formal 7.1 is **operational, not code**: provisioning the private
+> `pending/` prefix and the 14-day lifecycle rule on the live R2
+> bucket, plus an end-to-end test of the upload → promote path.
+
 - New `pending/` prefix (or sibling bucket) on R2: private, no public
   domain, accessed only via short-lived signed read URLs.
 - `apps/dashboard/api/r2.ts`: `presignUpload()` writes to `pending/`;
@@ -849,6 +861,12 @@ require GitHub login. Login is opt-in for attribution.
   Rate-limit prevents drive-by spam at modest scale.
 
 #### Phase 7.3 — Admin moderation queue
+
+> **Status — partially landed.** The server endpoints this UI drives,
+> `POST /api/admin/promote` and `POST /api/admin/reject`, already exist
+> (`apps/dashboard/api/admin-promote.ts`). The gated `/admin/queue`
+> route and its per-PR detail view are **not built yet** — that UI is
+> the bulk of the remaining 7.3 work, on top of the existing backend.
 
 - New gated route `/admin/queue` (403 for non-admins).
 - Lists every open PR touching `data/**` with: contributor identity,
