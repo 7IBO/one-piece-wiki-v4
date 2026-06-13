@@ -8,6 +8,47 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-038 — Naming axes (native script, romaji, literal meaning) + edition variants
+
+**Date**: 2026-06-13
+
+**Context**: The Fandom survey (`DATA_EXPANSION_PLAN.md` cluster C1) shows every
+notable entity carries **4+ name axes** — native script (kanji/kana), romanized
+(Hepburn), literal meaning/gloss, and official names that **differ per edition**
+(Viz `Gum-Gum Fruit` vs 4Kids; `Zoro` vs `Zolo`; Glénat FR). Our model is most of
+the way there already: `name` is an `i18n_key` property with a `name_type`
+qualifier, and the i18n layer's translation files **already** support per-key
+`{ default, variants: { … } }` (see `I18N_STRATEGY.md`), with `translation-variants`
+a vocabulary. Two gaps: (a) no `name_type` values for the script/meaning axes;
+(b) the variant-example keys in `I18N_STRATEGY.md` (`viz_translation`,
+`fr_glenat`) did not match the vocabulary ids (`viz`, `glenat`), and no
+resolution precedence was written down.
+
+**Decision**:
+
+1. Add three `name-types` values: `native_script` (kanji/kana), `romanized`
+   (Hepburn), `literal_meaning` (gloss). A name entry of these types holds an
+   `i18n_key` like any other. `native_script` / `romanized` are **locale-neutral
+   content** (the same string under every UI locale until a `ja` locale is added
+   per `I18N_STRATEGY.md`); `literal_meaning` is genuinely localizable.
+2. **Edition variants stay in the i18n layer** — no property-level qualifier.
+   The per-key `{ default, variants: { viz, glenat, … } }` shape (already
+   specced) holds the edition spellings. **Resolution precedence**: reader's
+   chosen edition variant → `default` → `en` fallback.
+3. Add `funimation` and `4kids` to `translation-variants` (distinct EN editions
+   whose names diverge, e.g. Zoro/Zolo). `[verify against need]`
+
+**Consequences**: additive — three `name-types` values, two
+`translation-variants` values; **no data migration**, **no code change** (the
+read-path variant resolution is a Phase-6 public-app concern; the storage shape
+already exists). Docs updated same-PR: `DATA_MODEL.md` (Name types), `INVENTORY.md`
+§5.4, `I18N_STRATEGY.md` (corrected the variant-key example to the real vocab ids
+`viz`/`glenat`; documented the precedence). Worked example — Gomu Gomu no Mi:
+`native_script` `ゴムゴムの実`, `romanized` `Gomu Gomu no Mi`, `literal_meaning`
+"Gum-Gum", Viz variant "Gum-Gum Fruit". First cluster of the data-expansion plan.
+
+---
+
 ## ADR-037 — Generalize the epistemic axis to all relations as base qualifiers
 
 **Date**: 2026-06-13
