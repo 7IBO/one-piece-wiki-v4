@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "person",
+  "schema_version": 1,
+  "labels": { "en": "Person (real-world)", "fr": "Personne (réelle)" },
+  "url_segment": "people",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "person_roles", "required": false, "historical": false, "localizable": false }
+  ],
+  "allowed_relations": ["depicted-by"],
+  "ui_hint": { "icon": "mic", "group": "production" }
+}

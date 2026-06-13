@@ -1,0 +1,26 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "marine-ranks",
+  "schema_version": 1,
+  "values": {
+    "fleet_admiral": { "labels": { "en": "Fleet Admiral", "fr": "Amiral en chef" } },
+    "admiral": { "labels": { "en": "Admiral", "fr": "Amiral" } },
+    "vice_admiral": { "labels": { "en": "Vice Admiral", "fr": "Vice-amiral" } },
+    "rear_admiral": { "labels": { "en": "Rear Admiral", "fr": "Contre-amiral" } },
+    "commodore": { "labels": { "en": "Commodore", "fr": "Commodore" } },
+    "captain": { "labels": { "en": "Captain", "fr": "Capitaine" } },
+    "commander": { "labels": { "en": "Commander", "fr": "Capitaine de frégate" } },
+    "lieutenant_commander": {
+      "labels": { "en": "Lieutenant Commander", "fr": "Capitaine de corvette" }
+    },
+    "lieutenant": { "labels": { "en": "Lieutenant", "fr": "Lieutenant" } },
+    "lieutenant_junior_grade": {
+      "labels": { "en": "Lieutenant Junior Grade", "fr": "Enseigne de vaisseau" }
+    },
+    "ensign": { "labels": { "en": "Ensign", "fr": "Aspirant" } },
+    "warrant_officer": { "labels": { "en": "Warrant Officer", "fr": "Officier marinier" } },
+    "chief_petty_officer": { "labels": { "en": "Chief Petty Officer", "fr": "Premier maître" } },
+    "petty_officer": { "labels": { "en": "Petty Officer", "fr": "Maître" } },
+    "seaman": { "labels": { "en": "Seaman", "fr": "Matelot" } }
+  }
+}

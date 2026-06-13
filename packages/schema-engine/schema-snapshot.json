@@ -105,8 +105,10 @@
         "member-of",
         "mentor-of",
         "pilots",
+        "portrayed-by",
         "resides-in",
         "uses-technique",
+        "voiced-by",
         "wields-weapon"
       ]
     },
@@ -395,6 +397,19 @@
         "has-member",
         "led-by",
         "subordinate-to"
+      ]
+    },
+    "person": {
+      "properties": {
+        "name": {
+          "required": true
+        },
+        "person_roles": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "depicted-by"
       ]
     },
     "race": {
@@ -853,6 +868,12 @@
     "page_count": {
       "value_type": "number",
       "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "person_roles": {
+      "value_type": "multi_enum",
+      "enum_ref": "person-roles",
       "historical": false,
       "localizable": false
     },
@@ -1342,6 +1363,7 @@
         "location",
         "manga-chapter",
         "organization",
+        "person",
         "race",
         "saga",
         "ship",
@@ -1648,6 +1670,11 @@
           "enum_ref": "departure-reasons",
           "required": false
         },
+        "held_rank": {
+          "value_type": "enum",
+          "enum_ref": "marine-ranks",
+          "required": false
+        },
         "loyalty_status": {
           "value_type": "enum",
           "enum_ref": "loyalty-statuses",
@@ -1839,6 +1866,32 @@
         }
       }
     },
+    "portrayed-by": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "person"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "context": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "production": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "references": {
       "valid_from_types": [
         "anime-episode",
@@ -2006,6 +2059,37 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "voiced-by": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "person"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "context": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "dub_studio": {
+          "value_type": "enum",
+          "enum_ref": "dub-studios",
+          "required": false
+        },
+        "language": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
         "since": {
           "value_type": "source_ref",
           "enum_ref": null,
@@ -2215,6 +2299,12 @@
       "unknown",
       "zoan"
     ],
+    "dub-studios": [
+      "4kids",
+      "funimation",
+      "odex",
+      "toei"
+    ],
     "during-periods": [
       "god_valley_incident",
       "ohara_incident",
@@ -2402,6 +2492,23 @@
       "traitor",
       "undercover"
     ],
+    "marine-ranks": [
+      "admiral",
+      "captain",
+      "chief_petty_officer",
+      "commander",
+      "commodore",
+      "ensign",
+      "fleet_admiral",
+      "lieutenant",
+      "lieutenant_commander",
+      "lieutenant_junior_grade",
+      "petty_officer",
+      "rear_admiral",
+      "seaman",
+      "vice_admiral",
+      "warrant_officer"
+    ],
     "membership-statuses": [
       "defected",
       "erased",
@@ -2467,6 +2574,20 @@
       "royal_court",
       "secret_society",
       "world_government_branch"
+    ],
+    "person-roles": [
+      "animation_director",
+      "character_designer",
+      "composer",
+      "dub_actor",
+      "episode_director",
+      "film_director",
+      "live_action_actor",
+      "mangaka",
+      "screenwriter",
+      "series_director",
+      "theme_performer",
+      "voice_actor"
     ],
     "publication-countries": [
       "br",

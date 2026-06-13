@@ -8,6 +8,67 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-044 — `person` entity (real-world cast & staff) + Marine rank vocabulary
+
+**Date**: 2026-06-13
+
+**Context**: Cluster C7. Two gaps surfaced by the Fandom survey (§2A / the
+cast-and-staff line in DATA_EXPANSION_PLAN). First, the model had **no way to
+represent real-world people** — seiyū, dub VAs (Toei/Funimation/4Kids/Odex),
+live-action actors, directors, writers, composers, theme performers, the
+mangaka — even though almost every character page carries this. DATA_MODEL
+explicitly listed it as _not captured_ (scoped to hypothetical `voice-cast` /
+`live-action-cast` types). Second, Marine and Navy characters hold a **formal
+rank** (Fleet Admiral → Seaman) that is a tenured, spoiler-sensitive fact
+attached to their service, not a free-text occupation.
+
+**Options**:
+
+- A — One `person` entity type with a `person_roles` multi-enum; cast links are
+  `character → person` relations (`voiced-by`, `portrayed-by`).
+- B — Separate `voice-cast` / `live-action-cast` / `staff` types (the old
+  DATA_MODEL sketch).
+- C — Keep cast as free-text strings on the character (status quo).
+
+**Choice**: A.
+
+**Decision** (additive):
+
+1. **`person`** entity type — real-world people. Properties: `name`,
+   `person_roles`. `allowed_relations`: `depicted-by` (a headshot → `image`).
+   `url_segment` `people`, ui group `production`.
+2. **`person_roles`** property (`multi_enum` → new **`person-roles`** vocab:
+   voice_actor, dub_actor, live_action_actor, series_director, episode_director,
+   film_director, animation_director, screenwriter, character_designer, composer,
+   theme_performer, mangaka). A person can hold several roles.
+3. **`voiced-by`** relation (`character → person`, historised) — qualifiers
+   `since`, `language`, `dub_studio` (enum → new **`dub-studios`** vocab:
+   toei/funimation/4kids/odex), `context`.
+4. **`portrayed-by`** relation (`character → person`, historised) — live-action;
+   qualifiers `since`, `production`, `context`.
+5. **`held_rank`** qualifier (enum → new **`marine-ranks`** vocab: 15 values,
+   fleet_admiral → seaman) on **`member-of`** — a Marine's rank within the
+   organization they serve, historised via the relation's own `since`/`until`.
+6. `depicted-by` `valid_from_types` widened to include `person` (so a person can
+   carry a portrait); `character` `allowed_relations` gains `voiced-by` /
+   `portrayed-by`.
+
+**Rationale**: One uniform `person` type (Option A) keeps the SDK/form surface
+flat — the same `getEntity` path, the same generated form — where Option B
+multiplies near-identical types. Roles are data (`person_roles`), not structure.
+Cast becomes first-class relations, so "who voiced Luffy in the Funimation dub
+since 2007" is a queryable edge with qualifiers rather than a string. Marine rank
+rides `member-of` because rank only exists _relative to_ the org served and is
+already historised there — no parallel timeline to keep in sync.
+
+**Consequences**: +1 entity type (21), +1 property, +3 vocabularies, +2
+relations; `character` and `member-of` extended, `depicted-by` source widened.
+No `/data` migration (additive; no `person` entities or cast/rank data exist
+yet). Snapshot regenerated (all diffs additive per `check:compat`). DATA_MODEL's
+"does not capture" note updated to reflect cast/staff is now captured. Cluster C7.
+
+---
+
 ## ADR-043 — Organizations: sub-units, power systems, member nations
 
 **Date**: 2026-06-13

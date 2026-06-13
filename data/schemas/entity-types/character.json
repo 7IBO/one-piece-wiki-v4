@@ -35,6 +35,8 @@
     "resides-in",
     "captains",
     "pilots",
+    "voiced-by",
+    "portrayed-by",
     "depicted-by"
   ],
   "ui_hint": { "icon": "user", "group": "people", "color": "blue" }

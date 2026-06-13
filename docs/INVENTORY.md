@@ -17,12 +17,14 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 > `birthplace-of`, `depicts`, `mentored-by`, `has-member-race`, `borne-by`,
 > `contains-arc`, `contains-location`, `causes-event`, `replaced-by`,
 > `participated-in`, `adapts`) are now **build-generated inverses**, not
-> declarable relations; and §5 omits 11 vocabularies added since
-> ADR-022/023 (`adaptation-coverage`, `arc-roles`, `blood-types`,
-> `depiction-periods`, `during-periods`, `event-outcomes`, `event-roles`,
-> `event-sides`, `family-relations`, `source-origins`,
-> `publication-countries`). A catalogue-generated refresh of this file is
-> tracked (see `DATA_EXPANSION_PLAN.md` §5).
+> declarable relations. The §2/§3/§4/§5 **headline counts reflect the true
+> catalogue totals**, but their per-item sub-sections still lag: several types
+> added since ADR-022/023 (e.g. `adaptation-coverage`, `arc-roles`,
+> `blood-types`, `depiction-periods`, `event-outcomes`, `family-relations`,
+> `source-origins`, `occupations`, `membership-statuses`, `departure-reasons`,
+> `system-statuses`, `canonicity-tiers`, `succession-reasons`) have no
+> sub-section entry yet. A catalogue-generated refresh of this file is tracked
+> (see `DATA_EXPANSION_PLAN.md` §5).
 
 ---
 
@@ -174,30 +176,31 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (20)
+## 2. Entity types (21)
 
-| ID              | Category   | Description                                 | URL segment     |
-| --------------- | ---------- | ------------------------------------------- | --------------- |
-| `character`     | people     | Any named individual in the universe        | `characters`    |
-| `race`          | people     | A race or species                           | `races`         |
-| `crew`          | groups     | A pirate crew or other organized group      | `crews`         |
-| `organization`  | groups     | Navy, World Government, Cipher Pol, etc.    | `organizations` |
-| `devil-fruit`   | things     | A Devil Fruit (Akuma no Mi)                 | `devil-fruits`  |
-| `technique`     | things     | A named combat or special technique         | `techniques`    |
-| `weapon`        | things     | A named weapon (Wado Ichimonji, etc.)       | `weapons`       |
-| `ship`          | things     | A named ship                                | `ships`         |
-| `location`      | places     | An island, sea, city, kingdom, etc.         | `locations`     |
-| `title`         | abstract   | An inheritable title (Joy Boy, Pirate King) | `titles`        |
-| `concept`       | abstract   | Mythological/philosophical entity (Nika)    | `concepts`      |
-| `manga-chapter` | source     | A manga chapter                             | `chapters`      |
-| `anime-episode` | source     | An anime episode                            | `episodes`      |
-| `film`          | source     | A film                                      | `films`         |
-| `sbs`           | source     | An SBS question corner                      | `sbs`           |
-| `databook`      | source     | A databook / Vivre Card / guide volume      | `databooks`     |
-| `arc`           | container  | A narrative arc                             | `arcs`          |
-| `saga`          | container  | A saga (contains multiple arcs)             | `sagas`         |
-| `event`         | occurrence | A significant in-universe occurrence        | `events`        |
-| `image`         | media      | An image, with R2-hosted URL and metadata   | `images`        |
+| ID              | Category   | Description                                                      | URL segment     |
+| --------------- | ---------- | ---------------------------------------------------------------- | --------------- |
+| `character`     | people     | Any named individual in the universe                             | `characters`    |
+| `race`          | people     | A race or species                                                | `races`         |
+| `crew`          | groups     | A pirate crew or other organized group                           | `crews`         |
+| `organization`  | groups     | Navy, World Government, Cipher Pol, etc.                         | `organizations` |
+| `devil-fruit`   | things     | A Devil Fruit (Akuma no Mi)                                      | `devil-fruits`  |
+| `technique`     | things     | A named combat or special technique                              | `techniques`    |
+| `weapon`        | things     | A named weapon (Wado Ichimonji, etc.)                            | `weapons`       |
+| `ship`          | things     | A named ship                                                     | `ships`         |
+| `location`      | places     | An island, sea, city, kingdom, etc.                              | `locations`     |
+| `title`         | abstract   | An inheritable title (Joy Boy, Pirate King)                      | `titles`        |
+| `concept`       | abstract   | Mythological/philosophical entity (Nika)                         | `concepts`      |
+| `manga-chapter` | source     | A manga chapter                                                  | `chapters`      |
+| `anime-episode` | source     | An anime episode                                                 | `episodes`      |
+| `film`          | source     | A film                                                           | `films`         |
+| `sbs`           | source     | An SBS question corner                                           | `sbs`           |
+| `databook`      | source     | A databook / Vivre Card / guide volume                           | `databooks`     |
+| `arc`           | container  | A narrative arc                                                  | `arcs`          |
+| `saga`          | container  | A saga (contains multiple arcs)                                  | `sagas`         |
+| `event`         | occurrence | A significant in-universe occurrence                             | `events`        |
+| `image`         | media      | An image, with R2-hosted URL and metadata                        | `images`        |
+| `person`        | production | Real-world cast & staff (seiyū, VAs, actors, directors, mangaka) | `people`        |
 
 ### 2.1 Properties per entity type
 
@@ -503,7 +506,19 @@ Allowed relations: `depicts`, `sourced-from`.
 
 ---
 
-## 3. Property types (~35)
+#### `person` (real-world)
+
+| Property       | Required | Historical | Localizable | Notes                     |
+| -------------- | -------- | ---------- | ----------- | ------------------------- |
+| `name`         | yes      | yes        | yes         | Actor / staff name        |
+| `person_roles` | no       | no         | no          | Multi-enum `person-roles` |
+
+Allowed relations: `depicted-by`. Inbound: `voices`, `portrays` (from
+`character` via `voiced-by` / `portrayed-by`).
+
+---
+
+## 3. Property types (74)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -579,6 +594,7 @@ unit, and qualifier policy (section 6).
 | `license`             | `enum`       | `image-licenses`              |
 | `format`              | `enum`       | `image-formats`               |
 | `haki_types`          | `multi_enum` | `haki-types`                  |
+| `person_roles`        | `multi_enum` | `person-roles`                |
 
 ### 3.5 Boolean
 
@@ -607,21 +623,21 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (52)
+## 4. Relation types (57)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.1 Group affiliation
 
-| Type              | From                                | To                     | Inverse           | Qualifiers                                              |
-| ----------------- | ----------------------------------- | ---------------------- | ----------------- | ------------------------------------------------------- |
-| `member-of`       | `character`                         | `crew`, `organization` | `has-member`      | role, since, until, loyalty_status, appears_to_world_as |
-| `led-by`          | `crew`, `organization`              | `character`            | `leads`           | since, until                                            |
-| `ally-of`         | `character`, `crew`, `organization` | (same)                 | (symmetric)       | since, until                                            |
-| `enemy-of`        | `character`, `crew`, `organization` | (same)                 | (symmetric)       | since, until, intensity                                 |
-| `subordinate-to`  | `crew`, `organization`              | `crew`, `organization` | `has-subordinate` | since, until                                            |
-| `member-state-of` | `location`                          | `organization`         | `member-states`   | since, until, membership_status                         |
+| Type              | From                                | To                     | Inverse           | Qualifiers                                                      |
+| ----------------- | ----------------------------------- | ---------------------- | ----------------- | --------------------------------------------------------------- |
+| `member-of`       | `character`                         | `crew`, `organization` | `has-member`      | role, since, until, loyalty_status, departure_reason, held_rank |
+| `led-by`          | `crew`, `organization`              | `character`            | `leads`           | since, until                                                    |
+| `ally-of`         | `character`, `crew`, `organization` | (same)                 | (symmetric)       | since, until                                                    |
+| `enemy-of`        | `character`, `crew`, `organization` | (same)                 | (symmetric)       | since, until, intensity                                         |
+| `subordinate-to`  | `crew`, `organization`              | `crew`, `organization` | `has-subordinate` | since, until                                                    |
+| `member-state-of` | `location`                          | `organization`         | `member-states`   | since, until, membership_status                                 |
 
 ### 4.2 Powers & abilities
 
@@ -726,9 +742,16 @@ generates inverses automatically when `inverse_inferred: true`.
 | `depicted-by`  | (most entity types) | `image`      | `depicts`       | role, period, context, since |
 | `sourced-from` | `image`             | source types | `sources-image` | —                            |
 
+### 4.14 Cast & staff (real-world)
+
+| Type           | From        | To       | Inverse    | Qualifiers                           |
+| -------------- | ----------- | -------- | ---------- | ------------------------------------ |
+| `voiced-by`    | `character` | `person` | `voices`   | since, language, dub_studio, context |
+| `portrayed-by` | `character` | `person` | `portrays` | since, production, context           |
+
 ---
 
-## 5. Vocabularies / Enums (36)
+## 5. Vocabularies / Enums (45)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -867,6 +890,24 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 `viz` (Viz Media EN), `glenat` (Glénat FR), `kana` (Kana FR),
 `official_dub_en`, `official_dub_fr`, `fan_translation`
 
+### 5.26 `person-roles`
+
+`voice_actor`, `dub_actor`, `live_action_actor`, `series_director`,
+`episode_director`, `film_director`, `animation_director`,
+`screenwriter`, `character_designer`, `composer`, `theme_performer`,
+`mangaka`
+
+### 5.27 `dub-studios`
+
+`toei`, `funimation`, `4kids`, `odex`
+
+### 5.28 `marine-ranks`
+
+`fleet_admiral`, `admiral`, `vice_admiral`, `rear_admiral`,
+`commodore`, `captain`, `commander`, `lieutenant_commander`,
+`lieutenant`, `lieutenant_junior_grade`, `ensign`, `warrant_officer`,
+`chief_petty_officer`, `petty_officer`, `seaman`
+
 ---
 
 ## 6. Universal qualifiers
@@ -958,7 +999,7 @@ These exist on every entity, declared once in primitives.
 
 `character`, `devil-fruit`, `crew`, `organization`, `location`,
 `technique`, `weapon`, `ship`, `race`, `title`, `concept`, `event`,
-`arc`, `saga`, `manga-chapter`, `anime-episode`, `film`
+`arc`, `saga`, `manga-chapter`, `anime-episode`, `film`, `person`
 
 ### 9.3 Entity types that can be `participant` of events
 
@@ -982,15 +1023,15 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 20
-- **Property types**: ~35 (some shared across multiple entity types)
-- **Relation types**: 52 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 36
+- **Entity types**: 21
+- **Property types**: 74 (some shared across multiple entity types)
+- **Relation types**: 57 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 45
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)
 - **Container entities**: 3 (arc, saga, event)
-- **Things that depict / can be depicted**: 17 / 1 (image)
+- **Things that depict / can be depicted**: 18 / 1 (image)
 
 ---
 
