@@ -49,11 +49,20 @@ this file is the current status + the open threads.
   repo-root `vercel.json` is **ignored** when Root Directory =
   `apps/dashboard`. **Never push deploy config blind** (CLAUDE.md
   Definition of done #7).
-- Vercel's post-build `tsc` prints node/bun-type errors on `api/` +
-  packages — **non-fatal** (deploy completes) and a Vercel-typecheck-
-  context artifact (our typecheck passes with bun types). The real,
-  local gap — `api/` not being in our typecheck scope — is now closed
-  (dashboard tsconfig `include` covers `api/**/*`).
+- The big post-build `tsc` **error flood** in the Vercel log (`Cannot
+  find name 'process'`, `node:crypto`, `Buffer`, `NodeJS`, `Bun`,
+  `S3Client.send`, plus a couple of "genuine-looking" ones like
+  `string | { error: string }` in server.ts and the `id?` mismatch in
+  generator.ts) is the **same root cause** as the 404: it is Vercel
+  **compiling `apps/dashboard/api/*.ts` as zero-config serverless
+  functions** in its own context without our `@types/bun`/`@types/node`.
+  Proof: every erroring file is in the `api/*.ts` import graph (api/ +
+  the packages it imports) — **zero errors come from `src/**`** (the
+  2302-module tree nitro actually bundles). It is **non-fatal** (deploy
+  exits 0) AND it disappears entirely once `api/` is renamed (PR #32):
+  no `api/` dir → Vercel compiles nothing there → no tsc pass → no
+  flood. The "genuine-looking" errors pass our CI typecheck and are
+  artifacts of the degraded (types-missing) context, not real bugs.
 
 ### 2. Admin schema editor (Phase 5) — proposed, not started
 
