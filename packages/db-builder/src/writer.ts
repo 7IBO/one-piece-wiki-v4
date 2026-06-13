@@ -58,8 +58,9 @@ export function writeDatabase(path: string, rows: ExtractedRows): WriteResult {
     const insertRelation = db.prepare(
       `INSERT INTO relations
         (source_entity_id, target_entity_id, relation_type, qualifiers,
-         since_source, until_source, is_inferred)
-       VALUES (?, ?, ?, ?, ?, ?, ?)`,
+         since_source, until_source, epistemic_status, believed_by,
+         known_truth_by, revealed_since, is_inferred)
+       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
     );
     const insertAppearance = db.prepare(
       `INSERT INTO appearances
@@ -98,6 +99,10 @@ export function writeDatabase(path: string, rows: ExtractedRows): WriteResult {
       r.qualifiers,
       r.since_source,
       r.until_source,
+      r.epistemic_status,
+      r.believed_by,
+      r.known_truth_by,
+      r.revealed_since,
       r.is_inferred,
     ];
     const bindAppearance = (r: AppearanceRow): Binding[] => [

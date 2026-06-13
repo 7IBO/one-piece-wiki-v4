@@ -38,6 +38,11 @@ export type RelationRow = {
   qualifiers: string | null;
   since_source: string | null;
   until_source: string | null;
+  // Relation base qualifiers (ADR-037), promoted from the qualifiers bag.
+  epistemic_status: string;
+  believed_by: string | null;
+  known_truth_by: string | null;
+  revealed_since: string | null;
   is_inferred: number;
 };
 
@@ -62,6 +67,15 @@ function asString(value: unknown): string | null {
 
 function asNumber(value: unknown): number {
   return typeof value === 'number' ? value : 0;
+}
+
+/**
+ * Serialize an entity_ref[] qualifier (`believed_by` / `known_truth_by`)
+ * for its column, or null when absent / not a non-empty array. The full
+ * value is also preserved in the `qualifiers` JSON blob.
+ */
+function jsonArrayOrNull(value: unknown): string | null {
+  return Array.isArray(value) && value.length > 0 ? JSON.stringify(value) : null;
 }
 
 function compareSources(a: string, b: string): number {
@@ -212,6 +226,19 @@ function extractRelationRows(
       : null;
     const since = qualifiersObj !== null ? asString(qualifiersObj['since']) : null;
     const until = qualifiersObj !== null ? asString(qualifiersObj['until']) : null;
+    // Relation base qualifiers (ADR-037). The generated inverse edge
+    // carries the same epistemic state — a hidden link is equally hidden
+    // in both directions.
+    const epistemicStatus = (qualifiersObj !== null
+      ? asString(qualifiersObj['epistemic_status'])
+      : null) ?? 'true';
+    const believedBy = qualifiersObj !== null
+      ? jsonArrayOrNull(qualifiersObj['believed_by'])
+      : null;
+    const knownTruthBy = qualifiersObj !== null
+      ? jsonArrayOrNull(qualifiersObj['known_truth_by'])
+      : null;
+    const revealedSince = qualifiersObj !== null ? asString(qualifiersObj['revealed_since']) : null;
 
     rows.push({
       source_entity_id: entity.id,
@@ -220,6 +247,10 @@ function extractRelationRows(
       qualifiers: qualifiersObj !== null ? JSON.stringify(qualifiersObj) : null,
       since_source: since,
       until_source: until,
+      epistemic_status: epistemicStatus,
+      believed_by: believedBy,
+      known_truth_by: knownTruthBy,
+      revealed_since: revealedSince,
       is_inferred: 0,
     });
 
@@ -232,6 +263,10 @@ function extractRelationRows(
         qualifiers: qualifiersObj !== null ? JSON.stringify(qualifiersObj) : null,
         since_source: since,
         until_source: until,
+        epistemic_status: epistemicStatus,
+        believed_by: believedBy,
+        known_truth_by: knownTruthBy,
+        revealed_since: revealedSince,
         is_inferred: 1,
       });
     }

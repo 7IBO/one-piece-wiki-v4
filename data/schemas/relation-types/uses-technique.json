@@ -9,13 +9,7 @@
   "valid_from_types": ["character"],
   "valid_to_types": ["technique"],
   "qualifiers": [
-    { "id": "since", "value_type": "source_ref", "required": false },
-    {
-      "id": "epistemic_status",
-      "value_type": "enum",
-      "enum_ref": "epistemic-statuses",
-      "required": false
-    }
+    { "id": "since", "value_type": "source_ref", "required": false }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,

@@ -138,6 +138,30 @@ describe('checkCoherence — unreferenced warning', () => {
     );
     expect(warnings.map((w) => w.source)).not.toContain('character:luffy');
   });
+
+  it('counts relation epistemic axes (revealed_since / known_truth_by) as references', () => {
+    const entities = entityMap(
+      entity('character:luffy', [
+        {
+          type: 'depicted-by',
+          target: 'image:luffy',
+          qualifiers: {
+            role: 'x',
+            revealed_since: 'manga-chapter:1',
+            known_truth_by: ['character:dragon'],
+          },
+        },
+      ]),
+      entity('image:luffy'),
+      entity('manga-chapter:1'),
+      entity('character:dragon'),
+    );
+    const unreferenced = checkCoherence(entities, baseCatalogue)
+      .filter((f) => f.severity === 'warning')
+      .map((w) => w.source);
+    expect(unreferenced).not.toContain('manga-chapter:1');
+    expect(unreferenced).not.toContain('character:dragon');
+  });
 });
 
 describe('checkSchemaCoherence', () => {
@@ -179,5 +203,44 @@ describe('checkSchemaCoherence', () => {
     );
     const codes = checkSchemaCoherence(cat).map((f) => f.code);
     expect(codes).toContain('SCHEMA_ALLOWED_RELATION_INVALID_SOURCE');
+  });
+
+  it('flags a relation type that re-declares a base qualifier (ADR-037)', () => {
+    const cat = catalogue(
+      { character: { allowed_relations: ['ally-of'] } },
+      {
+        'ally-of': {
+          valid_from_types: ['character'],
+          valid_to_types: ['character'],
+          qualifiers: [
+            { id: 'since', required: false },
+            { id: 'epistemic_status', required: false },
+          ],
+        },
+      },
+    );
+    const findings = checkSchemaCoherence(cat).filter(
+      (f) => f.code === 'RELATION_DECLARES_BASE_QUALIFIER',
+    );
+    expect(findings.map((f) => f.source)).toContain('ally-of');
+  });
+
+  it('does not flag relation-type-declared since/until/source/role', () => {
+    const cat = catalogue(
+      { character: { allowed_relations: ['member-of'] } },
+      {
+        'member-of': {
+          valid_from_types: ['character'],
+          valid_to_types: ['character'],
+          qualifiers: [
+            { id: 'since', required: true },
+            { id: 'until', required: false },
+            { id: 'role', required: true },
+          ],
+        },
+      },
+    );
+    const codes = checkSchemaCoherence(cat).map((f) => f.code);
+    expect(codes).not.toContain('RELATION_DECLARES_BASE_QUALIFIER');
   });
 });

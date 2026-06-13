@@ -23,6 +23,7 @@
  *                                   a coherence smell, e.g. an uploaded
  *                                   image no entity depicts.
  */
+import { RELATION_BASE_QUALIFIER_IDS } from '@onepiece-wiki/schemas';
 import type { LoadedEntity } from './entity-loader.ts';
 import type { ValidatedCatalogue } from './meta-validator.ts';
 
@@ -37,7 +38,8 @@ export type CoherenceFinding = {
     // schema-level (no entity data needed)
     | 'SCHEMA_ALLOWED_RELATION_UNKNOWN'
     | 'SCHEMA_ALLOWED_RELATION_INVALID_SOURCE'
-    | 'SCHEMA_UNIVERSE_SCOPE_LEAK';
+    | 'SCHEMA_UNIVERSE_SCOPE_LEAK'
+    | 'RELATION_DECLARES_BASE_QUALIFIER';
   readonly severity: 'error' | 'warning';
   readonly source: string;
   readonly path: string;
@@ -65,6 +67,16 @@ type RelationRecord = {
 function collectReferencedIds(entities: ReadonlyMap<string, LoadedEntity>): ReadonlySet<string> {
   const referenced = new Set<string>();
   const axisFields = ['since', 'until', 'source', 'event'] as const;
+  // Relations additionally carry the epistemic base qualifiers (ADR-037):
+  // `revealed_since` (source_ref) and `believed_by` / `known_truth_by`
+  // (entity_ref[]). Count them so a secret-keeper or reveal source is not
+  // falsely flagged UNREFERENCED.
+  const relationAxisFields = [
+    ...axisFields,
+    'revealed_since',
+    'believed_by',
+    'known_truth_by',
+  ] as const;
 
   for (const entity of entities.values()) {
     const data = entity.data as {
@@ -78,7 +90,7 @@ function collectReferencedIds(entities: ReadonlyMap<string, LoadedEntity>): Read
         const record = rel as RelationRecord;
         if (isEntityRef(record.target)) referenced.add(record.target);
         if (record.qualifiers !== null && typeof record.qualifiers === 'object') {
-          for (const field of axisFields) {
+          for (const field of relationAxisFields) {
             for (const ref of refList((record.qualifiers as Record<string, unknown>)[field])) {
               referenced.add(ref);
             }
@@ -227,6 +239,8 @@ export function checkCoherence(
  * `allowed_relations` must exist AND must permit that entity type as a
  * source (`valid_from_types`). Catches the class of bug where a type
  * advertises a relation the relation schema forbids it from starting.
+ * Also flags a relation type that re-declares an engine-provided base
+ * qualifier (`RELATION_DECLARES_BASE_QUALIFIER`, ADR-037).
  */
 export function checkSchemaCoherence(
   catalogue: ValidatedCatalogue,
@@ -255,6 +269,25 @@ export function checkSchemaCoherence(
           path: 'allowed_relations',
           message:
             `Entity type "${typeId}" allows "${relId}" but "${relId}".valid_from_types does not include "${typeId}".`,
+        });
+      }
+    }
+  }
+
+  // ADR-037: relation types must not re-declare a base qualifier; the
+  // schema engine provides epistemic_status / believed_by / known_truth_by
+  // / revealed_since on every relation.
+  const baseQualifierIds = new Set<string>(RELATION_BASE_QUALIFIER_IDS);
+  for (const [relId, relationType] of catalogue.relationTypes) {
+    for (const qualifier of relationType.qualifiers) {
+      if (baseQualifierIds.has(qualifier.id)) {
+        findings.push({
+          code: 'RELATION_DECLARES_BASE_QUALIFIER',
+          severity: 'error',
+          source: relId,
+          path: 'qualifiers',
+          message:
+            `Relation "${relId}" declares base qualifier "${qualifier.id}"; it is engine-provided and must not be re-declared (ADR-037).`,
         });
       }
     }

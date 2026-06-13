@@ -154,6 +154,10 @@ CREATE TABLE relations (
   qualifiers JSON,
   since_source TEXT,
   until_source TEXT,
+  epistemic_status TEXT NOT NULL DEFAULT 'true', -- relation base qualifiers (ADR-037)
+  believed_by JSON,                              -- entity_ref[]
+  known_truth_by JSON,                           -- entity_ref[]
+  revealed_since TEXT,                           -- source_ref
   is_inferred BOOLEAN NOT NULL DEFAULT 0
 );
 

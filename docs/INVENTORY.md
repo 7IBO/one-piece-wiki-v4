@@ -868,6 +868,23 @@ per-property; they are implicit.
 | `note_key`         | `i18n_key`           | none        | Localized explanatory note                    |
 | `superseded_by`    | same as value        | none        | Replacement for retconned values              |
 
+### 6.1 Universal relation qualifiers (ADR-037)
+
+A parallel epistemic set is implicit on **every relation**, inside its
+`qualifiers` object. NOT declared per relation type; `check:coherence`
+rejects a relation that re-declares one
+(`RELATION_DECLARES_BASE_QUALIFIER`). Promoted to columns on the
+`relations` table (mirrored onto the generated inverse) and surfaced on
+the SDK `RelationRecord`. The temporal/citation qualifiers `since` /
+`until` / `source` stay relation-type-declared, not base.
+
+| Qualifier          | Value type           | Default | Meaning                                          |
+| ------------------ | -------------------- | ------- | ------------------------------------------------ |
+| `epistemic_status` | enum                 | `true`  | What kind of truth the link is (see 5.1)         |
+| `believed_by`      | `entity_ref[]`       | none    | Characters who believe the link holds            |
+| `known_truth_by`   | `entity_ref[]`       | none    | Characters who know its real nature              |
+| `revealed_since`   | `source_ref` or list | none    | Source at which the link/its truth becomes known |
+
 ---
 
 ## 7. Primitive value types
@@ -947,7 +964,7 @@ depicted by another image).
 - **Relation types**: ~30
 - **Vocabularies**: 25
 - **Primitive value types**: 10
-- **Universal qualifiers**: 14
+- **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)
 - **Container entities**: 3 (arc, saga, event)
 - **Things that depict / can be depicted**: 17 / 1 (image)

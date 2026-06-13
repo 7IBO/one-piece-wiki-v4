@@ -75,6 +75,21 @@ export const EpistemicStatus = z.enum([
 ]);
 export type EpistemicStatus = z.infer<typeof EpistemicStatus>;
 
+/**
+ * Qualifiers implicit on every relation's `qualifiers` object (ADR-037),
+ * mirroring the historisable-property base qualifiers. A relation type
+ * MUST NOT declare these — the schema engine provides them and
+ * `check:coherence` rejects re-declaration. `since`/`until`/`source`
+ * stay relation-type-declared (they are not base).
+ */
+export const RELATION_BASE_QUALIFIER_IDS = [
+  'epistemic_status',
+  'believed_by',
+  'known_truth_by',
+  'revealed_since',
+] as const;
+export type RelationBaseQualifierId = typeof RELATION_BASE_QUALIFIER_IDS[number];
+
 export const CanonScope = z.enum([
   'manga',
   'anime',

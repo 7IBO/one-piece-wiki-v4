@@ -48,6 +48,12 @@ export type RelationRecord = {
   readonly qualifiers: Record<string, unknown> | null;
   readonly since_source: string | null;
   readonly until_source: string | null;
+  // Relation base qualifiers (ADR-037). `epistemic_status` defaults to
+  // 'true'; `believed_by` / `known_truth_by` are entity-ref lists.
+  readonly epistemic_status: string;
+  readonly believed_by: readonly string[] | null;
+  readonly known_truth_by: readonly string[] | null;
+  readonly revealed_since: string | null;
   readonly is_inferred: boolean;
 };
 
@@ -83,12 +89,14 @@ export function createClient(db: SqliteLike) {
   );
   const relationsOutgoing = db.prepare(
     `SELECT source_entity_id, target_entity_id, relation_type, qualifiers,
-            since_source, until_source, is_inferred
+            since_source, until_source, epistemic_status, believed_by,
+            known_truth_by, revealed_since, is_inferred
        FROM relations WHERE source_entity_id = ?`,
   );
   const relationsIncoming = db.prepare(
     `SELECT source_entity_id, target_entity_id, relation_type, qualifiers,
-            since_source, until_source, is_inferred
+            since_source, until_source, epistemic_status, believed_by,
+            known_truth_by, revealed_since, is_inferred
        FROM relations WHERE target_entity_id = ?`,
   );
 
@@ -130,6 +138,14 @@ export function createClient(db: SqliteLike) {
       : parseJsonField<Record<string, unknown>>(row['qualifiers']),
     since_source: (row['since_source'] as string | null) ?? null,
     until_source: (row['until_source'] as string | null) ?? null,
+    epistemic_status: (row['epistemic_status'] as string | null) ?? 'true',
+    believed_by: row['believed_by'] === null || row['believed_by'] === undefined
+      ? null
+      : parseJsonField<string[]>(row['believed_by']),
+    known_truth_by: row['known_truth_by'] === null || row['known_truth_by'] === undefined
+      ? null
+      : parseJsonField<string[]>(row['known_truth_by']),
+    revealed_since: (row['revealed_since'] as string | null) ?? null,
     is_inferred: Number(row['is_inferred']) === 1,
   });
 
