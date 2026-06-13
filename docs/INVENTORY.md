@@ -6,6 +6,23 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 > This is a reference document. If you add a new schema element, update
 > this file in the same PR.
+>
+> **Authoritative source.** The catalogue in `/data/schemas/**` (and the
+> generated Zod in `packages/schemas`) is authoritative; this inventory is
+> hand-maintained and can lag. When in doubt, read the schema files or run
+> `bun run schema:check` / `bun run check:coherence`. **Known lag
+> (2026-06-13):** the §1 directory tree and the §2 per-type _allowed
+> relations_ predate ADR-033/034's prefer-inferred cleanup — the deleted
+> inverse mirrors (`eaten-by`, `used-by`, `wielded-by`, `enables-technique`,
+> `birthplace-of`, `depicts`, `mentored-by`, `has-member-race`, `borne-by`,
+> `contains-arc`, `contains-location`, `causes-event`, `replaced-by`,
+> `participated-in`, `adapts`) are now **build-generated inverses**, not
+> declarable relations; and §5 omits 11 vocabularies added since
+> ADR-022/023 (`adaptation-coverage`, `arc-roles`, `blood-types`,
+> `depiction-periods`, `during-periods`, `event-outcomes`, `event-roles`,
+> `event-sides`, `family-relations`, `source-origins`,
+> `publication-countries`). A catalogue-generated refresh of this file is
+> tracked (see `DATA_EXPANSION_PLAN.md` §5).
 
 ---
 
@@ -215,12 +232,12 @@ Allowed relations: `member-of`, `ate-fruit`, `uses-technique`,
 
 #### `devil-fruit`
 
-| Property                    | Required | Historical | Localizable | Notes                            |
-| --------------------------- | -------- | ---------- | ----------- | -------------------------------- |
-| `name`                      | yes      | yes        | yes         | Common, true_name, etc.          |
-| `classification`            | yes      | yes        | no          | Vocabulary `devil-fruit-classes` |
-| `awakened`                  | no       | yes        | no          | Boolean                          |
-| `abilities_description_key` | no       | yes        | yes         | Short description key            |
+| Property                    | Required | Historical | Localizable | Notes                                    |
+| --------------------------- | -------- | ---------- | ----------- | ---------------------------------------- |
+| `name`                      | yes      | yes        | yes         | Common, true_name, etc.                  |
+| `classification`            | yes      | yes        | no          | Vocabulary `devil-fruit-classifications` |
+| `awakened`                  | no       | yes        | no          | Boolean                                  |
+| `abilities_description_key` | no       | yes        | yes         | Short description key                    |
 
 Allowed relations: `eaten-by`, `enables-technique`, `depicted-by`,
 `sourced-from`.
@@ -542,25 +559,25 @@ unit, and qualifier policy (section 6).
 
 ### 3.4 Categorical (enum-backed)
 
-| Property              | Value type   | Vocabulary            |
-| --------------------- | ------------ | --------------------- |
-| `status`              | `enum`       | `character-statuses`  |
-| `gender`              | `enum`       | `genders`             |
-| `classification` (DF) | `enum`       | `devil-fruit-classes` |
-| `location_subtype`    | `enum`       | `location-subtypes`   |
-| `technique_type`      | `enum`       | `technique-types`     |
-| `weapon_type`         | `enum`       | `weapon-types`        |
-| `weapon_grade`        | `enum`       | `weapon-grades`       |
-| `ship_type`           | `enum`       | `ship-types`          |
-| `organization_type`   | `enum`       | `org-types`           |
-| `arc_subtype`         | `enum`       | `arc-subtypes`        |
-| `event_subtype`       | `enum`       | `event-subtypes`      |
-| `concept_subtype`     | `enum`       | `concept-subtypes`    |
-| `canon_scope`         | `enum`       | `canon-scopes`        |
-| `databook_subtype`    | `enum`       | `databook-subtypes`   |
-| `license`             | `enum`       | `image-licenses`      |
-| `format`              | `enum`       | `image-formats`       |
-| `haki_types`          | `multi_enum` | `haki-types`          |
+| Property              | Value type   | Vocabulary                    |
+| --------------------- | ------------ | ----------------------------- |
+| `status`              | `enum`       | `character-statuses`          |
+| `gender`              | `enum`       | `genders`                     |
+| `classification` (DF) | `enum`       | `devil-fruit-classifications` |
+| `location_subtype`    | `enum`       | `location-subtypes`           |
+| `technique_type`      | `enum`       | `technique-types`             |
+| `weapon_type`         | `enum`       | `weapon-types`                |
+| `weapon_grade`        | `enum`       | `weapon-grades`               |
+| `ship_type`           | `enum`       | `ship-types`                  |
+| `organization_type`   | `enum`       | `org-types`                   |
+| `arc_subtype`         | `enum`       | `arc-subtypes`                |
+| `event_subtype`       | `enum`       | `event-subtypes`              |
+| `concept_subtype`     | `enum`       | `concept-subtypes`            |
+| `canon_scope`         | `enum`       | `canon-scopes`                |
+| `databook_subtype`    | `enum`       | `databook-subtypes`           |
+| `license`             | `enum`       | `image-licenses`              |
+| `format`              | `enum`       | `image-formats`               |
+| `haki_types`          | `multi_enum` | `haki-types`                  |
 
 ### 3.5 Boolean
 
@@ -589,7 +606,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (~30)
+## 4. Relation types (52)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -708,7 +725,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (22)
+## 5. Vocabularies / Enums (36)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -752,7 +769,7 @@ values have localized labels (EN, FR at minimum).
 `observation`, `armament`, `conqueror`, `observation_advanced`,
 `armament_advanced`, `conqueror_advanced`
 
-### 5.9 `devil-fruit-classes`
+### 5.9 `devil-fruit-classifications`
 
 `paramecia`, `zoan`, `logia`, `mythical_zoan`, `ancient_zoan`,
 `special_paramecia`, `smile`, `artificial`, `unknown`
@@ -961,8 +978,8 @@ depicted by another image).
 
 - **Entity types**: 20
 - **Property types**: ~35 (some shared across multiple entity types)
-- **Relation types**: ~30
-- **Vocabularies**: 25
+- **Relation types**: 52 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 36
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)
