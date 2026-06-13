@@ -174,10 +174,11 @@ Slices (each ADR + PR):
 
 1. **`staffed-by`** episode/film → person (role qualifier) + person-roles
    (storyboard/art_director/lyricist/arranger/producer) + dub-studios+=netflix —
-   **ADR-050 [done, this PR]**.
-2. **`theme-song`** entity + theme relations (performed/composed/written-by →
-   person; opening-of/ending-of → episode-range; theme-of → film; precedes/follows
-   chain) + `theme-song-type` vocab.
+   **ADR-050 [done, #65]**.
+2. **`theme-song`** entity + `theme-of` (→ anime-episode/film/arc; usage/sequence/
+   episode_from/to/broadcast_version) + `theme-song-usage` vocab; credits reuse
+   `staffed-by` (widened +=theme-song); `record_label`/`track_length` props; titles
+   via `name` `name_type` — **ADR-051 [done, this PR]**.
 3. Episode/film props: `eyecatcher`, `tv_rating`, `anime_original`; film
    ordering + regional release (per-dub titles/dates likely fold into C1 i18n).
 4. **Platform availability** (W-E): new `streaming-platform` entity +

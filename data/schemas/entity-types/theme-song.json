@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "theme-song",
+  "schema_version": 1,
+  "labels": { "en": "Theme song", "fr": "Générique" },
+  "url_segment": "theme-songs",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "record_label", "required": false, "historical": false, "localizable": false },
+    { "id": "track_length", "required": false, "historical": false, "localizable": false }
+  ],
+  "allowed_relations": ["staffed-by", "theme-of", "depicted-by"],
+  "ui_hint": { "icon": "music", "group": "production" }
+}

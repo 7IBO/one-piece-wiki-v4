@@ -186,7 +186,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (22)
+## 2. Entity types (23)
 
 | ID              | Category   | Description                                                      | URL segment     |
 | --------------- | ---------- | ---------------------------------------------------------------- | --------------- |
@@ -212,6 +212,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 | `image`         | media      | An image, with R2-hosted URL and metadata                        | `images`        |
 | `person`        | production | Real-world cast & staff (seiyū, VAs, actors, directors, mangaka) | `people`        |
 | `material`      | things     | A named substance (Seastone, Adam Wood, Wapometal)               | `materials`     |
+| `theme-song`    | production | An anime/film opening, ending, insert or image song              | `theme-songs`   |
 
 ### 2.1 Properties per entity type
 
@@ -546,7 +547,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (79)
+## 3. Property types (81)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -656,7 +657,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (59)
+## 4. Relation types (60)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -777,11 +778,11 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.14 Cast & staff (real-world)
 
-| Type           | From                    | To       | Inverse     | Qualifiers                           |
-| -------------- | ----------------------- | -------- | ----------- | ------------------------------------ |
-| `voiced-by`    | `character`             | `person` | `voices`    | since, language, dub_studio, context |
-| `portrayed-by` | `character`             | `person` | `portrays`  | since, production, context           |
-| `staffed-by`   | `anime-episode`, `film` | `person` | `worked-on` | role, since, note                    |
+| Type           | From                                  | To       | Inverse     | Qualifiers                           |
+| -------------- | ------------------------------------- | -------- | ----------- | ------------------------------------ |
+| `voiced-by`    | `character`                           | `person` | `voices`    | since, language, dub_studio, context |
+| `portrayed-by` | `character`                           | `person` | `portrays`  | since, production, context           |
+| `staffed-by`   | `anime-episode`, `film`, `theme-song` | `person` | `worked-on` | role, since, note                    |
 
 ### 4.15 Materials
 
@@ -789,9 +790,15 @@ generates inverses automatically when `inverse_inferred: true`.
 | --------- | ---------------- | ---------- | ------------- | ---------------- |
 | `made-of` | `ship`, `weapon` | `material` | `material-of` | since, component |
 
+### 4.16 Theme songs
+
+| Type       | From         | To                             | Inverse     | Qualifiers                                                          |
+| ---------- | ------------ | ------------------------------ | ----------- | ------------------------------------------------------------------- |
+| `theme-of` | `theme-song` | `anime-episode`, `film`, `arc` | `has-theme` | usage, sequence, episode_from, episode_to, broadcast_version, since |
+
 ---
 
-## 5. Vocabularies / Enums (48)
+## 5. Vocabularies / Enums (49)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -964,6 +971,10 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 
 `mineral`, `metal`, `alloy`, `wood`, `organic`, `synthetic`
 
+### 5.32 `theme-song-usage`
+
+`opening`, `ending`, `insert`, `image_song`
+
 ---
 
 ## 6. Universal qualifiers
@@ -1056,7 +1067,7 @@ These exist on every entity, declared once in primitives.
 `character`, `devil-fruit`, `crew`, `organization`, `location`,
 `technique`, `weapon`, `ship`, `race`, `title`, `concept`, `event`,
 `arc`, `saga`, `manga-chapter`, `anime-episode`, `film`, `person`,
-`material`
+`material`, `theme-song`
 
 ### 9.3 Entity types that can be `participant` of events
 
@@ -1080,15 +1091,15 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 22
-- **Property types**: 79 (some shared across multiple entity types)
-- **Relation types**: 59 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 48
+- **Entity types**: 23
+- **Property types**: 81 (some shared across multiple entity types)
+- **Relation types**: 60 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 49
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)
 - **Container entities**: 3 (arc, saga, event)
-- **Things that depict / can be depicted**: 19 / 1 (image)
+- **Things that depict / can be depicted**: 20 / 1 (image)
 
 ---
 

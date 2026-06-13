@@ -8,6 +8,48 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-051 — `theme-song` entity + `theme-of` (openings / endings / inserts)
+
+**Date**: 2026-06-14
+
+**Context**: Second slice of the production programme. The Fandom _Song Box_
+(28 fields) models openings, endings, insert songs, image songs and film themes
+as one article type, with performers/composers/lyricists linking to real people
+and non-contiguous, broadcaster-specific episode coverage. We had no place for
+any of it.
+
+**Decision** (additive, universal **core**):
+
+1. **`theme-song`** entity — `name` (titles incl. romaji/kanji handled by
+   `name`'s `name_type` qualifier, no dedicated props), `record_label`,
+   `track_length`. URL segment `theme-songs`, ui group `production`.
+2. **`theme-of`** relation (`theme-song` → `anime-episode` / `film` / `arc`) —
+   qualifiers `usage` (enum → new **`theme-song-usage`**: opening/ending/insert/
+   image_song, required), `sequence` (the opening/ending ordinal), `episode_from`
+   / `episode_to` (the covered range), `broadcast_version` (jp/funi/crunchyroll…),
+   `since`. One edge per coverage block, so non-contiguous and per-broadcaster
+   coverage is just multiple edges.
+3. **Reuse `staffed-by`** for theme credits: widened `valid_from` += `theme-song`,
+   so performer / composer / lyricist / arranger / producer are `staffed-by` →
+   `person` edges with the `role` qualifier (all already in `person-roles`). No
+   new performed-by / composed-by relations.
+4. `depicted-by` `valid_from` += `theme-song` (single/cover art).
+
+**Rationale**: the song's _role_ (opening vs insert) is contextual — the same
+song can be an opening for one range and an insert elsewhere (e.g. _We Are!_) —
+so it lives on the `theme-of` edge (`usage`), not as a fixed entity property.
+Title variants ride the existing `name` machinery rather than bespoke
+`title_romaji`/`title_kanji` props (forward-compatible with the C1 naming work).
+Reusing `staffed-by` keeps one production-credit relation for every media type.
+
+**Consequences**: +1 entity (23), +2 properties (81), +1 relation (60),
++1 vocabulary (49); `staffed-by` / `depicted-by` source widened. No `/data`
+migration. Snapshot regenerated (all diffs additive). Featured-characters /
+scene descriptions stay in narratives (prose), matching Fandom. Remaining
+production slices: episode/film props; platform availability.
+
+---
+
 ## ADR-050 — Production credits: per-episode/film staff via `staffed-by`
 
 **Date**: 2026-06-14

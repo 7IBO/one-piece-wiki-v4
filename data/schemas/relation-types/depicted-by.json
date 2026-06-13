@@ -25,7 +25,8 @@
     "anime-episode",
     "film",
     "person",
-    "material"
+    "material",
+    "theme-song"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [
