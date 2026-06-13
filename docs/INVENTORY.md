@@ -284,6 +284,8 @@ Allowed relations: `has-member`, `ally-of`, `enemy-of`, `based-in`,
 | ------------------ | -------- | ---------- | ----------- | ------------------------------ |
 | `name`             | yes      | yes        | yes         |                                |
 | `location_subtype` | yes      | no         | no          | Vocabulary `location-subtypes` |
+| `region`           | no       | no         | no          | Vocabulary `location-regions`  |
+| `location_status`  | no       | yes        | no          | Vocabulary `location-statuses` |
 | `climate`          | no       | no         | yes         |                                |
 | `population`       | no       | yes        | no          |                                |
 | `description_key`  | no       | no         | yes         |                                |
@@ -518,7 +520,7 @@ Allowed relations: `depicted-by`. Inbound: `voices`, `portrays` (from
 
 ---
 
-## 3. Property types (74)
+## 3. Property types (76)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -581,6 +583,8 @@ unit, and qualifier policy (section 6).
 | `gender`              | `enum`       | `genders`                     |
 | `classification` (DF) | `enum`       | `devil-fruit-classifications` |
 | `location_subtype`    | `enum`       | `location-subtypes`           |
+| `region`              | `enum`       | `location-regions`            |
+| `location_status`     | `enum`       | `location-statuses`           |
 | `technique_type`      | `enum`       | `technique-types`             |
 | `weapon_type`         | `enum`       | `weapon-types`                |
 | `weapon_grade`        | `enum`       | `weapon-grades`               |
@@ -674,7 +678,7 @@ generates inverses automatically when `inverse_inferred: true`.
 | -------------------- | ---------------------- | ----------- | --------------------- | ------------ |
 | `part-of-location`   | `location`             | `location`  | `contains-location`   | —            |
 | `based-in`           | `crew`, `organization` | `location`  | `houses-organization` | since        |
-| `controls-territory` | `organization`         | `location`  | `controlled-by`       | since, until |
+| `controls-territory` | `organization`, `crew` | `location`  | `controlled-by`       | since, until |
 | `set-in`             | `event`, `arc`         | `location`  | `setting-of`          | —            |
 | `ruled-by`           | `location`             | `character` | `rules`               | since, until |
 
@@ -751,7 +755,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (45)
+## 5. Vocabularies / Enums (47)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -908,6 +912,16 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 `lieutenant`, `lieutenant_junior_grade`, `ensign`, `warrant_officer`,
 `chief_petty_officer`, `petty_officer`, `seaman`
 
+### 5.29 `location-regions`
+
+`east_blue`, `west_blue`, `north_blue`, `south_blue`, `grand_line`,
+`paradise`, `new_world`, `calm_belt`, `red_line`
+
+### 5.30 `location-statuses`
+
+`active`, `destroyed`, `sunken`, `risen`, `undersea`, `frozen`,
+`abandoned`, `occupied`
+
 ---
 
 ## 6. Universal qualifiers
@@ -1024,9 +1038,9 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 21
-- **Property types**: 74 (some shared across multiple entity types)
+- **Property types**: 76 (some shared across multiple entity types)
 - **Relation types**: 57 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 45
+- **Vocabularies**: 47
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)

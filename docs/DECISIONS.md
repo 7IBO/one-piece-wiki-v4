@@ -8,6 +8,70 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-045 — Location geography (`region`) & historised lifecycle `status`
+
+**Date**: 2026-06-14
+
+**Context**: Cluster C9a (the first, cleanly-additive slice of the C9 world
+cluster). Locations carry two facts the model lacked: **which sea/region** they
+sit in (the four Blues, the Grand Line and its two halves, the Calm Belt, the
+Red Line) and a **lifecycle status that changes over the story** (Wano goes
+undersea → risen; islands are destroyed, frozen, abandoned, occupied). The
+plan (§C9) also listed an `affiliated-with` / `controlled-by` relation — but
+`controlled-by` **already exists** as the build-generated inverse of
+**`controls-territory`** (organization → location, historised). The only gap is
+that a pirate **crew** can't currently be the controller (its `valid_from` is
+`organization` only), so territories held by a crew (Beasts Pirates → Wano)
+can't be modelled. A brand-new `controlled-by` relation would duplicate this.
+
+**Options** (for the governance gap):
+
+- A — Add a new `controlled-by` relation (plan's literal wording).
+- B — Widen the existing `controls-territory` to also accept `crew` as the
+  controller.
+
+**Choice**: B for governance; plus the two properties.
+
+**Decision** (additive):
+
+1. **`region`** property (`enum` → new **`location-regions`** vocab: east_blue,
+   west_blue, north_blue, south_blue, grand_line, paradise, new_world,
+   calm_belt, red_line). Not historised (a place doesn't change seas), not
+   required. **`all_blue` is deliberately excluded** — it's a legend, not a
+   navigable region; if ever modelled it belongs as a `concept`, not a location
+   region.
+2. **`location_status`** property (`enum` → new **`location-statuses`** vocab:
+   active, destroyed, sunken, risen, undersea, frozen, abandoned, occupied;
+   historised, spoiler-sensitive, default qualifier `since`). A separate
+   property from the character-only `status` (different value set — a place
+   isn't "alive").
+3. **`controls-territory`** `valid_from_types` widened to include `crew` (a
+   territory held by a pirate crew, e.g. Wano under the Beasts Pirates), and
+   `controls-territory` added to `crew.allowed_relations` so the capacity is
+   usable — instead of a new, overlapping `controlled-by` relation.
+   `ruled-by` (formal rulership: a king/government rules a kingdom) is left as
+   is — distinct from territorial control.
+
+**Rationale**: Region and status are intrinsic location data, modelled as
+properties (status historised because it's the textbook spoiler-versioned fact).
+Widening `controls-territory` over adding a new relation avoids the near-
+duplicate the de-dup review explicitly guards against — the model already had
+`controls-territory`/`controlled-by` for org control, so only the crew domain
+was missing. Keeping `ruled-by` (rulership) and `controls-territory` (control /
+occupation) as distinct edges is intentional: a region can be formally ruled by
+one party while controlled by another. Looser `affiliated-with` and the
+`former-name` / `log_pose_time` ideas are dropped/deferred (naming → C1;
+log-pose time is minor).
+
+**Consequences**: +2 properties (76), +2 vocabularies (47); `location` schema
+bumped to v3; `controls-territory` source widened + declared on `crew`. No
+`/data` migration (additive; no location data sets these yet). Snapshot
+regenerated (all diffs additive per `check:compat`). Cluster C9a; the C9
+timeline/era and event-enrichment slices (which carry the `[D]`
+in-universe-time decision) remain.
+
+---
+
 ## ADR-044 — `person` entity (real-world cast & staff) + Marine rank vocabulary
 
 **Date**: 2026-06-13

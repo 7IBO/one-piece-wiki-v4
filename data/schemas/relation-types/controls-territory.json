@@ -6,7 +6,7 @@
     "en": { "active": "Controls territory", "inverse": "Controlled by" },
     "fr": { "active": "Contrôle le territoire", "inverse": "Contrôlé par" }
   },
-  "valid_from_types": ["organization"],
+  "valid_from_types": ["organization", "crew"],
   "valid_to_types": ["location"],
   "qualifiers": [
     { "id": "since", "value_type": "source_ref", "required": false },

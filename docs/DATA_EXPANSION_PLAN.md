@@ -23,13 +23,15 @@ rule stands — concepts land in `DATA_MODEL.md` and an ADR _before_ code).
     enum is frozen (research came from an LLM reading Fandom; treat exact
     counts/years as provisional).
 - **Status**: in progress. Shipped so far: C2 (ADR-041), C3 (ADR-043), C4
-  (ADR-039), C6 (ADR-040), C7-core (ADR-044), plus the cross-cutting relation
+  (ADR-039), C6 (ADR-040), C7-core (ADR-044), C9a (ADR-045: location
+  region/status + crew territorial control), plus the cross-cutting relation
   epistemic axis (ADR-037) and the `check:compat` lockfile (ADR-042). Remaining:
   C1 (naming/i18n editions), C5 (fighting-styles/Haki/techniques), C8 (sources /
   volumes / SBS-QA / databook-cards / cover-stories — absorbs C7's deferred
-  source/media enrichment, theme-song, adaptation many-to-many), C9
-  (world/region/status + events/timeline/era), and C4b (fruit
-  weaknesses/interactions/awakening outcomes).
+  source/media enrichment, theme-song, adaptation many-to-many), **C9-rest**
+  (race/ship/concept additions, ancient-weapon/artifact, event enrichment,
+  `era` entity + the `[D]` structured in-universe temporal value), and C4b
+  (fruit weaknesses/interactions/awakening outcomes).
 
 ---
 
@@ -207,6 +209,15 @@ relations, and the `adapts`/`adapted-by` many-to-many.
 | `canon-scopes` += `semi_canon` | SBS-ratified facts (between author-canon and non-canon)                                                                                                             | `[A]` |
 
 ### C9 — World, lore, events & the timeline
+
+**Shipped (ADR-045, C9a):** `location.region` (enum `location-regions`, sans
+`all_blue` — a legend, not a region), `location.status` (historised enum
+`location-statuses`), and crew territorial control (widened
+`controls-territory` to accept `crew`; `controlled-by` already existed as its
+inverse, so no new relation). **Remaining (C9-rest):** the rows below other than
+those two — race/ship/concept additions, `ancient-weapon`/`artifact`/`document`,
+`event` enrichment, the `era` entity + `during-periods` migration, and the
+`[D]` structured in-universe temporal value (the big modelling call).
 
 | Change                                         | Detail                                                                                                                                                                                                                                                  | Tag      |
 | ---------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
