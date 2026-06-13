@@ -806,9 +806,6 @@ Each type's properties and relations are declared in its
   with strict separation under a `theory` entity type later.
 - **Real-world publication metadata beyond essentials**: editor, artist
   assistants, sales numbers. Possibly added later.
-- **Cross-media identity at the actor/voice level** (live-action cast,
-  seiyū): possible later, scoped to `voice-cast` and `live-action-cast`
-  entity types.
 
 ## Migration to new entity types
 

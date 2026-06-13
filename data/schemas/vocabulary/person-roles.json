@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "person-roles",
+  "schema_version": 1,
+  "values": {
+    "voice_actor": { "labels": { "en": "Voice actor (seiyū)", "fr": "Doubleur (seiyū)" } },
+    "dub_actor": { "labels": { "en": "Dub actor", "fr": "Comédien de doublage" } },
+    "live_action_actor": { "labels": { "en": "Live-action actor", "fr": "Acteur (live-action)" } },
+    "series_director": { "labels": { "en": "Series director", "fr": "Réalisateur de la série" } },
+    "episode_director": { "labels": { "en": "Episode director", "fr": "Réalisateur d'épisode" } },
+    "film_director": { "labels": { "en": "Film director", "fr": "Réalisateur de film" } },
+    "animation_director": {
+      "labels": { "en": "Animation director", "fr": "Directeur de l'animation" }
+    },
+    "screenwriter": { "labels": { "en": "Screenwriter", "fr": "Scénariste" } },
+    "character_designer": { "labels": { "en": "Character designer", "fr": "Character designer" } },
+    "composer": { "labels": { "en": "Composer", "fr": "Compositeur" } },
+    "theme_performer": { "labels": { "en": "Theme performer", "fr": "Interprète du thème" } },
+    "mangaka": { "labels": { "en": "Mangaka", "fr": "Mangaka" } }
+  }
+}

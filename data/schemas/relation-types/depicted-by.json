@@ -23,7 +23,8 @@
     "saga",
     "manga-chapter",
     "anime-episode",
-    "film"
+    "film",
+    "person"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [

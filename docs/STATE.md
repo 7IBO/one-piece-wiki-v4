@@ -115,6 +115,25 @@ save-flow tests, the migration helper. **Pending**:
   `RelationRecord`. Unblocks disguise-of / same-identity-as (G-series) and
   secret-alliance / double-agent modelling. No data migration.
 
+### 4. Data-model expansion (clusters) — in progress
+
+Driven by `/docs/DATA_EXPANSION_PLAN.md` (Fandom-survey synthesis → clusters
+C1–C9, each = one ADR + PR). **Shipped:** ADR-037 (relation epistemic axis),
+ADR-039 (C4 devil-fruit identity/succession), ADR-040 (C6 weapon Meitō), ADR-041
+(C2 character occupations/blood-types), ADR-042 (`check:compat` schema-evolution
+lockfile + CI gate), ADR-043 (C3 organizations: sub-units/power-systems/member
+nations), ADR-044 (C7-core: `person` entity + `voiced-by`/`portrayed-by` +
+`marine-ranks` via `held_rank`). **Remaining (recommended order):** C9
+(world/region/status + events/timeline/era — biggest), C8 (sources / volumes /
+SBS-QA / databook-cards + adaptation many-to-many; absorbs C7's deferred
+source/media enrichment + theme-song), C5 (fighting-styles/Haki/techniques),
+C4b (fruit weaknesses/interactions/awakening outcomes), C1 (naming/i18n
+editions — foundational but invasive). All clusters touch DECISIONS.md +
+INVENTORY.md, so **merge sequentially**: pull main, branch, `compat:snapshot`
+per cluster. **INVENTORY refresh** (per-item sub-sections lag the true catalogue
+counts) is tracked in `DATA_EXPANSION_PLAN.md` §5 — a catalogue-generated
+rewrite, its own PR.
+
 ## Active plan (ADR-032) — tooling before ingest
 
 Six workstreams, built in this order; each ships as independent PR(s).

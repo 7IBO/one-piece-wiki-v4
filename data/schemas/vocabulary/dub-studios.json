@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "dub-studios",
+  "schema_version": 1,
+  "values": {
+    "toei": { "labels": { "en": "Toei Animation (JP)", "fr": "Toei Animation (JP)" } },
+    "funimation": { "labels": { "en": "Funimation (EN)", "fr": "Funimation (EN)" } },
+    "4kids": { "labels": { "en": "4Kids (EN)", "fr": "4Kids (EN)" } },
+    "odex": { "labels": { "en": "Odex (EN)", "fr": "Odex (EN)" } }
+  }
+}

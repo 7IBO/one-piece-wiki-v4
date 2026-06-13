@@ -22,8 +22,14 @@ rule stands — concepts land in `DATA_MODEL.md` and an ADR _before_ code).
   - `[V]` verify — value set / number must be checked against canon before the
     enum is frozen (research came from an LLM reading Fandom; treat exact
     counts/years as provisional).
-- **Status**: proposed. Nothing here is implemented yet. Supersedes nothing
-  until each ADR lands.
+- **Status**: in progress. Shipped so far: C2 (ADR-041), C3 (ADR-043), C4
+  (ADR-039), C6 (ADR-040), C7-core (ADR-044), plus the cross-cutting relation
+  epistemic axis (ADR-037) and the `check:compat` lockfile (ADR-042). Remaining:
+  C1 (naming/i18n editions), C5 (fighting-styles/Haki/techniques), C8 (sources /
+  volumes / SBS-QA / databook-cards / cover-stories — absorbs C7's deferred
+  source/media enrichment, theme-song, adaptation many-to-many), C9
+  (world/region/status + events/timeline/era), and C4b (fruit
+  weaknesses/interactions/awakening outcomes).
 
 ---
 
@@ -168,6 +174,13 @@ EN/FR names without collision; spoiler- and edition-correct display.
 | `wielded-by` → historised succession                           | ownership vs custody (Wado: Kuina→Kōshirō custody→Zoro); `succeeds` weapon→weapon (Kitetsu generations)                                         | `[A]`    |
 
 ### C7 — Sources, production & real-world people
+
+**Shipped (ADR-044, C7-core):** `person` entity, `person_roles` (multi-enum),
+`voiced-by` + `portrayed-by` relations, `marine-ranks` vocab via the `held_rank`
+qualifier on `member-of`, `dub-studios` vocab. **Deferred to C8** (they belong
+with the sources cluster): manga-chapter / anime-episode / film enrichment,
+`theme-song` entity + `performed-theme`, `directed`/`wrote`/`storyboarded`
+relations, and the `adapts`/`adapted-by` many-to-many.
 
 | Change                             | Detail                                                                                                                                                                      | Tag      |
 | ---------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | -------- |
