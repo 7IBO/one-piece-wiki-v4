@@ -604,10 +604,14 @@ end users):
   filler badge, "adapts chapters X-Y", full cast grouped by
   `appearance_type`, events occurring (battles, deaths, first
   appearances, fruit reveals), new introductions (characters,
-  locations, techniques, fruits, ships), OP/ED, prev/next episode.
+  locations, techniques, fruits, ships), OP/ED, prev/next episode,
+  **"where to watch" availability links** (Netflix / Disney+ /
+  Crunchyroll / ADN / Prime Video, region-aware — see ADR-028).
 - **manga-chapter**: cover image, cover story, cast by faction
   (from the Fandom `CharTable` ingest), first appearances + first
-  full appearances, author comment, trivia, linked anime episode.
+  full appearances, author comment, trivia, linked anime episode,
+  **"where to read" availability links** (MANGA Plus / Shōnen
+  Jump+ / Viz, region-aware — see ADR-028).
 - **devil-fruit**: visual, classification timeline (e.g. Gomu Gomu
   Paramecia → Mythical Zoan with the epistemic transition rendered),
   current + previous users, awakening flag, techniques grouped by

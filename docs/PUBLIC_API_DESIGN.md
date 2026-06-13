@@ -27,7 +27,9 @@ Out of scope for v1 (may come later, with its own ADR each):
 
 - Write access (suggestions stay on the dashboard PR flow)
 - GraphQL surface
-- Webhooks / push
+- Webhooks / push — **delivery** deferred, but the event taxonomy
+  and the build-pipeline emit seam are now fixed in ADR-028 so the
+  architecture stays webhook-ready (see § 13a)
 - Authenticated tiers with elevated quotas
 - Cross-universe queries (the universe primitive is universe-aware,
   but only One Piece is exposed)
@@ -589,8 +591,52 @@ These must be answered by a follow-up ADR before phase 1 starts.
 13. **Impact analyzer enforcement**: blocking on `breaking` only, or also on `minor-additive` (force explicit decision)?
 14. **Adapter representation**: TypeScript code vs declarative JSON config? Direction: TS for v1, evaluate JSON config when 95% of rules are mechanical.
 
+## 13a. Webhook event model (taxonomy fixed, delivery deferred)
+
+Ratified by **ADR-028**. Delivery is deferred; the taxonomy and the
+emit seam are fixed now so nothing forecloses it.
+
+**Event taxonomy** (stable):
+
+| Event                | Fires when                                       |
+| -------------------- | ------------------------------------------------ |
+| `entity.created`     | a new entity enters the corpus                   |
+| `entity.updated`     | an existing entity's data changes                |
+| `entity.deleted`     | an entity is removed                             |
+| `source.published`   | a new chapter / episode / film enters the corpus |
+| `vocabulary.changed` | a vocabulary gains/edits/disables a value        |
+| `build.completed`    | a build artifact finishes (carries the diff)     |
+
+**Envelope** (snake_case, consistent with the REST wire format):
+
+```json
+{
+  "event": "source.published",
+  "id": "manga-chapter:1145",
+  "type": "manga-chapter",
+  "schema_hash": "sha256-…",
+  "occurred_at": "2027-03-01T09:00:00Z",
+  "api_version": "v1.4.2"
+}
+```
+
+**Emit seam**: the build pipeline (`packages/db-builder`) and the
+PR-merge flow. The build manifest already records build metadata;
+the prerequisite is a **manifest-to-manifest diff** (entities and
+sources added or changed since the previous build). `db-builder`
+refactors must preserve this diff capability — it is the single seam
+every webhook feature reads from, and it also feeds the Phase 6.6
+`/help-wanted` and "recently revealed" surfaces.
+
+**Delivery (future, own ADR)**: a dispatcher reads the build diff,
+signs payloads (HMAC-SHA256 per subscriber), POSTs to subscriber URLs
+with retry + exponential backoff, and exposes subscription management
+in the dashboard. Not implemented; only the taxonomy and seam are
+fixed here.
+
 ## 14. References
 
+- ADR-028 — Anticipate availability links + webhook event model (this section's source)
 - ADR-025 — Public REST API with versioned wire-format adapters
 - ADR-024 — End-to-end type-safe SDK from generated Zod schemas (Phase A, prerequisite for the SDK side)
 - ADR-019 — Bundle `/data` into the dashboard SSR output for serverless deploys (informs the bundling strategy for `apps/api/`)
