@@ -4,7 +4,7 @@
  * touching /data.
  */
 import { describe, expect, it } from 'bun:test';
-import { checkCoherence } from '../src/coherence.ts';
+import { checkCoherence, checkSchemaCoherence } from '../src/coherence.ts';
 import type { LoadedEntity } from '../src/entity-loader.ts';
 import type { ValidatedCatalogue } from '../src/meta-validator.ts';
 
@@ -137,5 +137,47 @@ describe('checkCoherence — unreferenced warning', () => {
       f.severity === 'warning'
     );
     expect(warnings.map((w) => w.source)).not.toContain('character:luffy');
+  });
+});
+
+describe('checkSchemaCoherence', () => {
+  it('passes a self-consistent catalogue', () => {
+    const cat = catalogue(
+      { character: { allowed_relations: ['depicted-by'] }, image: { allowed_relations: [] } },
+      {
+        'depicted-by': {
+          valid_from_types: ['character'],
+          valid_to_types: ['image'],
+          qualifiers: [],
+        },
+      },
+    );
+    expect(checkSchemaCoherence(cat)).toEqual([]);
+  });
+
+  it('flags an allowed relation that does not exist', () => {
+    const cat = catalogue(
+      { character: { allowed_relations: ['ghost-relation'] } },
+      {},
+    );
+    const codes = checkSchemaCoherence(cat).map((f) => f.code);
+    expect(codes).toContain('SCHEMA_ALLOWED_RELATION_UNKNOWN');
+  });
+
+  it('flags an allowed relation whose valid_from_types excludes the type', () => {
+    // image allows depicts (valid_from must include image); but here we
+    // make image allow depicted-by, whose valid_from is [character] only.
+    const cat = catalogue(
+      { image: { allowed_relations: ['depicted-by'] } },
+      {
+        'depicted-by': {
+          valid_from_types: ['character'],
+          valid_to_types: ['image'],
+          qualifiers: [],
+        },
+      },
+    );
+    const codes = checkSchemaCoherence(cat).map((f) => f.code);
+    expect(codes).toContain('SCHEMA_ALLOWED_RELATION_INVALID_SOURCE');
   });
 });
