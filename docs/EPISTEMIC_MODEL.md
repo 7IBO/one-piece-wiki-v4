@@ -34,7 +34,7 @@ Example: Luffy's status is `alive` (since chapter 1, `epistemic_status: true`).
 Explicitly stated and verified in-universe at this point. Used when an
 earlier value was `believed` or `implied` and now becomes settled.
 
-Example: Gomu Gomu's classification becomes `mythical-zoan` (since
+Example: Gomu Gomu's classification becomes `mythical_zoan` (since
 chapter 1044, `epistemic_status: confirmed`, `event: nika-reveal`).
 
 ### `believed_by_world`
@@ -181,7 +181,12 @@ definition of `review_status` and its sibling qualifier `assisted_by`.
 ]
 ```
 
-### Reclassification by reveal
+### Reclassification by reveal — the Nika case
+
+The Gomu Gomu no Mi reveal (chapter 1044) is the canonical **multi-axis** case:
+the fruit's `classification`, its true `name`, and its `zoan_model` (ADR-039)
+all flip together at one event, while the World Government is the only party
+that knew the truth all along (`known_truth_by`).
 
 ```json
 "classification": [
@@ -189,12 +194,20 @@ definition of `review_status` and its sibling qualifier `assisted_by`.
     "value": "paramecia",
     "since": "manga-chapter:1",
     "epistemic_status": "believed_by_world",
-    "actual_value": "mythical-zoan"
+    "actual_value": "mythical_zoan"
   },
   {
-    "value": "mythical-zoan",
+    "value": "mythical_zoan",
     "since": "manga-chapter:1044",
     "epistemic_status": "confirmed",
+    "event": "event:nika-reveal"
+  }
+],
+"zoan_model": [
+  {
+    "value": "Nika",
+    "since": "manga-chapter:1044",
+    "epistemic_status": "revealed_to_reader",
     "event": "event:nika-reveal"
   }
 ]

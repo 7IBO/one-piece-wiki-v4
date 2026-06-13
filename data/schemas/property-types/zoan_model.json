@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "zoan_model",
+  "schema_version": 1,
+  "labels": { "en": "Zoan model", "fr": "Modèle Zoan" },
+  "value_type": "string",
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": ["devil-fruit"],
+  "default_qualifiers": ["since"]
+}

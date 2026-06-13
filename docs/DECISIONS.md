@@ -8,6 +8,49 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-039 — Devil-fruit identity, user-succession & awakening
+
+**Date**: 2026-06-13
+
+**Context**: Cluster C4 of `DATA_EXPANSION_PLAN.md`. Devil fruits carry identity
+nuance the model didn't hold: (a) a Zoan **model** ("Model: Nika") is orthogonal
+to `classification` and is often a late reveal; (b) a fruit **reincarnates on its
+user's death** — the Mera Mera no Mi passed Ace → Sabo, the Gomu Gomu / Hito Hito
+Nika from Joy Boy → Luffy — so the eater is a **succession over time**, not a
+single link; (c) an **awakening** is a distinct technique tied to the fruit
+(Gear 5 ↔ Hito Hito no Mi, Model: Nika); (d) some fruits/abilities are
+**non-canon** (anime/film/game-only).
+
+**Decision** (additive, no migration):
+
+1. `zoan_model` property (string, historisable, spoiler-sensitive) on
+   `devil-fruit` — an open-ended model name, revealed independently of
+   `classification`.
+2. `ate-fruit` gains `until` (source_ref) + `succession_reason` (enum → new
+   `succession-reasons` vocab). User-succession is N historised `ate-fruit`
+   edges with `since`/`until`; the **current eater is the latest open edge**.
+   Hidden eaters reuse ADR-037's relation epistemic axis. Answers backlog G4
+   (`until` on `ate-fruit`) and the §1.3 succession pattern.
+3. `awakening-of` relation (technique → devil-fruit, inverse "awakened form").
+4. `canonicity` property (enum → new `canonicity-tiers` vocab:
+   `canon`/`anime_only`/`film_only`/`game_only`/`sbs`/`non_canon`) on
+   `devil-fruit` + `technique` — a canon tier orthogonal to spoiler progression
+   (§1.4).
+
+The **Nika reveal** becomes the worked epistemic case: at ch.1044 the fruit's
+`classification` (paramecia → mythical_zoan), its `name` (true_name) and its
+`zoan_model` (Nika) all flip together at one event, with the World Government as
+`known_truth_by`. Documented in `EPISTEMIC_MODEL.md`.
+
+**Consequences**: +2 property types (`zoan_model`, `canonicity`), +1 relation
+(`awakening-of`), +2 vocabularies; `devil-fruit` / `technique` entity-types gain
+the new fields/relation. No `/data` migration (additive; `gomu-gomu` gains
+`zoan_model`). The §2A devil-fruit extras (weaknesses, fruit↔fruit interactions,
+special-cost abilities, awakening outcome) are deferred to a follow-up **C4b**.
+Cluster C4 of the data-expansion plan.
+
+---
+
 ## ADR-038 — Naming axes (native script, romaji, literal meaning) + edition variants
 
 **Date**: 2026-06-13
