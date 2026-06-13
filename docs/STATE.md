@@ -94,11 +94,16 @@ save-flow tests, the migration helper. **Pending**:
   reachability (reaching an episode implies its adapted chapter).
 - **Playwright e2e** for the entity-create → PR flow (none exists yet).
 - **decompose god-modules** — `EntityForm.tsx` (~1876 L) and
-  `api/server.ts` (~1776 L). **ADR-first**. Also burns down
+  `server/server.ts` (~1776 L). **ADR-first**. Also burns down
   react-doctor's ~254 advisory findings (mostly react-hooks deps here).
-- **schema-driven display name** — make the name resolver prefer
-  `canonical_name_key` / a property marker instead of the
-  `['name','title_key']` constant. Behaviour change → own PR.
+- ~~**schema-driven display name**~~ — **DONE (ADR-031):** entity types
+  declare an ordered `display_name_properties`; resolver defaults to
+  `['name','title_key']` only when a type omits it. No data migration.
+  **Follow-up the feature now unlocks:** `image` (→ `caption_key`) and
+  `sbs` currently fall back to slug (no `name`/`title_key`) — give them
+  real display names by declaring `display_name_properties` (own PR;
+  it's a display behaviour change, left out of ADR-031 to keep it
+  behaviour-preserving).
 
 ## Gotchas (so they don't bite again)
 

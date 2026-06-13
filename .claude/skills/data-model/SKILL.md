@@ -20,8 +20,11 @@ runtime. Full spec: `/docs/DATA_MODEL.md`, `/docs/SCHEMA_SPEC.md`.
   entity-type ids are discovered through the schema catalogue
   (`loadSchemas` / the dashboard `/api/schemas`). Never hardcode
   `'bounty'`, `'name'`, `['name','title_key']`, a type id, etc. in
-  app/component code. A shared display-name resolver already lives in
-  `@onepiece-wiki/schemas` (`resolveDisplayName` / `nameKeyFor`).
+  app/component code. A shared display-name resolver lives in
+  `@onepiece-wiki/schemas` (`resolveDisplayName` / `nameKeyFor`); pass
+  the entity type's `display_name_properties` so priority stays
+  schema-driven (ADR-031). It defaults to `['name','title_key']` only
+  when a type declares none.
 - **The four axes.** Every historisable value carries `since`,
   `epistemic_status` (default `true`), optional `event`, and `source`.
   Plus provenance: `assisted_by` (AI-generated; format

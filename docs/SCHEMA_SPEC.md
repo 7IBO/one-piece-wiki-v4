@@ -48,17 +48,18 @@ A file in `/data/schemas/entity-types/<id>.json`.
 
 ### Fields
 
-| Field                   | Type     | Required | Description                                                                                                    |
-| ----------------------- | -------- | -------- | -------------------------------------------------------------------------------------------------------------- |
-| `$schema`               | string   | yes      | Meta-schema reference                                                                                          |
-| `id`                    | string   | yes      | Type identifier, kebab-case (e.g. `character`)                                                                 |
-| `schema_version`        | integer  | yes      | Bumped on breaking changes                                                                                     |
-| `labels`                | object   | yes      | Locale → label, used in UI and breadcrumbs                                                                     |
-| `url_segment`           | string   | yes      | Segment used in URLs (kebab-case English, e.g. `characters`)                                                   |
-| `properties`            | array    | yes      | Allowed property declarations                                                                                  |
-| `allowed_relations`     | string[] | yes      | IDs of relation types entities of this type may participate in                                                 |
-| `requires_translations` | boolean  | no       | If true, translations are mandatory for the entity's `canonical_name_key` and all `i18n_key`-valued properties |
-| `ui_hint`               | object   | no       | Hints for the dashboard (icon, color, group)                                                                   |
+| Field                     | Type     | Required | Description                                                                                                                                                                              |
+| ------------------------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `$schema`                 | string   | yes      | Meta-schema reference                                                                                                                                                                    |
+| `id`                      | string   | yes      | Type identifier, kebab-case (e.g. `character`)                                                                                                                                           |
+| `schema_version`          | integer  | yes      | Bumped on breaking changes                                                                                                                                                               |
+| `labels`                  | object   | yes      | Locale → label, used in UI and breadcrumbs                                                                                                                                               |
+| `url_segment`             | string   | yes      | Segment used in URLs (kebab-case English, e.g. `characters`)                                                                                                                             |
+| `properties`              | array    | yes      | Allowed property declarations                                                                                                                                                            |
+| `allowed_relations`       | string[] | yes      | IDs of relation types entities of this type may participate in                                                                                                                           |
+| `requires_translations`   | boolean  | no       | If true, translations are mandatory for the entity's `canonical_name_key` and all `i18n_key`-valued properties                                                                           |
+| `display_name_properties` | string[] | no       | Property ids scanned, in priority order, to resolve the display name (latest entry of the first present one wins). Omitted → falls back to the default `['name', 'title_key']` (ADR-031) |
+| `ui_hint`                 | object   | no       | Hints for the dashboard (icon, color, group)                                                                                                                                             |
 
 ### Property declaration
 

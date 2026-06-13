@@ -12,6 +12,7 @@
     { "id": "runtime_minutes", "required": false, "historical": false, "localizable": false },
     { "id": "canon_scope", "required": false, "historical": false, "localizable": false }
   ],
+  "display_name_properties": ["title_key"],
   "allowed_relations": ["features", "adapts", "part-of-arc", "depicted-by"],
   "ui_hint": { "icon": "tv", "group": "sources" }
 }

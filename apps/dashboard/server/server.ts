@@ -231,7 +231,10 @@ async function buildDisplayNames(
   const tasks: Promise<void>[] = [];
   for (const entity of snap.entities.values()) {
     const fileBase = entity.id.split(':')[1] ?? '';
-    const key = nameKeyFor(entity.data);
+    const key = nameKeyFor(
+      entity.data,
+      snap.validated.entityTypes.get(entity.type)?.display_name_properties,
+    );
     tasks.push((async () => {
       const fallback = syntheticDisplayName(entity);
       if (key === null) {
