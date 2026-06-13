@@ -26,6 +26,8 @@ export const RelationTypeSchema = z.object({
   $schema: z.string().optional(),
   id: Slug,
   schema_version: z.number().int().positive(),
+  /** Universe scope; omitted = shared core. See ADR-035. */
+  universes: z.array(Slug).optional(),
   labels: RelationLabels,
   valid_from_types: z.array(Slug).min(1),
   valid_to_types: z.array(Slug).min(1),

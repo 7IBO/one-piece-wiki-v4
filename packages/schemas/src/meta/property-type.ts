@@ -32,6 +32,14 @@ export const PropertyTypeSchema = z.object({
   $schema: z.string().optional(),
   id: Slug,
   schema_version: z.number().int().positive(),
+  /**
+   * Universe ids this schema belongs to. Omitted/empty = **shared core**
+   * (available to every universe — e.g. `name`, `status`). A list (e.g.
+   * `["one-piece"]`) scopes it to those universes only (e.g. `bounty`,
+   * `classification`). A universe's effective catalogue is core ∪ its
+   * own schemas. See ADR-035.
+   */
+  universes: z.array(Slug).optional(),
   labels: LocalizedLabel,
   value_type: ValueType,
   value_constraints: ValueConstraints.optional(),

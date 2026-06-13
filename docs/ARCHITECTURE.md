@@ -265,7 +265,11 @@ The architecture is designed so adding a new universe (e.g. Naruto) requires
 no code changes:
 
 - Add `/data/universes/naruto/`
-- Add or extend schema types in `/data/schemas/`
+- Add schema types in `/data/schemas/`, **scoped with `universes: ["naruto"]`**
+  for universe-specific ones (e.g. `jutsu`, `chakra-natures`); leave the
+  generic backbone (`character`, `image`, the four axes, epistemic /
+  canon / name-type vocabularies) unscoped as shared **core** (ADR-035).
+  `check:coherence` guards that no core schema references a scoped one.
 - Add translations and narratives
 
 The build pipeline and apps treat universe as a top-level dimension. In
