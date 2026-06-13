@@ -644,6 +644,15 @@ All breaking changes:
 3. Are reviewed by ≥2 admins
 4. Are labeled `schema-breaking` on the PR
 
+This is enforced by the **`check:compat` schema lockfile** (ADR-042):
+`packages/schema-engine/schema-snapshot.json` captures the public contract the
+SDK/API and external consumers depend on; CI fails on **any** divergence and
+classifies each diff additive vs breaking. Regenerate it with
+`bun run compat:snapshot` and commit it in the same PR — so the contract change
+shows up in review. The model evolves **expand → migrate → contract** (add the
+new, migrate data, mark old `deprecated`, remove later) so the SDK/API never
+breaks in a single step.
+
 ## Schema validation
 
 The schema files themselves are validated by **meta-schemas** living in
@@ -653,9 +662,11 @@ The schema files themselves are validated by **meta-schemas** living in
 2. `bun run schema:generate` — generate Zod
 3. `bun run validate` — validate every entity JSON file
 4. `bun run check:references` — every reference resolves
-5. `bun run typecheck`
-6. `bun run lint`
-7. `bun run test`
+5. `bun run check:coherence` — cross-entity + schema coherence rules
+6. `bun run check:compat` — schema lockfile (ADR-042); breaking-change gate
+7. `bun run typecheck`
+8. `bun run lint`
+9. `bun run test`
 
 Any failure aborts the PR.
 

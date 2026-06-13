@@ -1,0 +1,2488 @@
+{
+  "entityTypes": {
+    "anime-episode": {
+      "properties": {
+        "aired_at_jp": {
+          "required": false
+        },
+        "canon_scope": {
+          "required": false
+        },
+        "number": {
+          "required": true
+        },
+        "publications": {
+          "required": false
+        },
+        "runtime_minutes": {
+          "required": false
+        },
+        "title_key": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "features",
+        "part-of-arc"
+      ]
+    },
+    "arc": {
+      "properties": {
+        "arc_subtype": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "narrative_key": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "contains-chapter",
+        "depicted-by",
+        "features-characters",
+        "part-of-saga",
+        "set-in"
+      ]
+    },
+    "character": {
+      "properties": {
+        "age": {
+          "required": false
+        },
+        "birthday": {
+          "required": false
+        },
+        "birthplace": {
+          "required": false
+        },
+        "blood_type": {
+          "required": false
+        },
+        "bounty": {
+          "required": false
+        },
+        "description_key": {
+          "required": false
+        },
+        "epithet": {
+          "required": false
+        },
+        "gender": {
+          "required": false
+        },
+        "haki_types": {
+          "required": false
+        },
+        "height": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "occupation": {
+          "required": false
+        },
+        "status": {
+          "required": true
+        },
+        "weight": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "ally-of",
+        "ate-fruit",
+        "bears-title",
+        "belongs-to-race",
+        "born-in",
+        "captains",
+        "depicted-by",
+        "enemy-of",
+        "family-of",
+        "member-of",
+        "mentor-of",
+        "pilots",
+        "resides-in",
+        "uses-technique",
+        "wields-weapon"
+      ]
+    },
+    "concept": {
+      "properties": {
+        "concept_subtype": {
+          "required": true
+        },
+        "description_key": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "appears-in",
+        "depicted-by",
+        "embodied-by"
+      ]
+    },
+    "crew": {
+      "properties": {
+        "description_key": {
+          "required": false
+        },
+        "disbanded_at": {
+          "required": false
+        },
+        "founded_at": {
+          "required": false
+        },
+        "jolly_roger": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "total_bounty": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "ally-of",
+        "based-in",
+        "captained-by",
+        "depicted-by",
+        "enemy-of",
+        "flies-flag",
+        "has-member"
+      ]
+    },
+    "databook": {
+      "properties": {
+        "canon_scope": {
+          "required": true
+        },
+        "databook_subtype": {
+          "required": true
+        },
+        "name": {
+          "required": true
+        },
+        "publications": {
+          "required": false
+        },
+        "published_at_jp": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "clarifies-fact",
+        "mentions"
+      ]
+    },
+    "devil-fruit": {
+      "properties": {
+        "awakened": {
+          "required": false
+        },
+        "canonicity": {
+          "required": false
+        },
+        "classification": {
+          "required": true
+        },
+        "description_key": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "zoan_model": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "depicted-by"
+      ]
+    },
+    "event": {
+      "properties": {
+        "event_subtype": {
+          "required": true
+        },
+        "first_source": {
+          "required": false
+        },
+        "is_public": {
+          "required": false
+        },
+        "last_source": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "narrative_key": {
+          "required": false
+        },
+        "primary_location": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "caused-by-event",
+        "caused-death-of",
+        "depicted-by",
+        "occurs-during-arc",
+        "participant",
+        "set-in"
+      ]
+    },
+    "film": {
+      "properties": {
+        "canon_scope": {
+          "required": true
+        },
+        "canonical_elements": {
+          "required": false
+        },
+        "director": {
+          "required": false
+        },
+        "oda_supervised": {
+          "required": false
+        },
+        "publications": {
+          "required": false
+        },
+        "released_at_jp": {
+          "required": true
+        },
+        "runtime_minutes": {
+          "required": true
+        },
+        "title_key": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "features"
+      ]
+    },
+    "image": {
+      "properties": {
+        "alt_text_key": {
+          "required": true
+        },
+        "attribution": {
+          "required": true
+        },
+        "caption_key": {
+          "required": false
+        },
+        "format": {
+          "required": true
+        },
+        "image_height": {
+          "required": false
+        },
+        "image_width": {
+          "required": false
+        },
+        "license": {
+          "required": true
+        },
+        "source_origin": {
+          "required": false
+        },
+        "spoiler_since": {
+          "required": true
+        },
+        "url": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "sourced-from"
+      ]
+    },
+    "location": {
+      "properties": {
+        "climate": {
+          "required": false
+        },
+        "description_key": {
+          "required": false
+        },
+        "location_subtype": {
+          "required": true
+        },
+        "name": {
+          "required": true
+        },
+        "population": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "part-of-location",
+        "ruled-by"
+      ]
+    },
+    "manga-chapter": {
+      "properties": {
+        "canon_scope": {
+          "required": false
+        },
+        "cover_image": {
+          "required": false
+        },
+        "number": {
+          "required": true
+        },
+        "page_count": {
+          "required": false
+        },
+        "publications": {
+          "required": false
+        },
+        "published_at_jp": {
+          "required": true
+        },
+        "title_key": {
+          "required": true
+        },
+        "volume": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "adapted-by",
+        "depicted-by",
+        "features",
+        "introduces-character",
+        "part-of-arc",
+        "references-event"
+      ]
+    },
+    "organization": {
+      "properties": {
+        "description_key": {
+          "required": false
+        },
+        "founded_at": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "organization_type": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "ally-of",
+        "based-in",
+        "controls-territory",
+        "depicted-by",
+        "enemy-of",
+        "has-member",
+        "led-by"
+      ]
+    },
+    "race": {
+      "properties": {
+        "average_height": {
+          "required": false
+        },
+        "description_key": {
+          "required": false
+        },
+        "lifespan": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "originates-from"
+      ]
+    },
+    "saga": {
+      "properties": {
+        "name": {
+          "required": true
+        },
+        "narrative_key": {
+          "required": false
+        },
+        "saga_number": {
+          "required": true
+        }
+      },
+      "allowed_relations": []
+    },
+    "sbs": {
+      "properties": {
+        "canon_scope": {
+          "required": true
+        },
+        "publications": {
+          "required": false
+        },
+        "published_at_jp": {
+          "required": true
+        },
+        "volume": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "clarifies-fact",
+        "mentions"
+      ]
+    },
+    "ship": {
+      "properties": {
+        "built_at": {
+          "required": false
+        },
+        "crew_capacity": {
+          "required": false
+        },
+        "description_key": {
+          "required": false
+        },
+        "destroyed_at": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "ship_type": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "captained-by",
+        "crewed-by",
+        "depicted-by",
+        "flies-flag",
+        "replaces"
+      ]
+    },
+    "technique": {
+      "properties": {
+        "canonicity": {
+          "required": false
+        },
+        "description_key": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "technique_type": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "awakening-of",
+        "depicted-by",
+        "derived-from",
+        "enabled-by-fruit"
+      ]
+    },
+    "title": {
+      "properties": {
+        "description_key": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "single_holder": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "granted-by"
+      ]
+    },
+    "weapon": {
+      "properties": {
+        "description_key": {
+          "required": false
+        },
+        "is_black_blade": {
+          "required": false
+        },
+        "is_cursed": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "weapon_grade": {
+          "required": false
+        },
+        "weapon_type": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "forged-by"
+      ]
+    }
+  },
+  "propertyTypes": {
+    "age": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "aired_at_jp": {
+      "value_type": "date",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "alt_text_key": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": true
+    },
+    "arc_subtype": {
+      "value_type": "enum",
+      "enum_ref": "arc-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "attribution": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "average_height": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "awakened": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "birthday": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "birthplace": {
+      "value_type": "entity_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "blood_type": {
+      "value_type": "enum",
+      "enum_ref": "blood-types",
+      "historical": false,
+      "localizable": false
+    },
+    "bounty": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "built_at": {
+      "value_type": "source_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "canon_scope": {
+      "value_type": "enum",
+      "enum_ref": "canon-scopes",
+      "historical": false,
+      "localizable": false
+    },
+    "canonical_elements": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "canonicity": {
+      "value_type": "enum",
+      "enum_ref": "canonicity-tiers",
+      "historical": false,
+      "localizable": false
+    },
+    "caption_key": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": true
+    },
+    "classification": {
+      "value_type": "enum",
+      "enum_ref": "devil-fruit-classifications",
+      "historical": true,
+      "localizable": false
+    },
+    "climate": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": true
+    },
+    "concept_subtype": {
+      "value_type": "enum",
+      "enum_ref": "concept-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "cover_image": {
+      "value_type": "entity_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "crew_capacity": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "databook_subtype": {
+      "value_type": "enum",
+      "enum_ref": "databook-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "description_key": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": true
+    },
+    "destroyed_at": {
+      "value_type": "source_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "director": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "disbanded_at": {
+      "value_type": "source_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "epithet": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": true
+    },
+    "event_subtype": {
+      "value_type": "enum",
+      "enum_ref": "event-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "first_source": {
+      "value_type": "source_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "format": {
+      "value_type": "enum",
+      "enum_ref": "image-formats",
+      "historical": false,
+      "localizable": false
+    },
+    "founded_at": {
+      "value_type": "source_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "gender": {
+      "value_type": "enum",
+      "enum_ref": "genders",
+      "historical": false,
+      "localizable": false
+    },
+    "haki_types": {
+      "value_type": "multi_enum",
+      "enum_ref": "haki-types",
+      "historical": true,
+      "localizable": false
+    },
+    "height": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "image_height": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "image_width": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "is_black_blade": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "is_cursed": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "is_public": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "jolly_roger": {
+      "value_type": "entity_ref",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "last_source": {
+      "value_type": "source_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "license": {
+      "value_type": "enum",
+      "enum_ref": "image-licenses",
+      "historical": false,
+      "localizable": false
+    },
+    "lifespan": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "location_subtype": {
+      "value_type": "enum",
+      "enum_ref": "location-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "name": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": true
+    },
+    "narrative_key": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": true
+    },
+    "number": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "occupation": {
+      "value_type": "multi_enum",
+      "enum_ref": "occupations",
+      "historical": true,
+      "localizable": false
+    },
+    "oda_supervised": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "organization_type": {
+      "value_type": "enum",
+      "enum_ref": "org-types",
+      "historical": false,
+      "localizable": false
+    },
+    "page_count": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "population": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "primary_location": {
+      "value_type": "entity_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "publications": {
+      "value_type": "date",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "published_at_jp": {
+      "value_type": "date",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "released_at_jp": {
+      "value_type": "date",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "runtime_minutes": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "saga_number": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "ship_type": {
+      "value_type": "enum",
+      "enum_ref": "ship-types",
+      "historical": false,
+      "localizable": false
+    },
+    "single_holder": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "source_origin": {
+      "value_type": "enum",
+      "enum_ref": "source-origins",
+      "historical": false,
+      "localizable": false
+    },
+    "spoiler_since": {
+      "value_type": "source_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "status": {
+      "value_type": "enum",
+      "enum_ref": "character-statuses",
+      "historical": true,
+      "localizable": false
+    },
+    "technique_type": {
+      "value_type": "enum",
+      "enum_ref": "technique-types",
+      "historical": false,
+      "localizable": false
+    },
+    "title_key": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": true
+    },
+    "total_bounty": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "url": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "volume": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "weapon_grade": {
+      "value_type": "enum",
+      "enum_ref": "weapon-grades",
+      "historical": false,
+      "localizable": false
+    },
+    "weapon_type": {
+      "value_type": "enum",
+      "enum_ref": "weapon-types",
+      "historical": false,
+      "localizable": false
+    },
+    "weight": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "zoan_model": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    }
+  },
+  "relationTypes": {
+    "adapted-by": {
+      "valid_from_types": [
+        "arc",
+        "manga-chapter",
+        "saga"
+      ],
+      "valid_to_types": [
+        "anime-episode",
+        "film"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "coverage": {
+          "value_type": "enum",
+          "enum_ref": "appearance-types",
+          "required": false
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "ally-of": {
+      "valid_from_types": [
+        "character",
+        "crew",
+        "organization"
+      ],
+      "valid_to_types": [
+        "character",
+        "crew",
+        "organization"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "appears-in": {
+      "valid_from_types": [
+        "character",
+        "concept",
+        "crew",
+        "devil-fruit",
+        "event",
+        "location",
+        "organization",
+        "race",
+        "ship",
+        "technique",
+        "title",
+        "weapon"
+      ],
+      "valid_to_types": [
+        "anime-episode",
+        "databook",
+        "film",
+        "manga-chapter",
+        "sbs"
+      ],
+      "inverse_inferred": false,
+      "qualifiers": {
+        "appearance_type": {
+          "value_type": "enum",
+          "enum_ref": "appearance-types",
+          "required": false
+        }
+      }
+    },
+    "ate-fruit": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "devil-fruit"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "during_period": {
+          "value_type": "enum",
+          "enum_ref": "during-periods",
+          "required": false
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "succession_reason": {
+          "value_type": "enum",
+          "enum_ref": "succession-reasons",
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "awakening-of": {
+      "valid_from_types": [
+        "technique"
+      ],
+      "valid_to_types": [
+        "devil-fruit"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "based-in": {
+      "valid_from_types": [
+        "crew",
+        "organization"
+      ],
+      "valid_to_types": [
+        "location"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "bears-title": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "title"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "during_period": {
+          "value_type": "enum",
+          "enum_ref": "during-periods",
+          "required": false
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "belongs-to-race": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "race"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "born-in": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "location"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "captained-by": {
+      "valid_from_types": [
+        "crew",
+        "ship"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": false,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "captains": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "ship"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "caused-by-event": {
+      "valid_from_types": [
+        "event"
+      ],
+      "valid_to_types": [
+        "event"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "caused-death-of": {
+      "valid_from_types": [
+        "event"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "clarifies-fact": {
+      "valid_from_types": [
+        "databook",
+        "sbs"
+      ],
+      "valid_to_types": [
+        "character",
+        "concept",
+        "crew",
+        "devil-fruit",
+        "event",
+        "location",
+        "organization",
+        "race",
+        "ship",
+        "technique",
+        "title",
+        "weapon"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "property_name": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "contains-chapter": {
+      "valid_from_types": [
+        "arc"
+      ],
+      "valid_to_types": [
+        "anime-episode",
+        "manga-chapter"
+      ],
+      "inverse_inferred": false,
+      "qualifiers": {}
+    },
+    "controls-territory": {
+      "valid_from_types": [
+        "organization"
+      ],
+      "valid_to_types": [
+        "location"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "crewed-by": {
+      "valid_from_types": [
+        "ship"
+      ],
+      "valid_to_types": [
+        "crew"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "depicted-by": {
+      "valid_from_types": [
+        "anime-episode",
+        "arc",
+        "character",
+        "concept",
+        "crew",
+        "devil-fruit",
+        "event",
+        "film",
+        "location",
+        "manga-chapter",
+        "organization",
+        "race",
+        "saga",
+        "ship",
+        "technique",
+        "title",
+        "weapon"
+      ],
+      "valid_to_types": [
+        "image"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "context": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "period": {
+          "value_type": "enum",
+          "enum_ref": "depiction-periods",
+          "required": false
+        },
+        "role": {
+          "value_type": "enum",
+          "enum_ref": "depiction-roles",
+          "required": true
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "derived-from": {
+      "valid_from_types": [
+        "technique"
+      ],
+      "valid_to_types": [
+        "technique"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "embodied-by": {
+      "valid_from_types": [
+        "concept"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "enabled-by-fruit": {
+      "valid_from_types": [
+        "technique"
+      ],
+      "valid_to_types": [
+        "devil-fruit"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "enemy-of": {
+      "valid_from_types": [
+        "character",
+        "crew",
+        "organization"
+      ],
+      "valid_to_types": [
+        "character",
+        "crew",
+        "organization"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "family-of": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": false,
+      "qualifiers": {
+        "known_publicly_since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "relation_kind": {
+          "value_type": "enum",
+          "enum_ref": "family-relations",
+          "required": true
+        }
+      }
+    },
+    "features": {
+      "valid_from_types": [
+        "anime-episode",
+        "film",
+        "manga-chapter"
+      ],
+      "valid_to_types": [
+        "character",
+        "crew",
+        "devil-fruit",
+        "image"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "appearance_type": {
+          "value_type": "enum",
+          "enum_ref": "appearance-types",
+          "required": true
+        }
+      }
+    },
+    "features-characters": {
+      "valid_from_types": [
+        "arc"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "role": {
+          "value_type": "enum",
+          "enum_ref": "arc-roles",
+          "required": false
+        }
+      }
+    },
+    "flies-flag": {
+      "valid_from_types": [
+        "crew",
+        "ship"
+      ],
+      "valid_to_types": [
+        "image"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "forged-by": {
+      "valid_from_types": [
+        "weapon"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "friend-of": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "granted-by": {
+      "valid_from_types": [
+        "title"
+      ],
+      "valid_to_types": [
+        "character",
+        "organization"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "has-member": {
+      "valid_from_types": [
+        "crew",
+        "organization"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": false,
+      "qualifiers": {
+        "role": {
+          "value_type": "enum",
+          "enum_ref": "crew-roles",
+          "required": false
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "introduces-character": {
+      "valid_from_types": [
+        "anime-episode",
+        "databook",
+        "film",
+        "manga-chapter",
+        "sbs"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "led-by": {
+      "valid_from_types": [
+        "crew",
+        "organization"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "married-to": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "member-of": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "crew",
+        "organization"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "loyalty_status": {
+          "value_type": "enum",
+          "enum_ref": "loyalty-statuses",
+          "required": false
+        },
+        "role": {
+          "value_type": "enum",
+          "enum_ref": "crew-roles",
+          "required": false
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": true
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "mentions": {
+      "valid_from_types": [
+        "databook",
+        "sbs"
+      ],
+      "valid_to_types": [
+        "character",
+        "concept",
+        "crew",
+        "devil-fruit",
+        "event",
+        "location",
+        "organization",
+        "race",
+        "ship",
+        "technique",
+        "title",
+        "weapon"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "mentor-of": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "occurs-during-arc": {
+      "valid_from_types": [
+        "event"
+      ],
+      "valid_to_types": [
+        "arc"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "originates-from": {
+      "valid_from_types": [
+        "race"
+      ],
+      "valid_to_types": [
+        "location"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "part-of-arc": {
+      "valid_from_types": [
+        "anime-episode",
+        "event",
+        "manga-chapter"
+      ],
+      "valid_to_types": [
+        "arc"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "part-of-location": {
+      "valid_from_types": [
+        "location"
+      ],
+      "valid_to_types": [
+        "location"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "part-of-saga": {
+      "valid_from_types": [
+        "arc"
+      ],
+      "valid_to_types": [
+        "saga"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "participant": {
+      "valid_from_types": [
+        "event"
+      ],
+      "valid_to_types": [
+        "character",
+        "crew"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "outcome": {
+          "value_type": "enum",
+          "enum_ref": "event-outcomes",
+          "required": false
+        },
+        "role": {
+          "value_type": "enum",
+          "enum_ref": "event-roles",
+          "required": false
+        },
+        "side": {
+          "value_type": "enum",
+          "enum_ref": "event-sides",
+          "required": false
+        }
+      }
+    },
+    "pilots": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "ship"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "references": {
+      "valid_from_types": [
+        "anime-episode",
+        "databook",
+        "film",
+        "manga-chapter",
+        "sbs"
+      ],
+      "valid_to_types": [
+        "character",
+        "concept",
+        "crew",
+        "devil-fruit",
+        "event",
+        "location",
+        "organization",
+        "race",
+        "ship",
+        "technique",
+        "title",
+        "weapon"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "references-event": {
+      "valid_from_types": [
+        "anime-episode",
+        "databook",
+        "film",
+        "manga-chapter",
+        "sbs"
+      ],
+      "valid_to_types": [
+        "event"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "replaces": {
+      "valid_from_types": [
+        "ship"
+      ],
+      "valid_to_types": [
+        "ship"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "resides-in": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "location"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "rival-of": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "ruled-by": {
+      "valid_from_types": [
+        "location"
+      ],
+      "valid_to_types": [
+        "character",
+        "organization"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "set-in": {
+      "valid_from_types": [
+        "arc",
+        "event"
+      ],
+      "valid_to_types": [
+        "location"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "sourced-from": {
+      "valid_from_types": [
+        "image"
+      ],
+      "valid_to_types": [
+        "manga-chapter"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "uses-technique": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "technique"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "wields-weapon": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "weapon"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "succession_reason": {
+          "value_type": "enum",
+          "enum_ref": "succession-reasons",
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    }
+  },
+  "vocabularies": {
+    "adaptation-coverage": [
+      "compressed",
+      "expanded",
+      "filler_added",
+      "full",
+      "loose",
+      "partial",
+      "reordered",
+      "scene_added",
+      "scene_omitted",
+      "summary"
+    ],
+    "appearance-types": [
+      "corpse",
+      "cover_story",
+      "flashback",
+      "full",
+      "imagined",
+      "mentioned",
+      "named_only",
+      "narrator_only",
+      "partial",
+      "photograph",
+      "portrait",
+      "recap",
+      "revelation",
+      "silhouette",
+      "vision"
+    ],
+    "arc-roles": [
+      "ally",
+      "antagonist",
+      "background",
+      "cameo",
+      "deuteragonist",
+      "henchman",
+      "mentor",
+      "narrator",
+      "protagonist",
+      "rival",
+      "supporting",
+      "victim",
+      "villain"
+    ],
+    "arc-subtypes": [
+      "cover_story",
+      "exploration",
+      "flashback",
+      "introductory",
+      "mystery",
+      "political",
+      "tournament",
+      "training",
+      "war"
+    ],
+    "blood-types": [
+      "F",
+      "S",
+      "X",
+      "XF"
+    ],
+    "canon-scopes": [
+      "anime",
+      "anime_filler",
+      "crossover",
+      "databook",
+      "film_canon",
+      "film_non_canon",
+      "live_action",
+      "manga",
+      "sbs",
+      "video_game"
+    ],
+    "canonicity-tiers": [
+      "anime_only",
+      "canon",
+      "film_only",
+      "game_only",
+      "non_canon",
+      "sbs"
+    ],
+    "character-statuses": [
+      "alive",
+      "dead",
+      "in_hiding",
+      "incapacitated",
+      "missing",
+      "presumed_dead",
+      "unknown"
+    ],
+    "concept-subtypes": [
+      "cosmological",
+      "cultural",
+      "historical_period",
+      "in_universe_phenomenon",
+      "mythological_figure",
+      "philosophical"
+    ],
+    "crew-roles": [
+      "apprentice",
+      "archaeologist",
+      "cabin_boy",
+      "captain",
+      "combatant",
+      "cook",
+      "doctor",
+      "first_mate",
+      "helmsman",
+      "musician",
+      "navigator",
+      "shipwright",
+      "sniper",
+      "tactician",
+      "vice_captain"
+    ],
+    "databook-subtypes": [
+      "blue",
+      "gold",
+      "green",
+      "guide_volume",
+      "magazine",
+      "red",
+      "silver",
+      "vivre_card",
+      "yellow"
+    ],
+    "depiction-periods": [
+      "adolescence",
+      "adulthood",
+      "alternate_form",
+      "childhood",
+      "current",
+      "elderly",
+      "flashback",
+      "infancy",
+      "post_timeskip",
+      "pre_timeskip",
+      "transformed",
+      "young_adulthood"
+    ],
+    "depiction-roles": [
+      "ability_illustration",
+      "color_spread",
+      "cover",
+      "emotional_moment",
+      "equipment_view",
+      "group_photo",
+      "location_view",
+      "primary_portrait",
+      "scene",
+      "secondary_portrait",
+      "silhouette"
+    ],
+    "devil-fruit-classifications": [
+      "ancient_zoan",
+      "artificial",
+      "logia",
+      "mythical_zoan",
+      "paramecia",
+      "smile",
+      "special_paramecia",
+      "unknown",
+      "zoan"
+    ],
+    "during-periods": [
+      "god_valley_incident",
+      "ohara_incident",
+      "pre_story",
+      "rocks_era",
+      "void_century"
+    ],
+    "epistemic-statuses": [
+      "believed_by_characters",
+      "believed_by_world",
+      "confirmed",
+      "disputed",
+      "implied",
+      "retconned",
+      "revealed_to_reader",
+      "rumored",
+      "true"
+    ],
+    "event-outcomes": [
+      "awakened",
+      "captured",
+      "defeated",
+      "demoted",
+      "escaped",
+      "exiled",
+      "joined",
+      "killed",
+      "left",
+      "promoted",
+      "rescued",
+      "revealed",
+      "survived",
+      "transformed",
+      "unresolved",
+      "victorious",
+      "withdrew",
+      "wounded"
+    ],
+    "event-roles": [
+      "ally",
+      "antagonist",
+      "captive",
+      "combatant",
+      "commander",
+      "leader",
+      "mediator",
+      "narrator",
+      "observer",
+      "rescuer",
+      "subject",
+      "supporter",
+      "target",
+      "victim",
+      "witness"
+    ],
+    "event-sides": [
+      "blackbeard_pirates",
+      "captive",
+      "cipher_pol",
+      "civilians",
+      "marines",
+      "neutral",
+      "other",
+      "pirates",
+      "revolutionary_army",
+      "shichibukai",
+      "straw_hat_pirates",
+      "whitebeard_allies",
+      "whitebeard_pirates",
+      "world_government",
+      "yonko"
+    ],
+    "event-subtypes": [
+      "alliance_broken",
+      "alliance_formed",
+      "awakening",
+      "battle",
+      "betrayal",
+      "bounty_change",
+      "capture",
+      "coronation",
+      "death",
+      "declaration",
+      "escape",
+      "execution",
+      "presumed_death",
+      "recruitment",
+      "revelation",
+      "separation",
+      "transformation"
+    ],
+    "family-relations": [
+      "adopted_daughter",
+      "adopted_son",
+      "adoptive_father",
+      "adoptive_mother",
+      "ancestor",
+      "aunt",
+      "brother",
+      "cousin",
+      "daughter",
+      "descendant",
+      "father",
+      "foster_parent",
+      "granddaughter",
+      "grandfather",
+      "grandmother",
+      "grandson",
+      "half_brother",
+      "half_sister",
+      "mother",
+      "nephew",
+      "niece",
+      "partner",
+      "sister",
+      "son",
+      "spouse",
+      "step_father",
+      "step_mother",
+      "sworn_brother",
+      "sworn_sister",
+      "uncle"
+    ],
+    "genders": [
+      "female",
+      "male",
+      "non_binary",
+      "not_applicable",
+      "unknown"
+    ],
+    "haki-types": [
+      "advanced_armament",
+      "advanced_conqueror",
+      "advanced_observation",
+      "armament",
+      "conqueror",
+      "observation"
+    ],
+    "image-formats": [
+      "avif",
+      "gif",
+      "jpg",
+      "png",
+      "svg",
+      "webp"
+    ],
+    "image-licenses": [
+      "cc-by",
+      "cc-by-sa",
+      "fan-art-fair-use",
+      "fan-art-permitted",
+      "official-shueisha",
+      "public-domain",
+      "screenshot-anime",
+      "screenshot-manga"
+    ],
+    "location-subtypes": [
+      "archipelago",
+      "building",
+      "city",
+      "country",
+      "fishman_district",
+      "floating_island",
+      "ghost_island",
+      "island",
+      "kingdom",
+      "marine_base",
+      "ocean",
+      "pirate_haven",
+      "prison",
+      "region",
+      "sea",
+      "sky_island",
+      "town",
+      "undersea",
+      "village"
+    ],
+    "loyalty-statuses": [
+      "allied",
+      "former_member",
+      "founder",
+      "honorary",
+      "member",
+      "presumed_dead_member",
+      "traitor",
+      "undercover"
+    ],
+    "name-types": [
+      "alias",
+      "codename",
+      "common",
+      "epithet",
+      "full_name",
+      "honorific",
+      "insult",
+      "literal_meaning",
+      "mistranslation",
+      "native_script",
+      "nickname",
+      "romanized",
+      "title",
+      "true_name"
+    ],
+    "occupations": [
+      "archaeologist",
+      "artist",
+      "assassin",
+      "bandit",
+      "blacksmith",
+      "bounty_hunter",
+      "cook",
+      "doctor",
+      "explorer",
+      "gladiator",
+      "government_official",
+      "journalist",
+      "marine",
+      "martial_artist",
+      "mercenary",
+      "merchant",
+      "musician",
+      "navigator",
+      "ninja",
+      "noble",
+      "pirate",
+      "revolutionary",
+      "royalty",
+      "samurai",
+      "scientist",
+      "shipwright",
+      "slave",
+      "sniper",
+      "swordsman",
+      "thief"
+    ],
+    "org-types": [
+      "cipher_pol",
+      "marine",
+      "merchant_guild",
+      "religious_order",
+      "revolutionary",
+      "royal_court",
+      "secret_society",
+      "world_government_branch"
+    ],
+    "publication-countries": [
+      "br",
+      "cn",
+      "de",
+      "es",
+      "fr",
+      "global",
+      "it",
+      "jp",
+      "kr",
+      "tw",
+      "uk",
+      "us"
+    ],
+    "review-statuses": [
+      "auto_imported",
+      "flagged",
+      "not_reviewed",
+      "reviewed"
+    ],
+    "ship-types": [
+      "caravel",
+      "flying_ship",
+      "frigate",
+      "galleon",
+      "marine_warship",
+      "mini_ship",
+      "pirate_ship",
+      "sloop",
+      "submarine"
+    ],
+    "source-origins": [
+      "anime_promotional",
+      "anime_screenshot",
+      "databook",
+      "fan_art",
+      "film_promotional",
+      "film_screenshot",
+      "live_action",
+      "manga_color_spread",
+      "manga_cover",
+      "manga_panel",
+      "official_merchandise",
+      "official_website",
+      "other",
+      "sbs",
+      "video_game"
+    ],
+    "succession-reasons": [
+      "extracted",
+      "previous_holder_died",
+      "relinquished",
+      "transferred",
+      "unknown"
+    ],
+    "technique-types": [
+      "awakening",
+      "combo",
+      "defensive",
+      "devil_fruit_based",
+      "haki_based",
+      "hand_to_hand",
+      "ranged",
+      "signature",
+      "support",
+      "swordsmanship",
+      "transformation"
+    ],
+    "translation-variants": [
+      "4kids",
+      "fan_translation",
+      "funimation",
+      "glenat",
+      "kana",
+      "official_dub_en",
+      "official_dub_fr",
+      "viz"
+    ],
+    "weapon-grades": [
+      "o_wazamono",
+      "ryo_wazamono",
+      "saijo_o_wazamono",
+      "unranked",
+      "wazamono"
+    ],
+    "weapon-types": [
+      "axe",
+      "bow",
+      "cannon",
+      "cutlass",
+      "exotic",
+      "gun",
+      "hammer",
+      "kanabo",
+      "katana",
+      "knife",
+      "naginata",
+      "saber",
+      "shikomizue",
+      "shuriken",
+      "spear",
+      "staff",
+      "sword",
+      "whip"
+    ]
+  }
+}
