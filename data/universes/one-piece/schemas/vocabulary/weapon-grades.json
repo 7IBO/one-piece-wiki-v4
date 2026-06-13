@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "weapon-grades",
+  "schema_version": 2,
+  "values": {
+    "saijo_o_wazamono": {
+      "labels": {
+        "en": "Supreme Grade (Saijō Ō Wazamono)",
+        "fr": "Sabre suprême (Saijō Ō Wazamono)"
+      }
+    },
+    "o_wazamono": {
+      "labels": { "en": "Great Grade (Ō Wazamono)", "fr": "Grand sabre (Ō Wazamono)" }
+    },
+    "ryo_wazamono": {
+      "labels": { "en": "Skillful Grade (Ryō Wazamono)", "fr": "Sabre habile (Ryō Wazamono)" }
+    },
+    "wazamono": { "labels": { "en": "Grade (Wazamono)", "fr": "Sabre (Wazamono)" } },
+    "unranked": { "labels": { "en": "Unranked", "fr": "Non classé" } }
+  }
+}

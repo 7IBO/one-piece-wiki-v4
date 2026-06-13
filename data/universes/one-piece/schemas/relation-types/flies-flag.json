@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "flies-flag",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Flies flag", "inverse": "Flag of" },
+    "fr": { "active": "Arbore le pavillon", "inverse": "Pavillon de" }
+  },
+  "valid_from_types": ["ship", "crew"],
+  "valid_to_types": ["image"],
+  "qualifiers": [
+    { "id": "since", "value_type": "source_ref", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": true
+}

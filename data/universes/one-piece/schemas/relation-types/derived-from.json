@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "derived-from",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Derived from", "inverse": "Derives" },
+    "fr": { "active": "Dérivé de", "inverse": "Dérive" }
+  },
+  "valid_from_types": ["technique"],
+  "valid_to_types": ["technique"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true
+}

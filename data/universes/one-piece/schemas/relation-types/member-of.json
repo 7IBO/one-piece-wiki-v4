@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "member-of",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Member of", "inverse": "Members" },
+    "fr": { "active": "Membre de", "inverse": "Membres" }
+  },
+  "valid_from_types": ["character"],
+  "valid_to_types": ["crew", "organization"],
+  "qualifiers": [
+    { "id": "role", "value_type": "enum", "enum_ref": "crew-roles", "required": false },
+    { "id": "since", "value_type": "source_ref", "required": true },
+    { "id": "until", "value_type": "source_ref", "required": false },
+    {
+      "id": "loyalty_status",
+      "value_type": "enum",
+      "enum_ref": "loyalty-statuses",
+      "required": false
+    },
+    {
+      "id": "departure_reason",
+      "value_type": "enum",
+      "enum_ref": "departure-reasons",
+      "required": false
+    },
+    {
+      "id": "held_rank",
+      "value_type": "enum",
+      "enum_ref": "marine-ranks",
+      "required": false
+    }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": true
+}

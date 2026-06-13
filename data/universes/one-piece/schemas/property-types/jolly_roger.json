@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "jolly_roger",
+  "schema_version": 1,
+  "labels": { "en": "Jolly Roger", "fr": "Jolly Roger" },
+  "value_type": "entity_ref",
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["crew"],
+  "default_qualifiers": ["since"]
+}

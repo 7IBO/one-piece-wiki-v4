@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "concept-subtypes",
+  "schema_version": 1,
+  "values": {
+    "mythological_figure": {
+      "labels": { "en": "Mythological figure", "fr": "Figure mythologique" }
+    },
+    "philosophical": { "labels": { "en": "Philosophical", "fr": "Philosophique" } },
+    "in_universe_phenomenon": {
+      "labels": { "en": "In-universe phenomenon", "fr": "Phénomène in-universe" }
+    },
+    "cosmological": { "labels": { "en": "Cosmological", "fr": "Cosmologique" } },
+    "cultural": { "labels": { "en": "Cultural", "fr": "Culturel" } },
+    "historical_period": { "labels": { "en": "Historical period", "fr": "Période historique" } }
+  }
+}

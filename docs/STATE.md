@@ -141,32 +141,28 @@ per cluster. **INVENTORY refresh** (per-item sub-sections lag the true catalogue
 counts) is tracked in `DATA_EXPANSION_PLAN.md` §5 — a catalogue-generated
 rewrite, its own PR.
 
-### 5. Universe scoping / G6 relocation — IN PROGRESS
+### 5. Universe scoping / G6 relocation — DONE
 
-**Decision 2026-06-14**: do G6 **now** (user: avoid letting the debt grow). Every
-One-Piece-specific schema currently lives in `/data/schemas/**` (the loader's
-"shared core, present in every universe") — `nullifies_devil_fruits`,
-`marine-ranks`, `location-regions`, `devil-fruit`, `haki-types`, `bounty`, etc.
-The move is **behaviour- and contract-preserving** with one universe: the loader
-re-merges `core ∪ one-piece`, `forUniverse` is only used in tests so far, and
-`compat.ts` ignores the `universes` field, so `validate`/`build`/`tests`/
-`check:compat` are unchanged. Done in two PRs:
+**Decision 2026-06-14** (user: avoid letting the debt grow): G6 done in two PRs,
+both behaviour- and contract-preserving (loader re-merges `core ∪ one-piece`;
+`forUniverse` is test-only; `compat.ts` ignores `universes`; merged catalogue
+identical at 22/79/58/48).
 
-- **PR1 — guard fix (ADR-048)** [this branch]: `checkUniverseScopes` no longer
+- **PR1 — guard fix (ADR-048)** [merged #63]: `checkUniverseScopes` no longer
   treats the _applicability_ lists (`relation.valid_from_types`/`valid_to_types`,
   `property.applies_to_entity_types`) as dependencies; `forUniverse` filters them
-  per universe instead. Kept checks: entity→properties, entity→allowed_relations,
+  per universe. Kept: entity→properties, entity→allowed_relations,
   entity→display_name_properties, property→enum_ref, relation→qualifier-enum.
-  Without this, tagging `character` one-piece cascades (via shared `name` +
-  `depicted-by`/`features`/`sourced-from`) into `arc`/`manga-chapter`/`image`/
-  `person`, collapsing the core to just vocabularies.
-- **PR2 — relocation**: `git mv` the One-Piece closure into
-  `data/universes/one-piece/schemas/` (auto-scoped to `one-piece`). Target
-  partition: **core** = `image` + media/narrative (`manga-chapter`/
-  `anime-episode`/`film`/`arc`/`saga`) + `event` + `person` + generic
-  property-types + meta vocabularies; **one-piece** = `devil-fruit`/`character`/
-  `crew`/`location`/… + their OP props/relations/vocabs. Iterate
-  `check:coherence` (the `SCHEMA_UNIVERSE_SCOPE_LEAK` guard) to green.
+- **PR2 — relocation (ADR-049)**: moved the One-Piece closure into
+  `data/universes/one-piece/schemas/`. **Core** (9 entities): `image`,
+  `manga-chapter`, `anime-episode`, `film`, `arc`, `saga`, `event`, `person`,
+  `databook` + 36 generic props + 17 universal relations + 24 meta/generic
+  vocabs. **One Piece** (13 entities): `character`/`crew`/`organization`/
+  `location`/`title`/`concept`/`race`/`ship`/`weapon`/`technique`/`devil-fruit`/
+  `sbs`/`material` + their 43 props + 41 relations + 24 domain vocabs. Guard
+  green (no `SCHEMA_UNIVERSE_SCOPE_LEAK`). New clusters: put One-Piece-specific
+  schemas under `data/universes/one-piece/schemas/`, universal ones under
+  `data/schemas/`.
 
 ## Active plan (ADR-032) — tooling before ingest
 

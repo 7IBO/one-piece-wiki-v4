@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "gender",
+  "schema_version": 1,
+  "labels": { "en": "Gender", "fr": "Genre" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "genders" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["character"]
+}

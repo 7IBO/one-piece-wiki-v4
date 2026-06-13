@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "location-regions",
+  "schema_version": 1,
+  "values": {
+    "east_blue": { "labels": { "en": "East Blue", "fr": "East Blue" } },
+    "west_blue": { "labels": { "en": "West Blue", "fr": "West Blue" } },
+    "north_blue": { "labels": { "en": "North Blue", "fr": "North Blue" } },
+    "south_blue": { "labels": { "en": "South Blue", "fr": "South Blue" } },
+    "grand_line": { "labels": { "en": "Grand Line", "fr": "Grand Line" } },
+    "paradise": { "labels": { "en": "Paradise", "fr": "Paradis" } },
+    "new_world": { "labels": { "en": "New World", "fr": "Nouveau Monde" } },
+    "calm_belt": { "labels": { "en": "Calm Belt", "fr": "Calm Belt" } },
+    "red_line": { "labels": { "en": "Red Line", "fr": "Red Line" } }
+  }
+}

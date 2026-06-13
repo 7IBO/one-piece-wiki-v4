@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "forged-by",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Forged by", "inverse": "Forged weapon" },
+    "fr": { "active": "Forgé par", "inverse": "A forgé l'arme" }
+  },
+  "valid_from_types": ["weapon"],
+  "valid_to_types": ["character"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true
+}

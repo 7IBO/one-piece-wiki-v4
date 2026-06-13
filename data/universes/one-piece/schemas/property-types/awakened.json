@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "awakened",
+  "schema_version": 1,
+  "labels": { "en": "Awakened", "fr": "Éveillé" },
+  "value_type": "boolean",
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": ["devil-fruit"],
+  "default_qualifiers": ["since", "source"]
+}

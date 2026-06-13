@@ -42,10 +42,11 @@ The architecture optimizes for three properties, in order:
 ┌─────────────────────────────────────────────────────────────────┐
 │                       Source of truth                           │
 │                                                                 │
-│   /data/schemas/              ← entity-types, property-types,   │
-│                                  relation-types, vocabulary     │
+│   /data/schemas/              ← shared CORE schemas (universal) │
+│                                  (ADR-049)                      │
 │                                                                 │
 │   /data/universes/one-piece/                                    │
+│     ├── schemas/              ← One-Piece-specific schemas      │
 │     ├── entities/             ← *.json per entity               │
 │     ├── translations/         ← per-locale property values      │
 │     └── narratives/           ← per-locale prose, by key        │
@@ -186,7 +187,8 @@ The architecture optimizes for three properties, in order:
 
 Detailed in `/docs/BUILD_PIPELINE.md`. Summary:
 
-1. **Schema load**: read `/data/schemas/**` into memory
+1. **Schema load**: read the shared core `/data/schemas/**` plus each
+   `/data/universes/<id>/schemas/**` (auto-scoped to `<id>`) into memory
 2. **Zod generation**: produce typed Zod schemas in
    `packages/schemas/generated/`
 3. **Validation pass**: every JSON file in `/data/universes/**` is validated
@@ -265,11 +267,19 @@ The architecture is designed so adding a new universe (e.g. Naruto) requires
 no code changes:
 
 - Add `/data/universes/naruto/`
-- Add schema types in `/data/schemas/`, **scoped with `universes: ["naruto"]`**
-  for universe-specific ones (e.g. `jutsu`, `chakra-natures`); leave the
-  generic backbone (`character`, `image`, the four axes, epistemic /
-  canon / name-type vocabularies) unscoped as shared **core** (ADR-035).
-  `check:coherence` guards that no core schema references a scoped one.
+- Put that universe's **own** schema types in
+  `/data/universes/naruto/schemas/{entity-types,property-types,relation-types,vocabulary}/`
+  — the loader auto-scopes a folder's files to its universe (ADR-036). The
+  **shared core** in `/data/schemas/**` is universal and inherited by every
+  universe: `image`, the media / narrative container types (`manga-chapter`,
+  `anime-episode`, `film`, `arc`, `saga`, `event`), `person`, generic property
+  types, and the four axes + epistemic / canon / name-type vocabularies. Each
+  universe defines its **own** content types: One Piece has `character` (with
+  `bounty`/`haki`), `devil-fruit`, `crew`, … under `one-piece/schemas/` (ADR-049);
+  Naruto would define its own `character`, `jutsu`, `chakra-natures`. A universal
+  relation's endpoints (`depicted-by` listing One-Piece types) are applicability,
+  filtered per universe by `forUniverse` (ADR-048). `check:coherence` guards that
+  no core schema **depends on** a scoped one (`SCHEMA_UNIVERSE_SCOPE_LEAK`).
 - Add translations and narratives
 
 The build pipeline and apps treat universe as a top-level dimension. In

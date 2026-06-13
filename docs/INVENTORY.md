@@ -7,10 +7,15 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 > This is a reference document. If you add a new schema element, update
 > this file in the same PR.
 >
-> **Authoritative source.** The catalogue in `/data/schemas/**` (and the
-> generated Zod in `packages/schemas`) is authoritative; this inventory is
-> hand-maintained and can lag. When in doubt, read the schema files or run
-> `bun run schema:check` / `bun run check:coherence`. **Known lag
+> **Authoritative source.** The catalogue is authoritative (generated Zod in
+> `packages/schemas`); this inventory is hand-maintained and can lag. **Since
+> ADR-049 the schema files are split**: universal "core" lives in
+> `/data/schemas/**`, One-Piece-specific schemas in
+> `/data/universes/one-piece/schemas/**` (auto-scoped to `one-piece`). Sections
+> 2–5 below list the **merged** catalogue (`core ∪ one-piece`) — what a One-Piece
+> editor sees; they do not mark which side a type lives on (see ADR-049 for the
+> partition). When in doubt, read the schema files or run `bun run schema:check`
+> / `bun run check:coherence`. **Known lag
 > (2026-06-13):** the §1 directory tree and the §2 per-type _allowed
 > relations_ predate ADR-033/034's prefer-inferred cleanup — the deleted
 > inverse mirrors (`eaten-by`, `used-by`, `wielded-by`, `enables-technique`,
@@ -99,14 +104,19 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 │   └── tailwind-config/            # Shared Tailwind preset + tokens
 │
 ├── data/
-│   ├── schemas/
-│   │   ├── entity-types/           # See section 2
-│   │   ├── property-types/         # See section 3
-│   │   ├── relation-types/         # See section 4
-│   │   └── vocabulary/             # See section 5
+│   ├── schemas/                    # SHARED CORE only (universal; ADR-049)
+│   │   ├── entity-types/           # image, manga-chapter, arc, event, person…
+│   │   ├── property-types/         # name, dates, canon_scope, image fields…
+│   │   ├── relation-types/         # depicted-by, features, participant…
+│   │   └── vocabulary/             # epistemic-statuses, canon-scopes, name-types…
 │   ├── universes/
 │   │   └── one-piece/
 │   │       ├── universe.json       # Metadata about the universe itself
+│   │       ├── schemas/            # One-Piece-specific schemas (ADR-049)
+│   │       │   ├── entity-types/   # character, devil-fruit, crew, location…
+│   │       │   ├── property-types/ # bounty, haki_types, nullifies_devil_fruits…
+│   │       │   ├── relation-types/ # ate-fruit, member-of, wields-weapon…
+│   │       │   └── vocabulary/     # haki-types, marine-ranks, location-regions…
 │   │       ├── entities/
 │   │       │   ├── character/
 │   │       │   ├── devil-fruit/

@@ -8,6 +8,58 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-049 — Relocate the One-Piece schema closure (G6, applies ADR-035/036/048)
+
+**Date**: 2026-06-14
+
+**Context**: With the scope guard fixed (ADR-048), the long-deferred G6
+relocation became a clean, mechanical move. One-Piece-specific schemas all lived
+in the shared core `/data/schemas/**` (the loader's "present in every universe"),
+so a future second universe would wrongly inherit `devil-fruit`, `haki-types`,
+`bounty`, `marine-ranks`, `nullifies_devil_fruits`, etc. Maintainer call: do it
+**now** rather than let the pile grow.
+
+**Decision**: move the One-Piece reference-closure into
+`data/universes/one-piece/schemas/{entity-types,property-types,relation-types,vocabulary}/`
+(the loader auto-scopes a folder's files to `one-piece`, ADR-036). The partition
+rule, given ADR-048's guard: **a schema is core iff every schema a _core_ schema
+_depends on_ is also core** — i.e. a core entity's `properties` /
+`allowed_relations` / `display_name_properties`, a core property's `enum_ref`,
+and a core relation's qualifier `enum_ref` must all be core. Endpoint /
+`applies_to` lists are applicability (ADR-048), so a core relation may still list
+One-Piece types.
+
+**The line** (`character` → one-piece, per the maintainer):
+
+- **Core (9 entities)**: `image`, `manga-chapter`, `anime-episode`, `film`,
+  `arc`, `saga`, `event`, `person`, `databook` — the media / narrative /
+  real-world container types. Plus 36 generic properties (`name`, `title_key`,
+  dates, `number`, `canon_scope`, `publications`, image fields, …), 17 universal
+  relations (`depicted-by`, `features`, `part-of-arc`, `participant`,
+  `sourced-from`, …), and 24 meta / generic vocabularies (`epistemic-statuses`,
+  `canon-scopes`, `name-types`, `genders`, `appearance-types`, `depiction-*`,
+  `event-*`, `image-*`, …).
+- **One Piece (13 entities)**: `character`, `crew`, `organization`, `location`,
+  `title`, `concept`, `race`, `ship`, `weapon`, `technique`, `devil-fruit`,
+  `sbs`, `material` — plus their 43 props (`bounty`, `haki_types`, `zoan_model`,
+  `nullifies_devil_fruits`, `weapon_grade`, …), 41 relations (`ate-fruit`,
+  `member-of`, `wields-weapon`, `made-of`, …), and 24 domain vocabularies
+  (`devil-fruit-classifications`, `haki-types`, `marine-ranks`, `crew-roles`,
+  `weapon-grades`, `location-regions`, …).
+
+**Consequences**: behaviour- and contract-preserving — the loader re-merges
+`core ∪ one-piece`, so the merged catalogue is byte-for-byte the same set
+(`schema:check` still 22/79/58/48), `check:coherence` is green (no
+`SCHEMA_UNIVERSE_SCOPE_LEAK`), `check:compat` unchanged (`compat.ts` ignores
+`universes`), and `validate`/`build`/`tests` pass. Moved files' `$schema`
+relative paths were re-depthed (`../../../` → `../../../../../`). A second
+universe now starts from a clean core; `forUniverse(catalogue, id)` filters
+endpoints per universe (ADR-048). Where the line might still shift (e.g. is
+`oda_supervised`/`canonical_elements` really core because `film` is?) is minor
+and revisitable.
+
+---
+
 ## ADR-048 — Universe scope guard: applicability vs dependency (amends ADR-035)
 
 **Date**: 2026-06-14

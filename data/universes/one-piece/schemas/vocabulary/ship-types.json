@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "ship-types",
+  "schema_version": 1,
+  "values": {
+    "caravel": { "labels": { "en": "Caravel", "fr": "Caravelle" } },
+    "galleon": { "labels": { "en": "Galleon", "fr": "Galion" } },
+    "sloop": { "labels": { "en": "Sloop", "fr": "Sloop" } },
+    "frigate": { "labels": { "en": "Frigate", "fr": "Frégate" } },
+    "marine_warship": { "labels": { "en": "Marine warship", "fr": "Navire de guerre" } },
+    "submarine": { "labels": { "en": "Submarine", "fr": "Sous-marin" } },
+    "flying_ship": { "labels": { "en": "Flying ship", "fr": "Navire volant" } },
+    "mini_ship": { "labels": { "en": "Mini ship", "fr": "Mini-navire" } },
+    "pirate_ship": { "labels": { "en": "Pirate ship", "fr": "Navire pirate" } }
+  }
+}
