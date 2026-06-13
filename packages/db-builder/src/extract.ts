@@ -78,6 +78,47 @@ function compareSources(a: string, b: string): number {
   return a.localeCompare(b);
 }
 
+function readCanonScope(data: Record<string, unknown>): string | null {
+  // An entity's canon scope is declared as a (historisable) property on
+  // the source itself, e.g. a manga-chapter carries `canon_scope`. Read
+  // the first declared value. No inference from the entity type: if the
+  // source never declares its scope, the answer is honestly null rather
+  // than a hardcoded type-to-scope guess.
+  const properties = data['properties'];
+  if (properties === null || properties === undefined || typeof properties !== 'object') {
+    return null;
+  }
+  const canonScope = (properties as Record<string, unknown>)['canon_scope'];
+  if (canonScope === undefined || canonScope === null) return null;
+  const entries = Array.isArray(canonScope) ? canonScope : [canonScope];
+  for (const entry of entries) {
+    if (entry === null || entry === undefined || typeof entry !== 'object') continue;
+    const value = (entry as Record<string, unknown>)['value'];
+    if (typeof value === 'string') return value;
+  }
+  return null;
+}
+
+/**
+ * Mark, for each entity, the appearance whose source is earliest in
+ * in-universe order as `is_first = 1`. Ties on the same earliest source
+ * are all marked (defensive; the data should not produce duplicates).
+ */
+function markFirstAppearances(appearances: AppearanceRow[]): void {
+  const earliestByEntity = new Map<string, string>();
+  for (const row of appearances) {
+    const current = earliestByEntity.get(row.entity_id);
+    if (current === undefined || compareSources(row.source_id, current) < 0) {
+      earliestByEntity.set(row.entity_id, row.source_id);
+    }
+  }
+  for (const row of appearances) {
+    if (earliestByEntity.get(row.entity_id) === row.source_id) {
+      row.is_first = 1;
+    }
+  }
+}
+
 function collectSinceSources(data: Record<string, unknown>): string[] {
   const sources = new Set<string>();
   const properties = data['properties'];
@@ -247,6 +288,20 @@ export function extract(
     out.relations.push(...extractRelationRows(entity, catalogue));
     out.appearances.push(...extractAppearanceRows(entity));
   }
+
+  // Derived: an entity's primary canon scope is the canon_scope declared
+  // by the source where it first appears. Resolved here because it needs
+  // the full entity map to look the source up.
+  for (const row of out.entities) {
+    if (row.first_appearance_source === null) continue;
+    const source = entities.get(row.first_appearance_source);
+    if (source !== undefined) {
+      row.primary_canon_scope = readCanonScope(source.data);
+    }
+  }
+
+  // Derived: flag the earliest appearance per entity.
+  markFirstAppearances(out.appearances);
 
   // Stable order for deterministic builds.
   out.entities.sort((a, b) => a.id.localeCompare(b.id));
