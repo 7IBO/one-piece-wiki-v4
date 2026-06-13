@@ -1,7 +1,7 @@
 /**
  * Catch-all server route for every `/api/*` request (ADR-018).
  *
- * Rather than break the existing handler in `api/server.ts` into one
+ * Rather than break the existing handler in `server/server.ts` into one
  * file per endpoint (~15 files, scattering rate-limit map, session
  * guards, admin checks), we mount a single splat catch-all here that
  * forwards the raw Request to `handleApiRequest`. Existing routing
@@ -13,7 +13,7 @@
  * through here.
  */
 import { createFileRoute } from '@tanstack/react-router';
-import { handleApiRequest } from '../../../api/server';
+import { handleApiRequest } from '../../../server/server';
 
 export const Route = createFileRoute('/api/$')({
   server: {

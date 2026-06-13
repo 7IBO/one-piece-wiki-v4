@@ -15,7 +15,7 @@
     },
     "apps/dashboard": {
       "entry": [
-        "api/server.ts",
+        "server/server.ts",
         "vite.config.ts",
         "src/router.tsx",
         "src/routeTree.gen.ts",

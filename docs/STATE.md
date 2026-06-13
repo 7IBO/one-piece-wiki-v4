@@ -11,33 +11,58 @@ this file is the current status + the open threads.
 
 ## Open / blocked threads — resume here
 
-### 1. Production dashboard `/api/*` 404 — infra fixed; remaining is operational
+### 1. Production dashboard `/api/*` 404 — ROOT CAUSE FOUND + FIXED (code)
 
-- Original symptom: `https://dashboard.one-piece.wiki/api/schemas` →
-  Vercel edge `NOT_FOUND`. Root cause was the Vercel **Framework Preset
-  = "Vite"** → Vercel served the app statically and never deployed the
-  serverless function, so all `/api/*` (and SSR) 404'd.
-- **Fixed at the infra level**: preset switched to **TanStack Start** +
-  **Root Directory = `apps/dashboard`** (confirmed). The Vercel build
-  log now shows the function built (`.vercel/output/functions/__server.func/`),
-  `config.json` routing `/(.*) → /__server`, and "Deployment completed".
-- **If `/api/*` still 404s**, it's an **operational** matter, not the
-  repo: the live production deployment is likely a stale one (the
-  "Configuration Settings differ" banner = production built with the
-  old Vite settings). Fix: Vercel → Deployments → latest successful
-  build → **Promote to Production** (or Redeploy without build cache),
-  then hard-refresh.
+- Symptom: `https://dashboard.one-piece.wiki/api/schemas` → Vercel edge
+  `NOT_FOUND`, while SSR routes (`/`, `/types/character`, `/login`) work
+  fine via the function. So the function deploys and runs — only
+  `/api/*` is intercepted **before** reaching it.
+- **Real root cause (proven 2026-06-13 by probing prod):** Vercel's
+  legacy **zero-config Serverless Functions** convention treats a
+  root-level `api/` directory as individual functions. With Root
+  Directory = `apps/dashboard`, Vercel saw **`apps/dashboard/api/`** and
+  reserved the **entire `/api/*` path prefix**, shadowing the nitro
+  Build-Output catch-all (`/(.*) → /__server`). Proof: `/api/server`,
+  `/api/session`, `/api/r2`, `/api/admin-promote` (= the `.ts`
+  filenames) returned **500 FUNCTION_INVOCATION_FAILED** (Vercel built
+  them as broken functions), while `/api/schemas` + any non-file path
+  returned **404 NOT_FOUND**. The earlier "Vite preset / stale deploy /
+  operational" theory was **wrong** — the deploy was current and the
+  function was live; `/api/*` never reached it.
+- **Fix (this PR):** renamed `apps/dashboard/api/` →
+  `apps/dashboard/server/` so there is no root-level `api/` dir for
+  Vercel to claim. The public URL `/api/*` is unchanged — it is the
+  TanStack route path `src/routes/api/$.ts` (splat → `handleApiRequest`),
+  independent of the server-lib dir name. Updated the 4 references:
+  route import, dashboard `tsconfig.json` include, `package.json`
+  `dev:api-legacy` script, `knip.json` entry. Typecheck + lint + vercel-
+  preset build all green; only `__server.func` is emitted; catch-all
+  config intact.
+- **Verify after deploy** (routing effect can't be checked locally —
+  DoD #7): `curl -s -o /dev/null -w "%{http_code}\n"
+  https://dashboard.one-piece.wiki/api/schemas` → expect **200** (was
+  404). Also confirm `/api/server` no longer 500s (should be handled by
+  the splat now).
 - Dead ends (do NOT repeat blind): #23 relocated `.vercel/output` via
   the buildCommand → **broke the build** (reverted #25); #27 removed
   `framework`/`outputDirectory` → made a preview 404 (closed). The
-  repo-root `vercel.json` is **ignored** anyway when Root Directory =
+  repo-root `vercel.json` is **ignored** when Root Directory =
   `apps/dashboard`. **Never push deploy config blind** (CLAUDE.md
   Definition of done #7).
-- Vercel's post-build `tsc` prints node/bun-type errors on `api/` +
-  packages — **non-fatal** (deploy completes) and a Vercel-typecheck-
-  context artifact (our typecheck passes with bun types). The real,
-  local gap — `api/` not being in our typecheck scope — is now closed
-  (dashboard tsconfig `include` covers `api/**/*`).
+- The big post-build `tsc` **error flood** in the Vercel log (`Cannot
+  find name 'process'`, `node:crypto`, `Buffer`, `NodeJS`, `Bun`,
+  `S3Client.send`, plus a couple of "genuine-looking" ones like
+  `string | { error: string }` in server.ts and the `id?` mismatch in
+  generator.ts) is the **same root cause** as the 404: it is Vercel
+  **compiling `apps/dashboard/api/*.ts` as zero-config serverless
+  functions** in its own context without our `@types/bun`/`@types/node`.
+  Proof: every erroring file is in the `api/*.ts` import graph (api/ +
+  the packages it imports) — **zero errors come from `src/**`** (the
+  2302-module tree nitro actually bundles). It is **non-fatal** (deploy
+  exits 0) AND it disappears entirely once `api/` is renamed (PR #32):
+  no `api/` dir → Vercel compiles nothing there → no tsc pass → no
+  flood. The "genuine-looking" errors pass our CI typecheck and are
+  artifacts of the degraded (types-missing) context, not real bugs.
 
 ### 2. Admin schema editor (Phase 5) — proposed, not started
 
