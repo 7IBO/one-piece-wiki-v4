@@ -8,6 +8,135 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-028 — Anticipate availability links + webhook event model (design-only)
+
+**Date**: 2026-06-13
+
+**Status**: design-only, no code in this ADR. Two forward-looking
+concepts are recorded now so the data model, build pipeline and
+public API are built ready for them rather than retrofitted.
+
+**Context**: two needs surfaced that the current design does not
+cover.
+
+1. **"Where to watch / where to read" links.** The Phase 6.1
+   episode and chapter templates want per-platform links — Netflix,
+   Disney+, Crunchyroll, ADN, Prime Video for anime episodes; MANGA
+   Plus, Shōnen Jump+, Viz for manga chapters. ADR-026's
+   `external_refs` covers cross-database _identifiers_ (`tmdb_id`,
+   `mal_id`, `anilist_id`) but not per-platform, per-region
+   _watch/read URLs_. Different concept, different lifecycle (URLs
+   rot; identifiers don't).
+2. **Webhooks.** ADR-025 / `PUBLIC_API_DESIGN.md` defer webhooks to
+   "its own ADR". The maintainer wants the architecture not to
+   foreclose them — webhooks need a domain-event stream, and if the
+   build/merge pipeline never emits events, retrofitting one is
+   painful. Fixing the event taxonomy and the emit seam now is cheap
+   insurance.
+
+**Decision 1 — Availability links as a historisable property**:
+
+- New property type `availability` (`value_type: object`),
+  attachable to the source entity types (`anime-episode`,
+  `manga-chapter`, `film`). `allow_multiple` so one source can list
+  many platform×region rows.
+- Each entry shape:
+  `{ platform, url, kind: "watch" | "read", region?: ISO-3166-1,
+  subtitle_langs?: string[], dub_langs?: string[],
+  requires_subscription?: boolean, verified_at?: ISO-8601 date }`.
+- New vocabulary `streaming-platforms` (`netflix`, `disney-plus`,
+  `crunchyroll`, `adn`, `prime-video`, `hulu`, `manga-plus`,
+  `shonen-jump-plus`, `viz`, …) with FR/EN labels.
+- **Not in the anti-spoiler scope.** Availability is real-world
+  metadata; a watch link reveals nothing in-universe, so it is
+  always visible. The _existence_ of the episode/chapter is still
+  spoiler-gated by the normal source-reachability rules — you only
+  reach the page if your progression reaches the source.
+- **Freshness**: URLs rot. Each entry carries an optional
+  `verified_at`; a future scheduled job can re-check and flag stale
+  links. Maintained as data by contributors via the dashboard, like
+  any other property.
+- **Monetisation / affiliate links**: explicitly out of scope here.
+  If affiliate tagging is ever wanted it is a separate decision; the
+  `url` field stays a plain canonical link for now.
+
+**Decision 2 — Webhook event model (taxonomy fixed, delivery
+deferred)**:
+
+- Fix a stable domain-event taxonomy now:
+  - `entity.created`, `entity.updated`, `entity.deleted`
+  - `source.published` (a new chapter / episode enters the corpus)
+  - `vocabulary.changed`
+  - `build.completed`
+- Event envelope:
+  `{ event, id, type, schema_hash, occurred_at, api_version }`.
+  Snake_case on the wire, consistent with the REST conventions.
+- **Emit seam**: the build pipeline (`packages/db-builder`) and the
+  PR-merge flow are the natural emit points. The build manifest
+  already records build metadata; the prerequisite for webhooks is a
+  **build diff** — entities/sources added or changed since the
+  previous manifest. This ADR does **not** implement the emitter,
+  but it directs that future `db-builder` refactors preserve (and
+  ideally expose) a manifest-to-manifest diff capability, since that
+  is the seam every webhook feature will read from.
+- **Delivery (future, own implementation ADR)**: a dispatcher reads
+  the build diff, signs payloads (HMAC-SHA256 with a per-subscriber
+  secret), POSTs to subscriber URLs with retry + exponential
+  backoff, and exposes subscription management in the dashboard.
+  All deferred; only the taxonomy and the emit seam are fixed here.
+- `PUBLIC_API_DESIGN.md` § 6 / scope upgraded from "no webhook" to
+  "webhook event taxonomy fixed in ADR-028; delivery deferred".
+
+**Rationale**:
+
+- Modelling availability as a property (not as `external_refs`)
+  keeps identifiers and URLs separate: identifiers are stable join
+  keys, URLs are perishable presentation data with their own
+  freshness lifecycle. Conflating them would force the same
+  validation and review cadence on two very different things.
+- Region-awareness is unavoidable for streaming (One Piece is on
+  different platforms per country); modelling it as a per-entry
+  field lets the public app filter by the visitor's region without a
+  schema change later.
+- Fixing the webhook taxonomy now costs a paragraph; retrofitting an
+  event stream onto a build pipeline that discarded its diffs costs
+  a rewrite. The asymmetry justifies the cheap up-front commitment
+  even though delivery is far off.
+- Keeping delivery deferred avoids over-building: there are zero API
+  consumers today, so a running dispatcher would be speculative.
+
+**Consequences**:
+
+- New schema files (spec'd, implemented when Phase 6.1 needs them):
+  `data/schemas/property-types/availability.json`,
+  `data/schemas/vocabulary/streaming-platforms.json`. The three
+  source entity types (`anime-episode`, `manga-chapter`, `film`)
+  gain an `availability` property reference.
+- `docs/DATA_MODEL.md` gains an "Availability links" subsection.
+- `docs/PUBLIC_API_DESIGN.md` § scope + a new "Webhook event model"
+  note updated to reference this ADR.
+- `docs/ROADMAP.md` Phase 6.1 episode + chapter templates list the
+  "where to watch/read" surface.
+- `packages/db-builder`: future refactors keep a manifest-to-
+  manifest diff capability in mind — it is the webhook emit seam and
+  also feeds the Phase 6.6 `/help-wanted` and "recently revealed"
+  surfaces.
+- No code, schema, or data changes in this ADR.
+
+**Open questions** (for the implementation ADRs):
+
+1. Region granularity — per-country (ISO-3166-1) vs per-locale
+   bucket? Direction: per-country, displayed grouped by locale.
+2. Link-freshness ownership — contributor-maintained only, or a
+   scheduled HEAD-check job that flags 404s? Direction: start
+   contributor-only, add the job if rot becomes a problem.
+3. Webhook subscriber auth + secret rotation model — deferred to the
+   delivery ADR.
+4. Whether `source.published` fires on data merge or only on a
+   tagged release build — deferred to the delivery ADR.
+
+---
+
 ## ADR-027 — Lead with product: expand Phase 6, defer Phase 5 + Phase 7
 
 **Date**: 2026-05-21

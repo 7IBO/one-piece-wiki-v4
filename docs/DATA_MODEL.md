@@ -310,6 +310,45 @@ depict such documents become `depicted-by` targets of the future
 `document` entities. See `/IDEAS.md` for the detailed thinking and
 ADR-011 for the deferral decision.
 
+### Availability links
+
+Source entities (`anime-episode`, `manga-chapter`, `film`) can carry
+an `availability` property: where a real-world viewer can legally
+watch or read that source. This is **real-world presentation
+metadata, not in-universe data** — it is exempt from spoiler
+filtering (a streaming link reveals nothing about the story), though
+the source page it lives on is still reachability-gated as usual.
+
+Each entry names a platform (from the `streaming-platforms`
+vocabulary), a URL, a `kind` (`watch` or `read`), and optional
+region / subtitle / dub / subscription / `verified_at` qualifiers:
+
+```json
+"availability": [
+  {
+    "platform": "crunchyroll",
+    "url": "https://www.crunchyroll.com/...",
+    "kind": "watch",
+    "region": "US",
+    "subtitle_langs": ["en", "fr"],
+    "requires_subscription": true,
+    "verified_at": "2026-06-13"
+  },
+  {
+    "platform": "manga-plus",
+    "url": "https://mangaplus.shueisha.co.jp/...",
+    "kind": "read",
+    "region": "FR"
+  }
+]
+```
+
+Distinct from `external_refs` (ADR-026), which holds stable
+cross-database _identifiers_ (`tmdb_id`, `mal_id`). Availability
+holds perishable _URLs_ with their own freshness lifecycle. Full
+rationale and the platform vocabulary in ADR-028; this concept is
+implemented when the Phase 6.1 episode/chapter templates need it.
+
 ## Worked examples
 
 ### Character: Monkey D. Luffy (excerpt)
