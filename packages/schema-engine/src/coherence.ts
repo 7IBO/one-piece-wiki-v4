@@ -33,7 +33,10 @@ export type CoherenceFinding = {
     | 'RELATION_INVALID_SOURCE_TYPE'
     | 'RELATION_INVALID_TARGET_TYPE'
     | 'RELATION_MISSING_REQUIRED_QUALIFIER'
-    | 'UNREFERENCED_ENTITY';
+    | 'UNREFERENCED_ENTITY'
+    // schema-level (no entity data needed)
+    | 'SCHEMA_ALLOWED_RELATION_UNKNOWN'
+    | 'SCHEMA_ALLOWED_RELATION_INVALID_SOURCE';
   readonly severity: 'error' | 'warning';
   readonly source: string;
   readonly path: string;
@@ -210,6 +213,49 @@ export function checkCoherence(
         message:
           `Nothing references ${entity.id} (no relation target, entity/source ref, or axis).`,
       });
+    }
+  }
+
+  return findings;
+}
+
+/**
+ * Schema-level coherence: rules over the catalogue alone (no entity data
+ * needed), so latent mismatches are caught before any entity exercises
+ * them. Currently: every relation an entity type lists in
+ * `allowed_relations` must exist AND must permit that entity type as a
+ * source (`valid_from_types`). Catches the class of bug where a type
+ * advertises a relation the relation schema forbids it from starting.
+ */
+export function checkSchemaCoherence(
+  catalogue: ValidatedCatalogue,
+): readonly CoherenceFinding[] {
+  const findings: CoherenceFinding[] = [];
+
+  for (const [typeId, entityType] of catalogue.entityTypes) {
+    for (const relId of entityType.allowed_relations) {
+      const relationType = catalogue.relationTypes.get(relId);
+      if (relationType === undefined) {
+        findings.push({
+          code: 'SCHEMA_ALLOWED_RELATION_UNKNOWN',
+          severity: 'error',
+          source: typeId,
+          path: 'allowed_relations',
+          message:
+            `Entity type "${typeId}" allows relation "${relId}" which is not in the catalogue.`,
+        });
+        continue;
+      }
+      if (!(relationType.valid_from_types as readonly string[]).includes(typeId)) {
+        findings.push({
+          code: 'SCHEMA_ALLOWED_RELATION_INVALID_SOURCE',
+          severity: 'error',
+          source: typeId,
+          path: 'allowed_relations',
+          message:
+            `Entity type "${typeId}" allows "${relId}" but "${relId}".valid_from_types does not include "${typeId}".`,
+        });
+      }
     }
   }
 

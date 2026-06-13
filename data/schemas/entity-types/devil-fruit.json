@@ -12,9 +12,7 @@
   ],
   "allowed_relations": [
     "eaten-by",
-    "enabled-by-fruit",
-    "depicted-by",
-    "sourced-from"
+    "depicted-by"
   ],
   "ui_hint": { "icon": "fruit", "group": "powers" }
 }
