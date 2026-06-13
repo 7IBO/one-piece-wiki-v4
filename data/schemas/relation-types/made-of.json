@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "made-of",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Made of", "inverse": "Material of" },
+    "fr": { "active": "Composé de", "inverse": "Matériau de" }
+  },
+  "valid_from_types": ["ship", "weapon"],
+  "valid_to_types": ["material"],
+  "qualifiers": [
+    { "id": "since", "value_type": "source_ref", "required": false },
+    { "id": "component", "value_type": "string", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": false
+}

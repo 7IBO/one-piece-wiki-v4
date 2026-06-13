@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "nullifies_devil_fruits",
+  "schema_version": 1,
+  "labels": { "en": "Nullifies Devil Fruits", "fr": "Neutralise les Fruits du Démon" },
+  "value_type": "boolean",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["material"]
+}
