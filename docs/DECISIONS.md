@@ -8,6 +8,60 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-048 — Universe scope guard: applicability vs dependency (amends ADR-035)
+
+**Date**: 2026-06-14
+
+**Context**: Preparing the long-deferred G6 relocation (move One-Piece-specific
+schemas out of the shared core into `data/universes/one-piece/schemas/`).
+ADR-035's guard `checkUniverseScopes` enforces "a schema may only reference
+schemas present in every universe where it itself is present", and it treats
+**all** of these as references: an entity's `properties` and `allowed_relations`;
+a property's `enum_ref` **and `applies_to_entity_types`**; a relation's
+`qualifiers.enum_ref` **and `valid_from_types`/`valid_to_types`**.
+
+The last three are not true dependencies — they are **applicability** lists. A
+relation like `depicted-by` doesn't _depend on_ `character`; it merely _applies
+to_ characters where they exist. But the strict guard makes them hard
+dependencies, so tagging `character` one-piece cascades (via the shared `name`
+property's `applies_to` and via `depicted-by`/`features`/`sourced-from`'s
+`valid_from`/`valid_to`) into `arc`, `manga-chapter`, `image`, `person` too —
+collapsing the achievable "core" to just the vocabularies. That contradicts
+ADR-036's intended small core and makes a clean partition impossible.
+
+**Options**:
+
+- A — Keep the strict guard; accept a near-total closure to one-piece (even
+  `image`/`arc`/`manga-chapter` become universe-specific). Semantically wrong.
+- B — Treat `valid_from_types` / `valid_to_types` / `applies_to_entity_types` as
+  **applicability**: drop their three checks in `checkUniverseScopes`, and make
+  `forUniverse` **filter** those lists to the entity types present in the target
+  universe (so a Naruto catalogue's `depicted-by.valid_from` simply omits
+  `character`). Real dependencies (entity→properties, entity→allowed_relations,
+  entity→display_name_properties, property→enum_ref, relation→qualifier enum_ref)
+  stay enforced.
+
+**Choice**: B.
+
+**Rationale**: It matches the semantics — endpoint/`applies_to` lists describe
+_where a universal schema is usable_, not what it needs to exist. Filtering in
+`forUniverse` preserves the "no dangling reference" guarantee at read time
+(the dangling case the guard protected against). The retained checks still catch
+the genuine leaks (a core entity owning a one-piece property/relation, a property
+pointing at a one-piece vocab). This unlocks the clean partition: **core** =
+`image` + media/narrative (`manga-chapter`/`anime-episode`/`film`/`arc`/`saga`) +
+`event` + `person` + generic property-types + meta vocabularies; **one-piece** =
+`devil-fruit`/`character`/`crew`/`location`/… + their OP props/relations/vocabs.
+
+**Consequences**: `checkUniverseScopes` drops three checks; `forUniverse` now
+filters relation endpoints + property `applies_to` per universe. Behaviour
+unchanged today (everything is still core; `forUniverse` is used only in tests so
+far; `check:coherence` stays green). No data change in this ADR — it is the
+**enabler** for the G6 relocation (a separate PR). Amends ADR-035's invariant
+(applicability lists are no longer scope references).
+
+---
+
 ## ADR-047 — `semi_canon` tier + narrative/appearance depth (C8 foundation)
 
 **Date**: 2026-06-14

@@ -38,20 +38,48 @@ function scopeCovers(referrer: Scoped, referee: Scoped): boolean {
   return (referrer.universes as readonly string[]).every((u) => refereeSet.has(u));
 }
 
+/** Keep the entries present in `universeId`, applying `transform` to each. */
+function scopedMap<V extends Scoped>(
+  source: ReadonlyMap<string, V>,
+  universeId: string,
+  transform: (v: V) => V,
+): Map<string, V> {
+  const out = new Map<string, V>();
+  for (const [k, v] of source) {
+    if (presentIn(v, universeId)) out.set(k, transform(v));
+  }
+  return out;
+}
+
 /**
  * The effective catalogue for one universe: shared-core schemas ∪
  * schemas scoped to `universeId`. Errors are passed through unchanged.
+ * Applicability lists (relation `valid_from_types`/`valid_to_types`, property
+ * `applies_to_entity_types`) are filtered to the entity types present here, so a
+ * universal schema does not dangle on a type absent from this universe (ADR-048).
  */
 export function forUniverse(
   catalogue: ValidatedCatalogue,
   universeId: string,
 ): ValidatedCatalogue {
-  const keep = (v: Scoped): boolean => presentIn(v, universeId);
+  const entityTypes = scopedMap(catalogue.entityTypes, universeId, (v) => v);
+  const here = (etId: string): boolean => entityTypes.has(etId);
   return {
-    entityTypes: new Map([...catalogue.entityTypes].filter(([, v]) => keep(v))),
-    propertyTypes: new Map([...catalogue.propertyTypes].filter(([, v]) => keep(v))),
-    relationTypes: new Map([...catalogue.relationTypes].filter(([, v]) => keep(v))),
-    vocabularies: new Map([...catalogue.vocabularies].filter(([, v]) => keep(v))),
+    entityTypes,
+    propertyTypes: scopedMap(
+      catalogue.propertyTypes,
+      universeId,
+      (v) =>
+        v.applies_to_entity_types === undefined
+          ? v
+          : { ...v, applies_to_entity_types: v.applies_to_entity_types.filter(here) },
+    ),
+    relationTypes: scopedMap(catalogue.relationTypes, universeId, (v) => ({
+      ...v,
+      valid_from_types: v.valid_from_types.filter(here),
+      valid_to_types: v.valid_to_types.filter(here),
+    })),
+    vocabularies: scopedMap(catalogue.vocabularies, universeId, (v) => v),
     errors: catalogue.errors,
   };
 }
@@ -110,18 +138,15 @@ export function checkUniverseScopes(
     if (enumRef !== undefined) {
       check(pt, id, vocabularies, enumRef, 'vocabulary', 'value_constraints.enum_ref');
     }
-    for (const etId of pt.applies_to_entity_types ?? []) {
-      check(pt, id, entityTypes, etId, 'entity type', 'applies_to_entity_types');
-    }
+    // `applies_to_entity_types` is applicability, not a dependency (ADR-048):
+    // a property attaches to those types where they exist. forUniverse filters
+    // it per universe, so it is not a scope reference.
   }
 
   for (const [id, rt] of relationTypes) {
-    for (const etId of rt.valid_from_types) {
-      check(rt, id, entityTypes, etId, 'entity type', 'valid_from_types');
-    }
-    for (const etId of rt.valid_to_types) {
-      check(rt, id, entityTypes, etId, 'entity type', 'valid_to_types');
-    }
+    // `valid_from_types` / `valid_to_types` are applicability, not dependencies
+    // (ADR-048): a relation connects those types where they exist. forUniverse
+    // filters them per universe, so they are not scope references here.
     for (const q of rt.qualifiers) {
       if (q.enum_ref !== undefined) {
         check(rt, id, vocabularies, q.enum_ref, 'vocabulary', `qualifiers.${q.id}.enum_ref`);
