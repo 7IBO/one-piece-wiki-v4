@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "during-periods",
+  "schema_version": 1,
+  "values": {
+    "pre_story": { "labels": { "en": "Pre-story", "fr": "Avant l'histoire" } },
+    "void_century": { "labels": { "en": "Void Century", "fr": "Siècle oublié" } },
+    "god_valley_incident": {
+      "labels": { "en": "God Valley incident", "fr": "Incident de God Valley" }
+    },
+    "rocks_era": { "labels": { "en": "Rocks era", "fr": "Ère de Rocks" } },
+    "ohara_incident": { "labels": { "en": "Ohara incident", "fr": "Incident d'Ohara" } }
+  }
+}

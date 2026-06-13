@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "disbanded_at",
+  "schema_version": 1,
+  "labels": { "en": "Disbanded", "fr": "Dissous" },
+  "value_type": "source_ref",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": ["crew", "organization"]
+}

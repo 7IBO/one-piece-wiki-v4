@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "location-statuses",
+  "schema_version": 1,
+  "values": {
+    "active": { "labels": { "en": "Active", "fr": "Actif" } },
+    "destroyed": { "labels": { "en": "Destroyed", "fr": "Détruit" } },
+    "sunken": { "labels": { "en": "Sunken", "fr": "Coulé" } },
+    "risen": { "labels": { "en": "Risen", "fr": "Émergé" } },
+    "undersea": { "labels": { "en": "Undersea", "fr": "Sous-marin" } },
+    "frozen": { "labels": { "en": "Frozen", "fr": "Gelé" } },
+    "abandoned": { "labels": { "en": "Abandoned", "fr": "Abandonné" } },
+    "occupied": { "labels": { "en": "Occupied", "fr": "Occupé" } }
+  }
+}

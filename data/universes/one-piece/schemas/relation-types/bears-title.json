@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "bears-title",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Bears title", "inverse": "Borne by" },
+    "fr": { "active": "Porte le titre", "inverse": "Porté par" }
+  },
+  "valid_from_types": ["character"],
+  "valid_to_types": ["title"],
+  "qualifiers": [
+    { "id": "since", "value_type": "source_ref", "required": false },
+    { "id": "until", "value_type": "source_ref", "required": false },
+    {
+      "id": "during_period",
+      "value_type": "enum",
+      "enum_ref": "during-periods",
+      "required": false
+    },
+    {
+      "id": "departure_reason",
+      "value_type": "enum",
+      "enum_ref": "departure-reasons",
+      "required": false
+    }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": true
+}

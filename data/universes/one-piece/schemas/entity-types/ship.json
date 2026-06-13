@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "ship",
+  "schema_version": 2,
+  "labels": { "en": "Ship", "fr": "Navire" },
+  "url_segment": "ships",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "ship_type", "required": true, "historical": false, "localizable": false },
+    { "id": "crew_capacity", "required": false, "historical": false, "localizable": false },
+    { "id": "built_at", "required": false, "historical": false, "localizable": false },
+    { "id": "destroyed_at", "required": false, "historical": false, "localizable": false },
+    { "id": "description_key", "required": false, "historical": false, "localizable": true }
+  ],
+  "allowed_relations": [
+    "captained-by",
+    "crewed-by",
+    "flies-flag",
+    "replaces",
+    "made-of",
+    "depicted-by"
+  ],
+  "ui_hint": { "icon": "ship", "group": "vehicles" }
+}

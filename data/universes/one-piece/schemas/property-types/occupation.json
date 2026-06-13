@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "occupation",
+  "schema_version": 1,
+  "labels": { "en": "Occupation", "fr": "Profession" },
+  "value_type": "multi_enum",
+  "value_constraints": { "enum_ref": "occupations" },
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": ["character"],
+  "default_qualifiers": ["since"]
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "membership-statuses",
+  "schema_version": 1,
+  "values": {
+    "member": { "labels": { "en": "Member", "fr": "Membre" } },
+    "founding_member": { "labels": { "en": "Founding member", "fr": "Membre fondateur" } },
+    "former_member": { "labels": { "en": "Former member", "fr": "Ancien membre" } },
+    "defected": { "labels": { "en": "Defected", "fr": "Dissident" } },
+    "erased": { "labels": { "en": "Erased", "fr": "Effacé" } },
+    "observer": { "labels": { "en": "Observer", "fr": "Observateur" } }
+  }
+}

@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "haki_types",
+  "schema_version": 1,
+  "labels": { "en": "Haki", "fr": "Haki" },
+  "value_type": "multi_enum",
+  "value_constraints": { "enum_ref": "haki-types" },
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": ["character"],
+  "default_qualifiers": ["since", "source"]
+}

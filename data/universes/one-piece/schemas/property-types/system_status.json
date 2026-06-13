@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "system_status",
+  "schema_version": 1,
+  "labels": { "en": "System status", "fr": "Statut du système" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "system-statuses" },
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": ["title"],
+  "default_qualifiers": ["since"]
+}

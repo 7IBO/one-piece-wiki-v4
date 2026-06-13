@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "ship_type",
+  "schema_version": 1,
+  "labels": { "en": "Ship type", "fr": "Type de navire" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "ship-types" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["ship"]
+}

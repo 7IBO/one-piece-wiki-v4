@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "concept_subtype",
+  "schema_version": 1,
+  "labels": { "en": "Concept subtype", "fr": "Sous-type de concept" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "concept-subtypes" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["concept"]
+}

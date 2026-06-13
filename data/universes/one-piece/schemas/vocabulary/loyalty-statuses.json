@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "loyalty-statuses",
+  "schema_version": 1,
+  "values": {
+    "founder": { "labels": { "en": "Founder", "fr": "Fondateur" } },
+    "member": { "labels": { "en": "Member", "fr": "Membre" } },
+    "former_member": { "labels": { "en": "Former member", "fr": "Ancien membre" } },
+    "traitor": { "labels": { "en": "Traitor", "fr": "Traître" } },
+    "undercover": { "labels": { "en": "Undercover", "fr": "Infiltré" } },
+    "allied": { "labels": { "en": "Allied", "fr": "Allié" } },
+    "presumed_dead_member": {
+      "labels": { "en": "Presumed dead member", "fr": "Membre présumé mort" }
+    },
+    "honorary": { "labels": { "en": "Honorary", "fr": "Honoraire" } }
+  }
+}

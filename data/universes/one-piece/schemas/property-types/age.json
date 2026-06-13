@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "age",
+  "schema_version": 1,
+  "labels": { "en": "Age", "fr": "Âge" },
+  "value_type": "number",
+  "value_constraints": { "min": 0, "step": 1 },
+  "unit": "years",
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["character"],
+  "default_qualifiers": ["since"]
+}
