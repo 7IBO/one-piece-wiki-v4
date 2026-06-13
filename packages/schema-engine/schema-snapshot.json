@@ -156,7 +156,8 @@
         "depicted-by",
         "enemy-of",
         "flies-flag",
-        "has-member"
+        "has-member",
+        "subordinate-to"
       ]
     },
     "databook": {
@@ -329,6 +330,7 @@
       },
       "allowed_relations": [
         "depicted-by",
+        "member-state-of",
         "part-of-location",
         "ruled-by"
       ]
@@ -391,7 +393,8 @@
         "depicted-by",
         "enemy-of",
         "has-member",
-        "led-by"
+        "led-by",
+        "subordinate-to"
       ]
     },
     "race": {
@@ -508,6 +511,9 @@
           "required": true
         },
         "single_holder": {
+          "required": false
+        },
+        "system_status": {
           "required": false
         }
       },
@@ -922,6 +928,12 @@
       "historical": true,
       "localizable": false
     },
+    "system_status": {
+      "value_type": "enum",
+      "enum_ref": "system-statuses",
+      "historical": true,
+      "localizable": false
+    },
     "technique_type": {
       "value_type": "enum",
       "enum_ref": "technique-types",
@@ -1131,6 +1143,11 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {
+        "departure_reason": {
+          "value_type": "enum",
+          "enum_ref": "departure-reasons",
+          "required": false
+        },
         "during_period": {
           "value_type": "enum",
           "enum_ref": "during-periods",
@@ -1626,6 +1643,11 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {
+        "departure_reason": {
+          "value_type": "enum",
+          "enum_ref": "departure-reasons",
+          "required": false
+        },
         "loyalty_status": {
           "value_type": "enum",
           "enum_ref": "loyalty-statuses",
@@ -1640,6 +1662,32 @@
           "value_type": "source_ref",
           "enum_ref": null,
           "required": true
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "member-state-of": {
+      "valid_from_types": [
+        "location"
+      ],
+      "valid_to_types": [
+        "organization"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "membership_status": {
+          "value_type": "enum",
+          "enum_ref": "membership-statuses",
+          "required": false
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
         },
         "until": {
           "value_type": "source_ref",
@@ -1926,6 +1974,29 @@
       "inverse_inferred": true,
       "qualifiers": {}
     },
+    "subordinate-to": {
+      "valid_from_types": [
+        "crew",
+        "organization"
+      ],
+      "valid_to_types": [
+        "crew",
+        "organization"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "uses-technique": {
       "valid_from_types": [
         "character"
@@ -2095,6 +2166,16 @@
       "silver",
       "vivre_card",
       "yellow"
+    ],
+    "departure-reasons": [
+      "abolished",
+      "annulled",
+      "deceased",
+      "declined",
+      "expelled",
+      "mia",
+      "resigned",
+      "revoked"
     ],
     "depiction-periods": [
       "adolescence",
@@ -2321,6 +2402,14 @@
       "traitor",
       "undercover"
     ],
+    "membership-statuses": [
+      "defected",
+      "erased",
+      "former_member",
+      "founding_member",
+      "member",
+      "observer"
+    ],
     "name-types": [
       "alias",
       "codename",
@@ -2433,6 +2522,11 @@
       "relinquished",
       "transferred",
       "unknown"
+    ],
+    "system-statuses": [
+      "abolished",
+      "active",
+      "reformed"
     ],
     "technique-types": [
       "awakening",

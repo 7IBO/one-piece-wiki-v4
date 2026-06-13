@@ -17,6 +17,7 @@
     "based-in",
     "led-by",
     "controls-territory",
+    "subordinate-to",
     "depicted-by"
   ],
   "ui_hint": { "icon": "shield", "group": "groups" }

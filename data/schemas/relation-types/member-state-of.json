@@ -1,26 +1,20 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
-  "id": "bears-title",
+  "id": "member-state-of",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Bears title", "inverse": "Borne by" },
-    "fr": { "active": "Porte le titre", "inverse": "Porté par" }
+    "en": { "active": "Member state of", "inverse": "Member states" },
+    "fr": { "active": "État membre de", "inverse": "États membres" }
   },
-  "valid_from_types": ["character"],
-  "valid_to_types": ["title"],
+  "valid_from_types": ["location"],
+  "valid_to_types": ["organization"],
   "qualifiers": [
     { "id": "since", "value_type": "source_ref", "required": false },
     { "id": "until", "value_type": "source_ref", "required": false },
     {
-      "id": "during_period",
+      "id": "membership_status",
       "value_type": "enum",
-      "enum_ref": "during-periods",
-      "required": false
-    },
-    {
-      "id": "departure_reason",
-      "value_type": "enum",
-      "enum_ref": "departure-reasons",
+      "enum_ref": "membership-statuses",
       "required": false
     }
   ],

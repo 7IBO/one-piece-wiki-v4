@@ -14,6 +14,7 @@
   "allowed_relations": [
     "part-of-location",
     "ruled-by",
+    "member-state-of",
     "depicted-by"
   ],
   "ui_hint": { "icon": "map-pin", "group": "places" }

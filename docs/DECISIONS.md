@@ -8,6 +8,42 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-043 — Organizations: sub-units, power systems, member nations
+
+**Date**: 2026-06-13
+
+**Context**: Cluster C3. The Fandom prose survey (§2A) surfaced group/government
+structure the model lacked: crews and orgs **nest** (Whitebeard's ~43
+subordinate crews, the World Government → Marines / Cipher Pol subdivisions);
+**power systems** (Shichibukai / Yonko / Admirals) are appointed, revoked, and
+sometimes **abolished wholesale** (the Warlords were abolished at ch.956); the
+World Government has ~170 **member nations**; and a membership / title tenure
+ends for varied reasons (declined, resigned, expelled, revoked).
+
+**Decision** (additive):
+
+1. **`subordinate-to`** relation (crew/org → crew/org, historised) — sub-crews
+   and org subdivisions. Distinct from `member-of` (person → group) and `ally-of`
+   (symmetric); this is the asymmetric "reports to".
+2. **`member-state-of`** relation (location → organization, historised, with a
+   `membership_status` qualifier → new `membership-statuses` vocab) — a nation's
+   membership in the World Government. New edge domain: a location as the member.
+3. **`departure_reason`** qualifier (→ new `departure-reasons` vocab:
+   declined/resigned/expelled/revoked/annulled/abolished/deceased/mia) on
+   `member-of` + `bears-title` — why a membership or title ended.
+4. **`system_status`** property (enum → new `system-statuses` vocab:
+   active/abolished/reformed; historised, spoiler-sensitive) on `title` — a power
+   system's lifecycle, e.g. `title:shichibukai` flips to `abolished` at ch.956.
+   Appointment / revocation of individual holders stays on `bears-title`
+   (`since`/`until` + the base `event` qualifier).
+
+**Consequences**: +2 relations, +1 property, +3 vocabularies; `crew` / `org` /
+`location` `allowed_relations` and `member-of` / `bears-title` qualifiers
+extended. No `/data` migration (additive; no group/title data uses them yet).
+Snapshot regenerated (all diffs additive per `check:compat`). Cluster C3.
+
+---
+
 ## ADR-042 — Schema-evolution policy + `check:compat` lockfile (SDK/API compatibility)
 
 **Date**: 2026-06-13

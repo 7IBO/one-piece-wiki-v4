@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "departure-reasons",
+  "schema_version": 1,
+  "values": {
+    "declined": { "labels": { "en": "Declined", "fr": "Décliné" } },
+    "resigned": { "labels": { "en": "Resigned", "fr": "Démission" } },
+    "expelled": { "labels": { "en": "Expelled", "fr": "Expulsé" } },
+    "revoked": { "labels": { "en": "Revoked", "fr": "Révoqué" } },
+    "annulled": { "labels": { "en": "Annulled", "fr": "Annulé" } },
+    "abolished": {
+      "labels": { "en": "Abolished (system ended)", "fr": "Aboli (système supprimé)" }
+    },
+    "deceased": { "labels": { "en": "Deceased", "fr": "Décédé" } },
+    "mia": { "labels": { "en": "Missing in action", "fr": "Porté disparu" } }
+  }
+}
