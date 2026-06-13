@@ -43,9 +43,15 @@ contract is `/CLAUDE.md`; conventions in `/docs/CONVENTIONS.md`.
 ```
 bun run format && bun run lint && bun run knip \
   && bun run typecheck && bun run validate \
-  && bun run check:references && bun test \
+  && bun run check:references && bun run check:coherence && bun test \
   && bun run -F @onepiece-wiki/dashboard build
 ```
+
+`check:coherence` (ADR-032 W-A) is the cross-entity gate: relation
+schema-compliance (allowed_relations, valid_from/to types, required
+relation qualifiers) plus an `UNREFERENCED_ENTITY` warning. It catches
+incoherence that `validate` (single-file shape) and `check:references`
+(bare ref existence) miss. Errors fail; warnings are informational.
 
 `typecheck` is NOT enough — it misses build-time breaks (a removed dep,
 a bad import). Always run the dashboard **build** when a change could

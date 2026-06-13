@@ -14,21 +14,5 @@
     "spoiler_since": { "value": "manga-chapter:96" },
     "alt_text_key": { "value_key": "image.straw-hats-group.alt" }
   },
-  "relations": [
-    {
-      "type": "depicted-by",
-      "target": "crew:straw-hat-pirates",
-      "qualifiers": { "role": "group_photo" }
-    },
-    {
-      "type": "depicted-by",
-      "target": "character:luffy",
-      "qualifiers": { "role": "group_photo" }
-    },
-    {
-      "type": "depicted-by",
-      "target": "character:zoro",
-      "qualifiers": { "role": "group_photo" }
-    }
-  ]
+  "relations": []
 }

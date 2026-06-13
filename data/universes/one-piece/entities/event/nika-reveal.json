@@ -9,7 +9,7 @@
     "name": [{ "value_key": "event.nika-reveal.name", "since": "manga-chapter:1044" }]
   },
   "relations": [
-    { "type": "part-of-arc", "target": "arc:wano" },
+    { "type": "occurs-during-arc", "target": "arc:wano" },
     {
       "type": "participant",
       "target": "character:luffy",

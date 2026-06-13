@@ -31,6 +31,11 @@
       "type": "member-of",
       "target": "crew:straw-hat-pirates",
       "qualifiers": { "role": "first_mate", "since": "manga-chapter:1" }
+    },
+    {
+      "type": "depicted-by",
+      "target": "image:straw-hats-group",
+      "qualifiers": { "role": "group_photo" }
     }
   ]
 }
