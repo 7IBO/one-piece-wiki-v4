@@ -6,6 +6,7 @@
     "toei": { "labels": { "en": "Toei Animation (JP)", "fr": "Toei Animation (JP)" } },
     "funimation": { "labels": { "en": "Funimation (EN)", "fr": "Funimation (EN)" } },
     "4kids": { "labels": { "en": "4Kids (EN)", "fr": "4Kids (EN)" } },
-    "odex": { "labels": { "en": "Odex (EN)", "fr": "Odex (EN)" } }
+    "odex": { "labels": { "en": "Odex (EN)", "fr": "Odex (EN)" } },
+    "netflix": { "labels": { "en": "Netflix (EN)", "fr": "Netflix (EN)" } }
   }
 }

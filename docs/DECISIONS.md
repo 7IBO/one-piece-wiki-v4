@@ -8,6 +8,48 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-050 — Production credits: per-episode/film staff via `staffed-by`
+
+**Date**: 2026-06-14
+
+**Context**: A Fandom audit (Episode Box / Movie Box / Song Box infoboxes)
+confirmed the wiki tracks rich per-episode and per-film production credits —
+episode director, storyboard, animation director(s), art director, screenplay,
+plus film director/writer/composer — each linking to a real person. Our model
+had the `person` entity (real-world people, with production roles) and
+`voiced-by`/`portrayed-by` (character → person casting), but **no way to link a
+source to its staff**: episodes/films couldn't say who directed or animated
+them. First slice of the "production & credits" programme.
+
+**Decision** (additive, all in the universal **core** — `person`,
+`anime-episode`, `film` are core, so this benefits any future universe):
+
+1. **`staffed-by`** relation (`anime-episode` / `film` → `person`, not
+   historised) — qualifiers `role` (enum → `person-roles`, **required**), `since`
+   (source), `note`. One edge per credited person; the `role` qualifier
+   distinguishes director / storyboard / animation-director / writer / composer…
+2. **`person-roles` += `storyboard`, `art_director`, `lyricist`, `arranger`,
+   `producer`** — the staff/music roles the audit surfaced that the vocab lacked
+   (`episode_director`/`animation_director`/`screenwriter`/`composer` already
+   existed). No `chief_animation_director` — Fandom does not track it.
+3. **`dub-studios` += `netflix`** — the Netflix English dub. Which dub a voice
+   credit belongs to is already captured by `voiced-by`'s `dub_studio`
+   qualifier; only the value was missing.
+
+**Why a relation, not per-episode properties**: staff are reusable `person`
+entities; an edge with a `role` qualifier is queryable ("everything Eiichirō
+Oda's regular episode director directed") and avoids dozens of free-text
+properties. Chapters-adapted is already `adapted-by` (reused, not duplicated).
+
+**Consequences**: +1 core relation (59), +6 vocabulary values; `anime-episode` /
+`film` `allowed_relations` extended. No `/data` migration (additive). Snapshot
+regenerated (all diffs additive). Follow-up slices (own ADRs): `theme-song`
+entity + theme relations; episode/film props (`eyecatcher`, `tv_rating`,
+`anime_original`); platform availability (`streaming-platform` + `available-on`,
+amending ADR-028 since the `object` value-type it assumed is unbuilt).
+
+---
+
 ## ADR-049 — Relocate the One-Piece schema closure (G6, applies ADR-035/036/048)
 
 **Date**: 2026-06-14

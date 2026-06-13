@@ -24,7 +24,8 @@
       "allowed_relations": [
         "depicted-by",
         "features",
-        "part-of-arc"
+        "part-of-arc",
+        "staffed-by"
       ]
     },
     "arc": {
@@ -276,7 +277,8 @@
       },
       "allowed_relations": [
         "depicted-by",
-        "features"
+        "features",
+        "staffed-by"
       ]
     },
     "image": {
@@ -2112,6 +2114,33 @@
       "inverse_inferred": true,
       "qualifiers": {}
     },
+    "staffed-by": {
+      "valid_from_types": [
+        "anime-episode",
+        "film"
+      ],
+      "valid_to_types": [
+        "person"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "note": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "role": {
+          "value_type": "enum",
+          "enum_ref": "person-roles",
+          "required": true
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "subordinate-to": {
       "valid_from_types": [
         "crew",
@@ -2390,6 +2419,7 @@
     "dub-studios": [
       "4kids",
       "funimation",
+      "netflix",
       "odex",
       "toei"
     ],
@@ -2694,15 +2724,20 @@
     ],
     "person-roles": [
       "animation_director",
+      "arranger",
+      "art_director",
       "character_designer",
       "composer",
       "dub_actor",
       "episode_director",
       "film_director",
       "live_action_actor",
+      "lyricist",
       "mangaka",
+      "producer",
       "screenwriter",
       "series_director",
+      "storyboard",
       "theme_performer",
       "voice_actor"
     ],

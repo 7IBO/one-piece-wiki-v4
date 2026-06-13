@@ -15,6 +15,6 @@
     { "id": "canonical_elements", "required": false, "historical": false, "localizable": false }
   ],
   "display_name_properties": ["title_key"],
-  "allowed_relations": ["features", "depicted-by"],
+  "allowed_relations": ["features", "staffed-by", "depicted-by"],
   "ui_hint": { "icon": "clapperboard", "group": "sources" }
 }
