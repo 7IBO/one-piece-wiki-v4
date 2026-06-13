@@ -747,7 +747,8 @@ values have localized labels (EN, FR at minimum).
 ### 5.4 `name-types`
 
 `common`, `full_name`, `true_name`, `epithet`, `nickname`, `alias`,
-`codename`, `title`, `insult`, `honorific`, `mistranslation`
+`codename`, `title`, `insult`, `honorific`, `mistranslation`,
+`native_script`, `romanized`, `literal_meaning`
 
 ### 5.5 `appearance-types`
 

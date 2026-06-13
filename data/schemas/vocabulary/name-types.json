@@ -13,6 +13,9 @@
     "title": { "labels": { "en": "Title", "fr": "Titre" } },
     "insult": { "labels": { "en": "Insult", "fr": "Insulte" } },
     "honorific": { "labels": { "en": "Honorific", "fr": "Honorifique" } },
-    "mistranslation": { "labels": { "en": "Mistranslation", "fr": "Erreur de traduction" } }
+    "mistranslation": { "labels": { "en": "Mistranslation", "fr": "Erreur de traduction" } },
+    "native_script": { "labels": { "en": "Native script", "fr": "Écriture native" } },
+    "romanized": { "labels": { "en": "Romanized", "fr": "Romanisation" } },
+    "literal_meaning": { "labels": { "en": "Literal meaning", "fr": "Sens littéral" } }
   }
 }

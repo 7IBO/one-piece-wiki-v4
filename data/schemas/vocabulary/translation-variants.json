@@ -8,6 +8,8 @@
     "kana": { "labels": { "en": "Kana (FR)", "fr": "Kana (FR)" } },
     "official_dub_en": { "labels": { "en": "Official dub (EN)", "fr": "Doublage officiel (EN)" } },
     "official_dub_fr": { "labels": { "en": "Official dub (FR)", "fr": "Doublage officiel (FR)" } },
+    "funimation": { "labels": { "en": "Funimation (EN dub)", "fr": "Funimation (doublage EN)" } },
+    "4kids": { "labels": { "en": "4Kids (EN dub, edited)", "fr": "4Kids (doublage EN, censuré)" } },
     "fan_translation": { "labels": { "en": "Fan translation", "fr": "Traduction de fans" } }
   }
 }

@@ -121,16 +121,33 @@ variants:
   "devil-fruit.gomu-gomu.name.common": {
     "default": "Gomu Gomu no Mi",
     "variants": {
-      "viz_translation": "Gum-Gum Fruit",
-      "fr_glenat": "Fruit du Gum Gum"
+      "viz": "Gum-Gum Fruit",
+      "glenat": "Fruit du Gum Gum"
     }
   }
 }
 ```
 
-The `default` is what's shown unless the user picks a variant. Variants
-are documented in
-`/data/schemas/vocabulary/translation-variants.json`.
+The `default` is what's shown unless the user picks a variant. Variant keys
+are the ids in `/data/schemas/vocabulary/translation-variants.json` (`viz`,
+`glenat`, `kana`, `funimation`, `4kids`, `official_dub_en`, `official_dub_fr`,
+`fan_translation`). **Resolution precedence** (ADR-038): the reader's chosen
+edition variant → the key's `default` → the `en` fallback.
+
+### Naming axes (ADR-038)
+
+A name entry's `name_type` distinguishes not only common/true/alias/… but
+three **script/meaning axes**:
+
+- `native_script` — the original Japanese (kanji/kana), e.g. `ゴムゴムの実`.
+- `romanized` — the Hepburn romanization, e.g. `Gomu Gomu no Mi`.
+- `literal_meaning` — an English/French gloss, e.g. "Gum-Gum".
+
+`native_script` and `romanized` are **locale-neutral content**: the same
+string resolves under every UI locale (store it once; `en`, `fr` share it)
+until a real `ja` locale is added (see "Adding a new locale"). Only
+`literal_meaning` and the everyday names genuinely differ per locale and per
+edition (via the `{default, variants}` shape above).
 
 ## Naming i18n keys
 

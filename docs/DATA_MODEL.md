@@ -701,19 +701,22 @@ Plus orthogonal flags:
 
 Names are historisable with a `name_type` qualifier:
 
-| Value            | Meaning                                          |
-| ---------------- | ------------------------------------------------ |
-| `common`         | Everyday name used by most                       |
-| `full_name`      | Full legal name                                  |
-| `true_name`      | Original/hidden name revealed late               |
-| `epithet`        | Press/world title ("Straw Hat", "Pirate Hunter") |
-| `nickname`       | Used by close ones                               |
-| `alias`          | Active disguise / pseudonym                      |
-| `codename`       | Used inside an organisation                      |
-| `title`          | Held title ("Fifth Emperor")                     |
-| `insult`         | Used by enemies                                  |
-| `honorific`      | Cultural address ("Luffy-Taro", "Luffy-Sama")    |
-| `mistranslation` | Variant from a specific translation edition      |
+| Value             | Meaning                                             |
+| ----------------- | --------------------------------------------------- |
+| `common`          | Everyday name used by most                          |
+| `full_name`       | Full legal name                                     |
+| `true_name`       | Original/hidden name revealed late                  |
+| `epithet`         | Press/world title ("Straw Hat", "Pirate Hunter")    |
+| `nickname`        | Used by close ones                                  |
+| `alias`           | Active disguise / pseudonym                         |
+| `codename`        | Used inside an organisation                         |
+| `title`           | Held title ("Fifth Emperor")                        |
+| `insult`          | Used by enemies                                     |
+| `honorific`       | Cultural address ("Luffy-Taro", "Luffy-Sama")       |
+| `mistranslation`  | Variant from a specific translation edition         |
+| `native_script`   | Original Japanese (kanji/kana), e.g. `ゴムゴムの実` |
+| `romanized`       | Hepburn romanization, e.g. `Gomu Gomu no Mi`        |
+| `literal_meaning` | English/French gloss, e.g. "Gum-Gum"                |
 
 Each name entry can carry `given_by` (who calls them this) and `context`
 (where, e.g. `dressrosa-coliseum`).
