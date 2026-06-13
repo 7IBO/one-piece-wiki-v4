@@ -614,12 +614,14 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.1 Group affiliation
 
-| Type        | From                                | To                     | Inverse      | Qualifiers                                              |
-| ----------- | ----------------------------------- | ---------------------- | ------------ | ------------------------------------------------------- |
-| `member-of` | `character`                         | `crew`, `organization` | `has-member` | role, since, until, loyalty_status, appears_to_world_as |
-| `led-by`    | `crew`, `organization`              | `character`            | `leads`      | since, until                                            |
-| `ally-of`   | `character`, `crew`, `organization` | (same)                 | (symmetric)  | since, until                                            |
-| `enemy-of`  | `character`, `crew`, `organization` | (same)                 | (symmetric)  | since, until, intensity                                 |
+| Type              | From                                | To                     | Inverse           | Qualifiers                                              |
+| ----------------- | ----------------------------------- | ---------------------- | ----------------- | ------------------------------------------------------- |
+| `member-of`       | `character`                         | `crew`, `organization` | `has-member`      | role, since, until, loyalty_status, appears_to_world_as |
+| `led-by`          | `crew`, `organization`              | `character`            | `leads`           | since, until                                            |
+| `ally-of`         | `character`, `crew`, `organization` | (same)                 | (symmetric)       | since, until                                            |
+| `enemy-of`        | `character`, `crew`, `organization` | (same)                 | (symmetric)       | since, until, intensity                                 |
+| `subordinate-to`  | `crew`, `organization`              | `crew`, `organization` | `has-subordinate` | since, until                                            |
+| `member-state-of` | `location`                          | `organization`         | `member-states`   | since, until, membership_status                         |
 
 ### 4.2 Powers & abilities
 

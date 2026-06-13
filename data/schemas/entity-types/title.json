@@ -7,7 +7,8 @@
   "properties": [
     { "id": "name", "required": true, "historical": true, "localizable": true },
     { "id": "description_key", "required": false, "historical": false, "localizable": true },
-    { "id": "single_holder", "required": false, "historical": false, "localizable": false }
+    { "id": "single_holder", "required": false, "historical": false, "localizable": false },
+    { "id": "system_status", "required": false, "historical": true, "localizable": false }
   ],
   "allowed_relations": ["granted-by", "depicted-by"],
   "ui_hint": { "icon": "crown", "group": "abstract" }

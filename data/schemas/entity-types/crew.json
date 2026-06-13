@@ -19,6 +19,7 @@
     "based-in",
     "captained-by",
     "flies-flag",
+    "subordinate-to",
     "depicted-by"
   ],
   "ui_hint": { "icon": "anchor", "group": "groups" }

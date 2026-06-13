@@ -17,6 +17,12 @@
       "value_type": "enum",
       "enum_ref": "loyalty-statuses",
       "required": false
+    },
+    {
+      "id": "departure_reason",
+      "value_type": "enum",
+      "enum_ref": "departure-reasons",
+      "required": false
     }
   ],
   "allow_multiple_concurrent": true,
