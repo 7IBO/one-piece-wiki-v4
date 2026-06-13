@@ -1,0 +1,172 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "property-type schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+    },
+    "schema_version": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "labels": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fr": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "en",
+        "fr"
+      ],
+      "additionalProperties": false
+    },
+    "value_type": {
+      "type": "string",
+      "enum": [
+        "string",
+        "number",
+        "boolean",
+        "enum",
+        "multi_enum",
+        "date",
+        "entity_ref",
+        "source_ref",
+        "i18n_key",
+        "markdown"
+      ]
+    },
+    "value_constraints": {
+      "type": "object",
+      "properties": {
+        "min": {
+          "type": "number"
+        },
+        "max": {
+          "type": "number"
+        },
+        "step": {
+          "type": "number"
+        },
+        "pattern": {
+          "type": "string"
+        },
+        "enum_ref": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    },
+    "unit": {
+      "type": "string"
+    },
+    "historical": {
+      "type": "boolean"
+    },
+    "localizable": {
+      "type": "boolean"
+    },
+    "spoiler_sensitive": {
+      "type": "boolean",
+      "default": false
+    },
+    "applies_to_entity_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 60,
+        "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+      }
+    },
+    "default_qualifiers": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 60,
+        "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+      },
+      "default": []
+    },
+    "allowed_qualifiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+          },
+          "value_type": {
+            "type": "string",
+            "enum": [
+              "string",
+              "number",
+              "boolean",
+              "enum",
+              "multi_enum",
+              "date",
+              "entity_ref",
+              "source_ref",
+              "i18n_key",
+              "markdown"
+            ]
+          },
+          "enum_ref": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "id",
+          "value_type"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "ui_hint": {
+      "type": "object",
+      "properties": {
+        "display_format": {
+          "type": "string"
+        },
+        "input_widget": {
+          "type": "string"
+        },
+        "icon": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "id",
+    "schema_version",
+    "labels",
+    "value_type",
+    "historical",
+    "localizable"
+  ],
+  "additionalProperties": false
+}
