@@ -28,14 +28,12 @@
     "ally-of",
     "enemy-of",
     "mentor-of",
-    "mentored-by",
     "bears-title",
     "belongs-to-race",
     "born-in",
     "resides-in",
     "captains",
     "pilots",
-    "participated-in",
     "depicted-by"
   ],
   "ui_hint": { "icon": "user", "group": "people", "color": "blue" }

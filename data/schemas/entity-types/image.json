@@ -16,6 +16,6 @@
     { "id": "format", "required": true, "historical": false, "localizable": false },
     { "id": "spoiler_since", "required": true, "historical": false, "localizable": false }
   ],
-  "allowed_relations": ["depicts", "sourced-from"],
+  "allowed_relations": ["sourced-from"],
   "ui_hint": { "icon": "image", "group": "media" }
 }
