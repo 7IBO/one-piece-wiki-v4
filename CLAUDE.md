@@ -92,7 +92,8 @@ If any task touches a specialized area, also read the relevant deep-dive doc:
 - **Linter**: oxlint
 - **Formatter**: dprint (oxfmt under consideration when it stabilises)
 - **Type checker**: `tsc --noEmit`, cached via Turborepo
-- **Tests (unit)**: Vitest (use `bun test` only for plain runtime scripts)
+- **Tests (unit)**: `bun test` (the repo standardised on Bun's built-in
+  test runner; Vitest was removed — see ADR-030)
 - **Tests (e2e)**: Playwright
 - **Git hooks**: lefthook
 - **Commit convention**: Conventional Commits, enforced by commitlint

@@ -8,6 +8,42 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-030 — Standardize on `bun test`; remove Vitest
+
+**Date**: 2026-06-13
+
+**Context**: CLAUDE.md's stack listed _"Tests (unit): Vitest (use
+`bun test` only for plain runtime scripts)"_, and a `vitest.config.ts`
+existed. But the codebase never followed it: all seven test suites
+import `bun:test`, CI runs `bun run test` → `bun test`, and nothing
+invokes Vitest. The `vitest` devDependency + config were dead, and the
+documented mandate contradicted reality — surfaced when a new
+db-builder test was first written against Vitest and failed under the
+actual `bun test` runner.
+
+**Options considered**:
+
+1. **Migrate every suite to Vitest** to honour the existing mandate.
+   Rejected: pure churn for no benefit — `bun test` already runs the
+   whole suite fast, in-process, with the same Jest-style `expect`
+   API, and is the runtime the project already standardised on.
+2. **Standardize on `bun test`, remove Vitest.** Chosen: align the
+   contract with the de-facto reality.
+
+**Choice**: `bun test` is the unit-test runner. Removed the `vitest`
+devDependency and `vitest.config.ts`; updated CLAUDE.md.
+
+**Consequences**:
+
+- `vitest` devDependency and `vitest.config.ts` deleted.
+- CLAUDE.md stack line updated to `bun test`.
+- No test files change — they already use `bun:test`.
+- Playwright remains the planned e2e runner (unaffected; ROADMAP
+  Phase-4 / task to add it stands).
+- `bun test` continues to pass (52 tests across 7 files).
+
+---
+
 ## ADR-029 — Two schema regimes: pre-freeze volatility, post-freeze API stability
 
 **Date**: 2026-06-13
