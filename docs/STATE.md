@@ -125,13 +125,16 @@ lockfile + CI gate), ADR-043 (C3 organizations: sub-units/power-systems/member
 nations), ADR-044 (C7-core: `person` entity + `voiced-by`/`portrayed-by` +
 `marine-ranks` via `held_rank`), ADR-045 (C9a: location `region` + historised
 `location_status` + crew territorial control), ADR-046 (materials: `material`
-entity + `made-of` + Seastone's `nullifies_devil_fruits`). **Remaining
-(committed order — user said "tout"):** C8 (sources / volumes / SBS-QA /
-databook-cards + adaptation many-to-many; absorbs C7's deferred source/media
-enrichment + theme-song), C9-rest (race/concept additions,
+entity + `made-of` + Seastone's `nullifies_devil_fruits`), ADR-047 (C8a:
+`semi_canon` tier + `wanted_poster`/`eyecatcher` + `arc_number`). **Remaining
+(committed order — user said "tout"):** C8-rest (`volume` tankōbon entity —
+needs expand→migrate→contract on the legacy `volume` string property; `sbs-qa` +
+`databook-card` entities; non-linear `adapts`/`adapted-by`; `theme-song` + C7's
+deferred source/media enrichment), C9-rest (race/concept additions,
 ancient-weapon/artifact, event enrichment, `era` entity + the `[D]` structured
 in-universe temporal value — biggest), C5 (fighting-styles/Haki/techniques), C1
-(naming/i18n editions — invasive, deliberately last). All clusters touch
+(naming/i18n editions — invasive, deliberately last; note `name-types` already
+carries `native_script`/`romanized`/`literal_meaning`). All clusters touch
 DECISIONS.md +
 INVENTORY.md, so **merge sequentially**: pull main, branch, `compat:snapshot`
 per cluster. **INVENTORY refresh** (per-item sub-sections lag the true catalogue

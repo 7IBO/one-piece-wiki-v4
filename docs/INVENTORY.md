@@ -452,6 +452,7 @@ Allowed relations: `mentions`, `clarifies-fact`, `depicted-by`.
 | Property        | Required | Historical | Localizable | Notes                        |
 | --------------- | -------- | ---------- | ----------- | ---------------------------- |
 | `name`          | yes      | yes        | yes         | "Wano Country", "Marineford" |
+| `arc_number`    | no       | no         | no          | Global arc ordinal           |
 | `arc_subtype`   | yes      | no         | no          | Vocabulary `arc-subtypes`    |
 | `narrative_key` | no       | no         | yes         | Arc summary key              |
 | `chapter_range` | no       | no         | no          | { first, last } source_refs  |
@@ -535,7 +536,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (78)
+## 3. Property types (79)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -567,6 +568,7 @@ unit, and qualifier policy (section 6).
 | `page_count`      | `number`   | —     | min:1                 |
 | `runtime_minutes` | `number`   | min   | min:0                 |
 | `saga_number`     | `number`   | —     | min:1                 |
+| `arc_number`      | `number`   | —     | min:1                 |
 | `width`           | `number`   | px    | min:0                 |
 | `height` (image)  | `number`   | px    | min:0                 |
 | `crew_capacity`   | `number`   | —     | min:0                 |
@@ -795,7 +797,8 @@ values have localized labels (EN, FR at minimum).
 ### 5.3 `canon-scopes`
 
 `manga`, `anime`, `anime_filler`, `film_canon`, `film_non_canon`,
-`sbs`, `databook`, `live_action`, `crossover`, `video_game`
+`sbs`, `databook`, `semi_canon`, `live_action`, `crossover`,
+`video_game`
 
 ### 5.4 `name-types`
 
@@ -807,7 +810,8 @@ values have localized labels (EN, FR at minimum).
 
 `full`, `silhouette`, `partial`, `mentioned`, `named_only`,
 `flashback`, `cover_story`, `recap`, `vision`, `photograph`,
-`portrait`, `corpse`, `imagined`, `narrator_only`
+`portrait`, `corpse`, `imagined`, `narrator_only`, `revelation`,
+`wanted_poster`, `eyecatcher`
 
 ### 5.6 `character-statuses`
 
@@ -1066,7 +1070,7 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 22
-- **Property types**: 78 (some shared across multiple entity types)
+- **Property types**: 79 (some shared across multiple entity types)
 - **Relation types**: 58 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 48
 - **Primitive value types**: 10

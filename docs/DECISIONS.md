@@ -8,6 +8,44 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-047 — `semi_canon` tier + narrative/appearance depth (C8 foundation)
+
+**Date**: 2026-06-14
+
+**Context**: First slice of cluster C8 (sources & canon depth). The cross-cutting
+finding §1.4 is that **canonicity ≠ spoiler**: SBS introduces a genuine tier
+between author-canon and non-canon — facts fans suggested that Oda later
+**ratified** (many birthdays, blood types, ages). `canon-scopes` had `sbs` and
+`databook` as _sources_ but no _tier_ for that ratified-but-not-in-the-manga
+status. Two smaller catalogue gaps surfaced alongside: characters appear via
+**wanted posters** and anime **eyecatchers** (no `appearance-types` value), and
+**arcs had no ordinal** (sagas have `saga_number`; arcs sort only by saga + guess).
+
+**Decision** (additive, no new entities):
+
+1. **`canon-scopes` += `semi_canon`** — the tier for fan-suggested, author-ratified
+   facts. Orthogonal to spoiler progression; usable as a value's `canon_scope`.
+2. **`appearance-types` += `wanted_poster`, `eyecatcher`** — two recurring
+   non-narrative appearance modes.
+3. **`arc_number`** property (`number`, optional, on `arc`) — a global arc ordinal,
+   parallel to `saga_number`. Optional so existing arcs need no backfill.
+
+**Why no new entities here**: cover-story arcs are already modelled as `arc`s
+(`arc-subtypes` already carries `cover_story`), so no `cover-story-arc` entity is
+needed. The heavier C8 entities — `volume` (tankōbon), `sbs-qa`, `databook-card`
+— each imply a migration question (e.g. the existing free-text `volume` _property_
+on `manga-chapter`/`sbs` should become a `volume`-entity relation via
+expand→migrate→contract) and are deferred to their own slices. Adaptation
+many-to-many (`adapts`/`adapted-by` non-linear) and `theme-song` likewise.
+
+**Consequences**: +1 property (79), +3 vocabulary values (no new vocab files);
+`arc` bumped to v3. No `/data` migration (all additive; `arc_number` optional).
+Snapshot regenerated (all diffs additive per `check:compat`). C8 remainder
+(volume / sbs-qa / databook-card / adaptation m2m / theme-song) tracked in
+DATA_EXPANSION_PLAN.
+
+---
+
 ## ADR-046 — `material` entity + `made-of`; Seastone's Devil-Fruit nullification
 
 **Date**: 2026-06-14
