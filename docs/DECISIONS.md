@@ -8,6 +8,38 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-041 — Character occupations + One Piece blood-type system
+
+**Date**: 2026-06-13
+
+**Context**: Cluster C2. (a) Characters need a **profession axis** (pirate,
+marine, swordsman, doctor, revolutionary, …) distinct from their in-crew
+**role** (`crew-roles`, carried on `member-of`): a character has crew-independent
+occupations, often several, and they change over time. (b) The `blood-types`
+vocabulary mixed the canonical **One Piece** system (F / S / X / XF — Oda's
+parody of A / O / B / AB) with real-world ABO values (`A_plus` … `O_minus`) that
+One Piece never uses, and tagged F/S/X with inaccurate species annotations.
+
+**Decision** (additive bar the vocab cleanup — no entity uses `blood_type`,
+verified):
+
+1. `occupation` property (`multi_enum` → new `occupations` vocab; historised,
+   spoiler-sensitive) on `character`. Distinct from `crew-roles`: occupation is
+   the profession/identity (multiple, crew-independent); a crew-role is a seat
+   on a specific crew. `[A][V]`
+2. `blood-types` reduced to the canonical OP set `F` / `S` / `X` / `XF`
+   (dropped the real-world `A/B/AB/O ±` and the species notes);
+   schema_version 1 → 2. **No migration** (zero characters carry `blood_type`).
+   `[B but no data][V]`
+
+**Consequences**: +1 property type, +1 vocabulary; `blood-types` 12 → 4 values.
+Occupation values + the blood-type set are `[verify against canon]`. The prose
+research's "bounty change reason" is **already covered** by the base `event`
+qualifier on property values — no `bounty` change. No `/data` migration.
+Cluster C2 of the data-expansion plan.
+
+---
+
 ## ADR-040 — Weapon grades (Meitō system) & owner succession
 
 **Date**: 2026-06-13

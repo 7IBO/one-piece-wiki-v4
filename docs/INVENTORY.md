@@ -207,21 +207,22 @@ property-type definitions are in section 3. Universal qualifiers
 
 #### `character`
 
-| Property          | Required | Historical | Localizable | Notes                           |
-| ----------------- | -------- | ---------- | ----------- | ------------------------------- |
-| `name`            | yes      | yes        | yes         | Multiple entries by name_type   |
-| `epithet`         | no       | yes        | yes         | "Straw Hat", "Pirate Hunter"    |
-| `bounty`          | no       | yes        | no          | In berries                      |
-| `age`             | no       | yes        | no          |                                 |
-| `height`          | no       | yes        | no          | In cm                           |
-| `weight`          | no       | yes        | no          | In kg (often unspecified)       |
-| `birthday`        | no       | no         | no          | MM-DD format                    |
-| `blood_type`      | no       | no         | no          | A, B, AB, O, with +/-           |
-| `gender`          | no       | no         | no          | Vocabulary `genders`            |
-| `haki_types`      | no       | yes        | no          | Multi-enum `haki-types`         |
-| `status`          | yes      | yes        | no          | Vocabulary `character-statuses` |
-| `birthplace`      | no       | no         | no          | entity_ref to `location`        |
-| `description_key` | no       | no         | yes         | Short bio key                   |
+| Property          | Required | Historical | Localizable | Notes                                              |
+| ----------------- | -------- | ---------- | ----------- | -------------------------------------------------- |
+| `name`            | yes      | yes        | yes         | Multiple entries by name_type                      |
+| `epithet`         | no       | yes        | yes         | "Straw Hat", "Pirate Hunter"                       |
+| `occupation`      | no       | yes        | no          | Multi-enum `occupations`; profession (≠ crew role) |
+| `bounty`          | no       | yes        | no          | In berries                                         |
+| `age`             | no       | yes        | no          |                                                    |
+| `height`          | no       | yes        | no          | In cm                                              |
+| `weight`          | no       | yes        | no          | In kg (often unspecified)                          |
+| `birthday`        | no       | no         | no          | MM-DD format                                       |
+| `blood_type`      | no       | no         | no          | Enum `blood-types`: F/S/X/XF (One Piece system)    |
+| `gender`          | no       | no         | no          | Vocabulary `genders`                               |
+| `haki_types`      | no       | yes        | no          | Multi-enum `haki-types`                            |
+| `status`          | yes      | yes        | no          | Vocabulary `character-statuses`                    |
+| `birthplace`      | no       | no         | no          | entity_ref to `location`                           |
+| `description_key` | no       | no         | yes         | Short bio key                                      |
 
 Allowed relations: `member-of`, `ate-fruit`, `uses-technique`,
 `wields-weapon`, `family-of`, `ally-of`, `enemy-of`, `mentor-of`,
