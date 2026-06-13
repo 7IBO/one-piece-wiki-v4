@@ -8,6 +8,82 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-032 — Re-sequence: pull admin queue, schema editor & availability links forward
+
+**Date**: 2026-06-13
+
+**Context**: ADR-027 set the post-4.3 order as 4.3 → 3.5 (bulk ingest) →
+6 (public app) → 5 (schema editor) → 7 (community) → 8 (API). The
+maintainer has since reprioritised toward **dashboard/admin maturity
+before bulk ingest**: an in-dashboard PR-review queue, contributor &
+contribution surfaces, schema/enum/value editing, a real media-
+management UX, platform "where to watch/read" links, plus a pass on
+entity coherence and dashboard UI consistency. The motivation is that
+ingest (3.5) produces thousands of `auto_imported` entities that are
+unusable without strong triage/review tooling — so the tooling should
+land first — and that the maintainer is today the sole reviewer doing
+PR triage by hand on github.com.
+
+Investigation (2026-06-13) established what already exists vs is
+missing, which reshapes the work into additive slices rather than new
+phases:
+
+- **Admin moderation queue** (Phase 7.3): promote/reject **backend
+  shipped** (`server/admin-promote.ts`, `/api/admin/{promote,reject}`);
+  only the gated `/admin/queue` **UI** is missing.
+- **Contributors/contributions**: only `MyContributions` (the user's
+  own open PRs) exists; no global aggregation. **Constraint:** every
+  commit/PR is bot-authored (ADR-016), so GitHub's native
+  author/contributor APIs don't reflect humans — the sole human-
+  attribution source is the **PR-body "Contributors" bullet**, which any
+  aggregation must parse.
+- **Availability/platform links**: fully **designed** (ADR-028 +
+  DATA_MODEL "Availability links") but **no schema/code**; affiliate
+  links explicitly deferred there and undesigned.
+- **Schema/enum editor** (Phase 5): not started.
+- **Media management**: uploader exists (drag-drop, presign, progress)
+  but there is **no media library, no reuse picker, and images are
+  never displayed on any entity page**.
+- **Coherence/UI**: no automated coherence checker beyond reference
+  resolution; dashboard has god-modules and ~7 routes duplicating the
+  `useEffect`+`useState`+skeleton+`Failed:` pattern with no shared
+  data-fetching abstraction.
+
+**Options considered**:
+
+1. **Hold ADR-027 order** (ingest next). Rejected: floods the wiki with
+   un-triageable auto-imports before the triage/review tools exist.
+2. **Re-sequence: tooling-before-ingest.** Chosen: build the admin/
+   review/editor/media tooling and the coherence + UI foundations
+   first, then run 3.5 ingest into mature tooling.
+
+**Choice**: New post-4.3 order →
+**F (UI-coherence foundation) → A (coherence linter) → B (admin queue +
+contributors) → C (schema/enum/value editor) → E (availability links) →
+D (media library + image UX)**, then resume **3.5 → 6 → 7 → 8**. Each
+workstream ships as independent PR(s); the full breakdown lives in
+`/docs/STATE.md` § "Active plan". No new app, no runtime DB: live
+PR/contributor data is read from the GitHub API on demand (module-level
+cache); derived aggregates are either computed server-side or emitted as
+generated TS manifests under `packages/` (same pattern as
+`packages/schemas/generated`); image bytes stay on R2.
+
+**Consequences**:
+
+- ROADMAP "Current phase" / order line updated to reference this ADR;
+  Phases 5 and 7.3 are pulled forward of 3.5/6 (their specs stand —
+  only timing moves, mirroring how ADR-027 reordered).
+- **Dependent decisions still required** (logged separately as work
+  reaches them): qualifiers schema-driven (task #3); affiliate links
+  (FTC disclosure + `rel="sponsored nofollow"` + program/tag model);
+  god-module decomposition (task #8); possibly adopting the already-
+  bundled TanStack Query for the shared fetch layer; a `SCHEMA_SPEC`
+  `object` value-type section (ADR-026 prereq for availability links).
+- Does not block a later return to 3.5; the ingest spec (ADR-026) is
+  unchanged.
+
+---
+
 ## ADR-031 — Schema-driven display-name resolution (`display_name_properties`)
 
 **Date**: 2026-06-13
