@@ -210,6 +210,126 @@ EN/FR names without collision; spoiler- and edition-correct display.
 
 ---
 
+## 2A. Prose-derived additions (research waves on page prose)
+
+Two further research waves read the **prose** (History, Abilities,
+Relationships, society, lore) of ~25 big pages across every type. They confirm
+the clusters above and surface these **additional** variables, grouped by the
+cluster they extend. Same tags. The recurring ingest lesson is at the end.
+
+**Powers (extends C4 / C5)**
+
+- devil-fruit `weakness` property (multi, historised) + a `devil-fruit-drawback-kinds`
+  vocab (`seastone_water`, `elemental_inferiority`, `stamina_drain`,
+  `lifespan_cost`, `no_intangibility_extra_damage`, `range_bound`,
+  `requires_contact`, `requires_gesture`, `requires_knowledge`). `[A][V]`
+- fruit **special ability with a cost** (Ope Ope "Perennial Youth Operation" =
+  the user's life) → a `technique` with a `cost`/`price` qualifier. `[A]`
+- **`interacts-with-fruit`** relation (devil-fruit→devil-fruit), `interaction_kind`
+  ∈ `superior_to`/`inferior_to`/`mutual_cancellation`/`nullifies`/`immune_to` +
+  source (many SBS-sourced — Magu>Mera, Yami nullifies, Gomu immune to Goro). `[A]`
+- `awakening_outcome` enum (`successful`/`failed_berserk`/`partial`) — Zoan
+  awakening risks personality loss; the `awakened` boolean can't express it. `[A]`
+- Haki **named applications as `technique` entities** (`technique_type: haki_based`:
+  future-sight, emission, internal-destruction, ryuo, advanced-conqueror) + a
+  `requires-haki` relation (technique→haki-type) + `acquisition_method` enum
+  (training/trauma/innate). `[A]`
+- technique **`variant-of`** (technique→technique) for Gear forms / sub-techniques
+  (distinct from the existing `derived-from`; ordered). `[A]`
+- fruit-as-object between users → event subtype `fruit_recirculation` + a
+  `held-by` (possession ≠ eating) relation (Ace dies → prize → Sabo eats). `[A]`
+- canonicity reaches **novel-only** (Ace Novel) and **video-game-only**
+  techniques — derived-entity `canonicity` must cover these. `[A][V]`
+
+**Groups & government (extends C3)**
+
+- **`subordinate-to` / `parent-crew`** (crew→crew, historised) — Whitebeard's
+  ~43 subordinate crews, Luffy's Grand Fleet, Cross Guild. Broader than org
+  `subdivision-of`. `[A]`
+- crew **divisions** as sub-units: a `division`/`unit` qualifier on `member-of`
+  - a `division-specialties` vocab (division number is an identifier, not a
+    rank), or a light `unit` entity. `[D]`
+- **power systems** (Warlords/Yonko/Admirals/Three Great Powers) as `title`/
+  `concept` with appointment & **revocation `event`s** + a system-level
+  `system_status` (active/abolished — Warlords abolished ch.956). `[A][D]`
+- **departure-reason** vocab on title/membership (`declined`/`resigned`/
+  `expelled`/`revoked`/`annulled`/`abolished`/`deceased`/`mia`) + a
+  declined-appointment non-membership state. `[A]`
+- **`member-state-of`** (location→organization) — ~170 WG member nations;
+  statuses (`member`/`former`/`founding`/`defected`/`erased`) + a tribute
+  qualifier (Heavenly Tribute). New edge domain (a location as the member). `[A][D]`
+- `loyalty-statuses` += `honorary`, `defected`, `disbanded`. `[A]`
+
+**Events (extends C9)**
+
+- **event phases / sub-events** — a `part-of-event` (event→event, inverse) +
+  `phase_order` qualifier (Marineford = ~10 ordered phases, each with its own
+  participants/location/outcome). `[A]`
+- structured **consequences** beyond death — bind non-death effects (role
+  resignations, fruit transfers, territory shifts, era transitions) to the
+  event; every "Story Impact" bullet → a property entry carrying `event`. `[A]`
+- `bounty` gains a `reason`/`event` qualifier (every raise has a narrated
+  cause). `[A]`
+
+**World & races (extends C9)**
+
+- ruler/**dynasty succession** as `event` (subtype `regime_change`/`coup`/
+  `restoration`/`abdication`); `ruled-by` target may be an org/family. `[A]`
+- sub-location nesting carries a **`zone_type`** (`lawless`/`commercial`/
+  `military`/`residential_by_class`) — Sabaody groves, FMI class districts;
+  `location-subtypes` += `grove`/`district`/`zone`. `[A]`
+- `population` → historised + `is_approximate`/`unknown`. `[A]`
+- **inter-race relations** (`race-relation`, race→race), `relation_kind`
+  (`discrimination`/`enslavement`/`alliance`/`taboo`), historised (the
+  "fish-men classified non-people" status was abolished at a datable point). `[A][D]`
+- race **population-status** (`near_extinct`/`presumed_extinct`) — extend
+  `status` to apply to `race` (Lunarians). `[A]`
+- **`hybrid-of`** (race→race) + sub-tribes (Wotan = giant × fish-man). `[A]`
+- cultural **institutions / festivals** as `concept` + a `practiced-by`
+  relation (race/location) — Elbaf trials, Nika worship; lighter beliefs stay
+  in narratives. `[A]`
+- arc **sub-arc nesting** + an `arc-segment-type` (`act`/`prologue`/`interlude`/
+  `epilogue`) + arc `spans` (first/last chapter & episode). `[A]`
+
+**Lore, concepts & sources (extends C8 / C9)**
+
+- **concept INSTANCES as entities** — each physical Poneglyph is an `artifact`/
+  `document` with `located-at`, `decipherable-by`/`read-by`, `contents`,
+  subtype; the abstract `concept` holds the rules, the instances hold the
+  facts (~20 poneglyphs, 4 Road + 1 lost). `[D]`
+- **`copy-of` / `rubbing-of`** relation (a poneglyph rubbing) with its own
+  historised possession chain (Big Mom's copied by Brook; Kid's → Shanks). `[A]`
+- **concept bearers** — a `bears`/`carries` relation (character→concept),
+  historised + epistemic (the 14 Will-of-D. carriers; most don't know its
+  meaning → per-carrier `epistemic_status`). `[A]`
+- epistemic enum value **`unknown`/`undisclosed`** for deliberate mysteries
+  (Uranus, Vegapunk's cut-off message) — model mystery via `epistemic_status`,
+  not a boolean flag. `[A]`
+- volume → `contains` (ordered) chapters + `cover-features` characters + an
+  author-note text block. `[A]`
+- relative in-universe dating ("X years ago") + named eras (`great_war`,
+  `appointed_time`) feed the timeline cluster's structured temporal value. `[A]`
+- **trivia / SBS meta-facts** with no home property → a per-entity `trivia`
+  narrative key (not structured fields); **personality stays in narratives**
+  (confirmed — do not add character-trait fields). `[A]`
+
+**Ingest (cross-cutting — applies to every item above)**
+
+The prose is the richest ingest source: every assertion is chapter+episode
+sourced via `{{Qref}}` templates (free `since`/`source` + manga↔anime
+reachability). **But it narrates the endgame as flat present-tense fact**
+(Imu, Nika, Poseidon = Shirahoshi, Pluton's location, the Great Kingdom). The
+non-negotiable ingest rule: **every extracted fact is stamped with its on-panel
+reveal source** (`since`/`revealed_since` = the chapter where it is _shown_,
+taken from the Qref) — never `during_period` alone; identity / parentage /
+capability facts default to `review_status: not_reviewed` + `assisted_by` and
+are flagged for epistemic review. Estimated yield: tens of events + dozens of
+relations + multiple name / bounty / ability records **per major page**. This
+makes the spoiler-correctness of ingest the single largest risk, and the reason
+tooling-before-ingest (ADR-032) is the right order.
+
+---
+
 ## 3. Sequencing
 
 Dependency-ordered; each is an ADR + PR, gauntlet-green before merge.
@@ -238,7 +358,10 @@ After each cluster ADR lands, update the relevant `/docs/*` in the **same PR**
 
 ## 4. Open decisions (need a maintainer call)
 
-These are genuine product/architecture calls — flagged rather than decided:
+These are genuine product/architecture calls — flagged rather than decided
+(plus every `[D]`-tagged item in § 2A — notably power-systems modelling,
+concept-instances as `artifact` entities, `member-state-of`, inter-race
+relations, and crew divisions):
 
 1. **Edition-scoped names (C1)**: add a `variant` qualifier on localizable
    values, or keep one EN/FR and treat dub variants as out of scope for now?
