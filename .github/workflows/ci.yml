@@ -56,3 +56,10 @@ jobs:
 
       - name: Test
         run: bun run test
+
+      # Catches dashboard build regressions (e.g. a removed dep, a bad
+      # import) that typecheck alone misses. NOTE: this does NOT run
+      # vercel.json's `buildCommand` — deploy-config changes still only
+      # prove out on Vercel itself (see CLAUDE.md Definition of done #7).
+      - name: Build dashboard
+        run: bun run -F @onepiece-wiki/dashboard build

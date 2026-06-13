@@ -43,8 +43,22 @@ contract is `/CLAUDE.md`; conventions in `/docs/CONVENTIONS.md`.
 ```
 bun run format && bun run lint && bun run knip \
   && bun run typecheck && bun run validate \
-  && bun run check:references && bun test
+  && bun run check:references && bun test \
+  && bun run -F @onepiece-wiki/dashboard build
 ```
+
+`typecheck` is NOT enough — it misses build-time breaks (a removed dep,
+a bad import). Always run the dashboard **build** when a change could
+touch it. CI runs it too.
+
+## Deploy config — cannot be verified locally
+
+`vercel.json`, the nitro preset, `NITRO_PRESET`, etc. only prove out on
+the platform — a local `VERCEL=1` build does NOT match Vercel's real
+build env. Never commit/merge a deploy-config change blind: prefer the
+standard setup, flag it for human review, and confirm on a real deploy.
+(Lesson from #23: a `vercel.json` `buildCommand` change passed every
+local check but broke the Vercel deployment; reverted in #25.)
 
 ## Dependencies & data
 

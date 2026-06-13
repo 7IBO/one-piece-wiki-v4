@@ -129,9 +129,17 @@ A task is done when all of the following are true:
 4. `bun run typecheck` passes across the affected workspaces
 5. `bun run lint` passes with zero warnings on touched files
 6. `bun run format` has been applied
-7. Documentation updated (relevant `/docs/*.md` files)
-8. CHANGELOG or DECISIONS.md updated if architectural
-9. PR description explains the change, the trade-offs, and links to the spec
+7. **Affected apps build.** If a change can touch the build (deps,
+   `apps/dashboard`, vite/nitro config, etc.), run the app build —
+   `bun run -F @onepiece-wiki/dashboard build` — before committing.
+   CI now runs this too. **Deploy config (`vercel.json`, nitro preset,
+   `NITRO_PRESET`) cannot be verified locally** — those changes only
+   prove out on the platform, so flag them for human review and never
+   merge them blind (lesson from #23: a `vercel.json` `buildCommand`
+   change passed every local check but broke the Vercel deployment).
+8. Documentation updated (relevant `/docs/*.md` files)
+9. CHANGELOG or DECISIONS.md updated if architectural
+10. PR description explains the change, the trade-offs, and links to the spec
 
 ## Workflow expectations
 
