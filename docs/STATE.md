@@ -11,25 +11,33 @@ this file is the current status + the open threads.
 
 ## Open / blocked threads — resume here
 
-### 1. ⚠️ Production dashboard `/api/*` 404 — UNRESOLVED, blocked on a Vercel setting
+### 1. Production dashboard `/api/*` 404 — infra fixed; remaining is operational
 
-- Symptom: `https://dashboard.one-piece.wiki/api/schemas` → Vercel **edge**
-  `NOT_FOUND` (`cdg1::…`). The serverless function isn't being routed —
-  Vercel isn't using nitro's Build Output API.
-- **The code is fine**: `/api/schemas` returns 200 in dev AND in the
-  built node-server locally; the dashboard build succeeds.
-- Root cause is a **Vercel project setting**, not the repo. Likely fix:
-  **Settings → General → Root Directory = `apps/dashboard`** (Framework
-  Preset = TanStack Start is already set). With the app in a subfolder,
-  that's what lets Vercel find `apps/dashboard/.vercel/output`.
-- Tried + reverted — **do NOT repeat blind**: #23 relocated
-  `.vercel/output` via the buildCommand → **broke the build** (reverted
-  in #25); #27 removed `framework`/`outputDirectory` → didn't help
-  (closed). A repo-root `vercel.json` can't reliably fix a
-  monorepo-subfolder deploy; the lever is the Root Directory setting.
-- To finish: confirm the Root Directory value, or paste
-  `npx vercel inspect <dpl> --logs`. **Never push deploy config blind**
-  (CLAUDE.md Definition of done #7).
+- Original symptom: `https://dashboard.one-piece.wiki/api/schemas` →
+  Vercel edge `NOT_FOUND`. Root cause was the Vercel **Framework Preset
+  = "Vite"** → Vercel served the app statically and never deployed the
+  serverless function, so all `/api/*` (and SSR) 404'd.
+- **Fixed at the infra level**: preset switched to **TanStack Start** +
+  **Root Directory = `apps/dashboard`** (confirmed). The Vercel build
+  log now shows the function built (`.vercel/output/functions/__server.func/`),
+  `config.json` routing `/(.*) → /__server`, and "Deployment completed".
+- **If `/api/*` still 404s**, it's an **operational** matter, not the
+  repo: the live production deployment is likely a stale one (the
+  "Configuration Settings differ" banner = production built with the
+  old Vite settings). Fix: Vercel → Deployments → latest successful
+  build → **Promote to Production** (or Redeploy without build cache),
+  then hard-refresh.
+- Dead ends (do NOT repeat blind): #23 relocated `.vercel/output` via
+  the buildCommand → **broke the build** (reverted #25); #27 removed
+  `framework`/`outputDirectory` → made a preview 404 (closed). The
+  repo-root `vercel.json` is **ignored** anyway when Root Directory =
+  `apps/dashboard`. **Never push deploy config blind** (CLAUDE.md
+  Definition of done #7).
+- Vercel's post-build `tsc` prints node/bun-type errors on `api/` +
+  packages — **non-fatal** (deploy completes) and a Vercel-typecheck-
+  context artifact (our typecheck passes with bun types). The real,
+  local gap — `api/` not being in our typecheck scope — is now closed
+  (dashboard tsconfig `include` covers `api/**/*`).
 
 ### 2. Admin schema editor (Phase 5) — proposed, not started
 
