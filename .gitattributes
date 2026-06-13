@@ -1,0 +1,7 @@
+# Force LF line endings on text files for cross-OS consistency.
+#
+# Without this, Windows checkouts show every text file as modified
+# (CRLF on disk vs LF in HEAD), which makes `git status` unusable
+# and blocks `git merge`. Binary files are auto-detected by the
+# `text=auto` heuristic and excluded from line-ending conversion.
+* text=auto eol=lf
