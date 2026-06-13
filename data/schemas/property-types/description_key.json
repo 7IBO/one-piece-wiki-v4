@@ -16,7 +16,12 @@
     "location",
     "saga",
     "ship",
-    "organization"
+    "organization",
+    "concept",
+    "race",
+    "technique",
+    "title",
+    "weapon"
   ],
   "default_qualifiers": ["since", "source"],
   "ui_hint": { "input_widget": "textarea" }
