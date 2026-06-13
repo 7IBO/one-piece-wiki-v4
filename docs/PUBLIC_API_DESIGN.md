@@ -7,6 +7,25 @@
 > Ratified by ADR-025. Open questions at the bottom must be answered
 > by a follow-up ADR before any `packages/api-*` package is created.
 
+## 0. Regime gate — this document applies post-freeze only
+
+**Everything below describes the _post-freeze_ regime.** It applies
+only once the schema-freeze milestone is declared and `apps/api/`
+ships v1.0.0.
+
+**Until then the project is pre-freeze** (ADR-029): the schema is
+volatile, and breaking changes — rename, remove, retype a property
+/ relation / vocabulary value — are **routine**. Pre-freeze they are
+handled in a single PR by migrating `/data`, bumping `schema_version`
+and updating the internal consumers (`sdk`, `dashboard`, `preview`)
+in lockstep. **No deprecation, no aliasing, no wire-format adapters,
+no MAJOR bumps** — there are no external consumers to insulate. The
+`api:impact` analyzer (§ 8) is advisory-only pre-freeze and becomes a
+blocking gate only at the freeze.
+
+Do not apply the versioning ceremony in this document to ordinary
+pre-freeze schema work. See ADR-029 for the gate criteria.
+
 ## 1. Vision and scope
 
 Expose the wiki's structured data to external consumers (YouTubers,
