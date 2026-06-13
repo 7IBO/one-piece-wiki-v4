@@ -1,3 +1,4 @@
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import {
@@ -165,24 +166,25 @@ function TypeListComponent(): JSX.Element {
             <SelectItem value='id'>{t('sortById')}</SelectItem>
           </SelectContent>
         </Select>
-        <button
+        <Button
           type='button'
+          variant='outline'
+          size='icon-lg'
           onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
-          className='border-input hover:bg-accent inline-flex size-9 items-center justify-center rounded-md border'
           aria-label={sortDir === 'asc' ? 'Sort descending' : 'Sort ascending'}
         >
           {sortDir === 'asc' ? <ArrowUp className='size-4' /> : <ArrowDown className='size-4' />}
-        </button>
+        </Button>
       </div>
 
       {draftIdsForType.size > 0
         ? (
-          <div className='border-amber-500/40 bg-amber-500/5 flex items-center gap-2 rounded-[3px] border px-3 py-2 text-xs'>
+          <Banner variant='warning'>
             <span className='inline-block size-1.5 rounded-full bg-amber-500' />
-            <span className='text-foreground'>
+            <span>
               {t('draftsThisType').replace('{n}', String(draftIdsForType.size))}
             </span>
-          </div>
+          </Banner>
         )
         : null}
 

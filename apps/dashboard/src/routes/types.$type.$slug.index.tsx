@@ -10,6 +10,7 @@
  * split — see commit history).
  */
 import { Badge } from '@/components/ui/badge';
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { resolveDisplayName } from '@onepiece-wiki/schemas';
@@ -206,9 +207,9 @@ function EntityEditComponent(): JSX.Element {
       </div>
       {entity.resumePR !== undefined
         ? (
-          <div className='border-primary/40 bg-primary/5 flex flex-wrap items-center gap-2 rounded-[3px] border px-3 py-2 text-xs'>
+          <Banner variant='info'>
             <GitPullRequest className='text-primary size-4 shrink-0' />
-            <span className='text-foreground'>
+            <span>
               {t('resumePRBanner').replace('{n}', String(entity.resumePR.number))}
             </span>
             <a
@@ -221,7 +222,7 @@ function EntityEditComponent(): JSX.Element {
               PR #{entity.resumePR.number}
               <ExternalLink className='size-3' />
             </a>
-          </div>
+          </Banner>
         )
         : null}
       <EntityForm

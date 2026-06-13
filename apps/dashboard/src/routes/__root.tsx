@@ -131,12 +131,9 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
               <LocaleSwitcher />
               {!loaded ? null : user === null
                 ? (
-                  <Link
-                    to='/login'
-                    className='bg-primary text-primary-foreground hover:bg-primary/90 inline-flex h-7 items-center rounded-[3px] px-2.5 text-xs font-medium no-underline'
-                  >
+                  <Button render={<Link to='/login' />} size='sm' className='no-underline'>
                     Sign in
-                  </Link>
+                  </Button>
                 )
                 : (
                   <>

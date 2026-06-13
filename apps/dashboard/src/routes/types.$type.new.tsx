@@ -21,6 +21,7 @@
  * No extra mobile work needed at this layer.
  */
 import { Badge } from '@/components/ui/badge';
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -157,9 +158,9 @@ function EntityCreateComponent(): JSX.Element {
 
       {openedPR !== null
         ? (
-          <div className='border-primary/40 bg-primary/5 flex flex-wrap items-center gap-2 rounded-[3px] border px-3 py-2 text-xs'>
+          <Banner variant='info'>
             <GitPullRequest className='text-primary size-4 shrink-0' />
-            <span className='text-foreground'>
+            <span>
               Your new {entityTypeLabel.toLowerCase()}{' '}
               is in PR #{openedPR.number}. It will appear in the dashboard catalogue after the PR is
               merged and Vercel redeploys.
@@ -173,7 +174,7 @@ function EntityCreateComponent(): JSX.Element {
               PR #{openedPR.number}
               <ExternalLink className='size-3' />
             </a>
-          </div>
+          </Banner>
         )
         : null}
 
