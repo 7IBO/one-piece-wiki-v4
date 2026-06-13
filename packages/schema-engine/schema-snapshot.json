@@ -155,6 +155,7 @@
         "ally-of",
         "based-in",
         "captained-by",
+        "controls-territory",
         "depicted-by",
         "enemy-of",
         "flies-flag",
@@ -320,6 +321,9 @@
         "description_key": {
           "required": false
         },
+        "location_status": {
+          "required": false
+        },
         "location_subtype": {
           "required": true
         },
@@ -327,6 +331,9 @@
           "required": true
         },
         "population": {
+          "required": false
+        },
+        "region": {
           "required": false
         }
       },
@@ -823,6 +830,12 @@
       "historical": false,
       "localizable": false
     },
+    "location_status": {
+      "value_type": "enum",
+      "enum_ref": "location-statuses",
+      "historical": true,
+      "localizable": false
+    },
     "location_subtype": {
       "value_type": "enum",
       "enum_ref": "location-subtypes",
@@ -898,6 +911,12 @@
     "published_at_jp": {
       "value_type": "date",
       "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "region": {
+      "value_type": "enum",
+      "enum_ref": "location-regions",
       "historical": false,
       "localizable": false
     },
@@ -1310,6 +1329,7 @@
     },
     "controls-territory": {
       "valid_from_types": [
+        "crew",
         "organization"
       ],
       "valid_to_types": [
@@ -2460,6 +2480,27 @@
       "public-domain",
       "screenshot-anime",
       "screenshot-manga"
+    ],
+    "location-regions": [
+      "calm_belt",
+      "east_blue",
+      "grand_line",
+      "new_world",
+      "north_blue",
+      "paradise",
+      "red_line",
+      "south_blue",
+      "west_blue"
+    ],
+    "location-statuses": [
+      "abandoned",
+      "active",
+      "destroyed",
+      "frozen",
+      "occupied",
+      "risen",
+      "sunken",
+      "undersea"
     ],
     "location-subtypes": [
       "archipelago",
