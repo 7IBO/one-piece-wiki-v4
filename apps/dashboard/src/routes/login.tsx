@@ -19,6 +19,7 @@
  * (via the `?from=…` query param) on successful sign-in so the
  * contributor doesn't lose their place.
  */
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router';
 import { type JSX, useState } from 'react';
@@ -101,12 +102,9 @@ function LoginPage(): JSX.Element {
 
       {error !== null
         ? (
-          <div
-            role='alert'
-            className='border-destructive/30 bg-destructive/5 text-destructive rounded-[3px] border px-3 py-2 text-xs'
-          >
+          <Banner variant='error'>
             {error}
-          </div>
+          </Banner>
         )
         : null}
 
