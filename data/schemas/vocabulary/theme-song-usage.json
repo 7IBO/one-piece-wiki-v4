@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "theme-song-usage",
+  "schema_version": 1,
+  "values": {
+    "opening": { "labels": { "en": "Opening", "fr": "Générique de début" } },
+    "ending": { "labels": { "en": "Ending", "fr": "Générique de fin" } },
+    "insert": { "labels": { "en": "Insert song", "fr": "Chanson d'insert" } },
+    "image_song": { "labels": { "en": "Image song", "fr": "Image song" } }
+  }
+}

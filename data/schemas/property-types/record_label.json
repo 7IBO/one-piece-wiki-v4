@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "record_label",
+  "schema_version": 1,
+  "labels": { "en": "Record label", "fr": "Label" },
+  "value_type": "string",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["theme-song"]
+}

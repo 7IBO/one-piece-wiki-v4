@@ -549,6 +549,24 @@
         "enabled-by-fruit"
       ]
     },
+    "theme-song": {
+      "properties": {
+        "name": {
+          "required": true
+        },
+        "record_label": {
+          "required": false
+        },
+        "track_length": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "staffed-by",
+        "theme-of"
+      ]
+    },
     "title": {
       "properties": {
         "description_key": {
@@ -958,6 +976,12 @@
       "historical": false,
       "localizable": false
     },
+    "record_label": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
     "region": {
       "value_type": "enum",
       "enum_ref": "location-regions",
@@ -1034,6 +1058,12 @@
       "value_type": "number",
       "enum_ref": null,
       "historical": true,
+      "localizable": false
+    },
+    "track_length": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
       "localizable": false
     },
     "url": {
@@ -1433,6 +1463,7 @@
         "saga",
         "ship",
         "technique",
+        "theme-song",
         "title",
         "weapon"
       ],
@@ -2117,7 +2148,8 @@
     "staffed-by": {
       "valid_from_types": [
         "anime-episode",
-        "film"
+        "film",
+        "theme-song"
       ],
       "valid_to_types": [
         "person"
@@ -2161,6 +2193,49 @@
           "value_type": "source_ref",
           "enum_ref": null,
           "required": false
+        }
+      }
+    },
+    "theme-of": {
+      "valid_from_types": [
+        "theme-song"
+      ],
+      "valid_to_types": [
+        "anime-episode",
+        "arc",
+        "film"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "broadcast_version": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "episode_from": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": false
+        },
+        "episode_to": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": false
+        },
+        "sequence": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": false
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "usage": {
+          "value_type": "enum",
+          "enum_ref": "theme-song-usage",
+          "required": true
         }
       }
     },
@@ -2813,6 +2888,12 @@
       "support",
       "swordsmanship",
       "transformation"
+    ],
+    "theme-song-usage": [
+      "ending",
+      "image_song",
+      "insert",
+      "opening"
     ],
     "translation-variants": [
       "4kids",
