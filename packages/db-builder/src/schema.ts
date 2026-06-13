@@ -38,6 +38,10 @@ export const DDL: readonly string[] = [
     qualifiers       TEXT,
     since_source     TEXT,
     until_source     TEXT,
+    epistemic_status TEXT NOT NULL DEFAULT 'true',
+    believed_by      TEXT,
+    known_truth_by   TEXT,
+    revealed_since   TEXT,
     is_inferred      INTEGER NOT NULL DEFAULT 0
   )`,
   `CREATE TABLE appearances (

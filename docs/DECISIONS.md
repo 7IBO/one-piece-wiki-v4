@@ -8,6 +8,102 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-037 — Generalize the epistemic axis to all relations as base qualifiers
+
+**Date**: 2026-06-13
+
+**Context**: ADR-034 (#2) gave `uses-technique` an `epistemic_status`
+qualifier so an edge could mean "shown using" vs "inferred-available".
+The same machinery is needed far more broadly: **hidden relationships** —
+secret alliances, double agents, concealed family ties, disguises
+(`Sogeking = Usopp`), shared identities — all turn on _what kind of truth
+a link is_ and _who knows it_, exactly the axis historisable **property
+values** already carry (`epistemic_status`, `believed_by`,
+`known_truth_by` — see DATA_MODEL § "Epistemic status").
+
+Relation qualifiers are already a free bag: `buildEntitySchema`
+(`entity-loader.ts`) and the generated `RelationEntry`
+(`printers/entities.ts`) both type `qualifiers` as
+`z.record(z.string(), z.unknown())`, so `epistemic_status` on a relation
+already _validates_. What is missing is three things:
+
+1. **Recognition** — the axis is not acknowledged as base, so a relation
+   type can redundantly re-declare it (only `uses-technique` does today),
+   and a typo in the enum value is silently accepted.
+2. **Reference integrity** — `check:references` / `check:coherence`
+   follow only `since`/`until`/`source`/`event` on a relation, so a
+   character referenced solely as a secret-keeper would be invisible.
+3. **Exposure** — the db-builder `relations` table buries everything but
+   `since`/`until` in the opaque `qualifiers` JSON blob, and the SDK
+   `RelationRecord` surfaces none of it. You cannot query "who is secretly
+   allied with whom, as known at chapter N" without re-parsing JSON.
+
+**Decision**: promote a fixed set of **relation base qualifiers** —
+`epistemic_status`, `believed_by`, `known_truth_by`, `revealed_since` —
+to first-class, engine-provided status on every relation, mirroring the
+property base qualifiers.
+
+- `epistemic_status` (enum `epistemic-statuses`), `believed_by` /
+  `known_truth_by` (entity_ref[]) carry the same semantics they have on
+  property values.
+- `revealed_since` (source_ref) is **new**: the source at which the
+  relation — or its true nature — becomes known to the reader/world,
+  distinct from `since` (when the link holds in-universe). For a secret
+  alliance, `since` = when it formed, `revealed_since` = the chapter it
+  surfaces, `known_truth_by` = who was in on it, `epistemic_status` =
+  `believed_by_characters` / `implied` / `confirmed`.
+
+Concretely:
+
+1. **Recognition + guard**: relation types MUST NOT declare a base
+   qualifier (mirrors the SCHEMA_SPEC rule for properties). A new
+   schema-level `check:coherence` rule `RELATION_DECLARES_BASE_QUALIFIER`
+   enforces it. `uses-technique` drops its now-redundant `epistemic_status`
+   declaration.
+2. **Validation**: `buildEntitySchema` and the generated `RelationEntry`
+   type the four base qualifiers inside `qualifiers` (all optional,
+   enum/ref-typed) while keeping `.passthrough()` for relation-specific
+   qualifiers — existing data stays valid, and a bad `epistemic_status`
+   value is now rejected.
+3. **Reference integrity**: relation `revealed_since` (source_ref) and
+   `believed_by` / `known_truth_by` (entity_ref[]) join the ref-resolution
+   and unreferenced-entity scans.
+4. **Exposure**: the db-builder `relations` table gains
+   `epistemic_status` (NOT NULL DEFAULT `'true'`), `believed_by`,
+   `known_truth_by`, `revealed_since` columns, populated for **both** the
+   authored edge and its generated inverse (a secret tie is equally secret
+   in both directions). The SDK `RelationRecord` surfaces the same four.
+
+**Scope / non-goals**:
+
+- `since` / `until` / `source` stay relation-type-declared qualifiers
+  (they already are) — only the **epistemic axis** becomes base. This is
+  the explicit ask and leaves the well-established temporal qualifiers
+  undisturbed.
+- The property base set's `event` and `actual_value` are **not** added to
+  relations; `revealed_since` covers the relation reveal-point directly.
+  Room is left to add them later if a case demands it.
+- `family-of.known_publicly_since` overlaps `revealed_since` but can also
+  mean "public knowledge" (vs "revealed to reader", which
+  `epistemic_status` + `believed_by` capture); left as a relation-specific
+  qualifier. Consolidation is a possible follow-up, not part of this ADR.
+- Unblocks **G3** (`disguise-of` / `same-identity-as`) and secret-alliance
+  / double-agent modelling, which depend on this axis.
+
+**Consequences**:
+
+- New coherence code `RELATION_DECLARES_BASE_QUALIFIER`; `uses-technique`
+  qualifier list shrinks by one (now base).
+- `relations` table widens by 4 columns; `RelationRecord` gains 4 fields.
+  **No `/data` migration**: the change is additive and existing
+  epistemic-on-relation data (e.g. `bears-title`/`eaten-by` examples in
+  DATA_MODEL) was already valid under the free bag.
+- Docs updated same-PR: DATA_MODEL § "Epistemic status on relations",
+  SCHEMA_SPEC § "Relation base qualifiers", INVENTORY § "Universal
+  relation qualifiers", BUILD_PIPELINE relations-table columns.
+
+---
+
 ## ADR-036 — Folder-based universe schemas (`data/universes/<id>/schemas/`)
 
 **Date**: 2026-06-13

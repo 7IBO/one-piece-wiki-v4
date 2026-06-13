@@ -99,6 +99,22 @@ describe('Phase 2 end-to-end', () => {
     expect(inverse!.is_inferred).toBe(true);
   });
 
+  it('surfaces relation base qualifiers (ADR-037), defaulting epistemic_status', () => {
+    // No epistemic qualifier is authored on this edge, so the build
+    // promotes the engine default through to the SDK record. This
+    // exercises the full DDL → writer → client wiring of the four
+    // relation base-qualifier columns.
+    const luffyRelations = client.getRelations('character:luffy', 'outgoing');
+    const ateFruit = luffyRelations.find(
+      (r) => r.relation_type === 'ate-fruit' && r.target_entity_id === 'devil-fruit:gomu-gomu',
+    );
+    expect(ateFruit).toBeDefined();
+    expect(ateFruit!.epistemic_status).toBe('true');
+    expect(ateFruit!.believed_by).toBeNull();
+    expect(ateFruit!.known_truth_by).toBeNull();
+    expect(ateFruit!.revealed_since).toBeNull();
+  });
+
   it('spoiler filter cuts bounty history at user progression', () => {
     const properties = client.getProperties('character:luffy');
     const earlyBounties = visibleProperties(properties, { manga_chapter: 432 });

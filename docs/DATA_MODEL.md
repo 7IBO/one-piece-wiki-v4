@@ -88,6 +88,50 @@ The full enum and its semantics are in `/docs/EPISTEMIC_MODEL.md`. Summary:
 When an entry has a non-`true` status that diverges from reality, it carries
 an `actual_value` field referencing the real value.
 
+### Epistemic status on relations
+
+Links between entities can be just as epistemically loaded as property
+values: a secret alliance, a double agent, a concealed parentage, a
+disguise. Relations therefore carry the **same epistemic axis** as
+historisable values, as a fixed set of **base qualifiers** the schema
+engine provides on every relation (never declared per relation type):
+
+| Qualifier          | Type         | Meaning                                               |
+| ------------------ | ------------ | ----------------------------------------------------- |
+| `epistemic_status` | enum         | What kind of truth this link is. Defaults to `true`.  |
+| `believed_by`      | entity_ref[] | Characters who believe the link holds                 |
+| `known_truth_by`   | entity_ref[] | Characters who know its real nature                   |
+| `revealed_since`   | source_ref   | Source at which the link (or its truth) becomes known |
+
+`revealed_since` is the relation counterpart of the reveal mechanism on
+properties. It is distinct from `since` (when the link holds _in-universe_):
+`since` anchors the relationship to the moment it begins; `revealed_since`
+anchors the moment the reader/world learns of it.
+
+A secret alliance formed off-page and exposed much later:
+
+```json
+{
+  "type": "ally-of",
+  "target": "organization:revolutionary-army",
+  "qualifiers": {
+    "since": "manga-chapter:1",
+    "epistemic_status": "believed_by_characters",
+    "known_truth_by": ["character:dragon", "character:ivankov"],
+    "revealed_since": "manga-chapter:593"
+  }
+}
+```
+
+Because these are base qualifiers, a relation type MUST NOT declare them
+in its own `qualifiers` (mirroring the property rule); `check:coherence`
+flags a violation (`RELATION_DECLARES_BASE_QUALIFIER`). The build pipeline
+exposes them as first-class columns on the `relations` table — and
+propagates them to the generated inverse edge, since a hidden link is
+equally hidden in both directions — so the read side can answer "who is
+secretly allied with whom, as known at chapter N" without re-parsing the
+qualifier blob. See `/docs/SCHEMA_SPEC.md` § "Relation base qualifiers".
+
 ### Sources and in-universe progression
 
 Every dated value points to a **source entity**: a manga chapter, anime

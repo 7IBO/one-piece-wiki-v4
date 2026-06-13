@@ -86,3 +86,76 @@ describe('extract — derived fields', () => {
     expect(row?.primary_canon_scope).toBeNull();
   });
 });
+
+describe('extract — relation base qualifiers (ADR-037)', () => {
+  const catalogueWithAlly: ValidatedCatalogue = {
+    entityTypes: new Map(),
+    propertyTypes: new Map(),
+    relationTypes: new Map([['ally-of', {
+      inverse_inferred: true,
+    }]]) as ValidatedCatalogue['relationTypes'],
+    vocabularies: new Map(),
+    errors: [],
+  };
+
+  const dragon = loaded('character:dragon', 'character', {
+    slug: 'dragon',
+    schema_version: 1,
+    properties: {},
+    relations: [
+      {
+        type: 'ally-of',
+        target: 'organization:revolutionary-army',
+        qualifiers: {
+          since: 'manga-chapter:1',
+          epistemic_status: 'believed_by_characters',
+          believed_by: ['character:sabo'],
+          known_truth_by: ['character:dragon', 'character:ivankov'],
+          revealed_since: 'manga-chapter:593',
+        },
+      },
+    ],
+  });
+
+  const rows = extract(toMap([dragon]), catalogueWithAlly);
+  const canonical = rows.relations.find(
+    (r) => r.relation_type === 'ally-of' && r.source_entity_id === 'character:dragon',
+  );
+  const inverse = rows.relations.find((r) => r.relation_type === 'ally-of.inverse');
+
+  it('promotes the epistemic axis to columns on the authored edge', () => {
+    expect(canonical?.epistemic_status).toBe('believed_by_characters');
+    expect(canonical?.revealed_since).toBe('manga-chapter:593');
+    expect(canonical?.believed_by).toBe(JSON.stringify(['character:sabo']));
+    expect(canonical?.known_truth_by).toBe(
+      JSON.stringify(['character:dragon', 'character:ivankov']),
+    );
+  });
+
+  it('mirrors the epistemic axis onto the generated inverse edge', () => {
+    expect(inverse?.source_entity_id).toBe('organization:revolutionary-army');
+    expect(inverse?.epistemic_status).toBe('believed_by_characters');
+    expect(inverse?.revealed_since).toBe('manga-chapter:593');
+    expect(inverse?.known_truth_by).toBe(
+      JSON.stringify(['character:dragon', 'character:ivankov']),
+    );
+  });
+
+  it('defaults epistemic_status to "true" and leaves arrays null when absent', () => {
+    const plain = loaded('character:zoro', 'character', {
+      slug: 'zoro',
+      schema_version: 1,
+      properties: {},
+      relations: [
+        { type: 'ally-of', target: 'character:luffy', qualifiers: { since: 'manga-chapter:1' } },
+      ],
+    });
+    const out = extract(toMap([plain]), catalogueWithAlly);
+    const row = out.relations.find(
+      (r) => r.relation_type === 'ally-of' && r.source_entity_id === 'character:zoro',
+    );
+    expect(row?.epistemic_status).toBe('true');
+    expect(row?.believed_by).toBeNull();
+    expect(row?.revealed_since).toBeNull();
+  });
+});

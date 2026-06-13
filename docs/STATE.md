@@ -106,6 +106,14 @@ save-flow tests, the migration helper. **Pending**:
   real display names by declaring `display_name_properties` (own PR;
   it's a display behaviour change, left out of ADR-031 to keep it
   behaviour-preserving).
+- ~~**relation epistemic axis**~~ — **DONE (ADR-037):** `epistemic_status`
+  / `believed_by` / `known_truth_by` / `revealed_since` are now base
+  qualifiers on every relation (engine-provided, guarded by
+  `RELATION_DECLARES_BASE_QUALIFIER`), typed in both validators
+  (`entity-loader` + generated printer), exposed as columns on the
+  db-builder `relations` table (mirrored onto the inverse) and on the SDK
+  `RelationRecord`. Unblocks disguise-of / same-identity-as (G-series) and
+  secret-alliance / double-agent modelling. No data migration.
 
 ## Active plan (ADR-032) — tooling before ingest
 

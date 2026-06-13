@@ -54,6 +54,19 @@ const BaseQualifierBag = z
   })
   .passthrough();
 
+// Epistemic base qualifiers implicit on every relation (ADR-037), typed
+// inside the relation's `qualifiers` object. Relation-specific qualifiers
+// (role, since, until, mastery_level, …) ride the passthrough. Mirror of
+// the lines emitted by printers/entities.ts — keep the two in sync.
+const RelationQualifierBag = z
+  .object({
+    epistemic_status: EpistemicStatus.optional(),
+    believed_by: z.array(EntityId).optional(),
+    known_truth_by: z.array(EntityId).optional(),
+    revealed_since: SourceRefOrList.optional(),
+  })
+  .passthrough();
+
 function valueSchemaFor(valueType: ValueType): z.ZodTypeAny {
   switch (valueType) {
     case 'string':
@@ -121,7 +134,7 @@ export function buildEntitySchema(
   const relationSchema = z.object({
     type: Slug,
     target: EntityId,
-    qualifiers: z.record(z.string(), z.unknown()).optional(),
+    qualifiers: RelationQualifierBag.optional(),
   });
 
   return z.object({
@@ -334,7 +347,14 @@ export function resolveEntityReferences(
         const qualifiers = record['qualifiers'];
         if (qualifiers !== null && qualifiers !== undefined && typeof qualifiers === 'object') {
           for (const [key, qValue] of Object.entries(qualifiers as Record<string, unknown>)) {
-            if (key !== 'since' && key !== 'until' && key !== 'source' && key !== 'event') {
+            // Source/entity-ref-bearing qualifiers: the temporal/citation
+            // axes plus the relation epistemic base qualifiers (ADR-037)
+            // `revealed_since` (source_ref) and `believed_by` /
+            // `known_truth_by` (entity_ref[]).
+            if (
+              key !== 'since' && key !== 'until' && key !== 'source' && key !== 'event'
+              && key !== 'revealed_since' && key !== 'believed_by' && key !== 'known_truth_by'
+            ) {
               continue;
             }
             for (const ref of refOrRefList(qValue)) {

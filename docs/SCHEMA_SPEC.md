@@ -342,6 +342,34 @@ A file in `/data/schemas/relation-types/<id>.json`.
 | `historical`                | boolean  | no       | If true, relations themselves carry `since`/`until`          |
 | `ui_hint`                   | object   | no       | Display hints                                                |
 
+### Relation base qualifiers
+
+Just as historisable property values carry implicit base qualifiers
+(see § "Base qualifiers" above), **every relation carries an epistemic
+base-qualifier set** the schema engine provides on its `qualifiers`
+object. They MUST NOT be listed in a relation type's `qualifiers` array;
+the schema engine supplies them, and `check:coherence` rejects a relation
+type that re-declares one (`RELATION_DECLARES_BASE_QUALIFIER`).
+
+| Qualifier          | Type               | Meaning                                               |
+| ------------------ | ------------------ | ----------------------------------------------------- |
+| `epistemic_status` | enum (epistemic)   | What kind of truth the link is. Defaults to `true`.   |
+| `believed_by`      | entity_ref[]       | Characters who believe the link holds                 |
+| `known_truth_by`   | entity_ref[]       | Characters who know its real nature                   |
+| `revealed_since`   | source_ref \| list | Source at which the link (or its truth) becomes known |
+
+These mirror the property epistemic axis (see `/docs/DATA_MODEL.md`
+§ "Epistemic status on relations"). `revealed_since` is the relation-only
+addition: the reveal point of a hidden link, distinct from `since` (when
+the link holds in-universe). The temporal/citation qualifiers `since`,
+`until`, `source` remain **relation-type-declared** (not base) — declare
+them in `qualifiers` where the relation needs them.
+
+Default-equal base qualifiers MUST NOT appear in entity JSON
+(`epistemic_status: "true"` is omitted). The build pipeline promotes all
+four to first-class columns on the `relations` table (mirrored onto the
+generated inverse edge) and the SDK `RelationRecord` surfaces them.
+
 ### When `since` is required on a relation
 
 Most relations should carry `since` — it anchors the relation to a
