@@ -20,6 +20,7 @@
     "validate": "bun packages/schema-engine/src/cli/validate.ts",
     "check:references": "bun packages/schema-engine/src/cli/check-references.ts",
     "format:data": "bun packages/schema-engine/src/cli/format-data.ts",
+    "migrate": "bun packages/schema-engine/src/cli/migrate.ts",
     "build:data": "bun packages/db-builder/src/cli/build.ts",
     "dashboard:dev": "bun --filter @onepiece-wiki/dashboard dev",
     "check:frontend-extensions": "bun scripts/check-frontend-extensions.ts",

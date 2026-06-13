@@ -1,0 +1,57 @@
+# Data migrations
+
+During the **pre-freeze** schema regime (ADR-029) breaking changes —
+renaming a property, removing a relation type, renaming a qualifier —
+are routine. Because the source of truth is JSON in `/data`, such a
+change means rewriting every entity file that used the old shape. A
+migration makes that a one-command operation instead of a manual
+sweep.
+
+## Writing a migration
+
+Create a file here named `NNNN-short-slug.ts` (zero-padded sequence),
+default-exporting a `Migration`:
+
+```ts
+import { type Migration, renameProperty } from '@onepiece-wiki/schema-engine';
+
+const migration: Migration = {
+  id: '0001-bounty-to-reward',
+  description: 'Rename character `bounty` property to `reward`.',
+  up: (data) => renameProperty(data, 'bounty', 'reward'),
+};
+
+export default migration;
+```
+
+`up` receives one entity's parsed JSON and returns the transformed
+data, the same object when nothing changed, or `null` to delete the
+entity. Compose the helpers from `@onepiece-wiki/schema-engine`:
+`renameProperty`, `removeProperty`, `renameRelationType`,
+`removeRelationType`, `renameRelationQualifier`. For anything they
+don't cover, write a plain function over `data`.
+
+## Running
+
+```bash
+# preview the affected files, write nothing
+bun run migrate data/migrations/0001-bounty-to-reward.ts --dry-run
+
+# apply
+bun run migrate data/migrations/0001-bounty-to-reward.ts
+```
+
+After a real run:
+
+1. Bump the affected entity type's `schema_version` in
+   `data/schemas/entity-types/`.
+2. `bun run schema:generate` — regenerate the Zod types.
+3. `bun run format` — dprint normalises the rewritten JSON.
+4. `bun run validate` — confirm the corpus still parses.
+5. Update the internal consumers (`packages/sdk`, `apps/dashboard`,
+   `apps/preview`) in the **same PR** — see ADR-029.
+
+Migrations are kept in the repo as a historical record; they are not
+re-run automatically. A numbered-migration runner (apply all pending,
+track applied state) is the full Phase 5 Task 4 scope — this helper is
+the lightweight subset that covers the volatile-phase need.
