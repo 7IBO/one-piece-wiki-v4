@@ -126,6 +126,34 @@ describe('Phase 2 end-to-end', () => {
     expect(chapter1Member.length).toBe(1);
   });
 
+  it('epistemic false-belief: Gomu Gomu reads Paramecia until the Nika reveal', () => {
+    // The classic hidden-truth case (ADR epistemic model): the world
+    // BELIEVES the Gomu Gomu no Mi is a Paramecia (believed_by_world,
+    // since ch.1) while it is actually a Mythical Zoan; the truth is
+    // CONFIRMED only at ch.1044 (the Nika reveal). The spoiler filter
+    // must show the believed value before the reveal and the confirmed
+    // value after — and must NOT leak the truth early.
+    const props = client.getProperties('devil-fruit:gomu-gomu');
+
+    const preReveal = visibleProperties(props, { manga_chapter: 1043 })
+      .find((p) => p.property_id === 'classification');
+    expect(preReveal).toBeDefined();
+    expect((preReveal!.value as { value: string; }).value).toBe('paramecia');
+    expect(preReveal!.epistemic_status).toBe('believed_by_world');
+
+    // The truth (mythical_zoan) must be unreachable before ch.1044.
+    const preRevealAll = visibleProperties(props, { manga_chapter: 1043 })
+      .filter((p) => p.property_id === 'classification');
+    expect(
+      preRevealAll.some((p) => (p.value as { value: string; }).value === 'mythical_zoan'),
+    ).toBe(false);
+
+    const postReveal = visibleProperties(props, { manga_chapter: 1044 })
+      .find((p) => p.property_id === 'classification');
+    expect((postReveal!.value as { value: string; }).value).toBe('mythical_zoan');
+    expect(postReveal!.epistemic_status).toBe('confirmed');
+  });
+
   it('handles a reused image (group photo) depicted by multiple entities', () => {
     // Schema-correct model (depicted-by valid_from = depicting entities,
     // valid_to = image): the crew + the two characters each hold
