@@ -15,6 +15,10 @@
  *                                   `valid_to_types`
  *  - RELATION_MISSING_REQUIRED_QUALIFIER  a `required` relation qualifier
  *                                   is absent
+ *  - DUPLICATE_RELATION             an exact-duplicate relation (identical
+ *                                   type + target + qualifiers) on one entity
+ *  - DUPLICATE_PROPERTY_VALUE       an exact-duplicate entry within one
+ *                                   property's history
  *
  * Warnings (reported, do not fail CI):
  *  - UNREFERENCED_ENTITY            no other entity points at this one
@@ -39,7 +43,9 @@ export type CoherenceFinding = {
     | 'SCHEMA_ALLOWED_RELATION_UNKNOWN'
     | 'SCHEMA_ALLOWED_RELATION_INVALID_SOURCE'
     | 'SCHEMA_UNIVERSE_SCOPE_LEAK'
-    | 'RELATION_DECLARES_BASE_QUALIFIER';
+    | 'RELATION_DECLARES_BASE_QUALIFIER'
+    | 'DUPLICATE_RELATION'
+    | 'DUPLICATE_PROPERTY_VALUE';
   readonly severity: 'error' | 'warning';
   readonly source: string;
   readonly path: string;
@@ -115,6 +121,22 @@ function collectReferencedIds(entities: ReadonlyMap<string, LoadedEntity>): Read
   }
 
   return referenced;
+}
+
+/**
+ * Stable, recursively key-sorted JSON serialization. Two values produce the
+ * same string iff they are deeply equal regardless of key order — the basis
+ * for exact-duplicate detection.
+ */
+function canonicalize(value: unknown): string {
+  if (Array.isArray(value)) return `[${value.map(canonicalize).join(',')}]`;
+  if (value !== null && typeof value === 'object') {
+    const obj = value as Record<string, unknown>;
+    return `{${
+      Object.keys(obj).sort().map((k) => `${JSON.stringify(k)}:${canonicalize(obj[k])}`).join(',')
+    }}`;
+  }
+  return JSON.stringify(value) ?? 'null';
 }
 
 /**
@@ -210,6 +232,63 @@ export function checkCoherence(
             path: `${path}.qualifiers.${qualifier.id}`,
             message: `Relation "${relType}" requires qualifier "${qualifier.id}".`,
           });
+        }
+      }
+    }
+  }
+
+  // Duplicate detection: an exact-duplicate relation or property entry is
+  // always redundant (a copy-paste / double-ingest error). "Exact" = identical
+  // type + target + qualifiers (relation) or an identical entry (property);
+  // legitimately historised re-relations (e.g. left and rejoined a crew)
+  // differ in since/until and are NOT flagged. Matters most ahead of bulk
+  // ingest, which mass-produces entities.
+  for (const entity of entities.values()) {
+    const data = entity.data as {
+      relations?: unknown[];
+      properties?: Record<string, unknown>;
+    };
+
+    if (Array.isArray(data.relations)) {
+      const seen = new Map<string, number>();
+      for (const [index, rel] of data.relations.entries()) {
+        if (rel === null || typeof rel !== 'object') continue;
+        const key = canonicalize(rel);
+        const prior = seen.get(key);
+        if (prior === undefined) {
+          seen.set(key, index);
+        } else {
+          findings.push({
+            code: 'DUPLICATE_RELATION',
+            severity: 'error',
+            source: entity.id,
+            path: `relations[${index}]`,
+            message:
+              `Relation duplicates relations[${prior}] exactly (same type, target, qualifiers).`,
+          });
+        }
+      }
+    }
+
+    if (data.properties !== null && typeof data.properties === 'object') {
+      for (const [propertyId, value] of Object.entries(data.properties)) {
+        if (!Array.isArray(value)) continue;
+        const seen = new Map<string, number>();
+        for (const [index, entry] of value.entries()) {
+          if (entry === null || typeof entry !== 'object') continue;
+          const key = canonicalize(entry);
+          const prior = seen.get(key);
+          if (prior === undefined) {
+            seen.set(key, index);
+          } else {
+            findings.push({
+              code: 'DUPLICATE_PROPERTY_VALUE',
+              severity: 'error',
+              source: entity.id,
+              path: `properties.${propertyId}[${index}]`,
+              message: `Property entry duplicates properties.${propertyId}[${prior}] exactly.`,
+            });
+          }
         }
       }
     }
