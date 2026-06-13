@@ -3,5 +3,8 @@ export * from './entity-loader.ts';
 export * from './generator.ts';
 export * from './loader.ts';
 export * from './meta-validator.ts';
+export * from './migrate/runner.ts';
+export * from './migrate/transforms.ts';
+export * from './migrate/types.ts';
 export * from './paths.ts';
 export * from './reference-resolver.ts';
