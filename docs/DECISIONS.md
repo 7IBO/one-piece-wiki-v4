@@ -8,6 +8,46 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-036 — Folder-based universe schemas (`data/universes/<id>/schemas/`)
+
+**Date**: 2026-06-13
+
+**Context**: ADR-035 added universe scoping via an optional `universes`
+tag + a consistency guard. The maintainer prefers expressing "this
+schema belongs to One Piece" by **location** — a `schemas/` folder
+inside the already-existing `data/universes/one-piece/` — rather than a
+tag on every file.
+
+**Choice**: the loader now reads, in addition to the shared core under
+`/data/schemas/**`, each universe's
+`/data/universes/<id>/schemas/{entity-types,property-types,relation-types,vocabulary}/**`
+and **auto-scopes** those files to `<id>` (injects `universes: [<id>]`;
+an explicit `universes` on the file still wins, so a folder can host a
+schema shared with a sibling universe). **Folder = scope** for the common
+case; the `universes` tag (ADR-035) remains for cross-subset sharing.
+The merged catalogue and `checkUniverseScopes` are unchanged.
+
+**Consequences**:
+
+- Loader merges core ∪ per-universe folders (this PR). With the One Piece
+  folder still empty, behaviour is unchanged (verified). The dashboard's
+  `import.meta.glob('../../../data/**/*.json')` already captures the new
+  paths — no bundle change needed.
+- **Relocation is a deliberate follow-up** (task #24): the One Piece power
+  system (devil-fruit, techniques, haki, bounty) is woven into a central
+  `character` type via properties + relations, so a _consistent_ move
+  (guard-green) pulls most of the domain into `one-piece/`, leaving a
+  small universal **core** (image; the media/narrative types
+  `manga-chapter`/`anime-episode`/`film`/`arc`/`saga`; generic property
+  types; the provenance/epistemic/canon/name-type/license vocabularies;
+  generic structural relations). Where the core/One-Piece line falls —
+  notably whether `character` is core or per-universe — is the open
+  design call; the guard makes whatever partition is chosen provably
+  consistent. The move is mechanical (git mv) and leaves the merged
+  catalogue identical, so validate/build stay green.
+
+---
+
 ## ADR-035 — Universe-scoped schemas (multi-manga), guarded for consistency
 
 **Date**: 2026-06-13
