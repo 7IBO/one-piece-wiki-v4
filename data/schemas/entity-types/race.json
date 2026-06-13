@@ -10,6 +10,6 @@
     { "id": "lifespan", "required": false, "historical": false, "localizable": false },
     { "id": "average_height", "required": false, "historical": false, "localizable": false }
   ],
-  "allowed_relations": ["has-member-race", "originates-from", "depicted-by"],
+  "allowed_relations": ["originates-from", "depicted-by"],
   "ui_hint": { "icon": "users", "group": "concepts" }
 }

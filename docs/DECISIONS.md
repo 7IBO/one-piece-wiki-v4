@@ -8,6 +8,78 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-034 — Techniques, transformations & per-user vs fruit-inherent abilities
+
+**Date**: 2026-06-13
+
+**Context**: How does the model represent techniques (Hiken, Gear 2),
+transformations/awakenings (Gear 5, Gear 4 forms), and — crucially —
+the fact that an ability can be **shared by several users of the same
+fruit** yet only **partially observed** per user? Concrete case: Ace
+and Sabo both ate the Mera Mera no Mi; some of Ace's techniques have
+been shown used by Sabo, but **not all** — the model must distinguish
+"seen using" from "could use (fruit-inherent) but never shown".
+
+**What already exists (sufficient bones)**:
+
+- `technique` is a first-class entity (`technique_type`, `name`,
+  `description_key`).
+- `character --uses-technique--> technique` (historisable, `since`,
+  `allow_multiple_concurrent`): WHO has been seen using WHAT, and when.
+- `technique --enabled-by-fruit--> devil-fruit`: a technique is
+  fruit-derived ⇒ conceptually available to ANY user of that fruit.
+- `technique --derived-from--> technique`: variations / evolutions
+  (e.g. Gear 4 Snakeman derived-from Gear 4).
+- `devil-fruit.awakened` (boolean): fruit awakening.
+
+So "shared" is naturally one technique entity with N `uses-technique`
+edges (Ace AND Sabo → same `technique:hiken`), and "fruit-inherent" is
+the `enabled-by-fruit` link. No new entity type is needed.
+
+**Decisions**:
+
+1. **Transformations are techniques**, not a new entity type. Added
+   `transformation` and `awakening` values to the `technique-types`
+   vocabulary. Gear 5 = a `technique` of type `awakening`,
+   `enabled-by-fruit` the fruit, with `devil-fruit.awakened = true`;
+   Gear 2/4 = `transformation`; sub-forms chain via `derived-from`.
+   Rejected a dedicated `transformation` entity type as over-modelling —
+   the technique entity + vocab + `derived-from` already express it.
+
+2. **Observed vs inferable is the epistemic axis** (PROPOSED — pending
+   implementation, gated on this ADR): `uses-technique` today carries
+   only `since`. Add an epistemic qualifier (`epistemic_status`, or an
+   `observation: confirmed | inferred`) so an edge can mean "shown using"
+   vs "inferred-available". An entity is linked only for techniques it
+   has actually been shown using; the **inference engine** (backlog #5)
+   then derives _"techniques of a user's fruit they haven't been shown
+   using"_ = `enabled-by-fruit(fruit)` − `uses-technique(user)`, surfaced
+   as _potential / unconfirmed_ and spoiler-filtered. This is what
+   answers the Ace/Sabo case precisely.
+
+3. **Mirror cleanup completion** (extends ADR-033): the prefer-inferred
+   pass missed three redundant manual mirrors — `used-by`
+   (↔ `uses-technique`), `borne-by` (↔ `bears-title`), `has-member-race`
+   (↔ `belongs-to-race`). Deleted all three (zero data usage) and removed
+   them from `technique` / `title` / `race` `allowed_relations`.
+
+**Consequences**:
+
+- Vocab `technique-types` gains `transformation`, `awakening` (additive,
+  no migration). Relation catalogue 55 → 52 (three more mirrors gone).
+- **Implemented now**: items 1 + 3 (vocab + mirror deletions).
+- **Deferred to implementation** (item 2): the `uses-technique`
+  epistemic qualifier + the inference rule, which depends on the
+  db-builder inference engine (backlog #5). When built, it needs the
+  qualifier added to `uses-technique` and an SDK surface for
+  "potential abilities".
+- Still open (separate, ADR-033 §deferred): the intentional-vs-redundant
+  status of `has-member`/`member-of`, `led-by`, `captained-by`,
+  `crewed-by`, `pilots` — these LOOK like mirrors but the schema author
+  marked them deliberate dual-authoring; left untouched pending a call.
+
+---
+
 ## ADR-033 — One canonical direction per relation: prefer the inferred inverse
 
 **Date**: 2026-06-13
