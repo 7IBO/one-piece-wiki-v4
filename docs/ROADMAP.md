@@ -8,10 +8,16 @@ Current phase is tracked at the top of this file. Update it as you progress.
 
 > **Current phase**: 4.3 — Contribution surface expansion (entity creation + apparitions hub + mobile triage). 4.2 shipped end-to-end (admin PR flow verified on prod).
 >
-> **Post-4.3 execution order** (per ADR-027): 4.3 → 3.5 (Fandom + TMDB
-> bulk ingest) → 6 (public web app, 7 sub-phases) → 5 (vocab/schema
-> editor, when dashboard volume justifies it) → 7 (community opening,
-> when contributor inflow justifies it) → 8 (REST API) → 9+.
+> **Post-4.3 execution order** — **re-sequenced by ADR-032**
+> (tooling-before-ingest): the dashboard/admin tooling lands first so
+> the 3.5 bulk ingest runs into mature triage/review tools. Order →
+> **W-F (UI-coherence foundation) → W-A (coherence linter) → W-B (admin
+> moderation queue + contributors, pulls 7.3 fwd) → W-C (schema/enum/
+> value editor, pulls 5 fwd) → W-E (availability links, ADR-028) → W-D
+> (media library + image UX)**, then resume **3.5 → 6 → 7 → 8 → 9+**.
+> The per-workstream breakdown is in `/docs/STATE.md` § "Active plan".
+> (Supersedes the ADR-027 ordering; phase specs below are unchanged —
+> only timing moves.)
 
 ## Phase 1 — Foundations
 

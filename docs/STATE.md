@@ -6,8 +6,10 @@ session can pick up mid-stream. Architectural _rationale_ lives in
 this file is the current status + the open threads.
 
 **Last updated**: 2026-06-13
-**Current phase**: 4.3 (see ROADMAP). Post-4.3 order (ADR-027):
-4.3 → 3.5 (Fandom + TMDB ingest) → 6 (public app) → 5 → 7 → 8 → 9+.
+**Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
+ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
+then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below
+(§ "Active plan").
 
 ## Open / blocked threads — resume here
 
@@ -104,6 +106,58 @@ save-flow tests, the migration helper. **Pending**:
   real display names by declaring `display_name_properties` (own PR;
   it's a display behaviour change, left out of ADR-031 to keep it
   behaviour-preserving).
+
+## Active plan (ADR-032) — tooling before ingest
+
+Six workstreams, built in this order; each ships as independent PR(s).
+No runtime DB: live PR/contributor data is read from the GitHub API on
+demand (module-level cache like `api.ts`); derived aggregates are
+computed server-side or emitted as generated TS manifests under
+`packages/` (cf. `packages/schemas/generated`); image bytes stay on R2.
+
+- **W-F — UI-coherence foundation** (do first, low risk). Shared
+  resource-fetch hook (or adopt the already-bundled TanStack Query) to
+  kill the duplicated `useEffect`+`useState`+skeleton+`Failed:` pattern
+  in ~7 routes; a shared `<PRBanner>`/`<InfoBanner>` for the repeated
+  amber/primary callouts; replace raw `<a>`/`<button>` (in `__root.tsx`,
+  `types.$type.index.tsx`) with `<Button>`. God-module decomposition
+  (`EntityForm.tsx` 1876 L, `inputs.tsx` 1103 L, `server/server.ts`
+  1776 L) is a later **ADR-first** slice, done opportunistically as
+  W-B/C/D touch those files.
+- **W-A — coherence linter.** New `bun run check:coherence` in
+  `packages/schema-engine` (CI gate): asymmetric/missing inverse
+  relations, orphan refs, source-coverage gaps, untranslated `i18n_key`
+  (EN/FR), `canon_scope` inconsistencies, images with no `depicted-by`.
+  Plus make `form/qualifiers.ts` schema-driven (task #3) — **ADR-first**.
+- **W-B — admin queue + contributors** (pulls Phase 7.3 fwd; backend
+  already shipped). `GET /api/admin/pulls` (all open `via-dashboard`
+  PRs); gated `/admin/queue` (list + per-PR detail, server-side
+  structured diff reusing `DiffPopover`, staged image previews,
+  Approve-merge/Request-changes/Close → existing promote/reject).
+  `GET /api/contributors` + `/contributors` route aggregating by
+  **parsing the PR-body Contributors bullet** (bot owns commits, so
+  GitHub's author APIs don't reflect humans). `packages/contribution-
+  stats` util; optional build-time `contributors.generated.ts`.
+- **W-C — schema/enum/value editor** (pulls Phase 5 fwd). Vocabulary
+  (enum) editor first (additive, PR label `vocabulary`) → property-type
+  editor (+ impact analysis, reuse `bun run migrate`) → entity-type
+  editor (admin-only, ≥2 reviews, incl. `display_name_properties`), PR
+  label `schema-breaking`. Reuse the form generator + github-client.
+- **W-E — availability links** (ADR-028, already designed). `availability`
+  object property (`{platform,url,kind,region?,subtitle_langs?,
+  dub_langs?,requires_subscription?,verified_at?}`, `allow_multiple`) on
+  anime-episode/manga-chapter/film; `streaming-platforms` vocabulary.
+  Prereq: `SCHEMA_SPEC` `object` value-type section (ADR-026) + a
+  repeating-object-row form input. **Affiliate links = separate net-new
+  ADR** (FTC disclosure, `rel="sponsored nofollow"`, program/tag model).
+- **W-D — media library + image UX.** `/media` gallery (filter by
+  license/format/spoiler/usage, search, "where used"); image **reuse
+  picker** in the form (widen `depicted-by.valid_from_types` first);
+  **display images** on entity detail/list/cards, spoiler-gated by
+  `spoiler_since`; uploader polish (paste, bulk, optional crop/focal,
+  inline license+attribution+alt-text gating, content-hash dedup).
+  `packages/media` helper (URL resolution, srcset, blur). Responsive
+  variants via Cloudflare = deploy-config, flag for platform.
 
 ## Gotchas (so they don't bite again)
 
