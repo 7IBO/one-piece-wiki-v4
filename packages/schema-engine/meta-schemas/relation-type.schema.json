@@ -1,0 +1,158 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "relation-type schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+    },
+    "schema_version": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "labels": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inverse": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "active",
+            "inverse"
+          ],
+          "additionalProperties": false
+        },
+        "fr": {
+          "type": "object",
+          "properties": {
+            "active": {
+              "type": "string",
+              "minLength": 1
+            },
+            "inverse": {
+              "type": "string",
+              "minLength": 1
+            }
+          },
+          "required": [
+            "active",
+            "inverse"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "en",
+        "fr"
+      ],
+      "additionalProperties": false
+    },
+    "valid_from_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 60,
+        "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+      },
+      "minItems": 1
+    },
+    "valid_to_types": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 60,
+        "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+      },
+      "minItems": 1
+    },
+    "qualifiers": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+          },
+          "value_type": {
+            "type": "string",
+            "enum": [
+              "string",
+              "number",
+              "boolean",
+              "enum",
+              "multi_enum",
+              "date",
+              "entity_ref",
+              "source_ref",
+              "i18n_key",
+              "markdown"
+            ]
+          },
+          "enum_ref": {
+            "type": "string"
+          },
+          "required": {
+            "type": "boolean",
+            "default": false
+          },
+          "default": {}
+        },
+        "required": [
+          "id",
+          "value_type"
+        ],
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "allow_multiple_concurrent": {
+      "type": "boolean",
+      "default": false
+    },
+    "inverse_inferred": {
+      "type": "boolean"
+    },
+    "historical": {
+      "type": "boolean",
+      "default": false
+    },
+    "ui_hint": {
+      "type": "object",
+      "properties": {
+        "icon": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "id",
+    "schema_version",
+    "labels",
+    "valid_from_types",
+    "valid_to_types",
+    "inverse_inferred"
+  ],
+  "additionalProperties": false
+}

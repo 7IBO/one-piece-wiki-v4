@@ -45,6 +45,13 @@ jobs:
       - name: Generate Zod schemas
         run: bun run schema:generate
 
+      # The committed JSON-Schema meta-schemas (what every /data/schemas
+      # `$schema` points to) are generated from the Zod meta-schemas.
+      # Fail if they drifted from source — `schema:generate` above just
+      # regenerated them, so any diff means the commit is stale.
+      - name: Meta-schemas up to date
+        run: git diff --exit-code -- packages/schema-engine/meta-schemas
+
       - name: Typecheck
         run: bun run typecheck
 

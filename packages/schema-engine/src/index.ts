@@ -3,6 +3,7 @@ export * from './data-source.ts';
 export * from './entity-loader.ts';
 export * from './generator.ts';
 export * from './loader.ts';
+export * from './meta-schema-generator.ts';
 export * from './meta-validator.ts';
 export * from './migrate/runner.ts';
 export * from './migrate/transforms.ts';

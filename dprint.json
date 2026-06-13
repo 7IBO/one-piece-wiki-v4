@@ -26,6 +26,7 @@
     "**/.output",
     "**/.tanstack",
     "packages/schemas/generated",
+    "packages/schema-engine/meta-schemas",
     "apps/dashboard/src/routeTree.gen.ts"
   ],
   "plugins": [

@@ -1,0 +1,119 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "entity-type schema",
+  "type": "object",
+  "properties": {
+    "$schema": {
+      "type": "string"
+    },
+    "id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+    },
+    "schema_version": {
+      "type": "integer",
+      "exclusiveMinimum": 0
+    },
+    "labels": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fr": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "en",
+        "fr"
+      ],
+      "additionalProperties": false
+    },
+    "url_segment": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 60,
+      "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+    },
+    "properties": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 60,
+            "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+          },
+          "required": {
+            "type": "boolean",
+            "default": false
+          },
+          "historical": {
+            "type": "boolean",
+            "default": false
+          },
+          "localizable": {
+            "type": "boolean",
+            "default": false
+          }
+        },
+        "required": [
+          "id"
+        ],
+        "additionalProperties": false
+      }
+    },
+    "allowed_relations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 60,
+        "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+      },
+      "default": []
+    },
+    "requires_translations": {
+      "type": "boolean"
+    },
+    "display_name_properties": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 60,
+        "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+      }
+    },
+    "ui_hint": {
+      "type": "object",
+      "properties": {
+        "icon": {
+          "type": "string"
+        },
+        "group": {
+          "type": "string"
+        },
+        "color": {
+          "type": "string"
+        }
+      },
+      "additionalProperties": false
+    }
+  },
+  "required": [
+    "id",
+    "schema_version",
+    "labels",
+    "url_segment",
+    "properties"
+  ],
+  "additionalProperties": false
+}
