@@ -13,9 +13,6 @@
   ],
   "allowed_relations": [
     "part-of-location",
-    "contains-location",
-    "birthplace-of",
-    "home-of",
     "ruled-by",
     "depicted-by"
   ],

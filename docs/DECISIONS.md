@@ -8,6 +8,62 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-033 — One canonical direction per relation: prefer the inferred inverse
+
+**Date**: 2026-06-13
+
+**Context**: The build pipeline auto-generates a reverse edge
+`<relId>.inverse` for every relation type with `inverse_inferred: true`
+(`packages/db-builder/src/extract.ts`). But the schema ALSO carried, for
+~13 relations, a **hand-written mirror** expressing the same edge in the
+opposite direction (e.g. `born-in` [inverse_inferred] **and** a separate
+`birthplace-of`; `ate-fruit` **and** `eaten-by`; `depicted-by` **and**
+`depicts`). So each such edge was represented twice — a generated
+inverse plus a redundant manual relation — inflating the relation
+catalogue, doubling `allowed_relations` entries, and inviting drift
+(the two sides could disagree on `valid_*` types or qualifiers).
+
+The W-A coherence audit surfaced this; no entity data used any of the
+manual mirrors (data uses only the "active"/inverse_inferred side).
+
+**Options considered**:
+
+1. **Prefer manual** — set `inverse_inferred: false` everywhere and keep
+   the explicit mirror files. Rejected: more files to hand-maintain and
+   keep in sync; defeats the point of inverse inference.
+2. **Prefer inferred.** Chosen: keep the `inverse_inferred: true`
+   relation as the single canonical direction; delete the redundant
+   manual mirror; the build supplies its reverse as `<relId>.inverse`.
+
+**Choice**: For each strict-mirror pair, the `inverse_inferred: true`
+side is canonical. Deleted the 13 manual mirrors — `birthplace-of`,
+`home-of`, `mentored-by`, `wielded-by`, `contains-location`,
+`causes-event`, `replaced-by`, `contains-arc`, `adapts`, `depicts`,
+`enables-technique`, `eaten-by`, `participated-in` — and removed them
+from the 9 entity types' `allowed_relations`. An entity expresses the
+relationship from the canonical side (e.g. a character holds
+`depicted-by → image`; the image's "depicts" is generated), never by
+declaring the mirror.
+
+**Consequences**:
+
+- Relation catalogue 68 → 55. No data migration (no entity used a
+  deleted relation; `check:references` + `check:coherence` green).
+- The schema-level coherence check (ADR-032 W-A) already guards against
+  an `allowed_relations` entry whose relation forbids that source type,
+  so re-introducing a mirror that isn't wired correctly is caught.
+- **Deferred — NOT strict inverses, need a product decision** (left
+  untouched): `references` ↔ `references-event` (overlapping subset,
+  both inverse_inferred), `appears-in` ↔ `features` (asymmetric
+  valid_* types; `appears-in` is the authored entity→source side),
+  `part-of-arc` ↔ `occurs-during-arc` (both inverse_inferred and both
+  used by data — genuinely two relations). These are tracked
+  separately, not folded into prefer-inferred.
+- Intentional asymmetric authored pairs (`has-member`/`member-of`,
+  `captains`/`captained-by`, …) are NOT mirrors and were left as-is.
+
+---
+
 ## ADR-032 — Re-sequence: pull admin queue, schema editor & availability links forward
 
 **Date**: 2026-06-13
