@@ -8,6 +8,98 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-029 — Two schema regimes: pre-freeze volatility, post-freeze API stability
+
+**Date**: 2026-06-13
+
+**Context**: ADR-025 and ADR-028 describe an elaborate public-API
+versioning regime — frozen per-version wire-format adapters, MAJOR
+bumps on rename/remove, 18-month deprecation windows, an impact
+analyzer that blocks breaking PRs. That ceremony presumes a _stable_
+schema where breaking changes are rare, deliberate events. The
+current reality is the opposite: the schema is **volatile**. Property
+and relation shapes change often as the model matures; fields get
+renamed and removed routinely. There are also **zero external API
+consumers today** — no public API is deployed — so there is no
+contract to honor. Applying the post-freeze ceremony now would either
+paralyse ordinary schema evolution or accumulate meaningless `v2`
+bumps and dead aliases for fields nobody outside the repo ever
+consumed.
+
+**Decision**: distinguish two explicit regimes, separated by a
+one-way **schema-freeze milestone**.
+
+### Pre-freeze regime (current)
+
+- No public API is deployed; no external consumer is pinned to any
+  wire format.
+- The schema may change freely, **including breaking changes**
+  (rename, remove, retype a property / relation / vocabulary value).
+- A breaking change is handled in a **single PR**:
+  1. edit the schema file;
+  2. migrate `/data` — rewrite every entity JSON that used the old
+     shape;
+  3. bump the affected entity type's `schema_version`;
+  4. regenerate Zod (`bun run schema:generate`);
+  5. update internal consumers (`packages/sdk`, `apps/dashboard`,
+     `apps/preview`) in lockstep.
+- **No deprecation, no aliasing, no old-field retention.** Internal
+  consumers are not version-pinned; they ride the current data shape
+  and are refactored together. This is safe precisely because there
+  is no external contract.
+- `schema_version` and the `assisted_by` / `review_status`
+  provenance are the only backward-looking metadata kept. Old
+  _field names_ are not preserved.
+
+### Post-freeze regime (begins at API v1.0.0)
+
+- Triggered when the freeze milestone is declared and
+  `packages/api-v1/` ships.
+- The full ADR-025 / ADR-028 ceremony then applies: frozen wire
+  format per MAJOR, aliasing or `v2` on rename, deprecation windows,
+  `api:impact` as a blocking CI gate.
+- Internal data keeps evolving; the adapters absorb the drift so
+  external consumers stay insulated.
+
+### The freeze gate
+
+The schema is declared stable enough to freeze and ship v1 only when
+**all** of:
+
+1. The Phase 3.5 bulk ingest is complete — data shapes proven
+   against the full corpus (~1500 characters, ~1130 chapters, …),
+   not just the ~30 seed entities. A model that holds at 30 entities
+   can still break at scale.
+2. No breaking change to the **core** entity types (`character`,
+   `devil-fruit`, `manga-chapter`, `anime-episode`, `arc`, `crew`,
+   `event`) has landed in the preceding ~8 weeks.
+3. The Phase 6 public web app has run on the schema and exercised
+   every property / relation a consumer would read.
+
+Until all three hold, the project stays pre-freeze and the API
+versioning machinery is **documentation, not policy**.
+
+**Consequences**:
+
+- `PUBLIC_API_DESIGN.md` gains a prominent §0 stating the gate: its
+  versioning rules apply only post-freeze; pre-freeze, see this ADR.
+- The `api:impact` analyzer (ADR-025) is **not** wired as a blocking
+  gate until the freeze. Pre-freeze it runs advisory-only, or not at
+  all.
+- A lightweight **schema-migration helper** becomes valuable now
+  (frequent renames during volatility). Pulled forward from Phase 5
+  Task 4 as a near-term backlog item: a scripted `/data` rewrite +
+  `schema_version` bump so a rename stays a one-command operation
+  rather than a manual sweep. Tracked separately; not built here.
+- No code, schema, or data change in this ADR.
+
+**Open question**: should `schema_version` bump automatically
+(tooling-enforced) on a detected breaking change pre-freeze, or stay
+manual? Direction: manual until the migration helper lands, then
+helper-driven.
+
+---
+
 ## ADR-028 — Anticipate availability links + webhook event model (design-only)
 
 **Date**: 2026-06-13
