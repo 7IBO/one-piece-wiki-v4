@@ -45,6 +45,39 @@ describe('forUniverse', () => {
     const c = cat({ entityTypes: { x: { universes: [], allowed_relations: [], properties: [] } } });
     expect(forUniverse(c, 'anything').entityTypes.has('x')).toBe(true);
   });
+
+  it('filters relation endpoints to entity types present in the universe (ADR-048)', () => {
+    const c = cat({
+      entityTypes: {
+        character: { allowed_relations: [], properties: [] }, // core
+        jutsu: { universes: ['naruto'], allowed_relations: [], properties: [] },
+      },
+      relationTypes: {
+        // a core, universal relation whose valid_from lists a naruto-only type
+        'depicted-by': {
+          valid_from_types: ['character', 'jutsu'],
+          valid_to_types: [],
+          qualifiers: [],
+        },
+      },
+    });
+    expect(forUniverse(c, 'one-piece').relationTypes.get('depicted-by')?.valid_from_types)
+      .toEqual(['character']); // jutsu (naruto-only) filtered out
+    expect(forUniverse(c, 'naruto').relationTypes.get('depicted-by')?.valid_from_types)
+      .toEqual(['character', 'jutsu']);
+  });
+
+  it('filters property applies_to to entity types present in the universe (ADR-048)', () => {
+    const c = cat({
+      entityTypes: {
+        character: { allowed_relations: [], properties: [] }, // core
+        jutsu: { universes: ['naruto'], allowed_relations: [], properties: [] },
+      },
+      propertyTypes: { name: { applies_to_entity_types: ['character', 'jutsu'] } },
+    });
+    expect(forUniverse(c, 'one-piece').propertyTypes.get('name')?.applies_to_entity_types)
+      .toEqual(['character']);
+  });
 });
 
 describe('checkUniverseScopes', () => {
@@ -93,13 +126,29 @@ describe('checkUniverseScopes', () => {
           valid_to_types: ['image'],
           qualifiers: [],
         },
-        // depicted-by is core; its valid_from lists a one-piece type — that's
-        // the inverse direction (core -> scoped) and IS flagged, see next test.
       },
-      // Keep this case clean: depicted-by here is scoped to one-piece too.
     });
     // devil-fruit (op) -> depicted-by: depicted-by is core -> OK for that edge.
     const fromDevilFruit = checkUniverseScopes(c).filter((f) => f.source === 'devil-fruit');
     expect(fromDevilFruit).toEqual([]);
+  });
+
+  it('does not flag a core relation/property that only APPLIES to a scoped type (ADR-048)', () => {
+    // applicability lists (valid_from/valid_to, applies_to) are not dependencies;
+    // forUniverse filters them, so a core schema may list a one-piece type.
+    const c = cat({
+      entityTypes: {
+        'devil-fruit': { universes: ['one-piece'], allowed_relations: [], properties: [] },
+      },
+      relationTypes: {
+        'depicted-by': {
+          valid_from_types: ['devil-fruit'],
+          valid_to_types: ['image'],
+          qualifiers: [],
+        },
+      },
+      propertyTypes: { name: { applies_to_entity_types: ['devil-fruit'] } },
+    });
+    expect(checkUniverseScopes(c)).toEqual([]);
   });
 });

@@ -141,6 +141,33 @@ per cluster. **INVENTORY refresh** (per-item sub-sections lag the true catalogue
 counts) is tracked in `DATA_EXPANSION_PLAN.md` §5 — a catalogue-generated
 rewrite, its own PR.
 
+### 5. Universe scoping / G6 relocation — IN PROGRESS
+
+**Decision 2026-06-14**: do G6 **now** (user: avoid letting the debt grow). Every
+One-Piece-specific schema currently lives in `/data/schemas/**` (the loader's
+"shared core, present in every universe") — `nullifies_devil_fruits`,
+`marine-ranks`, `location-regions`, `devil-fruit`, `haki-types`, `bounty`, etc.
+The move is **behaviour- and contract-preserving** with one universe: the loader
+re-merges `core ∪ one-piece`, `forUniverse` is only used in tests so far, and
+`compat.ts` ignores the `universes` field, so `validate`/`build`/`tests`/
+`check:compat` are unchanged. Done in two PRs:
+
+- **PR1 — guard fix (ADR-048)** [this branch]: `checkUniverseScopes` no longer
+  treats the _applicability_ lists (`relation.valid_from_types`/`valid_to_types`,
+  `property.applies_to_entity_types`) as dependencies; `forUniverse` filters them
+  per universe instead. Kept checks: entity→properties, entity→allowed_relations,
+  entity→display_name_properties, property→enum_ref, relation→qualifier-enum.
+  Without this, tagging `character` one-piece cascades (via shared `name` +
+  `depicted-by`/`features`/`sourced-from`) into `arc`/`manga-chapter`/`image`/
+  `person`, collapsing the core to just vocabularies.
+- **PR2 — relocation**: `git mv` the One-Piece closure into
+  `data/universes/one-piece/schemas/` (auto-scoped to `one-piece`). Target
+  partition: **core** = `image` + media/narrative (`manga-chapter`/
+  `anime-episode`/`film`/`arc`/`saga`) + `event` + `person` + generic
+  property-types + meta vocabularies; **one-piece** = `devil-fruit`/`character`/
+  `crew`/`location`/… + their OP props/relations/vocabs. Iterate
+  `check:coherence` (the `SCHEMA_UNIVERSE_SCOPE_LEAK` guard) to green.
+
 ## Active plan (ADR-032) — tooling before ingest
 
 Six workstreams, built in this order; each ships as independent PR(s).
