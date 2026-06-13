@@ -64,6 +64,12 @@ jobs:
       - name: Coherence check
         run: bun run check:coherence
 
+      # Schema lockfile (ADR-042): fail if the public contract diverged from
+      # the committed snapshot. Regenerate + commit with `bun run
+      # compat:snapshot`; breaking diffs are listed and need a migration.
+      - name: Compatibility check
+        run: bun run check:compat
+
       - name: Test
         run: bun run test
 

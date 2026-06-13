@@ -8,6 +8,55 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-042 — Schema-evolution policy + `check:compat` lockfile (SDK/API compatibility)
+
+**Date**: 2026-06-13
+
+**Context**: The data-expansion plan adds entity types / properties / relations
+/ vocabularies fast. Because the model is schema-driven and the
+SDK/API/db-builder are **generic** (records carry the JSON as opaque
+`data`/`value`/`qualifiers`; queries key off string ids), **additive** changes
+already flow through without breaking consumers — and SQLite is a disposable
+artefact rebuilt from migrated JSON, so there is never stranded data. The real
+risk is a **breaking** change (remove / rename / retype / tighten) reaching the
+SDK/API or external consumers (public app Phase 6, API Phase 8) **unnoticed**.
+There was no automated guard for that.
+
+**Decision**:
+
+1. **Policy: expand → migrate → contract** (parallel-change). Never remove or
+   rename in one step: add the new, migrate the data, mark the old
+   `deprecated`, remove it later once no consumer uses it. **Additive by
+   default.**
+2. **`check:compat` schema lockfile.** A committed
+   `packages/schema-engine/schema-snapshot.json` captures the public **contract**
+   — per entity-type the property set + which are required; per property-type
+   the `value_type` / `enum_ref` / `historical` / `localizable`; per
+   relation-type the endpoints + qualifiers + `inverse_inferred`; per vocabulary
+   its value set. `bun run check:compat` (CI gate, after coherence) fails on
+   **any** divergence; `bun run compat:snapshot` regenerates it. The classifier
+   tags each diff **additive** vs **breaking**; breaking diffs are listed and
+   additionally require a `/data` migration + the `schema-breaking` PR label. ⇒
+   the contract change is always visible in review, and a break can't ship by
+   accident.
+3. **Stable-name core.** The build pipeline references a few names directly
+   (`canon_scope`, `features`, `appearance_type`) for derived fields
+   (primary_canon_scope, appearances). These are a documented small set **not
+   to rename** without updating `packages/db-builder`.
+4. **SDK stays generic** (no per-property typed methods) and exposes
+   `schema_version`; the public **API is versioned** (`/api/v1`) when it opens.
+
+**Consequences**: every schema PR now regenerates + commits the snapshot (one
+extra step), so the contract diff is reviewable. New `compat.ts` +
+`check-compat` CLI + `schema-snapshot.json` + a CI step + tests. The
+`deprecated` marker (step 1) is the intended contract mechanism; the field
+lands as an additive meta-schema change when the first deprecation occurs.
+This is the infra cluster requested before continuing the data-expansion
+clusters; it does not block them — additive cluster work passes the gate after
+a snapshot refresh.
+
+---
+
 ## ADR-041 — Character occupations + One Piece blood-type system
 
 **Date**: 2026-06-13
