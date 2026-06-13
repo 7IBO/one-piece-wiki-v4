@@ -21,6 +21,7 @@
  * QualifierSheet and stays predictable.
  */
 import { Button } from '@/components/ui/button';
+import { resolveDisplayName } from '@onepiece-wiki/schemas';
 import { ExternalLink, X } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
@@ -43,29 +44,6 @@ function prettifySlug(slug: string): string {
     .split('-')
     .map((p) => p.length > 0 ? p[0]!.toUpperCase() + p.slice(1) : p)
     .join(' ');
-}
-
-function resolveDisplayName(entity: EntityDetail, locale: 'en' | 'fr'): string {
-  const props = entity.data['properties'];
-  if (props !== null && typeof props === 'object') {
-    for (const candidate of ['name', 'title_key'] as const) {
-      const raw = (props as Record<string, unknown>)[candidate];
-      if (raw === null || raw === undefined) continue;
-      const list = Array.isArray(raw) ? raw : [raw];
-      for (let i = list.length - 1; i >= 0; i--) {
-        const e = list[i];
-        if (e !== null && typeof e === 'object') {
-          const k = (e as Record<string, unknown>)['value_key']
-            ?? (e as Record<string, unknown>)['value'];
-          if (typeof k === 'string') {
-            const t = entity.translations[locale][k] ?? entity.translations.en[k];
-            if (t !== undefined && t.length > 0) return t;
-          }
-        }
-      }
-    }
-  }
-  return prettifySlug(entity.slug);
 }
 
 export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
@@ -118,7 +96,9 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
     return schemas.entityTypes[p.type];
   }, [schemas, p.type]);
 
-  const headerLabel = entity === null ? '' : resolveDisplayName(entity, locale);
+  const headerLabel = entity === null
+    ? ''
+    : resolveDisplayName(entity.data, entity.translations, locale) ?? prettifySlug(entity.slug);
   const typeLabel = useMemo(() => {
     if (schemas === null) return p.type;
     const et = schemas.entityTypes[p.type];

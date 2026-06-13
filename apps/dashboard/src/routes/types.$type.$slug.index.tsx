@@ -12,6 +12,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
+import { resolveDisplayName } from '@onepiece-wiki/schemas';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, Film, GitPullRequest, Users } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
@@ -23,37 +24,6 @@ import { useLocale, useT } from '../form/locale';
 export const Route = createFileRoute('/types/$type/$slug/')({
   component: EntityEditComponent,
 });
-
-/**
- * Resolve the entity's display name from its translations. Looks at
- * the latest `name` (or `title_key`) entry's `value_key`, then resolves
- * it against the loaded translations. Returns null when no real
- * translated name exists — the header renders the entity id in that
- * case rather than fabricating a name out of the URL slug.
- */
-function resolveDisplayName(entity: EntityDetail, locale: 'en' | 'fr'): string | null {
-  const props = entity.data['properties'];
-  if (props !== null && typeof props === 'object') {
-    for (const candidate of ['name', 'title_key'] as const) {
-      const raw = (props as Record<string, unknown>)[candidate];
-      if (raw === null || raw === undefined) continue;
-      const list = Array.isArray(raw) ? raw : [raw];
-      for (let i = list.length - 1; i >= 0; i--) {
-        const e = list[i];
-        if (e !== null && typeof e === 'object') {
-          const k = (e as Record<string, unknown>)['value_key']
-            ?? (e as Record<string, unknown>)['value'];
-          if (typeof k === 'string') {
-            const translated = entity.translations[locale][k]
-              ?? entity.translations.en[k];
-            if (translated !== undefined && translated.length > 0) return translated;
-          }
-        }
-      }
-    }
-  }
-  return null;
-}
 
 function EntityEditComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
@@ -90,7 +60,7 @@ function EntityEditComponent(): JSX.Element {
   }, [type, slug]);
 
   const displayName = useMemo(
-    () => entity === null ? null : resolveDisplayName(entity, locale),
+    () => entity === null ? null : resolveDisplayName(entity.data, entity.translations, locale),
     [entity, locale],
   );
 

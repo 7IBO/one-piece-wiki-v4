@@ -49,7 +49,7 @@ import {
   loadSchemas,
   validateCatalogue,
 } from '@onepiece-wiki/schema-engine';
-import { Slug as SlugSchema } from '@onepiece-wiki/schemas';
+import { nameKeyFor, Slug as SlugSchema } from '@onepiece-wiki/schemas';
 import { randomBytes } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -183,30 +183,6 @@ async function findEntity(snap: CatalogueSnapshot, type: string, slug: string) {
     if (entity.type === type && entity.data['slug'] === slug) return entity;
   }
   return undefined;
-}
-
-/**
- * Pull the most recent value_key from an entity's most "name-like"
- * property. Tries `name` first, then `title_key` (used by chapters).
- * Works whether the property is historical (array) or not.
- */
-function nameKeyFor(data: Record<string, unknown>): string | null {
-  const props = data['properties'];
-  if (props === null || typeof props !== 'object') return null;
-  for (const candidate of ['name', 'title_key'] as const) {
-    const raw = (props as Record<string, unknown>)[candidate];
-    if (raw === null || raw === undefined) continue;
-    const entries = Array.isArray(raw) ? raw : [raw];
-    for (let i = entries.length - 1; i >= 0; i--) {
-      const entry = entries[i];
-      if (entry !== null && typeof entry === 'object') {
-        const v = (entry as Record<string, unknown>)['value_key']
-          ?? (entry as Record<string, unknown>)['value'];
-        if (typeof v === 'string' && v.length > 0) return v;
-      }
-    }
-  }
-  return null;
 }
 
 const SOURCE_TYPE_IDS: ReadonlySet<string> = new Set([
