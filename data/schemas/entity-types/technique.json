@@ -7,8 +7,9 @@
   "properties": [
     { "id": "name", "required": true, "historical": true, "localizable": true },
     { "id": "technique_type", "required": true, "historical": false, "localizable": false },
+    { "id": "canonicity", "required": false, "historical": false, "localizable": false },
     { "id": "description_key", "required": false, "historical": false, "localizable": true }
   ],
-  "allowed_relations": ["enabled-by-fruit", "derived-from", "depicted-by"],
+  "allowed_relations": ["enabled-by-fruit", "derived-from", "awakening-of", "depicted-by"],
   "ui_hint": { "icon": "zap", "group": "powers" }
 }

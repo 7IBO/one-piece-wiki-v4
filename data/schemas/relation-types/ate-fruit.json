@@ -10,6 +10,13 @@
   "valid_to_types": ["devil-fruit"],
   "qualifiers": [
     { "id": "since", "value_type": "source_ref", "required": false },
+    { "id": "until", "value_type": "source_ref", "required": false },
+    {
+      "id": "succession_reason",
+      "value_type": "enum",
+      "enum_ref": "succession-reasons",
+      "required": false
+    },
     {
       "id": "during_period",
       "value_type": "enum",

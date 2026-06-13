@@ -32,6 +32,14 @@
         "epistemic_status": "confirmed",
         "event": "event:nika-reveal"
       }
+    ],
+    "zoan_model": [
+      {
+        "value": "Nika",
+        "since": "manga-chapter:1044",
+        "epistemic_status": "revealed_to_reader",
+        "event": "event:nika-reveal"
+      }
     ]
   },
   "relations": [

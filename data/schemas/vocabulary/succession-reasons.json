@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "succession-reasons",
+  "schema_version": 1,
+  "values": {
+    "previous_holder_died": {
+      "labels": { "en": "Previous holder died", "fr": "Détenteur précédent décédé" }
+    },
+    "transferred": { "labels": { "en": "Transferred", "fr": "Transféré" } },
+    "relinquished": { "labels": { "en": "Relinquished", "fr": "Abandonné" } },
+    "extracted": { "labels": { "en": "Extracted", "fr": "Extrait" } },
+    "unknown": { "labels": { "en": "Unknown", "fr": "Inconnu" } }
+  }
+}
