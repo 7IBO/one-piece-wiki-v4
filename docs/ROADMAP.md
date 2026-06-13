@@ -641,8 +641,8 @@ review passed; no raw JSON dumps anywhere.
 - "Show everything" toggle behind a confirmation.
 
 **Exit**: opening Luffy's page at cursor "manga ch.50" hides Gear 5
-+ the Joy Boy reveal entirely; sharing the URL preserves the cursor
-for a friend.
+and the Joy Boy reveal entirely; sharing the URL preserves the
+cursor for a friend.
 
 #### Phase 6.3 — Search, ⌘K, facets
 
