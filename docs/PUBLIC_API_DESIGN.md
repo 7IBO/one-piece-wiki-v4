@@ -281,18 +281,18 @@ Listing endpoints return a thin shape (id, slug, resolved name only). Full detai
 
 ## 6. Endpoint inventory (v1.0.0 release target)
 
-| Method | Path                             | Purpose                                   |
-| ------ | -------------------------------- | ----------------------------------------- |
-| `GET`  | `/api/v1/health`                 | Liveness + version + schema hash          |
-| `GET`  | `/api/v1/openapi.json`           | OpenAPI spec for v1 current `MINOR.PATCH` |
-| `GET`  | `/api/v1/docs`                   | Redoc-rendered HTML                       |
-| `GET`  | `/api/v1/entities`               | Inventory of exposed entity types         |
-| `GET`  | `/api/v1/entities/:type`         | Paginated list of entities of `:type`     |
-| `GET`  | `/api/v1/entities/:type/:slug`   | Entity detail                             |
-| `GET`  | `/api/v1/vocabularies`           | Inventory of vocabularies                 |
-| `GET`  | `/api/v1/vocabularies/:id`       | Vocabulary detail with localized labels   |
-| `GET`  | `/api/v1/narratives/:type/:slug` | Narrative for an entity                   |
-| `GET`  | `/api/v1/search`                 | Full-text search across exposed entities  |
+| Method | Path                             | Purpose                                        |
+| ------ | -------------------------------- | ---------------------------------------------- |
+| `GET`  | `/api/v1/health`                 | Liveness + version + schema hash               |
+| `GET`  | `/api/v1/openapi.json`           | OpenAPI spec for v1 current `MINOR.PATCH`      |
+| `GET`  | `/api/v1/docs`                   | Interactive docs + request playground (Scalar) |
+| `GET`  | `/api/v1/entities`               | Inventory of exposed entity types              |
+| `GET`  | `/api/v1/entities/:type`         | Paginated list of entities of `:type`          |
+| `GET`  | `/api/v1/entities/:type/:slug`   | Entity detail                                  |
+| `GET`  | `/api/v1/vocabularies`           | Inventory of vocabularies                      |
+| `GET`  | `/api/v1/vocabularies/:id`       | Vocabulary detail with localized labels        |
+| `GET`  | `/api/v1/narratives/:type/:slug` | Narrative for an entity                        |
+| `GET`  | `/api/v1/search`                 | Full-text search across exposed entities       |
 
 Notably **absent** in v1:
 
@@ -529,7 +529,18 @@ The printer is an extension of the generator built in ADR-024 Phase A. It walks 
 
 **Hosting**: `/api/v1/openapi.json` serves the current latest MINOR.PATCH. Archived snapshots under `docs/api-versions/v1/` are served as static files (also via `/api/v1/openapi-1.4.2.json` for direct access).
 
-**Interactive doc**: `/api/v1/docs` renders Redoc as a static HTML page. Zero JS-runtime cost, perfect CDN cacheability.
+**Interactive doc**: `/api/v1/docs` is an **interactive API reference with a
+built-in request playground** — the maintainer wants consumers to _test
+requests_ against the live API, see the formats, and browse versions, not just
+read. Default pick: **Scalar** (open-source, self-hosted, embeddable, themable,
+free) — it renders the generated OpenAPI, offers a "try it" console, and a
+**version switcher** across the archived `openapi-<MINOR>.<PATCH>.json`
+snapshots. The same docs app surfaces the **per-version CHANGELOG** (§8) and the
+**schema-contract changelog** derived from the `schema-snapshot.json` lockfile
+(ADR-042 — the additive/breaking diffs of the data contract). **Redoc** stays an
+optional zero-JS fallback if a purely read-only, maximally-cacheable reference
+is also wanted for SEO/CDN. (Resolves open question #8 toward a
+playground-capable renderer.)
 
 ## 10. Authentication and rate limiting
 
@@ -602,7 +613,11 @@ These must be answered by a follow-up ADR before phase 1 starts.
 5. **Write endpoints in v1**: confirmed out of scope?
 6. **Hosting**: `apps/api/` workspace vs route group inside `apps/dashboard/`? Direction: separate workspace.
 7. **Adapter file decomposition**: one per resource (entities, vocabularies, narratives, search) vs single `wire-format.ts`?
-8. **Doc renderer**: Redoc statique, Swagger UI, or Stoplight Elements?
+8. **Doc renderer**: → **Scalar** (or Stoplight Elements / Swagger UI). The
+   maintainer requires an interactive **request playground** ("tester les
+   requêtes") plus changelog/version/format surfaces, which read-only Redoc
+   cannot provide; Redoc kept only as an optional zero-JS fallback. Confirm the
+   exact pick at the phase-1 ADR.
 9. **Old MAJOR support duration**: 12 months minimum, 18 months default — confirm 18?
 10. **CHANGELOG file**: one per `packages/api-vN/` (Keep-a-changelog) vs single top-level `docs/API_CHANGELOG.md`?
 11. **Enum-value addition policy**: MINOR (documented risk) or MAJOR (zero surprise)? Direction: MAJOR for `epistemic_status`, MINOR for decorative vocabularies.
