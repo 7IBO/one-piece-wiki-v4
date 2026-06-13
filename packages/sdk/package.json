@@ -11,9 +11,7 @@
   "scripts": {
     "typecheck": "tsc --noEmit"
   },
-  "dependencies": {
-    "@onepiece-wiki/schemas": "workspace:*"
-  },
+  "dependencies": {},
   "devDependencies": {
     "@onepiece-wiki/tsconfig": "workspace:*",
     "typescript": "^5.7.0"

@@ -12,9 +12,7 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@onepiece-wiki/schema-engine": "workspace:*",
-    "@onepiece-wiki/schemas": "workspace:*",
-    "zod": "^3.23.8"
+    "@onepiece-wiki/schema-engine": "workspace:*"
   },
   "devDependencies": {
     "@onepiece-wiki/tsconfig": "workspace:*",

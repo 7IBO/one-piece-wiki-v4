@@ -12,7 +12,6 @@
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
-    "@onepiece-wiki/schemas": "workspace:*",
     "zod": "^3.23.8"
   },
   "devDependencies": {
