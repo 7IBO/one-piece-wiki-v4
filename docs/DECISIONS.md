@@ -8,6 +8,38 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-040 — Weapon grades (Meitō system) & owner succession
+
+**Date**: 2026-06-13
+
+**Context**: Cluster C6. The `weapon-grades` vocabulary used invented tiers
+(`supreme_grade`/`great_grade`/`skillful_grade`/`legendary`/`cursed`) that
+conflated the canonical Meitō ranking with orthogonal blade traits. Canon: graded
+swords (Meitō, 名刀) form four tiers — Saijō Ō Wazamono (12 blades), Ō Wazamono
+(21), Ryō Wazamono (50), Wazamono — while **cursed** (the Kitetsu line) and
+**black blade** (Kokutō, _earned_ through Armament Haki) are independent flags,
+not grades. No `weapon` entity exists in the corpus (verified: no
+`entities/weapon/` dir, no `weapon_grade`/`weapon_type` usage), so the vocab
+correction needs no data migration.
+
+**Decision** (additive bar the vocab swap, which has zero data to migrate):
+
+1. `weapon-grades` → `saijo_o_wazamono` / `o_wazamono` / `ryo_wazamono` /
+   `wazamono` / `unranked` (schema_version 1 → 2). `[verify against canon]`
+2. `is_cursed` (boolean) + `is_black_blade` (boolean, historised — earned)
+   properties on `weapon`, split out from the grade axis.
+3. `weapon-types` += `naginata`, `shikomizue`, `cutlass`, `saber`.
+4. `wields-weapon` gains `succession_reason` (`until` already present) → weapon
+   owner-succession (Wado Ichimonji: Kuina → Kōshirō custody → Zoro), reusing the
+   `succession-reasons` vocab (ADR-039) and the §1.3 pattern.
+
+**Consequences**: `weapon-grades` values are provisional pending a canon check;
++2 boolean property types; +4 `weapon-types`; **no `/data` migration** (zero
+weapon entities). Deferred: the Kitetsu generational `succeeds` (weapon→weapon)
+relation. Cluster C6 of the data-expansion plan.
+
+---
+
 ## ADR-039 — Devil-fruit identity, user-succession & awakening
 
 **Date**: 2026-06-13

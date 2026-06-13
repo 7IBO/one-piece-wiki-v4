@@ -806,12 +806,14 @@ values have localized labels (EN, FR at minimum).
 ### 5.15 `weapon-types`
 
 `sword`, `katana`, `gun`, `cannon`, `staff`, `knife`, `spear`, `axe`,
-`hammer`, `whip`, `kanabo`, `bow`, `shuriken`, `exotic`
+`hammer`, `whip`, `kanabo`, `bow`, `shuriken`, `naginata`, `shikomizue`,
+`cutlass`, `saber`, `exotic`
 
 ### 5.16 `weapon-grades`
 
-`supreme_grade`, `great_grade`, `skillful_grade`, `unranked`,
-`legendary`, `cursed`
+`saijo_o_wazamono`, `o_wazamono`, `ryo_wazamono`, `wazamono`, `unranked`
+(the Meitō tiers, ADR-040; `cursed` and black-blade are now orthogonal
+boolean properties `is_cursed` / `is_black_blade`, not grades)
 
 ### 5.17 `ship-types`
 
