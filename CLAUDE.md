@@ -20,12 +20,14 @@ universe in scope right now is One Piece.
 At the start of any session, read these files in order:
 
 1. `/CLAUDE.md` (this file)
-2. `/docs/ARCHITECTURE.md` — high-level vision and stack
-3. `/docs/DATA_MODEL.md` — the three primitives and all data concepts
-4. `/docs/SCHEMA_SPEC.md` — formal spec of schema files
-5. `/docs/CONVENTIONS.md` — naming, code style, file organization
-6. `/docs/ROADMAP.md` — phases and current state
-7. `/docs/DECISIONS.md` — log of architectural decisions
+2. `/docs/STATE.md` — current status + open/blocked threads (read this
+   first to resume work mid-stream)
+3. `/docs/ARCHITECTURE.md` — high-level vision and stack
+4. `/docs/DATA_MODEL.md` — the three primitives and all data concepts
+5. `/docs/SCHEMA_SPEC.md` — formal spec of schema files
+6. `/docs/CONVENTIONS.md` — naming, code style, file organization
+7. `/docs/ROADMAP.md` — phases and current state
+8. `/docs/DECISIONS.md` — log of architectural decisions
 
 If any task touches a specialized area, also read the relevant deep-dive doc:
 
