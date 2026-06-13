@@ -7,6 +7,11 @@ demonstrably working and reviewed.**
 Current phase is tracked at the top of this file. Update it as you progress.
 
 > **Current phase**: 4.3 — Contribution surface expansion (entity creation + apparitions hub + mobile triage). 4.2 shipped end-to-end (admin PR flow verified on prod).
+>
+> **Post-4.3 execution order** (per ADR-027): 4.3 → 3.5 (Fandom + TMDB
+> bulk ingest) → 6 (public web app, 7 sub-phases) → 5 (vocab/schema
+> editor, when dashboard volume justifies it) → 7 (community opening,
+> when contributor inflow justifies it) → 8 (REST API) → 9+.
 
 ## Phase 1 — Foundations
 
@@ -503,6 +508,11 @@ shippable on its own.
 
 ## Phase 5 — Referential and schema management
 
+**Scheduling**: deferred until the dashboard volume justifies it
+(per ADR-027). Editing vocabularies and schemas via direct GitHub
+PRs is acceptable until then; the absence of this phase does not
+block Phase 6 (public app) or Phase 7 (community opening).
+
 **Goal**: edit vocabularies and (with care) schema files from the
 dashboard.
 
@@ -538,36 +548,192 @@ dashboard.
 
 ## Phase 6 — Public web app
 
-**Goal**: the actual wiki: SEO-optimized, fast, beautiful.
+**Goal**: ship a public wiki polished enough that it acts as its own
+marketing — quality of UX + data depth attracts contributors without
+external promotion (per ADR-027).
 
-**Exit criteria**:
+**Scheduling**: executes after Phase 3.5 ships. Comes **before**
+Phase 5 (vocab/schema editor) and **before** Phase 7 (community
+opening); both deferred until the public app proves demand.
 
-- `apps/web` (or replaces `apps/preview`) serves the public-facing wiki
-- SSG or ISR for all entity pages
-- Locale routes (`/en/...`, `/fr/...`)
-- Hreflang, JSON-LD, OG images
-- Progression UI persists in URL-shareable state
-- Search with facets
+**Exit criteria** (whole phase):
 
-### Tasks
+- The public app is live at a custom domain with Lighthouse ≥ 95
+  on five representative pages.
+- All nine entity templates render with custom design — no generic
+  JSON dumps visible to users.
+- Spoiler cursor works end-to-end (URL-shareable, persisted,
+  per-fact filtering).
+- ⌘K search + facets ship.
+- OG images generated per entity for social previews.
+- Soft launch post lands on r/OnePiece + r/OnePieceFR with ≥ 100
+  unique day-one visitors and ≥ 1 inbound contributor signal.
 
-1. **Design system finalization**
-2. **SEO infrastructure**
-   - Sitemap by entity type
-   - JSON-LD per page
-   - OG image generation (Satori)
-   - Canonical URL strategy
-3. **Progression UX**
-   - Onboarding flow ("where are you in the story?")
-   - URL-shareable progression
-4. **Search**
-   - Facet by type, arc, canon scope
-5. **Performance pass**
-   - Critical CSS
-   - Image optimization via Cloudflare
-   - JS payload audit
+### Sub-phases
+
+Each sub-phase ships independently with its own preview deploy. The
+order is sequential — earlier sub-phases unblock later ones.
+
+#### Phase 6.0 — Foundations
+
+- `apps/web` (TanStack Start) reads the SQLite build artifact via
+  `packages/sdk`. SSG by default, ISR for the rare freshness-needing
+  pages.
+- Locale routes `/en/...`, `/fr/...` with `<html lang>` + hreflang.
+- Custom design system over Base UI + Tailwind v4: typography stack,
+  spacing scale, color tokens (incl. arc-tinted accent palette for
+  Phase 6.4).
+- Dark mode (system + manual toggle).
+- Layout shell: header, nav, footer, breadcrumbs.
+
+**Exit**: `/en/types/character/luffy` renders a clean basic page;
+Lighthouse ≥ 95 on cold visit.
+
+#### Phase 6.1 — Per-entity-type templates
+
+Nine bespoke page templates (no generic property dumper visible to
+end users):
+
+- **character**: hero portrait + epithet + current bounty, bounty
+  timeline SVG (static, generated at build from the historical
+  `bounty` property), relations panel (crew / family / allies /
+  enemies grouped), techniques table (haki / fruit / weapon),
+  apparitions tab filterable by `appearance_type` and
+  `appearance_modifiers`.
+- **anime-episode**: hero still, # / title / air date / canon-vs-
+  filler badge, "adapts chapters X-Y", full cast grouped by
+  `appearance_type`, events occurring (battles, deaths, first
+  appearances, fruit reveals), new introductions (characters,
+  locations, techniques, fruits, ships), OP/ED, prev/next episode.
+- **manga-chapter**: cover image, cover story, cast by faction
+  (from the Fandom `CharTable` ingest), first appearances + first
+  full appearances, author comment, trivia, linked anime episode.
+- **devil-fruit**: visual, classification timeline (e.g. Gomu Gomu
+  Paramecia → Mythical Zoan with the epistemic transition rendered),
+  current + previous users, awakening flag, techniques grouped by
+  form, trivia.
+- **arc**: header art, locale-aware synopsis, chapter + episode
+  ranges, major events timeline, featured characters, prev/next arc.
+- **saga**: contained arcs (canon vs filler distinct), spans
+  (volumes / chapters / episodes), live-action episodes when present.
+- **crew**: composition over time (timeline of recruitments and
+  departures), ship, total bounty, jolly roger, principal enemies.
+- **location**: SVG map placeholder, events occurring there,
+  notable inhabitants, political control history.
+- **event**: participants grouped by side, outcome, caused-by /
+  causes chain, narrative.
+
+**Exit**: each template hand-validated on five real entities; design
+review passed; no raw JSON dumps anywhere.
+
+#### Phase 6.2 — Spoiler cursor (the killer feature)
+
+- Onboarding modal on first visit: "where are you in One Piece?"
+  (manga chapter # / anime episode # / films seen / SBS up to).
+- Cursor persisted in URL hash + localStorage fallback. URLs are
+  shareable.
+- Every historisable value renders through a cursor filter: facts
+  with `since > cursor` are replaced by a placeholder card
+  "🔒 hidden until chapter N".
+- Cursor badge in the header with a quick-edit popover.
+- Counter at page bottom: "X facts hidden on this page by your
+  cursor".
+- "Show everything" toggle behind a confirmation.
+
+**Exit**: opening Luffy's page at cursor "manga ch.50" hides Gear 5
+and the Joy Boy reveal entirely; sharing the URL preserves the
+cursor for a friend.
+
+#### Phase 6.3 — Search, ⌘K, facets
+
+- Pagefind indexes the SSG output at build.
+- ⌘K palette (reuse the dashboard implementation from Phase 4.3).
+- Dedicated `/search` route with facets: entity type, arc, saga,
+  crew, fruit, status, canon scope, bounty range, has-devil-fruit.
+- Search itself spoiler-aware (results filtered by cursor).
+
+**Exit**: typing a generic query returns relevant entities,
+filterable by facet; results respect the cursor.
+
+#### Phase 6.4 — Visual polish + internal links
+
+The phase that creates the "wow" reaction:
+
+- Typed entity links via `<EntityLink id="character:luffy">`
+  rendering an inline avatar + epithet; on hover, a preview card
+  (avatar, epithet, current bounty at cursor, top-line stats).
+- Image handling: srcset, blur placeholder, lazy-loading,
+  AVIF/WebP via Cloudflare Polish, click-for-lightbox, caption +
+  license + attribution visible.
+- Image spoiler-gating respected (existing `spoiler_since`
+  property): a Gear 5 still does not render before the cursor
+  reaches chapter 1044, even on a page that legitimately
+  references it later.
+- Subtle arc-themed accents (Skypiea = cloud motif background,
+  Wano = ink calligraphy, Thriller Bark = darker palette),
+  opt-in via cursor location, never overpowering.
+- Micro-animations on page transitions, hover states, skeletons.
+- Static relation graphs per character (D3, generated SVG at build,
+  zoom/pan client-side).
+
+**Exit**: a fan opens ten random pages and feels compelled to
+screenshot.
+
+#### Phase 6.5 — SEO, social, JSON-LD
+
+- `sitemap.xml` partitioned by entity type.
+- JSON-LD per page (`Person`, `TVEpisode`, `BookSeries`,
+  `ImageObject` as appropriate).
+- OG image generation via Satori — one per entity, rendered at
+  build, served from R2 or Cloudflare image transform.
+- Strict canonical URLs.
+- Hreflang cross-linking between EN ↔ FR.
+- `robots.txt` + `noindex` on utility routes.
+
+**Exit**: Google indexes correctly within a week of soft launch;
+sharing a URL on Twitter / Discord produces a beautiful preview.
+
+#### Phase 6.6 — Contributor surfaces (public-facing)
+
+The contribution acquisition flow lives on public pages:
+
+- "Suggest a correction" button on every entity page that
+  deep-links to the dashboard pre-filled.
+- `/help-wanted` page auto-generated from entities with
+  `review_status: auto_imported` or `not_reviewed`, sorted by
+  popularity (popularity proxy: incoming relation count, computed
+  at build).
+- Discreet badge on `auto_imported` values: "this fact has not yet
+  been reviewed by a human".
+- `/contributors` page slot (empty at launch, populated as PRs
+  ship).
+
+**Exit**: a curious visitor finds "what to help with" in under 30
+seconds without reading any documentation.
+
+#### Phase 6.7 — Perf pass and soft launch
+
+- Critical CSS inlined; JS payload < 50 KB initial; per-route code
+  split.
+- Lighthouse 100/100/100/100 on five representative pages.
+- Responsive test on five real devices.
+- Plausible or Cloudflare Analytics wired in — no own DB, no
+  cookies, GDPR-clean.
+- Discord set up; link in the footer.
+- Soft launch: one post on r/OnePiece, one on r/OnePieceFR. No
+  paid promotion, no influencer outreach.
+
+**Exit**: at least 100 unique visitors on day one; Discord open
+and reachable; first inbound contributor signal logged.
 
 ## Phase 7 — Community opening
+
+**Scheduling**: executes after Phase 6 soft launch and only when
+contributor inflow justifies the 3-tier auth + moderation queue
+investment (per ADR-027). The sub-phase plan below stands as
+spec'd; only the timing moves. Trigger to start: "open contributor
+PRs accumulate faster than the maintainer reviews them by hand
+within 48 hours".
 
 **Goal**: open editing to non-admin contributors. Anyone with a
 GitHub account can propose changes (data + images); a small admin

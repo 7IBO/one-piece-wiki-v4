@@ -8,6 +8,121 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-027 — Lead with product: expand Phase 6, defer Phase 5 + Phase 7
+
+**Date**: 2026-05-21
+
+**Context**: the wiki has zero contributors, no public app live, no
+runtime database (intentionally), and a single maintainer. The
+current ROADMAP runs Phase 5 (vocab/schema editor in dashboard)
+before Phase 6 (public web app), and treats Phase 6 as a thin
+deliverable (five tasks: design system, SEO, progression UX, search,
+perf pass).
+
+To attract a community without marketing budget or sustained social
+presence, the only viable strategy is to lead with product quality.
+A polished public app whose data depth and UX feel a generation
+ahead of fandom.com is the marketing — the alternative (build a
+mediocre site, then evangelise) reverses the cost-benefit and is
+unrealistic for a solo project.
+
+A subordinate decision: the absence of a runtime DB is **not** a
+constraint on the wiki experience. Every visualisation the wiki
+needs (bounty curves, classification timelines, relation graphs,
+comparison views) is derivable from the static JSON corpus at build
+time. The DB question only constrains the social layer (comments,
+votes, real-time notifications), which is explicitly out of scope
+for Phase 6.
+
+**Options considered**:
+
+1. **Marketing-led**: pre-launch social presence, Discord buildup,
+   YouTuber outreach, partnership posts. Rejected: requires
+   sustained single-maintainer time investment that bottlenecks
+   product development.
+2. **Feature-mass**: ship many low-polish features quickly to "look
+   active". Rejected: dilutes effort, leaves a thin site, defeats
+   the moat strategy.
+3. **Quality-led, single soft launch**: invest heavily in Phase 6
+   quality + Phase 3.5 data completeness, then a single targeted
+   soft-launch post per relevant community. Chosen.
+
+**Choice**:
+
+- **Reorder the roadmap**:
+  - Phase 6 (public app) executes **before** Phase 5 (vocab/schema
+    editor in dashboard).
+  - Phase 5 becomes "executed when dashboard volume justifies it";
+    direct GitHub PRs on schema files remain acceptable in the
+    meantime.
+  - Phase 7 (community opening) executes **after** Phase 6 soft
+    launch and only when contributor inflow justifies the 3-tier
+    auth + moderation queue.
+- **Expand Phase 6 into seven sub-phases** (6.0 through 6.7), each
+  shippable independently with its own preview deploy. Full detail
+  in `docs/ROADMAP.md` § Phase 6.
+- **Reaffirm the no-runtime-database constraint**: all "graphs" in
+  the public app are static SVGs generated at build from the
+  SQLite artifact. Analytics use Plausible or Cloudflare Analytics,
+  not an own DB. Social-layer features stay out of Phase 6 scope.
+- **Soft-launch criterion**: a single post on r/OnePiece and a
+  single post on r/OnePieceFR, no paid promotion, no influencer
+  outreach. Day-one success metric is "≥ 100 unique visitors and
+  ≥ 1 inbound contributor signal (issue, PR, Discord join)".
+
+**Rationale**:
+
+- A solo maintainer with zero contributors cannot afford parallel
+  marketing work and product work. Picking one means picking the
+  one whose output compounds: product.
+- Phase 5's dashboard vocab/schema editor is a developer
+  convenience, not a contributor-facing feature. The maintainer
+  already commits schema PRs directly on GitHub via the worktree
+  flow. Deferring it costs nothing relative to the strategic
+  objective.
+- Phase 7's full three-tier auth + moderation queue is meaningful
+  only at non-trivial contributor volume. Building it before any
+  contributor exists is over-engineering. The Phase 7 spec stands
+  as written; only its timing moves.
+- Phase 6 at its current size (~5 bullet tasks, ~30 lines) is too
+  thin to express the "wow" expected of a quality-led launch. The
+  expansion into seven sub-phases puts the actual work on paper.
+- A no-runtime-database constraint is a free pass on the social
+  layer's complexity. Embracing it explicitly (vs leaving it as an
+  ambient assumption) lets future contributors avoid proposing
+  DB-introducing features in Phase 6.
+
+**Consequences**:
+
+- `docs/ROADMAP.md` § Phase 6 rewritten with seven sub-phases (6.0
+  Foundations, 6.1 Per-entity-type templates, 6.2 Spoiler cursor,
+  6.3 Search + ⌘K + facets, 6.4 Visual polish + internal links,
+  6.5 SEO + social + JSON-LD, 6.6 Contributor surfaces, 6.7 Perf
+  pass + soft launch).
+- `docs/ROADMAP.md` § Phase 5 and § Phase 7 each gain a
+  **Scheduling** preamble explaining the new ordering.
+- `docs/ROADMAP.md` top-of-file phase-order note updated to reflect
+  the sequence: 4.3 → 3.5 → 6 (sub-phases) → 5 (when needed) →
+  7 (when contributor inflow justifies) → 8 (REST API) → 9+.
+- `IDEAS.md` gains ~15 parking-lot entries for features surfaced
+  during the strategic pass (comparison views, embed widgets,
+  cover-story navigation, today-in-OP-history, PWA offline, etc.).
+  These are forward pointers, not Phase 6 scope.
+- No code, schema, or data changes in this ADR.
+
+**Out of scope**:
+
+- Choice of analytics provider (Plausible vs Cloudflare Analytics):
+  decided at Phase 6.7.
+- Discord server tooling: hosted-service decision deferred.
+- Mobile app: deferred to Phase 9+.
+- Translation contribution UI: filed in `IDEAS.md`; promoted
+  post-launch if FR contributors materialise.
+- Marketing strategy beyond the single soft-launch post per
+  community: out of ADR-027 scope.
+
+---
+
 ## ADR-026 — Bulk ingest from Fandom EN + TMDB; split `appearance_type` into two axes
 
 **Date**: 2026-05-17
