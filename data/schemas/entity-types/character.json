@@ -1,12 +1,13 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "character",
-  "schema_version": 2,
+  "schema_version": 3,
   "labels": { "en": "Character", "fr": "Personnage" },
   "url_segment": "characters",
   "properties": [
     { "id": "name", "required": true, "historical": true, "localizable": true },
     { "id": "epithet", "required": false, "historical": true, "localizable": true },
+    { "id": "occupation", "required": false, "historical": true, "localizable": false },
     { "id": "bounty", "required": false, "historical": true, "localizable": false },
     { "id": "age", "required": false, "historical": true, "localizable": false },
     { "id": "height", "required": false, "historical": true, "localizable": false },

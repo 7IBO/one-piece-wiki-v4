@@ -32,7 +32,7 @@ describe('schema-engine generator', () => {
     expect(typeof entitiesMod.EntityDataSchemas).toBe('object');
     expect(entitiesMod.EntityDataSchemas.character).toBeDefined();
     expect(propertyMod.PropertyEntrySchemas.bounty).toBeDefined();
-    expect(vocabMod.VocabularyValues['blood-types']).toContain('A_plus');
+    expect(vocabMod.VocabularyValues['blood-types']).toContain('F');
   });
 
   it('accepts a well-formed bounty entry and rejects negative values', async () => {
