@@ -244,3 +244,53 @@ describe('checkSchemaCoherence', () => {
     expect(codes).not.toContain('RELATION_DECLARES_BASE_QUALIFIER');
   });
 });
+
+describe('checkCoherence — duplicate detection', () => {
+  it('flags an exact-duplicate relation', () => {
+    const dup = {
+      type: 'depicted-by',
+      target: 'image:luffy',
+      qualifiers: { role: 'primary_portrait' },
+    };
+    const entities = entityMap(
+      entity('character:luffy', [dup, { ...dup, qualifiers: { ...dup.qualifiers } }]),
+      entity('image:luffy'),
+    );
+    const codes = checkCoherence(entities, baseCatalogue).map((f) => f.code);
+    expect(codes).toContain('DUPLICATE_RELATION');
+  });
+
+  it('does NOT flag historised re-relations (same type+target, different since)', () => {
+    const entities = entityMap(
+      entity('character:luffy', [
+        {
+          type: 'depicted-by',
+          target: 'image:luffy',
+          qualifiers: { role: 'x', since: 'manga-chapter:1', until: 'manga-chapter:100' },
+        },
+        {
+          type: 'depicted-by',
+          target: 'image:luffy',
+          qualifiers: { role: 'x', since: 'manga-chapter:200' },
+        },
+      ]),
+      entity('image:luffy'),
+    );
+    const dupes = checkCoherence(entities, baseCatalogue).filter((f) =>
+      f.code === 'DUPLICATE_RELATION'
+    );
+    expect(dupes).toEqual([]);
+  });
+
+  it('flags an exact-duplicate property entry regardless of key order', () => {
+    const entities = entityMap(entity('character:luffy', []));
+    (entities.get('character:luffy') as LoadedEntity).data['properties'] = {
+      status: [
+        { value: 'alive', since: 'manga-chapter:1' },
+        { since: 'manga-chapter:1', value: 'alive' },
+      ],
+    };
+    const codes = checkCoherence(entities, baseCatalogue).map((f) => f.code);
+    expect(codes).toContain('DUPLICATE_PROPERTY_VALUE');
+  });
+});
