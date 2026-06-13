@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "material-subtypes",
+  "schema_version": 1,
+  "values": {
+    "mineral": { "labels": { "en": "Mineral", "fr": "Minéral" } },
+    "metal": { "labels": { "en": "Metal", "fr": "Métal" } },
+    "alloy": { "labels": { "en": "Alloy", "fr": "Alliage" } },
+    "wood": { "labels": { "en": "Wood", "fr": "Bois" } },
+    "organic": { "labels": { "en": "Organic", "fr": "Organique" } },
+    "synthetic": { "labels": { "en": "Synthetic", "fr": "Synthétique" } }
+  }
+}

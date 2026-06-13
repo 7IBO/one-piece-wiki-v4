@@ -176,7 +176,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (21)
+## 2. Entity types (22)
 
 | ID              | Category   | Description                                                      | URL segment     |
 | --------------- | ---------- | ---------------------------------------------------------------- | --------------- |
@@ -201,6 +201,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 | `event`         | occurrence | A significant in-universe occurrence                             | `events`        |
 | `image`         | media      | An image, with R2-hosted URL and metadata                        | `images`        |
 | `person`        | production | Real-world cast & staff (seiyū, VAs, actors, directors, mangaka) | `people`        |
+| `material`      | things     | A named substance (Seastone, Adam Wood, Wapometal)               | `materials`     |
 
 ### 2.1 Properties per entity type
 
@@ -520,7 +521,21 @@ Allowed relations: `depicted-by`. Inbound: `voices`, `portrays` (from
 
 ---
 
-## 3. Property types (76)
+#### `material`
+
+| Property                 | Required | Historical | Localizable | Notes                          |
+| ------------------------ | -------- | ---------- | ----------- | ------------------------------ |
+| `name`                   | yes      | yes        | yes         |                                |
+| `material_subtype`       | yes      | no         | no          | Vocabulary `material-subtypes` |
+| `nullifies_devil_fruits` | no       | no         | no          | Boolean — `true` for Seastone  |
+| `description_key`        | no       | no         | yes         |                                |
+
+Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
+`weapon` via `made-of`).
+
+---
+
+## 3. Property types (78)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -585,6 +600,7 @@ unit, and qualifier policy (section 6).
 | `location_subtype`    | `enum`       | `location-subtypes`           |
 | `region`              | `enum`       | `location-regions`            |
 | `location_status`     | `enum`       | `location-statuses`           |
+| `material_subtype`    | `enum`       | `material-subtypes`           |
 | `technique_type`      | `enum`       | `technique-types`             |
 | `weapon_type`         | `enum`       | `weapon-types`                |
 | `weapon_grade`        | `enum`       | `weapon-grades`               |
@@ -602,12 +618,13 @@ unit, and qualifier policy (section 6).
 
 ### 3.5 Boolean
 
-| Property         | Value type | Notes                                  |
-| ---------------- | ---------- | -------------------------------------- |
-| `awakened`       | `boolean`  | Devil Fruit                            |
-| `oda_supervised` | `boolean`  | Film                                   |
-| `is_public`      | `boolean`  | Event — controls knowledge propagation |
-| `single_holder`  | `boolean`  | Title                                  |
+| Property                 | Value type | Notes                                  |
+| ------------------------ | ---------- | -------------------------------------- |
+| `awakened`               | `boolean`  | Devil Fruit                            |
+| `oda_supervised`         | `boolean`  | Film                                   |
+| `is_public`              | `boolean`  | Event — controls knowledge propagation |
+| `single_holder`          | `boolean`  | Title                                  |
+| `nullifies_devil_fruits` | `boolean`  | Material — `true` for Seastone         |
 
 ### 3.6 References
 
@@ -627,7 +644,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (57)
+## 4. Relation types (58)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -753,9 +770,15 @@ generates inverses automatically when `inverse_inferred: true`.
 | `voiced-by`    | `character` | `person` | `voices`   | since, language, dub_studio, context |
 | `portrayed-by` | `character` | `person` | `portrays` | since, production, context           |
 
+### 4.15 Materials
+
+| Type      | From             | To         | Inverse       | Qualifiers       |
+| --------- | ---------------- | ---------- | ------------- | ---------------- |
+| `made-of` | `ship`, `weapon` | `material` | `material-of` | since, component |
+
 ---
 
-## 5. Vocabularies / Enums (47)
+## 5. Vocabularies / Enums (48)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -922,6 +945,10 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 `active`, `destroyed`, `sunken`, `risen`, `undersea`, `frozen`,
 `abandoned`, `occupied`
 
+### 5.31 `material-subtypes`
+
+`mineral`, `metal`, `alloy`, `wood`, `organic`, `synthetic`
+
 ---
 
 ## 6. Universal qualifiers
@@ -1013,7 +1040,8 @@ These exist on every entity, declared once in primitives.
 
 `character`, `devil-fruit`, `crew`, `organization`, `location`,
 `technique`, `weapon`, `ship`, `race`, `title`, `concept`, `event`,
-`arc`, `saga`, `manga-chapter`, `anime-episode`, `film`, `person`
+`arc`, `saga`, `manga-chapter`, `anime-episode`, `film`, `person`,
+`material`
 
 ### 9.3 Entity types that can be `participant` of events
 
@@ -1037,15 +1065,15 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 21
-- **Property types**: 76 (some shared across multiple entity types)
-- **Relation types**: 57 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 47
+- **Entity types**: 22
+- **Property types**: 78 (some shared across multiple entity types)
+- **Relation types**: 58 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 48
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)
 - **Container entities**: 3 (arc, saga, event)
-- **Things that depict / can be depicted**: 18 / 1 (image)
+- **Things that depict / can be depicted**: 19 / 1 (image)
 
 ---
 

@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "material",
+  "schema_version": 1,
+  "labels": { "en": "Material", "fr": "Matériau" },
+  "url_segment": "materials",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "material_subtype", "required": true, "historical": false, "localizable": false },
+    {
+      "id": "nullifies_devil_fruits",
+      "required": false,
+      "historical": false,
+      "localizable": false
+    },
+    { "id": "description_key", "required": false, "historical": false, "localizable": true }
+  ],
+  "allowed_relations": ["depicted-by"],
+  "ui_hint": { "icon": "gem", "group": "objects" }
+}

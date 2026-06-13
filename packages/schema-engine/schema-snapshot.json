@@ -380,6 +380,25 @@
         "references-event"
       ]
     },
+    "material": {
+      "properties": {
+        "description_key": {
+          "required": false
+        },
+        "material_subtype": {
+          "required": true
+        },
+        "name": {
+          "required": true
+        },
+        "nullifies_devil_fruits": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "depicted-by"
+      ]
+    },
     "organization": {
       "properties": {
         "description_key": {
@@ -499,6 +518,7 @@
         "crewed-by",
         "depicted-by",
         "flies-flag",
+        "made-of",
         "replaces"
       ]
     },
@@ -567,7 +587,8 @@
       },
       "allowed_relations": [
         "depicted-by",
-        "forged-by"
+        "forged-by",
+        "made-of"
       ]
     }
   },
@@ -842,6 +863,12 @@
       "historical": false,
       "localizable": false
     },
+    "material_subtype": {
+      "value_type": "enum",
+      "enum_ref": "material-subtypes",
+      "historical": false,
+      "localizable": false
+    },
     "name": {
       "value_type": "i18n_key",
       "enum_ref": null,
@@ -853,6 +880,12 @@
       "enum_ref": null,
       "historical": true,
       "localizable": true
+    },
+    "nullifies_devil_fruits": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
     },
     "number": {
       "value_type": "number",
@@ -1382,6 +1415,7 @@
         "film",
         "location",
         "manga-chapter",
+        "material",
         "organization",
         "person",
         "race",
@@ -1648,6 +1682,28 @@
           "required": false
         },
         "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "made-of": {
+      "valid_from_types": [
+        "ship",
+        "weapon"
+      ],
+      "valid_to_types": [
+        "material"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "component": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "since": {
           "value_type": "source_ref",
           "enum_ref": null,
           "required": false
@@ -2549,6 +2605,14 @@
       "seaman",
       "vice_admiral",
       "warrant_officer"
+    ],
+    "material-subtypes": [
+      "alloy",
+      "metal",
+      "mineral",
+      "organic",
+      "synthetic",
+      "wood"
     ],
     "membership-statuses": [
       "defected",

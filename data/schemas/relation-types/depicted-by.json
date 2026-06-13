@@ -24,7 +24,8 @@
     "manga-chapter",
     "anime-episode",
     "film",
-    "person"
+    "person",
+    "material"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [

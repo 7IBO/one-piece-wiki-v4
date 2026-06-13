@@ -8,6 +8,55 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-046 — `material` entity + `made-of`; Seastone's Devil-Fruit nullification
+
+**Date**: 2026-06-14
+
+**Context**: The "fruit mechanics + materials" cluster. One Piece has a small
+set of **named, reusable substances** that matter mechanically — Seastone
+(kairōseki), Treasure Tree Adam / Adam Wood, Wapometal, Dyna Stones — that ships
+and weapons are built from. The model had no way to name them or to link an
+object to what it's made of. The headline mechanic is **Seastone**, whose
+defining trait is that it nullifies Devil-Fruit powers.
+
+**Key modelling question — where do Devil-Fruit weaknesses live?** The sea/water
+and Seastone weaknesses are **universal to the Devil-Fruit phenomenon**, not
+facts about any individual fruit. Encoding them per-`devil-fruit` entity would
+duplicate the same datum across every fruit. So they are _not_ per-fruit data.
+
+**Decision** (additive):
+
+1. **`material`** entity type — name, `material_subtype` (enum → new
+   **`material-subtypes`** vocab: mineral/metal/alloy/wood/organic/synthetic),
+   `nullifies_devil_fruits` (boolean), `description_key`. `url_segment`
+   `materials`, ui group `objects`.
+2. **`nullifies_devil_fruits`** boolean property (on `material`) — the
+   structural home of the Seastone weakness: `material:seastone` sets it `true`.
+   The weakness is encoded **once**, on the substance, rather than on every
+   fruit.
+3. **`made-of`** relation (`ship` / `weapon` → `material`, not historised) —
+   qualifiers `since` (source) and `component` (which part, e.g. hull / blade /
+   jutte tip). Declared on `ship.allowed_relations` + `weapon.allowed_relations`.
+4. `depicted-by` `valid_from_types` += `material` (a substance can carry an
+   image).
+
+**Rationale**: A `material` entity makes Seastone & co. first-class, queryable,
+and citable, and `made-of` turns "the Thousand Sunny is Adam Wood" / "Smoker's
+jutte tip is Seastone" into real edges. Putting `nullifies_devil_fruits` on the
+material (not on fruits) models the weakness where it actually lives — a
+property of the substance — and answers "which materials neutralise Devil
+Fruits?" structurally. The general sea/water weakness and the descriptive
+_effects_ of awakening stay in narrative (awakening's structural footprint —
+`awakened` + `awakening-of` — already landed in ADR-039/C4); elemental
+type-advantages (magma > fire) are deferred (low volume, debatable canon).
+
+**Consequences**: +1 entity type (22), +2 properties (78), +1 relation (58),
++1 vocabulary (48); `ship` / `weapon` `allowed_relations` and `depicted-by`
+source widened. No `/data` migration (additive; no `material` entities exist
+yet). Snapshot regenerated (all diffs additive per `check:compat`).
+
+---
+
 ## ADR-045 — Location geography (`region`) & historised lifecycle `status`
 
 **Date**: 2026-06-14

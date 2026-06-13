@@ -17,6 +17,7 @@
     "crewed-by",
     "flies-flag",
     "replaces",
+    "made-of",
     "depicted-by"
   ],
   "ui_hint": { "icon": "ship", "group": "vehicles" }

@@ -124,14 +124,15 @@ ADR-039 (C4 devil-fruit identity/succession), ADR-040 (C6 weapon Meitō), ADR-04
 lockfile + CI gate), ADR-043 (C3 organizations: sub-units/power-systems/member
 nations), ADR-044 (C7-core: `person` entity + `voiced-by`/`portrayed-by` +
 `marine-ranks` via `held_rank`), ADR-045 (C9a: location `region` + historised
-`location_status` + crew territorial control). **Remaining (recommended
-order):** C9-rest (race/ship/concept additions, ancient-weapon/artifact, event
-enrichment, `era` entity + the `[D]` structured in-universe temporal value —
-biggest), C8 (sources / volumes / SBS-QA / databook-cards + adaptation
-many-to-many; absorbs C7's deferred source/media enrichment + theme-song), C5
-(fighting-styles/Haki/techniques), C4b (fruit weaknesses/interactions/awakening
-outcomes), C1 (naming/i18n editions — foundational but invasive). All clusters
-touch DECISIONS.md +
+`location_status` + crew territorial control), ADR-046 (materials: `material`
+entity + `made-of` + Seastone's `nullifies_devil_fruits`). **Remaining
+(committed order — user said "tout"):** C8 (sources / volumes / SBS-QA /
+databook-cards + adaptation many-to-many; absorbs C7's deferred source/media
+enrichment + theme-song), C9-rest (race/concept additions,
+ancient-weapon/artifact, event enrichment, `era` entity + the `[D]` structured
+in-universe temporal value — biggest), C5 (fighting-styles/Haki/techniques), C1
+(naming/i18n editions — invasive, deliberately last). All clusters touch
+DECISIONS.md +
 INVENTORY.md, so **merge sequentially**: pull main, branch, `compat:snapshot`
 per cluster. **INVENTORY refresh** (per-item sub-sections lag the true catalogue
 counts) is tracked in `DATA_EXPANSION_PLAN.md` §5 — a catalogue-generated
