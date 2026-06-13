@@ -164,6 +164,31 @@ identical at 22/79/58/48).
   schemas under `data/universes/one-piece/schemas/`, universal ones under
   `data/schemas/`.
 
+### 6. Production & credits + availability programme — in progress
+
+User asked (2026-06-14) for full anime/film production data + platform links.
+A Fandom audit (Episode Box / Song Box / Movie Box) confirmed: per-episode staff
+(director/storyboard/animation-dir/art-dir/screenplay), theme songs (28-field Song
+Box), per-dub cast, film credits + regional releases. **All universal → core.**
+Slices (each ADR + PR):
+
+1. **`staffed-by`** episode/film → person (role qualifier) + person-roles
+   (storyboard/art_director/lyricist/arranger/producer) + dub-studios+=netflix —
+   **ADR-050 [done, this PR]**.
+2. **`theme-song`** entity + theme relations (performed/composed/written-by →
+   person; opening-of/ending-of → episode-range; theme-of → film; precedes/follows
+   chain) + `theme-song-type` vocab.
+3. Episode/film props: `eyecatcher`, `tv_rating`, `anime_original`; film
+   ordering + regional release (per-dub titles/dates likely fold into C1 i18n).
+4. **Platform availability** (W-E): new `streaming-platform` entity +
+   `available-on` relation (anime-episode/manga-chapter/film → streaming-platform;
+   qualifiers url/region/kind(watch|read)/requires_subscription/verified_at/langs)
+   - `streaming-platforms` vocab. **Amends ADR-028** — implemented as a relation
+     to a platform entity, NOT the `object` value-type ADR-028 assumed (it isn't
+     built; the value-types are string/number/boolean/enum/multi_enum/date/
+     entity_ref/source_ref/i18n_key/markdown). Live-action availability needs a
+     live-action entity first (not yet modelled).
+
 ## Active plan (ADR-032) — tooling before ingest
 
 Six workstreams, built in this order; each ships as independent PR(s).

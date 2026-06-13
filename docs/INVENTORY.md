@@ -656,7 +656,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (58)
+## 4. Relation types (59)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -777,10 +777,11 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.14 Cast & staff (real-world)
 
-| Type           | From        | To       | Inverse    | Qualifiers                           |
-| -------------- | ----------- | -------- | ---------- | ------------------------------------ |
-| `voiced-by`    | `character` | `person` | `voices`   | since, language, dub_studio, context |
-| `portrayed-by` | `character` | `person` | `portrays` | since, production, context           |
+| Type           | From                    | To       | Inverse     | Qualifiers                           |
+| -------------- | ----------------------- | -------- | ----------- | ------------------------------------ |
+| `voiced-by`    | `character`             | `person` | `voices`    | since, language, dub_studio, context |
+| `portrayed-by` | `character`             | `person` | `portrays`  | since, production, context           |
+| `staffed-by`   | `anime-episode`, `film` | `person` | `worked-on` | role, since, note                    |
 
 ### 4.15 Materials
 
@@ -934,13 +935,13 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 ### 5.26 `person-roles`
 
 `voice_actor`, `dub_actor`, `live_action_actor`, `series_director`,
-`episode_director`, `film_director`, `animation_director`,
-`screenwriter`, `character_designer`, `composer`, `theme_performer`,
-`mangaka`
+`episode_director`, `film_director`, `animation_director`, `storyboard`,
+`art_director`, `screenwriter`, `character_designer`, `composer`,
+`lyricist`, `arranger`, `producer`, `theme_performer`, `mangaka`
 
 ### 5.27 `dub-studios`
 
-`toei`, `funimation`, `4kids`, `odex`
+`toei`, `funimation`, `4kids`, `odex`, `netflix`
 
 ### 5.28 `marine-ranks`
 
@@ -1081,7 +1082,7 @@ depicted by another image).
 
 - **Entity types**: 22
 - **Property types**: 79 (some shared across multiple entity types)
-- **Relation types**: 58 (canonical declared; inverses are build-generated)
+- **Relation types**: 59 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 48
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)

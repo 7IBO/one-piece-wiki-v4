@@ -13,6 +13,6 @@
     { "id": "canon_scope", "required": false, "historical": false, "localizable": false }
   ],
   "display_name_properties": ["title_key"],
-  "allowed_relations": ["features", "part-of-arc", "depicted-by"],
+  "allowed_relations": ["features", "part-of-arc", "staffed-by", "depicted-by"],
   "ui_hint": { "icon": "tv", "group": "sources" }
 }

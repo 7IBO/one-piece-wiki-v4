@@ -12,9 +12,14 @@
     "animation_director": {
       "labels": { "en": "Animation director", "fr": "Directeur de l'animation" }
     },
+    "storyboard": { "labels": { "en": "Storyboard", "fr": "Storyboard" } },
+    "art_director": { "labels": { "en": "Art director", "fr": "Directeur artistique" } },
     "screenwriter": { "labels": { "en": "Screenwriter", "fr": "Scénariste" } },
     "character_designer": { "labels": { "en": "Character designer", "fr": "Character designer" } },
     "composer": { "labels": { "en": "Composer", "fr": "Compositeur" } },
+    "lyricist": { "labels": { "en": "Lyricist", "fr": "Parolier" } },
+    "arranger": { "labels": { "en": "Arranger", "fr": "Arrangeur" } },
+    "producer": { "labels": { "en": "Producer", "fr": "Producteur" } },
     "theme_performer": { "labels": { "en": "Theme performer", "fr": "Interprète du thème" } },
     "mangaka": { "labels": { "en": "Mangaka", "fr": "Mangaka" } }
   }
