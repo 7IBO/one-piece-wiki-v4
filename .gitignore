@@ -17,6 +17,9 @@ build/
 .output/
 .nitro/
 .tanstack/
+# Vercel Build Output API (nitro `vercel` preset + relocated to repo
+# root by vercel.json's buildCommand)
+.vercel/
 
 # Generated schemas
 packages/schemas/generated/
