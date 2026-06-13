@@ -11,6 +11,7 @@
     "no-debugger": "error",
     "eqeqeq": "error",
     "no-unused-vars": "error",
+    "no-await-in-loop": "off",
     "react/react-in-jsx-scope": "off",
     "react/jsx-key": "warn",
     "react/no-array-index-key": "off"
