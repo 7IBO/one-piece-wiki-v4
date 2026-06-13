@@ -13,6 +13,8 @@ export const VocabularySchema = z.object({
   $schema: z.string().optional(),
   id: Slug,
   schema_version: z.number().int().positive(),
+  /** Universe scope; omitted = shared core. See ADR-035. */
+  universes: z.array(Slug).optional(),
   values: z.record(z.string(), VocabularyValue),
 });
 export type VocabularySchema = z.infer<typeof VocabularySchema>;

@@ -16,6 +16,15 @@
       "type": "integer",
       "exclusiveMinimum": 0
     },
+    "universes": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 60,
+        "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+      }
+    },
     "values": {
       "type": "object",
       "additionalProperties": {

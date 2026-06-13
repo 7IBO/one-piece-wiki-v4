@@ -42,6 +42,24 @@ This document is the formal spec. The conceptual overview is in
 Every schema file starts with `$schema` pointing to its meta-schema, used
 for editor support and validation of schemas themselves.
 
+## Universe scoping (ADR-035)
+
+Every schema (entity-type, property-type, relation-type, vocabulary) may
+carry an optional `universes: string[]`:
+
+- **Omitted / empty** → **shared core**: present in every universe
+  (the generic backbone — `character`, `image`, `name`, `status`, the
+  epistemic-status / canon-scope / name-type vocabularies, …).
+- **A list** (e.g. `["one-piece"]`) scopes it to those universes only
+  (`devil-fruit`, `bounty`, `haki`, SBS, …).
+
+A universe's effective catalogue is `core ∪ its own schemas`. **Invariant
+(enforced by `check:coherence`):** a schema may only reference schemas
+present in every universe where it itself is present — so a core schema
+may reference only core schemas, while a `["one-piece"]` schema may
+reference core + one-piece schemas. A violation is reported as
+`SCHEMA_UNIVERSE_SCOPE_LEAK`.
+
 ## Entity type schema
 
 A file in `/data/schemas/entity-types/<id>.json`.
@@ -53,6 +71,7 @@ A file in `/data/schemas/entity-types/<id>.json`.
 | `$schema`                 | string   | yes      | Meta-schema reference                                                                                                                                                                    |
 | `id`                      | string   | yes      | Type identifier, kebab-case (e.g. `character`)                                                                                                                                           |
 | `schema_version`          | integer  | yes      | Bumped on breaking changes                                                                                                                                                               |
+| `universes`               | string[] | no       | Universe ids this type belongs to. Omitted/empty = shared **core** (every universe). A list scopes it (e.g. `["one-piece"]`). See ADR-035 / "Universe scoping" below                     |
 | `labels`                  | object   | yes      | Locale → label, used in UI and breadcrumbs                                                                                                                                               |
 | `url_segment`             | string   | yes      | Segment used in URLs (kebab-case English, e.g. `characters`)                                                                                                                             |
 | `properties`              | array    | yes      | Allowed property declarations                                                                                                                                                            |

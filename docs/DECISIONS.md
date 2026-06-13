@@ -8,6 +8,73 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-035 — Universe-scoped schemas (multi-manga), guarded for consistency
+
+**Date**: 2026-06-13
+
+**Context**: The data model must eventually host more than One Piece
+(Naruto, Bleach, …). Entities are already per-universe
+(`/data/universes/<id>/`), but **schemas are global** (`/data/schemas/`).
+ARCHITECTURE §Extensibility said "extend `/data/schemas/` for a new
+universe" — which makes the schema a union, with nothing scoping a type
+to a universe: editing One Piece would offer Naruto's `jutsu` type or a
+`chakra-natures` vocab. The maintainer's framing: _schemas differ per
+manga, but the whole thing must stay manageable._
+
+Investigation showed the **primitives are already universal** (the four
+historisation axes, epistemic-statuses, canon-scopes, name-types,
+image/license/format vocabularies, value-types). What is
+One-Piece-specific is a subset of **entity types / property types /
+relation types / vocabularies** (devil-fruit, bounty, haki, SBS, …).
+Crucially, these are **entangled**: tagging `devil-fruit` one-piece
+pulls in `ate-fruit` → `character` → `bounty`, `technique` →
+`enabled-by-fruit`, etc. — a reference closure. A half-done tagging
+silently dangles in another universe.
+
+**Options considered**:
+
+1. **Per-universe schema directories** (`/data/universes/<id>/schemas/`,
+   loader merges core ∪ universe). Clean at scale but a big-bang
+   relocation of ~190 files + a per-universe catalogue/generator rewrite.
+   Deferred — not needed with one universe.
+2. **Tag each schema with `universes`** (omitted = shared core). Chosen:
+   additive, no file moves, forward-compatible, and the same flat layout
+   keeps tooling simple while there is one universe.
+
+**Choice**: optional `universes: Slug[]` on every meta-schema
+(entity/property/relation/vocabulary). Omitted/empty = **shared core**
+(present in every universe). A universe's effective catalogue is
+`forUniverse(catalogue, id)` = core ∪ schemas scoped to `id`.
+
+The invariant that keeps it manageable — **a schema may only reference
+schemas present in every universe where it itself is present** (core may
+reference only core; a `["one-piece"]` schema may reference core +
+one-piece). `checkUniverseScopes` enforces this in `check:coherence`
+(`SCHEMA_UNIVERSE_SCOPE_LEAK`), so an inconsistent tag is caught before a
+second universe exists.
+
+**Consequences**:
+
+- **This PR (mechanism + guard)**: the `universes` field, `forUniverse`,
+  and `checkUniverseScopes` (wired into `check:coherence`); meta-schemas
+  regenerated. Everything stays **core** for now → guard green, zero
+  behaviour change. Tests cover filtering + the leak guard.
+- **Next (apply scoping)**: tag the One-Piece reference-closure
+  (`devil-fruit`, `character`, `technique`, `sbs` + their props/relations/
+  vocabs) under the guard — iterate until green — then point the
+  dashboard at `forUniverse(catalogue, "one-piece")` so the editor only
+  offers a universe's own types. Where the core/specific line falls (esp.
+  is `character` core or per-universe? its property composition is
+  universe-specific) is the design call there.
+- **Deferred**: per-universe Zod generation + per-universe `validate`
+  (today's global validation is correct while one universe exists). The
+  directory-relocation (option 1) remains available if the flat layout
+  grows unwieldy.
+- Supersedes ARCHITECTURE §Extensibility's "just extend /data/schemas"
+  with the scoped-tag model.
+
+---
+
 ## ADR-034 — Techniques, transformations & per-user vs fruit-inherent abilities
 
 **Date**: 2026-06-13

@@ -21,6 +21,8 @@ export const EntityTypeSchema = z.object({
   $schema: z.string().optional(),
   id: Slug,
   schema_version: z.number().int().positive(),
+  /** Universe scope; omitted = shared core (e.g. `character`, `image`). See ADR-035. */
+  universes: z.array(Slug).optional(),
   labels: LocalizedLabel,
   url_segment: Slug,
   properties: z.array(PropertyDeclaration),

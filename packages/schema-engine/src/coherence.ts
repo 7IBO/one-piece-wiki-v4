@@ -36,7 +36,8 @@ export type CoherenceFinding = {
     | 'UNREFERENCED_ENTITY'
     // schema-level (no entity data needed)
     | 'SCHEMA_ALLOWED_RELATION_UNKNOWN'
-    | 'SCHEMA_ALLOWED_RELATION_INVALID_SOURCE';
+    | 'SCHEMA_ALLOWED_RELATION_INVALID_SOURCE'
+    | 'SCHEMA_UNIVERSE_SCOPE_LEAK';
   readonly severity: 'error' | 'warning';
   readonly source: string;
   readonly path: string;

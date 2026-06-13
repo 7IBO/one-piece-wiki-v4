@@ -7,6 +7,7 @@ import { checkCoherence, checkSchemaCoherence } from '../coherence.ts';
 import { loadEntities } from '../entity-loader.ts';
 import { loadSchemas } from '../loader.ts';
 import { validateCatalogue } from '../meta-validator.ts';
+import { checkUniverseScopes } from '../universe.ts';
 
 const catalogue = await loadSchemas();
 const validated = validateCatalogue(catalogue);
@@ -24,6 +25,7 @@ if (loaded.errors.length > 0) {
 
 const findings = [
   ...checkSchemaCoherence(validated),
+  ...checkUniverseScopes(validated),
   ...checkCoherence(loaded.entities, validated),
 ];
 const errors = findings.filter((f) => f.severity === 'error');
