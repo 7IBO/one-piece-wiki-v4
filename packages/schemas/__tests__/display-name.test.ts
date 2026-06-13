@@ -4,7 +4,11 @@
  * client, so the dedup PR is provably behaviour-preserving.
  */
 import { describe, expect, it } from 'bun:test';
-import { nameKeyFor, resolveDisplayName } from '../src/display-name.ts';
+import {
+  DEFAULT_NAME_LIKE_PROPERTY_IDS,
+  nameKeyFor,
+  resolveDisplayName,
+} from '../src/display-name.ts';
 
 const translations = {
   en: {
@@ -83,5 +87,47 @@ describe('resolveDisplayName', () => {
     // latest entry (untranslated.key) has no translation; the resolver
     // falls back to the earlier entry that does.
     expect(resolveDisplayName(data, translations, 'en')).toBe('Monkey D. Luffy');
+  });
+});
+
+describe('schema-driven nameProperties', () => {
+  it('the default matches the historical ["name","title_key"] order', () => {
+    expect([...DEFAULT_NAME_LIKE_PROPERTY_IDS]).toEqual(['name', 'title_key']);
+  });
+
+  it('a custom list restricts which properties are scanned', () => {
+    const data = {
+      properties: {
+        name: { value_key: 'character.luffy.name' },
+        title_key: { value_key: 'manga-chapter.1.title' },
+      },
+    };
+    // default would prefer name; a type declaring only title_key skips it.
+    expect(nameKeyFor(data, ['title_key'])).toBe('manga-chapter.1.title');
+  });
+
+  it('a custom list controls priority order', () => {
+    const data = {
+      properties: {
+        name: { value_key: 'character.luffy.name' },
+        epithet: { value_key: 'character.luffy.epithet' },
+      },
+    };
+    expect(nameKeyFor(data, ['epithet', 'name'])).toBe('character.luffy.epithet');
+  });
+
+  it('an empty list resolves to null (no name-like property declared)', () => {
+    const data = { properties: { name: { value_key: 'character.luffy.name' } } };
+    expect(nameKeyFor(data, [])).toBeNull();
+  });
+
+  it('resolveDisplayName honours a custom property list', () => {
+    const data = {
+      properties: {
+        name: { value_key: 'character.luffy.name' },
+        title_key: { value_key: 'manga-chapter.1.title' },
+      },
+    };
+    expect(resolveDisplayName(data, translations, 'en', ['title_key'])).toBe('Romance Dawn');
   });
 });

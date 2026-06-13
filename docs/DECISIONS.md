@@ -8,6 +8,62 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-031 — Schema-driven display-name resolution (`display_name_properties`)
+
+**Date**: 2026-06-13
+
+**Context**: The shared display-name resolver
+(`packages/schemas/src/display-name.ts`, extracted in the dedup PR)
+still hardcoded the property priority `['name', 'title_key']` as a
+code-level constant. That violates the non-negotiable rule "No property
+name is hardcoded in application code" (CLAUDE.md / ADR-002): a new
+universe — or a One Piece entity type whose display name isn't `name`
+or `title_key` (e.g. `image` → `caption_key`) — could not control its
+own display name without a code change.
+
+**Options considered**:
+
+1. **A marker on _property-type_ schemas** (e.g. `is_display_name: true`).
+   Rejected: a property type is shared across entity types, so it can't
+   express per-entity-type priority (a chapter's `title_key` vs a
+   character's `name`) or ordering, and it couples the property's
+   identity to one role.
+2. **`canonical_name_key`-first** (privilege the existing
+   `canonical_name_key` concept). Rejected: `canonical_name_key` is an
+   entity-instance/i18n concern, not a per-type display-priority list,
+   and several types have no single canonical key.
+3. **An ordered `display_name_properties` list on the _entity-type_
+   schema.** Chosen: display priority is intrinsically per-entity-type
+   and ordered; this matches the shape exactly, stays additive, and
+   needs no data migration.
+
+**Choice**: Add an optional ordered `display_name_properties: Slug[]` to
+the entity-type meta-schema. The resolver accepts it as a
+`nameProperties` argument; when a type omits it (or a caller has no
+schema config to hand), the functions fall back to a documented
+`DEFAULT_NAME_LIKE_PROPERTY_IDS = ['name', 'title_key']`. So behaviour
+is identical for every existing type, while the priority is now
+schema-controlled.
+
+**Consequences**:
+
+- `EntityTypeSchema` (Zod) gains optional `display_name_properties`.
+- `nameKeyFor` / `resolveDisplayName` take an optional ordered list;
+  the three dashboard call sites (server `buildDisplayNames`, the entity
+  page, the edit drawer) pass the entity type's `display_name_properties`.
+- `anime-episode`, `film`, `manga-chapter` declare
+  `["title_key"]` explicitly — exactly what the default already
+  resolved to, so no behaviour change; it documents intent and
+  exercises the override.
+- **Now unlocked (follow-up):** types with no `name`/`title_key` — e.g.
+  `image` (`caption_key`) and `sbs` — can get real display names instead
+  of the slug fallback by declaring `display_name_properties`. Left out
+  of this PR to keep it behaviour-preserving.
+- No data migration; `bun run validate` + `schema:check` pass;
+  generated types unchanged.
+
+---
+
 ## ADR-030 — Standardize on `bun test`; remove Vitest
 
 **Date**: 2026-06-13

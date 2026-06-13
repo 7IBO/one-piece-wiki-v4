@@ -4,30 +4,38 @@
  * places (server `nameKeyFor`, two client `resolveDisplayName`); this
  * module is the single source.
  *
- * The name-like property priority is centralised in
- * `NAME_LIKE_PROPERTY_IDS`. It is still a code-level constant rather
- * than schema-derived — making it schema-driven (a marker on
- * property-type schemas, or `canonical_name_key`-first) is a behaviour
- * change tracked separately. This module preserves the prior behaviour
- * exactly; it only removes the duplication.
+ * The name-like property priority is **schema-driven**: each entity
+ * type may declare `display_name_properties` (an ordered list) on its
+ * schema, which callers pass in as `nameProperties`. When a caller has
+ * no schema config to hand, the functions fall back to
+ * `DEFAULT_NAME_LIKE_PROPERTY_IDS` so behaviour is unchanged for any
+ * type that doesn't override it. No property name is hardcoded in app
+ * code — the constant here is only the documented default.
  *
  * Pure and dependency-free (no sqlite, no fs) so it is safe to import
  * from both the Bun server process and the Vite browser bundle.
  */
 
-/** Properties scanned, in priority order, for an entity's display name. */
-export const NAME_LIKE_PROPERTY_IDS = ['name', 'title_key'] as const;
+/**
+ * Fallback property priority when an entity type declares no
+ * `display_name_properties`. Scanned in order; the first present
+ * property wins.
+ */
+export const DEFAULT_NAME_LIKE_PROPERTY_IDS = ['name', 'title_key'] as const;
 
 type EntityData = Record<string, unknown>;
 
 /** `{ en: { key: text }, fr: { ... }, ... }` — per-locale i18n maps. */
 export type LocaleTranslations = Record<string, Record<string, string>>;
 
-function nameLikeEntries(data: EntityData): readonly unknown[][] {
+function nameLikeEntries(
+  data: EntityData,
+  nameProperties: readonly string[],
+): readonly unknown[][] {
   const props = data['properties'];
   if (props === null || typeof props !== 'object') return [];
   const lists: unknown[][] = [];
-  for (const candidate of NAME_LIKE_PROPERTY_IDS) {
+  for (const candidate of nameProperties) {
     const raw = (props as Record<string, unknown>)[candidate];
     if (raw === null || raw === undefined) continue;
     lists.push(Array.isArray(raw) ? raw : [raw]);
@@ -45,13 +53,18 @@ function entryKey(entry: unknown): string | null {
 /**
  * The i18n key (or literal value) of an entity's most name-like
  * property: the latest entry of the first present property among
- * {@link NAME_LIKE_PROPERTY_IDS}. Returns null when none is present.
+ * `nameProperties` (an entity type's `display_name_properties`, or
+ * {@link DEFAULT_NAME_LIKE_PROPERTY_IDS} when not supplied). Returns
+ * null when none is present.
  *
  * Translation-unaware — used server-side, where the key is resolved to
  * text per locale downstream.
  */
-export function nameKeyFor(data: EntityData): string | null {
-  for (const list of nameLikeEntries(data)) {
+export function nameKeyFor(
+  data: EntityData,
+  nameProperties: readonly string[] = DEFAULT_NAME_LIKE_PROPERTY_IDS,
+): string | null {
+  for (const list of nameLikeEntries(data, nameProperties)) {
     for (let i = list.length - 1; i >= 0; i--) {
       const key = entryKey(list[i]);
       if (key !== null) return key;
@@ -62,17 +75,20 @@ export function nameKeyFor(data: EntityData): string | null {
 
 /**
  * The entity's display name resolved against `translations` for
- * `locale` (falling back to `en`). Scans latest-first across the
- * name-like properties and returns the first entry whose key resolves
- * to a non-empty translation. Returns null when none does — callers
- * choose their own fallback (slug, id, …).
+ * `locale` (falling back to `en`). Scans latest-first across
+ * `nameProperties` (an entity type's `display_name_properties`, or
+ * {@link DEFAULT_NAME_LIKE_PROPERTY_IDS} when not supplied) and returns
+ * the first entry whose key resolves to a non-empty translation.
+ * Returns null when none does — callers choose their own fallback
+ * (slug, id, …).
  */
 export function resolveDisplayName(
   data: EntityData,
   translations: LocaleTranslations,
   locale: string,
+  nameProperties: readonly string[] = DEFAULT_NAME_LIKE_PROPERTY_IDS,
 ): string | null {
-  for (const list of nameLikeEntries(data)) {
+  for (const list of nameLikeEntries(data, nameProperties)) {
     for (let i = list.length - 1; i >= 0; i--) {
       const key = entryKey(list[i]);
       if (key === null) continue;

@@ -60,8 +60,16 @@ function EntityEditComponent(): JSX.Element {
   }, [type, slug]);
 
   const displayName = useMemo(
-    () => entity === null ? null : resolveDisplayName(entity.data, entity.translations, locale),
-    [entity, locale],
+    () =>
+      entity === null
+        ? null
+        : resolveDisplayName(
+          entity.data,
+          entity.translations,
+          locale,
+          schemas?.entityTypes[type]?.display_name_properties,
+        ),
+    [entity, locale, schemas, type],
   );
 
   const entityTypeLabel = useMemo(() => {

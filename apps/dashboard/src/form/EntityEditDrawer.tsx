@@ -98,7 +98,12 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
 
   const headerLabel = entity === null
     ? ''
-    : resolveDisplayName(entity.data, entity.translations, locale) ?? prettifySlug(entity.slug);
+    : resolveDisplayName(
+      entity.data,
+      entity.translations,
+      locale,
+      entityType?.display_name_properties,
+    ) ?? prettifySlug(entity.slug);
   const typeLabel = useMemo(() => {
     if (schemas === null) return p.type;
     const et = schemas.entityTypes[p.type];
