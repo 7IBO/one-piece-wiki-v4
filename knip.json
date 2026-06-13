@@ -1,0 +1,38 @@
+{
+  "$schema": "https://unpkg.com/knip@5/schema.json",
+  "ignoreDependencies": [
+    "@onepiece-wiki/tsconfig",
+    "@types/diff",
+    "@types/react-dom",
+    "react-dom",
+    "@base-ui-components/react",
+    "lefthook",
+    "shadcn"
+  ],
+  "workspaces": {
+    ".": {
+      "entry": ["scripts/*.ts", "commitlint.config.ts"]
+    },
+    "apps/dashboard": {
+      "entry": [
+        "api/server.ts",
+        "vite.config.ts",
+        "src/router.tsx",
+        "src/routeTree.gen.ts",
+        "src/routes/**/*.{ts,tsx}"
+      ],
+      "ignore": ["src/components/ui/**"]
+    },
+    "apps/preview": {
+      "entry": ["src/server.ts"]
+    },
+    "packages/*": {
+      "entry": ["src/index.ts", "src/cli/*.ts", "src/*.css"]
+    }
+  },
+  "rules": {
+    "exports": "off",
+    "types": "off",
+    "duplicates": "off"
+  }
+}

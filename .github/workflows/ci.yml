@@ -36,6 +36,9 @@ jobs:
       - name: Lint
         run: bun run lint
 
+      - name: Dead-code check (knip)
+        run: bun run knip
+
       - name: Schema check
         run: bun run schema:check
 
