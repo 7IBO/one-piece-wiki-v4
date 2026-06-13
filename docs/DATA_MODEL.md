@@ -196,8 +196,9 @@ on Fandom. Events occur within arcs; arcs belong to sagas.
 ### Canon scope
 
 Every source declares its canon scope (`manga`, `anime`, `anime_filler`,
-`film_canon`, `film_non_canon`, `sbs`, `databook`, `live_action`). Every
-derived fact inherits a canon scope from its source(s). Users configure which
+`film_canon`, `film_non_canon`, `sbs`, `databook`, `live_action`,
+`crossover`, `video_game`). Every derived fact inherits a canon scope from
+its source(s). Users configure which
 scopes they accept.
 
 Full detail in `/docs/CANON_MODEL.md`.
