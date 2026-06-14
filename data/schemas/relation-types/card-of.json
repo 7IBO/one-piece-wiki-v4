@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "card-of",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Card of", "inverse": "Has card" },
+    "fr": { "active": "Fiche de", "inverse": "A pour fiche" }
+  },
+  "valid_from_types": ["databook-card"],
+  "valid_to_types": ["databook"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true,
+  "historical": false
+}

@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "card_kind",
+  "schema_version": 1,
+  "labels": { "en": "Card kind", "fr": "Type de fiche" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "card-kinds" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["databook-card"]
+}

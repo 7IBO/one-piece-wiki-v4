@@ -27,7 +27,8 @@
     "person",
     "material",
     "theme-song",
-    "company"
+    "company",
+    "databook-card"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [

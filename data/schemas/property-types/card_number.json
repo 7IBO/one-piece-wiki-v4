@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "card_number",
+  "schema_version": 1,
+  "labels": { "en": "Card number", "fr": "Numéro de fiche" },
+  "value_type": "string",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["databook-card"]
+}
