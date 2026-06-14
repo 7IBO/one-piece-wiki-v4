@@ -11,7 +11,8 @@
     "manga-chapter",
     "film",
     "live-action-series",
-    "live-action-episode"
+    "live-action-episode",
+    "anime-special"
   ],
   "valid_to_types": ["streaming-platform"],
   "qualifiers": [

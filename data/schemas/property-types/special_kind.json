@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "special_kind",
+  "schema_version": 1,
+  "labels": { "en": "Special type", "fr": "Type de spécial" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "special-kinds" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["anime-special"]
+}

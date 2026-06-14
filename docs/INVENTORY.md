@@ -186,7 +186,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (31)
+## 2. Entity types (32)
 
 | ID                    | Category   | Description                                                      | URL segment            |
 | --------------------- | ---------- | ---------------------------------------------------------------- | ---------------------- |
@@ -221,6 +221,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 | `video-game`          | sources    | A One Piece video game (console / handheld / PC / mobile)        | `games`                |
 | `live-action-series`  | sources    | A live-action adaptation series (Netflix 2023)                   | `live-action`          |
 | `live-action-episode` | sources    | An episode of a live-action series                               | `live-action-episodes` |
+| `anime-special`       | sources    | An OVA, TV special, or ONA (non-theatrical anime)                | `specials`             |
 
 ### 2.1 Properties per entity type
 
@@ -554,7 +555,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (90)
+## 3. Property types (91)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -640,6 +641,7 @@ unit, and qualifier policy (section 6).
 | `person_roles`        | `multi_enum` | `person-roles`                |
 | `game_genre`          | `enum`       | `game-genres`                 |
 | `game_platforms`      | `multi_enum` | `game-platforms`              |
+| `special_kind`        | `enum`       | `special-kinds`               |
 
 ### 3.5 Boolean
 
@@ -820,7 +822,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (56)
+## 5. Vocabularies / Enums (57)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -1024,7 +1026,11 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 `psp`, `ps_vita`, `xbox_360`, `xbox_one`, `xbox_series`, `pc`, `ios`,
 `android`, `arcade`
 
-> Note: §5 detailed subsections (5.1–5.37) lag the head count (56) — a
+### 5.38 `special-kinds`
+
+`ova`, `tv_special`, `ona`
+
+> Note: §5 detailed subsections (5.1–5.38) lag the head count (57) — a
 > backlog of recently added vocabularies (e.g. `transformation-kinds`,
 > `album-kinds`, `depiction-roles`) still need their entries. Tracked
 > separately; the head count is authoritative.
@@ -1145,10 +1151,10 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 31
-- **Property types**: 90 (some shared across multiple entity types)
+- **Entity types**: 32
+- **Property types**: 91 (some shared across multiple entity types)
 - **Relation types**: 67 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 56
+- **Vocabularies**: 57
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)

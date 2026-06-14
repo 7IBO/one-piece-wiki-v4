@@ -8,6 +8,38 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-063 — `anime-special` entity (OVAs, TV specials, ONAs)
+
+**Date**: 2026-06-14
+
+**Context**: One Piece has a large body of anime productions that are neither
+numbered TV episodes nor theatrical films: OVAs (_Defeat the Pirate Ganzack!_,
+_Romance Dawn Story_, _Strong World Episode 0_), ~14 TV specials (_3D2Y_, _Heart
+of Gold_, _Adventure of Nebulandia_, the _Episode of…_ retellings), and ONAs.
+Fandom treats these as a distinct category from films and the main episode list.
+
+**Decision** (additive, core):
+
+1. **`anime-special`** entity — `title_key`, `special_kind` (req, enum → new
+   **`special-kinds`**: ova / tv_special / ona), `aired_at_jp`,
+   `runtime_minutes`, `canon_scope`.
+2. Reuse `features` / `staffed-by` / `produced-by` / `available-on` /
+   `depicted-by` (`valid_from` += `anime-special`), `theme-of` (`valid_to` +=
+   `anime-special`), and widen `aired_at_jp` / `runtime_minutes` / `canon_scope`
+   `applies_to`.
+
+**Rationale**: **Format is orthogonal to canonicity.** `special_kind`
+(ova/tv_special/ona) is the _format_ discriminator; `canon_scope` stays the
+_canonicity_ axis (a given special may be `anime_filler`, `semi_canon`, or
+`film_non_canon`). So no new canon-scope values were needed — the two concerns
+stay separate. A dedicated entity (rather than overloading `film`) matches the
+Fandom category split and keeps `film` theatrical-only.
+
+**Consequences**: +1 entity (32), +1 property (91), +1 vocabulary (57); several
+`valid_from`/`applies_to` widenings. All core, additive. No migration.
+
+---
+
 ## ADR-062 — `live-action-series` + `live-action-episode`
 
 **Date**: 2026-06-14

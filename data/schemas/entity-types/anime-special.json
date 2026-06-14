@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "anime-special",
+  "schema_version": 1,
+  "labels": { "en": "Anime special", "fr": "Spécial anime" },
+  "url_segment": "specials",
+  "properties": [
+    { "id": "title_key", "required": true, "historical": false, "localizable": true },
+    { "id": "special_kind", "required": true, "historical": false, "localizable": false },
+    { "id": "aired_at_jp", "required": false, "historical": false, "localizable": false },
+    { "id": "runtime_minutes", "required": false, "historical": false, "localizable": false },
+    { "id": "canon_scope", "required": false, "historical": false, "localizable": false }
+  ],
+  "display_name_properties": ["title_key"],
+  "allowed_relations": ["features", "staffed-by", "produced-by", "available-on", "depicted-by"],
+  "ui_hint": { "icon": "film", "group": "sources" }
+}
