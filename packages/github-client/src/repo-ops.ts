@@ -283,6 +283,31 @@ export type OpenContribution = {
  * GitHub search index can lag a few seconds behind a fresh PR open —
  * that's acceptable for a "your recent contributions" panel.
  */
+
+// PR titles are `[DATA] <Verb> <type:slug>` (see save-flow.ts). These
+// helpers recover the entity from a title / match a title against one,
+// tolerating the `[DATA]` prefix AND both verbs — a contributor who
+// created an entity and returns must resume the SAME PR (whose title is
+// `Create …`), not open a duplicate. Legacy titles without the prefix
+// still parse.
+const DATA_TITLE_PREFIX = /^\[DATA\] /;
+
+export function parseEntityTitle(
+  title: string,
+): { readonly entityType: string; readonly entitySlug: string; } | null {
+  const stripped = title.replace(DATA_TITLE_PREFIX, '');
+  const m = /^(?:Edit|Create) ([a-z0-9-]+):([a-z0-9-]+)$/.exec(stripped);
+  if (m === null) return null;
+  const [, entityType = '', entitySlug = ''] = m;
+  if (entityType === '' || entitySlug === '') return null;
+  return { entityType, entitySlug };
+}
+
+export function titleMatchesEntity(title: string, entityId: string): boolean {
+  const stripped = title.replace(DATA_TITLE_PREFIX, '');
+  return stripped === `Edit ${entityId}` || stripped === `Create ${entityId}`;
+}
+
 export async function listOpenContributions(
   octokit: Octokit,
   config: GitHubAppConfig,
@@ -307,17 +332,15 @@ export async function listOpenContributions(
     order: 'desc',
   });
 
-  // Each PR title is `Edit <entityId>` (see save-flow.ts); we parse
-  // it to recover the entity coordinates without an extra round-trip
-  // per PR. Items that don't match the title pattern are skipped —
-  // they were opened outside the dashboard's normal flow.
+  // Recover entity coordinates from each PR title (see parseEntityTitle)
+  // without an extra round-trip per PR. Items that don't match — opened
+  // outside the dashboard's normal flow — are skipped.
   const out: OpenContribution[] = [];
   for (const item of data.items) {
     const title = item.title ?? '';
-    const match = /^Edit ([a-z0-9-]+):([a-z0-9-]+)$/.exec(title);
-    if (match === null) continue;
-    const [, entityType = '', entitySlug = ''] = match;
-    if (entityType === '' || entitySlug === '') continue;
+    const parsed = parseEntityTitle(title);
+    if (parsed === null) continue;
+    const { entityType, entitySlug } = parsed;
 
     // The search API returns Issues, not PRs — `pull_request.html_url`
     // is the only canonical PR URL on that payload shape, and the
@@ -367,7 +390,9 @@ export async function findOpenPRForEntity(
     ? `"- @${identity.login}"`
     : `"**${identity.nickname}**"`;
   const labelTerm = identity.kind === 'github' ? 'label:via-dashboard' : 'label:anonymous';
-  const titleTerm = `"Edit ${entityId}" in:title`;
+  // Match the id substring; the verb (Edit/Create) and `[DATA]` prefix
+  // are normalised client-side by titleMatchesEntity below.
+  const titleTerm = `"${entityId}" in:title`;
   const query = `${repoQ} is:pr is:open ${labelTerm} ${contribTerm} ${titleTerm}`;
 
   const { data } = await octokit.search.issuesAndPullRequests({
@@ -376,11 +401,10 @@ export async function findOpenPRForEntity(
     sort: 'updated',
     order: 'desc',
   });
-  // Title-exact filter on the client side (GitHub's search is fuzzy
-  // around punctuation; we want a strict match on the canonical form).
-  const expectedTitle = `Edit ${entityId}`;
+  // Strict client-side match (GitHub search is fuzzy around
+  // punctuation) tolerating the `[DATA]` prefix and Edit/Create verbs.
   for (const item of data.items) {
-    if ((item.title ?? '') !== expectedTitle) continue;
+    if (!titleMatchesEntity(item.title ?? '', entityId)) continue;
     // Fetch the full PR to get head branch + SHA — search API only
     // returns the Issue shape.
     // eslint-disable-next-line no-await-in-loop
