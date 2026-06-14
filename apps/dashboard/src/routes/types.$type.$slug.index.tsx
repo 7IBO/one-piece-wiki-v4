@@ -20,7 +20,8 @@ import { type JSX, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type EntityDetail, type SchemaCatalogue, type SourceRef } from '../api';
 import { EntityForm } from '../form/EntityForm';
-import { useLocale, useT } from '../form/locale';
+import { EntityImageStrip } from '../form/EntityImageStrip';
+import { useEntityTypeLabel, useLocale, useT } from '../form/locale';
 
 export const Route = createFileRoute('/types/$type/$slug/')({
   component: EntityEditComponent,
@@ -73,11 +74,10 @@ function EntityEditComponent(): JSX.Element {
     [entity, locale, schemas, type],
   );
 
-  const entityTypeLabel = useMemo(() => {
-    if (schemas === null) return type;
-    const et = schemas.entityTypes[type];
-    return et?.labels[locale] ?? et?.labels.en ?? type;
-  }, [schemas, type, locale]);
+  // Shared resolver (null while the catalogue loads → falls back to the
+  // raw type id, which only shows during the skeleton phase). Replaces
+  // the memo that was copy-pasted across the type routes.
+  const entityTypeLabel = useEntityTypeLabel(schemas, type) ?? type;
 
   if (error !== null) {
     return <p className='text-destructive'>Failed: {error}</p>;
@@ -205,6 +205,11 @@ function EntityEditComponent(): JSX.Element {
           )
           : null}
       </div>
+      <EntityImageStrip
+        data={entity.data}
+        propertyTypes={schemas.propertyTypes}
+        relationTypes={schemas.relationTypes}
+      />
       {entity.resumePR !== undefined
         ? (
           <Banner variant='info'>

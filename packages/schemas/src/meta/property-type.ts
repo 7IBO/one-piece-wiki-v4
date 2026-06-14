@@ -25,6 +25,14 @@ export const PropertyTypeUiHint = z
     display_format: z.string().optional(),
     input_widget: z.string().optional(),
     icon: z.string().optional(),
+    /**
+     * Semantic role so application code can discover a property WITHOUT
+     * hardcoding its id (CLAUDE.md: "no hardcoded property name").
+     * `image_url` marks the property holding an image entity's
+     * displayable URL. Open string so further roles (e.g. `thumbnail`,
+     * `caption`) need no schema-engine change. See ADR-072.
+     */
+    role: z.string().optional(),
   })
   .partial();
 

@@ -8,6 +8,42 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-072 — Schema-driven discovery of the displayable image URL (`ui_hint.role`)
+
+**Date**: 2026-06-14
+
+**Context**: The dashboard needs to show an entity's images (its
+`depicted-by` targets) and resolve an `image` entity's displayable URL.
+That URL lives on the `url` property — but CLAUDE.md forbids hardcoding
+property names in application code, and nothing in the schema marks
+_which_ property is the image URL.
+
+**Decision**: Add an optional `role` to `PropertyTypeUiHint` and tag the
+`url` property with `ui_hint.role: "image_url"`. App code finds the
+image-URL property by scanning the catalogue for `ui_hint.role ===
+"image_url"`, never by the literal id `url`. `role` is an open string so
+further semantic roles (`thumbnail`, `caption`, …) need no schema-engine
+change.
+
+**Options considered**:
+
+- Hardcode `url` in the dashboard — rejected (breaks the
+  no-hardcoded-property-name rule).
+- An entity-type-level pointer (à la `display_name_properties`) — viable
+  but couples the entity type to a property id; a property-level role is
+  more local and reusable across universes.
+- A new top-level property field vs `ui_hint` — chose `ui_hint`, the
+  existing display-hint bag, since "this is the image URL" is a
+  display/semantic hint.
+
+**Consequences**: `PropertyTypeUiHint` gains `role`; `url.json` gains
+`ui_hint.role: "image_url"`; meta-schemas regenerated. No change to the
+`check:compat` contract (ui_hint is not tracked). Unblocks image display,
+the reuse picker, and inline image creation — all of which resolve the
+URL property by role, not by name.
+
+---
+
 ## ADR-071 — `volume` (tankōbon) entity + `part-of-volume` (expand phase)
 
 **Date**: 2026-06-14

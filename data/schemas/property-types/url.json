@@ -8,5 +8,6 @@
   "localizable": false,
   "spoiler_sensitive": false,
   "applies_to_entity_types": ["image"],
-  "default_qualifiers": ["since"]
+  "default_qualifiers": ["since"],
+  "ui_hint": { "role": "image_url" }
 }
