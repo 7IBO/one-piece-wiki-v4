@@ -1,0 +1,13 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "release-territories",
+  "schema_version": 1,
+  "values": {
+    "jp": { "labels": { "en": "Japan", "fr": "Japon" } },
+    "worldwide": { "labels": { "en": "Worldwide", "fr": "Mondial" } },
+    "north_america": { "labels": { "en": "North America", "fr": "Amérique du Nord" } },
+    "europe": { "labels": { "en": "Europe", "fr": "Europe" } },
+    "asia": { "labels": { "en": "Asia", "fr": "Asie" } },
+    "other": { "labels": { "en": "Other", "fr": "Autre" } }
+  }
+}

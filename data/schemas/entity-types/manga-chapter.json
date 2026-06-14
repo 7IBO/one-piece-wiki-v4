@@ -1,13 +1,13 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "manga-chapter",
-  "schema_version": 3,
+  "schema_version": 4,
   "labels": { "en": "Manga chapter", "fr": "Chapitre du manga" },
   "url_segment": "chapters",
   "properties": [
     { "id": "number", "required": true, "historical": false, "localizable": false },
     { "id": "title_key", "required": true, "historical": false, "localizable": true },
-    { "id": "published_at_jp", "required": true, "historical": false, "localizable": false },
+    { "id": "released_at", "required": true, "historical": false, "localizable": false },
     { "id": "publications", "required": false, "historical": true, "localizable": false },
     { "id": "volume", "required": false, "historical": false, "localizable": false },
     { "id": "page_count", "required": false, "historical": false, "localizable": false },

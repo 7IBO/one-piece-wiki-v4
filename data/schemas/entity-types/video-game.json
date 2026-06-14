@@ -1,14 +1,14 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "video-game",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": { "en": "Video game", "fr": "Jeu vidéo" },
   "url_segment": "games",
   "properties": [
     { "id": "title_key", "required": true, "historical": false, "localizable": true },
     { "id": "game_genre", "required": true, "historical": false, "localizable": false },
     { "id": "game_platforms", "required": false, "historical": false, "localizable": false },
-    { "id": "released_at_jp", "required": true, "historical": false, "localizable": false },
+    { "id": "released_at", "required": true, "historical": false, "localizable": false },
     { "id": "canon_scope", "required": true, "historical": false, "localizable": false }
   ],
   "display_name_properties": ["title_key"],

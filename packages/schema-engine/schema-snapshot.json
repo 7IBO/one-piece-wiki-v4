@@ -17,7 +17,7 @@
         "record_label": {
           "required": false
         },
-        "released_at_jp": {
+        "released_at": {
           "required": false
         }
       },
@@ -30,9 +30,6 @@
     },
     "anime-episode": {
       "properties": {
-        "aired_at_jp": {
-          "required": false
-        },
         "anime_original": {
           "required": false
         },
@@ -43,6 +40,9 @@
           "required": true
         },
         "publications": {
+          "required": false
+        },
+        "released_at": {
           "required": false
         },
         "runtime_minutes": {
@@ -63,10 +63,10 @@
     },
     "anime-special": {
       "properties": {
-        "aired_at_jp": {
+        "canon_scope": {
           "required": false
         },
-        "canon_scope": {
+        "released_at": {
           "required": false
         },
         "runtime_minutes": {
@@ -250,7 +250,7 @@
         "publications": {
           "required": false
         },
-        "published_at_jp": {
+        "released_at": {
           "required": true
         }
       },
@@ -349,7 +349,7 @@
         "publications": {
           "required": false
         },
-        "released_at_jp": {
+        "released_at": {
           "required": true
         },
         "runtime_minutes": {
@@ -519,7 +519,7 @@
         "publications": {
           "required": false
         },
-        "published_at_jp": {
+        "released_at": {
           "required": true
         },
         "title_key": {
@@ -655,7 +655,7 @@
         "publications": {
           "required": false
         },
-        "published_at_jp": {
+        "released_at": {
           "required": true
         },
         "volume": {
@@ -799,7 +799,7 @@
         "game_platforms": {
           "required": false
         },
-        "released_at_jp": {
+        "released_at": {
           "required": true
         },
         "title_key": {
@@ -846,12 +846,6 @@
       "value_type": "number",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
-    },
-    "aired_at_jp": {
-      "value_type": "date",
-      "enum_ref": null,
-      "historical": false,
       "localizable": false
     },
     "album_kind": {
@@ -1244,12 +1238,6 @@
       "historical": true,
       "localizable": false
     },
-    "published_at_jp": {
-      "value_type": "date",
-      "enum_ref": null,
-      "historical": false,
-      "localizable": false
-    },
     "record_label": {
       "value_type": "string",
       "enum_ref": null,
@@ -1263,12 +1251,6 @@
       "localizable": false
     },
     "released_at": {
-      "value_type": "date",
-      "enum_ref": null,
-      "historical": false,
-      "localizable": false
-    },
-    "released_at_jp": {
       "value_type": "date",
       "enum_ref": null,
       "historical": false,
@@ -3332,6 +3314,14 @@
       "tw",
       "uk",
       "us"
+    ],
+    "release-territories": [
+      "asia",
+      "europe",
+      "jp",
+      "north_america",
+      "other",
+      "worldwide"
     ],
     "review-statuses": [
       "auto_imported",

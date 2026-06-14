@@ -1,13 +1,13 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "album",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": { "en": "Album", "fr": "Album" },
   "url_segment": "albums",
   "properties": [
     { "id": "name", "required": true, "historical": true, "localizable": true },
     { "id": "album_kind", "required": true, "historical": false, "localizable": false },
-    { "id": "released_at_jp", "required": false, "historical": false, "localizable": false },
+    { "id": "released_at", "required": false, "historical": false, "localizable": false },
     { "id": "record_label", "required": false, "historical": false, "localizable": false },
     { "id": "catalog_number", "required": false, "historical": false, "localizable": false },
     { "id": "disc_count", "required": false, "historical": false, "localizable": false }

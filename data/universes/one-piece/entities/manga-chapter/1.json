@@ -4,11 +4,21 @@
   "schema_version": 1,
   "slug": "chapter-1",
   "properties": {
-    "number": { "value": 1 },
-    "title_key": { "value_key": "manga-chapter.1.title" },
-    "published_at_jp": { "value": "1997-07-22" }
+    "number": {
+      "value": 1
+    },
+    "title_key": {
+      "value_key": "manga-chapter.1.title"
+    },
+    "released_at": {
+      "value": "1997-07-22",
+      "territory": "jp"
+    }
   },
   "relations": [
-    { "type": "part-of-arc", "target": "arc:east-blue" }
+    {
+      "type": "part-of-arc",
+      "target": "arc:east-blue"
+    }
   ]
 }

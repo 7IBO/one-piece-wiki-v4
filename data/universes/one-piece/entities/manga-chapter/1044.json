@@ -4,11 +4,21 @@
   "schema_version": 1,
   "slug": "chapter-1044",
   "properties": {
-    "number": { "value": 1044 },
-    "title_key": { "value_key": "manga-chapter.1044.title" },
-    "published_at_jp": { "value": "2022-03-07" }
+    "number": {
+      "value": 1044
+    },
+    "title_key": {
+      "value_key": "manga-chapter.1044.title"
+    },
+    "released_at": {
+      "value": "2022-03-07",
+      "territory": "jp"
+    }
   },
   "relations": [
-    { "type": "part-of-arc", "target": "arc:wano" }
+    {
+      "type": "part-of-arc",
+      "target": "arc:wano"
+    }
   ]
 }

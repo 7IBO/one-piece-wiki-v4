@@ -4,11 +4,21 @@
   "schema_version": 1,
   "slug": "chapter-96",
   "properties": {
-    "number": { "value": 96 },
-    "title_key": { "value_key": "manga-chapter.96.title" },
-    "published_at_jp": { "value": "1999-04-19" }
+    "number": {
+      "value": 96
+    },
+    "title_key": {
+      "value_key": "manga-chapter.96.title"
+    },
+    "released_at": {
+      "value": "1999-04-19",
+      "territory": "jp"
+    }
   },
   "relations": [
-    { "type": "part-of-arc", "target": "arc:east-blue" }
+    {
+      "type": "part-of-arc",
+      "target": "arc:east-blue"
+    }
   ]
 }

@@ -1,12 +1,12 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "film",
-  "schema_version": 4,
+  "schema_version": 5,
   "labels": { "en": "Film", "fr": "Film" },
   "url_segment": "films",
   "properties": [
     { "id": "title_key", "required": true, "historical": false, "localizable": true },
-    { "id": "released_at_jp", "required": true, "historical": false, "localizable": false },
+    { "id": "released_at", "required": true, "historical": false, "localizable": false },
     { "id": "publications", "required": false, "historical": true, "localizable": false },
     { "id": "runtime_minutes", "required": true, "historical": false, "localizable": false },
     { "id": "canon_scope", "required": true, "historical": false, "localizable": false },

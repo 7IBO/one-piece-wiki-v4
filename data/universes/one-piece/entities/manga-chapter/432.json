@@ -4,9 +4,16 @@
   "schema_version": 1,
   "slug": "chapter-432",
   "properties": {
-    "number": { "value": 432 },
-    "title_key": { "value_key": "manga-chapter.432.title" },
-    "published_at_jp": { "value": "2006-09-15" }
+    "number": {
+      "value": 432
+    },
+    "title_key": {
+      "value_key": "manga-chapter.432.title"
+    },
+    "released_at": {
+      "value": "2006-09-15",
+      "territory": "jp"
+    }
   },
   "relations": []
 }

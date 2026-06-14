@@ -95,7 +95,7 @@ Each `packages/api-vN/` is an independent workspace containing:
 | ---------------------------- | ------------------------------- | ----------------------------------------------- | --------------------------------------------------------------------- |
 | **Wire (REST)** meta keys    | `snake_case`                    | code-defined                                    | `entity_id`, `since_source`, `epistemic_status`, `canonical_name_key` |
 | **TypeScript SDK** meta keys | `camelCase`                     | code-defined                                    | `entityId`, `sinceSource`, `epistemicStatus`, `canonicalNameKey`      |
-| Property IDs                 | unchanged                       | data-defined in `/data/schemas/property-types/` | `bounty`, `blood_type`, `haki_types`, `published_at_jp`               |
+| Property IDs                 | unchanged                       | data-defined in `/data/schemas/property-types/` | `bounty`, `blood_type`, `haki_types`, `released_at`                   |
 | Qualifier IDs                | unchanged                       | data-defined in `allowed_qualifiers[]`          | `issued_by`, `name_type`, `appearance_type`                           |
 | Entity-type IDs              | unchanged                       | data-defined                                    | `character`, `devil-fruit`, `manga-chapter`                           |
 | Vocabulary IDs               | unchanged                       | data-defined                                    | `blood-types`, `haki-types`, `epistemic-statuses`                     |
