@@ -18,6 +18,8 @@ export const VOCABULARY_DIR: string = resolve(SCHEMA_DIR, 'vocabulary');
 
 export const UNIVERSES_DIR: string = resolve(REPO_ROOT, 'data', 'universes');
 
+export const MIGRATIONS_DIR: string = resolve(REPO_ROOT, 'data', 'migrations');
+
 export const GENERATED_DIR: string = resolve(
   REPO_ROOT,
   'packages',

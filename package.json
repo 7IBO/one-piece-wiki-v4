@@ -26,6 +26,7 @@
     "compat:snapshot": "bun packages/schema-engine/src/cli/check-compat.ts --write",
     "format:data": "bun packages/schema-engine/src/cli/format-data.ts",
     "migrate": "bun packages/schema-engine/src/cli/migrate.ts",
+    "migrate:all": "bun packages/schema-engine/src/cli/migrate-all.ts",
     "build:data": "bun packages/db-builder/src/cli/build.ts",
     "dashboard:dev": "bun --filter @onepiece-wiki/dashboard dev",
     "check:frontend-extensions": "bun scripts/check-frontend-extensions.ts",

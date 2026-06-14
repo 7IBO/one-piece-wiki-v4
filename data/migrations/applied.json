@@ -1,0 +1,8 @@
+{
+  "applied": [
+    "0001-relation-dedup",
+    "0002-unify-release-dates",
+    "0003-drop-canonicity",
+    "0004-merge-references-into-features"
+  ]
+}

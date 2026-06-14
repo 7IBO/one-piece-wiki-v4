@@ -8,6 +8,51 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-070 — Numbered-migration runner (`migrate:all` + applied ledger)
+
+**Date**: 2026-06-14
+
+**Context**: ADR-029 gave a lightweight helper (`bun run migrate <file>`) that
+applies **one** migration by path. The full "apply all pending, track applied
+state" runner was deferred (Phase 5 Task 4). After ADR-066…069 there are four
+migrations (`0001`–`0004`) under `/data/migrations`, so the backlog is real
+enough to justify the runner.
+
+**Decision**:
+
+1. **`bun run migrate:all`** (`cli/migrate-all.ts`) — discovers
+   `/data/migrations/NNNN-*.ts` (numeric order), applies the ones **not** in the
+   ledger as a pipeline (`applyMigrations`, each migration sees the previous
+   one's output), writes the rewritten entity JSON, and appends the applied IDs
+   to the ledger.
+2. **Ledger**: committed **`/data/migrations/applied.json`** (`{ "applied": [...] }`),
+   seeded with `0001`–`0004` (already applied — `0002` rewrote 10 chapter files,
+   the others were no-ops). The ledger travels with the data, so a checkout's
+   applied-state is explicit.
+3. **Modes**: `--dry-run` (list pending + the files they would touch, write
+   nothing); `--check` (exit 1 if anything is pending — a CI gate that forces a
+   contributor who adds a migration to run it and commit the data + ledger);
+   `--allow-lossy` (confirm property/relation removals or entity deletions).
+4. The runner enforces `migration.id === filename` and is pure where it counts:
+   `applyMigrations` is filesystem-free and unit-tested; only the CLI does I/O.
+   It **reuses `detectLosses`** (the same guard the single-file loss-aware
+   `migrate` CLI uses) over the pipeline's reports, so `migrate:all` refuses to
+   destroy four-axis history unless `--allow-lossy` is passed.
+
+**Rationale**: Migrate-forward keeps the corpus current, so an up-to-date
+checkout has **0 pending** and `migrate:all` is a no-op; the value is on a stale
+branch (replay a backlog deterministically) and in CI (`--check` catches
+"added a migration but didn't apply it"). All existing transforms are
+idempotent, so re-running an applied migration would be a no-op anyway — the
+ledger just avoids the wasted pass and records intent.
+
+**Consequences**: new `migrate:all` script, `migrate-all.ts` CLI, `applied.json`
+ledger, and `applyMigrations` in the runner (+ tests). No schema/data change
+(the data is already current); not wired into CI in this PR — `--check` is
+available for a follow-up CI step.
+
+---
+
 ## ADR-069 — Merge `references` into `features` (one occurrence relation)
 
 **Date**: 2026-06-14

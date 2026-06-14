@@ -60,6 +60,48 @@ export function applyMigration(
   return { migrationId: migration.id, changed, deleted, unchanged };
 }
 
+/**
+ * Applies an ordered list of migrations as a pipeline: each migration sees
+ * the corpus as left by the previous one (so a rename then a remove compose).
+ * Returns a per-migration report plus the final state of every file, with the
+ * paths that ended up changed or deleted relative to the original input — what
+ * the CLI must write or `rm`. Pure: no filesystem, no mutation of `files`.
+ */
+export function applyMigrations(
+  files: readonly EntityFile[],
+  migrations: readonly Migration[],
+): {
+  readonly reports: readonly MigrationReport[];
+  readonly finalFiles: readonly EntityFile[];
+  readonly changedPaths: readonly string[];
+  readonly deletedPaths: readonly string[];
+} {
+  const originalJson = new Map(files.map((f) => [f.path, JSON.stringify(f.data)]));
+  let current: EntityFile[] = files.map((f) => ({ path: f.path, data: f.data }));
+  const reports: MigrationReport[] = [];
+  const deletedPaths = new Set<string>();
+
+  for (const migration of migrations) {
+    const report = applyMigration(current, migration);
+    reports.push(report);
+    const changedByPath = new Map(report.changed.map((c) => [c.path, c.after]));
+    for (const path of report.deleted) deletedPaths.add(path);
+    const dropped = new Set(report.deleted);
+    current = current
+      .filter((f) => !dropped.has(f.path))
+      .map((f) => {
+        const after = changedByPath.get(f.path);
+        return after === undefined ? f : { path: f.path, data: after };
+      });
+  }
+
+  const changedPaths = current
+    .filter((f) => JSON.stringify(f.data) !== originalJson.get(f.path))
+    .map((f) => f.path);
+
+  return { reports, finalFiles: current, changedPaths, deletedPaths: [...deletedPaths] };
+}
+
 export type MigrationLoss = {
   readonly path: string;
   readonly reason: 'file-deleted' | 'property-removed' | 'relations-removed';
