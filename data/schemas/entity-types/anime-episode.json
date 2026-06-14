@@ -15,6 +15,13 @@
     { "id": "anime_original", "required": false, "historical": false, "localizable": false }
   ],
   "display_name_properties": ["title_key"],
-  "allowed_relations": ["features", "part-of-arc", "staffed-by", "available-on", "depicted-by"],
+  "allowed_relations": [
+    "features",
+    "part-of-arc",
+    "staffed-by",
+    "produced-by",
+    "available-on",
+    "depicted-by"
+  ],
   "ui_hint": { "icon": "tv", "group": "sources" }
 }

@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "company-roles",
+  "schema_version": 1,
+  "values": {
+    "animation_studio": { "labels": { "en": "Animation studio", "fr": "Studio d'animation" } },
+    "production_company": {
+      "labels": { "en": "Production company", "fr": "Société de production" }
+    },
+    "distributor": { "labels": { "en": "Distributor", "fr": "Distributeur" } },
+    "game_developer": { "labels": { "en": "Game developer", "fr": "Développeur de jeu" } },
+    "game_publisher": { "labels": { "en": "Game publisher", "fr": "Éditeur de jeu" } },
+    "record_label": { "labels": { "en": "Record label", "fr": "Label discographique" } },
+    "manufacturer": { "labels": { "en": "Manufacturer", "fr": "Fabricant" } },
+    "publisher": { "labels": { "en": "Publisher", "fr": "Éditeur" } },
+    "collaborator": { "labels": { "en": "Collaborator", "fr": "Collaborateur" } }
+  }
+}

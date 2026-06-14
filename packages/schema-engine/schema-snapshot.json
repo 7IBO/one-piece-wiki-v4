@@ -32,6 +32,7 @@
         "depicted-by",
         "features",
         "part-of-arc",
+        "produced-by",
         "staffed-by"
       ]
     },
@@ -121,6 +122,22 @@
         "uses-technique",
         "voiced-by",
         "wields-weapon"
+      ]
+    },
+    "company": {
+      "properties": {
+        "company_kind": {
+          "required": false
+        },
+        "homepage_url": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "depicted-by"
       ]
     },
     "concept": {
@@ -289,6 +306,7 @@
         "available-on",
         "depicted-by",
         "features",
+        "produced-by",
         "staffed-by"
       ]
     },
@@ -761,6 +779,12 @@
       "enum_ref": null,
       "historical": false,
       "localizable": true
+    },
+    "company_kind": {
+      "value_type": "enum",
+      "enum_ref": "company-roles",
+      "historical": false,
+      "localizable": false
     },
     "concept_subtype": {
       "value_type": "enum",
@@ -1553,6 +1577,7 @@
         "anime-episode",
         "arc",
         "character",
+        "company",
         "concept",
         "crew",
         "devil-fruit",
@@ -2114,6 +2139,33 @@
         }
       }
     },
+    "produced-by": {
+      "valid_from_types": [
+        "anime-episode",
+        "film"
+      ],
+      "valid_to_types": [
+        "company"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "note": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "role": {
+          "value_type": "enum",
+          "enum_ref": "company-roles",
+          "required": true
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "references": {
       "valid_from_types": [
         "anime-episode",
@@ -2510,6 +2562,17 @@
       "missing",
       "presumed_dead",
       "unknown"
+    ],
+    "company-roles": [
+      "animation_studio",
+      "collaborator",
+      "distributor",
+      "game_developer",
+      "game_publisher",
+      "manufacturer",
+      "production_company",
+      "publisher",
+      "record_label"
     ],
     "concept-subtypes": [
       "cosmological",

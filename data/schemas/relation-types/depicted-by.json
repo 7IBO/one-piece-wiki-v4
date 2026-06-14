@@ -26,7 +26,8 @@
     "film",
     "person",
     "material",
-    "theme-song"
+    "theme-song",
+    "company"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [
