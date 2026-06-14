@@ -22,9 +22,6 @@
         },
         "title_key": {
           "required": false
-        },
-        "tv_rating": {
-          "required": false
         }
       },
       "allowed_relations": [
@@ -52,7 +49,6 @@
         }
       },
       "allowed_relations": [
-        "contains-chapter",
         "depicted-by",
         "features-characters",
         "part-of-saga",
@@ -279,9 +275,6 @@
         },
         "narrative_key": {
           "required": false
-        },
-        "primary_location": {
-          "required": false
         }
       },
       "allowed_relations": [
@@ -297,12 +290,6 @@
       "properties": {
         "canon_scope": {
           "required": true
-        },
-        "canonical_elements": {
-          "required": false
-        },
-        "director": {
-          "required": false
         },
         "film_number": {
           "required": false
@@ -771,12 +758,6 @@
       "historical": false,
       "localizable": false
     },
-    "canonical_elements": {
-      "value_type": "string",
-      "enum_ref": null,
-      "historical": false,
-      "localizable": false
-    },
     "canonicity": {
       "value_type": "enum",
       "enum_ref": "canonicity-tiers",
@@ -851,12 +832,6 @@
     },
     "destroyed_at": {
       "value_type": "source_ref",
-      "enum_ref": null,
-      "historical": false,
-      "localizable": false
-    },
-    "director": {
-      "value_type": "string",
       "enum_ref": null,
       "historical": false,
       "localizable": false
@@ -1065,12 +1040,6 @@
       "historical": true,
       "localizable": false
     },
-    "primary_location": {
-      "value_type": "entity_ref",
-      "enum_ref": null,
-      "historical": false,
-      "localizable": false
-    },
     "publications": {
       "value_type": "date",
       "enum_ref": null,
@@ -1173,12 +1142,6 @@
       "historical": false,
       "localizable": false
     },
-    "tv_rating": {
-      "value_type": "number",
-      "enum_ref": null,
-      "historical": false,
-      "localizable": false
-    },
     "url": {
       "value_type": "string",
       "enum_ref": null,
@@ -1231,7 +1194,7 @@
       "qualifiers": {
         "coverage": {
           "value_type": "enum",
-          "enum_ref": "appearance-types",
+          "enum_ref": "adaptation-coverage",
           "required": false
         },
         "since": {
@@ -1560,17 +1523,6 @@
           "required": false
         }
       }
-    },
-    "contains-chapter": {
-      "valid_from_types": [
-        "arc"
-      ],
-      "valid_to_types": [
-        "anime-episode",
-        "manga-chapter"
-      ],
-      "inverse_inferred": false,
-      "qualifiers": {}
     },
     "controls-territory": {
       "valid_from_types": [

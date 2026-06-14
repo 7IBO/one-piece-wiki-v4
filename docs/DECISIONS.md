@@ -8,6 +8,58 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-056 — Schema cleanup pass 1: remove duplicates & low-value attributes
+
+**Date**: 2026-06-14
+
+**Context**: A maintainer-prompted quality audit (one internal structural agent +
+two Fandom relevance agents, EN/FR/JP) flagged duplicates and low-value
+attributes — seeded by two correct maintainer catches: `tv_rating` (external,
+volatile) and `contains-chapter` (a duplicate inverse). This ADR lands the
+**unambiguous** fixes (zero data usage → no migration); the judgment calls
+(relation-family consolidation, technique entity) are deferred (see below).
+
+**Decision** — remove / fix (all have **zero** entity-data usage):
+
+1. **Delete `contains-chapter`** — it duplicates the build-generated inverse of
+   `part-of-arc` (`manga-chapter`/`event`/`anime-episode` → arc). Exactly the
+   ADR-033 "prefer-inferred" pattern, missed because it post-dated that pass.
+   Arc→chapter listing comes free as `part-of-arc.inverse`, and is _broader_
+   (also events/episodes). Removed from `arc.allowed_relations`.
+2. **Delete `tv_rating`** (anime-episode) — JP broadcast audience share: external,
+   volatile, real-world, not in-universe, not spoiler-versioned. Fandom itself
+   treats `rating`/`rank`/views as noise.
+3. **Delete `director`** (film) — duplicates `staffed-by` (→ person,
+   `role: film_director`); a free-text parallel that ADR-050 explicitly argued
+   against. Direction is now only a `staffed-by` edge.
+4. **Delete `canonical_elements`** (film) — a free-string prose blob (which-bits-
+   are-canon); editorial content that belongs in `/narratives`, not entity JSON.
+5. **Delete `primary_location`** (event) — duplicates the `set-in` relation
+   (event → location/arc); one writable home for the fact, prefer the relation.
+6. **Fix `adapted-by.coverage`** — `enum_ref` was wrongly `appearance-types`
+   (a character-appearance vocab); corrected to the purpose-built
+   `adaptation-coverage` (full/partial/summary/…), which was orphaned (0 refs).
+
+**No migration** (ADR-042): every removed property/relation has zero usage in
+`/data` (verified by grep across all entities), so the "contract" removal
+rewrites nothing. PR labelled `schema-breaking`; snapshot regenerated (11
+breaking diffs, all removals/the enum fix).
+
+**Deferred to a follow-up (genuine product/design calls, need maintainer input)**:
+the over-split source↔entity relation family (`features`/`appears-in`,
+`introduces-character` vs a `features.is_first_appearance` qualifier,
+`references`/`references-event`, `mentions`/`clarifies-fact`); the wire-or-drop of
+`friend-of`/`married-to`/`rival-of` (unreachable today; `married-to` may overlap
+`family-of{spouse}`); and the **bigger question** the Fandom audit raised —
+whether `technique` should stay a first-class entity at all (Fandom, the most
+exhaustive source, keeps techniques as prose, not structured data).
+
+**Consequences**: −4 properties (85), −1 relation (63); `arc`/`anime-episode`/
+`film`/`event` `schema_version` bumped. INVENTORY refreshed (it had documented
+`contains-chapter` and a non-existent `features.is_first_appearance` as healthy).
+
+---
+
 ## ADR-055 — `databook-card` entity (Vivre Card / Visual Dictionary)
 
 **Date**: 2026-06-14

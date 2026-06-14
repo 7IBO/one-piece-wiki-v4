@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "arc",
-  "schema_version": 3,
+  "schema_version": 4,
   "labels": { "en": "Arc", "fr": "Arc" },
   "url_segment": "arcs",
   "properties": [
@@ -12,7 +12,6 @@
   ],
   "allowed_relations": [
     "part-of-saga",
-    "contains-chapter",
     "features-characters",
     "set-in",
     "depicted-by"
