@@ -98,6 +98,14 @@ const UI_STRINGS = {
   cancel: { en: 'Cancel', fr: 'Annuler' },
   done: { en: 'Done', fr: 'Terminé' },
   search: { en: 'Search…', fr: 'Rechercher…' },
+  // Home page
+  homeTitle: { en: 'Entity types', fr: 'Types d’entités' },
+  homeSubtitle: {
+    en: 'pick one to browse and edit entities.',
+    fr: 'choisissez-en un à parcourir et éditer.',
+  },
+  entitiesWord: { en: 'entities', fr: 'entités' },
+  entityWord: { en: 'entity', fr: 'entité' },
   // Property nav
   propertiesHeader: { en: 'Properties', fr: 'Propriétés' },
   filledProgress: { en: 'filled', fr: 'remplies' },
