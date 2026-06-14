@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "card-kinds",
+  "schema_version": 1,
+  "values": {
+    "character": { "labels": { "en": "Character profile", "fr": "Profil de personnage" } },
+    "extra": { "labels": { "en": "Extra characters", "fr": "Personnages secondaires" } },
+    "skill": { "labels": { "en": "Skill / ability", "fr": "Compétence / capacité" } },
+    "ship": { "labels": { "en": "Ship", "fr": "Navire" } }
+  }
+}

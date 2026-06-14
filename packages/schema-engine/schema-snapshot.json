@@ -214,6 +214,27 @@
         "mentions"
       ]
     },
+    "databook-card": {
+      "properties": {
+        "canon_scope": {
+          "required": false
+        },
+        "card_kind": {
+          "required": true
+        },
+        "card_number": {
+          "required": false
+        },
+        "name": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "card-of",
+        "depicted-by",
+        "profiles"
+      ]
+    },
     "devil-fruit": {
       "properties": {
         "awakened": {
@@ -767,6 +788,18 @@
       "enum_ref": null,
       "historical": true,
       "localizable": true
+    },
+    "card_kind": {
+      "value_type": "enum",
+      "enum_ref": "card-kinds",
+      "historical": false,
+      "localizable": false
+    },
+    "card_number": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
     },
     "classification": {
       "value_type": "enum",
@@ -1470,6 +1503,16 @@
         }
       }
     },
+    "card-of": {
+      "valid_from_types": [
+        "databook-card"
+      ],
+      "valid_to_types": [
+        "databook"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
     "caused-by-event": {
       "valid_from_types": [
         "event"
@@ -1580,6 +1623,7 @@
         "company",
         "concept",
         "crew",
+        "databook-card",
         "devil-fruit",
         "event",
         "film",
@@ -2166,6 +2210,24 @@
         }
       }
     },
+    "profiles": {
+      "valid_from_types": [
+        "databook-card"
+      ],
+      "valid_to_types": [
+        "character",
+        "devil-fruit",
+        "ship"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "references": {
       "valid_from_types": [
         "anime-episode",
@@ -2553,6 +2615,12 @@
       "game_only",
       "non_canon",
       "sbs"
+    ],
+    "card-kinds": [
+      "character",
+      "extra",
+      "ship",
+      "skill"
     ],
     "character-statuses": [
       "alive",

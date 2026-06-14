@@ -8,6 +8,41 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-055 — `databook-card` entity (Vivre Card / Visual Dictionary)
+
+**Date**: 2026-06-14
+
+**Context**: Databooks — especially the ongoing Vivre Card – Visual Dictionary —
+publish numbered profile cards (character / extras / skill / ship), each a
+sourced, author-supplemented snapshot of a subject's facts plus exclusive lore.
+A Fandom audit corrected one assumption: **there is no six-axis stat hexagon** —
+cards carry _descriptive + measured_ fields, not RPG ratings. We already had the
+`databook` source entity but no finer-grained card.
+
+**Decision** (additive, core):
+
+1. **`databook-card`** entity — `card_number`, `card_kind` (enum → new
+   **`card-kinds`**: character / extra / skill / ship, required), `name`,
+   `canon_scope`. ui group `sources`.
+2. **`profiles`** relation (`databook-card` → `character` / `devil-fruit` /
+   `ship`) — the subject the card documents.
+3. **`card-of`** relation (`databook-card` → `databook`) — its parent book.
+4. `depicted-by` `valid_from` += `databook-card`.
+
+**Rationale**: the card is a fine-grained **source**; the _facts_ it states about
+a subject continue to live on that subject (historised, with the card as the
+`since`/`source`), so the card entity itself stays lean (number, kind, subject,
+book) rather than duplicating height/age/bounty/blood-type. Canon tier is
+`databook` (or `semi_canon` for author-ratified facts) — both already in
+`canon-scopes`.
+
+**Consequences**: +1 entity (26), +2 properties (89), +2 relations (64),
++1 vocabulary (52). All core. No `/data` migration. Snapshot regenerated
+(additive). A future refinement can make `databook-card` a `source_ref` target
+for per-card fact citation.
+
+---
+
 ## ADR-054 — Real-world `company` entity + `produced-by`
 
 **Date**: 2026-06-14

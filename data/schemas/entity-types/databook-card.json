@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "databook-card",
+  "schema_version": 1,
+  "labels": { "en": "Databook card", "fr": "Fiche de databook" },
+  "url_segment": "databook-cards",
+  "properties": [
+    { "id": "name", "required": false, "historical": true, "localizable": true },
+    { "id": "card_number", "required": false, "historical": false, "localizable": false },
+    { "id": "card_kind", "required": true, "historical": false, "localizable": false },
+    { "id": "canon_scope", "required": false, "historical": false, "localizable": false }
+  ],
+  "allowed_relations": ["profiles", "card-of", "depicted-by"],
+  "ui_hint": { "icon": "id-card", "group": "sources" }
+}
