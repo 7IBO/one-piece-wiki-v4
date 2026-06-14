@@ -11,6 +11,6 @@
     { "id": "canon_scope", "required": true, "historical": false, "localizable": false },
     { "id": "databook_subtype", "required": true, "historical": false, "localizable": false }
   ],
-  "allowed_relations": ["references", "clarifies-fact"],
+  "allowed_relations": ["features", "clarifies-fact"],
   "ui_hint": { "icon": "book-marked", "group": "sources" }
 }

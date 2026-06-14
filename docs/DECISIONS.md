@@ -8,6 +8,56 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-069 — Merge `references` into `features` (one occurrence relation)
+
+**Date**: 2026-06-14
+
+**Context**: After ADR-066 there were still two source→entity relations:
+`features` ("shown on the page", required `appearance_type` qualifier) and
+`references` ("evoked, not shown", no qualifier). But "shown vs evoked" is
+exactly what `appearance_type` already encodes — its values run from `full` /
+`silhouette` / `partial` (shown) through `mentioned` (not shown). So the
+relation-type split **re-encoded a distinction the qualifier already carried** —
+the same kind of redundancy ADR-066 removed. Worse, `appearance-types` also held
+`named_only` and `narrator_only`, which are non-visual (mention-like) and
+duplicated the `mentioned` case.
+
+**Decision** (breaking; user-approved):
+
+1. **Delete `references`; merge it into `features`.** One relation = "this source
+   involves this entity"; _how_ (shown or evoked) is `appearance_type`. A bare
+   reference is `features` with `appearance_type: "mentioned"`.
+2. Widen `features.valid_from` += `sbs`, `databook` (the sources `references`
+   added). `sbs` / `databook` swap `references` → `features` in
+   `allowed_relations`; `manga-chapter` drops the now-redundant `references`
+   (it already had `features`).
+3. **Relabel** the inverse to be honest for the merged scope: "Appears in" →
+   "Featured in" (fr "Apparaît dans" → "Figure dans"; active fr "Met en scène" →
+   "Présente").
+4. **Collapse `appearance-types`**: drop `named_only` and `narrator_only`
+   (verbal-evocation variants) into the single `mentioned`. The 15 remaining
+   values are genuine visual/contextual manners (full, silhouette, partial,
+   flashback, cover_story, recap, vision, photograph, portrait, corpse, imagined,
+   revelation, wanted_poster, eyecatcher, mentioned).
+
+**Migration**:
+[`0004-merge-references-into-features.ts`](../data/migrations/0004-merge-references-into-features.ts)
+— rewrites `references` edges to `features{appearance_type:mentioned}` and
+collapses `named_only`/`narrator_only` → `mentioned`. No-op on the current corpus
+(0 entities used them).
+
+**Rationale**: The shown/evoked axis is a _manner_, not a _kind_ of link. One
+relation + one manner enum gives a binary rule with no overlap: a chapter
+"features" Luffy (full), Imu (silhouette), or Joy Boy (mentioned) — all one
+edge type, queried uniformly for spoiler/appearance lists. A silhouette (the
+classic One Piece foreshadow) stays an appearance (`silhouette`), not a
+reference.
+
+**Consequences**: relation types 63 → 62 (−1); `appearance-types` 17 → 15 values.
+Breaking (compat: 6 breaking / 4 additive). No data rewrite.
+
+---
+
 ## ADR-068 — Drop the manual `canonicity` tier; derive it from `canon_scope`
 
 **Date**: 2026-06-14

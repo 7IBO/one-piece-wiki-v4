@@ -406,7 +406,7 @@ appearances are `features`' generated inverse.)
 | `cover_image` | no       | no         | no          | entity_ref to `image`         |
 
 Allowed relations: `features`, `part-of-arc`, `adapted-by`,
-`introduces-character`, `references`, `depicted-by`.
+`introduces-character`, `depicted-by`.
 
 ---
 
@@ -448,7 +448,7 @@ Allowed relations: `features`, `staffed-by`, `produced-by`, `available-on`,
 | `released_at` | yes      | no         | no          | `territory: jp` |
 | `canon_scope` | yes      | no         | no          | Always `sbs`    |
 
-Allowed relations: `references`, `clarifies-fact`.
+Allowed relations: `features`, `clarifies-fact`.
 
 ---
 
@@ -461,7 +461,7 @@ Allowed relations: `references`, `clarifies-fact`.
 | `canon_scope`      | yes      | no         | no          | Always `databook`               |
 | `databook_subtype` | yes      | no         | no          | Vocabulary `databook-subtypes`  |
 
-Allowed relations: `references`, `clarifies-fact`.
+Allowed relations: `features`, `clarifies-fact`.
 
 ---
 
@@ -663,7 +663,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (63)
+## 4. Relation types (62)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -736,12 +736,11 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.8 Source ↔ entity
 
-| Type                   | From              | To          | Inverse               | Qualifiers                                         |
-| ---------------------- | ----------------- | ----------- | --------------------- | -------------------------------------------------- |
-| `features`             | source types      | any entity  | `appears-in` _(gen.)_ | appearance_type                                    |
-| `introduces-character` | source types      | `character` | `introduced-in`       | —                                                  |
-| `references`           | source types      | any entity  | `referenced-by`       | — (absorbs former `mentions` / `references-event`) |
-| `clarifies-fact`       | `sbs`, `databook` | any entity  | `clarified-in`        | property_name                                      |
+| Type                   | From              | To          | Inverse                | Qualifiers                                                                  |
+| ---------------------- | ----------------- | ----------- | ---------------------- | --------------------------------------------------------------------------- |
+| `features`             | source types      | any entity  | `featured-in` _(gen.)_ | appearance_type (shown _or_ evoked; absorbs former `references`/`mentions`) |
+| `introduces-character` | source types      | `character` | `introduced-in`        | —                                                                           |
+| `clarifies-fact`       | `sbs`, `databook` | any entity  | `clarified-in`         | property_name                                                               |
 
 ### 4.9 Source ↔ source (adaptation)
 
@@ -844,10 +843,10 @@ values have localized labels (EN, FR at minimum).
 
 ### 5.5 `appearance-types`
 
-`full`, `silhouette`, `partial`, `mentioned`, `named_only`,
-`flashback`, `cover_story`, `recap`, `vision`, `photograph`,
-`portrait`, `corpse`, `imagined`, `narrator_only`, `revelation`,
-`wanted_poster`, `eyecatcher`
+`full`, `silhouette`, `partial`, `mentioned`, `flashback`,
+`cover_story`, `recap`, `vision`, `photograph`, `portrait`, `corpse`,
+`imagined`, `revelation`, `wanted_poster`, `eyecatcher`
+(the manner on a `features` edge — shown or, for `mentioned`, evoked)
 
 ### 5.6 `character-statuses`
 
@@ -1222,7 +1221,9 @@ These exist on every entity, declared once in primitives.
 
 ### 9.1 Entity types that can appear in `features` relations (source side)
 
-`manga-chapter`, `anime-episode`, `film`, `sbs`, `databook`
+`manga-chapter`, `anime-episode`, `film`, `video-game`,
+`live-action-series`, `live-action-episode`, `anime-special`,
+`live-performance`, `sbs`, `databook`
 
 ### 9.2 Entity types that can be `depicted-by` images
 
@@ -1255,7 +1256,7 @@ depicted by another image).
 
 - **Entity types**: 34
 - **Property types**: 89 (some shared across multiple entity types)
-- **Relation types**: 63 (canonical declared; inverses are build-generated)
+- **Relation types**: 62 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 59
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)

@@ -256,7 +256,7 @@
       },
       "allowed_relations": [
         "clarifies-fact",
-        "references"
+        "features"
       ]
     },
     "databook-card": {
@@ -532,8 +532,7 @@
         "depicted-by",
         "features",
         "introduces-character",
-        "part-of-arc",
-        "references"
+        "part-of-arc"
       ]
     },
     "material": {
@@ -661,7 +660,7 @@
       },
       "allowed_relations": [
         "clarifies-fact",
-        "references"
+        "features"
       ]
     },
     "ship": {
@@ -1923,11 +1922,13 @@
       "valid_from_types": [
         "anime-episode",
         "anime-special",
+        "databook",
         "film",
         "live-action-episode",
         "live-action-series",
         "live-performance",
         "manga-chapter",
+        "sbs",
         "video-game"
       ],
       "valid_to_types": [
@@ -2376,31 +2377,6 @@
         }
       }
     },
-    "references": {
-      "valid_from_types": [
-        "anime-episode",
-        "databook",
-        "film",
-        "manga-chapter",
-        "sbs"
-      ],
-      "valid_to_types": [
-        "character",
-        "concept",
-        "crew",
-        "devil-fruit",
-        "event",
-        "location",
-        "organization",
-        "race",
-        "ship",
-        "technique",
-        "title",
-        "weapon"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {}
-    },
     "replaces": {
       "valid_from_types": [
         "ship"
@@ -2719,8 +2695,6 @@
       "full",
       "imagined",
       "mentioned",
-      "named_only",
-      "narrator_only",
       "partial",
       "photograph",
       "portrait",
