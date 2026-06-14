@@ -26,6 +26,7 @@ import {
 import { Link } from '@tanstack/react-router';
 import { type JSX, useEffect, useMemo, useState } from 'react';
 import { api, type TableEntity } from '../api';
+import { useEntityDrawer } from './EntityDrawerProvider';
 import { type Locale, useLocale, useT } from './locale';
 
 export type EntityImageStripProps = {
@@ -113,6 +114,9 @@ function DepictionCard(
     readonly locale: Locale;
   },
 ): JSX.Element {
+  // Hook must run unconditionally — before the loading early-return.
+  const drawer = useEntityDrawer();
+
   if (loading) {
     return <Skeleton className='size-20 shrink-0 rounded' />;
   }
@@ -133,13 +137,10 @@ function DepictionCard(
     ? humanizeRole(roleValue)
     : null;
 
-  return (
-    <Link
-      to='/types/$type/$slug'
-      params={{ type, slug }}
-      className='group flex w-20 shrink-0 flex-col gap-1'
-      title={name ?? depiction.imageId}
-    >
+  const label = name ?? depiction.imageId;
+  const cardClass = 'group flex w-20 shrink-0 flex-col gap-1 text-left';
+  const content = (
+    <>
       {url !== null
         ? (
           <ImageThumb
@@ -160,6 +161,26 @@ function DepictionCard(
       <span className='text-muted-foreground max-w-full truncate text-[10px]'>
         {name ?? slug}
       </span>
+    </>
+  );
+
+  // Prefer inline editing in the shared drawer (no navigation away);
+  // fall back to a full-page link when no drawer provider is mounted.
+  if (drawer !== null) {
+    return (
+      <button
+        type='button'
+        onClick={() => drawer.openEntity(type, slug)}
+        className={cardClass}
+        title={label}
+      >
+        {content}
+      </button>
+    );
+  }
+  return (
+    <Link to='/types/$type/$slug' params={{ type, slug }} className={cardClass} title={label}>
+      {content}
     </Link>
   );
 }
