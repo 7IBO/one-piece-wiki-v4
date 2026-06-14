@@ -13,16 +13,23 @@ Create a file here named `NNNN-short-slug.ts` (zero-padded sequence),
 default-exporting a `Migration`:
 
 ```ts
-import { type Migration, renameProperty } from '@onepiece-wiki/schema-engine';
+// Import via relative path to the engine source — `/data` is not a workspace
+// package, so the `@onepiece-wiki/schema-engine` specifier does not resolve here.
+import {
+  type Migration,
+  renameProperty,
+} from '../../packages/schema-engine/src/index.ts';
 
 const migration: Migration = {
-  id: '0001-bounty-to-reward',
+  id: '0002-bounty-to-reward',
   description: 'Rename character `bounty` property to `reward`.',
   up: (data) => renameProperty(data, 'bounty', 'reward'),
 };
 
 export default migration;
 ```
+
+> The first real migration is [`0001-relation-dedup.ts`](0001-relation-dedup.ts) (ADR-066).
 
 `up` receives one entity's parsed JSON and returns the transformed
 data, the same object when nothing changed, or `null` to delete the

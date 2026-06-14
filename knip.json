@@ -11,7 +11,7 @@
   ],
   "workspaces": {
     ".": {
-      "entry": ["scripts/*.ts", "commitlint.config.ts"]
+      "entry": ["scripts/*.ts", "commitlint.config.ts", "data/migrations/*.ts"]
     },
     "apps/dashboard": {
       "entry": [

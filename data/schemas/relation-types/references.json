@@ -1,5 +1,5 @@
 {
-  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
   "id": "references",
   "schema_version": 1,
   "labels": {

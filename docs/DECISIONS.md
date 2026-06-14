@@ -8,6 +8,52 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-066 — Relation dedup pass 3 (appearance + relationship families)
+
+**Date**: 2026-06-14
+
+**Context**: The schema audit (continuing ADR-056/057's cleanup) found redundant
+relations in the appearance/reference and relationship families:
+
+- **`appears-in`** (entity → source) is the literal inverse of **`features`**
+  (source → entity); both were declared, and their type-lists had drifted apart.
+- **`mentions`** (sbs/databook → entity) and **`references-event`**
+  (source → event) are both strict subsets of **`references`** (source → entity,
+  events already among its targets).
+- **`married-to`** is a strict subset of **`family-of`** with
+  `relation_kind: "spouse"` (the vocabulary already has `spouse`/`partner`).
+- **`friend-of`** and **`rival-of`** existed but were never wired into
+  `character.allowed_relations`, i.e. unusable.
+
+**Decision** (breaking; user-approved):
+
+1. **Delete** `appears-in`, `mentions`, `references-event`, `married-to`.
+2. **Widen `features.valid_to`** to absorb `appears-in`'s coverage (+ concept,
+   title, event, ship, technique, weapon, location, organization, race). The
+   "Appears in" view is `features`' generated inverse (ADR-033/034).
+3. **Relocate `references` core** (`/data/schemas/relation-types/`): it is the
+   canonical reference relation and is now wired into the **core** entities
+   `databook` / `manga-chapter` (and `sbs`), so it cannot live under the
+   one-piece scope. `sbs`/`databook` swap `mentions` → `references`;
+   `manga-chapter` swaps `references-event` → `references`; `concept` drops
+   `appears-in`.
+4. **Wire `friend-of` + `rival-of`** into `character` (kept distinct: a rival is
+   not an enemy, a friend is not a strategic ally). Spouse data, if any, maps to
+   `family-of{relation_kind: spouse}`.
+
+**Migration**: [`0001-relation-dedup.ts`](../data/migrations/0001-relation-dedup.ts)
+— the project's first migration. `removeRelationType` ×4. A **no-op on the
+current corpus** (0 of 30 entities used any removed relation, verified), kept as
+the historical record. Fixed the migrations README import convention (relative
+path to the engine source; the `@onepiece-wiki/schema-engine` specifier does not
+resolve from `/data`).
+
+**Consequences**: relation types 67 → 63 (−4). Breaking (compat: 8 breaking /
+14 additive), `schema-breaking` label. No data rewrite. `references` becomes a
+live core relation; the appearance graph now has one canonical direction.
+
+---
+
 ## ADR-065 — `merchandise` entity
 
 **Date**: 2026-06-14
