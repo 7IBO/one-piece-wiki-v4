@@ -1,11 +1,11 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
-  "id": "released_at_jp",
+  "id": "catalog_number",
   "schema_version": 1,
-  "labels": { "en": "Released in Japan", "fr": "Sorti au Japon" },
-  "value_type": "date",
+  "labels": { "en": "Catalog number", "fr": "Référence catalogue" },
+  "value_type": "string",
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,
-  "applies_to_entity_types": ["film", "album"]
+  "applies_to_entity_types": ["album"]
 }

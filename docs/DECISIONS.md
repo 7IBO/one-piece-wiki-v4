@@ -8,6 +8,40 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-060 — `album` entity + `contains-track` (discography)
+
+**Date**: 2026-06-14
+
+**Context**: The Fandom music audit found ~40+ OST / compilation / character-song
+albums, structured as a first-class artifact (release, label, tracklist) with a
+many-to-many song↔album link ("Featured on"). Our `theme-song` (ADR-051) covers
+individual songs; albums are a distinct published artifact.
+
+**Decision** (additive, core — albums are universal):
+
+1. **`album`** entity — `name`, `album_kind` (enum → new **`album-kinds`**:
+   movie_ost / tv_ost / compilation / character_song / image_song / single /
+   best), `released_at_jp`, `record_label`, `catalog_number`, `disc_count`.
+2. **`contains-track`** relation (`album` → `theme-song`, many-to-many) —
+   qualifiers `track_number` (required), `disc`, `version_note` ("TV Size" /
+   "Extended" / remix), `since`. A song appearing on many albums is many
+   `contains-track` edges; the "Featured on" side is the generated inverse.
+3. Credits reuse `staffed-by` / `produced-by` (widened `valid_from` += `album`):
+   composer/arranger/performer → `person`, label → `company`. No new relations.
+4. `depicted-by` `valid_from` += `album` (cover art). `record_label` /
+   `released_at_jp` `applies_to` widened to `album`.
+
+**Rationale**: `theme-song` doubles as the track entity (album tracks include
+non-theme BGM and character songs); the many-to-many "Featured on" reality needs
+a relation (not an array property) to carry per-appearance qualifiers. Reusing
+`staffed-by`/`produced-by` keeps one credit model across all media.
+
+**Consequences**: +1 entity (28), +3 properties (86), +1 relation (66),
++1 vocabulary (54); 3 source-relation `valid_from`s widened. All core. No
+migration. Snapshot regenerated (additive).
+
+---
+
 ## ADR-059 — Schema-version model: migrate-forward + version tooling
 
 **Date**: 2026-06-14

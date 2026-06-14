@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "album-kinds",
+  "schema_version": 1,
+  "values": {
+    "movie_ost": { "labels": { "en": "Movie soundtrack", "fr": "BO de film" } },
+    "tv_ost": { "labels": { "en": "TV soundtrack", "fr": "BO de la série" } },
+    "compilation": { "labels": { "en": "Compilation", "fr": "Compilation" } },
+    "character_song": {
+      "labels": { "en": "Character song album", "fr": "Album de chansons de personnages" }
+    },
+    "image_song": { "labels": { "en": "Image song album", "fr": "Album d'image songs" } },
+    "single": { "labels": { "en": "Single", "fr": "Single" } },
+    "best": { "labels": { "en": "Best-of", "fr": "Best-of" } }
+  }
+}

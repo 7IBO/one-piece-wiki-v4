@@ -7,5 +7,5 @@
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,
-  "applies_to_entity_types": ["theme-song"]
+  "applies_to_entity_types": ["theme-song", "album"]
 }
