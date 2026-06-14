@@ -7,5 +7,5 @@
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,
-  "applies_to_entity_types": ["anime-episode"]
+  "applies_to_entity_types": ["anime-episode", "anime-special"]
 }

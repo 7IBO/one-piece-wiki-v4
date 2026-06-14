@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "special-kinds",
+  "schema_version": 1,
+  "values": {
+    "ova": { "labels": { "en": "OVA", "fr": "OAV" } },
+    "tv_special": { "labels": { "en": "TV special", "fr": "Spécial TV" } },
+    "ona": { "labels": { "en": "ONA", "fr": "ONA" } }
+  }
+}

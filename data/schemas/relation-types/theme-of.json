@@ -7,7 +7,7 @@
     "fr": { "active": "Thème de", "inverse": "A pour thème" }
   },
   "valid_from_types": ["theme-song"],
-  "valid_to_types": ["anime-episode", "film", "arc", "live-action-series"],
+  "valid_to_types": ["anime-episode", "film", "arc", "live-action-series", "anime-special"],
   "qualifiers": [
     { "id": "usage", "value_type": "enum", "enum_ref": "theme-song-usage", "required": true },
     { "id": "sequence", "value_type": "number", "required": false },

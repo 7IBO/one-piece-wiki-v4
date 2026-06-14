@@ -61,6 +61,32 @@
         "staffed-by"
       ]
     },
+    "anime-special": {
+      "properties": {
+        "aired_at_jp": {
+          "required": false
+        },
+        "canon_scope": {
+          "required": false
+        },
+        "runtime_minutes": {
+          "required": false
+        },
+        "special_kind": {
+          "required": true
+        },
+        "title_key": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "available-on",
+        "depicted-by",
+        "features",
+        "produced-by",
+        "staffed-by"
+      ]
+    },
     "arc": {
       "properties": {
         "arc_number": {
@@ -1233,6 +1259,12 @@
       "historical": false,
       "localizable": false
     },
+    "special_kind": {
+      "value_type": "enum",
+      "enum_ref": "special-kinds",
+      "historical": false,
+      "localizable": false
+    },
     "spoiler_since": {
       "value_type": "source_ref",
       "enum_ref": null,
@@ -1433,6 +1465,7 @@
     "available-on": {
       "valid_from_types": [
         "anime-episode",
+        "anime-special",
         "film",
         "live-action-episode",
         "live-action-series",
@@ -1742,6 +1775,7 @@
       "valid_from_types": [
         "album",
         "anime-episode",
+        "anime-special",
         "arc",
         "character",
         "company",
@@ -1896,6 +1930,7 @@
     "features": {
       "valid_from_types": [
         "anime-episode",
+        "anime-special",
         "film",
         "live-action-episode",
         "live-action-series",
@@ -2335,6 +2370,7 @@
       "valid_from_types": [
         "album",
         "anime-episode",
+        "anime-special",
         "film",
         "live-action-episode",
         "live-action-series",
@@ -2519,6 +2555,7 @@
       "valid_from_types": [
         "album",
         "anime-episode",
+        "anime-special",
         "film",
         "live-action-episode",
         "live-action-series",
@@ -2576,6 +2613,7 @@
       ],
       "valid_to_types": [
         "anime-episode",
+        "anime-special",
         "arc",
         "film",
         "live-action-series"
@@ -3328,6 +3366,11 @@
       "other",
       "sbs",
       "video_game"
+    ],
+    "special-kinds": [
+      "ona",
+      "ova",
+      "tv_special"
     ],
     "succession-reasons": [
       "extracted",

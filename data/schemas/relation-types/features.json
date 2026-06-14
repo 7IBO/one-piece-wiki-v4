@@ -12,7 +12,8 @@
     "film",
     "video-game",
     "live-action-series",
-    "live-action-episode"
+    "live-action-episode",
+    "anime-special"
   ],
   "valid_to_types": [
     "character",
