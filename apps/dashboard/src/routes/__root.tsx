@@ -2,18 +2,11 @@
 import { Button } from '@/components/ui/button';
 import { MobileSheet, MobileSheetContent, MobileSheetTrigger } from '@/components/ui/mobile-sheet';
 import { Toaster } from '@/components/ui/sonner';
-import {
-  createRootRoute,
-  HeadContent,
-  Link,
-  Scripts,
-  useLocation,
-  useNavigate,
-} from '@tanstack/react-router';
+import { createRootRoute, HeadContent, Link, Scripts, useLocation } from '@tanstack/react-router';
 import { Menu } from 'lucide-react';
 import { type JSX, type ReactNode, useEffect, useState } from 'react';
 import { AppSidebar } from '../AppSidebar';
-import { auth, useCurrentUser } from '../auth';
+import { useCurrentUser, useSignOut } from '../auth';
 import { BottomNav } from '../BottomNav';
 import { DraftsIndicator } from '../DraftsIndicator';
 import { EntityDrawerProvider } from '../form/EntityDrawerProvider';
@@ -68,7 +61,7 @@ function RootDocument({ children }: { children: ReactNode; }): JSX.Element {
 
 function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
   const { user, loaded } = useCurrentUser();
-  const navigate = useNavigate();
+  const { signOut, pending: signOutPending } = useSignOut();
   const location = useLocation();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
 
@@ -149,10 +142,8 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
                       size='sm'
                       variant='outline'
                       className='hidden sm:inline-flex'
-                      onClick={async () => {
-                        await auth.signOut();
-                        await navigate({ to: '/login' });
-                      }}
+                      disabled={signOutPending}
+                      onClick={signOut}
                     >
                       Sign out
                     </Button>
