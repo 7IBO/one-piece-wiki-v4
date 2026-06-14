@@ -106,6 +106,15 @@ const UI_STRINGS = {
   },
   entitiesWord: { en: 'entities', fr: 'entités' },
   entityWord: { en: 'entity', fr: 'entité' },
+  ofWord: { en: 'of', fr: 'sur' },
+  noEntitiesYet: {
+    en: 'No entities of this type yet.',
+    fr: 'Aucune entité de ce type pour l’instant.',
+  },
+  noMatchSearch: {
+    en: 'No match — try a different search.',
+    fr: 'Aucun résultat — essayez une autre recherche.',
+  },
   // New-entity page + slug input
   newEntityLabel: { en: 'New:', fr: 'Nouveau :' },
   draftLabel: { en: 'draft', fr: 'brouillon' },
@@ -465,4 +474,25 @@ type UiStringKey = keyof typeof UI_STRINGS;
 export function useT(): (key: UiStringKey) => string {
   const locale = useLocale();
   return (key) => UI_STRINGS[key][locale] ?? UI_STRINGS[key].en;
+}
+
+type TypeLabelSource = {
+  readonly entityTypes: Record<
+    string,
+    { readonly labels: { readonly en: string; readonly fr: string; }; }
+  >;
+};
+
+/**
+ * Localized entity-type label, or `null` while the schema catalogue is
+ * still loading. Callers render a skeleton on `null` rather than the raw
+ * kebab-case `type` id, which otherwise flashes lowercase (e.g. "arc"
+ * before "Arc") on a cold load. One shared resolver replaces the memo
+ * that was copy-pasted across the type routes.
+ */
+export function useEntityTypeLabel(schemas: TypeLabelSource | null, type: string): string | null {
+  const locale = useLocale();
+  if (schemas === null) return null;
+  const et = schemas.entityTypes[type];
+  return et?.labels[locale] ?? et?.labels.en ?? type;
 }
