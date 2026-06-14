@@ -8,6 +8,49 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-062 — `live-action-series` + `live-action-episode`
+
+**Date**: 2026-06-14
+
+**Context**: The Netflix _One Piece_ (2023) live-action is a major topic with a
+series page and per-episode pages on Fandom. Cast (`portrayed-by`) and crew
+(`staffed-by`) relations already existed; `canon-scopes` already carried
+`live_action`. What was missing were the source entities and a non-JP release
+date — the series premiered worldwide on Netflix with no Japan-first window, so
+`released_at_jp` is semantically wrong for it.
+
+**Decision** (additive, core — live-action is a universal medium, like `film`):
+
+1. **`live-action-series`** entity — `title_key`, `released_at`, `canon_scope`
+   (the main wiki page; anchors Netflix availability, showrunner credits, poster,
+   theme score).
+2. **`live-action-episode`** entity — `number`, `season_number`, `title_key`,
+   `released_at`, `runtime_minutes`, `canon_scope`.
+3. **`part-of-series`** relation (`live-action-episode` → `live-action-series`,
+   single-valued) — the episode↔series parent link, mirroring `part-of-arc`.
+4. New **`released_at`** (generic real-world release date) and **`season_number`**
+   properties. Reuse: `features` / `staffed-by` / `produced-by` / `available-on`
+   / `depicted-by` `valid_from` += both; `theme-of` `valid_to` += series;
+   `number` / `runtime_minutes` / `canon_scope` `applies_to` += as appropriate.
+
+**Rationale**: A series entity (not just episodes + a `season_number`) is the
+canonical Fandom page and the anchor for series-wide facts; episodes alone would
+be the incomplete model. `portrayed-by` already carries casting via its
+free-text `production` qualifier, so no entity_ref anchor was needed.
+
+**`released_at` vs `released_at_jp`** — `released_at_jp` stays the Japan-anchored
+date for JP-first media (manga/anime/film/album/game); `released_at` is the
+generic worldwide/first-release date introduced here for globally-released
+media. This is deliberately the **seed** of the date-property unification review
+(open): a later ADR may converge the two into `released_at` + a territory
+qualifier. Kept additive for now — no migration.
+
+**Consequences**: +2 entities (31), +2 properties (90), +1 relation (67);
+several source-relation `valid_from`s and three `applies_to`s widened. All core,
+additive.
+
+---
+
 ## ADR-061 — `video-game` entity (game catalogue)
 
 **Date**: 2026-06-14

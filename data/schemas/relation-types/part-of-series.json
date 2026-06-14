@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "part-of-series",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Part of series", "inverse": "Episodes" },
+    "fr": { "active": "Partie de la série", "inverse": "Épisodes" }
+  },
+  "valid_from_types": ["live-action-episode"],
+  "valid_to_types": ["live-action-series"],
+  "qualifiers": [
+    { "id": "since", "value_type": "source_ref", "required": false }
+  ],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true
+}

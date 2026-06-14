@@ -6,7 +6,14 @@
     "en": { "active": "Features", "inverse": "Appears in" },
     "fr": { "active": "Met en scène", "inverse": "Apparaît dans" }
   },
-  "valid_from_types": ["manga-chapter", "anime-episode", "film", "video-game"],
+  "valid_from_types": [
+    "manga-chapter",
+    "anime-episode",
+    "film",
+    "video-game",
+    "live-action-series",
+    "live-action-episode"
+  ],
   "valid_to_types": [
     "character",
     "devil-fruit",

@@ -9,5 +9,5 @@
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,
-  "applies_to_entity_types": ["anime-episode", "film"]
+  "applies_to_entity_types": ["anime-episode", "film", "live-action-episode"]
 }

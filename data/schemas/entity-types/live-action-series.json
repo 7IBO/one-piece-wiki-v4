@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "live-action-series",
+  "schema_version": 1,
+  "labels": { "en": "Live-action series", "fr": "Série en prise de vue réelle" },
+  "url_segment": "live-action",
+  "properties": [
+    { "id": "title_key", "required": true, "historical": false, "localizable": true },
+    { "id": "released_at", "required": false, "historical": false, "localizable": false },
+    { "id": "canon_scope", "required": false, "historical": false, "localizable": false }
+  ],
+  "display_name_properties": ["title_key"],
+  "allowed_relations": ["features", "staffed-by", "produced-by", "available-on", "depicted-by"],
+  "ui_hint": { "icon": "clapperboard", "group": "sources" }
+}

@@ -377,6 +377,55 @@
         "sourced-from"
       ]
     },
+    "live-action-episode": {
+      "properties": {
+        "canon_scope": {
+          "required": false
+        },
+        "number": {
+          "required": true
+        },
+        "released_at": {
+          "required": false
+        },
+        "runtime_minutes": {
+          "required": false
+        },
+        "season_number": {
+          "required": false
+        },
+        "title_key": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "available-on",
+        "depicted-by",
+        "features",
+        "part-of-series",
+        "staffed-by"
+      ]
+    },
+    "live-action-series": {
+      "properties": {
+        "canon_scope": {
+          "required": false
+        },
+        "released_at": {
+          "required": false
+        },
+        "title_key": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "available-on",
+        "depicted-by",
+        "features",
+        "produced-by",
+        "staffed-by"
+      ]
+    },
     "location": {
       "properties": {
         "climate": {
@@ -1136,6 +1185,12 @@
       "historical": false,
       "localizable": false
     },
+    "released_at": {
+      "value_type": "date",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
     "released_at_jp": {
       "value_type": "date",
       "enum_ref": null,
@@ -1149,6 +1204,12 @@
       "localizable": false
     },
     "saga_number": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "season_number": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
@@ -1373,6 +1434,8 @@
       "valid_from_types": [
         "anime-episode",
         "film",
+        "live-action-episode",
+        "live-action-series",
         "manga-chapter"
       ],
       "valid_to_types": [
@@ -1688,6 +1751,8 @@
         "devil-fruit",
         "event",
         "film",
+        "live-action-episode",
+        "live-action-series",
         "location",
         "manga-chapter",
         "material",
@@ -1832,6 +1897,8 @@
       "valid_from_types": [
         "anime-episode",
         "film",
+        "live-action-episode",
+        "live-action-series",
         "manga-chapter",
         "video-game"
       ],
@@ -2174,6 +2241,22 @@
       "inverse_inferred": true,
       "qualifiers": {}
     },
+    "part-of-series": {
+      "valid_from_types": [
+        "live-action-episode"
+      ],
+      "valid_to_types": [
+        "live-action-series"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "participant": {
       "valid_from_types": [
         "event"
@@ -2253,6 +2336,8 @@
         "album",
         "anime-episode",
         "film",
+        "live-action-episode",
+        "live-action-series",
         "video-game"
       ],
       "valid_to_types": [
@@ -2435,6 +2520,8 @@
         "album",
         "anime-episode",
         "film",
+        "live-action-episode",
+        "live-action-series",
         "theme-song",
         "video-game"
       ],
@@ -2490,7 +2577,8 @@
       "valid_to_types": [
         "anime-episode",
         "arc",
-        "film"
+        "film",
+        "live-action-series"
       ],
       "inverse_inferred": true,
       "qualifiers": {
