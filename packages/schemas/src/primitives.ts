@@ -4,9 +4,14 @@ import { z } from 'zod';
 // vocabularies) AND underscores for snake_case property/qualifier ids.
 // Both are in active use across the data model; the convention is to
 // pick one separator per id but the validator does not enforce that.
-const SLUG = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
-const I18N_KEY = /^[a-z0-9]+(?:[-_][a-z0-9]+)*(?:\.[a-z0-9]+(?:[-_][a-z0-9]+)*)+$/;
-const ENTITY_ID = /^[a-z0-9]+(?:[-_][a-z0-9]+)*:[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
+// Canonical id/key patterns. Exported as the single source of truth so
+// consumers (the dashboard slug input, the schema-engine reference
+// resolver, the i18n-key validator) reuse them instead of hand-copying —
+// divergent copies caused real bugs (a looser ref regex silently skipped
+// snake_case ids like `devil-fruit:gomu_gomu`).
+export const SLUG_PATTERN = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
+export const I18N_KEY_PATTERN = /^[a-z0-9]+(?:[-_][a-z0-9]+)*(?:\.[a-z0-9]+(?:[-_][a-z0-9]+)*)+$/;
+export const ENTITY_ID_PATTERN = /^[a-z0-9]+(?:[-_][a-z0-9]+)*:[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
 
 export type Brand<TBase, TBrand extends string> = TBase & { readonly __brand: TBrand; };
 
@@ -15,7 +20,7 @@ export const Slug = z
   .min(1)
   .max(60)
   .regex(
-    SLUG,
+    SLUG_PATTERN,
     'Slug must be kebab-case or snake_case English (a-z, 0-9, hyphen or underscore separators).',
   )
   .transform((value) => value as Brand<string, 'Slug'>);
@@ -23,7 +28,7 @@ export type Slug = z.infer<typeof Slug>;
 
 export const EntityId = z
   .string()
-  .regex(ENTITY_ID, 'EntityId must follow <type>:<slug> where both are kebab-case.')
+  .regex(ENTITY_ID_PATTERN, 'EntityId must follow <type>:<slug> where both are kebab-case.')
   .transform((value) => value as Brand<string, 'EntityId'>);
 export type EntityId = z.infer<typeof EntityId>;
 
@@ -35,7 +40,7 @@ export type EntityRef = z.infer<typeof EntityRef>;
 
 export const I18nKey = z
   .string()
-  .regex(I18N_KEY, 'I18nKey must be dot-separated kebab/snake segments.')
+  .regex(I18N_KEY_PATTERN, 'I18nKey must be dot-separated kebab/snake segments.')
   .transform((value) => value as Brand<string, 'I18nKey'>);
 export type I18nKey = z.infer<typeof I18nKey>;
 

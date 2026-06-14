@@ -27,7 +27,7 @@
  *                                   a coherence smell, e.g. an uploaded
  *                                   image no entity depicts.
  */
-import { RELATION_BASE_QUALIFIER_IDS } from '@onepiece-wiki/schemas';
+import { ENTITY_ID_PATTERN, RELATION_BASE_QUALIFIER_IDS } from '@onepiece-wiki/schemas';
 import type { LoadedEntity } from './entity-loader.ts';
 import type { ValidatedCatalogue } from './meta-validator.ts';
 
@@ -52,9 +52,8 @@ export type CoherenceFinding = {
   readonly message: string;
 };
 
-const ENTITY_REF = /^[a-z0-9-]+:[a-z0-9-]+$/;
 const isEntityRef = (value: unknown): value is string =>
-  typeof value === 'string' && ENTITY_REF.test(value);
+  typeof value === 'string' && ENTITY_ID_PATTERN.test(value);
 
 /** A single ref or an array of refs (the `since`/`source` authoring forms). */
 function refList(value: unknown): readonly string[] {

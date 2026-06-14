@@ -10,8 +10,10 @@
 import {
   type AssistedBy,
   type CanonScope,
+  ENTITY_ID_PATTERN,
   EntityId,
   EpistemicStatus,
+  I18N_KEY_PATTERN,
   IsoDate,
   type Locale,
   ReviewStatus,
@@ -24,9 +26,7 @@ import { type DataSource, fsDataSource } from './data-source.ts';
 import type { PropertyType, ValidatedCatalogue, Vocabulary } from './meta-validator.ts';
 import { UNIVERSES_DIR } from './paths.ts';
 
-const I18nKeyString = z.string().regex(
-  /^[a-z0-9]+(?:[-_][a-z0-9]+)*(?:\.[a-z0-9]+(?:[-_][a-z0-9]+)*)+$/,
-);
+const I18nKeyString = z.string().regex(I18N_KEY_PATTERN);
 
 // `since` / `until` / `source` accept either a single source ref or
 // an array. The array form lets a single value entry cite multiple
@@ -330,7 +330,7 @@ export function resolveEntityReferences(
 ): readonly EntityReferenceError[] {
   const errors: EntityReferenceError[] = [];
   const isEntityRef = (value: unknown): value is string =>
-    typeof value === 'string' && /^[a-z0-9-]+:[a-z0-9-]+$/.test(value);
+    typeof value === 'string' && ENTITY_ID_PATTERN.test(value);
   // `since` / `until` / `source` accept a single ref or an array. Walk
   // both shapes so reference-resolution covers both.
   const refOrRefList = (value: unknown): readonly string[] => {
