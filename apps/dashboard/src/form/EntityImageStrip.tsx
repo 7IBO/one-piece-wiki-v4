@@ -3,7 +3,7 @@
  * entity edit page above the form. Each thumbnail links to the image
  * entity so the maintainer can jump in and edit its metadata.
  *
- * Everything here is schema-driven (ADR-070): the depiction relation and
+ * Everything here is schema-driven (ADR-072): the depiction relation and
  * the image-URL property are discovered from the catalogue, never named
  * literally. See `@onepiece-wiki/schemas` → images.ts.
  *

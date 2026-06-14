@@ -14,13 +14,13 @@
  * Both are discovered from the schema instead of named literally:
  *
  *  - the URL property is the one tagged `ui_hint.role === "image_url"`
- *    (ADR-070); its `applies_to_entity_types` names the image entity
+ *    (ADR-072); its `applies_to_entity_types` names the image entity
  *    type(s).
  *  - the depiction relation(s) are those whose `valid_to_types` point at
  *    an image entity type.
  *
  * The only literal here is {@link IMAGE_URL_ROLE} — the role *value* that
- * forms the ADR-070 contract, analogous to
+ * forms the ADR-072 contract, analogous to
  * {@link ./display-name.ts}'s documented default constant. It is a
  * discovery key, not a property id.
  */
@@ -33,7 +33,7 @@ type EntityData = Record<string, unknown>;
 
 /**
  * The `ui_hint.role` value marking the property that holds an image
- * entity's displayable URL. See ADR-070.
+ * entity's displayable URL. See ADR-072.
  */
 export const IMAGE_URL_ROLE = 'image_url';
 
@@ -48,7 +48,7 @@ export type Depiction = {
 };
 
 /**
- * The property type tagged `ui_hint.role === "image_url"` (ADR-070), or
+ * The property type tagged `ui_hint.role === "image_url"` (ADR-072), or
  * null when the catalogue defines none. First match wins — the contract
  * expects exactly one.
  */

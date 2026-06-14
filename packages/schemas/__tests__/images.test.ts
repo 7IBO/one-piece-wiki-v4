@@ -1,5 +1,5 @@
 /**
- * Tests for the schema-driven image discovery helpers (ADR-070). These
+ * Tests for the schema-driven image discovery helpers (ADR-072). These
  * lock in that app code finds the image-URL property and the depiction
  * relation WITHOUT hardcoding `url` / `depicted-by` — discovery is purely
  * a function of the schema shape.
