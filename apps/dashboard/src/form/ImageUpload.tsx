@@ -11,10 +11,11 @@
  * standalone input if we ever expose a "create image entity from this
  * upload" affordance.
  */
+import { ImageThumb } from '@/components/ImageThumb';
 import { Button } from '@/components/ui/button';
 import { ImagePlus, Loader2, Trash2, Upload } from 'lucide-react';
 import { type JSX, useRef, useState } from 'react';
-import { api, resolveImageUrl } from '../api';
+import { api } from '../api';
 
 /**
  * Metadata the uploader can derive from the picked file. `format`
@@ -161,7 +162,7 @@ export function ImageUpload(
       {hasImage
         ? (
           <div className='border-input bg-card flex items-center gap-3 rounded-md border p-2'>
-            <ImagePreview src={value!} />
+            <ImageThumb src={value!} size={64} />
             <div className='min-w-0 flex-1'>
               <p className='truncate text-xs font-mono text-muted-foreground'>{value}</p>
               <div className='mt-1 flex gap-2'>
@@ -233,52 +234,5 @@ export function ImageUpload(
         ? <p className='text-destructive text-[10px]'>{error}</p>
         : null}
     </div>
-  );
-}
-
-/**
- * Thumbnail with a graceful fallback when the URL doesn't resolve.
- * Seed data + manually-typed URLs often point at hosts that don't
- * exist (e.g. `images.onepiece-wiki.example`), and the browser's
- * default broken-image icon is alarming. We catch the error and show
- * a muted placeholder + the host name so the maintainer knows what's
- * up at a glance.
- */
-function ImagePreview({ src }: { src: string; }): JSX.Element {
-  const [broken, setBroken] = useState(false);
-  // Reset the broken flag when the URL changes so swapping in a new
-  // image gives it a fresh chance to load.
-  const lastSrc = useRef(src);
-  if (lastSrc.current !== src) {
-    lastSrc.current = src;
-    if (broken) setBroken(false);
-  }
-
-  if (broken) {
-    let host = '?';
-    try {
-      host = new URL(src).hostname;
-    } catch { /* relative URLs etc. */ }
-    return (
-      <div
-        className='bg-muted text-muted-foreground flex size-16 shrink-0 flex-col items-center justify-center rounded text-[9px]'
-        title={`Image unavailable — ${src}`}
-      >
-        <ImagePlus className='size-4 opacity-50' />
-        <span className='truncate max-w-full px-1'>{host}</span>
-      </div>
-    );
-  }
-  // Resolve `staging://` placeholders to the dashboard's signed
-  // preview route so the browser can render unpromoted uploads.
-  const resolved = resolveImageUrl(src);
-  return (
-    <img
-      src={resolved}
-      alt=''
-      className='size-16 shrink-0 rounded object-cover'
-      loading='lazy'
-      onError={() => setBroken(true)}
-    />
   );
 }

@@ -274,6 +274,8 @@ const UI_STRINGS = {
   },
   addRelation: { en: 'Add relation', fr: 'Ajouter une relation' },
   typesAvailable: { en: 'types available', fr: 'types disponibles' },
+  // Entity image strip (depicted-by, ADR-070)
+  imagesHeading: { en: 'Images', fr: 'Images' },
   // Save bar / drawer footer
   unsavedChanges: { en: 'Unsaved changes', fr: 'Modifications non sauvegardées' },
   saveShortcut: { en: '⌘S to save', fr: '⌘S pour sauvegarder' },
