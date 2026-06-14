@@ -1,13 +1,29 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
   "id": "released_at",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": { "en": "Release date", "fr": "Date de sortie" },
   "value_type": "date",
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,
+  "allowed_qualifiers": [
+    {
+      "id": "territory",
+      "value_type": "enum",
+      "enum_ref": "release-territories",
+      "required": false
+    }
+  ],
   "applies_to_entity_types": [
+    "manga-chapter",
+    "anime-episode",
+    "anime-special",
+    "film",
+    "album",
+    "video-game",
+    "sbs",
+    "databook",
     "live-action-series",
     "live-action-episode",
     "live-performance",

@@ -4,11 +4,21 @@
   "schema_version": 1,
   "slug": "chapter-550",
   "properties": {
-    "number": { "value": 550 },
-    "title_key": { "value_key": "manga-chapter.550.title" },
-    "published_at_jp": { "value": "2009-07-21" }
+    "number": {
+      "value": 550
+    },
+    "title_key": {
+      "value_key": "manga-chapter.550.title"
+    },
+    "released_at": {
+      "value": "2009-07-21",
+      "territory": "jp"
+    }
   },
   "relations": [
-    { "type": "part-of-arc", "target": "arc:marineford" }
+    {
+      "type": "part-of-arc",
+      "target": "arc:marineford"
+    }
   ]
 }

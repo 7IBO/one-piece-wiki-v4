@@ -53,12 +53,12 @@ describe('schema-engine generator', () => {
 
   it('accepts a well-formed IsoDate and rejects malformed dates', async () => {
     const propertyMod = await import(join(GENERATED_DIR, 'property-values.ts'));
-    const PublishedAtJp = propertyMod.PropertyEntrySchemas.published_at_jp;
+    const ReleasedAt = propertyMod.PropertyEntrySchemas.released_at;
 
-    const good = PublishedAtJp.safeParse({ value: '1997-07-22' });
+    const good = ReleasedAt.safeParse({ value: '1997-07-22', territory: 'jp' });
     expect(good.success).toBe(true);
 
-    const bad = PublishedAtJp.safeParse({ value: '97/07/22' });
+    const bad = ReleasedAt.safeParse({ value: '97/07/22' });
     expect(bad.success).toBe(false);
   });
 

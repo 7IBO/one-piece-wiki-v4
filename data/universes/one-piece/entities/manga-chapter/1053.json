@@ -4,11 +4,21 @@
   "schema_version": 1,
   "slug": "chapter-1053",
   "properties": {
-    "number": { "value": 1053 },
-    "title_key": { "value_key": "manga-chapter.1053.title" },
-    "published_at_jp": { "value": "2022-07-25" }
+    "number": {
+      "value": 1053
+    },
+    "title_key": {
+      "value_key": "manga-chapter.1053.title"
+    },
+    "released_at": {
+      "value": "2022-07-25",
+      "territory": "jp"
+    }
   },
   "relations": [
-    { "type": "part-of-arc", "target": "arc:wano" }
+    {
+      "type": "part-of-arc",
+      "target": "arc:wano"
+    }
   ]
 }

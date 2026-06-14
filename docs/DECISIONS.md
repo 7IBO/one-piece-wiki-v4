@@ -8,6 +8,47 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-067 — Unify release-date properties into `released_at` + `territory`
+
+**Date**: 2026-06-14
+
+**Context**: Three near-duplicate date properties had accreted, split by medium:
+`published_at_jp` (manga-chapter / sbs / databook), `aired_at_jp` (anime-episode
+/ anime-special), `released_at_jp` (film / album / video-game) — plus the generic
+`released_at` added for globally-released media (ADR-062). All four mean "first
+made available, on date X, in territory Y". The `_jp` suffix hard-coded the
+territory into the property name, so global media (Netflix live-action) needed a
+fourth property. This was the date-model review flagged in ADR-062.
+
+**Decision** (breaking; user-approved):
+
+1. **One `released_at` date property** for every source/media entity, carrying a
+   **`territory`** value-qualifier (enum → new **`release-territories`**: jp /
+   worldwide / north_america / europe / asia / other). The verb
+   (published/aired/released) is implied by the entity type.
+2. **Delete** `published_at_jp`, `aired_at_jp`, `released_at_jp`. Widen
+   `released_at` `applies_to` to all twelve date-bearing source/media types.
+3. Property-value custom qualifiers (`allowed_qualifiers`) carry `territory` on
+   the value, e.g. `{ "value": "1997-07-22", "territory": "jp" }`.
+
+**Migration**:
+[`0002-unify-release-dates.ts`](../data/migrations/0002-unify-release-dates.ts)
+— renames whichever JP date key an entity has to `released_at` and stamps
+`territory: "jp"`. **10 manga-chapter entities rewritten** (the only date-bearing
+instances); dry-run verified before apply. The eight affected entity types had
+their `schema_version` bumped.
+
+**Rationale**: Territory is data, not a property name. One property + a qualifier
+scales to any territory (US/EU theatrical dates, simultaneous worldwide drops)
+without multiplying properties, and lets a single UI render "release dates" with
+their territories. This is the unification ADR-062 seeded.
+
+**Consequences**: property types 93 → 90 (−3), vocabularies 59 → 60 (+1).
+Breaking (compat: 16 breaking / 4 additive). First migration to rewrite real
+data (10 files).
+
+---
+
 ## ADR-066 — Relation dedup pass 3 (appearance + relationship families)
 
 **Date**: 2026-06-14

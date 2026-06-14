@@ -596,8 +596,12 @@ fruit's `classification`, true `name` and `zoan_model` together — see
     "title_key": [
       { "value": "manga-chapter.1044.title", "since": "manga-chapter:1044" }
     ],
-    "published_at_jp": [
-      { "value": "2022-03-07", "since": "manga-chapter:1044" }
+    "released_at": [
+      {
+        "value": "2022-03-07",
+        "territory": "jp",
+        "since": "manga-chapter:1044"
+      }
     ],
     "volume": [{ "value": "104", "since": "manga-chapter:1044" }],
     "canon_scope": [{ "value": "manga", "since": "manga-chapter:1044" }]

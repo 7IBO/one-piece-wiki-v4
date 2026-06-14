@@ -400,15 +400,15 @@ appearances are `features`' generated inverse.)
 
 #### `manga-chapter`
 
-| Property          | Required | Historical | Localizable | Notes                         |
-| ----------------- | -------- | ---------- | ----------- | ----------------------------- |
-| `number`          | yes      | no         | no          |                               |
-| `title_key`       | yes      | no         | yes         | Japanese title + translations |
-| `published_at_jp` | yes      | no         | no          | ISO date                      |
-| `volume`          | no       | no         | no          | Volume number/string          |
-| `page_count`      | no       | no         | no          |                               |
-| `canon_scope`     | yes      | no         | no          | Always `manga`                |
-| `cover_image`     | no       | no         | no          | entity_ref to `image`         |
+| Property      | Required | Historical | Localizable | Notes                         |
+| ------------- | -------- | ---------- | ----------- | ----------------------------- |
+| `number`      | yes      | no         | no          |                               |
+| `title_key`   | yes      | no         | yes         | Japanese title + translations |
+| `released_at` | yes      | no         | no          | ISO date; `territory: jp`     |
+| `volume`      | no       | no         | no          | Volume number/string          |
+| `page_count`  | no       | no         | no          |                               |
+| `canon_scope` | yes      | no         | no          | Always `manga`                |
+| `cover_image` | no       | no         | no          | entity_ref to `image`         |
 
 Allowed relations: `features`, `part-of-arc`, `adapted-by`,
 `introduces-character`, `references`, `depicted-by`.
@@ -421,7 +421,7 @@ Allowed relations: `features`, `part-of-arc`, `adapted-by`,
 | ----------------- | -------- | ---------- | ----------- | ------------------------- |
 | `number`          | yes      | no         | no          |                           |
 | `title_key`       | yes      | no         | yes         |                           |
-| `aired_at_jp`     | yes      | no         | no          | ISO date                  |
+| `released_at`     | no       | no         | no          | ISO date; `territory: jp` |
 | `runtime_minutes` | no       | no         | no          |                           |
 | `canon_scope`     | yes      | no         | no          | `anime` or `anime_filler` |
 
@@ -434,7 +434,7 @@ Allowed relations: `features`, `adapts`, `part-of-arc`, `depicted-by`.
 | Property          | Required | Historical | Localizable | Notes                            |
 | ----------------- | -------- | ---------- | ----------- | -------------------------------- |
 | `title_key`       | yes      | no         | yes         |                                  |
-| `released_at_jp`  | yes      | no         | no          | ISO date                         |
+| `released_at`     | yes      | no         | no          | ISO date; `territory: jp`        |
 | `runtime_minutes` | yes      | no         | no          |                                  |
 | `canon_scope`     | yes      | no         | no          | `film_canon` or `film_non_canon` |
 | `oda_supervised`  | no       | no         | no          | Boolean                          |
@@ -447,11 +447,11 @@ Allowed relations: `features`, `staffed-by`, `produced-by`, `available-on`,
 
 #### `sbs`
 
-| Property          | Required | Historical | Localizable | Notes         |
-| ----------------- | -------- | ---------- | ----------- | ------------- |
-| `volume`          | yes      | no         | no          | Volume number |
-| `published_at_jp` | yes      | no         | no          |               |
-| `canon_scope`     | yes      | no         | no          | Always `sbs`  |
+| Property      | Required | Historical | Localizable | Notes           |
+| ------------- | -------- | ---------- | ----------- | --------------- |
+| `volume`      | yes      | no         | no          | Volume number   |
+| `released_at` | yes      | no         | no          | `territory: jp` |
+| `canon_scope` | yes      | no         | no          | Always `sbs`    |
 
 Allowed relations: `references`, `clarifies-fact`.
 
@@ -462,7 +462,7 @@ Allowed relations: `references`, `clarifies-fact`.
 | Property           | Required | Historical | Localizable | Notes                           |
 | ------------------ | -------- | ---------- | ----------- | ------------------------------- |
 | `name`             | yes      | yes        | yes         | "Vivre Card", "Yellow Magazine" |
-| `published_at_jp`  | yes      | no         | no          |                                 |
+| `released_at`      | yes      | no         | no          | `territory: jp`                 |
 | `canon_scope`      | yes      | no         | no          | Always `databook`               |
 | `databook_subtype` | yes      | no         | no          | Vocabulary `databook-subtypes`  |
 
@@ -558,7 +558,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (93)
+## 3. Property types (90)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -602,20 +602,17 @@ unit, and qualifier policy (section 6).
 
 ### 3.3 Dates and temporal references
 
-| Property          | Value type   | Notes                                                 |
-| ----------------- | ------------ | ----------------------------------------------------- |
-| `birthday`        | `date`       | MM-DD only (no year for characters)                   |
-| `published_at_jp` | `date`       | ISO 8601 full date                                    |
-| `aired_at_jp`     | `date`       | ISO 8601 full date                                    |
-| `released_at_jp`  | `date`       | ISO 8601 full date                                    |
-| `released_at`     | `date`       | Generic real-world release (non-JP, e.g. live-action) |
-| `founded_at`      | `source_ref` | When in-fiction the founding occurred                 |
-| `disbanded_at`    | `source_ref` | When in-fiction disbanded                             |
-| `built_at`        | `source_ref` | Ship                                                  |
-| `destroyed_at`    | `source_ref` | Ship                                                  |
-| `spoiler_since`   | `source_ref` | Image safety threshold                                |
-| `first_source`    | `source_ref` | Event span start                                      |
-| `last_source`     | `source_ref` | Event span end                                        |
+| Property        | Value type   | Notes                                                                              |
+| --------------- | ------------ | ---------------------------------------------------------------------------------- |
+| `birthday`      | `date`       | MM-DD only (no year for characters)                                                |
+| `released_at`   | `date`       | Unified release date; `territory` qualifier (enum `release-territories`) — ADR-067 |
+| `founded_at`    | `source_ref` | When in-fiction the founding occurred                                              |
+| `disbanded_at`  | `source_ref` | When in-fiction disbanded                                                          |
+| `built_at`      | `source_ref` | Ship                                                                               |
+| `destroyed_at`  | `source_ref` | Ship                                                                               |
+| `spoiler_since` | `source_ref` | Image safety threshold                                                             |
+| `first_source`  | `source_ref` | Event span start                                                                   |
+| `last_source`   | `source_ref` | Event span end                                                                     |
 
 ### 3.4 Categorical (enum-backed)
 
@@ -824,7 +821,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (59)
+## 5. Vocabularies / Enums (60)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -1042,7 +1039,12 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 `figure`, `model_kit`, `plush`, `apparel`, `accessory`, `stationery`,
 `homeware`, `food`, `trading_card`, `collectible`, `other`
 
-> Note: §5 detailed subsections (5.1–5.40) lag the head count (59) — a
+### 5.41 `release-territories`
+
+`jp`, `worldwide`, `north_america`, `europe`, `asia`, `other`
+(qualifier values for `released_at` — ADR-067)
+
+> Note: §5 detailed subsections (5.1–5.41) lag the head count (60) — a
 > backlog of recently added vocabularies (e.g. `transformation-kinds`,
 > `album-kinds`, `depiction-roles`) still need their entries. Tracked
 > separately; the head count is authoritative.
@@ -1164,9 +1166,9 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 34
-- **Property types**: 93 (some shared across multiple entity types)
+- **Property types**: 90 (some shared across multiple entity types)
 - **Relation types**: 63 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 59
+- **Vocabularies**: 60
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)

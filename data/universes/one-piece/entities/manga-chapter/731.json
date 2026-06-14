@@ -4,9 +4,16 @@
   "schema_version": 1,
   "slug": "chapter-731",
   "properties": {
-    "number": { "value": 731 },
-    "title_key": { "value_key": "manga-chapter.731.title" },
-    "published_at_jp": { "value": "2013-12-02" }
+    "number": {
+      "value": 731
+    },
+    "title_key": {
+      "value_key": "manga-chapter.731.title"
+    },
+    "released_at": {
+      "value": "2013-12-02",
+      "territory": "jp"
+    }
   },
   "relations": []
 }

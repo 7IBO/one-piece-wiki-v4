@@ -1,12 +1,12 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "sbs",
-  "schema_version": 2,
+  "schema_version": 3,
   "labels": { "en": "SBS", "fr": "SBS" },
   "url_segment": "sbs",
   "properties": [
     { "id": "volume", "required": true, "historical": false, "localizable": false },
-    { "id": "published_at_jp", "required": true, "historical": false, "localizable": false },
+    { "id": "released_at", "required": true, "historical": false, "localizable": false },
     { "id": "publications", "required": false, "historical": true, "localizable": false },
     { "id": "canon_scope", "required": true, "historical": false, "localizable": false }
   ],

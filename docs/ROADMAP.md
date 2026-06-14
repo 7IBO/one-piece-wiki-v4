@@ -69,7 +69,7 @@ and the tooling to validate them.
      `event`, `arc`, `crew`, `image`
    - Property types: `name`, `epithet`, `bounty`, `status`,
      `classification`, `event_subtype`, `number`, `title_key`,
-     `published_at_jp`, `url`, `caption_key`, `license`,
+     `released_at`, `url`, `caption_key`, `license`,
      `attribution`, `source_origin`, `width`, `height`, `format`,
      `spoiler_since`, `alt_text_key`
    - Relation types: `member-of`, `ate-fruit`, `features`,
@@ -309,7 +309,7 @@ deferred to Phase 6.
      `I18N_STRATEGY.md`.
 
 3. **TMDB anime-episode pipeline**
-   - Ingest all 1 181 episode skeletons: `number`, `aired_at_jp`,
+   - Ingest all 1 181 episode skeletons: `number`, `released_at`,
      `runtime_minutes`, `canon_scope`, `external_refs.tmdb_id`,
      `title_key`.
    - Translation files for EN + FR: episode title + overview
