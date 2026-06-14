@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "platform-kinds",
+  "schema_version": 1,
+  "values": {
+    "streaming": { "labels": { "en": "Streaming (video)", "fr": "Streaming (vidéo)" } },
+    "reader": { "labels": { "en": "Manga reader", "fr": "Lecture manga" } },
+    "store": { "labels": { "en": "Digital store", "fr": "Boutique numérique" } }
+  }
+}

@@ -8,6 +8,48 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-052 — Platform availability via `available-on` + `streaming-platform` (implements ADR-028)
+
+**Date**: 2026-06-14
+
+**Context**: The "where to watch / where to read" links from ADR-028 (Netflix,
+Crunchyroll, ADN, Prime Video for anime; MANGA Plus, Shōnen Jump+, Viz for
+manga). ADR-028 designed these as an `availability` property with
+`value_type: object`. **That value-type was never built** — the engine supports
+only string / number / boolean / enum / multi_enum / date / entity_ref /
+source_ref / i18n_key / markdown. Building a general `object` value-type
+(meta-schema + Zod printer + runtime mapper + a repeating-object-row form input)
+is a sizeable engine feature for one use.
+
+**Decision** (implements ADR-028's intent without the `object` value-type):
+
+- **`streaming-platform`** entity — `name`, `platform_kind` (enum → new
+  **`platform-kinds`**: streaming / reader / store), `homepage_url`. Platforms
+  are **reusable entities** (one `streaming-platform:netflix`, referenced by many
+  sources).
+- **`available-on`** relation (`anime-episode` / `manga-chapter` / `film` →
+  `streaming-platform`, not historised) — qualifiers carry the per-link data:
+  `url` (required), `region` (ISO country), `requires_subscription`,
+  `subtitle_langs`, `dub_langs`, `verified_at` (the freshness date ADR-028
+  wanted), `since`.
+
+**Rationale**: a relation to a platform entity is implementable today, and it is
+arguably cleaner than an object-list property — the platform becomes a
+first-class, queryable, reusable node ("everything on Crunchyroll"), and the
+URL/region/freshness ride qualifiers. Per ADR-028, availability is **real-world
+metadata, not spoiler-gated** and **not affiliate-tagged** (the `url` is a plain
+canonical link). One edge per source × platform × region; freshness via
+`verified_at` for a future re-check job.
+
+**Consequences**: +1 entity (24), +2 properties (83), +1 relation (61),
++1 vocabulary (50); `anime-episode` / `manga-chapter` / `film` `allowed_relations`
+extended. All universal → core. No `/data` migration. Snapshot regenerated.
+**Amends ADR-028's implementation** (relation-to-entity, not object property);
+the object value-type can still be built later for other uses. Live-action
+availability needs a live-action entity first (not yet modelled).
+
+---
+
 ## ADR-051 — `theme-song` entity + `theme-of` (openings / endings / inserts)
 
 **Date**: 2026-06-14

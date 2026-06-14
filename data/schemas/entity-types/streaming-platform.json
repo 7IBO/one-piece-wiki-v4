@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "streaming-platform",
+  "schema_version": 1,
+  "labels": { "en": "Platform", "fr": "Plateforme" },
+  "url_segment": "platforms",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "platform_kind", "required": true, "historical": false, "localizable": false },
+    { "id": "homepage_url", "required": false, "historical": false, "localizable": false }
+  ],
+  "allowed_relations": [],
+  "ui_hint": { "icon": "monitor-play", "group": "production" }
+}

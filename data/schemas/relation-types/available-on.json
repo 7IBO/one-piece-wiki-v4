@@ -1,0 +1,23 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "available-on",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Available on", "inverse": "Hosts" },
+    "fr": { "active": "Disponible sur", "inverse": "Héberge" }
+  },
+  "valid_from_types": ["anime-episode", "manga-chapter", "film"],
+  "valid_to_types": ["streaming-platform"],
+  "qualifiers": [
+    { "id": "url", "value_type": "string", "required": true },
+    { "id": "region", "value_type": "string", "required": false },
+    { "id": "requires_subscription", "value_type": "boolean", "required": false },
+    { "id": "subtitle_langs", "value_type": "string", "required": false },
+    { "id": "dub_langs", "value_type": "string", "required": false },
+    { "id": "verified_at", "value_type": "date", "required": false },
+    { "id": "since", "value_type": "source_ref", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": false
+}

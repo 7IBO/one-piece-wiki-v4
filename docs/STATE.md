@@ -181,14 +181,19 @@ Slices (each ADR + PR):
    via `name` `name_type` — **ADR-051 [done, this PR]**.
 3. Episode/film props: `eyecatcher`, `tv_rating`, `anime_original`; film
    ordering + regional release (per-dub titles/dates likely fold into C1 i18n).
-4. **Platform availability** (W-E): new `streaming-platform` entity +
+4. **Platform availability** (W-E): `streaming-platform` entity (name,
+   `platform_kind` → `platform-kinds` streaming/reader/store, `homepage_url`) +
    `available-on` relation (anime-episode/manga-chapter/film → streaming-platform;
-   qualifiers url/region/kind(watch|read)/requires_subscription/verified_at/langs)
-   - `streaming-platforms` vocab. **Amends ADR-028** — implemented as a relation
-     to a platform entity, NOT the `object` value-type ADR-028 assumed (it isn't
-     built; the value-types are string/number/boolean/enum/multi_enum/date/
-     entity_ref/source_ref/i18n_key/markdown). Live-action availability needs a
-     live-action entity first (not yet modelled).
+   qualifiers url/region/requires_subscription/subtitle_langs/dub_langs/
+   verified_at/since) — **ADR-052 [done, this PR]**. **Amends ADR-028** —
+   relation-to-entity, NOT the `object` value-type ADR-028 assumed (unbuilt;
+   value-types are string/number/boolean/enum/multi_enum/date/entity_ref/
+   source_ref/i18n_key/markdown). Live-action availability needs a live-action
+   entity first (not yet modelled).
+
+Remaining: slice 3 (episode/film props `eyecatcher`/`tv_rating`/`anime_original`
+
+- film ordering/regional release) — lowest priority, not yet done.
 
 ## Active plan (ADR-032) — tooling before ingest
 

@@ -22,6 +22,7 @@
         }
       },
       "allowed_relations": [
+        "available-on",
         "depicted-by",
         "features",
         "part-of-arc",
@@ -276,6 +277,7 @@
         }
       },
       "allowed_relations": [
+        "available-on",
         "depicted-by",
         "features",
         "staffed-by"
@@ -378,6 +380,7 @@
       },
       "allowed_relations": [
         "adapted-by",
+        "available-on",
         "depicted-by",
         "features",
         "introduces-character",
@@ -526,6 +529,20 @@
         "made-of",
         "replaces"
       ]
+    },
+    "streaming-platform": {
+      "properties": {
+        "homepage_url": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "platform_kind": {
+          "required": true
+        }
+      },
+      "allowed_relations": []
     },
     "technique": {
       "properties": {
@@ -826,6 +843,12 @@
       "historical": true,
       "localizable": false
     },
+    "homepage_url": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
     "image_height": {
       "value_type": "number",
       "enum_ref": null,
@@ -949,6 +972,12 @@
     "person_roles": {
       "value_type": "multi_enum",
       "enum_ref": "person-roles",
+      "historical": false,
+      "localizable": false
+    },
+    "platform_kind": {
+      "value_type": "enum",
+      "enum_ref": "platform-kinds",
       "historical": false,
       "localizable": false
     },
@@ -1210,6 +1239,54 @@
         },
         "until": {
           "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "available-on": {
+      "valid_from_types": [
+        "anime-episode",
+        "film",
+        "manga-chapter"
+      ],
+      "valid_to_types": [
+        "streaming-platform"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "dub_langs": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "region": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "requires_subscription": {
+          "value_type": "boolean",
+          "enum_ref": null,
+          "required": false
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "subtitle_langs": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
+        "url": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": true
+        },
+        "verified_at": {
+          "value_type": "date",
           "enum_ref": null,
           "required": false
         }
@@ -2815,6 +2892,11 @@
       "storyboard",
       "theme_performer",
       "voice_actor"
+    ],
+    "platform-kinds": [
+      "reader",
+      "store",
+      "streaming"
     ],
     "publication-countries": [
       "br",
