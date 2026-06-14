@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "contains-track",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Contains track", "inverse": "Featured on" },
+    "fr": { "active": "Contient la piste", "inverse": "Présent sur" }
+  },
+  "valid_from_types": ["album"],
+  "valid_to_types": ["theme-song"],
+  "qualifiers": [
+    { "id": "track_number", "value_type": "number", "required": true },
+    { "id": "disc", "value_type": "number", "required": false },
+    { "id": "version_note", "value_type": "string", "required": false },
+    { "id": "since", "value_type": "source_ref", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": false
+}

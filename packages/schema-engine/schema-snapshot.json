@@ -1,5 +1,33 @@
 {
   "entityTypes": {
+    "album": {
+      "properties": {
+        "album_kind": {
+          "required": true
+        },
+        "catalog_number": {
+          "required": false
+        },
+        "disc_count": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "record_label": {
+          "required": false
+        },
+        "released_at_jp": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "contains-track",
+        "depicted-by",
+        "produced-by",
+        "staffed-by"
+      ]
+    },
     "anime-episode": {
       "properties": {
         "aired_at_jp": {
@@ -687,6 +715,12 @@
       "historical": false,
       "localizable": false
     },
+    "album_kind": {
+      "value_type": "enum",
+      "enum_ref": "album-kinds",
+      "historical": false,
+      "localizable": false
+    },
     "alt_text_key": {
       "value_type": "i18n_key",
       "enum_ref": null,
@@ -783,6 +817,12 @@
       "historical": false,
       "localizable": false
     },
+    "catalog_number": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
     "classification": {
       "value_type": "enum",
       "enum_ref": "devil-fruit-classifications",
@@ -833,6 +873,12 @@
     },
     "disbanded_at": {
       "value_type": "source_ref",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "disc_count": {
+      "value_type": "number",
       "enum_ref": null,
       "historical": false,
       "localizable": false
@@ -1518,6 +1564,37 @@
         }
       }
     },
+    "contains-track": {
+      "valid_from_types": [
+        "album"
+      ],
+      "valid_to_types": [
+        "theme-song"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "disc": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": false
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "track_number": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": true
+        },
+        "version_note": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "controls-territory": {
       "valid_from_types": [
         "crew",
@@ -1563,6 +1640,7 @@
     },
     "depicted-by": {
       "valid_from_types": [
+        "album",
         "anime-episode",
         "arc",
         "character",
@@ -2133,6 +2211,7 @@
     },
     "produced-by": {
       "valid_from_types": [
+        "album",
         "anime-episode",
         "film"
       ],
@@ -2313,6 +2392,7 @@
     },
     "staffed-by": {
       "valid_from_types": [
+        "album",
         "anime-episode",
         "film",
         "theme-song"
@@ -2507,6 +2587,15 @@
       "scene_added",
       "scene_omitted",
       "summary"
+    ],
+    "album-kinds": [
+      "best",
+      "character_song",
+      "compilation",
+      "image_song",
+      "movie_ost",
+      "single",
+      "tv_ost"
     ],
     "appearance-types": [
       "corpse",

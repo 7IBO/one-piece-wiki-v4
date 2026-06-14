@@ -29,7 +29,8 @@
     "theme-song",
     "company",
     "databook-card",
-    "transformation"
+    "transformation",
+    "album"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [

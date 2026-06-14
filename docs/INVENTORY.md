@@ -186,7 +186,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (27)
+## 2. Entity types (28)
 
 | ID                   | Category   | Description                                                      | URL segment       |
 | -------------------- | ---------- | ---------------------------------------------------------------- | ----------------- |
@@ -217,6 +217,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 | `company`            | production | A real-world company (studio, game dev/publisher, label, maker)  | `companies`       |
 | `databook-card`      | source     | A numbered databook / Vivre Card profile card                    | `databook-cards`  |
 | `transformation`     | powers     | A form/state (Gear 2-5, Sulong, Zoan form, awakening)            | `transformations` |
+| `album`              | production | A soundtrack / compilation / character-song album                | `albums`          |
 
 ### 2.1 Properties per entity type
 
@@ -550,7 +551,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (83)
+## 3. Property types (86)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -656,7 +657,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (65)
+## 4. Relation types (66)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -811,7 +812,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (53)
+## 5. Vocabularies / Enums (54)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -1117,10 +1118,10 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 27
-- **Property types**: 83 (some shared across multiple entity types)
-- **Relation types**: 65 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 53
+- **Entity types**: 28
+- **Property types**: 86 (some shared across multiple entity types)
+- **Relation types**: 66 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 54
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)
