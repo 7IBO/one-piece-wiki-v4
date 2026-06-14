@@ -10,6 +10,6 @@
     { "id": "publications", "required": false, "historical": true, "localizable": false },
     { "id": "canon_scope", "required": true, "historical": false, "localizable": false }
   ],
-  "allowed_relations": ["mentions", "clarifies-fact"],
+  "allowed_relations": ["references", "clarifies-fact"],
   "ui_hint": { "icon": "message-square", "group": "sources" }
 }

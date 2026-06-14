@@ -20,7 +20,16 @@
     "character",
     "devil-fruit",
     "crew",
-    "image"
+    "image",
+    "concept",
+    "title",
+    "event",
+    "ship",
+    "technique",
+    "weapon",
+    "location",
+    "organization",
+    "race"
   ],
   "qualifiers": [
     {

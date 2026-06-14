@@ -161,11 +161,13 @@
         "depicted-by",
         "enemy-of",
         "family-of",
+        "friend-of",
         "member-of",
         "mentor-of",
         "pilots",
         "portrayed-by",
         "resides-in",
+        "rival-of",
         "transforms-into",
         "uses-technique",
         "voiced-by",
@@ -201,7 +203,6 @@
         }
       },
       "allowed_relations": [
-        "appears-in",
         "depicted-by",
         "embodied-by"
       ]
@@ -255,7 +256,7 @@
       },
       "allowed_relations": [
         "clarifies-fact",
-        "mentions"
+        "references"
       ]
     },
     "databook-card": {
@@ -535,7 +536,7 @@
         "features",
         "introduces-character",
         "part-of-arc",
-        "references-event"
+        "references"
       ]
     },
     "material": {
@@ -663,7 +664,7 @@
       },
       "allowed_relations": [
         "clarifies-fact",
-        "mentions"
+        "references"
       ]
     },
     "ship": {
@@ -1450,37 +1451,6 @@
         }
       }
     },
-    "appears-in": {
-      "valid_from_types": [
-        "character",
-        "concept",
-        "crew",
-        "devil-fruit",
-        "event",
-        "location",
-        "organization",
-        "race",
-        "ship",
-        "technique",
-        "title",
-        "weapon"
-      ],
-      "valid_to_types": [
-        "anime-episode",
-        "databook",
-        "film",
-        "manga-chapter",
-        "sbs"
-      ],
-      "inverse_inferred": false,
-      "qualifiers": {
-        "appearance_type": {
-          "value_type": "enum",
-          "enum_ref": "appearance-types",
-          "required": false
-        }
-      }
-    },
     "ate-fruit": {
       "valid_from_types": [
         "character"
@@ -1992,9 +1962,18 @@
       ],
       "valid_to_types": [
         "character",
+        "concept",
         "crew",
         "devil-fruit",
-        "image"
+        "event",
+        "image",
+        "location",
+        "organization",
+        "race",
+        "ship",
+        "technique",
+        "title",
+        "weapon"
       ],
       "inverse_inferred": true,
       "qualifiers": {
@@ -2145,27 +2124,6 @@
         }
       }
     },
-    "married-to": {
-      "valid_from_types": [
-        "character"
-      ],
-      "valid_to_types": [
-        "character"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {
-        "since": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        },
-        "until": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        }
-      }
-    },
     "member-of": {
       "valid_from_types": [
         "character"
@@ -2233,28 +2191,6 @@
           "required": false
         }
       }
-    },
-    "mentions": {
-      "valid_from_types": [
-        "databook",
-        "sbs"
-      ],
-      "valid_to_types": [
-        "character",
-        "concept",
-        "crew",
-        "devil-fruit",
-        "event",
-        "location",
-        "organization",
-        "race",
-        "ship",
-        "technique",
-        "title",
-        "weapon"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {}
     },
     "mentor-of": {
       "valid_from_types": [
@@ -2491,20 +2427,6 @@
         "technique",
         "title",
         "weapon"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {}
-    },
-    "references-event": {
-      "valid_from_types": [
-        "anime-episode",
-        "databook",
-        "film",
-        "manga-chapter",
-        "sbs"
-      ],
-      "valid_to_types": [
-        "event"
       ],
       "inverse_inferred": true,
       "qualifiers": {}

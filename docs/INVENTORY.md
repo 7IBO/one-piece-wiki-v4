@@ -393,7 +393,8 @@ Allowed relations: `borne-by`, `granted-by`, `depicted-by`.
 | `concept_subtype` | yes      | no         | no          | Vocabulary `concept-subtypes` |
 | `description_key` | no       | no         | yes         |                               |
 
-Allowed relations: `embodied-by`, `appears-in`, `depicted-by`.
+Allowed relations: `embodied-by`, `depicted-by`. (Concept→source
+appearances are `features`' generated inverse.)
 
 ---
 
@@ -410,7 +411,7 @@ Allowed relations: `embodied-by`, `appears-in`, `depicted-by`.
 | `cover_image`     | no       | no         | no          | entity_ref to `image`         |
 
 Allowed relations: `features`, `part-of-arc`, `adapted-by`,
-`introduces-character`, `references-event`, `depicted-by`.
+`introduces-character`, `references`, `depicted-by`.
 
 ---
 
@@ -452,7 +453,7 @@ Allowed relations: `features`, `staffed-by`, `produced-by`, `available-on`,
 | `published_at_jp` | yes      | no         | no          |               |
 | `canon_scope`     | yes      | no         | no          | Always `sbs`  |
 
-Allowed relations: `mentions`, `clarifies-fact`.
+Allowed relations: `references`, `clarifies-fact`.
 
 ---
 
@@ -465,7 +466,7 @@ Allowed relations: `mentions`, `clarifies-fact`.
 | `canon_scope`      | yes      | no         | no          | Always `databook`               |
 | `databook_subtype` | yes      | no         | no          | Vocabulary `databook-subtypes`  |
 
-Allowed relations: `mentions`, `clarifies-fact`, `depicted-by`.
+Allowed relations: `references`, `clarifies-fact`.
 
 ---
 
@@ -670,7 +671,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (67)
+## 4. Relation types (63)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -698,13 +699,12 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.3 Relationships
 
-| Type         | From        | To          | Inverse           | Qualifiers                          |
-| ------------ | ----------- | ----------- | ----------------- | ----------------------------------- |
-| `family-of`  | `character` | `character` | (symmetric/typed) | relation_kind, known_publicly_since |
-| `mentor-of`  | `character` | `character` | `mentored-by`     | since, until                        |
-| `friend-of`  | `character` | `character` | (symmetric)       | since                               |
-| `rival-of`   | `character` | `character` | (symmetric)       | since                               |
-| `married-to` | `character` | `character` | (symmetric)       | since, until                        |
+| Type        | From        | To          | Inverse           | Qualifiers                          |
+| ----------- | ----------- | ----------- | ----------------- | ----------------------------------- |
+| `family-of` | `character` | `character` | (symmetric/typed) | relation_kind, known_publicly_since |
+| `mentor-of` | `character` | `character` | `mentored-by`     | since, until                        |
+| `friend-of` | `character` | `character` | (symmetric)       | since                               |
+| `rival-of`  | `character` | `character` | (symmetric)       | since                               |
 
 ### 4.4 Race & origin
 
@@ -744,20 +744,18 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.8 Source ↔ entity
 
-| Type                   | From              | To          | Inverse                | Qualifiers                                          |
-| ---------------------- | ----------------- | ----------- | ---------------------- | --------------------------------------------------- |
-| `features`             | source types      | any entity  | `appears-in`           | appearance_type, is_first_appearance, is_first_full |
-| `introduces-character` | source types      | `character` | `introduced-in`        | —                                                   |
-| `references-event`     | source types      | `event`     | `referenced-by-source` | —                                                   |
-| `mentions`             | `sbs`, `databook` | any entity  | `mentioned-in`         | —                                                   |
-| `clarifies-fact`       | `sbs`, `databook` | any entity  | `clarified-in`         | property_name                                       |
+| Type                   | From              | To          | Inverse               | Qualifiers                                         |
+| ---------------------- | ----------------- | ----------- | --------------------- | -------------------------------------------------- |
+| `features`             | source types      | any entity  | `appears-in` _(gen.)_ | appearance_type                                    |
+| `introduces-character` | source types      | `character` | `introduced-in`       | —                                                  |
+| `references`           | source types      | any entity  | `referenced-by`       | — (absorbs former `mentions` / `references-event`) |
+| `clarifies-fact`       | `sbs`, `databook` | any entity  | `clarified-in`        | property_name                                      |
 
 ### 4.9 Source ↔ source (adaptation)
 
-| Type         | From            | To              | Inverse         | Qualifiers |
-| ------------ | --------------- | --------------- | --------------- | ---------- |
-| `adapted-by` | `manga-chapter` | `anime-episode` | `adapts`        | coverage   |
-| `references` | source types    | source types    | `referenced-by` | —          |
+| Type         | From            | To              | Inverse  | Qualifiers |
+| ------------ | --------------- | --------------- | -------- | ---------- |
+| `adapted-by` | `manga-chapter` | `anime-episode` | `adapts` | coverage   |
 
 ### 4.10 Narrative structure
 
@@ -1167,7 +1165,7 @@ depicted by another image).
 
 - **Entity types**: 34
 - **Property types**: 93 (some shared across multiple entity types)
-- **Relation types**: 67 (canonical declared; inverses are build-generated)
+- **Relation types**: 63 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 59
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
