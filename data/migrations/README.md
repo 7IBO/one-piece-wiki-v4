@@ -40,15 +40,26 @@ don't cover, write a plain function over `data`.
 
 ## Running
 
-```bash
-# preview the affected files, write nothing
-bun run migrate data/migrations/0001-bounty-to-reward.ts --dry-run
+Two CLIs. Use **`migrate:all`** (the runner, ADR-070) normally; the
+single-file `migrate` is for ad-hoc replays.
 
-# apply
+```bash
+# RUNNER — apply every migration not yet in applied.json, in order
+bun run migrate:all --dry-run   # list pending + the files they'd touch
+bun run migrate:all             # apply pending, then append IDs to applied.json
+bun run migrate:all --check     # exit 1 if anything is pending (CI gate)
+
+# single migration (ad-hoc)
+bun run migrate data/migrations/0001-bounty-to-reward.ts --dry-run
 bun run migrate data/migrations/0001-bounty-to-reward.ts
 ```
 
-After a real run:
+`applied.json` is the committed ledger of which migrations have run against the
+corpus. `migrate:all` skips applied ones and records the ones it applies — so an
+up-to-date checkout reports **0 pending**. (`migrate` writes nothing to the
+ledger; if you use it, add the ID to `applied.json` yourself.)
+
+After a real run (either CLI):
 
 1. Bump the affected entity type's `schema_version` in
    `data/schemas/entity-types/`.
@@ -58,10 +69,11 @@ After a real run:
 5. Update the internal consumers (`packages/sdk`, `apps/dashboard`,
    `apps/preview`) in the **same PR** — see ADR-029.
 
-Migrations are kept in the repo as a historical record; they are not
-re-run automatically. A numbered-migration runner (apply all pending,
-track applied state) is the full Phase 5 Task 4 scope — this helper is
-the lightweight subset that covers the volatile-phase need.
+Migrations are kept in the repo as a historical record. They are not
+re-run on every build; `migrate:all` replays only what the ledger says is
+pending (and all current transforms are idempotent, so a re-run would no-op
+anyway). The runner + applied-state ledger is ADR-070; the per-applied
+`schema_version` model is ADR-059.
 
 ## Inspecting versions (ADR-059)
 

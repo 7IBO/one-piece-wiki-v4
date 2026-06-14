@@ -23,8 +23,10 @@ derive from `canon_scope` (ADR-068), and merged `references` into `features`
 (ADR-069). **Migration system now exercised**: `0001`–`0004` under
 `/data/migrations` (mostly no-ops on the current corpus; `0002` rewrote 10
 chapter files); import via **relative path** to the engine, not the package
-specifier (README fixed). Remaining schema lag: §1 tree + §2 allowed-relations
-in INVENTORY only; the full apply-all-pending migration runner is still Phase-5.
+specifier (README fixed). The full **apply-all-pending migration runner** now
+exists — `bun run migrate:all` (+ `--dry-run`/`--check`) with a committed
+`applied.json` ledger (ADR-070). Remaining schema lag: §1 tree + §2
+allowed-relations in INVENTORY only.
 
 ## Open / blocked threads — resume here
 

@@ -4,7 +4,7 @@
  * is touched — `applyMigration` operates on in-memory EntityFile[].
  */
 import { describe, expect, it } from 'bun:test';
-import { applyMigration } from '../src/migrate/runner.ts';
+import { applyMigration, applyMigrations } from '../src/migrate/runner.ts';
 import {
   removeProperty,
   removeRelationType,
@@ -111,5 +111,65 @@ describe('applyMigration', () => {
     const report = applyMigration(files, migration);
     expect(report.deleted).toEqual(['b.json']);
     expect(report.unchanged).toBe(1);
+  });
+});
+
+describe('applyMigrations (pipeline)', () => {
+  const seed = (): EntityFile[] => [
+    { path: 'a.json', data: character() },
+    {
+      path: 'b.json',
+      data: { id: 'character:other', type: 'character', properties: {}, relations: [] },
+    },
+  ];
+
+  it('composes migrations in order; net changed paths reflect the end state', () => {
+    const rename: Migration = {
+      id: '0001-bounty-to-reward',
+      description: 'bounty → reward',
+      up: (data) => renameProperty(data, 'bounty', 'reward'),
+    };
+    const drop: Migration = {
+      id: '0002-drop-reward',
+      description: 'remove reward',
+      up: (data) => removeProperty(data, 'reward'),
+    };
+
+    const res = applyMigrations(seed(), [rename, drop]);
+
+    expect(res.reports.map((r) => r.migrationId)).toEqual([
+      '0001-bounty-to-reward',
+      '0002-drop-reward',
+    ]);
+    expect(res.changedPaths).toEqual(['a.json']);
+    expect(res.deletedPaths).toEqual([]);
+
+    const a = res.finalFiles.find((f) => f.path === 'a.json');
+    const props = a?.data['properties'] as Record<string, unknown>;
+    expect('bounty' in props).toBe(false);
+    expect('reward' in props).toBe(false);
+    expect('name' in props).toBe(true);
+  });
+
+  it('a pipeline of no-ops changes nothing', () => {
+    const noop: Migration = {
+      id: '0001-noop',
+      description: 'remove an absent property',
+      up: (data) => removeProperty(data, 'nonexistent'),
+    };
+    const res = applyMigrations(seed(), [noop]);
+    expect(res.changedPaths).toEqual([]);
+    expect(res.deletedPaths).toEqual([]);
+  });
+
+  it('propagates deletions out of the pipeline', () => {
+    const del: Migration = {
+      id: '0001-drop-other',
+      description: 'delete character:other',
+      up: (data) => (data['id'] === 'character:other' ? null : data),
+    };
+    const res = applyMigrations(seed(), [del]);
+    expect(res.deletedPaths).toEqual(['b.json']);
+    expect(res.finalFiles.map((f) => f.path)).toEqual(['a.json']);
   });
 });
