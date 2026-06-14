@@ -5,6 +5,9 @@
         "aired_at_jp": {
           "required": false
         },
+        "anime_original": {
+          "required": false
+        },
         "canon_scope": {
           "required": false
         },
@@ -18,6 +21,9 @@
           "required": false
         },
         "title_key": {
+          "required": false
+        },
+        "tv_rating": {
           "required": false
         }
       },
@@ -258,6 +264,9 @@
           "required": false
         },
         "director": {
+          "required": false
+        },
+        "film_number": {
           "required": false
         },
         "oda_supervised": {
@@ -651,6 +660,12 @@
       "historical": false,
       "localizable": true
     },
+    "anime_original": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
     "arc_number": {
       "value_type": "number",
       "enum_ref": null,
@@ -804,6 +819,12 @@
     "event_subtype": {
       "value_type": "enum",
       "enum_ref": "event-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "film_number": {
+      "value_type": "number",
+      "enum_ref": null,
       "historical": false,
       "localizable": false
     },
@@ -1091,6 +1112,12 @@
     },
     "track_length": {
       "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "tv_rating": {
+      "value_type": "number",
       "enum_ref": null,
       "historical": false,
       "localizable": false

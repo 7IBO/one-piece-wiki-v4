@@ -548,7 +548,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (83)
+## 3. Property types (86)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -581,6 +581,8 @@ unit, and qualifier policy (section 6).
 | `runtime_minutes` | `number`   | min   | min:0                 |
 | `saga_number`     | `number`   | —     | min:1                 |
 | `arc_number`      | `number`   | —     | min:1                 |
+| `tv_rating`       | `number`   | %     | min:0 (anime-episode) |
+| `film_number`     | `number`   | —     | min:1 (film ordinal)  |
 | `width`           | `number`   | px    | min:0                 |
 | `height` (image)  | `number`   | px    | min:0                 |
 | `crew_capacity`   | `number`   | —     | min:0                 |
@@ -639,6 +641,7 @@ unit, and qualifier policy (section 6).
 | `is_public`              | `boolean`  | Event — controls knowledge propagation |
 | `single_holder`          | `boolean`  | Title                                  |
 | `nullifies_devil_fruits` | `boolean`  | Material — `true` for Seastone         |
+| `anime_original`         | `boolean`  | Anime-episode — filler / anime-only    |
 
 ### 3.6 References
 
@@ -1103,7 +1106,7 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 24
-- **Property types**: 83 (some shared across multiple entity types)
+- **Property types**: 86 (some shared across multiple entity types)
 - **Relation types**: 61 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 50
 - **Primitive value types**: 10

@@ -179,8 +179,9 @@ Slices (each ADR + PR):
    episode_from/to/broadcast_version) + `theme-song-usage` vocab; credits reuse
    `staffed-by` (widened +=theme-song); `record_label`/`track_length` props; titles
    via `name` `name_type` — **ADR-051 [done, this PR]**.
-3. Episode/film props: `eyecatcher`, `tv_rating`, `anime_original`; film
-   ordering + regional release (per-dub titles/dates likely fold into C1 i18n).
+3. Episode/film props: `tv_rating`, `anime_original`, `film_number` — **ADR-053
+   [done, this PR]**. (Eyecatcher = `features` + `appearance_type: eyecatcher`,
+   no new field. Per-dub titles/dates fold into C1 i18n.)
 4. **Platform availability** (W-E): `streaming-platform` entity (name,
    `platform_kind` → `platform-kinds` streaming/reader/store, `homepage_url`) +
    `available-on` relation (anime-episode/manga-chapter/film → streaming-platform;
@@ -191,9 +192,29 @@ Slices (each ADR + PR):
    source_ref/i18n_key/markdown). Live-action availability needs a live-action
    entity first (not yet modelled).
 
-Remaining: slice 3 (episode/film props `eyecatcher`/`tv_rating`/`anime_original`
+**New-domain clusters** (user: "tout tout tout"; from a 4-agent Fandom audit, queued):
 
-- film ordering/regional release) — lowest priority, not yet done.
+- **Real-world `company` entity** (core) — devs/publishers/labels/studios/
+  manufacturers; + `produced-by` relation (media → company, `role` qualifier).
+  Foundational; unblocks games/merch/music/live-action. (Note: in-universe
+  `organization` is OP-scoped; real-world companies are distinct + universal.)
+- **`live-action-episode`** entity (+ season): Netflix series; reuse
+  `staffed-by`/`portrayed-by`/`available-on`/`theme-song`, `canon_scope: live_action`.
+- **Non-canon media**: specials → `anime-episode` + `anime_filler`; crossovers →
+  `anime-episode` + `crossover`; OVAs → new `ova` canon-scope value; stage shows/
+  musicals → new `live-performance` entity.
+- **`databook-card`** entity (Vivre Card / Visual Dictionary): `card_number`,
+  `card_kind` vocab (character/extra/skill/ship), measured-fact snapshot props
+  (historised), `profiles` → character/df/ship, `sourced-from` → databook. NB the
+  audit found **no six-axis stat hexagon** — cards are descriptive/measured.
+- **`album`** entity + `contains-track` (album → theme-song, many-to-many,
+  qualifiers disc/track_number/version_note); `album_kind` vocab; reuse
+  `staffed-by` (widen += album). theme-song doubles as the track entity.
+- **`video-game`** entity (Game Box: name/genre/platform/release/prev-next);
+  `game-platforms` vocab; widen `features` += video-game (+ `appearance_type`
+  playable/exclusive); dev/publisher via `produced-by` → company.
+- **`merchandise`** entity (+ `product-line`, `product-type` vocabs);
+  manufacturer/collab via `produced-by` → company.
 
 ## Active plan (ADR-032) — tooling before ingest
 
