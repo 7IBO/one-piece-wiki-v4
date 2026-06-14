@@ -21,6 +21,7 @@
     "adapted-by",
     "introduces-character",
     "references-event",
+    "available-on",
     "depicted-by"
   ],
   "ui_hint": { "icon": "book", "group": "sources" }
