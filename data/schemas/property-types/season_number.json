@@ -1,12 +1,12 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
-  "id": "number",
+  "id": "season_number",
   "schema_version": 1,
-  "labels": { "en": "Number", "fr": "Numéro" },
+  "labels": { "en": "Season", "fr": "Saison" },
   "value_type": "number",
   "value_constraints": { "min": 1, "step": 1 },
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,
-  "applies_to_entity_types": ["manga-chapter", "anime-episode", "live-action-episode"]
+  "applies_to_entity_types": ["live-action-episode"]
 }

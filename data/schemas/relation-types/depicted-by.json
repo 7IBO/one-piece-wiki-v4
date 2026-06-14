@@ -31,7 +31,9 @@
     "databook-card",
     "transformation",
     "album",
-    "video-game"
+    "video-game",
+    "live-action-series",
+    "live-action-episode"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [

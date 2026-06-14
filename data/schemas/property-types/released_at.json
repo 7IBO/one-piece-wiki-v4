@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "released_at",
+  "schema_version": 1,
+  "labels": { "en": "Release date", "fr": "Date de sortie" },
+  "value_type": "date",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["live-action-series", "live-action-episode"]
+}

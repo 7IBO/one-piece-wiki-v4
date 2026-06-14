@@ -6,7 +6,13 @@
     "en": { "active": "Available on", "inverse": "Hosts" },
     "fr": { "active": "Disponible sur", "inverse": "Héberge" }
   },
-  "valid_from_types": ["anime-episode", "manga-chapter", "film"],
+  "valid_from_types": [
+    "anime-episode",
+    "manga-chapter",
+    "film",
+    "live-action-series",
+    "live-action-episode"
+  ],
   "valid_to_types": ["streaming-platform"],
   "qualifiers": [
     { "id": "url", "value_type": "string", "required": true },

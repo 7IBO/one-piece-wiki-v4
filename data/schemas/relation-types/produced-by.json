@@ -6,7 +6,14 @@
     "en": { "active": "Produced by", "inverse": "Produced" },
     "fr": { "active": "Produit par", "inverse": "A produit" }
   },
-  "valid_from_types": ["anime-episode", "film", "album", "video-game"],
+  "valid_from_types": [
+    "anime-episode",
+    "film",
+    "album",
+    "video-game",
+    "live-action-series",
+    "live-action-episode"
+  ],
   "valid_to_types": ["company"],
   "qualifiers": [
     { "id": "role", "value_type": "enum", "enum_ref": "company-roles", "required": true },
