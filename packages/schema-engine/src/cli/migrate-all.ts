@@ -59,9 +59,9 @@ async function discover(): Promise<readonly Migration[]> {
   return migrations;
 }
 
-const args = process.argv.slice(2);
-const dryRun = args.includes('--dry-run');
-const check = args.includes('--check');
+const flags = new Set(process.argv.slice(2));
+const dryRun = flags.has('--dry-run');
+const check = flags.has('--check');
 
 const all = await discover();
 const applied = new Set((await readLedger()).applied);
