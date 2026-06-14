@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "crew",
-  "schema_version": 2,
+  "schema_version": 3,
   "labels": { "en": "Crew", "fr": "Équipage" },
   "url_segment": "crews",
   "properties": [
@@ -9,11 +9,9 @@
     { "id": "total_bounty", "required": false, "historical": true, "localizable": false },
     { "id": "founded_at", "required": false, "historical": false, "localizable": false },
     { "id": "disbanded_at", "required": false, "historical": false, "localizable": false },
-    { "id": "jolly_roger", "required": false, "historical": true, "localizable": false },
     { "id": "description_key", "required": false, "historical": false, "localizable": true }
   ],
   "allowed_relations": [
-    "has-member",
     "ally-of",
     "enemy-of",
     "based-in",

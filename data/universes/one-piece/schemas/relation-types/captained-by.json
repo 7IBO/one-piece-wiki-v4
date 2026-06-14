@@ -6,7 +6,7 @@
     "en": { "active": "Captained by", "inverse": "Captains" },
     "fr": { "active": "Capitainé par", "inverse": "Capitaine de" }
   },
-  "valid_from_types": ["crew", "ship"],
+  "valid_from_types": ["crew"],
   "valid_to_types": ["character"],
   "qualifiers": [
     { "id": "since", "value_type": "source_ref", "required": false },

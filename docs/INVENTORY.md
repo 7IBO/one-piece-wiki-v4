@@ -549,7 +549,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (85)
+## 3. Property types (82)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -645,20 +645,17 @@ unit, and qualifier policy (section 6).
 
 ### 3.6 References
 
-| Property        | Value type   | Target type      |
-| --------------- | ------------ | ---------------- |
-| `url`           | `string`     | (R2 URL)         |
-| `birthplace`    | `entity_ref` | `location`       |
-| `jolly_roger`   | `entity_ref` | `image`          |
-| `cover_image`   | `entity_ref` | `image`          |
-| `attribution`   | `string`     | —                |
-| `source_origin` | `string`     | —                |
-| `climate`       | `string`     | —                |
-| `blood_type`    | `string`     | A, B, AB, O, +/− |
+| Property        | Value type | Target type      |
+| --------------- | ---------- | ---------------- |
+| `url`           | `string`   | (R2 URL)         |
+| `attribution`   | `string`   | —                |
+| `source_origin` | `string`   | —                |
+| `climate`       | `string`   | —                |
+| `blood_type`    | `string`   | A, B, AB, O, +/− |
 
 ---
 
-## 4. Relation types (63)
+## 4. Relation types (62)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -667,7 +664,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 | Type              | From                                | To                     | Inverse           | Qualifiers                                                      |
 | ----------------- | ----------------------------------- | ---------------------- | ----------------- | --------------------------------------------------------------- |
-| `member-of`       | `character`                         | `crew`, `organization` | `has-member`      | role, since, until, loyalty_status, departure_reason, held_rank |
+| `member-of`       | `character`                         | `crew`, `organization` | `(inferred)`      | role, since, until, loyalty_status, departure_reason, held_rank |
 | `led-by`          | `crew`, `organization`              | `character`            | `leads`           | since, until                                                    |
 | `ally-of`         | `character`, `crew`, `organization` | (same)                 | (symmetric)       | since, until                                                    |
 | `enemy-of`        | `character`, `crew`, `organization` | (same)                 | (symmetric)       | since, until, intensity                                         |
@@ -722,13 +719,13 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.7 Ship-related
 
-| Type         | From           | To      | Inverse        | Qualifiers   |
-| ------------ | -------------- | ------- | -------------- | ------------ |
-| `captains`   | `character`    | `ship`  | `captained-by` | since, until |
-| `pilots`     | `character`    | `ship`  | `piloted-by`   | since, until |
-| `crewed-by`  | `ship`         | `crew`  | `sails`        | since, until |
-| `flies-flag` | `ship`, `crew` | `image` | `flag-of`      | since        |
-| `replaces`   | `ship`         | `ship`  | `replaced-by`  | since        |
+| Type         | From           | To      | Inverse       | Qualifiers   |
+| ------------ | -------------- | ------- | ------------- | ------------ |
+| `captains`   | `character`    | `ship`  | `(inferred)`  | since, until |
+| `pilots`     | `character`    | `ship`  | `piloted-by`  | since, until |
+| `crewed-by`  | `ship`         | `crew`  | `sails`       | since, until |
+| `flies-flag` | `ship`, `crew` | `image` | `flag-of`     | since        |
+| `replaces`   | `ship`         | `ship`  | `replaced-by` | since        |
 
 ### 4.8 Source ↔ entity
 
@@ -1120,8 +1117,8 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 26
-- **Property types**: 85 (some shared across multiple entity types)
-- **Relation types**: 63 (canonical declared; inverses are build-generated)
+- **Property types**: 82 (some shared across multiple entity types)
+- **Relation types**: 62 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 52
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)

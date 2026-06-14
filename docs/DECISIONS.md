@@ -8,6 +8,47 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-057 — Schema cleanup pass 2: redundant inverse + entity_ref-property duplicates
+
+**Date**: 2026-06-14
+
+**Context**: Deeper duplicate sweep (maintainer: "check les autres"). Two new
+families surfaced, both zero data usage → no migration.
+
+**Decision**:
+
+1. **Delete `has-member`** — duplicates the build-generated inverse of `member-of`
+   (`character` → crew/org, `inverse_inferred: true`, inverse label "Members").
+   Same pattern as `contains-chapter` (ADR-056). Removed from `crew` /
+   `organization` `allowed_relations`; their members come free as `member-of`'s
+   inverse.
+2. **Delete 3 `entity_ref` properties that duplicate dedicated relations** — the
+   model should link entity→entity via relations (queryable, qualifiable,
+   historisable), not entity_ref properties:
+   - `birthplace` (character → location) ⟶ use the **`born-in`** relation.
+   - `jolly_roger` (crew → image) ⟶ use the **`flies-flag`** relation.
+   - `cover_image` (manga-chapter → image) ⟶ use **`depicted-by` {role: cover}**.
+     (Same class as `primary_location`, removed in ADR-056.)
+3. **Tighten `captained-by`** to `valid_from: [crew]` (was `[crew, ship]`). The
+   ship→character leg duplicated `captains`' generated inverse; a ship's captain
+   now comes via `captains.inverse`. Removed `captained-by` from `ship`
+   `allowed_relations`.
+
+**No migration** — all targets have zero entity usage (grep-verified). PR
+labelled `schema-breaking`; snapshot regenerated (10 breaking diffs).
+`crew`/`organization`/`character`/`manga-chapter`/`ship` `schema_version` bumped.
+
+**Still deferred (design reviews, not pure cleanup)**: the 7-relation appearance
+family (`features`/`appears-in`/…); the canon overlap (two vocabularies
+`canon-scopes` + `canonicity-tiers`, plus `oda_supervised` vs `film_canon`); the
+medium-split date props (`published_at_jp`/`released_at_jp`/`aired_at_jp`);
+`married-to` ⊆ `family-of {spouse}`; and `friend-of`/`rival-of` wire-or-drop. The
+`technique`/`transformation` split is a separate ADR.
+
+**Consequences**: −3 properties (82), −1 relation (62). INVENTORY refreshed.
+
+---
+
 ## ADR-056 — Schema cleanup pass 1: remove duplicates & low-value attributes
 
 **Date**: 2026-06-14

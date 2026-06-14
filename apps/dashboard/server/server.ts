@@ -144,6 +144,34 @@ function serviceUnavailable(message: string): Response {
 function conflict(message: string, currentSha: string): Response {
   return json({ error: message, currentSha }, 409);
 }
+function forbidden(message: string): Response {
+  return json({ error: message }, 403);
+}
+function tooManyRequests(message: string): Response {
+  return json({ error: message }, 429);
+}
+function payloadTooLarge(message: string): Response {
+  return json({ error: message }, 413);
+}
+
+// Largest JSON body accepted on a write. Entity payloads are small;
+// image bytes go straight to R2 via presigned PUT, never through here.
+const MAX_BODY_BYTES = 1_000_000;
+
+/**
+ * Same-origin check for state-changing requests. The request's own
+ * origin is always allowed; the configured public base is also accepted
+ * to cover proxy setups where the inbound host differs from the URL the
+ * browser used.
+ */
+function isAllowedOrigin(origin: string, requestUrl: URL): boolean {
+  if (origin === requestUrl.origin) return true;
+  try {
+    return new URL(origin).origin === new URL(PUBLIC_BASE_URL).origin;
+  } catch {
+    return false;
+  }
+}
 
 function dataPath(type: string, fileBase: string): string {
   return `data/universes/${UNIVERSE}/entities/${type}/${fileBase}.json`;
@@ -1333,8 +1361,9 @@ async function handleMyContributions(
 
 /**
  * Mint a presigned PUT URL on R2 for the browser to upload an image
- * directly. Auth-gated to admins so randoms can't burn through the
- * bucket quota. Returns { uploadUrl, stagingUrl, key, expiresIn,
+ * directly. Requires an authenticated session (visitors are rejected
+ * at the route); non-admins are rate-limited so randoms can't burn
+ * through the bucket quota. Returns { uploadUrl, stagingUrl, key, expiresIn,
  * maxBytes }. The `stagingUrl` is the `staging://<key>` placeholder
  * the dashboard stores on the entity JSON until the merge workflow
  * rewrites it to the canonical public URL (see ADR-015 / Phase 7.1).
@@ -1533,6 +1562,22 @@ export async function handleApiRequest(req: Request): Promise<Response> {
   // fail-safe (don't let unset XFF disable the limiter).
   const ip = clientIp(req, '0.0.0.0');
 
+  // ── CSRF + payload guards for state-changing requests ──
+  // Cookie auth + SameSite=Lax alone is not sufficient: reject
+  // cross-site writes when the browser sends an Origin that isn't ours.
+  // A missing Origin (non-browser clients) falls through to the
+  // session/rate-limit guards below. Also cap the request body size.
+  if (req.method !== 'GET' && req.method !== 'HEAD') {
+    const origin = req.headers.get('origin');
+    if (origin !== null && !isAllowedOrigin(origin, url)) {
+      return forbidden('Cross-site request blocked.');
+    }
+    const declaredLength = Number(req.headers.get('content-length') ?? '0');
+    if (Number.isFinite(declaredLength) && declaredLength > MAX_BODY_BYTES) {
+      return payloadTooLarge(`Request body exceeds ${MAX_BODY_BYTES} bytes.`);
+    }
+  }
+
   // Anonymous abuse kill-switch — global, before any routing.
   // Reading a blocked IP's GET is still allowed (read endpoints
   // are public anyway); only write paths are gated below via
@@ -1541,10 +1586,7 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     // Don't reveal anything about the block — return a generic
     // 403 to make scraping the blocklist boring.
     if (req.method !== 'GET') {
-      return new Response(JSON.stringify({ error: 'Forbidden.' }), {
-        status: 403,
-        headers: { 'content-type': 'application/json' },
-      });
+      return forbidden('Forbidden.');
     }
   }
 
@@ -1594,17 +1636,15 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     }
 
     if (req.method === 'POST' && path === '/api/uploads/presign') {
-      // Anonymous + contributor + admin all may upload (to staging).
-      // Admin gets no rate-limit; everyone else is bucketed.
-      if (!isAdminSession()) {
-        if (rateLimitHit('upload', rateLimitKey(), ANON_UPLOAD_LIMIT)) {
-          return new Response(
-            JSON.stringify({
-              error: `Rate limit reached (${ANON_UPLOAD_LIMIT}/hour). Try again later.`,
-            }),
-            { status: 429, headers: { 'content-type': 'application/json' } },
-          );
-        }
+      // Any authenticated session may upload to staging; visitors may
+      // not (this is a write surface). Admins skip the rate limit.
+      if (session === null) {
+        return unauthorized('Sign in (anonymous or GitHub) before uploading.');
+      }
+      if (!isAdminSession() && rateLimitHit('upload', rateLimitKey(), ANON_UPLOAD_LIMIT)) {
+        return tooManyRequests(
+          `Rate limit reached (${ANON_UPLOAD_LIMIT}/hour). Try again later.`,
+        );
       }
       return await handlePresignUpload(req);
     }
@@ -1650,11 +1690,8 @@ export async function handleApiRequest(req: Request): Promise<Response> {
         }
         if (!isAdminSession()) {
           if (rateLimitHit('save', rateLimitKey(), ANON_WRITE_LIMIT)) {
-            return new Response(
-              JSON.stringify({
-                error: `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
-              }),
-              { status: 429, headers: { 'content-type': 'application/json' } },
+            return tooManyRequests(
+              `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
             );
           }
         }
@@ -1675,11 +1712,8 @@ export async function handleApiRequest(req: Request): Promise<Response> {
         }
         if (!isAdminSession()) {
           if (rateLimitHit('save', rateLimitKey(), ANON_WRITE_LIMIT)) {
-            return new Response(
-              JSON.stringify({
-                error: `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
-              }),
-              { status: 429, headers: { 'content-type': 'application/json' } },
+            return tooManyRequests(
+              `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
             );
           }
         }
@@ -1710,11 +1744,8 @@ export async function handleApiRequest(req: Request): Promise<Response> {
         }
         if (!isAdminSession()) {
           if (rateLimitHit('save', rateLimitKey(), ANON_WRITE_LIMIT)) {
-            return new Response(
-              JSON.stringify({
-                error: `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
-              }),
-              { status: 429, headers: { 'content-type': 'application/json' } },
+            return tooManyRequests(
+              `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
             );
           }
         }

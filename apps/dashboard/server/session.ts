@@ -72,7 +72,7 @@ const SESSION_TTL_MS = 30 * 24 * 60 * 60 * 1000;
  * at first sign/verify.
  */
 let cachedSecret: string | null = null;
-let warnedServerless = false;
+let warnedWeakSecret = false;
 
 function isServerless(): boolean {
   // Heuristic for "this is actually a serverless deploy", as opposed
@@ -89,22 +89,35 @@ function getSessionSecret(): string {
 
   const envSecret = process.env['SESSION_SECRET'];
   if (envSecret !== undefined && envSecret !== '') {
+    // A weak secret is no better than none. Require ≥32 chars: fatal on
+    // a real deploy, a warning locally so a throwaway dev value still
+    // works.
+    if (envSecret.length < 32) {
+      if (isServerless()) {
+        throw new Error(
+          '[session] SESSION_SECRET must be at least 32 characters '
+            + '(generate one with `openssl rand -base64 32`).',
+        );
+      }
+      if (!warnedWeakSecret) {
+        warnedWeakSecret = true;
+        process.stderr.write(
+          '[session] WARNING: SESSION_SECRET is shorter than 32 chars; '
+            + 'use `openssl rand -base64 32` for a strong secret.\n',
+        );
+      }
+    }
     cachedSecret = envSecret;
     return cachedSecret;
   }
 
-  // Serverless without SESSION_SECRET set is broken-by-design:
-  // every cold start gets a fresh random, so cookies break across
-  // requests routed to different instances. We loudly warn — once
-  // — and fall through to the random so reads still work. Writes
-  // / auth flows will visibly fail on the contributor's side.
-  if (isServerless() && !warnedServerless) {
-    warnedServerless = true;
-    process.stderr.write(
-      '[session] WARNING: SESSION_SECRET is not set on a serverless '
-        + 'platform. Cookies will not survive across cold starts — '
-        + 'every contributor effectively gets a new session per request. '
-        + 'Set SESSION_SECRET in the platform env to fix.\n',
+  // Serverless without SESSION_SECRET is broken-by-design (every cold
+  // start would mint a fresh random, so cookies break across instances)
+  // and risks silently signing with the on-disk dev file. Fail closed.
+  if (isServerless()) {
+    throw new Error(
+      '[session] SESSION_SECRET is required in production. '
+        + 'Set it in the platform environment.',
     );
   }
 
@@ -191,7 +204,16 @@ export function parse(cookieValue: string | null | undefined): Session | null {
   if (dot < 0) return null;
   const payload = cookieValue.slice(0, dot);
   const sig = cookieValue.slice(dot + 1);
-  if (!constantTimeEquals(sign(payload), sig)) return null;
+  let expectedSig: string;
+  try {
+    expectedSig = sign(payload);
+  } catch {
+    // Secret unavailable (e.g. unset in production) — treat as no
+    // session. Cookie minting (serialize) still throws loudly so a
+    // misconfigured deploy fails visibly on the first sign-in.
+    return null;
+  }
+  if (!constantTimeEquals(expectedSig, sig)) return null;
   let parsed: unknown;
   try {
     parsed = JSON.parse(base64UrlDecode(payload));
@@ -212,14 +234,23 @@ export function parse(cookieValue: string | null | undefined): Session | null {
   return null;
 }
 
+/**
+ * `; Secure` on real deploys (HTTPS) so the session cookie never
+ * travels over plain HTTP; omitted locally so it still works over
+ * `http://localhost` during dev.
+ */
+function cookieSecurity(): string {
+  return isServerless() ? '; Secure' : '';
+}
+
 export function buildCookie(session: Session): string {
   const value = serialize(session);
   const maxAge = Math.floor((session.expiresAt - Date.now()) / 1000);
-  return `${COOKIE_NAME}=${value}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Lax`;
+  return `${COOKIE_NAME}=${value}; HttpOnly; Path=/; Max-Age=${maxAge}; SameSite=Lax${cookieSecurity()}`;
 }
 
 export function clearCookie(): string {
-  return `${COOKIE_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax`;
+  return `${COOKIE_NAME}=; HttpOnly; Path=/; Max-Age=0; SameSite=Lax${cookieSecurity()}`;
 }
 
 export function readCookie(req: Request): string | null {

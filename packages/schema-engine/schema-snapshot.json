@@ -63,9 +63,6 @@
         "birthday": {
           "required": false
         },
-        "birthplace": {
-          "required": false
-        },
         "blood_type": {
           "required": false
         },
@@ -165,9 +162,6 @@
         "founded_at": {
           "required": false
         },
-        "jolly_roger": {
-          "required": false
-        },
         "name": {
           "required": true
         },
@@ -183,7 +177,6 @@
         "depicted-by",
         "enemy-of",
         "flies-flag",
-        "has-member",
         "subordinate-to"
       ]
     },
@@ -391,9 +384,6 @@
         "canon_scope": {
           "required": false
         },
-        "cover_image": {
-          "required": false
-        },
         "number": {
           "required": true
         },
@@ -463,7 +453,6 @@
         "controls-territory",
         "depicted-by",
         "enemy-of",
-        "has-member",
         "led-by",
         "subordinate-to"
       ]
@@ -557,7 +546,6 @@
         }
       },
       "allowed_relations": [
-        "captained-by",
         "crewed-by",
         "depicted-by",
         "flies-flag",
@@ -728,12 +716,6 @@
       "historical": false,
       "localizable": false
     },
-    "birthplace": {
-      "value_type": "entity_ref",
-      "enum_ref": null,
-      "historical": false,
-      "localizable": false
-    },
     "blood_type": {
       "value_type": "enum",
       "enum_ref": "blood-types",
@@ -803,12 +785,6 @@
     "concept_subtype": {
       "value_type": "enum",
       "enum_ref": "concept-subtypes",
-      "historical": false,
-      "localizable": false
-    },
-    "cover_image": {
-      "value_type": "entity_ref",
-      "enum_ref": null,
       "historical": false,
       "localizable": false
     },
@@ -930,12 +906,6 @@
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
-    },
-    "jolly_roger": {
-      "value_type": "entity_ref",
-      "enum_ref": null,
-      "historical": true,
       "localizable": false
     },
     "last_source": {
@@ -1425,8 +1395,7 @@
     },
     "captained-by": {
       "valid_from_types": [
-        "crew",
-        "ship"
+        "crew"
       ],
       "valid_to_types": [
         "character"
@@ -1791,33 +1760,6 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {}
-    },
-    "has-member": {
-      "valid_from_types": [
-        "crew",
-        "organization"
-      ],
-      "valid_to_types": [
-        "character"
-      ],
-      "inverse_inferred": false,
-      "qualifiers": {
-        "role": {
-          "value_type": "enum",
-          "enum_ref": "crew-roles",
-          "required": false
-        },
-        "since": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        },
-        "until": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        }
-      }
     },
     "introduces-character": {
       "valid_from_types": [
