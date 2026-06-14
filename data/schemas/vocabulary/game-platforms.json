@@ -1,0 +1,29 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "game-platforms",
+  "schema_version": 1,
+  "values": {
+    "game_boy_advance": { "labels": { "en": "Game Boy Advance", "fr": "Game Boy Advance" } },
+    "nintendo_ds": { "labels": { "en": "Nintendo DS", "fr": "Nintendo DS" } },
+    "nintendo_3ds": { "labels": { "en": "Nintendo 3DS", "fr": "Nintendo 3DS" } },
+    "nintendo_switch": { "labels": { "en": "Nintendo Switch", "fr": "Nintendo Switch" } },
+    "nintendo_switch_2": { "labels": { "en": "Nintendo Switch 2", "fr": "Nintendo Switch 2" } },
+    "gamecube": { "labels": { "en": "GameCube", "fr": "GameCube" } },
+    "wii": { "labels": { "en": "Wii", "fr": "Wii" } },
+    "wii_u": { "labels": { "en": "Wii U", "fr": "Wii U" } },
+    "playstation": { "labels": { "en": "PlayStation", "fr": "PlayStation" } },
+    "playstation_2": { "labels": { "en": "PlayStation 2", "fr": "PlayStation 2" } },
+    "playstation_3": { "labels": { "en": "PlayStation 3", "fr": "PlayStation 3" } },
+    "playstation_4": { "labels": { "en": "PlayStation 4", "fr": "PlayStation 4" } },
+    "playstation_5": { "labels": { "en": "PlayStation 5", "fr": "PlayStation 5" } },
+    "psp": { "labels": { "en": "PlayStation Portable", "fr": "PlayStation Portable" } },
+    "ps_vita": { "labels": { "en": "PlayStation Vita", "fr": "PlayStation Vita" } },
+    "xbox_360": { "labels": { "en": "Xbox 360", "fr": "Xbox 360" } },
+    "xbox_one": { "labels": { "en": "Xbox One", "fr": "Xbox One" } },
+    "xbox_series": { "labels": { "en": "Xbox Series X|S", "fr": "Xbox Series X|S" } },
+    "pc": { "labels": { "en": "PC", "fr": "PC" } },
+    "ios": { "labels": { "en": "iOS", "fr": "iOS" } },
+    "android": { "labels": { "en": "Android", "fr": "Android" } },
+    "arcade": { "labels": { "en": "Arcade", "fr": "Arcade" } }
+  }
+}

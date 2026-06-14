@@ -674,6 +674,31 @@
         "form-of"
       ]
     },
+    "video-game": {
+      "properties": {
+        "canon_scope": {
+          "required": true
+        },
+        "game_genre": {
+          "required": true
+        },
+        "game_platforms": {
+          "required": false
+        },
+        "released_at_jp": {
+          "required": true
+        },
+        "title_key": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "features",
+        "produced-by",
+        "staffed-by"
+      ]
+    },
     "weapon": {
       "properties": {
         "description_key": {
@@ -916,6 +941,18 @@
     "founded_at": {
       "value_type": "source_ref",
       "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "game_genre": {
+      "value_type": "enum",
+      "enum_ref": "game-genres",
+      "historical": false,
+      "localizable": false
+    },
+    "game_platforms": {
+      "value_type": "multi_enum",
+      "enum_ref": "game-platforms",
       "historical": false,
       "localizable": false
     },
@@ -1663,6 +1700,7 @@
         "theme-song",
         "title",
         "transformation",
+        "video-game",
         "weapon"
       ],
       "valid_to_types": [
@@ -1794,7 +1832,8 @@
       "valid_from_types": [
         "anime-episode",
         "film",
-        "manga-chapter"
+        "manga-chapter",
+        "video-game"
       ],
       "valid_to_types": [
         "character",
@@ -2213,7 +2252,8 @@
       "valid_from_types": [
         "album",
         "anime-episode",
-        "film"
+        "film",
+        "video-game"
       ],
       "valid_to_types": [
         "company"
@@ -2395,7 +2435,8 @@
         "album",
         "anime-episode",
         "film",
-        "theme-song"
+        "theme-song",
+        "video-game"
       ],
       "valid_to_types": [
         "person"
@@ -2908,6 +2949,49 @@
       "sworn_brother",
       "sworn_sister",
       "uncle"
+    ],
+    "game-genres": [
+      "action",
+      "action_adventure",
+      "action_rpg",
+      "adventure",
+      "beat_em_up",
+      "board",
+      "card",
+      "fighting",
+      "hack_and_slash",
+      "mmo",
+      "other",
+      "party",
+      "puzzle",
+      "racing",
+      "rhythm",
+      "rpg",
+      "strategy"
+    ],
+    "game-platforms": [
+      "android",
+      "arcade",
+      "game_boy_advance",
+      "gamecube",
+      "ios",
+      "nintendo_3ds",
+      "nintendo_ds",
+      "nintendo_switch",
+      "nintendo_switch_2",
+      "pc",
+      "playstation",
+      "playstation_2",
+      "playstation_3",
+      "playstation_4",
+      "playstation_5",
+      "ps_vita",
+      "psp",
+      "wii",
+      "wii_u",
+      "xbox_360",
+      "xbox_one",
+      "xbox_series"
     ],
     "genders": [
       "female",

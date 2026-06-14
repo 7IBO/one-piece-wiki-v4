@@ -8,6 +8,45 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-061 — `video-game` entity (game catalogue)
+
+**Date**: 2026-06-14
+
+**Context**: One Piece has a large game catalogue (Grand Battle, Pirate
+Warriors, Unlimited World, Odyssey, Bounty Rush, …). Fandom models each as an
+infobox with title, genre, platform(s), developer/publisher, JP release date,
+and a cast of featured characters. `company-roles` already carried
+`game_developer`/`game_publisher` and `canon-scopes` already carried
+`video_game` — the relations needed no new vocabulary.
+
+**Decision** (additive, core — games are universal):
+
+1. **`video-game`** entity — `title_key`, `game_genre` (req, enum → new
+   **`game-genres`**), `game_platforms` (multi-enum → new **`game-platforms`**),
+   `released_at_jp`, `canon_scope` (typically `video_game`).
+2. **`game-genres`** vocab — action / action_adventure / fighting /
+   hack_and_slash / beat_em_up / rpg / action_rpg / adventure / strategy / card
+   / board / racing / party / rhythm / puzzle / mmo / other.
+3. **`game-platforms`** vocab — the consoles/handhelds/PC/mobile/arcade the OP
+   catalogue shipped on (GBA → Switch 2, PS1 → PS5, Xbox 360 → Series, PC, iOS,
+   Android, arcade).
+4. Reuse: `features` (game → character/crew/devil-fruit), `produced-by`
+   (developer/publisher → company), `staffed-by` (director/composer → person),
+   `depicted-by` (box art) — each `valid_from` += `video-game`. `released_at_jp`
+   / `canon_scope` `applies_to` += `video-game`.
+
+**Rationale**: The hardware a game runs on is an intrinsic **property**
+(`game_platforms`, multi-enum), not a distribution edge — `available-on`
+(url/region/subscription qualifiers) models _where you watch/read_ and would be
+semantically wrong for "runs on PS4". Digital storefronts could later reuse
+`available-on` (kind `store`) without disturbing this. Credits/cast reuse the
+existing relations, keeping one production model across all media.
+
+**Consequences**: +1 entity (29), +2 properties (88), +2 vocabularies (56);
+4 source-relation `valid_from`s widened. All core, additive. No migration.
+
+---
+
 ## ADR-060 — `album` entity + `contains-track` (discography)
 
 **Date**: 2026-06-14

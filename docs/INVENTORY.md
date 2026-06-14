@@ -186,7 +186,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (28)
+## 2. Entity types (29)
 
 | ID                   | Category   | Description                                                      | URL segment       |
 | -------------------- | ---------- | ---------------------------------------------------------------- | ----------------- |
@@ -218,6 +218,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 | `databook-card`      | source     | A numbered databook / Vivre Card profile card                    | `databook-cards`  |
 | `transformation`     | powers     | A form/state (Gear 2-5, Sulong, Zoan form, awakening)            | `transformations` |
 | `album`              | production | A soundtrack / compilation / character-song album                | `albums`          |
+| `video-game`         | sources    | A One Piece video game (console / handheld / PC / mobile)        | `games`           |
 
 ### 2.1 Properties per entity type
 
@@ -551,7 +552,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (86)
+## 3. Property types (88)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -633,6 +634,8 @@ unit, and qualifier policy (section 6).
 | `format`              | `enum`       | `image-formats`               |
 | `haki_types`          | `multi_enum` | `haki-types`                  |
 | `person_roles`        | `multi_enum` | `person-roles`                |
+| `game_genre`          | `enum`       | `game-genres`                 |
+| `game_platforms`      | `multi_enum` | `game-platforms`              |
 
 ### 3.5 Boolean
 
@@ -812,7 +815,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (54)
+## 5. Vocabularies / Enums (56)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -1002,6 +1005,25 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 
 `character`, `extra`, `skill`, `ship`
 
+### 5.36 `game-genres`
+
+`action`, `action_adventure`, `fighting`, `hack_and_slash`,
+`beat_em_up`, `rpg`, `action_rpg`, `adventure`, `strategy`, `card`,
+`board`, `racing`, `party`, `rhythm`, `puzzle`, `mmo`, `other`
+
+### 5.37 `game-platforms`
+
+`game_boy_advance`, `nintendo_ds`, `nintendo_3ds`, `nintendo_switch`,
+`nintendo_switch_2`, `gamecube`, `wii`, `wii_u`, `playstation`,
+`playstation_2`, `playstation_3`, `playstation_4`, `playstation_5`,
+`psp`, `ps_vita`, `xbox_360`, `xbox_one`, `xbox_series`, `pc`, `ios`,
+`android`, `arcade`
+
+> Note: §5 detailed subsections (5.1–5.37) lag the head count (56) — a
+> backlog of recently added vocabularies (e.g. `transformation-kinds`,
+> `album-kinds`, `depiction-roles`) still need their entries. Tracked
+> separately; the head count is authoritative.
+
 ---
 
 ## 6. Universal qualifiers
@@ -1118,10 +1140,10 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 28
-- **Property types**: 86 (some shared across multiple entity types)
+- **Entity types**: 29
+- **Property types**: 88 (some shared across multiple entity types)
 - **Relation types**: 66 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 54
+- **Vocabularies**: 56
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)

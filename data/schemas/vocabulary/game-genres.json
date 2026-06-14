@@ -1,0 +1,24 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "game-genres",
+  "schema_version": 1,
+  "values": {
+    "action": { "labels": { "en": "Action", "fr": "Action" } },
+    "action_adventure": { "labels": { "en": "Action-adventure", "fr": "Action-aventure" } },
+    "fighting": { "labels": { "en": "Fighting", "fr": "Combat" } },
+    "hack_and_slash": { "labels": { "en": "Hack and slash", "fr": "Hack and slash" } },
+    "beat_em_up": { "labels": { "en": "Beat 'em up", "fr": "Beat 'em up" } },
+    "rpg": { "labels": { "en": "RPG", "fr": "RPG" } },
+    "action_rpg": { "labels": { "en": "Action RPG", "fr": "Action-RPG" } },
+    "adventure": { "labels": { "en": "Adventure", "fr": "Aventure" } },
+    "strategy": { "labels": { "en": "Strategy", "fr": "Stratégie" } },
+    "card": { "labels": { "en": "Card game", "fr": "Jeu de cartes" } },
+    "board": { "labels": { "en": "Board game", "fr": "Jeu de plateau" } },
+    "racing": { "labels": { "en": "Racing", "fr": "Course" } },
+    "party": { "labels": { "en": "Party game", "fr": "Jeu de société" } },
+    "rhythm": { "labels": { "en": "Rhythm", "fr": "Rythme" } },
+    "puzzle": { "labels": { "en": "Puzzle", "fr": "Puzzle" } },
+    "mmo": { "labels": { "en": "MMO", "fr": "MMO" } },
+    "other": { "labels": { "en": "Other", "fr": "Autre" } }
+  }
+}

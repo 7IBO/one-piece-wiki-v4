@@ -1,11 +1,12 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
-  "id": "released_at_jp",
+  "id": "game_genre",
   "schema_version": 1,
-  "labels": { "en": "Released in Japan", "fr": "Sorti au Japon" },
-  "value_type": "date",
+  "labels": { "en": "Genre", "fr": "Genre" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "game-genres" },
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,
-  "applies_to_entity_types": ["film", "album", "video-game"]
+  "applies_to_entity_types": ["video-game"]
 }
