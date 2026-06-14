@@ -186,36 +186,37 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (26)
+## 2. Entity types (27)
 
-| ID                   | Category   | Description                                                      | URL segment      |
-| -------------------- | ---------- | ---------------------------------------------------------------- | ---------------- |
-| `character`          | people     | Any named individual in the universe                             | `characters`     |
-| `race`               | people     | A race or species                                                | `races`          |
-| `crew`               | groups     | A pirate crew or other organized group                           | `crews`          |
-| `organization`       | groups     | Navy, World Government, Cipher Pol, etc.                         | `organizations`  |
-| `devil-fruit`        | things     | A Devil Fruit (Akuma no Mi)                                      | `devil-fruits`   |
-| `technique`          | things     | A named combat or special technique                              | `techniques`     |
-| `weapon`             | things     | A named weapon (Wado Ichimonji, etc.)                            | `weapons`        |
-| `ship`               | things     | A named ship                                                     | `ships`          |
-| `location`           | places     | An island, sea, city, kingdom, etc.                              | `locations`      |
-| `title`              | abstract   | An inheritable title (Joy Boy, Pirate King)                      | `titles`         |
-| `concept`            | abstract   | Mythological/philosophical entity (Nika)                         | `concepts`       |
-| `manga-chapter`      | source     | A manga chapter                                                  | `chapters`       |
-| `anime-episode`      | source     | An anime episode                                                 | `episodes`       |
-| `film`               | source     | A film                                                           | `films`          |
-| `sbs`                | source     | An SBS question corner                                           | `sbs`            |
-| `databook`           | source     | A databook / Vivre Card / guide volume                           | `databooks`      |
-| `arc`                | container  | A narrative arc                                                  | `arcs`           |
-| `saga`               | container  | A saga (contains multiple arcs)                                  | `sagas`          |
-| `event`              | occurrence | A significant in-universe occurrence                             | `events`         |
-| `image`              | media      | An image, with R2-hosted URL and metadata                        | `images`         |
-| `person`             | production | Real-world cast & staff (seiyū, VAs, actors, directors, mangaka) | `people`         |
-| `material`           | things     | A named substance (Seastone, Adam Wood, Wapometal)               | `materials`      |
-| `theme-song`         | production | An anime/film opening, ending, insert or image song              | `theme-songs`    |
-| `streaming-platform` | production | A watch/read platform (Netflix, Crunchyroll, MANGA Plus, Viz)    | `platforms`      |
-| `company`            | production | A real-world company (studio, game dev/publisher, label, maker)  | `companies`      |
-| `databook-card`      | source     | A numbered databook / Vivre Card profile card                    | `databook-cards` |
+| ID                   | Category   | Description                                                      | URL segment       |
+| -------------------- | ---------- | ---------------------------------------------------------------- | ----------------- |
+| `character`          | people     | Any named individual in the universe                             | `characters`      |
+| `race`               | people     | A race or species                                                | `races`           |
+| `crew`               | groups     | A pirate crew or other organized group                           | `crews`           |
+| `organization`       | groups     | Navy, World Government, Cipher Pol, etc.                         | `organizations`   |
+| `devil-fruit`        | things     | A Devil Fruit (Akuma no Mi)                                      | `devil-fruits`    |
+| `technique`          | things     | A named combat or special technique                              | `techniques`      |
+| `weapon`             | things     | A named weapon (Wado Ichimonji, etc.)                            | `weapons`         |
+| `ship`               | things     | A named ship                                                     | `ships`           |
+| `location`           | places     | An island, sea, city, kingdom, etc.                              | `locations`       |
+| `title`              | abstract   | An inheritable title (Joy Boy, Pirate King)                      | `titles`          |
+| `concept`            | abstract   | Mythological/philosophical entity (Nika)                         | `concepts`        |
+| `manga-chapter`      | source     | A manga chapter                                                  | `chapters`        |
+| `anime-episode`      | source     | An anime episode                                                 | `episodes`        |
+| `film`               | source     | A film                                                           | `films`           |
+| `sbs`                | source     | An SBS question corner                                           | `sbs`             |
+| `databook`           | source     | A databook / Vivre Card / guide volume                           | `databooks`       |
+| `arc`                | container  | A narrative arc                                                  | `arcs`            |
+| `saga`               | container  | A saga (contains multiple arcs)                                  | `sagas`           |
+| `event`              | occurrence | A significant in-universe occurrence                             | `events`          |
+| `image`              | media      | An image, with R2-hosted URL and metadata                        | `images`          |
+| `person`             | production | Real-world cast & staff (seiyū, VAs, actors, directors, mangaka) | `people`          |
+| `material`           | things     | A named substance (Seastone, Adam Wood, Wapometal)               | `materials`       |
+| `theme-song`         | production | An anime/film opening, ending, insert or image song              | `theme-songs`     |
+| `streaming-platform` | production | A watch/read platform (Netflix, Crunchyroll, MANGA Plus, Viz)    | `platforms`       |
+| `company`            | production | A real-world company (studio, game dev/publisher, label, maker)  | `companies`       |
+| `databook-card`      | source     | A numbered databook / Vivre Card profile card                    | `databook-cards`  |
+| `transformation`     | powers     | A form/state (Gear 2-5, Sulong, Zoan form, awakening)            | `transformations` |
 
 ### 2.1 Properties per entity type
 
@@ -549,7 +550,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (82)
+## 3. Property types (83)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -655,7 +656,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (62)
+## 4. Relation types (65)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -810,7 +811,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (52)
+## 5. Vocabularies / Enums (53)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -1092,7 +1093,7 @@ These exist on every entity, declared once in primitives.
 `character`, `devil-fruit`, `crew`, `organization`, `location`,
 `technique`, `weapon`, `ship`, `race`, `title`, `concept`, `event`,
 `arc`, `saga`, `manga-chapter`, `anime-episode`, `film`, `person`,
-`material`, `theme-song`, `company`, `databook-card`
+`material`, `theme-song`, `company`, `databook-card`, `transformation`
 
 ### 9.3 Entity types that can be `participant` of events
 
@@ -1116,15 +1117,15 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 26
-- **Property types**: 82 (some shared across multiple entity types)
-- **Relation types**: 62 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 52
+- **Entity types**: 27
+- **Property types**: 83 (some shared across multiple entity types)
+- **Relation types**: 65 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 53
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)
 - **Container entities**: 3 (arc, saga, event)
-- **Things that depict / can be depicted**: 22 / 1 (image)
+- **Things that depict / can be depicted**: 23 / 1 (image)
 
 ---
 

@@ -13,8 +13,6 @@
     "support": { "labels": { "en": "Support", "fr": "Soutien" } },
     "defensive": { "labels": { "en": "Defensive", "fr": "Défensive" } },
     "combo": { "labels": { "en": "Combo", "fr": "Combo" } },
-    "signature": { "labels": { "en": "Signature", "fr": "Signature" } },
-    "transformation": { "labels": { "en": "Transformation", "fr": "Transformation" } },
-    "awakening": { "labels": { "en": "Awakening", "fr": "Éveil" } }
+    "signature": { "labels": { "en": "Signature", "fr": "Signature" } }
   }
 }

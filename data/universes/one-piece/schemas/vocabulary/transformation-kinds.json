@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "transformation-kinds",
+  "schema_version": 1,
+  "values": {
+    "gear": { "labels": { "en": "Gear", "fr": "Gear" } },
+    "zoan_form": { "labels": { "en": "Zoan form", "fr": "Forme Zoan" } },
+    "sulong": { "labels": { "en": "Sulong", "fr": "Sulong" } },
+    "awakening": { "labels": { "en": "Awakening", "fr": "Éveil" } },
+    "other": { "labels": { "en": "Other", "fr": "Autre" } }
+  }
+}

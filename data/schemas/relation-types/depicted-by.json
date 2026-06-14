@@ -28,7 +28,8 @@
     "material",
     "theme-song",
     "company",
-    "databook-card"
+    "databook-card",
+    "transformation"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [

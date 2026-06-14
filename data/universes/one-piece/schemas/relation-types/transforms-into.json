@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "transforms-into",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Transforms into", "inverse": "Used by" },
+    "fr": { "active": "Se transforme en", "inverse": "Utilisé par" }
+  },
+  "valid_from_types": ["character"],
+  "valid_to_types": ["transformation"],
+  "qualifiers": [
+    { "id": "since", "value_type": "source_ref", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": false
+}
