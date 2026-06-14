@@ -27,7 +27,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 > added since ADR-022/023 (e.g. `adaptation-coverage`, `arc-roles`,
 > `blood-types`, `depiction-periods`, `event-outcomes`, `family-relations`,
 > `source-origins`, `occupations`, `membership-statuses`, `departure-reasons`,
-> `system-statuses`, `canonicity-tiers`, `succession-reasons`) have no
+> `system-statuses`, `succession-reasons`) have no
 > sub-section entry yet. A catalogue-generated refresh of this file is tracked
 > (see `DATA_EXPANSION_PLAN.md` §5).
 
@@ -558,7 +558,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (90)
+## 3. Property types (89)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -821,7 +821,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (60)
+## 5. Vocabularies / Enums (59)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -1166,9 +1166,9 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 34
-- **Property types**: 90 (some shared across multiple entity types)
+- **Property types**: 89 (some shared across multiple entity types)
 - **Relation types**: 63 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 60
+- **Vocabularies**: 59
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)
