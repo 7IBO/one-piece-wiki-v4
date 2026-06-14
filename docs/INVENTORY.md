@@ -16,20 +16,15 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 > editor sees; they do not mark which side a type lives on (see ADR-049 for the
 > partition). When in doubt, read the schema files or run `bun run schema:check`
 > / `bun run check:coherence`. **Known lag
-> (2026-06-13):** the §1 directory tree and the §2 per-type _allowed
+> (2026-06-14):** the §1 directory tree and the §2 per-type _allowed
 > relations_ predate ADR-033/034's prefer-inferred cleanup — the deleted
 > inverse mirrors (`eaten-by`, `used-by`, `wielded-by`, `enables-technique`,
 > `birthplace-of`, `depicts`, `mentored-by`, `has-member-race`, `borne-by`,
 > `contains-arc`, `contains-location`, `causes-event`, `replaced-by`,
 > `participated-in`, `adapts`) are now **build-generated inverses**, not
-> declarable relations. The §2/§3/§4/§5 **headline counts reflect the true
-> catalogue totals**, but their per-item sub-sections still lag: several types
-> added since ADR-022/023 (e.g. `adaptation-coverage`, `arc-roles`,
-> `blood-types`, `depiction-periods`, `event-outcomes`, `family-relations`,
-> `source-origins`, `occupations`, `membership-statuses`, `departure-reasons`,
-> `system-statuses`, `succession-reasons`) have no
-> sub-section entry yet. A catalogue-generated refresh of this file is tracked
-> (see `DATA_EXPANSION_PLAN.md` §5).
+> declarable relations. §3 (properties), §4 (relations) and §5 (vocabularies)
+> are now fully enumerated and match their head counts; the §1 tree and the §2
+> per-type _allowed relations_ are the remaining hand-maintained lag.
 
 ---
 
@@ -1044,10 +1039,103 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 `jp`, `worldwide`, `north_america`, `europe`, `asia`, `other`
 (qualifier values for `released_at` — ADR-067)
 
-> Note: §5 detailed subsections (5.1–5.41) lag the head count (60) — a
-> backlog of recently added vocabularies (e.g. `transformation-kinds`,
-> `album-kinds`, `depiction-roles`) still need their entries. Tracked
-> separately; the head count is authoritative.
+### 5.42 `adaptation-coverage`
+
+`full`, `partial`, `summary`, `compressed`, `reordered`,
+`filler_added`, `scene_added`, `scene_omitted`, `loose`
+
+### 5.43 `album-kinds`
+
+`movie_ost`, `tv_ost`, `compilation`, `character_song`, `image_song`,
+`single`, `best`
+
+### 5.44 `arc-roles`
+
+`protagonist`, `antagonist`, `deuteragonist`, `supporting`, `mentor`,
+`ally`, `rival`, `villain`, `henchman`, `victim`, `narrator`, `cameo`,
+`background`
+
+### 5.45 `blood-types`
+
+`F`, `S`, `X`, `XF` (the One Piece F/S/X/XF system, not the real-world ABO one)
+
+### 5.46 `departure-reasons`
+
+`declined`, `resigned`, `expelled`, `revoked`, `annulled`, `deceased`,
+`mia`
+
+### 5.47 `depiction-periods`
+
+`infancy`, `childhood`, `adolescence`, `young_adulthood`, `adulthood`,
+`elderly`, `pre_timeskip`, `post_timeskip`, `flashback`, `current`,
+`transformed`, `alternate_form`
+
+### 5.48 `during-periods`
+
+`pre_story`, `void_century`, `rocks_era`, `ohara_incident`
+
+### 5.49 `event-outcomes`
+
+`victorious`, `defeated`, `survived`, `killed`, `captured`, `escaped`,
+`rescued`, `wounded`, `withdrew`, `exiled`, `promoted`, `demoted`,
+`awakened`, `revealed`, `transformed`, `joined`, `left`, `unresolved`
+
+### 5.50 `event-roles`
+
+`subject`, `combatant`, `commander`, `leader`, `supporter`, `rescuer`,
+`target`, `victim`, `captive`, `witness`, `observer`, `antagonist`,
+`mediator`, `ally`, `narrator`
+
+### 5.51 `event-sides`
+
+`marines`, `world_government`, `cipher_pol`, `pirates`, `shichibukai`,
+`yonko`, `civilians`, `captive`, `neutral`, `other`
+
+### 5.52 `family-relations`
+
+`father`, `mother`, `son`, `daughter`, `brother`, `sister`,
+`half_brother`, `half_sister`, `sworn_brother`, `sworn_sister`,
+`adoptive_father`, `adoptive_mother`, `adopted_son`, `adopted_daughter`,
+`step_father`, `step_mother`, `foster_parent`, `grandfather`,
+`grandmother`, `grandson`, `granddaughter`, `uncle`, `aunt`, `nephew`,
+`niece`, `cousin`, `spouse`, `partner`, `ancestor`, `descendant`
+
+### 5.53 `membership-statuses`
+
+`member`, `founding_member`, `former_member`, `defected`, `erased`,
+`observer`
+
+### 5.54 `occupations`
+
+`pirate`, `marine`, `revolutionary`, `bounty_hunter`, `swordsman`,
+`martial_artist`, `navigator`, `cook`, `doctor`, `scientist`,
+`archaeologist`, `shipwright`, `musician`, `sniper`, `blacksmith`,
+`merchant`, `noble`, `royalty`, `government_official`, `assassin`,
+`mercenary`, `bandit`, `thief`, `slave`, `samurai`, `ninja`,
+`gladiator`, `explorer`, `journalist`, `artist`
+
+### 5.55 `publication-countries`
+
+`jp`, `fr`, `us`, `uk`, `de`, `es`, `it`, `br`, `kr`, `cn`, `tw`,
+`global`
+
+### 5.56 `source-origins`
+
+`manga_panel`, `manga_cover`, `manga_color_spread`, `anime_screenshot`,
+`film_screenshot`, `databook`, `sbs`, `official_website`, `video_game`,
+`live_action`, `fan_art`, `other`
+
+### 5.57 `succession-reasons`
+
+`transferred`, `relinquished`, `extracted`, `unknown`
+
+### 5.58 `system-statuses`
+
+`active`, `abolished`, `reformed`
+
+### 5.59 `transformation-kinds`
+
+`gear`, `zoan_form`, `sulong`, `awakening`, `other`
 
 ---
 
