@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "merch-types",
+  "schema_version": 1,
+  "values": {
+    "figure": { "labels": { "en": "Figure", "fr": "Figurine" } },
+    "model_kit": { "labels": { "en": "Model kit", "fr": "Maquette" } },
+    "plush": { "labels": { "en": "Plush", "fr": "Peluche" } },
+    "apparel": { "labels": { "en": "Apparel", "fr": "Vêtement" } },
+    "accessory": { "labels": { "en": "Accessory", "fr": "Accessoire" } },
+    "stationery": { "labels": { "en": "Stationery", "fr": "Papeterie" } },
+    "homeware": { "labels": { "en": "Homeware", "fr": "Décoration" } },
+    "food": { "labels": { "en": "Food & drink", "fr": "Alimentaire" } },
+    "trading_card": { "labels": { "en": "Trading card", "fr": "Carte à collectionner" } },
+    "collectible": { "labels": { "en": "Collectible", "fr": "Objet de collection" } },
+    "other": { "labels": { "en": "Other", "fr": "Autre" } }
+  }
+}

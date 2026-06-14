@@ -8,6 +8,36 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-065 — `merchandise` entity
+
+**Date**: 2026-06-14
+
+**Context**: Official One Piece merchandise (figures — P.O.P., Figuarts —, model
+kits, plush, apparel, trading cards, collectibles) is a large Fandom catalogue
+with a manufacturer, a release date, and product photos.
+
+**Decision** (additive, core):
+
+1. **`merchandise`** entity — `title_key`, `merch_type` (req, enum → new
+   **`merch-types`**: figure / model_kit / plush / apparel / accessory /
+   stationery / homeware / food / trading_card / collectible / other),
+   `released_at`.
+2. Reuse `produced-by` (manufacturer → `company`, role `manufacturer` already in
+   `company-roles`) and `depicted-by` (product photo); `valid_from` += and
+   `released_at` `applies_to` +=.
+
+**Rationale**: Deliberately did **not** wire `features` to merchandise: that
+relation models _narrative_ appearance (its `appearance_type` qualifier is
+cameo/recurring/…), which is a poor fit for "a Luffy figure". Linking a product
+to the character it represents is a distinct _depicts-subject_ concern, left to a
+later design rather than overloading `features`. Simplest correct version:
+manufacturer + photos.
+
+**Consequences**: +1 entity (34), +1 property (93), +1 vocabulary (59); two
+`valid_from`/`applies_to` widenings. All core, additive. No migration.
+
+---
+
 ## ADR-064 — `live-performance` entity (stage adaptations)
 
 **Date**: 2026-06-14

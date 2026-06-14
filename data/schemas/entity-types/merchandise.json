@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "merchandise",
+  "schema_version": 1,
+  "labels": { "en": "Merchandise", "fr": "Produit dérivé" },
+  "url_segment": "merchandise",
+  "properties": [
+    { "id": "title_key", "required": true, "historical": false, "localizable": true },
+    { "id": "merch_type", "required": true, "historical": false, "localizable": false },
+    { "id": "released_at", "required": false, "historical": false, "localizable": false }
+  ],
+  "display_name_properties": ["title_key"],
+  "allowed_relations": ["produced-by", "depicted-by"],
+  "ui_hint": { "icon": "package", "group": "production" }
+}

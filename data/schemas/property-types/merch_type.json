@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "merch_type",
+  "schema_version": 1,
+  "labels": { "en": "Merchandise type", "fr": "Type de produit" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "merch-types" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["merchandise"]
+}
