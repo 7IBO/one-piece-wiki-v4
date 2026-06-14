@@ -17,6 +17,7 @@
   "allowed_relations": [
     "features",
     "part-of-arc",
+    "part-of-volume",
     "adapted-by",
     "introduces-character",
     "available-on",

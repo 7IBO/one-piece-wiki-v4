@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "part-of-volume",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Part of volume", "inverse": "Collects" },
+    "fr": { "active": "Dans le tome", "inverse": "Rassemble" }
+  },
+  "valid_from_types": ["manga-chapter", "sbs"],
+  "valid_to_types": ["volume"],
+  "qualifiers": [
+    { "id": "since", "value_type": "source_ref", "required": false }
+  ],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true
+}
