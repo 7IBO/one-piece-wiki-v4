@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "produced-by",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Produced by", "inverse": "Produced" },
+    "fr": { "active": "Produit par", "inverse": "A produit" }
+  },
+  "valid_from_types": ["anime-episode", "film"],
+  "valid_to_types": ["company"],
+  "qualifiers": [
+    { "id": "role", "value_type": "enum", "enum_ref": "company-roles", "required": true },
+    { "id": "since", "value_type": "source_ref", "required": false },
+    { "id": "note", "value_type": "string", "required": false }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": false
+}

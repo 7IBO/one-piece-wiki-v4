@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "company",
+  "schema_version": 1,
+  "labels": { "en": "Company", "fr": "Société" },
+  "url_segment": "companies",
+  "properties": [
+    { "id": "name", "required": true, "historical": true, "localizable": true },
+    { "id": "company_kind", "required": false, "historical": false, "localizable": false },
+    { "id": "homepage_url", "required": false, "historical": false, "localizable": false }
+  ],
+  "allowed_relations": ["depicted-by"],
+  "ui_hint": { "icon": "building", "group": "production" }
+}

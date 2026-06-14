@@ -8,6 +8,42 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-054 — Real-world `company` entity + `produced-by`
+
+**Date**: 2026-06-14
+
+**Context**: The "biggest DB" expansion (user: "tout tout tout") repeatedly needs
+**real-world companies** — animation studios (Toei), film production companies,
+game developers/publishers (Bandai Namco), record labels (Nippon Columbia),
+merchandise manufacturers (Bandai, MegaHouse). These are distinct from the
+in-universe **`organization`** type (Marines, World Government), which is
+One-Piece-scoped (ADR-049); real-world companies are universal, like `person`.
+Foundational for the games / merch / music / live-action clusters that follow.
+
+**Decision** (additive, core):
+
+1. **`company`** entity — `name`, `company_kind` (enum → new **`company-roles`**:
+   animation_studio / production_company / distributor / game_developer /
+   game_publisher / record_label / manufacturer / publisher / collaborator),
+   `homepage_url` (widened to apply to `company`). ui group `production`.
+2. **`produced-by`** relation (`anime-episode` / `film` → `company`, not
+   historised) — qualifier `role` (enum → `company-roles`, required) +
+   `since`/`note`. Mirrors `staffed-by` (→ `person`): one relation for every
+   media-→-company credit, role-qualified, widened per domain as clusters land.
+3. `depicted-by` `valid_from` += `company` (logo).
+
+**Rationale**: `company` is to organizations what `person` is to characters — the
+real-world counterpart, universal across universes. Reusing one role-qualified
+`produced-by` (like `staffed-by`) avoids a proliferation of `developed-by` /
+`published-by` / `manufactured-by` relations.
+
+**Consequences**: +1 entity (25), +1 property (87), +1 relation (62),
++1 vocabulary (51); `produced-by` `valid_from` will widen as video-game / album /
+merchandise / live-action land. All core. No `/data` migration. Snapshot
+regenerated (additive).
+
+---
+
 ## ADR-053 — Episode/film production props (`tv_rating`, `anime_original`, `film_number`)
 
 **Date**: 2026-06-14

@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "company_kind",
+  "schema_version": 1,
+  "labels": { "en": "Company kind", "fr": "Type de société" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "company-roles" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["company"]
+}
