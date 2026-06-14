@@ -532,7 +532,8 @@
         "depicted-by",
         "features",
         "introduces-character",
-        "part-of-arc"
+        "part-of-arc",
+        "part-of-volume"
       ]
     },
     "material": {
@@ -660,7 +661,8 @@
       },
       "allowed_relations": [
         "clarifies-fact",
-        "features"
+        "features",
+        "part-of-volume"
       ]
     },
     "ship": {
@@ -804,6 +806,22 @@
         "features",
         "produced-by",
         "staffed-by"
+      ]
+    },
+    "volume": {
+      "properties": {
+        "number": {
+          "required": true
+        },
+        "released_at": {
+          "required": false
+        },
+        "title_key": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "depicted-by"
       ]
     },
     "weapon": {
@@ -1791,6 +1809,7 @@
         "title",
         "transformation",
         "video-game",
+        "volume",
         "weapon"
       ],
       "valid_to_types": [
@@ -2242,6 +2261,23 @@
       ],
       "valid_to_types": [
         "live-action-series"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "part-of-volume": {
+      "valid_from_types": [
+        "manga-chapter",
+        "sbs"
+      ],
+      "valid_to_types": [
+        "volume"
       ],
       "inverse_inferred": true,
       "qualifiers": {

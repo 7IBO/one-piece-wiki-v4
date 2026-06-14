@@ -181,7 +181,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (34)
+## 2. Entity types (35)
 
 | ID                    | Category   | Description                                                      | URL segment            |
 | --------------------- | ---------- | ---------------------------------------------------------------- | ---------------------- |
@@ -219,6 +219,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 | `anime-special`       | sources    | An OVA, TV special, or ONA (non-theatrical anime)                | `specials`             |
 | `live-performance`    | sources    | A stage adaptation (Premier Show, musical, kabuki, concert)      | `live-performances`    |
 | `merchandise`         | production | Official merch (figure, model kit, plush, apparel, card)         | `merchandise`          |
+| `volume`              | sources    | A collected manga volume (tankōbon)                              | `volumes`              |
 
 ### 2.1 Properties per entity type
 
@@ -663,7 +664,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (62)
+## 4. Relation types (63)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -753,6 +754,7 @@ generates inverses automatically when `inverse_inferred: true`.
 | Type                  | From                                      | To                   | Inverse           | Qualifiers |
 | --------------------- | ----------------------------------------- | -------------------- | ----------------- | ---------- |
 | `part-of-arc`         | `manga-chapter`, `event`, `anime-episode` | `arc`                | `(inferred)`      | —          |
+| `part-of-volume`      | `manga-chapter`, `sbs`                    | `volume`             | `collects`        | since      |
 | `part-of-series`      | `live-action-episode`                     | `live-action-series` | `(inferred)`      | since      |
 | `part-of-saga`        | `arc`                                     | `saga`               | `contains-arc`    | —          |
 | `occurs-during-arc`   | `event`                                   | `arc`                | `contains-event`  | —          |
@@ -1230,7 +1232,9 @@ These exist on every entity, declared once in primitives.
 `character`, `devil-fruit`, `crew`, `organization`, `location`,
 `technique`, `weapon`, `ship`, `race`, `title`, `concept`, `event`,
 `arc`, `saga`, `manga-chapter`, `anime-episode`, `film`, `person`,
-`material`, `theme-song`, `company`, `databook-card`, `transformation`
+`material`, `theme-song`, `company`, `databook-card`, `transformation`,
+`album`, `video-game`, `live-action-series`, `live-action-episode`,
+`anime-special`, `live-performance`, `merchandise`, `volume`
 
 ### 9.3 Entity types that can be `participant` of events
 
@@ -1254,9 +1258,9 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 34
+- **Entity types**: 35
 - **Property types**: 89 (some shared across multiple entity types)
-- **Relation types**: 62 (canonical declared; inverses are build-generated)
+- **Relation types**: 63 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 59
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)

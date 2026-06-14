@@ -8,6 +8,40 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-071 — `volume` (tankōbon) entity + `part-of-volume` (expand phase)
+
+**Date**: 2026-06-14
+
+**Context**: A manga chapter currently records its tankōbon as a free-text
+`volume` string property (also on `sbs`). That can't carry a volume's own facts
+— title (vols have names), release date, cover art — and can't be browsed as
+"show me volume 105". The collected volume is a first-class publication artifact.
+This is the C8 `volume` item from the data-expansion plan, which calls for the
+safe **expand → migrate → contract** sequence.
+
+**Decision** (this PR = **expand**, additive):
+
+1. **`volume`** entity — `number` (req), `title_key` (volume titles are
+   localizable), `released_at` (+`territory`). Cover art via `depicted-by`.
+2. **`part-of-volume`** relation (`manga-chapter` / `sbs` → `volume`,
+   single-valued) — inverse "Collects". Wired into `manga-chapter` / `sbs`.
+3. Reuse `number` / `released_at` (`applies_to` += `volume`) and `depicted-by`
+   (`valid_from` += `volume`). No new property or vocabulary.
+
+**Deliberately deferred (migrate + contract)**: the legacy `volume` **string**
+property stays for now. Removing it is breaking and needs the volume entities to
+exist first — i.e. author a `volume` entity per tankōbon, migrate each
+chapter/SBS's `volume` string into a `part-of-volume` edge (a corpus-data task,
+not pure schema), then drop the string. Tracked as the follow-up; until then the
+string and the relation coexist (the standard expand-phase overlap).
+
+**Consequences**: +1 entity (35), +1 relation (63); two `applies_to`/`valid_from`
+widenings. All additive, core. No migration in this PR. (Entity id `volume`
+coexists with the property id `volume` — separate registries; `schema:check`
+green.)
+
+---
+
 ## ADR-070 — Numbered-migration runner (`migrate:all` + applied ledger)
 
 **Date**: 2026-06-14
