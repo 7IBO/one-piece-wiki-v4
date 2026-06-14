@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "film",
-  "schema_version": 2,
+  "schema_version": 3,
   "labels": { "en": "Film", "fr": "Film" },
   "url_segment": "films",
   "properties": [
@@ -12,7 +12,8 @@
     { "id": "canon_scope", "required": true, "historical": false, "localizable": false },
     { "id": "oda_supervised", "required": false, "historical": false, "localizable": false },
     { "id": "director", "required": false, "historical": false, "localizable": false },
-    { "id": "canonical_elements", "required": false, "historical": false, "localizable": false }
+    { "id": "canonical_elements", "required": false, "historical": false, "localizable": false },
+    { "id": "film_number", "required": false, "historical": false, "localizable": false }
   ],
   "display_name_properties": ["title_key"],
   "allowed_relations": ["features", "staffed-by", "available-on", "depicted-by"],

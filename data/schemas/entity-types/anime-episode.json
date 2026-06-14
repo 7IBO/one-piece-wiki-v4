@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "anime-episode",
-  "schema_version": 2,
+  "schema_version": 3,
   "labels": { "en": "Anime episode", "fr": "Épisode d'anime" },
   "url_segment": "episodes",
   "properties": [
@@ -10,7 +10,9 @@
     { "id": "aired_at_jp", "required": false, "historical": false, "localizable": false },
     { "id": "publications", "required": false, "historical": true, "localizable": false },
     { "id": "runtime_minutes", "required": false, "historical": false, "localizable": false },
-    { "id": "canon_scope", "required": false, "historical": false, "localizable": false }
+    { "id": "canon_scope", "required": false, "historical": false, "localizable": false },
+    { "id": "tv_rating", "required": false, "historical": false, "localizable": false },
+    { "id": "anime_original", "required": false, "historical": false, "localizable": false }
   ],
   "display_name_properties": ["title_key"],
   "allowed_relations": ["features", "part-of-arc", "staffed-by", "available-on", "depicted-by"],

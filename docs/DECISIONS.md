@@ -8,6 +8,31 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-053 — Episode/film production props (`tv_rating`, `anime_original`, `film_number`)
+
+**Date**: 2026-06-14
+
+**Context**: Third production slice — the small per-episode/film facts the Fandom
+_Episode Box_ / _Movie Box_ carry that weren't worth relations.
+
+**Decision** (additive, core):
+
+- **`tv_rating`** (number, on `anime-episode`) — the JP broadcast audience share.
+- **`anime_original`** (boolean, on `anime-episode`) — flags filler / anime-only
+  episodes (complements `canon_scope: anime_filler`).
+- **`film_number`** (number, on `film`) — the film's ordinal in the series.
+
+**Why no `eyecatcher` here**: an episode's two eyecatcher characters are already
+expressible as `features` (anime-episode → character) edges with
+`appearance_type: eyecatcher` (the value added in ADR-047) — no new field needed.
+
+**Consequences**: +3 properties (86); `anime-episode` / `film` bumped to v3. No
+`/data` migration. Snapshot regenerated (additive). Completes the core
+production programme (ADR-050/051/052/053); remaining media work is new domains
+(live-action, databooks, games, music, merch) tracked separately.
+
+---
+
 ## ADR-052 — Platform availability via `available-on` + `streaming-platform` (implements ADR-028)
 
 **Date**: 2026-06-14
