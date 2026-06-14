@@ -7,11 +7,11 @@
  */
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Link, useLocation, useNavigate } from '@tanstack/react-router';
+import { Link, useLocation } from '@tanstack/react-router';
 import { LogIn, LogOut } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
 import { api, type SchemaCatalogue } from './api';
-import { auth, useCurrentUser } from './auth';
+import { useCurrentUser, useSignOut } from './auth';
 import { useLocale } from './form/locale';
 
 const GROUP_LABELS: Record<string, { en: string; fr: string; }> = {
@@ -55,7 +55,7 @@ type GroupedType = {
 export function AppSidebar(): JSX.Element {
   const locale = useLocale();
   const location = useLocation();
-  const navigate = useNavigate();
+  const { signOut, pending: signOutPending } = useSignOut();
   const { user, loaded: userLoaded } = useCurrentUser();
   const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
 
@@ -176,10 +176,8 @@ export function AppSidebar(): JSX.Element {
                     variant='outline'
                     size='sm'
                     className='w-full gap-1.5'
-                    onClick={async () => {
-                      await auth.signOut();
-                      await navigate({ to: '/login' });
-                    }}
+                    disabled={signOutPending}
+                    onClick={signOut}
                   >
                     <LogOut className='size-3.5' />
                     Sign out

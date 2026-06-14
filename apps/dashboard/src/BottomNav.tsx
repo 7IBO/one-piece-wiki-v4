@@ -29,13 +29,14 @@ import { Home, LogIn, LogOut, Menu, Plus, User2 } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
 import { api, type SchemaCatalogue } from './api';
 import { AppSidebar } from './AppSidebar';
-import { auth, useCurrentUser } from './auth';
+import { useCurrentUser, useSignOut } from './auth';
 import { useLocale } from './form/locale';
 
 export function BottomNav(): JSX.Element | null {
   const location = useLocation();
   const { user, loaded } = useCurrentUser();
   const locale = useLocale();
+  const { signOut, pending: signOutPending } = useSignOut();
   const [browseOpen, setBrowseOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
@@ -198,10 +199,8 @@ export function BottomNav(): JSX.Element | null {
                     variant='outline'
                     size='sm'
                     className='w-full gap-1.5'
-                    onClick={async () => {
-                      await auth.signOut();
-                      globalThis.location.assign('/login');
-                    }}
+                    disabled={signOutPending}
+                    onClick={signOut}
                   >
                     <LogOut className='size-3.5' />
                     Sign out

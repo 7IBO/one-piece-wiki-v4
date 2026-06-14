@@ -4,7 +4,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { type JSX, useEffect, useState } from 'react';
 import { api, type SchemaCatalogue } from '../api';
 import { useCurrentUser } from '../auth';
-import { useLocale } from '../form/locale';
+import { useLocale, useT } from '../form/locale';
 import { MyContributions } from '../MyContributions';
 import { MyDrafts } from '../MyDrafts';
 
@@ -14,6 +14,7 @@ export const Route = createFileRoute('/')({
 
 function IndexComponent(): JSX.Element {
   const locale = useLocale();
+  const t = useT();
   const { user, loaded: userLoaded } = useCurrentUser();
   const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
   const [counts, setCounts] = useState<Record<string, number>>({});
@@ -61,10 +62,10 @@ function IndexComponent(): JSX.Element {
   }
 
   const types = Object.values(schemas.entityTypes)
-    .map((t) => ({
-      ...t,
-      displayLabel: t.labels[locale] ?? t.labels.en,
-      count: counts[t.id],
+    .map((et) => ({
+      ...et,
+      displayLabel: et.labels[locale] ?? et.labels.en,
+      count: counts[et.id],
     }))
     .sort((a, b) => {
       // Sort by count descending. Types whose count hasn't loaded yet
@@ -76,34 +77,34 @@ function IndexComponent(): JSX.Element {
       return a.displayLabel.localeCompare(b.displayLabel);
     });
 
-  const entitiesLabel = locale === 'fr' ? 'entités' : 'entities';
-  const singularLabel = locale === 'fr' ? 'entité' : 'entity';
+  const entitiesLabel = t('entitiesWord');
+  const singularLabel = t('entityWord');
 
   return (
     <div className='space-y-6'>
       {userLoaded && user !== null ? <MyDrafts /> : null}
       {userLoaded && user !== null ? <MyContributions /> : null}
       <div>
-        <h1 className='text-2xl font-semibold tracking-tight'>Entity types</h1>
+        <h1 className='text-2xl font-semibold tracking-tight'>{t('homeTitle')}</h1>
         <p className='text-muted-foreground text-sm'>
-          {types.length} types · pick one to browse and edit entities.
+          {types.length} types · {t('homeSubtitle')}
         </p>
       </div>
       <div className='grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4'>
-        {types.map((t) => (
+        {types.map((et) => (
           <Link
-            key={t.id}
+            key={et.id}
             to='/types/$type'
-            params={{ type: t.id }}
+            params={{ type: et.id }}
             className='no-underline'
           >
             <Card className='hover:border-ring transition'>
               <CardHeader>
-                <CardTitle className='text-base'>{t.displayLabel}</CardTitle>
+                <CardTitle className='text-base'>{et.displayLabel}</CardTitle>
                 <CardDescription className='text-xs'>
-                  {t.count === undefined
+                  {et.count === undefined
                     ? '…'
-                    : `${t.count} ${t.count === 1 ? singularLabel : entitiesLabel}`}
+                    : `${et.count} ${et.count === 1 ? singularLabel : entitiesLabel}`}
                 </CardDescription>
               </CardHeader>
             </Card>

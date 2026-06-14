@@ -73,15 +73,22 @@ function LoginPage(): JSX.Element {
   function onGitHub(): void {
     setGithubBusy(true);
     setError(null);
-    // Full-page navigation takes over here — the server 302s to
-    // GitHub, then GitHub 302s to our callback, then the callback
-    // 302s back to "/" with the cookie set. The `safeFrom` is lost
-    // because the OAuth flow can't carry app state across; this is
-    // acceptable since the user is almost always sent here from "/"
-    // already (the sign-in link on the header). If a future caller
-    // needs `safeFrom` preserved we can stash it in sessionStorage
-    // and read it back from "/" on next mount.
-    auth.signInWithGitHub();
+    try {
+      // Full-page navigation takes over here — the server 302s to
+      // GitHub, then GitHub 302s to our callback, then the callback
+      // 302s back to "/" with the cookie set. The `safeFrom` is lost
+      // because the OAuth flow can't carry app state across; this is
+      // acceptable since the user is almost always sent here from "/"
+      // already (the sign-in link on the header). If a future caller
+      // needs `safeFrom` preserved we can stash it in sessionStorage
+      // and read it back from "/" on next mount.
+      auth.signInWithGitHub();
+    } catch (e: unknown) {
+      // location.assign can throw under a strict CSP / sandboxed iframe
+      // — don't leave the button stuck on "Signing in…".
+      setError(e instanceof Error ? e.message : String(e));
+      setGithubBusy(false);
+    }
   }
 
   // Two columns visually, single-column on narrow viewports. The

@@ -11,7 +11,7 @@
  * version: `useStoredDraft` reads the persisted draft on mount,
  * `useDraftAutosave` writes on every change with a 400ms debounce.
  */
-import { clear as clearStore, del, get, keys as idbKeys, set } from 'idb-keyval';
+import { del, get, keys as idbKeys, set } from 'idb-keyval';
 import { useCallback, useEffect, useRef, useState } from 'react';
 import type { Translations } from '../api';
 
@@ -95,10 +95,19 @@ export async function clearDraft(entityId: string): Promise<void> {
   }
 }
 
-/** Wipe every dashboard draft. Useful for "reset all" affordances. */
+/**
+ * Wipe every dashboard draft. Only deletes `KEY_PREFIX`-scoped keys —
+ * NOT the whole IndexedDB store (idb-keyval's `clear()` would nuke any
+ * other consumer's data sharing the default store).
+ */
 export async function clearAllDrafts(): Promise<void> {
   try {
-    await clearStore();
+    const all = await idbKeys();
+    await Promise.all(
+      all
+        .filter((k): k is string => typeof k === 'string' && k.startsWith(KEY_PREFIX))
+        .map((k) => del(k)),
+    );
     notifyDraftChange();
   } catch {
     // ignore

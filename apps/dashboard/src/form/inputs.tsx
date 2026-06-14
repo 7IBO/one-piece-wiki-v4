@@ -36,6 +36,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
+import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@base-ui-components/react/checkbox';
 import { useVirtualizer } from '@tanstack/react-virtual';
@@ -72,6 +73,22 @@ export function StringInput({ value, onChange, disabled }: InputProps<string>): 
       value={value ?? ''}
       disabled={disabled === true}
       onChange={(e) => onChange(e.target.value)}
+    />
+  );
+}
+
+/**
+ * Multi-line text for the `markdown` value_type. Previously routed to
+ * the one-line <Input>, which made any long-form markdown property
+ * unusable.
+ */
+export function MarkdownInput({ value, onChange, disabled }: InputProps<string>): JSX.Element {
+  return (
+    <Textarea
+      value={value ?? ''}
+      disabled={disabled === true}
+      onChange={(e) => onChange(e.target.value)}
+      rows={4}
     />
   );
 }
@@ -187,6 +204,56 @@ export function EnumInput(
         ))}
       </SelectContent>
     </Select>
+  );
+}
+
+/**
+ * Multi-select for the `multi_enum` value_type — stores an ARRAY of
+ * vocab ids. Was previously routed to the single-select EnumInput,
+ * which could only ever hold one value (a real data-shape bug, since
+ * the generated schema is `z.array(...)`). Chip toggles stay simple at
+ * any vocab size; output preserves vocabulary order for stable diffs.
+ */
+export function MultiEnumInput(
+  { value, onChange, enumValues, disabled }: InputProps<readonly string[]> & {
+    enumValues: readonly EnumValue[];
+  },
+): JSX.Element {
+  const locale = useLocale();
+  const t = useT();
+  const selected = new Set(value ?? []);
+  function toggle(id: string): void {
+    const next = new Set(selected);
+    if (next.has(id)) next.delete(id);
+    else next.add(id);
+    onChange(enumValues.filter((v) => next.has(v.id)).map((v) => v.id));
+  }
+  if (enumValues.length === 0) {
+    return <p className='text-muted-foreground text-xs'>{t('noMatch')}</p>;
+  }
+  return (
+    <div className='flex flex-wrap gap-1.5'>
+      {enumValues.map((v) => {
+        const on = selected.has(v.id);
+        return (
+          <button
+            key={v.id}
+            type='button'
+            disabled={disabled === true}
+            aria-pressed={on}
+            onClick={() => toggle(v.id)}
+            className={cn(
+              'rounded-[3px] border px-2 py-0.5 text-xs transition disabled:opacity-50',
+              on
+                ? 'border-primary bg-primary/10 text-foreground'
+                : 'border-input text-muted-foreground hover:bg-accent/40',
+            )}
+          >
+            {enumLabel(v, locale)}
+          </button>
+        );
+      })}
+    </div>
   );
 }
 
@@ -1041,9 +1108,16 @@ export function ValueInput(
 ): JSX.Element {
   switch (valueType) {
     case 'string':
-    case 'markdown':
       return (
         <StringInput value={value as string | undefined} onChange={onChange} disabled={disabled} />
+      );
+    case 'markdown':
+      return (
+        <MarkdownInput
+          value={value as string | undefined}
+          onChange={onChange}
+          disabled={disabled}
+        />
       );
     case 'date':
       return (
@@ -1062,10 +1136,18 @@ export function ValueInput(
         />
       );
     case 'enum':
-    case 'multi_enum':
       return (
         <EnumInput
           value={value as string | undefined}
+          onChange={onChange}
+          disabled={disabled}
+          enumValues={ctx.enumValues}
+        />
+      );
+    case 'multi_enum':
+      return (
+        <MultiEnumInput
+          value={value as readonly string[] | undefined}
           onChange={onChange}
           disabled={disabled}
           enumValues={ctx.enumValues}

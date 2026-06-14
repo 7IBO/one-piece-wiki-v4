@@ -775,6 +775,14 @@ function TextCellEditor(p: {
     ref.current?.focus();
     ref.current?.select();
   }, []);
+  // Commit only when the value actually changed. An unchanged blur or
+  // Enter cancels instead, so merely clicking into a cell and clicking
+  // out never creates a no-op draft that marks the row dirty and rides
+  // into "Save all".
+  function commit(value: string): void {
+    if (value === p.defaultValue) p.onCancel();
+    else p.onCommit(value);
+  }
   return (
     <input
       ref={ref}
@@ -784,13 +792,13 @@ function TextCellEditor(p: {
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
           e.preventDefault();
-          p.onCommit((e.target as HTMLInputElement).value);
+          commit((e.target as HTMLInputElement).value);
         } else if (e.key === 'Escape') {
           e.preventDefault();
           p.onCancel();
         }
       }}
-      onBlur={(e) => p.onCommit(e.target.value)}
+      onBlur={(e) => commit(e.target.value)}
     />
   );
 }

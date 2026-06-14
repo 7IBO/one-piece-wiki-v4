@@ -13,7 +13,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowDown, ArrowUp, Plus, Search, Table2 } from 'lucide-react';
 import { type JSX, useDeferredValue, useEffect, useMemo, useState } from 'react';
 import { api, type EntityRef, type SchemaCatalogue } from '../api';
-import { useLocale, useT } from '../form/locale';
+import { useEntityTypeLabel, useLocale, useT } from '../form/locale';
 import { useAllDrafts } from '../form/use-draft';
 
 export const Route = createFileRoute('/types/$type/')({
@@ -59,11 +59,7 @@ function TypeListComponent(): JSX.Element {
       });
   }, [type]);
 
-  const entityTypeLabel = useMemo(() => {
-    if (schemas === null) return type;
-    const et = schemas.entityTypes[type];
-    return et?.labels[locale] ?? et?.labels.en ?? type;
-  }, [schemas, type, locale]);
+  const entityTypeLabel = useEntityTypeLabel(schemas, type);
 
   const display = useMemo(() => {
     if (list === null) return null;
@@ -103,14 +99,14 @@ function TypeListComponent(): JSX.Element {
       <div className='flex items-baseline justify-between gap-3'>
         <div>
           <h1 className='text-2xl font-semibold tracking-tight'>
-            {entityTypeLabel}
+            {entityTypeLabel ?? <Skeleton className='inline-block h-7 w-40 align-middle' />}
           </h1>
           <p className='text-muted-foreground text-sm'>
             {list === null
-              ? 'Loading…'
+              ? t('loading')
               : display?.length === list.length
-              ? `${list.length} entities`
-              : `${display?.length ?? 0} of ${list.length} entities`}
+              ? `${list.length} ${t('entitiesWord')}`
+              : `${display?.length ?? 0} ${t('ofWord')} ${list.length} ${t('entitiesWord')}`}
           </p>
         </div>
         <div className='flex items-center gap-2'>
@@ -193,9 +189,7 @@ function TypeListComponent(): JSX.Element {
         : display === null || display.length === 0
         ? (
           <div className='text-muted-foreground rounded-md border border-dashed p-8 text-center text-sm'>
-            {list.length === 0
-              ? 'No entities of this type yet.'
-              : 'No match — try a different search.'}
+            {list.length === 0 ? t('noEntitiesYet') : t('noMatchSearch')}
           </div>
         )
         : (
