@@ -21,28 +21,45 @@ const DrawerContext = createContext<DrawerApi | null>(null);
 export function EntityDrawerProvider(
   { children }: { children: ReactNode; },
 ): JSX.Element {
-  const [target, setTarget] = useState<DrawerTarget | null>(null);
+  // A STACK of targets, not a single one. Opening a linked entity from
+  // inside an already-open drawer pushes a new level on top, so editing
+  // A → B → C never discards the level beneath: every drawer stays
+  // mounted (preserving its in-progress form state) and closing the top
+  // pops back to the previous one intact. The old single-target version
+  // silently clobbered the parent edit on the A → B → C path.
+  const [stack, setStack] = useState<readonly DrawerTarget[]>([]);
 
   const openEntity = useCallback((type: string, slug: string) => {
     if (type === '' || slug === '') return;
-    setTarget({ type, slug });
+    setStack((prev) => {
+      const top = prev[prev.length - 1];
+      // Re-opening the entity already on top is a no-op (e.g. a double
+      // click on the same pencil).
+      if (top !== undefined && top.type === type && top.slug === slug) return prev;
+      return [...prev, { type, slug }];
+    });
+  }, []);
+
+  const closeFrom = useCallback((index: number) => {
+    setStack((prev) => prev.slice(0, index));
   }, []);
 
   return (
     <DrawerContext.Provider value={{ openEntity }}>
       {children}
-      {target !== null
-        ? (
-          <EntityEditDrawer
-            open
-            onOpenChange={(o) => {
-              if (!o) setTarget(null);
-            }}
-            type={target.type}
-            slug={target.slug}
-          />
-        )
-        : null}
+      {stack.map((target, i) => (
+        <EntityEditDrawer
+          key={`${i}:${target.type}:${target.slug}`}
+          open
+          depth={i}
+          isTop={i === stack.length - 1}
+          onOpenChange={(o) => {
+            if (!o) closeFrom(i);
+          }}
+          type={target.type}
+          slug={target.slug}
+        />
+      ))}
     </DrawerContext.Provider>
   );
 }

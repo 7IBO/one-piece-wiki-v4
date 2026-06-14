@@ -35,6 +35,12 @@ export type EntityEditDrawerProps = {
   onOpenChange: (open: boolean) => void;
   type: string;
   slug: string;
+  /** Position in the drawer stack (0 = bottom). Drives z-index so a
+   *  drawer opened from inside another layers above it. Defaults to 0. */
+  depth?: number;
+  /** Whether this is the topmost (interactive) drawer. Only the top
+   *  renders the backdrop and listens for ESC. Defaults to true. */
+  isTop?: boolean;
 };
 
 type FormStatus = { dirty: boolean; saving: boolean; error: string | null; };
@@ -49,6 +55,8 @@ function prettifySlug(slug: string): string {
 export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
   const locale = useLocale();
   const t = useT();
+  const depth = p.depth ?? 0;
+  const isTop = p.isTop ?? true;
   const [entity, setEntity] = useState<EntityDetail | null>(null);
   const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
   const [sources, setSources] = useState<readonly SourceRef[]>([]);
@@ -114,13 +122,13 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
   // when not open so each mounted drawer doesn't keep a global
   // listener idle.
   useEffect(() => {
-    if (!p.open) return;
+    if (!p.open || !isTop) return;
     function onKey(e: KeyboardEvent): void {
       if (e.key === 'Escape') p.onOpenChange(false);
     }
     window.addEventListener('keydown', onKey);
     return () => window.removeEventListener('keydown', onKey);
-  }, [p.open, p.onOpenChange]);
+  }, [p.open, isTop, p.onOpenChange]);
 
   if (typeof document === 'undefined') return <></>;
 
@@ -131,10 +139,11 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
           so the form behind doesn't shift right when the drawer
           opens. Click dismisses (with an unsaved-changes guard). */
       }
-      {p.open
+      {p.open && isTop
         ? (
           <div
-            className='fixed inset-0 z-40 bg-black/20 backdrop-blur-[2px]'
+            className='fixed inset-0 bg-black/20 backdrop-blur-[2px]'
+            style={{ zIndex: 40 + depth * 10 }}
             onClick={() => {
               if (status.dirty && !globalThis.confirm(t('unsavedChanges'))) return;
               p.onOpenChange(false);
@@ -145,13 +154,14 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
       <div
         role='dialog'
         aria-label={`${t('editingType')} ${typeLabel}`}
-        className={`bg-background text-foreground fixed inset-y-0 right-0 z-50 flex w-full max-w-[64rem] flex-col border-l shadow-xl outline-none transition-transform duration-150 ease-out ${
+        className={`bg-background text-foreground fixed inset-y-0 right-0 flex w-full max-w-[64rem] flex-col border-l shadow-xl outline-none transition-transform duration-150 ease-out ${
           p.open ? 'translate-x-0' : 'pointer-events-none translate-x-full'
         }`}
         // GPU-promoted layer keeps the wide panel's shadow + slide
         // off the main thread; without this, scrolling a long form
-        // inside the drawer stutters on mid-range hardware.
-        style={{ willChange: 'transform' }}
+        // inside the drawer stutters on mid-range hardware. zIndex sits
+        // above this drawer's own backdrop and any shallower drawer.
+        style={{ willChange: 'transform', zIndex: 45 + depth * 10 }}
       >
         {/* Header */}
         <div className='border-border flex shrink-0 items-baseline gap-3 border-b px-5 py-3'>
