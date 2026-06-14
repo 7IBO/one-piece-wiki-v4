@@ -557,6 +557,23 @@
         "depicted-by"
       ]
     },
+    "merchandise": {
+      "properties": {
+        "merch_type": {
+          "required": true
+        },
+        "released_at": {
+          "required": false
+        },
+        "title_key": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "produced-by"
+      ]
+    },
     "organization": {
       "properties": {
         "description_key": {
@@ -1139,6 +1156,12 @@
     "material_subtype": {
       "value_type": "enum",
       "enum_ref": "material-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "merch_type": {
+      "value_type": "enum",
+      "enum_ref": "merch-types",
       "historical": false,
       "localizable": false
     },
@@ -1818,6 +1841,7 @@
         "location",
         "manga-chapter",
         "material",
+        "merchandise",
         "organization",
         "person",
         "race",
@@ -2403,6 +2427,7 @@
         "film",
         "live-action-episode",
         "live-action-series",
+        "merchandise",
         "video-game"
       ],
       "valid_to_types": [
@@ -3267,6 +3292,19 @@
       "founding_member",
       "member",
       "observer"
+    ],
+    "merch-types": [
+      "accessory",
+      "apparel",
+      "collectible",
+      "figure",
+      "food",
+      "homeware",
+      "model_kit",
+      "other",
+      "plush",
+      "stationery",
+      "trading_card"
     ],
     "name-types": [
       "alias",

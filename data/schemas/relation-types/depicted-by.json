@@ -35,7 +35,8 @@
     "live-action-series",
     "live-action-episode",
     "anime-special",
-    "live-performance"
+    "live-performance",
+    "merchandise"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [

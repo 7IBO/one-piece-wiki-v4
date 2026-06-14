@@ -13,7 +13,8 @@
     "video-game",
     "live-action-series",
     "live-action-episode",
-    "anime-special"
+    "anime-special",
+    "merchandise"
   ],
   "valid_to_types": ["company"],
   "qualifiers": [

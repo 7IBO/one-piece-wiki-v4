@@ -7,5 +7,10 @@
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,
-  "applies_to_entity_types": ["live-action-series", "live-action-episode", "live-performance"]
+  "applies_to_entity_types": [
+    "live-action-series",
+    "live-action-episode",
+    "live-performance",
+    "merchandise"
+  ]
 }
