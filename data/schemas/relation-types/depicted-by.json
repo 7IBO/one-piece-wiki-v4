@@ -34,7 +34,8 @@
     "video-game",
     "live-action-series",
     "live-action-episode",
-    "anime-special"
+    "anime-special",
+    "live-performance"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [

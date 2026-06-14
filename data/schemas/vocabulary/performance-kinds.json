@@ -1,0 +1,14 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "performance-kinds",
+  "schema_version": 1,
+  "values": {
+    "stage_play": { "labels": { "en": "Stage play", "fr": "Pièce de théâtre" } },
+    "musical": { "labels": { "en": "Musical", "fr": "Comédie musicale" } },
+    "kabuki": { "labels": { "en": "Kabuki", "fr": "Kabuki" } },
+    "live_attraction": { "labels": { "en": "Live attraction", "fr": "Attraction live" } },
+    "premier_show": { "labels": { "en": "Premier Show", "fr": "Premier Show" } },
+    "concert": { "labels": { "en": "Concert", "fr": "Concert" } },
+    "other": { "labels": { "en": "Other", "fr": "Autre" } }
+  }
+}

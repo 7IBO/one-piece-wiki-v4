@@ -186,7 +186,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (32)
+## 2. Entity types (33)
 
 | ID                    | Category   | Description                                                      | URL segment            |
 | --------------------- | ---------- | ---------------------------------------------------------------- | ---------------------- |
@@ -222,6 +222,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 | `live-action-series`  | sources    | A live-action adaptation series (Netflix 2023)                   | `live-action`          |
 | `live-action-episode` | sources    | An episode of a live-action series                               | `live-action-episodes` |
 | `anime-special`       | sources    | An OVA, TV special, or ONA (non-theatrical anime)                | `specials`             |
+| `live-performance`    | sources    | A stage adaptation (Premier Show, musical, kabuki, concert)      | `live-performances`    |
 
 ### 2.1 Properties per entity type
 
@@ -555,7 +556,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (91)
+## 3. Property types (92)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -642,6 +643,7 @@ unit, and qualifier policy (section 6).
 | `game_genre`          | `enum`       | `game-genres`                 |
 | `game_platforms`      | `multi_enum` | `game-platforms`              |
 | `special_kind`        | `enum`       | `special-kinds`               |
+| `performance_kind`    | `enum`       | `performance-kinds`           |
 
 ### 3.5 Boolean
 
@@ -822,7 +824,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (57)
+## 5. Vocabularies / Enums (58)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -840,7 +842,7 @@ values have localized labels (EN, FR at minimum).
 
 `manga`, `anime`, `anime_filler`, `film_canon`, `film_non_canon`,
 `sbs`, `databook`, `semi_canon`, `live_action`, `crossover`,
-`video_game`
+`video_game`, `stage`
 
 ### 5.4 `name-types`
 
@@ -1030,7 +1032,12 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 
 `ova`, `tv_special`, `ona`
 
-> Note: §5 detailed subsections (5.1–5.38) lag the head count (57) — a
+### 5.39 `performance-kinds`
+
+`stage_play`, `musical`, `kabuki`, `live_attraction`, `premier_show`,
+`concert`, `other`
+
+> Note: §5 detailed subsections (5.1–5.39) lag the head count (58) — a
 > backlog of recently added vocabularies (e.g. `transformation-kinds`,
 > `album-kinds`, `depiction-roles`) still need their entries. Tracked
 > separately; the head count is authoritative.
@@ -1151,10 +1158,10 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 32
-- **Property types**: 91 (some shared across multiple entity types)
+- **Entity types**: 33
+- **Property types**: 92 (some shared across multiple entity types)
 - **Relation types**: 67 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 57
+- **Vocabularies**: 58
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)

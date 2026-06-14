@@ -452,6 +452,27 @@
         "staffed-by"
       ]
     },
+    "live-performance": {
+      "properties": {
+        "canon_scope": {
+          "required": false
+        },
+        "performance_kind": {
+          "required": true
+        },
+        "released_at": {
+          "required": false
+        },
+        "title_key": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "features",
+        "staffed-by"
+      ]
+    },
     "location": {
       "properties": {
         "climate": {
@@ -1169,6 +1190,12 @@
       "historical": false,
       "localizable": false
     },
+    "performance_kind": {
+      "value_type": "enum",
+      "enum_ref": "performance-kinds",
+      "historical": false,
+      "localizable": false
+    },
     "person_roles": {
       "value_type": "multi_enum",
       "enum_ref": "person-roles",
@@ -1787,6 +1814,7 @@
         "film",
         "live-action-episode",
         "live-action-series",
+        "live-performance",
         "location",
         "manga-chapter",
         "material",
@@ -1934,6 +1962,7 @@
         "film",
         "live-action-episode",
         "live-action-series",
+        "live-performance",
         "manga-chapter",
         "video-game"
       ],
@@ -2559,6 +2588,7 @@
         "film",
         "live-action-episode",
         "live-action-series",
+        "live-performance",
         "theme-song",
         "video-game"
       ],
@@ -2826,6 +2856,7 @@
       "manga",
       "sbs",
       "semi_canon",
+      "stage",
       "video_game"
     ],
     "canonicity-tiers": [
@@ -3294,6 +3325,15 @@
       "royal_court",
       "secret_society",
       "world_government_branch"
+    ],
+    "performance-kinds": [
+      "concert",
+      "kabuki",
+      "live_attraction",
+      "musical",
+      "other",
+      "premier_show",
+      "stage_play"
     ],
     "person-roles": [
       "animation_director",
