@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "character",
-  "schema_version": 3,
+  "schema_version": 4,
   "labels": { "en": "Character", "fr": "Personnage" },
   "url_segment": "characters",
   "properties": [
@@ -17,7 +17,6 @@
     { "id": "gender", "required": false, "historical": false, "localizable": false },
     { "id": "haki_types", "required": false, "historical": true, "localizable": false },
     { "id": "status", "required": true, "historical": true, "localizable": false },
-    { "id": "birthplace", "required": false, "historical": false, "localizable": false },
     { "id": "description_key", "required": false, "historical": false, "localizable": true }
   ],
   "allowed_relations": [

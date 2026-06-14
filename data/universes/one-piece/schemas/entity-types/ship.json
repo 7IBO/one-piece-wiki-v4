@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "ship",
-  "schema_version": 2,
+  "schema_version": 3,
   "labels": { "en": "Ship", "fr": "Navire" },
   "url_segment": "ships",
   "properties": [
@@ -13,7 +13,6 @@
     { "id": "description_key", "required": false, "historical": false, "localizable": true }
   ],
   "allowed_relations": [
-    "captained-by",
     "crewed-by",
     "flies-flag",
     "replaces",
