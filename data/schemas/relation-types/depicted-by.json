@@ -30,7 +30,8 @@
     "company",
     "databook-card",
     "transformation",
-    "album"
+    "album",
+    "video-game"
   ],
   "valid_to_types": ["image"],
   "qualifiers": [

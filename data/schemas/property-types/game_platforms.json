@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "game_platforms",
+  "schema_version": 1,
+  "labels": { "en": "Platforms", "fr": "Plateformes" },
+  "value_type": "multi_enum",
+  "value_constraints": { "enum_ref": "game-platforms" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["video-game"]
+}
