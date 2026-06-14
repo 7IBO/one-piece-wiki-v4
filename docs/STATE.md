@@ -5,11 +5,26 @@ session can pick up mid-stream. Architectural _rationale_ lives in
 `/docs/DECISIONS.md` (ADRs); the build order in `/docs/ROADMAP.md`;
 this file is the current status + the open threads.
 
-**Last updated**: 2026-06-13
+**Last updated**: 2026-06-14
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below
 (§ "Active plan").
+
+**2026-06-14 — schema expansion + consolidation campaign (ADR-060…069), all
+merged.** Catalogue **34 entities / 89 properties / 62 relations / 59
+vocabularies**. New media/production entities: `album`+`contains-track`
+(ADR-060), `video-game` (ADR-061), `live-action-series`+`live-action-episode`
+(ADR-062), `anime-special` OVA/TV-special/ONA (ADR-063), `live-performance`
+(ADR-064), `merchandise` (ADR-065). Then five dedup/consolidation refactors
+(all breaking, migrate-forward): relation dedup pass 3 (ADR-066), unified
+release dates `released_at`+`territory` (ADR-067), dropped `canonicity` →
+derive from `canon_scope` (ADR-068), and merged `references` into `features`
+(ADR-069). **Migration system now exercised**: `0001`–`0004` under
+`/data/migrations` (mostly no-ops on the current corpus; `0002` rewrote 10
+chapter files); import via **relative path** to the engine, not the package
+specifier (README fixed). Remaining schema lag: §1 tree + §2 allowed-relations
+in INVENTORY only; the full apply-all-pending migration runner is still Phase-5.
 
 ## Open / blocked threads — resume here
 
@@ -189,10 +204,18 @@ Slices (each ADR + PR):
    verified_at/since) — **ADR-052 [done, this PR]**. **Amends ADR-028** —
    relation-to-entity, NOT the `object` value-type ADR-028 assumed (unbuilt;
    value-types are string/number/boolean/enum/multi_enum/date/entity_ref/
-   source_ref/i18n_key/markdown). Live-action availability needs a live-action
-   entity first (not yet modelled).
+   source_ref/i18n_key/markdown). Live-action availability now works:
+   `available-on` `valid_from` += `live-action-series`/`live-action-episode`
+   (ADR-062).
 
-**New-domain clusters** (user: "tout tout tout"; from a 4-agent Fandom audit, queued):
+**New-domain clusters** (user: "tout tout tout"; from a 4-agent Fandom audit).
+**STATUS 2026-06-14 — all delivered** (see the dated summary at the top): `company`
+(prior), `databook-card` (prior), `album` (ADR-060), `video-game` (ADR-061),
+`live-action-series`+`live-action-episode` (ADR-062), `merchandise` (ADR-065),
+plus stage shows as `live-performance` (ADR-064). **OVAs/specials changed approach**:
+modelled as a dedicated **`anime-special`** entity with a `special_kind`
+(ova/tv_special/ona) **format** axis (ADR-063), _not_ a new `ova` canon-scope value
+— format is orthogonal to canonicity. Original (now-superseded) plan below:
 
 - **Real-world `company` entity** (core) — devs/publishers/labels/studios/
   manufacturers; + `produced-by` relation (media → company, `role` qualifier).
