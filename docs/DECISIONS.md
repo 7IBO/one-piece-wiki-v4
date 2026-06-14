@@ -31,9 +31,13 @@ enough to justify the runner.
    applied-state is explicit.
 3. **Modes**: `--dry-run` (list pending + the files they would touch, write
    nothing); `--check` (exit 1 if anything is pending — a CI gate that forces a
-   contributor who adds a migration to run it and commit the data + ledger).
+   contributor who adds a migration to run it and commit the data + ledger);
+   `--allow-lossy` (confirm property/relation removals or entity deletions).
 4. The runner enforces `migration.id === filename` and is pure where it counts:
    `applyMigrations` is filesystem-free and unit-tested; only the CLI does I/O.
+   It **reuses `detectLosses`** (the same guard the single-file loss-aware
+   `migrate` CLI uses) over the pipeline's reports, so `migrate:all` refuses to
+   destroy four-axis history unless `--allow-lossy` is passed.
 
 **Rationale**: Migrate-forward keeps the corpus current, so an up-to-date
 checkout has **0 pending** and `migrate:all` is a no-op; the value is on a stale

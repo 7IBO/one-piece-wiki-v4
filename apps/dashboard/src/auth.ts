@@ -10,7 +10,7 @@
  *                                 (302 → GitHub → callback → home)
  *   - `auth.signOut()`          — POST `/api/auth/sign-out`
  */
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 
 export type CurrentUser =
   | {
@@ -103,4 +103,31 @@ export function useCurrentUser(): { user: CurrentUser | null; loaded: boolean; }
     };
   }, []);
   return { user, loaded };
+}
+
+/**
+ * Sign out + reset client state. Guards against double-clicks (a second
+ * call while one is in flight is ignored) and does a full reload to "/"
+ * on success — the simplest way to clear every cached store (current
+ * user, drafts indicator, contributions) at once. `pending` lets the
+ * button disable while it runs.
+ */
+export function useSignOut(): { readonly signOut: () => void; readonly pending: boolean; } {
+  const [pending, setPending] = useState(false);
+  const inFlight = useRef(false);
+  const signOut = useCallback((): void => {
+    if (inFlight.current) return;
+    inFlight.current = true;
+    setPending(true);
+    void (async () => {
+      try {
+        await auth.signOut();
+        globalThis.location.assign('/');
+      } catch {
+        inFlight.current = false;
+        setPending(false);
+      }
+    })();
+  }, []);
+  return { signOut, pending };
 }

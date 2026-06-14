@@ -4,7 +4,7 @@
   "schema_version": 1,
   "labels": { "en": "Bounty", "fr": "Prime" },
   "value_type": "number",
-  "value_constraints": { "min": 0, "step": 1000000 },
+  "value_constraints": { "min": 0, "step": 100000 },
   "unit": "berry",
   "historical": true,
   "localizable": false,

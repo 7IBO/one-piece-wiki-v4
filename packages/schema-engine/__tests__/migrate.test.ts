@@ -4,7 +4,7 @@
  * is touched — `applyMigration` operates on in-memory EntityFile[].
  */
 import { describe, expect, it } from 'bun:test';
-import { applyMigration, applyMigrations } from '../src/migrate/runner.ts';
+import { applyMigration, applyMigrations, detectLosses } from '../src/migrate/runner.ts';
 import {
   removeProperty,
   removeRelationType,
@@ -171,5 +171,46 @@ describe('applyMigrations (pipeline)', () => {
     const res = applyMigrations(seed(), [del]);
     expect(res.deletedPaths).toEqual(['b.json']);
     expect(res.finalFiles.map((f) => f.path)).toEqual(['a.json']);
+  });
+});
+
+describe('detectLosses', () => {
+  const files: EntityFile[] = [{ path: 'a.json', data: character() }];
+
+  it('flags a removed property (history loss)', () => {
+    const report = applyMigration(files, {
+      id: '0003',
+      description: 'drop bounty',
+      up: (data) => removeProperty(data, 'bounty'),
+    });
+    const losses = detectLosses(report);
+    expect(losses).toHaveLength(1);
+    expect(losses[0]?.reason).toBe('property-removed');
+    expect(losses[0]?.detail).toContain('bounty');
+  });
+
+  it('flags removed relations', () => {
+    const report = applyMigration(files, {
+      id: '0004',
+      description: 'drop member-of',
+      up: (data) => removeRelationType(data, 'member-of'),
+    });
+    expect(detectLosses(report).some((l) => l.reason === 'relations-removed')).toBe(true);
+  });
+
+  it('flags file deletions', () => {
+    const report = applyMigration(files, { id: '0005', description: 'delete', up: () => null });
+    expect(detectLosses(report)).toEqual([
+      { path: 'a.json', reason: 'file-deleted', detail: 'entity file removed' },
+    ]);
+  });
+
+  it('does NOT flag a pure rename as a loss', () => {
+    const report = applyMigration(files, {
+      id: '0006',
+      description: 'rename bounty → reward',
+      up: (data) => renameProperty(data, 'bounty', 'reward'),
+    });
+    expect(detectLosses(report)).toEqual([]);
   });
 });

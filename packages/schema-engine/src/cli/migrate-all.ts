@@ -7,16 +7,18 @@
  * The migrate-forward corpus is kept current, so an up-to-date checkout has zero
  * pending migrations; this runner is for replaying a backlog on a stale branch.
  *
- *   --dry-run : list pending migrations + the files they would touch; write nothing.
- *   --check   : exit 1 if any migration is pending (CI gate — "you added a
- *               migration, run it and commit the data + ledger"); write nothing.
+ *   --dry-run     : list pending migrations + the files they would touch; write nothing.
+ *   --check       : exit 1 if any migration is pending (CI gate — "you added a
+ *                   migration, run it and commit the data + ledger"); write nothing.
+ *   --allow-lossy : confirm migrations that remove a property/relation or delete an
+ *                   entity (mirrors the single-file `migrate` CLI); refused otherwise.
  *
  * After a real run: `bun run format` (dprint normalises the JSON) then
  * `bun run validate`.
  */
 import { readdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { applyMigrations, collectEntityFiles } from '../migrate/runner.ts';
+import { applyMigrations, collectEntityFiles, detectLosses } from '../migrate/runner.ts';
 import type { Migration } from '../migrate/types.ts';
 import { MIGRATIONS_DIR } from '../paths.ts';
 
@@ -62,6 +64,7 @@ async function discover(): Promise<readonly Migration[]> {
 const flags = new Set(process.argv.slice(2));
 const dryRun = flags.has('--dry-run');
 const check = flags.has('--check');
+const allowLossy = flags.has('--allow-lossy');
 
 const all = await discover();
 const applied = new Set((await readLedger()).applied);
@@ -92,11 +95,28 @@ process.stdout.write(
   `Net: ${changedPaths.length} file(s) to write, ${deletedPaths.length} to delete.\n`,
 );
 
+// Loss guard, mirroring the single-file `migrate` CLI (a removed property/relation
+// or a deleted entity destroys four-axis history). Refuse unless --allow-lossy.
+const losses = reports.flatMap((report) => detectLosses(report));
+if (losses.length > 0) {
+  process.stderr.write(`\n${losses.length} potentially lossy change(s):\n`);
+  for (const loss of losses) {
+    process.stderr.write(`  ! ${loss.path} — ${loss.reason} (${loss.detail})\n`);
+  }
+}
+
 if (dryRun) {
   for (const p of changedPaths) process.stdout.write(`  ~ ${p}\n`);
   for (const p of deletedPaths) process.stdout.write(`  - ${p}\n`);
   process.stdout.write('\n(dry run — no files written, ledger untouched)\n');
   process.exit(0);
+}
+
+if (losses.length > 0 && !allowLossy) {
+  process.stderr.write(
+    '\nRefusing to apply lossy changes. Re-run with --allow-lossy to confirm.\n',
+  );
+  process.exit(1);
 }
 
 const finalByPath = new Map(finalFiles.map((f) => [f.path, f.data]));

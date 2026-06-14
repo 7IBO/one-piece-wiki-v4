@@ -10,8 +10,10 @@
 import {
   type AssistedBy,
   type CanonScope,
+  ENTITY_ID_PATTERN,
   EntityId,
   EpistemicStatus,
+  I18N_KEY_PATTERN,
   IsoDate,
   type Locale,
   ReviewStatus,
@@ -21,12 +23,10 @@ import {
 import { basename, join } from 'node:path';
 import { z } from 'zod';
 import { type DataSource, fsDataSource } from './data-source.ts';
-import type { ValidatedCatalogue } from './meta-validator.ts';
+import type { PropertyType, ValidatedCatalogue, Vocabulary } from './meta-validator.ts';
 import { UNIVERSES_DIR } from './paths.ts';
 
-const I18nKeyString = z.string().regex(
-  /^[a-z0-9]+(?:[-_][a-z0-9]+)*(?:\.[a-z0-9]+(?:[-_][a-z0-9]+)*)+$/,
-);
+const I18nKeyString = z.string().regex(I18N_KEY_PATTERN);
 
 // `since` / `until` / `source` accept either a single source ref or
 // an array. The array form lets a single value entry cite multiple
@@ -67,18 +67,59 @@ const RelationQualifierBag = z
   })
   .passthrough();
 
-function valueSchemaFor(valueType: ValueType): z.ZodTypeAny {
+type Constraints = PropertyType['value_constraints'];
+
+function applyNumberConstraints(schema: z.ZodNumber, c: Constraints): z.ZodNumber {
+  if (c === undefined) return schema;
+  let s = schema;
+  if (c.min !== undefined) s = s.min(c.min);
+  if (c.max !== undefined) s = s.max(c.max);
+  if (c.step !== undefined) s = s.step(c.step);
+  return s;
+}
+
+/**
+ * Resolve an `enum` / `multi_enum` ref to `z.enum([...vocab keys])`.
+ * Falls back to `z.string()` when the ref is missing or the vocabulary
+ * isn't in the catalogue, so a malformed schema degrades instead of
+ * throwing mid-load (the meta-validator / coherence layer flags those).
+ */
+function enumSchemaFor(
+  enumRef: string | undefined,
+  vocabularies: ReadonlyMap<string, Vocabulary>,
+): z.ZodTypeAny {
+  if (enumRef === undefined) return z.string();
+  const vocab = vocabularies.get(enumRef);
+  if (vocab === undefined) return z.string();
+  const values = Object.keys(vocab.values);
+  if (values.length === 0) return z.string();
+  return z.enum(values as [string, ...string[]]);
+}
+
+/**
+ * Live Zod for a property/qualifier value. Honours enum membership and
+ * numeric/string `value_constraints` so this runtime validator matches
+ * the generated schema (and therefore `bun run validate`): an edit the
+ * dashboard accepts here is the same edit CI accepts on disk.
+ */
+function valueSchemaFor(
+  valueType: ValueType,
+  constraints: Constraints,
+  vocabularies: ReadonlyMap<string, Vocabulary>,
+): z.ZodTypeAny {
   switch (valueType) {
-    case 'string':
-      return z.string();
+    case 'string': {
+      const pattern = constraints?.pattern;
+      return pattern !== undefined ? z.string().regex(new RegExp(pattern)) : z.string();
+    }
     case 'number':
-      return z.number();
+      return applyNumberConstraints(z.number(), constraints);
     case 'boolean':
       return z.boolean();
     case 'enum':
-      return z.string();
+      return enumSchemaFor(constraints?.enum_ref, vocabularies);
     case 'multi_enum':
-      return z.array(z.string());
+      return z.array(enumSchemaFor(constraints?.enum_ref, vocabularies));
     case 'date':
       return IsoDate;
     case 'entity_ref':
@@ -95,8 +136,10 @@ function valueSchemaFor(valueType: ValueType): z.ZodTypeAny {
 function propertyEntrySchema(
   valueType: ValueType,
   localizable: boolean,
+  constraints: Constraints,
+  vocabularies: ReadonlyMap<string, Vocabulary>,
 ): z.ZodTypeAny {
-  const value = valueSchemaFor(valueType);
+  const value = valueSchemaFor(valueType, constraints, vocabularies);
   const entry = BaseQualifierBag.merge(
     localizable
       ? z.object({ value_key: I18nKeyString })
@@ -126,7 +169,12 @@ export function buildEntitySchema(
   for (const declared of entityType.properties) {
     const propertyType = catalogue.propertyTypes.get(declared.id);
     if (!propertyType) continue;
-    const entry = propertyEntrySchema(propertyType.value_type, propertyType.localizable);
+    const entry = propertyEntrySchema(
+      propertyType.value_type,
+      propertyType.localizable,
+      propertyType.value_constraints,
+      catalogue.vocabularies,
+    );
     const fieldSchema = propertyType.historical ? z.array(entry).min(1) : entry;
     propertyShape[declared.id] = declared.required ? fieldSchema : fieldSchema.optional();
   }
@@ -282,7 +330,7 @@ export function resolveEntityReferences(
 ): readonly EntityReferenceError[] {
   const errors: EntityReferenceError[] = [];
   const isEntityRef = (value: unknown): value is string =>
-    typeof value === 'string' && /^[a-z0-9-]+:[a-z0-9-]+$/.test(value);
+    typeof value === 'string' && ENTITY_ID_PATTERN.test(value);
   // `since` / `until` / `source` accept a single ref or an array. Walk
   // both shapes so reference-resolution covers both.
   const refOrRefList = (value: unknown): readonly string[] => {
