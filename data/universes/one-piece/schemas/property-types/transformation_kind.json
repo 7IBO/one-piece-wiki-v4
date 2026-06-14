@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "transformation_kind",
+  "schema_version": 1,
+  "labels": { "en": "Transformation kind", "fr": "Type de transformation" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "transformation-kinds" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["transformation"]
+}

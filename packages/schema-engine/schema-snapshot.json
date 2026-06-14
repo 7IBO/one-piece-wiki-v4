@@ -112,6 +112,7 @@
         "pilots",
         "portrayed-by",
         "resides-in",
+        "transforms-into",
         "uses-technique",
         "voiced-by",
         "wields-weapon"
@@ -586,7 +587,8 @@
         "awakening-of",
         "depicted-by",
         "derived-from",
-        "enabled-by-fruit"
+        "enabled-by-fruit",
+        "enabled-by-transformation"
       ]
     },
     "theme-song": {
@@ -625,6 +627,23 @@
       "allowed_relations": [
         "depicted-by",
         "granted-by"
+      ]
+    },
+    "transformation": {
+      "properties": {
+        "description_key": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "transformation_kind": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "form-of"
       ]
     },
     "weapon": {
@@ -1112,6 +1131,12 @@
       "historical": false,
       "localizable": false
     },
+    "transformation_kind": {
+      "value_type": "enum",
+      "enum_ref": "transformation-kinds",
+      "historical": false,
+      "localizable": false
+    },
     "url": {
       "value_type": "string",
       "enum_ref": null,
@@ -1559,6 +1584,7 @@
         "technique",
         "theme-song",
         "title",
+        "transformation",
         "weapon"
       ],
       "valid_to_types": [
@@ -1623,6 +1649,22 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {}
+    },
+    "enabled-by-transformation": {
+      "valid_from_types": [
+        "technique"
+      ],
+      "valid_to_types": [
+        "transformation"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
     },
     "enemy-of": {
       "valid_from_types": [
@@ -1730,6 +1772,18 @@
       ],
       "valid_to_types": [
         "character"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "form-of": {
+      "valid_from_types": [
+        "transformation"
+      ],
+      "valid_to_types": [
+        "concept",
+        "devil-fruit",
+        "race"
       ],
       "inverse_inferred": true,
       "qualifiers": {}
@@ -2348,6 +2402,22 @@
           "value_type": "enum",
           "enum_ref": "theme-song-usage",
           "required": true
+        }
+      }
+    },
+    "transforms-into": {
+      "valid_from_types": [
+        "character"
+      ],
+      "valid_to_types": [
+        "transformation"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
         }
       }
     },
@@ -3011,7 +3081,6 @@
       "reformed"
     ],
     "technique-types": [
-      "awakening",
       "combo",
       "defensive",
       "devil_fruit_based",
@@ -3020,14 +3089,20 @@
       "ranged",
       "signature",
       "support",
-      "swordsmanship",
-      "transformation"
+      "swordsmanship"
     ],
     "theme-song-usage": [
       "ending",
       "image_song",
       "insert",
       "opening"
+    ],
+    "transformation-kinds": [
+      "awakening",
+      "gear",
+      "other",
+      "sulong",
+      "zoan_form"
     ],
     "translation-variants": [
       "4kids",

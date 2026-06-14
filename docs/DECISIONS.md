@@ -8,6 +8,43 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-058 — Split `transformation` from `technique`
+
+**Date**: 2026-06-14
+
+**Context**: Maintainer distinction: a **technique** is a discrete _action_ you
+use (Gomu Gomu no Pistol, Oni Giri, Rokuogan); a **transformation** is a
+_state/form_ you enter that persists and **enables** techniques (Gear 2/3/4/5,
+Snakeman, Sulong, Zoan hybrid/beast forms, Devil-Fruit awakening). The model
+conflated them: `technique-types` carried `transformation` and `awakening` as
+_values_, so Gears were `technique` entities with `technique_type:
+transformation`. The Fandom audit independently questioned whether `technique`
+should be an entity at all; the maintainer's answer — keep `technique` for
+attacks, but lift transformations out.
+
+**Decision** (additive except 2 vocab-value removals, zero usage → no migration):
+
+1. **`transformation`** entity — `name`, `transformation_kind` (enum → new
+   **`transformation-kinds`**: gear / zoan_form / sulong / awakening / other),
+   `description_key`.
+2. **`transforms-into`** (`character` → `transformation`) — who enters the form.
+3. **`form-of`** (`transformation` → `devil-fruit` / `race` / `concept`) — what
+   it's a form of (Gear → Gomu/Nika; Sulong → Mink race; Zoan form → the fruit).
+4. **`enabled-by-transformation`** (`technique` → `transformation`, **optional**) —
+   "Gomu Gomu no Gigant Pistol is enabled by Gear 3"; base techniques have no
+   such edge (techniques may be tied to a transformation, or not).
+5. **Remove `transformation` + `awakening` from `technique-types`** — they were
+   never technique _types_; awakening now rides `transformation_kind: awakening`
+   (the existing `awakened` flag / `awakening-of` relation on devil-fruit stay).
+
+**Consequences**: +1 entity (27), +1 property (83), +3 relations (65),
++1 vocabulary (53); 2 breaking vocab-value removals (no technique data exists).
+`technique`/`character` `schema_version` bumped; `depicted-by` source widened.
+Snapshot regenerated. `technique` stays first-class (queryable: who uses what,
+which fruit/Haki enables it) — the audit's "demote to prose" option is rejected.
+
+---
+
 ## ADR-057 — Schema cleanup pass 2: redundant inverse + entity_ref-property duplicates
 
 **Date**: 2026-06-14

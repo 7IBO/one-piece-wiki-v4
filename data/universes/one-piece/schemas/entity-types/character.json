@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "character",
-  "schema_version": 4,
+  "schema_version": 5,
   "labels": { "en": "Character", "fr": "Personnage" },
   "url_segment": "characters",
   "properties": [
@@ -34,6 +34,7 @@
     "resides-in",
     "captains",
     "pilots",
+    "transforms-into",
     "voiced-by",
     "portrayed-by",
     "depicted-by"
