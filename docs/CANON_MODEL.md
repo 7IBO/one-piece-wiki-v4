@@ -101,6 +101,18 @@ canon. Modeling rules:
 - A `concept_only_in: [...]` field can mark entities that exist only in
   certain scopes (filters them out when those scopes are disabled)
 
+### Derived entity canonicity (ADR-068)
+
+An entity's canonicity is **derived, not hand-authored**. There is one canon
+axis — `canon_scope` (the `canon-scopes` vocabulary) — carried by sources and
+inherited by values. `primary_canon_scope` is the strongest scope among an
+entity's values; a coarse "is this canon?" tier is read off that scope
+(`manga`/`anime`/`film_canon` → canon; `anime_filler`/`film_non_canon`/
+`video_game`/`stage`/`live_action` → non-canon; `sbs`/`databook`/`semi_canon` →
+semi-canon). The former hand-set `canonicity` property and `canonicity-tiers`
+vocabulary were removed — a manual tier duplicated (and could drift from) the
+scope it summarizes.
+
 Example: Shiki (the Lion) is a `film_canon` character. His entity has
 `primary_canon_scope: film_canon`. He won't appear in manga-only mode.
 
@@ -118,7 +130,7 @@ later phases.
 ## SBS and databook handling
 
 SBS and databooks are sources of factual answers that don't fit into a
-narrative slot. They're modeled as entities with a `published_at` and
+narrative slot. They're modeled as entities with a `released_at` and
 attached to volumes/issues. Facts they reveal point to them as `source`.
 
 Example: Luffy's blood type comes from SBS, not from a chapter. The

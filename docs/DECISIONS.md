@@ -8,6 +8,49 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-068 — Drop the manual `canonicity` tier; derive it from `canon_scope`
+
+**Date**: 2026-06-14
+
+**Context**: Two overlapping canon vocabularies existed:
+
+- **`canon-scopes`** (core, 12 values) — the per-source medium + canon status
+  (`manga`, `anime_filler`, `film_non_canon`, `video_game`, `stage`, …). Carried
+  by every source and inherited by derived values as a `canon_scope` qualifier
+  (CANON_MODEL.md).
+- **`canonicity-tiers`** (one-piece, 6 values: canon / anime_only / film_only /
+  game_only / sbs / non_canon) — backed a hand-set **`canonicity`** property on
+  `devil-fruit` and `technique`.
+
+The tier is a coarse projection of the scope, and CANON_MODEL.md already defines
+the derived entity-level field **`primary_canon_scope`** ("the strongest scope
+they have"). So `canonicity` duplicated information derivable from the entity's
+values / introducing source.
+
+**Decision** (breaking; user-approved):
+
+1. **Delete** the `canonicity` property and the `canonicity-tiers` vocabulary.
+2. Entity-level canonicity is the **derived `primary_canon_scope`** — computed
+   (build-side, future) from the strongest `canon_scope` among an entity's
+   values, not hand-authored. Documented in CANON_MODEL.md ("Derived entity
+   canonicity").
+3. `devil-fruit` / `technique` drop the property and bump `schema_version`.
+
+**Migration**:
+[`0003-drop-canonicity.ts`](../data/migrations/0003-drop-canonicity.ts) —
+`removeProperty('canonicity')`. No-op on the current corpus (0 entities set it),
+kept as the record.
+
+**Rationale**: One canon axis (scope), not two. Canonicity is a _view_ over an
+entity's scopes, so deriving it removes a hand-maintained field that could drift
+from the values it summarizes. `canon-scopes` stays the single source of canon
+truth.
+
+**Consequences**: property types 90 → 89 (−1), vocabularies 60 → 59 (−1).
+Breaking (compat: 4 breaking / 0 additive). No data rewrite.
+
+---
+
 ## ADR-067 — Unify release-date properties into `released_at` + `territory`
 
 **Date**: 2026-06-14

@@ -285,9 +285,6 @@
         "awakened": {
           "required": false
         },
-        "canonicity": {
-          "required": false
-        },
         "classification": {
           "required": true
         },
@@ -712,9 +709,6 @@
     },
     "technique": {
       "properties": {
-        "canonicity": {
-          "required": false
-        },
         "description_key": {
           "required": false
         },
@@ -923,12 +917,6 @@
     "canon_scope": {
       "value_type": "enum",
       "enum_ref": "canon-scopes",
-      "historical": false,
-      "localizable": false
-    },
-    "canonicity": {
-      "value_type": "enum",
-      "enum_ref": "canonicity-tiers",
       "historical": false,
       "localizable": false
     },
@@ -2787,14 +2775,6 @@
       "semi_canon",
       "stage",
       "video_game"
-    ],
-    "canonicity-tiers": [
-      "anime_only",
-      "canon",
-      "film_only",
-      "game_only",
-      "non_canon",
-      "sbs"
     ],
     "card-kinds": [
       "character",
