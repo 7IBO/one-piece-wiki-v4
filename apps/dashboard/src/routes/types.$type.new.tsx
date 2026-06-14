@@ -32,7 +32,7 @@ import { type JSX, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type SchemaCatalogue, type SourceRef } from '../api';
 import { EntityForm } from '../form/EntityForm';
-import { useLocale } from '../form/locale';
+import { useLocale, useT } from '../form/locale';
 import { SlugInput } from '../form/SlugInput';
 import { slugify } from '../lib/slugify';
 
@@ -43,6 +43,7 @@ export const Route = createFileRoute('/types/$type/new')({
 function EntityCreateComponent(): JSX.Element {
   const { type } = Route.useParams() as { type: string; };
   const locale = useLocale();
+  const t = useT();
   const navigate = useNavigate();
 
   const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
@@ -148,10 +149,10 @@ function EntityCreateComponent(): JSX.Element {
         </Button>
         <div className='mt-1 flex flex-wrap items-center gap-2'>
           <h1 className='text-xl font-semibold tracking-tight'>
-            New {entityTypeLabel}
+            {t('newEntityLabel')} {entityTypeLabel}
           </h1>
           <Badge variant='outline' className='text-amber-500 ml-auto text-[10px]'>
-            draft
+            {t('draftLabel')}
           </Badge>
         </div>
       </div>
@@ -161,9 +162,8 @@ function EntityCreateComponent(): JSX.Element {
           <Banner variant='info'>
             <GitPullRequest className='text-primary size-4 shrink-0' />
             <span>
-              Your new {entityTypeLabel.toLowerCase()}{' '}
-              is in PR #{openedPR.number}. It will appear in the dashboard catalogue after the PR is
-              merged and Vercel redeploys.
+              {t('newPrBannerPre')} #{openedPR.number}
+              {t('newPrBannerPost')}
             </span>
             <a
               href={openedPR.htmlUrl}
@@ -180,18 +180,18 @@ function EntityCreateComponent(): JSX.Element {
 
       <div className='max-w-xl space-y-4'>
         <div className='space-y-1.5'>
-          <Label htmlFor='entity-name-en'>Name (English)</Label>
+          <Label htmlFor='entity-name-en'>{t('nameEnglish')}</Label>
           <Input
             id='entity-name-en'
             value={nameEn}
             onChange={(e) => setNameEn(e.target.value)}
-            placeholder='e.g. Monkey D. Luffy'
+            placeholder={t('namePlaceholder')}
             disabled={creating || openedPR !== null}
             autoComplete='off'
             spellCheck={false}
           />
           <p className='text-muted-foreground text-xs'>
-            The slug below is derived from this name automatically — you can override it.
+            {t('nameFromSlugHelp')}
           </p>
         </div>
         <SlugInput
@@ -209,9 +209,7 @@ function EntityCreateComponent(): JSX.Element {
       {nameEn === '' || !slugValid
         ? (
           <div className='text-muted-foreground rounded-md border border-dashed p-8 text-center text-sm'>
-            {nameEn === ''
-              ? "Type the entity's name above to start editing its properties and relations."
-              : 'Pick a valid, unused slug above to continue.'}
+            {nameEn === '' ? t('newGateName') : t('newGateSlug')}
           </div>
         )
         : (
@@ -240,12 +238,12 @@ function EntityCreateComponent(): JSX.Element {
               try {
                 const result = await api.createEntity(type, slug, next, translations);
                 if (result.pr.noOp) {
-                  toast.info('Nothing to save yet.');
+                  toast.info(t('nothingToSaveYet'));
                   return;
                 }
                 setOpenedPR({ number: result.pr.number, htmlUrl: result.pr.htmlUrl });
                 toast.success(
-                  `Create PR opened (#${result.pr.number})`,
+                  `${t('createPrOpened')} (#${result.pr.number})`,
                   {
                     description: result.pr.htmlUrl,
                     action: {

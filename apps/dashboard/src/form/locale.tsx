@@ -106,6 +106,50 @@ const UI_STRINGS = {
   },
   entitiesWord: { en: 'entities', fr: 'entités' },
   entityWord: { en: 'entity', fr: 'entité' },
+  // New-entity page + slug input
+  newEntityLabel: { en: 'New:', fr: 'Nouveau :' },
+  draftLabel: { en: 'draft', fr: 'brouillon' },
+  nameEnglish: { en: 'Name (English)', fr: 'Nom (anglais)' },
+  namePlaceholder: { en: 'e.g. Monkey D. Luffy', fr: 'ex. Monkey D. Luffy' },
+  nameFromSlugHelp: {
+    en: 'The slug below is derived from this name automatically — you can override it.',
+    fr: 'Le slug ci-dessous est dérivé de ce nom automatiquement — vous pouvez le modifier.',
+  },
+  newGateName: {
+    en: "Type the entity's name above to start editing its properties and relations.",
+    fr: 'Saisissez le nom de l’entité ci-dessus pour éditer ses propriétés et relations.',
+  },
+  newGateSlug: {
+    en: 'Pick a valid, unused slug above to continue.',
+    fr: 'Choisissez un slug valide et libre ci-dessus pour continuer.',
+  },
+  newPrBannerPre: { en: 'Opened PR', fr: 'PR ouverte' },
+  newPrBannerPost: {
+    en: '. Your entry will appear in the catalogue once it’s merged and Vercel redeploys.',
+    fr: '. Votre entrée apparaîtra dans le catalogue une fois la PR fusionnée et Vercel redéployé.',
+  },
+  nothingToSaveYet: { en: 'Nothing to save yet.', fr: 'Rien à enregistrer pour le moment.' },
+  createPrOpened: { en: 'Create PR opened', fr: 'PR de création ouverte' },
+  slugLabel: { en: 'Slug', fr: 'Slug' },
+  slugPlaceholder: { en: 'e.g. monkey-d-luffy', fr: 'ex. monkey-d-luffy' },
+  slugRequired: {
+    en: 'Required. URL-safe identifier — e.g. `monkey-d-luffy`.',
+    fr: 'Requis. Identifiant compatible URL — ex. `monkey-d-luffy`.',
+  },
+  slugInvalidFormat: {
+    en: 'Use lowercase letters, digits, and `-` or `_` between them.',
+    fr: 'Lettres minuscules, chiffres et `-` ou `_` entre eux.',
+  },
+  slugChecking: { en: 'Checking availability…', fr: 'Vérification de la disponibilité…' },
+  slugTaken: {
+    en: 'This slug is already taken for this type.',
+    fr: 'Ce slug est déjà utilisé pour ce type.',
+  },
+  slugLookupFailed: {
+    en: 'Couldn’t verify uniqueness — the server will re-check on save.',
+    fr: 'Impossible de vérifier l’unicité — le serveur revérifiera à l’enregistrement.',
+  },
+  slugWillSaveAs: { en: 'Will be saved as', fr: 'Sera enregistré comme' },
   // Property nav
   propertiesHeader: { en: 'Properties', fr: 'Propriétés' },
   filledProgress: { en: 'filled', fr: 'remplies' },

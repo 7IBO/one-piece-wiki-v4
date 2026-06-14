@@ -20,15 +20,11 @@
  */
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
+import { SLUG_PATTERN } from '@onepiece-wiki/schemas';
 import { CircleAlertIcon, CircleCheckIcon } from 'lucide-react';
 import { type JSX, useEffect, useState } from 'react';
 import { api } from '../api';
-
-// Mirrors `SLUG` in packages/schemas/src/primitives.ts. Kept in sync
-// by hand — if/when that primitive grows new characters, this regex
-// must follow (and ideally we'd export the regex from the schemas
-// package, but that's a follow-up).
-const SLUG_REGEX = /^[a-z0-9]+(?:[-_][a-z0-9]+)*$/;
+import { useT } from './locale';
 
 export type SlugInputProps = {
   /** Entity type the new slug will belong to. Drives the uniqueness
@@ -57,6 +53,7 @@ type ValidityState =
 export function SlugInput(
   { type, value, onChange, onValidChange, disabled }: SlugInputProps,
 ): JSX.Element {
+  const t = useT();
   const [state, setState] = useState<ValidityState>(
     value === '' ? { kind: 'empty' } : { kind: 'checking' },
   );
@@ -72,7 +69,7 @@ export function SlugInput(
       onValidChange?.(false);
       return;
     }
-    if (!SLUG_REGEX.test(value)) {
+    if (!SLUG_PATTERN.test(value)) {
       setState({ kind: 'invalid_format' });
       onValidChange?.(false);
       return;
@@ -108,17 +105,17 @@ export function SlugInput(
   const helperText = (() => {
     switch (state.kind) {
       case 'empty':
-        return 'Required. URL-safe identifier — e.g. `monkey-d-luffy`.';
+        return t('slugRequired');
       case 'invalid_format':
-        return 'Use lowercase letters, digits, and `-` or `_` between them.';
+        return t('slugInvalidFormat');
       case 'checking':
-        return 'Checking availability…';
+        return t('slugChecking');
       case 'taken':
-        return `An entity of type ${type} with this slug already exists.`;
+        return t('slugTaken');
       case 'lookup_failed':
-        return `Couldn't verify uniqueness (${state.message}). The server will re-check on save.`;
+        return t('slugLookupFailed');
       case 'available':
-        return `Will be saved as \`${type}:${value}\`.`;
+        return `${t('slugWillSaveAs')} \`${type}:${value}\``;
     }
   })();
 
@@ -127,7 +124,7 @@ export function SlugInput(
 
   return (
     <div className='space-y-1.5'>
-      <Label htmlFor='slug-input'>Slug</Label>
+      <Label htmlFor='slug-input'>{t('slugLabel')}</Label>
       <div className='relative'>
         <Input
           id='slug-input'
@@ -137,7 +134,7 @@ export function SlugInput(
           // typing "Luffy" and seeing a confusing "invalid format"
           // error a second later.
           onChange={(e) => onChange(e.target.value.toLowerCase())}
-          placeholder='e.g. monkey-d-luffy'
+          placeholder={t('slugPlaceholder')}
           disabled={disabled === true}
           autoComplete='off'
           spellCheck={false}
