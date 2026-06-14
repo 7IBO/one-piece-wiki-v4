@@ -45,7 +45,8 @@ export type CoherenceFinding = {
     | 'SCHEMA_UNIVERSE_SCOPE_LEAK'
     | 'RELATION_DECLARES_BASE_QUALIFIER'
     | 'DUPLICATE_RELATION'
-    | 'DUPLICATE_PROPERTY_VALUE';
+    | 'DUPLICATE_PROPERTY_VALUE'
+    | 'ENTITY_SCHEMA_VERSION_AHEAD';
   readonly severity: 'error' | 'warning';
   readonly source: string;
   readonly path: string;
@@ -308,6 +309,40 @@ export function checkCoherence(
     }
   }
 
+  return findings;
+}
+
+/**
+ * Schema-version sanity: an entity may sit at an OLDER `schema_version` than
+ * its type (it predates an additive bump and still validates — that is fine,
+ * see the `schema:versions` report + the migrate-forward model in ADR-029/059),
+ * but it must never declare a version NEWER than the type has ever reached.
+ * That can only mean corrupt data or a type bump that was forgotten, so it is
+ * an error. Behind-the-type entities are reported, not failed, to avoid noise
+ * on every additive bump.
+ */
+export function checkEntityVersions(
+  entities: ReadonlyMap<string, LoadedEntity>,
+  catalogue: ValidatedCatalogue,
+): readonly CoherenceFinding[] {
+  const findings: CoherenceFinding[] = [];
+  for (const entity of entities.values()) {
+    const entityType = catalogue.entityTypes.get(entity.type);
+    if (entityType === undefined) continue;
+    const version = (entity.data as { schema_version?: unknown; }).schema_version;
+    if (typeof version !== 'number') continue;
+    if (version > entityType.schema_version) {
+      findings.push({
+        code: 'ENTITY_SCHEMA_VERSION_AHEAD',
+        severity: 'error',
+        source: entity.id,
+        path: 'schema_version',
+        message: `Entity is at schema_version ${version} but the "${entity.type}" type is only at `
+          + `${entityType.schema_version}. An entity cannot declare a version the schema has `
+          + `never reached — corrupt data or a forgotten type bump.`,
+      });
+    }
+  }
   return findings;
 }
 

@@ -3,7 +3,7 @@
  * single-file validation and bare reference existence. Errors fail the
  * build; warnings are printed but non-fatal.
  */
-import { checkCoherence, checkSchemaCoherence } from '../coherence.ts';
+import { checkCoherence, checkEntityVersions, checkSchemaCoherence } from '../coherence.ts';
 import { loadEntities } from '../entity-loader.ts';
 import { loadSchemas } from '../loader.ts';
 import { validateCatalogue } from '../meta-validator.ts';
@@ -27,6 +27,7 @@ const findings = [
   ...checkSchemaCoherence(validated),
   ...checkUniverseScopes(validated),
   ...checkCoherence(loaded.entities, validated),
+  ...checkEntityVersions(loaded.entities, validated),
 ];
 const errors = findings.filter((f) => f.severity === 'error');
 const warnings = findings.filter((f) => f.severity === 'warning');

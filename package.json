@@ -18,6 +18,7 @@
     "test:watch": "bun test --watch",
     "schema:check": "bun packages/schema-engine/src/cli/check.ts",
     "schema:generate": "bun packages/schema-engine/src/cli/generate.ts",
+    "schema:versions": "bun packages/schema-engine/src/cli/schema-versions.ts",
     "validate": "bun packages/schema-engine/src/cli/validate.ts",
     "check:references": "bun packages/schema-engine/src/cli/check-references.ts",
     "check:coherence": "bun packages/schema-engine/src/cli/check-coherence.ts",
