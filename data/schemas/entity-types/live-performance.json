@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "live-performance",
+  "schema_version": 1,
+  "labels": { "en": "Live performance", "fr": "Spectacle vivant" },
+  "url_segment": "live-performances",
+  "properties": [
+    { "id": "title_key", "required": true, "historical": false, "localizable": true },
+    { "id": "performance_kind", "required": true, "historical": false, "localizable": false },
+    { "id": "released_at", "required": false, "historical": false, "localizable": false },
+    { "id": "canon_scope", "required": false, "historical": false, "localizable": false }
+  ],
+  "display_name_properties": ["title_key"],
+  "allowed_relations": ["features", "staffed-by", "depicted-by"],
+  "ui_hint": { "icon": "drama", "group": "sources" }
+}

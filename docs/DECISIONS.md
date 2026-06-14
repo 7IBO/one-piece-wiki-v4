@@ -8,6 +8,40 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-064 — `live-performance` entity (stage adaptations)
+
+**Date**: 2026-06-14
+
+**Context**: One Piece's stage/live adaptations are a real Fandom category: the
+_Premier Show_ and _Live Attraction_ park productions, the Super Kabuki II
+_One Piece_, the _One Piece_ stage musicals, and concerts. They feature
+characters, have a director/composer/choreographer, and posters — but they are
+non-canon real-world events, not in-universe sources.
+
+**Decision** (additive, core):
+
+1. **`live-performance`** entity — `title_key`, `performance_kind` (req, enum →
+   new **`performance-kinds`**: stage_play / musical / kabuki / live_attraction /
+   premier_show / concert / other), `released_at` (premiere), `canon_scope`.
+2. New **`stage`** value added to `canon-scopes` (the non-canon scope these sit
+   in, parallel to `live_action` / `film_non_canon`).
+3. Reuse `features` (cast appears), `staffed-by` (crew), `depicted-by` (poster);
+   `valid_from` += `live-performance`. Casting reuses the existing
+   `portrayed-by` (its free-text `production` qualifier names the show), so the
+   entity needs no casting relation of its own. `released_at` / `canon_scope`
+   `applies_to` widened.
+
+**Rationale**: A first-class entity (vs cramming stage shows into `film`) matches
+the Fandom split and keeps media types clean. `performance_kind` is the format
+axis; `stage` on `canon_scope` is the canonicity axis — same orthogonality as
+ADR-063.
+
+**Consequences**: +1 entity (33), +1 property (92), +1 vocabulary (58), +1
+`canon-scopes` value; three `valid_from` and two `applies_to` widenings. All
+core, additive. No migration.
+
+---
+
 ## ADR-063 — `anime-special` entity (OVAs, TV specials, ONAs)
 
 **Date**: 2026-06-14
