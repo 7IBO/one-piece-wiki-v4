@@ -3,8 +3,8 @@
   "id": "features",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Features", "inverse": "Appears in" },
-    "fr": { "active": "Met en scène", "inverse": "Apparaît dans" }
+    "en": { "active": "Features", "inverse": "Featured in" },
+    "fr": { "active": "Présente", "inverse": "Figure dans" }
   },
   "valid_from_types": [
     "manga-chapter",
@@ -14,7 +14,9 @@
     "live-action-series",
     "live-action-episode",
     "anime-special",
-    "live-performance"
+    "live-performance",
+    "sbs",
+    "databook"
   ],
   "valid_to_types": [
     "character",
