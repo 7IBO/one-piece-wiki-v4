@@ -1,23 +1,32 @@
 /**
- * bun run migrate <path-to-migration.ts> [--dry-run]
+ * bun run migrate <path-to-migration.ts> [--dry-run] [--allow-lossy] [--force]
  *
  * Applies a migration to the entity corpus in `/data/universes/**`.
  * The migration file must default-export a `Migration` (see
  * `/data/migrations/README.md`). With `--dry-run`, reports the
  * affected files without writing anything.
  *
+ * Safety: refuses to run when `data/universes` has uncommitted changes
+ * (a clean tree keeps a bad migration reversible with `git checkout
+ * data/`; `--force` overrides), and refuses lossy changes — deleted
+ * files or dropped properties/relations — unless `--allow-lossy` is
+ * passed.
+ *
  * After a real run, run `bun run format` (dprint normalises the
  * rewritten JSON) and `bun run validate` (confirms the corpus still
  * parses against the schema).
  */
+import { execSync } from 'node:child_process';
 import { rm, writeFile } from 'node:fs/promises';
 import { resolve } from 'node:path';
-import { applyMigration, collectEntityFiles } from '../migrate/runner.ts';
+import { applyMigration, collectEntityFiles, detectLosses } from '../migrate/runner.ts';
 import type { Migration } from '../migrate/types.ts';
 import { REPO_ROOT } from '../paths.ts';
 
 const args = process.argv.slice(2);
 const dryRun = args.includes('--dry-run');
+const force = args.includes('--force');
+const allowLossy = args.includes('--allow-lossy');
 const fileArg = args.find((arg) => !arg.startsWith('--'));
 
 if (fileArg === undefined) {
@@ -52,6 +61,37 @@ if (dryRun) {
   for (const path of report.deleted) process.stdout.write(`  - ${path}\n`);
   process.stdout.write('\n(dry run — no files written)\n');
   process.exit(0);
+}
+
+// A clean tree makes a bad migration fully reversible with
+// `git checkout data/`. Refuse to write over uncommitted data unless
+// forced (e.g. CI on a throwaway checkout).
+if (!force) {
+  const dirty = execSync('git status --porcelain data/universes', {
+    cwd: REPO_ROOT,
+    encoding: 'utf8',
+  }).trim();
+  if (dirty !== '') {
+    process.stderr.write(
+      'Refusing to migrate: data/universes has uncommitted changes.\n'
+        + 'Commit or stash them first so this migration stays reversible, or pass --force.\n',
+    );
+    process.exit(1);
+  }
+}
+
+// Lossy changes (deleted files, dropped properties/relations) take
+// historisation metadata with them — require explicit opt-in.
+const losses = detectLosses(report);
+if (losses.length > 0 && !allowLossy) {
+  process.stderr.write(
+    `Refusing to migrate: ${losses.length} change(s) would drop data. `
+      + 'Re-run with --allow-lossy to confirm:\n',
+  );
+  for (const loss of losses) {
+    process.stderr.write(`  ! ${loss.path} — ${loss.reason} (${loss.detail})\n`);
+  }
+  process.exit(1);
 }
 
 for (const change of report.changed) {
