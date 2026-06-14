@@ -9,7 +9,12 @@
   "valid_from_types": ["manga-chapter", "arc", "saga"],
   "valid_to_types": ["anime-episode", "film"],
   "qualifiers": [
-    { "id": "coverage", "value_type": "enum", "enum_ref": "appearance-types", "required": false },
+    {
+      "id": "coverage",
+      "value_type": "enum",
+      "enum_ref": "adaptation-coverage",
+      "required": false
+    },
     { "id": "since", "value_type": "source_ref", "required": false }
   ],
   "allow_multiple_concurrent": true,

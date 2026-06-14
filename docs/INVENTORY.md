@@ -422,17 +422,17 @@ Allowed relations: `features`, `adapts`, `part-of-arc`, `depicted-by`.
 
 #### `film`
 
-| Property             | Required | Historical | Localizable | Notes                            |
-| -------------------- | -------- | ---------- | ----------- | -------------------------------- |
-| `title_key`          | yes      | no         | yes         |                                  |
-| `released_at_jp`     | yes      | no         | no          | ISO date                         |
-| `runtime_minutes`    | yes      | no         | no          |                                  |
-| `canon_scope`        | yes      | no         | no          | `film_canon` or `film_non_canon` |
-| `oda_supervised`     | no       | no         | no          | Boolean                          |
-| `director`           | no       | no         | no          | String                           |
-| `canonical_elements` | no       | no         | no          | String array — what's canon      |
+| Property          | Required | Historical | Localizable | Notes                            |
+| ----------------- | -------- | ---------- | ----------- | -------------------------------- |
+| `title_key`       | yes      | no         | yes         |                                  |
+| `released_at_jp`  | yes      | no         | no          | ISO date                         |
+| `runtime_minutes` | yes      | no         | no          |                                  |
+| `canon_scope`     | yes      | no         | no          | `film_canon` or `film_non_canon` |
+| `oda_supervised`  | no       | no         | no          | Boolean                          |
+| `film_number`     | no       | no         | no          | Series ordinal                   |
 
-Allowed relations: `features`, `depicted-by`.
+Allowed relations: `features`, `staffed-by`, `produced-by`, `available-on`,
+`depicted-by`. (Direction via `staffed-by` `role: film_director`.)
 
 ---
 
@@ -471,8 +471,8 @@ Allowed relations: `mentions`, `clarifies-fact`, `depicted-by`.
 | `narrative_key` | no       | no         | yes         | Arc summary key              |
 | `chapter_range` | no       | no         | no          | { first, last } source_refs  |
 
-Allowed relations: `part-of-saga`, `contains-chapter`,
-`features-characters`, `set-in`, `depicted-by`.
+Allowed relations: `part-of-saga`, `features-characters`, `set-in`,
+`depicted-by`. (Arc→chapter/episode/event is `part-of-arc`'s inferred inverse.)
 
 ---
 
@@ -490,14 +490,13 @@ Allowed relations: `contains-arc`.
 
 #### `event`
 
-| Property           | Required | Historical | Localizable | Notes                         |
-| ------------------ | -------- | ---------- | ----------- | ----------------------------- |
-| `event_subtype`    | yes      | no         | no          | Vocabulary `event-subtypes`   |
-| `narrative_key`    | no       | no         | yes         |                               |
-| `first_source`     | yes      | no         | no          | source_ref                    |
-| `last_source`      | no       | no         | no          | source_ref                    |
-| `primary_location` | no       | no         | no          | entity_ref to `location`      |
-| `is_public`        | no       | no         | no          | Boolean — affects propagation |
+| Property        | Required | Historical | Localizable | Notes                         |
+| --------------- | -------- | ---------- | ----------- | ----------------------------- |
+| `event_subtype` | yes      | no         | no          | Vocabulary `event-subtypes`   |
+| `narrative_key` | no       | no         | yes         |                               |
+| `first_source`  | yes      | no         | no          | source_ref                    |
+| `last_source`   | no       | no         | no          | source_ref                    |
+| `is_public`     | no       | no         | no          | Boolean — affects propagation |
 
 Allowed relations: `participant`, `caused-death-of`,
 `occurs-during-arc`, `caused-by-event`, `causes-event`, `set-in`,
@@ -550,7 +549,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (89)
+## 3. Property types (85)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -583,7 +582,6 @@ unit, and qualifier policy (section 6).
 | `runtime_minutes` | `number`   | min   | min:0                 |
 | `saga_number`     | `number`   | —     | min:1                 |
 | `arc_number`      | `number`   | —     | min:1                 |
-| `tv_rating`       | `number`   | %     | min:0 (anime-episode) |
 | `film_number`     | `number`   | —     | min:1 (film ordinal)  |
 | `width`           | `number`   | px    | min:0                 |
 | `height` (image)  | `number`   | px    | min:0                 |
@@ -647,23 +645,20 @@ unit, and qualifier policy (section 6).
 
 ### 3.6 References
 
-| Property             | Value type   | Target type       |
-| -------------------- | ------------ | ----------------- |
-| `url`                | `string`     | (R2 URL)          |
-| `birthplace`         | `entity_ref` | `location`        |
-| `primary_location`   | `entity_ref` | `location`        |
-| `jolly_roger`        | `entity_ref` | `image`           |
-| `cover_image`        | `entity_ref` | `image`           |
-| `attribution`        | `string`     | —                 |
-| `source_origin`      | `string`     | —                 |
-| `director`           | `string`     | (free-form)       |
-| `climate`            | `string`     | —                 |
-| `blood_type`         | `string`     | A, B, AB, O, +/−  |
-| `canonical_elements` | `string[]`   | (film canonicity) |
+| Property        | Value type   | Target type      |
+| --------------- | ------------ | ---------------- |
+| `url`           | `string`     | (R2 URL)         |
+| `birthplace`    | `entity_ref` | `location`       |
+| `jolly_roger`   | `entity_ref` | `image`          |
+| `cover_image`   | `entity_ref` | `image`          |
+| `attribution`   | `string`     | —                |
+| `source_origin` | `string`     | —                |
+| `climate`       | `string`     | —                |
+| `blood_type`    | `string`     | A, B, AB, O, +/− |
 
 ---
 
-## 4. Relation types (64)
+## 4. Relation types (63)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -754,12 +749,12 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.10 Narrative structure
 
-| Type                  | From                             | To          | Inverse            | Qualifiers |
-| --------------------- | -------------------------------- | ----------- | ------------------ | ---------- |
-| `part-of-arc`         | `manga-chapter`, `anime-episode` | `arc`       | `contains-chapter` | —          |
-| `part-of-saga`        | `arc`                            | `saga`      | `contains-arc`     | —          |
-| `occurs-during-arc`   | `event`                          | `arc`       | `contains-event`   | —          |
-| `features-characters` | `arc`                            | `character` | `featured-in-arc`  | role       |
+| Type                  | From                                      | To          | Inverse           | Qualifiers |
+| --------------------- | ----------------------------------------- | ----------- | ----------------- | ---------- |
+| `part-of-arc`         | `manga-chapter`, `event`, `anime-episode` | `arc`       | `(inferred)`      | —          |
+| `part-of-saga`        | `arc`                                     | `saga`      | `contains-arc`    | —          |
+| `occurs-during-arc`   | `event`                                   | `arc`       | `contains-event`  | —          |
+| `features-characters` | `arc`                                     | `character` | `featured-in-arc` | role       |
 
 ### 4.11 Events
 
@@ -1125,8 +1120,8 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 26
-- **Property types**: 89 (some shared across multiple entity types)
-- **Relation types**: 64 (canonical declared; inverses are build-generated)
+- **Property types**: 85 (some shared across multiple entity types)
+- **Relation types**: 63 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 52
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)

@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "event",
-  "schema_version": 2,
+  "schema_version": 3,
   "labels": { "en": "Event", "fr": "Évènement" },
   "url_segment": "events",
   "properties": [
@@ -10,7 +10,6 @@
     { "id": "narrative_key", "required": false, "historical": false, "localizable": true },
     { "id": "first_source", "required": false, "historical": false, "localizable": false },
     { "id": "last_source", "required": false, "historical": false, "localizable": false },
-    { "id": "primary_location", "required": false, "historical": false, "localizable": false },
     { "id": "is_public", "required": false, "historical": false, "localizable": false }
   ],
   "allowed_relations": [
