@@ -8,6 +8,53 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-059 — Schema-version model: migrate-forward + version tooling
+
+**Date**: 2026-06-14
+
+**Context**: Maintainer asked how `schema_version` actually works — how to detect
+an entity's version, what happens when a type is bumped while entities sit at an
+older version, and whether old→new updates are automatic. Recording the model
+and closing two gaps.
+
+**The model (was implicit; now stated)** — **migrate-forward** (ADR-003/029):
+there is always exactly **one current schema**. `schema_version` is a **tracking
+field**, not a validation gate — `validate` checks every entity against the
+_current_ type schema regardless of the entity's declared version (so an entity
+at v1 validates fine against a type at v5). The field exists on both the type and
+each entity (and flows to SQLite + the SDK `RecordRecord`) so a future migration
+runner knows which migrations an entity still needs.
+
+- **Additive bump** (new optional field / relation): old entities keep validating
+  unchanged — `check:compat` classifies it additive, no migration.
+- **Breaking change** (rename / remove / retype): old entities would fail, so you
+  write a migration (`data/migrations/NNNN-*.ts` + `bun run migrate`) that
+  **rewrites the data forward** to the new shape, then bump the type version. We
+  do **not** keep old type schemas to validate old data against (no lazy /
+  multi-version validation) — that is a heavier model and unnecessary for a
+  Git-JSON source of truth.
+- **Migration application is semi-manual today** (`bun run migrate <file>`); a
+  numbered runner that tracks applied state and applies pending on build is
+  designed but deferred (Phase 5).
+
+**Decision** (two small additions):
+
+1. **`ENTITY_SCHEMA_VERSION_AHEAD`** coherence error (in `check:coherence`) — an
+   entity must never declare a version _newer_ than its type has reached (corrupt
+   data / forgotten bump). Entities _behind_ the type are NOT failed — that is the
+   normal post-additive-bump state, and failing it would be noise.
+2. **`bun run schema:versions`** report — per entity type, the type's current
+   version + the distribution of entity versions, flagging laggards. Answers "what
+   version is each entity at / what would a migration touch", and lets you confirm
+   a clean state (e.g. before the planned **v1 reset of all `schema_version` to 1**,
+   which is sound: pre-v1 is the volatile phase, so the dev-time version churn is
+   discarded and real migration history starts at launch).
+
+**Consequences**: +1 coherence error code, +1 read-only CLI + script, +tests. No
+schema or data change. The lazy/multi-version alternative is explicitly rejected.
+
+---
+
 ## ADR-058 — Split `transformation` from `technique`
 
 **Date**: 2026-06-14

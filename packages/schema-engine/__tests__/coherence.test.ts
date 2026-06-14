@@ -4,7 +4,7 @@
  * touching /data.
  */
 import { describe, expect, it } from 'bun:test';
-import { checkCoherence, checkSchemaCoherence } from '../src/coherence.ts';
+import { checkCoherence, checkEntityVersions, checkSchemaCoherence } from '../src/coherence.ts';
 import type { LoadedEntity } from '../src/entity-loader.ts';
 import type { ValidatedCatalogue } from '../src/meta-validator.ts';
 
@@ -292,5 +292,42 @@ describe('checkCoherence — duplicate detection', () => {
     };
     const codes = checkCoherence(entities, baseCatalogue).map((f) => f.code);
     expect(codes).toContain('DUPLICATE_PROPERTY_VALUE');
+  });
+});
+
+function versionCatalogue(types: Record<string, number>): ValidatedCatalogue {
+  return {
+    entityTypes: new Map(
+      Object.entries(types).map(([id, schema_version]) => [id, { schema_version }]),
+    ) as ValidatedCatalogue['entityTypes'],
+    relationTypes: new Map(),
+    propertyTypes: new Map(),
+    vocabularies: new Map(),
+    errors: [],
+  };
+}
+function versioned(id: string, type: string, schema_version: number): LoadedEntity {
+  return { id, type, path: `${id}.json`, data: { id, type, schema_version } };
+}
+
+describe('checkEntityVersions', () => {
+  it('errors when an entity is AHEAD of its type version', () => {
+    const findings = checkEntityVersions(
+      entityMap(versioned('character:x', 'character', 4)),
+      versionCatalogue({ character: 2 }),
+    );
+    expect(findings.map((f) => f.code)).toContain('ENTITY_SCHEMA_VERSION_AHEAD');
+    expect(findings[0]?.severity).toBe('error');
+  });
+
+  it('does not flag entities at or BEHIND their type version (migrate-forward)', () => {
+    const findings = checkEntityVersions(
+      entityMap(
+        versioned('character:a', 'character', 1), // behind (type v3) — fine
+        versioned('character:b', 'character', 3), // equal — fine
+      ),
+      versionCatalogue({ character: 3 }),
+    );
+    expect(findings).toEqual([]);
   });
 });

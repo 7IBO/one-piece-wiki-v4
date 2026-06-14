@@ -55,3 +55,20 @@ Migrations are kept in the repo as a historical record; they are not
 re-run automatically. A numbered-migration runner (apply all pending,
 track applied state) is the full Phase 5 Task 4 scope — this helper is
 the lightweight subset that covers the volatile-phase need.
+
+## Inspecting versions (ADR-059)
+
+The model is **migrate-forward**: one current schema, data rewritten to
+match it. `schema_version` is a tracking field, not a validation gate —
+`validate` checks every entity against the _current_ type schema.
+
+```bash
+# per-type: the type's current schema_version + the distribution of entity
+# versions, flagging entities that lag (i.e. what a migration would touch)
+bun run schema:versions
+```
+
+`check:coherence` additionally errors (`ENTITY_SCHEMA_VERSION_AHEAD`) if an
+entity declares a version _newer_ than its type has reached — corrupt data or a
+forgotten type bump. Entities _behind_ the type are fine (the normal state after
+an additive bump) and are only reported, never failed.
