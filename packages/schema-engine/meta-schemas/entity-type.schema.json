@@ -64,6 +64,10 @@
             "type": "boolean",
             "default": false
           },
+          "recommended": {
+            "type": "boolean",
+            "default": false
+          },
           "historical": {
             "type": "boolean",
             "default": false
@@ -88,6 +92,15 @@
         "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
       },
       "default": []
+    },
+    "recommended_relations": {
+      "type": "array",
+      "items": {
+        "type": "string",
+        "minLength": 1,
+        "maxLength": 60,
+        "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+      }
     },
     "requires_translations": {
       "type": "boolean"

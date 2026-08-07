@@ -8,6 +8,44 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-083 — Field importance tiers: `recommended` properties + `recommended_relations`
+
+**Date**: 2026-08-07
+
+**Context**: Maintainer direction for the dashboard redesign: fields should
+carry Wikipedia-style guidance — "certain fields should really be
+recommended", per-entity completeness, and a visual state for
+recommended-but-empty. The schema-driven rule (no property names in app
+code) means this cannot be a hardcoded checklist; the 2026-08-07 UX audit
+confirmed the schema only knows `required: boolean` today.
+
+**Options**:
+
+1. Hardcode per-type recommended lists in the dashboard — violates the
+   schema-driven contract, dies on universe #2.
+2. A separate "editorial guidelines" file per type — second source of truth
+   next to the entity-type schema, drifts.
+3. **Schema metadata**: a `recommended: boolean` on property declarations +
+   a `recommended_relations` subset on entity types.
+
+**Choice**: option 3. `PropertyDeclaration.recommended` (default false,
+never combined with `required`) and `EntityTypeSchema.recommended_relations`
+(⊆ `allowed_relations`, enforced by `schema:check` as
+`REFERENCE_NOT_FOUND`). Advisory only — validation never blocks on it.
+First flags: `character` (occupation, gender, birthday, bounty + member-of,
+belongs-to-race, voiced-by, depicted-by), `manga-chapter` (released_at,
+page_count + part-of-arc, part-of-volume, features), `anime-episode`
+(title_key, released_at + features, part-of-arc, available-on).
+
+**Consequences**: the dashboard can derive a completeness meter, a
+"recommended, still empty" field tier, and list-row completeness — all
+schema-driven, inherited free by future types and universes. The compat
+snapshot is unaffected (advisory metadata is not part of the wire
+contract). Cross-field recommendation _rules_ ("status=dead but no
+died_at") are a separate decision (parked in IDEAS.md; needs its own ADR).
+
+---
+
 ## ADR-082 — `manga-chapter.released_at` becomes optional (schema v7)
 
 **Date**: 2026-08-07

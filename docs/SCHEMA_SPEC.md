@@ -76,6 +76,7 @@ A file in `/data/schemas/entity-types/<id>.json`.
 | `url_segment`             | string   | yes      | Segment used in URLs (kebab-case English, e.g. `characters`)                                                                                                                             |
 | `properties`              | array    | yes      | Allowed property declarations                                                                                                                                                            |
 | `allowed_relations`       | string[] | yes      | IDs of relation types entities of this type may participate in                                                                                                                           |
+| `recommended_relations`   | string[] | no       | Subset of `allowed_relations` a complete article is expected to carry (ADR-083). `schema:check` rejects entries not in `allowed_relations`                                               |
 | `requires_translations`   | boolean  | no       | If true, translations are mandatory for the entity's `canonical_name_key` and all `i18n_key`-valued properties                                                                           |
 | `display_name_properties` | string[] | no       | Property ids scanned, in priority order, to resolve the display name (latest entry of the first present one wins). Omitted → falls back to the default `['name', 'title_key']` (ADR-031) |
 | `ui_hint`                 | object   | no       | Hints for the dashboard (icon, color, group)                                                                                                                                             |
@@ -89,12 +90,18 @@ localizable, and what default qualifiers it carries.
 {
   "id": "bounty",
   "required": false,
+  "recommended": true,
   "historical": true,
   "localizable": false,
   "spoiler_sensitive": true,
   "default_qualifiers": ["since", "source", "epistemic_status"]
 }
 ```
+
+`recommended` (default `false`) is the Wikipedia-style completeness tier
+(ADR-083): a complete article is expected to carry the property, but its
+absence never fails validation. `required` implies recommended — never set
+both flags on one declaration.
 
 The shape of values is defined in the corresponding property type file.
 
