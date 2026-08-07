@@ -27,6 +27,22 @@ W-A closed (qualifier-type registry, ADR-078 — catalogue is now 36 / 101 /
 (dashboard image display, open at the time of writing — disjoint files,
 merge order safe either way).
 
+**2026-06-14 (late) — maintainer vision drop, recorded.** Direction
+received in the maintainer's own words: (1) **Fandom-assisted ingestion**
+via the MediaWiki content API → **ADR-079** (importers v1 programme;
+BLOCKER for cloud runs: `onepiece.fandom.com` is denied by the session
+network policy — allowlist it in the Claude environment settings, or run
+imports locally/CI); (2) **public-API additions** → **ADR-080**
+(field-lifecycle registry generated from compat snapshots, official npm
+SDK, per-entity history endpoint; Stripe-style pinning confirmed as the
+existing URL-MAJOR + `X-API-Version` design; all still design-only,
+pre-freeze gate ADR-029 unchanged); (3) **dashboard UX coherence pass 2**
+
+- SEO / partnerships / "incontournable" polish → parked in IDEAS.md
+  pending their own ADRs (affiliate links explicitly need the dedicated
+  ADR). Next implementable slices, in order: importers fetcher+parsers
+  (fixtures, no network needed), W-B detail view, W-F2 UX conventions.
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below

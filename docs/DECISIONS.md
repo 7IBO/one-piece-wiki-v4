@@ -8,6 +8,102 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-080 — public-API additions: field-lifecycle registry, npm SDK, data-history
+
+**Date**: 2026-06-14
+
+**Context**: Maintainer direction (2026-06-14): the future public API must
+version "like Stripe" (explicit version pinning, headers), consumers must be
+able to know **when a field was created / renamed / deprecated / removed**,
+and per-datum provenance ("when was this value added/changed, by what
+source") must be queryable. PUBLIC_API_DESIGN.md (ADR-025) already fixes
+most of the versioning mechanics: MAJOR in the URL prefix + `X-API-Version`
+response header, frozen per-MAJOR wire adapters, drift strategies, impact
+analyzer, per-version OpenAPI archives — that design **stands**. This ADR
+records the maintainer-ratified additions. All of it remains
+**design-only** until the schema freeze (ADR-029 regime gate).
+
+**Decisions** (amend PUBLIC_API_DESIGN.md, implementation deferred):
+
+1. **Field-lifecycle registry** — a generated, machine-readable
+   `field-lifecycle.json`: for every property/relation/vocabulary-value,
+   `introduced_in` (API version + date), `deprecated_in?`, `removed_in?`,
+   `renamed_from?`. Source of truth: the committed compat snapshots
+   (ADR-042) diffed per release — no hand-maintained table. Exposed at
+   `GET /api/v1/meta/fields` and rendered in the doc site's changelog.
+   Pre-freeze, the same generator can already emit an internal changelog
+   from git history of `schema-snapshot.json` (nice-to-have, not gating).
+2. **Official npm SDK** — `@onepiece-wiki/api-client`, generated from the
+   archived OpenAPI of each release (typed responses, progression/lang
+   params, pagination helpers), version-aligned with the API (SDK
+   1.4.x ↔ API v1.4.x). Hand-written sugar stays thin; the generated
+   core guarantees the types never drift from the wire contract.
+3. **Per-entity data history** — `GET /api/v1/:type/:slug/history`:
+   the **in-universe** axes (since/source/epistemic per value — already
+   in the data) plus the **editorial** history (when added/changed, by
+   whom, which PR) derived from the entity file's git log at build time.
+   No runtime GitHub calls; the build pipeline emits a compact per-entity
+   history manifest.
+4. Versioning header confirmed as designed: URL carries MAJOR
+   (`/api/v1/`), `X-API-Version` carries the exact deployed version;
+   clients needing bit-exact behaviour pin the archived OpenAPI. No
+   per-request date-pinning à la Stripe `Stripe-Version` — the adapter
+   model (one frozen wire shape per MAJOR) makes it unnecessary at our
+   scale; revisit only if MINOR-level behaviour drift ever hurts a
+   consumer.
+
+**Consequences**: PUBLIC_API_DESIGN §8a/§9/§5 updated; open-questions list
+trimmed accordingly. No code in this PR.
+
+---
+
+## ADR-079 — Fandom-assisted ingestion programme (importers v1)
+
+**Date**: 2026-06-14
+
+**Context**: Maintainer direction (2026-06-14): use AI-assisted ingestion
+to fill the corpus at scale from onepiece.fandom.com, via the **MediaWiki
+content API** (`api.php?action=parse` / `action=query`, the same access
+path the DATA_EXPANSION_PLAN research used — plain scraping is blocked by
+Fandom). The tooling-before-ingest gate (ADR-032) is now satisfied:
+validate/coherence/compat gates, migration runner, admin moderation queue
+(W-B v1) and the provenance axes all exist.
+
+**Decision** — the `packages/importers` harness (currently a stub) becomes:
+
+1. **Fetcher**: MediaWiki API client (`action=parse` for wikitext +
+   sections, `action=query` for metadata/categories/images), with local
+   response cache (content-hashed, committed nowhere), polite rate
+   limiting, and a fixture recorder so parsers are tested offline.
+2. **Parsers**: per-entity-type wikitext mappers (infobox → properties,
+   `{{Qref}}` templates → `since`/`source` refs) emitting **schema-valid
+   entity JSON** through the generated Zod validators.
+3. **AI-assisted extraction** for prose-borne facts (relations, events),
+   under the plan's non-negotiable ingest rule: every fact stamped with
+   its **on-panel reveal source** from the Qref; identity/parentage/
+   capability facts default `review_status: not_reviewed` +
+   `assisted_by`; never `during_period` alone.
+4. **Output = PRs**, never direct writes: batches go through the existing
+   github-client flow, labelled `via-dashboard` + `import`, landing in
+   the admin queue for human review.
+5. **Licensing**: Fandom text is CC-BY-SA. We ingest **facts** (not
+   copyrightable) into structured JSON; we do **not** copy prose —
+   narratives are written fresh. Image files are NOT imported from
+   Fandom (rights unclear); images come through the existing upload
+   flow with per-file licensing.
+6. **Environment constraint (blocker for cloud sessions)**:
+   `onepiece.fandom.com` is currently denied by the sandbox network
+   policy (403 CONNECT). Import runs need either the domain allowlisted
+   in the Claude environment settings, a local run, or a scheduled CI
+   job with egress. Parser development is unaffected (fixtures).
+
+**Consequences**: ROADMAP Phase 3.5 (seed corpus) gets its engine;
+`packages/importers` gains its first real modules (own PR(s), starting
+with `manga-chapter`/`character` — the highest-volume, best-templated
+pages). The dashboard admin queue is the human gate.
+
+---
+
 ## ADR-078 — qualifier-type registry: schema-driven qualifier UI
 
 **Date**: 2026-06-14
