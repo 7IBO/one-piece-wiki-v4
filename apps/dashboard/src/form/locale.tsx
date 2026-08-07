@@ -102,6 +102,12 @@ const UI_STRINGS = {
   queueWorking: { en: 'Working…', fr: 'En cours…' },
   queueApproved: { en: 'PR #{n} merged.', fr: 'PR #{n} fusionnée.' },
   queueRejected: { en: 'PR #{n} closed.', fr: 'PR #{n} fermée.' },
+  queueDetail: { en: 'Diff', fr: 'Diff' },
+  queueDetailEmpty: {
+    en: 'No structured data change in this PR.',
+    fr: 'Aucun changement de données structurées dans cette PR.',
+  },
+  queueDetailTranslations: { en: 'Translations', fr: 'Traductions' },
   pickOne: { en: '— pick one —', fr: '— choisir —' },
   pickSource: { en: '— pick a source —', fr: '— choisir une source —' },
   noMatch: { en: 'No match.', fr: 'Aucun résultat.' },

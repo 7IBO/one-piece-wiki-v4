@@ -21,7 +21,7 @@ import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute } from '@tanstack/react-router';
-import { Check, ExternalLink, RefreshCw, X } from 'lucide-react';
+import { Check, ChevronDown, ChevronRight, ExternalLink, RefreshCw, X } from 'lucide-react';
 import { type JSX, useState } from 'react';
 import { toast } from 'sonner';
 import { api, ApiError, type QueueItem } from '../api';
@@ -51,6 +51,8 @@ function AdminQueueComponent(): JSX.Element {
   // PR number currently being acted on (approve/reject) — one at a
   // time; the queue is a moderation surface, not a bulk tool.
   const [busy, setBusy] = useState<number | null>(null);
+  // PR whose in-app diff is expanded (one at a time keeps the page scannable).
+  const [expanded, setExpanded] = useState<number | null>(null);
 
   async function act(kind: 'approve' | 'reject', prNumber: number): Promise<void> {
     setBusy(prNumber);
@@ -138,6 +140,19 @@ function AdminQueueComponent(): JSX.Element {
                 </div>
                 <div className='flex shrink-0 items-center gap-1.5'>
                   <Button
+                    type='button'
+                    variant='ghost'
+                    size='sm'
+                    className='gap-1'
+                    onClick={() => setExpanded((e) => (e === pr.prNumber ? null : pr.prNumber))}
+                    aria-expanded={expanded === pr.prNumber}
+                  >
+                    {expanded === pr.prNumber
+                      ? <ChevronDown className='size-3.5' />
+                      : <ChevronRight className='size-3.5' />}
+                    {t('queueDetail')}
+                  </Button>
+                  <Button
                     render={
                       <a href={pr.htmlUrl} target='_blank' rel='noreferrer'>
                         <ExternalLink className='size-3.5' />
@@ -171,10 +186,84 @@ function AdminQueueComponent(): JSX.Element {
                     {t('queueReject')}
                   </Button>
                 </div>
+                {expanded === pr.prNumber
+                  ? (
+                    <div className='basis-full'>
+                      <PullDetailPanel prNumber={pr.prNumber} />
+                    </div>
+                  )
+                  : null}
               </li>
             ))}
           </ul>
         )}
     </div>
+  );
+}
+
+/** Server-computed structured diff for one queue PR (W-B slice 2). */
+function PullDetailPanel({ prNumber }: { readonly prNumber: number; }): JSX.Element {
+  const t = useT();
+  const { data, error } = useApiResource(() => api.adminPullDetail(prNumber), [prNumber]);
+  if (error !== null) return <LoadFailed message={error} />;
+  if (data === null) return <Skeleton className='mt-2 h-16 w-full' />;
+  if (data.entities.length === 0 && data.translations.length === 0) {
+    return <p className='text-muted-foreground mt-2 text-xs'>{t('queueDetailEmpty')}</p>;
+  }
+  return (
+    <div className='mt-2 space-y-3 rounded-md border p-3 text-xs'>
+      {data.entities.map((e) => (
+        <div key={e.path} className='space-y-1.5'>
+          <p className='font-mono text-[11px] font-medium'>
+            {e.entityId ?? e.path}
+            <Badge variant='outline' className='ml-2 text-[10px]'>{e.kind}</Badge>
+          </p>
+          {e.properties.map((f) => (
+            <DiffRow key={f.id} label={f.id} before={f.before} after={f.after} />
+          ))}
+          {e.relations.map((r) => (
+            <p key={r.type} className='text-muted-foreground'>
+              <span className='text-foreground font-medium'>{r.type}</span>
+              {r.added.length > 0
+                ? <span className='text-emerald-600'>{' '}+ {r.added.join(', ')}</span>
+                : null}
+              {r.removed.length > 0
+                ? <span className='text-destructive'>{' '}− {r.removed.join(', ')}</span>
+                : null}
+            </p>
+          ))}
+        </div>
+      ))}
+      {data.translations.map((tf) => (
+        <div key={tf.path} className='space-y-1.5'>
+          <p className='font-mono text-[11px] font-medium'>
+            {t('queueDetailTranslations')} ({tf.locale})
+          </p>
+          {tf.changed.map((c) => (
+            <DiffRow key={c.key} label={c.key} before={c.before} after={c.after} />
+          ))}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+function DiffRow(
+  { label, before, after }: {
+    readonly label: string;
+    readonly before: string | null;
+    readonly after: string | null;
+  },
+): JSX.Element {
+  return (
+    <p className='break-all'>
+      <span className='font-medium'>{label}</span>
+      {': '}
+      {before !== null
+        ? <del className='text-destructive/80 no-underline line-through'>{before}</del>
+        : null}
+      {before !== null && after !== null ? ' → ' : null}
+      {after !== null ? <ins className='text-emerald-600 no-underline'>{after}</ins> : null}
+    </p>
   );
 }

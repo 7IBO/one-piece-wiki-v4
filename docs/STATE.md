@@ -317,9 +317,11 @@ computed server-side or emitted as generated TS manifests under
   evening** (PR #91): `GET /api/admin/pulls` (github-client
   `listAdminQueue` + contributor parsed from the Contributors bullet),
   gated `/admin/queue` route (list, Approve-merge → promote, Reject →
-  reject, Review link), `admin` flag on `/api/auth/me`. **Remaining
-  W-B**: per-PR in-app detail (structured diff via `DiffPopover`,
-  staged image previews, CI status, Request-changes action) and the
+  reject, Review link), `admin` flag on `/api/auth/me`. **Slice 2 DONE
+  (same evening)**: in-app structured diff (`server/diff.ts` pure
+  helpers + `GET /api/admin/pulls/:n/detail` + expandable queue rows).
+  **Remaining W-B**: staged image previews, CI status,
+  Request-changes action, and the
   `GET /api/contributors` + `/contributors` route aggregating by
   **parsing the PR-body Contributors bullet** (bot owns commits, so
   GitHub's author APIs don't reflect humans). `packages/contribution-

@@ -391,8 +391,13 @@ parses the contributor from the body's Contributors bullet) + the
 Review-on-GitHub link, **Approve & merge** (→ `/api/admin/promote`) and
 **Reject** (→ `/api/admin/reject`). `/api/auth/me` now carries
 `admin: true` for configured admins so the client can gate the surface.
-The richer detail below (in-app structured diff, CI status,
-request-changes, staged-image thumbnails) is the tracked follow-up:
+**Slice 2 (same PR):** in-app structured diff — admin-gated
+`GET /api/admin/pulls/:n/detail` computes the per-entity property
+diffs + relation add/remove deltas + changed translation keys
+server-side (`server/diff.ts`, pure + unit-tested) from the PR's
+base/head file contents; the queue row expands into the rendered diff
+(no GitHub round-trip for the reviewer). Still pending: CI status,
+request-changes action, staged-image thumbnails:
 
 Route `/admin/queue` (admin-only). Lists every open PR touching
 `data/**` with: contributor identity, age, branch, CI status, file

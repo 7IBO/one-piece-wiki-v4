@@ -104,6 +104,36 @@ export type QueueItem = {
     | null;
 };
 
+/** Server-side structured diff of one queue PR (W-B slice 2). */
+export type PullDetail = {
+  readonly prNumber: number;
+  readonly title: string;
+  readonly entities: readonly {
+    readonly path: string;
+    readonly entityId: string | null;
+    readonly kind: 'added' | 'modified' | 'removed';
+    readonly properties: readonly {
+      readonly id: string;
+      readonly before: string | null;
+      readonly after: string | null;
+    }[];
+    readonly relations: readonly {
+      readonly type: string;
+      readonly added: readonly string[];
+      readonly removed: readonly string[];
+    }[];
+  }[];
+  readonly translations: readonly {
+    readonly path: string;
+    readonly locale: string;
+    readonly changed: readonly {
+      readonly key: string;
+      readonly before: string | null;
+      readonly after: string | null;
+    }[];
+  }[];
+};
+
 export type SourceRef = {
   readonly id: string;
   readonly type: string;
@@ -411,6 +441,10 @@ export const api = {
   /** Admin moderation queue: every open via-dashboard PR (W-B). */
   async adminPulls(): Promise<{ pulls: readonly QueueItem[]; }> {
     return getJson('/api/admin/pulls');
+  },
+  /** Structured diff of one queue PR (W-B slice 2). Admin-only. */
+  async adminPullDetail(prNumber: number): Promise<PullDetail> {
+    return getJson(`/api/admin/pulls/${prNumber}/detail`);
   },
   /** Approve: promote staged images (if any) + squash-merge. Admin-only. */
   async adminPromote(prNumber: number): Promise<unknown> {
