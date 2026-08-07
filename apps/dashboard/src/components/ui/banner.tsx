@@ -6,7 +6,7 @@ import { cn } from '@/lib/utils';
 /**
  * Inline callout/banner shared across the dashboard (PR-opened notices,
  * draft warnings, inline errors). Replaces the ad-hoc
- * `border-…/40 bg-…/5 rounded-[3px] border px-3 py-2 text-xs` blocks
+ * `border-…/40 bg-…/5 rounded-md border px-3 py-2 text-xs` blocks
  * that were copy-pasted across routes.
  *
  * Layout defaults to a wrapping flex row (icon/dot + text + optional
@@ -14,7 +14,7 @@ import { cn } from '@/lib/utils';
  * `justify-between`, `mb-4`, tighter padding, etc.
  */
 const bannerVariants = cva(
-  'flex flex-wrap items-center gap-2 rounded-[3px] border px-3 py-2 text-xs',
+  'flex flex-wrap items-center gap-2 rounded-md border px-3 py-2 text-xs',
   {
     variants: {
       variant: {

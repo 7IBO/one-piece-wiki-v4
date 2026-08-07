@@ -243,7 +243,7 @@ export function MultiEnumInput(
             aria-pressed={on}
             onClick={() => toggle(v.id)}
             className={cn(
-              'rounded-[3px] border px-2 py-0.5 text-xs transition disabled:opacity-50',
+              'rounded-md border px-2 py-0.5 text-xs transition disabled:opacity-50',
               on
                 ? 'border-primary bg-primary/10 text-foreground'
                 : 'border-input text-muted-foreground hover:bg-accent/40',
@@ -349,7 +349,7 @@ export function EntityRefInput(
           label: allowedTypes.length > 1
             ? (
               <span className='flex items-center gap-1.5'>
-                <span className='bg-muted text-muted-foreground rounded-[3px] px-1 py-0.5 font-mono text-[9px] uppercase'>
+                <span className='bg-muted text-muted-foreground rounded-md px-1 py-0.5 font-mono text-[9px] uppercase'>
                   {et.label}
                 </span>
                 <span className='truncate'>{name}</span>
@@ -528,8 +528,8 @@ export function MultiEntityRefInput(
   //    container — keeps the chips as the visual focal point.
   const triggerLabel = list.length === 0 ? t('pickOne') : t('addEntry');
   const triggerClassName = list.length === 0
-    ? 'border-input bg-background text-muted-foreground hover:bg-accent/40 hover:text-foreground flex h-8 w-full items-center justify-between gap-2 rounded-[3px] border px-2 text-xs disabled:opacity-50'
-    : 'text-muted-foreground hover:bg-accent hover:text-foreground ml-auto inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px] disabled:opacity-50';
+    ? 'border-input bg-background text-muted-foreground hover:bg-accent/40 hover:text-foreground flex h-8 w-full items-center justify-between gap-2 rounded-md border px-2 text-xs disabled:opacity-50'
+    : 'text-muted-foreground hover:bg-accent hover:text-foreground ml-auto inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] disabled:opacity-50';
   const triggerContent = (
     <>
       <span>{triggerLabel}</span>
@@ -572,7 +572,7 @@ export function MultiEntityRefInput(
     : (
       <div
         className={cn(
-          'border-input bg-background flex min-h-8 flex-wrap items-center gap-1 rounded-[3px] border px-1.5 py-1',
+          'border-input bg-background flex min-h-8 flex-wrap items-center gap-1 rounded-md border px-1.5 py-1',
           disabled === true && 'opacity-50',
         )}
       >
@@ -583,7 +583,7 @@ export function MultiEntityRefInput(
           return (
             <span
               key={fullId}
-              className='bg-muted text-foreground inline-flex items-center gap-1 rounded-[3px] px-1.5 py-0.5 text-[11px]'
+              className='bg-muted text-foreground inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px]'
             >
               <span className='truncate max-w-[12rem]'>{label}</span>
               <button
@@ -754,7 +754,7 @@ function MultiEntityList(p: {
                       >
                         {p.allowedTypes.length > 1
                           ? (
-                            <span className='bg-muted text-muted-foreground rounded-[3px] px-1 py-0.5 font-mono text-[9px] uppercase'>
+                            <span className='bg-muted text-muted-foreground rounded-md px-1 py-0.5 font-mono text-[9px] uppercase'>
                               {item.typeLabel}
                             </span>
                           )
@@ -952,7 +952,7 @@ export function MultiSourceRefInput(
         {availableTypes.map((typeId) => (
           <div
             key={typeId}
-            className='border-input flex items-stretch overflow-hidden rounded-[3px] border'
+            className='border-input flex items-stretch overflow-hidden rounded-md border'
           >
             <span className='bg-muted text-muted-foreground inline-flex shrink-0 items-center border-r border-input px-2 text-[10px] font-medium uppercase tracking-wider'>
               {sourceTypeLabel(typeId, locale)}
@@ -978,7 +978,7 @@ export function MultiSourceRefInput(
                 key={tid}
                 type='button'
                 onClick={() => reveal(tid)}
-                className='border-input/60 text-muted-foreground hover:border-input hover:text-foreground hover:bg-accent/40 rounded-[3px] border px-1.5 py-0.5 text-[10px]'
+                className='border-input/60 text-muted-foreground hover:border-input hover:text-foreground hover:bg-accent/40 rounded-md border px-1.5 py-0.5 text-[10px]'
               >
                 + {sourceTypeLabel(tid, locale)}
               </button>

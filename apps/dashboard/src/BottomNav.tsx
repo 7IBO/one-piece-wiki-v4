@@ -27,10 +27,10 @@ import { MobileSheet, MobileSheetContent, MobileSheetTrigger } from '@/component
 import { Link, useLocation } from '@tanstack/react-router';
 import { Home, LogIn, LogOut, Menu, Plus, User2 } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
-import { api, type SchemaCatalogue } from './api';
 import { AppSidebar } from './AppSidebar';
 import { useCurrentUser, useSignOut } from './auth';
 import { useLocale } from './form/locale';
+import { useSchemaCatalogue } from './hooks/use-schema-catalogue';
 
 export function BottomNav(): JSX.Element | null {
   const location = useLocation();
@@ -40,15 +40,11 @@ export function BottomNav(): JSX.Element | null {
   const [browseOpen, setBrowseOpen] = useState(false);
   const [createOpen, setCreateOpen] = useState(false);
   const [accountOpen, setAccountOpen] = useState(false);
+  const schemas = useSchemaCatalogue();
 
-  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
-  useEffect(() => {
-    api.schemas().then(setSchemas).catch(() => {/* nav still usable without */});
-  }, []);
-
-  // Close every sheet on route change — same pattern as the
-  // hamburger in __root.tsx. Without this, tapping a link inside a
-  // sheet leaves the sheet open over the navigated-to content.
+  // Close every sheet on route change — without this, tapping a link
+  // inside a sheet leaves the sheet open over the navigated-to
+  // content.
   useEffect(() => {
     setBrowseOpen(false);
     setCreateOpen(false);
@@ -56,17 +52,6 @@ export function BottomNav(): JSX.Element | null {
   }, [location.pathname]);
 
   const isHome = location.pathname === '/';
-
-  // Routes where a sticky save bar is rendered (EntityForm, cast
-  // manager, apparitions editor, entity creation). On those pages the
-  // save bar is the primary action and the BottomNav was visually
-  // competing — the centred "+" FAB popped up next to the save
-  // button and made the bottom of the screen feel cluttered. Hiding
-  // the nav keeps the focus on the edit flow; users still have the
-  // header (hamburger + search + locale) to navigate away.
-  const hasSaveBar = /^\/(types|sources)\/[^/]+\/[^/]+/.test(location.pathname)
-    || /^\/types\/[^/]+\/new$/.test(location.pathname);
-  if (hasSaveBar) return null;
 
   // Type list for the "+ New" picker. Sorted alphabetically; the
   // first-time experience prioritises "find the type" over "remember
@@ -78,6 +63,17 @@ export function BottomNav(): JSX.Element | null {
       .sort((a, b) => a.label.localeCompare(b.label));
   }, [schemas, locale]);
 
+  // Routes where a sticky save bar is rendered (EntityForm, cast
+  // manager, apparitions editor, entity creation). On those pages the
+  // save bar is the primary action and the BottomNav was visually
+  // competing. This check MUST come after every hook — BottomNav
+  // stays mounted across navigations, and an early return before the
+  // hooks above changed the hook count between renders (a
+  // Rules-of-Hooks crash the 2026-08 audit caught live).
+  const hasSaveBar = /^\/(types|sources)\/[^/]+\/[^/]+/.test(location.pathname)
+    || /^\/types\/[^/]+\/new$/.test(location.pathname);
+  if (hasSaveBar) return null;
+
   return (
     <nav
       className='border-border bg-card fixed inset-x-0 bottom-0 z-30 grid grid-cols-4 border-t lg:hidden'
@@ -86,7 +82,7 @@ export function BottomNav(): JSX.Element | null {
     >
       <Link
         to='/'
-        className={`flex flex-col items-center justify-center gap-0.5 py-2 text-[10px] ${
+        className={`flex flex-col items-center justify-center gap-0.5 py-2 text-xs ${
           isHome ? 'text-foreground' : 'text-muted-foreground'
         }`}
       >
@@ -99,7 +95,7 @@ export function BottomNav(): JSX.Element | null {
           render={
             <button
               type='button'
-              className='text-muted-foreground flex flex-col items-center justify-center gap-0.5 py-2 text-[10px]'
+              className='text-muted-foreground flex flex-col items-center justify-center gap-0.5 py-2 text-xs'
             >
               <Menu className='size-5' aria-hidden />
               <span>Browse</span>
@@ -116,7 +112,7 @@ export function BottomNav(): JSX.Element | null {
           render={
             <button
               type='button'
-              className='text-foreground flex flex-col items-center justify-center gap-0.5 py-2 text-[10px]'
+              className='text-foreground flex flex-col items-center justify-center gap-0.5 py-2 text-xs'
             >
               {
                 /* Filled background on the "+" so it reads as the
@@ -163,7 +159,7 @@ export function BottomNav(): JSX.Element | null {
           render={
             <button
               type='button'
-              className='text-muted-foreground flex flex-col items-center justify-center gap-0.5 py-2 text-[10px]'
+              className='text-muted-foreground flex flex-col items-center justify-center gap-0.5 py-2 text-xs'
             >
               {user !== null
                 ? <User2 className='size-5' aria-hidden />

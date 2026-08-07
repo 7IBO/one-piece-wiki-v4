@@ -660,7 +660,7 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
                 setRangeDraft(null);
                 setRangeError(null);
               }}
-              className='text-muted-foreground hover:text-foreground border-input ml-auto inline-flex h-6 items-center gap-1 rounded-[3px] border px-2 text-[10px]'
+              className='text-muted-foreground hover:text-foreground border-input ml-auto inline-flex h-6 items-center gap-1 rounded-md border px-2 text-[10px]'
             >
               {rangeMode ? t('chipView') : t('rangeView')}
             </button>
@@ -682,7 +682,7 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
               }}
               placeholder='1, 5-10, 96, 432-450'
               rows={3}
-              className='border-input bg-background focus-visible:border-ring w-full rounded-[3px] border px-2 py-1.5 font-mono text-xs outline-none'
+              className='border-input bg-background focus-visible:border-ring w-full rounded-md border px-2 py-1.5 font-mono text-xs outline-none'
             />
             {rangeError !== null
               ? (

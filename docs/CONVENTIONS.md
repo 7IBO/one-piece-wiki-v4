@@ -532,3 +532,51 @@ follow-up; new code follows them immediately.
 - **Links**: `<Button render={<Link/>}>` / `render={<a/>}` — never a
   raw styled `<a>`/`<button>` (`__root` nav is the audited exception
   until its dedicated pass).
+
+### Layout, borders & responsive (added 2026-08-07, redesign audit)
+
+- **Layout tokens**: `--header-h` (styles.css) is the single source of
+  truth for the header height — every sticky offset (`top-[var(--header-h)]`,
+  save bars) derives from it; never hardcode a pixel offset.
+  `--page-px` is the mobile page gutter; the `bleed` utility cancels it.
+- **Mobile is full-bleed** (< `sm`): top-level cards, lists and tables
+  span edge-to-edge — no side borders, no radius, hairline `border-y`
+  separators only. Use `<Card bleed>` / the `bleed` utility. From `sm:`
+  up, surfaces go back to boxed (`rounded-lg`+stroke). Never nest a
+  `bleed` surface inside another padded container.
+- **Border budget**: one stroked container per region. Rows inside a
+  container separate with `divide-y`, never per-row borders; controls
+  inside a bordered box don't add their own boxes (chips/ghost instead).
+  If a surface needs a second nested stroke, restructure it.
+- **Breakpoints**: design mobile-first with `sm` (640) and `lg` (1024)
+  as the two structural switches — `lg` is where the sidebar appears
+  and the BottomNav disappears, so _desktop-only chrome is `lg:`-gated,
+  not `sm:`-gated_ (the 640–1024 tablet band uses the mobile nav).
+- **One nav system per breakpoint**: below `lg` the BottomNav is the
+  only navigation chrome (no hamburger duplicates), `lg:`+ the sidebar.
+- **Radii**: token steps only (`rounded-sm/md/lg/full`); arbitrary
+  `rounded-[Npx]` is forbidden (use the nearest token).
+- **Typography floor**: 12px (`text-xs`) minimum for any readable text;
+  form controls are ≥16px below `sm` (`text-base sm:text-xs`) so iOS
+  Safari never focus-zooms. `text-[10px]`/`text-[9px]` are forbidden.
+- **Focus & invalid**: one recipe kit-wide —
+  `focus-visible:border-ring focus-visible:ring-2 ring-ring/40` and
+  `aria-invalid:border-destructive aria-invalid:ring-destructive/40`.
+  Components never invent their own.
+
+### Field states (ADR-083 consumers)
+
+Every property row in a form or list communicates exactly one of:
+
+| State               | Signal                                             |
+| ------------------- | -------------------------------------------------- |
+| filled              | value shown, muted ✓ in nav                        |
+| empty (optional)    | hollow marker, muted                               |
+| empty (recommended) | hollow **amber** marker + "recommended" chip       |
+| defaulted (omitted) | value shown with a subtle "default" tag — the JSON |
+|                     | omits it (format:data strips defaults); editors    |
+|                     | must not "fix" it                                  |
+| invalid             | destructive border/ring + inline message           |
+
+Epistemic/review badges are orthogonal to these states and render as
+chips on the value, never as row states.

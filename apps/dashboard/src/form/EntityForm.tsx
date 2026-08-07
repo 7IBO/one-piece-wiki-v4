@@ -843,7 +843,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         ? (
           <div
             role='alert'
-            className='border-destructive/40 bg-destructive/5 text-destructive mb-4 rounded-[3px] border px-3 py-2'
+            className='border-destructive/40 bg-destructive/5 text-destructive mb-4 rounded-md border px-3 py-2'
           >
             <p className='mb-1 text-[11px] font-semibold uppercase tracking-wide'>
               {t('validationFailed')}
@@ -866,7 +866,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
       }
       {draftIsRecoverable
         ? (
-          <div className='border-amber-500/40 bg-amber-500/5 mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[3px] border px-3 py-1.5'>
+          <div className='border-amber-500/40 bg-amber-500/5 mb-4 flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-1.5'>
             <span className='text-muted-foreground text-[11px]'>
               <span className='text-amber-500'>●</span> {t('unsavedDraft')}
               <span className='ml-2'>
@@ -1161,7 +1161,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   return (
     <div
       id={p.anchorId}
-      className={`scroll-mt-20 rounded-[3px] py-2 transition-colors sm:py-2.5 ${ringClass}`}
+      className={`scroll-mt-20 rounded-md py-2 transition-colors sm:py-2.5 ${ringClass}`}
     >
       <div className='mb-1.5 flex items-baseline gap-2'>
         <Label
@@ -1249,7 +1249,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
                 <button
                   type='button'
                   onClick={p.onAdd}
-                  className='border-input/60 text-muted-foreground hover:border-input hover:text-foreground hover:bg-accent/40 flex w-full items-center justify-center gap-1 rounded-[3px] border border-dashed py-2 text-xs transition-colors'
+                  className='border-input/60 text-muted-foreground hover:border-input hover:text-foreground hover:bg-accent/40 flex w-full items-center justify-center gap-1 rounded-md border border-dashed py-2 text-xs transition-colors'
                 >
                   <Plus className='size-3.5' />
                   {t('addEntry')}
@@ -1353,7 +1353,7 @@ function EntryCard(p: EntryCardProps): JSX.Element {
   const setQualifierCount = setIds.size;
 
   return (
-    <div className='border-input/70 bg-card/40 relative flex flex-col gap-1.5 rounded-[3px] border p-1.5 sm:p-2'>
+    <div className='border-input/70 bg-card/40 relative flex flex-col gap-1.5 rounded-md border p-1.5 sm:p-2'>
       {
         /* ✕ is absolute top-right INSIDE the card. To stop it from
           cutting into the qualifier rows below (DEPUIS / CHAPITRE
@@ -1649,7 +1649,7 @@ function LocalizedValueField(p: {
           the SINCE pickers and broke visual alignment. Inlining the
           globe inside the same border keeps all rows flush-right. */
       }
-      <div className='border-input bg-background flex h-8 items-stretch overflow-hidden rounded-[3px] border focus-within:border-ring'>
+      <div className='border-input bg-background flex h-8 items-stretch overflow-hidden rounded-md border focus-within:border-ring'>
         <span className='bg-muted/60 text-muted-foreground border-input flex w-7 shrink-0 items-center justify-center border-r font-mono text-[10px] uppercase'>
           {locale}
         </span>
@@ -1703,7 +1703,7 @@ function LocalizedValueField(p: {
                 return (
                   <div
                     key={loc}
-                    className={`border-input bg-background flex h-8 items-stretch overflow-hidden rounded-[3px] border focus-within:border-ring ${
+                    className={`border-input bg-background flex h-8 items-stretch overflow-hidden rounded-md border focus-within:border-ring ${
                       loc === locale ? 'ring-1 ring-primary/40' : ''
                     }`}
                   >

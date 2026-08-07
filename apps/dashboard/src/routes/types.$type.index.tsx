@@ -222,7 +222,7 @@ function TypeListComponent(): JSX.Element {
                     <span className='min-w-0 truncate'>{name}</span>
                     {hasDraft
                       ? (
-                        <span className='ml-auto shrink-0 rounded-[3px] border border-amber-500/40 bg-amber-500/5 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-amber-500'>
+                        <span className='ml-auto shrink-0 rounded-md border border-amber-500/40 bg-amber-500/5 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-amber-500'>
                           {t('draftBadge')}
                         </span>
                       )

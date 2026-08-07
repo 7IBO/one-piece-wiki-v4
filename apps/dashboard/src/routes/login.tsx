@@ -138,7 +138,7 @@ function LoginPage(): JSX.Element {
             onKeyDown={(e) => {
               if (e.key === 'Enter' && !anonBusy && !githubBusy) void onAnonymous();
             }}
-            className='border-input bg-background placeholder:text-muted-foreground/70 focus:ring-ring h-9 rounded-[3px] border px-2 text-sm focus:outline-none focus:ring-1'
+            className='border-input bg-background placeholder:text-muted-foreground/70 focus:ring-ring h-9 rounded-md border px-2 text-sm focus:outline-none focus:ring-1'
           />
           <Button
             type='button'

@@ -790,7 +790,7 @@ function TextCellEditor(p: {
       ref={ref}
       type={p.type ?? 'text'}
       defaultValue={p.defaultValue}
-      className='border-input bg-background w-full rounded-[3px] border px-1.5 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-ring'
+      className='border-input bg-background w-full rounded-md border px-1.5 py-0.5 text-xs focus:outline-none focus:ring-1 focus:ring-ring'
       onKeyDown={(e) => {
         if (e.key === 'Enter') {
           e.preventDefault();

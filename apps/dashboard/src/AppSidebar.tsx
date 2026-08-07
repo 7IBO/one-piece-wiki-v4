@@ -9,10 +9,10 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link, useLocation } from '@tanstack/react-router';
 import { LogIn, LogOut } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useState } from 'react';
-import { api, type SchemaCatalogue } from './api';
+import { type JSX, useMemo } from 'react';
 import { useCurrentUser, useSignOut } from './auth';
 import { useLocale } from './form/locale';
+import { useSchemaCatalogue } from './hooks/use-schema-catalogue';
 
 const GROUP_LABELS: Record<string, { en: string; fr: string; }> = {
   people: { en: 'People', fr: 'Personnages' },
@@ -57,11 +57,7 @@ export function AppSidebar(): JSX.Element {
   const location = useLocation();
   const { signOut, pending: signOutPending } = useSignOut();
   const { user, loaded: userLoaded } = useCurrentUser();
-  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
-
-  useEffect(() => {
-    api.schemas().then(setSchemas).catch(() => {/* empty sidebar on error */});
-  }, []);
+  const schemas = useSchemaCatalogue();
 
   const groups = useMemo<readonly GroupedType[]>(() => {
     if (schemas === null) return [];

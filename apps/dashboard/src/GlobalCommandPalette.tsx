@@ -355,7 +355,7 @@ export function CommandPaletteTrigger(): JSX.Element {
         type='button'
         onClick={dispatch}
         aria-label='Search entities'
-        className='border-input bg-input/30 text-muted-foreground hover:bg-input/50 hidden h-7 items-center gap-2 rounded-[3px] border px-2 text-xs sm:inline-flex'
+        className='border-input bg-input/30 text-muted-foreground hover:bg-input/50 hidden h-7 items-center gap-2 rounded-md border px-2 text-xs sm:inline-flex'
       >
         <SearchIcon className='size-3.5' />
         <span>Search…</span>
@@ -368,7 +368,7 @@ export function CommandPaletteTrigger(): JSX.Element {
         type='button'
         onClick={dispatch}
         aria-label='Search entities'
-        className='text-muted-foreground hover:bg-accent inline-flex size-8 items-center justify-center rounded-[3px] sm:hidden'
+        className='text-muted-foreground hover:bg-accent inline-flex size-8 items-center justify-center rounded-md sm:hidden'
       >
         <SearchIcon className='size-4' />
       </button>
