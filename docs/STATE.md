@@ -36,12 +36,11 @@ imports locally/CI); (2) **public-API additions** → **ADR-080**
 (field-lifecycle registry generated from compat snapshots, official npm
 SDK, per-entity history endpoint; Stripe-style pinning confirmed as the
 existing URL-MAJOR + `X-API-Version` design; all still design-only,
-pre-freeze gate ADR-029 unchanged); (3) **dashboard UX coherence pass 2**
-
-- SEO / partnerships / "incontournable" polish → parked in IDEAS.md
-  pending their own ADRs (affiliate links explicitly need the dedicated
-  ADR). Next implementable slices, in order: importers fetcher+parsers
-  (fixtures, no network needed), W-B detail view, W-F2 UX conventions.
+pre-freeze gate ADR-029 unchanged); (3) **dashboard UX coherence pass 2** and the SEO / partnerships /
+"incontournable" polish → parked in IDEAS.md pending their own ADRs
+(affiliate links explicitly need the dedicated ADR). Next implementable
+slices, in order: importers fetcher+parsers (fixtures, no network
+needed), W-B detail view, W-F2 UX conventions.
 
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
