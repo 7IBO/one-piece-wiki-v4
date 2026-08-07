@@ -87,13 +87,16 @@ describe('chapter mapper (real Chapter Box)', () => {
     expect(result?.entity.properties['released_at']).toBeUndefined();
   });
 
-  it('fails the generated Zod gate without released_at; passes once supplied', async () => {
+  it('passes the generated Zod gate without released_at (optional since v7), warning kept', async () => {
     const mod = (await import(join(GENERATED_DIR, 'entities.ts'))) as {
       MangaChapterData: { safeParse: (v: unknown) => { success: boolean; }; };
     };
     const page = await fixture('chapter-1044');
     const result = mapChapter(page);
-    expect(mod.MangaChapterData.safeParse(result?.entity).success).toBe(false);
+    // The real Chapter Box has no release date — the entity must still
+    // import (ADR-082); the gap is routed to a warning, not a failure.
+    expect(mod.MangaChapterData.safeParse(result?.entity).success).toBe(true);
+    expect(result?.warnings.some((w) => w.includes('no release date'))).toBe(true);
     const supplemented = {
       ...result?.entity,
       properties: {

@@ -8,6 +8,42 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-082 — `manga-chapter.released_at` becomes optional (schema v7)
+
+**Date**: 2026-08-07
+
+**Context**: First live Fandom import (run 3, 25 chapters crawled and
+mapped) failed the validation gate: `properties.released_at: Required`
+on every new chapter. Verified against the live wiki: the real
+`{{Chapter Box}}` carries **no release-date parameter** (dates live on
+volume pages), so no chapter import can ever satisfy a required
+`released_at` from its own page.
+
+**Options**:
+
+1. Keep `released_at` required; chapters wait for the volume-page
+   mapper to cross-supply dates — blocks the entire chapter corpus on
+   a mapper that does not exist yet.
+2. Synthesize a placeholder date — fabricated data, violates the
+   "never guess" import rule.
+3. **Make `released_at` optional** (`manga-chapter` v6 → v7); keep the
+   mapper warning so the gap stays visible in every import PR, and
+   backfill from the volume pages / AI pass later.
+
+**Choice**: option 3. Release date is real, knowable metadata — but its
+absence must not block a chapter from existing. No data migration
+needed (existing chapters all carry the property; optionality only
+widens the contract). `check:compat` snapshot unchanged (requiredness
+is not part of the frozen wire contract).
+
+**Consequences**: chapter imports land without dates; the
+`no release date in infobox` warning routes the backfill to the future
+volume mapper / AI enrichment pass. The public-API field-lifecycle
+registry (ADR-080) must record `released_at` as optional when the API
+freezes.
+
+---
+
 ## ADR-081 — Fandom sync registry: page↔entity map, redirects, update detection
 
 **Date**: 2026-06-14
