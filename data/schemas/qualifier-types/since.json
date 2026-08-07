@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "since",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 1,
+  "labels": {
+    "en": "Since",
+    "fr": "Depuis"
+  },
+  "descriptions": {
+    "en": "When this value starts applying. Record both manga + anime if you know both.",
+    "fr": "À partir de quand la valeur s'applique. Notez manga + anime si connus."
+  },
+  "value_type": "source_ref",
+  "multi": true
+}

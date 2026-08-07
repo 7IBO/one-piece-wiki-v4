@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "fruit-interaction-kinds",
+  "schema_version": 1,
+  "values": {
+    "superior_to": {
+      "labels": {
+        "en": "Superior to",
+        "fr": "Supérieur à"
+      }
+    },
+    "inferior_to": {
+      "labels": {
+        "en": "Inferior to",
+        "fr": "Inférieur à"
+      }
+    },
+    "mutual_cancellation": {
+      "labels": {
+        "en": "Mutual cancellation",
+        "fr": "Annulation mutuelle"
+      }
+    },
+    "nullifies": {
+      "labels": {
+        "en": "Nullifies",
+        "fr": "Annule"
+      }
+    },
+    "immune_to": {
+      "labels": {
+        "en": "Immune to",
+        "fr": "Immunisé contre"
+      }
+    }
+  }
+}

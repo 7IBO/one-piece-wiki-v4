@@ -778,3 +778,22 @@ pattern.
 
 A native or wrapped-PWA mobile app with push notifications on new
 chapter / episode publication. Deferred to Phase 9+ at earliest.
+
+## 2026-06-14 — maintainer vision drop (parked pending their own ADRs)
+
+- **SEO / visibility programme** for the public reading app: prerendered
+  entity pages, structured data (schema.org), sitemaps per progression-safe
+  surface, canonical URLs (slugs already stable), i18n hreflang.
+- **Streaming-platform partnerships / affiliate links**: `available-on`
+  already models the links; affiliation itself needs the dedicated ADR
+  (FTC disclosure, `rel="sponsored nofollow"`, program/tag model) noted in
+  STATE — do NOT bolt onto `available-on` without it.
+- **"Incontournable" polish track**: Wikipedia-depth entity pages but
+  fluid/responsive; reading-position cursor UX ("I'm at episode N /
+  chapter M") as the first-run experience; manga↔anime cross-medium jump
+  (adapted-by is in the data); per-medium coverage badges (manga / anime /
+  live-action / films / specials — entity types all exist since ADR-060..065).
+- **Dashboard UX coherence pass 2 (W-F2)**: Button/Banner are adopted
+  (audit 2026-06-14: 1 raw `<a>` left) but variant/size usage is scattered
+  per surface; define per-context conventions (primary action per page,
+  destructive style, icon sizing 3.5 vs 4) + a lint/checklist, then sweep.

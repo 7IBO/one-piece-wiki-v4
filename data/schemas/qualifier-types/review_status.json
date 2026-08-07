@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "review_status",
+  "schema_version": 1,
+  "kind": "base",
+  "order": 7,
+  "labels": {
+    "en": "Review status",
+    "fr": "Statut de relecture"
+  },
+  "descriptions": {
+    "en": "Human-review state. Defaults to \"reviewed\".",
+    "fr": "État de relecture humaine. Par défaut « reviewed »."
+  },
+  "value_type": "enum",
+  "enum_ref": "review-statuses"
+}

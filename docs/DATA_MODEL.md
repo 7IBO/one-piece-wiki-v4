@@ -138,6 +138,17 @@ Every dated value points to a **source entity**: a manga chapter, anime
 episode, film, SBS volume, databook, etc. Sources are first-class entities,
 not metadata.
 
+Sources can be **nested for precision**: an `sbs` column (one per tankōbon,
+linked to its `volume` via `part-of-volume`) contains atomic **`sbs-qa`**
+entries — one question/answer pair each (`question_key` / `answer_key`,
+optional `asker_pen_name` and `page`), attached to their column via `qa-of`.
+An SBS-revealed fact (a birthday, a blood type) should cite the `sbs-qa`
+entry when known, or the `sbs` column as the coarser fallback; both carry
+`canon_scope` (typically `semi_canon`, see `/docs/CANON_MODEL.md`) and the
+`clarifies-fact` relation (with its `property_name` qualifier) points from
+the Q&A to the entity/property it settles. The same pattern covers databooks
+(`databook` → `databook-card` via `card-of`).
+
 The user's progression is a multi-dimensional cursor over sources:
 
 ```json
@@ -167,6 +178,10 @@ Events have:
 - A span (`first_source`, `last_source`)
 - A primary location (relation)
 - Participants (relations, with role and outcome qualifiers)
+- Optional **phases**: a long event decomposes into sub-events via
+  `part-of-event` (child → parent, ordered by the `phase_order`
+  qualifier), each phase carrying its own participants/location/outcome
+  (ADR-076 — e.g. the Battle of Marineford's ordered phases)
 - Effects (caused_death_of, set_up_event, …)
 - An optional narrative key for prose summary
 
@@ -603,11 +618,11 @@ fruit's `classification`, true `name` and `zoan_model` together — see
         "since": "manga-chapter:1044"
       }
     ],
-    "volume": [{ "value": "104", "since": "manga-chapter:1044" }],
     "canon_scope": [{ "value": "manga", "since": "manga-chapter:1044" }]
   },
   "relations": [
     { "type": "part-of-arc", "target": "arc:wano" },
+    { "type": "part-of-volume", "target": "volume:104" },
     {
       "type": "adapted-by",
       "target": "anime-episode:1071",

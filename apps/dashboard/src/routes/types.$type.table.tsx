@@ -35,9 +35,11 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowUpRight, ChevronLeft, Columns3, RotateCcw, Save, Search } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { api, type SchemaCatalogue, type TableEntity, type Translations } from '../api';
+import { api, type TableEntity, type Translations } from '../api';
+import { LoadFailed } from '../components/LoadFailed';
 import { useEntityDrawer } from '../form/EntityDrawerProvider';
 import { type Locale, useLocale, useT } from '../form/locale';
+import { useApiResource } from '../hooks/use-api-resource';
 
 export const Route = createFileRoute('/types/$type/table')({
   component: TableComponent,
@@ -210,9 +212,12 @@ function TableComponent(): JSX.Element {
   const locale = useLocale();
   const t = useT();
   const drawer = useEntityDrawer();
-  const [rows, setRows] = useState<readonly TableEntity[] | null>(null);
-  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error } = useApiResource(
+    () => Promise.all([api.tableEntities(type), api.schemas()]),
+    [type],
+  );
+  const rows = data?.[0].entities ?? null;
+  const schemas = data?.[1] ?? null;
   const [query, setQuery] = useState('');
   const [drafts, setDrafts] = useState<Map<string, EntityDraft>>(new Map());
   const [saving, setSaving] = useState<{ done: number; total: number; } | null>(null);
@@ -221,18 +226,15 @@ function TableComponent(): JSX.Element {
   // keep clobbering their choice with the schema's default each render.
   const colsInitialized = useRef(false);
 
-  useEffect(() => {
-    setRows(null);
-    setError(null);
+  // Reset the local edit state when switching entity types (the fetch
+  // itself resets via the hook's deps) — render-time adjustment
+  // (react.dev "you might not need an effect"), no effect chain.
+  const [prevType, setPrevType] = useState(type);
+  if (prevType !== type) {
+    setPrevType(type);
     setDrafts(new Map());
     colsInitialized.current = false;
-    Promise.all([api.tableEntities(type), api.schemas()])
-      .then(([r, s]) => {
-        setRows(r.entities);
-        setSchemas(s);
-      })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
-  }, [type]);
+  }
 
   const entityType = schemas?.entityTypes[type];
   const propertyTypes = schemas?.propertyTypes ?? {};
@@ -387,7 +389,7 @@ function TableComponent(): JSX.Element {
   }
 
   if (error !== null) {
-    return <p className='text-destructive'>Failed: {error}</p>;
+    return <LoadFailed message={error} />;
   }
 
   const entityTypeLabel = entityType?.labels[locale] ?? entityType?.labels.en ?? type;

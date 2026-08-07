@@ -136,6 +136,13 @@ attached to volumes/issues. Facts they reveal point to them as `source`.
 Example: Luffy's blood type comes from SBS, not from a chapter. The
 property entry has `source: "sbs:volume-46"`.
 
+Both source families nest for precision (ADR-074): an individual
+question/answer is an `sbs-qa` entity (`qa-of` → its `sbs` column), a
+numbered card is a `databook-card` (`card-of` → its `databook`). Cite the
+atomic entry as `source` when known — `source: "sbs-qa:volume-46-luffy-blood-type"`
+— and the column/book as the coarser fallback; reachability is identical
+(the entry inherits its parent's volume anchoring).
+
 When a user filters out SBS, these facts disappear from their view; the
 property may revert to "unknown" or to the next-best source.
 

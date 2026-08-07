@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "requires_haki",
+  "schema_version": 1,
+  "labels": {
+    "en": "Requires Haki",
+    "fr": "Haki requis"
+  },
+  "value_type": "multi_enum",
+  "value_constraints": {
+    "enum_ref": "haki-types"
+  },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": [
+    "technique"
+  ]
+}

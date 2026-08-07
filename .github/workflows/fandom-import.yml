@@ -1,0 +1,61 @@
+# Full-auto Fandom import (ADR-079/081) — MANUAL trigger only.
+#
+# Crawls the given category (auto-detecting infobox kinds), stages the
+# mapped entities + translations into the working tree, then opens ONE
+# reviewable PR labelled `via-dashboard` + `import` so it lands in the
+# dashboard's admin moderation queue (list, in-app diff, Approve /
+# Reject). Nothing merges without a human.
+#
+# CI runners have normal egress — no sandbox allowlist needed.
+name: fandom-import
+on:
+  workflow_dispatch:
+    inputs:
+      category:
+        description: 'Fandom category to crawl (e.g. Chapters, Humans)'
+        required: true
+      limit:
+        description: 'Max pages to fetch this run'
+        required: true
+        default: '25'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  import:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run schema:generate
+      - name: Crawl and stage
+        run: >
+          bun run import:fandom crawl
+          --category "${{ github.event.inputs.category }}"
+          --limit "${{ github.event.inputs.limit }}"
+          --stage
+      - name: Validate the staged corpus
+        run: bun run schema:check && bun run validate && bun run check:references
+      - name: Open the import PR
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
+            echo "Nothing staged — no PR."
+            exit 0
+          fi
+          branch="import/fandom-${{ github.run_id }}"
+          git config user.name "fandom-importer[bot]"
+          git config user.email "noreply@one-piece.wiki"
+          git checkout -b "$branch"
+          git add data/
+          git commit -m "data(import): crawl '${{ github.event.inputs.category }}' (run ${{ github.run_id }})"
+          git push -u origin "$branch"
+          gh pr create --draft \
+            --title "[DATA] Import from Fandom: ${{ github.event.inputs.category }} (run ${{ github.run_id }})" \
+            --body "Automated crawl of category **${{ github.event.inputs.category }}** (limit ${{ github.event.inputs.limit }}). Deterministic infobox extraction only — review in the dashboard admin queue. See the run log for warnings, the import frontier, and unmapped infobox kinds." \
+            --label via-dashboard --label import

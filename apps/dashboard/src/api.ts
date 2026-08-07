@@ -8,6 +8,7 @@
 import type {
   EntityTypeSchema,
   PropertyTypeSchema,
+  QualifierTypeSchema,
   RelationTypeSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
@@ -85,6 +86,52 @@ export type SchemaCatalogue = {
   readonly propertyTypes: Record<string, PropertyTypeSchema>;
   readonly relationTypes: Record<string, RelationTypeSchema>;
   readonly vocabularies: Record<string, VocabularySchema>;
+  readonly qualifierTypes: Record<string, QualifierTypeSchema>;
+};
+
+/** One row of the admin moderation queue (W-B). */
+export type QueueItem = {
+  readonly prNumber: number;
+  readonly htmlUrl: string;
+  readonly title: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly labels: readonly string[];
+  readonly entityId: string | null;
+  readonly contributor:
+    | { readonly kind: 'github'; readonly login: string; }
+    | { readonly kind: 'anonymous'; readonly nickname: string; }
+    | null;
+};
+
+/** Server-side structured diff of one queue PR (W-B slice 2). */
+export type PullDetail = {
+  readonly prNumber: number;
+  readonly title: string;
+  readonly entities: readonly {
+    readonly path: string;
+    readonly entityId: string | null;
+    readonly kind: 'added' | 'modified' | 'removed';
+    readonly properties: readonly {
+      readonly id: string;
+      readonly before: string | null;
+      readonly after: string | null;
+    }[];
+    readonly relations: readonly {
+      readonly type: string;
+      readonly added: readonly string[];
+      readonly removed: readonly string[];
+    }[];
+  }[];
+  readonly translations: readonly {
+    readonly path: string;
+    readonly locale: string;
+    readonly changed: readonly {
+      readonly key: string;
+      readonly before: string | null;
+      readonly after: string | null;
+    }[];
+  }[];
 };
 
 export type SourceRef = {
@@ -390,6 +437,22 @@ export const api = {
     }[];
   }> {
     return getJson('/api/me/contributions');
+  },
+  /** Admin moderation queue: every open via-dashboard PR (W-B). */
+  async adminPulls(): Promise<{ pulls: readonly QueueItem[]; }> {
+    return getJson('/api/admin/pulls');
+  },
+  /** Structured diff of one queue PR (W-B slice 2). Admin-only. */
+  async adminPullDetail(prNumber: number): Promise<PullDetail> {
+    return getJson(`/api/admin/pulls/${prNumber}/detail`);
+  },
+  /** Approve: promote staged images (if any) + squash-merge. Admin-only. */
+  async adminPromote(prNumber: number): Promise<unknown> {
+    return postJson('/api/admin/promote', { prNumber });
+  },
+  /** Reject: close the PR + delete its staged R2 objects. Admin-only. */
+  async adminReject(prNumber: number): Promise<unknown> {
+    return postJson('/api/admin/reject', { prNumber });
   },
   /** Manually drop every cached response — useful behind a "Refresh" button. */
   invalidateAll(): void {

@@ -30,11 +30,17 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, GitPullRequest } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { api, type SchemaCatalogue, type SourceRef } from '../api';
+import { api, type SourceRef } from '../api';
+import { LoadFailed } from '../components/LoadFailed';
 import { EntityForm } from '../form/EntityForm';
 import { useLocale, useT } from '../form/locale';
 import { SlugInput } from '../form/SlugInput';
+import { useApiResource } from '../hooks/use-api-resource';
 import { slugify } from '../lib/slugify';
+
+// Stable fallbacks while the page resource is loading.
+const emptySources: readonly SourceRef[] = [];
+const emptyKeys: readonly string[] = [];
 
 export const Route = createFileRoute('/types/$type/new')({
   component: EntityCreateComponent,
@@ -46,10 +52,13 @@ function EntityCreateComponent(): JSX.Element {
   const t = useT();
   const navigate = useNavigate();
 
-  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
-  const [sources, setSources] = useState<readonly SourceRef[]>([]);
-  const [i18nKeys, setI18nKeys] = useState<readonly string[]>([]);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error } = useApiResource(
+    () => Promise.all([api.schemas(), api.sources(), api.i18nKeys()]),
+    [],
+  );
+  const schemas = data?.[0] ?? null;
+  const sources = data?.[1] ?? emptySources;
+  const i18nKeys = data?.[2] ?? emptyKeys;
 
   // Two-field gate, in order: (1) display name (EN), (2) slug.
   // The slug auto-derives from the name via `slugify` until the user
@@ -77,16 +86,6 @@ function EntityCreateComponent(): JSX.Element {
   const [openedPR, setOpenedPR] = useState<{ number: number; htmlUrl: string; } | null>(
     null,
   );
-
-  useEffect(() => {
-    Promise.all([api.schemas(), api.sources(), api.i18nKeys()])
-      .then(([s, src, keys]) => {
-        setSchemas(s);
-        setSources(src);
-        setI18nKeys(keys);
-      })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
-  }, []);
 
   const entityTypeLabel = useMemo(() => {
     if (schemas === null) return type;
@@ -120,7 +119,7 @@ function EntityCreateComponent(): JSX.Element {
   );
 
   if (error !== null) {
-    return <p className='text-destructive'>Failed: {error}</p>;
+    return <LoadFailed message={error} />;
   }
   if (schemas === null) {
     return (
@@ -223,6 +222,7 @@ function EntityCreateComponent(): JSX.Element {
             propertyTypes={schemas.propertyTypes}
             relationTypes={schemas.relationTypes}
             vocabularies={schemas.vocabularies}
+            qualifierTypes={schemas.qualifierTypes}
             sources={sources}
             i18nKeys={i18nKeys}
             initialData={initialData}

@@ -21,6 +21,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import type {
   EntityTypeSchema,
   PropertyTypeSchema,
+  QualifierTypeSchema,
   RelationTypeSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
@@ -166,6 +167,7 @@ export type EntityFormProps = {
   propertyTypes: Record<string, PropertyTypeSchema>;
   relationTypes: Record<string, RelationTypeSchema>;
   vocabularies: Record<string, VocabularySchema>;
+  qualifierTypes: Record<string, QualifierTypeSchema>;
   sources: readonly SourceRef[];
   i18nKeys: readonly string[];
   initialData: EntityData;
@@ -811,6 +813,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         translations={translations}
         valueCtx={valueCtx}
         vocabularies={props.vocabularies}
+        qualifierTypes={props.qualifierTypes}
         fallbackName={fallbackName}
         showSchemaDetails={showSchemaDetails}
         locale={locale}
@@ -1111,6 +1114,7 @@ type PropertyRowProps = {
   translations: Translations;
   valueCtx: ValueInputContext;
   vocabularies: Record<string, VocabularySchema>;
+  qualifierTypes: Record<string, QualifierTypeSchema>;
   fallbackName?: string | undefined;
   showSchemaDetails: boolean;
   locale: Locale;
@@ -1231,6 +1235,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
                 translations={p.translations}
                 valueCtx={p.valueCtx}
                 vocabularies={p.vocabularies}
+                qualifierTypes={p.qualifierTypes}
                 fallbackName={p.fallbackName}
                 showRemove={isHistorical || p.entries.length > 0}
                 onUpdate={(next) => p.onUpdate(idx, next)}
@@ -1280,6 +1285,7 @@ type EntryCardProps = {
   translations: Translations;
   valueCtx: ValueInputContext;
   vocabularies: Record<string, VocabularySchema>;
+  qualifierTypes: Record<string, QualifierTypeSchema>;
   fallbackName?: string | undefined;
   showRemove: boolean;
   onUpdate: (next: PropertyEntry) => void;
@@ -1295,15 +1301,18 @@ type EntryCardProps = {
  */
 function EntryCard(p: EntryCardProps): JSX.Element {
   const t = useT();
+  const locale = useLocale();
   const qLabel = useQualifierLabel();
   const { primary, secondary } = useMemo(
     () =>
       resolveQualifiers(
+        p.qualifierTypes,
+        locale,
         p.propertyType.default_qualifiers,
         p.propertyType.allowed_qualifiers,
         ['since'],
       ),
-    [p.propertyType],
+    [p.propertyType, p.qualifierTypes, locale],
   );
 
   function setQualifier(id: string, value: unknown): void {

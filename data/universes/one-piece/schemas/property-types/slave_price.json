@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "slave_price",
+  "schema_version": 1,
+  "labels": { "en": "Slave market price", "fr": "Prix au marché aux esclaves" },
+  "value_type": "number",
+  "value_constraints": { "min": 0, "step": 1000 },
+  "unit": "berry",
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["race"],
+  "default_qualifiers": ["since", "source"],
+  "ui_hint": { "display_format": "currency_short", "input_widget": "number_with_units" }
+}

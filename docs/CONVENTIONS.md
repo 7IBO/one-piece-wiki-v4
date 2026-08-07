@@ -504,3 +504,31 @@ The dashboard targets:
 - Use `.env.local` for local development (gitignored)
 - Use Vercel environment variables for production
 - A `.env.example` is committed showing required keys
+
+## Dashboard UI conventions (W-F2)
+
+Defined 2026-06-14 from the coherence audit (Button/Banner adopted
+everywhere; the residual incoherence was per-surface variant drift).
+The sweep applying these to existing surfaces is the tracked W-F2
+follow-up; new code follows them immediately.
+
+- **One primary action per view** (`variant='default'`): the action
+  that advances the flow (Save, Approve & merge, New). Everything
+  else is `outline` (secondary), `ghost` (navigation/inline), or
+  `outline + text-destructive` (destructive — Reject, Remove).
+- **Destructive actions** never use `variant='default'`; confirmation
+  is required only when the action is not recoverable via GitHub
+  (closing a PR is recoverable → no confirm; deleting staged R2
+  objects with it is accepted as part of Reject).
+- **Icon sizing**: `size-3.5` inside `size='sm'` buttons, `size-4`
+  elsewhere. Icon-only buttons MUST carry `aria-label`.
+- **Feedback**: mutations report via `toast` (success/error);
+  page-level load failures use `<LoadFailed>`; inline notices use
+  `<Banner>` (`info` = FYI, `warning` = pending local state,
+  `error` = blocking). No ad-hoc colored `<p>`/`<div>` callouts.
+- **Loading**: skeletons (`<Skeleton>`) for page resources (never
+  spinners); button-level busy state = disabled + label swap
+  ("Working…" pattern).
+- **Links**: `<Button render={<Link/>}>` / `render={<a/>}` — never a
+  raw styled `<a>`/`<button>` (`__root` nav is the audited exception
+  until its dedicated pass).

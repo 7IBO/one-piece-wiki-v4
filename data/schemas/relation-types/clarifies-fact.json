@@ -6,7 +6,7 @@
     "en": { "active": "Clarifies fact", "inverse": "Clarified in" },
     "fr": { "active": "Clarifie le fait", "inverse": "Clarifié dans" }
   },
-  "valid_from_types": ["sbs", "databook"],
+  "valid_from_types": ["sbs", "sbs-qa", "databook"],
   "valid_to_types": [
     "character",
     "crew",

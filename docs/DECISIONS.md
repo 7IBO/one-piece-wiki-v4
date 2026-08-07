@@ -8,6 +8,349 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-081 — Fandom sync registry: page↔entity map, redirects, update detection
+
+**Date**: 2026-06-14
+
+**Context**: Maintainer direction: one-shot imports are not enough — the
+system must **know when Fandom updates a page** we imported and re-queue
+it, and must **resolve wikitext links** (which flow through redirect
+aliases like "Straw Hat Luffy") to our entity ids to detect entity
+linkages in content. Verified against live responses: redirect pages are
+`#REDIRECT [[Target]]` wikitext; `action=query&prop=info|redirects`
+returns `lastrevid` + inbound aliases; `list=recentchanges` is the
+change feed.
+
+**Decision** (extends the ADR-079 importers):
+
+1. **Committed ledger `data/import/fandom-pages.json`** (peer of
+   `data/migrations/applied.json` — reviewable import state, never
+   referenced by entity JSON): per entity — canonical page title,
+   pageId, redirect aliases, `lastRevId` + `lastImportedAt` of the last
+   import.
+2. **Registry module** (`fandom/registry.ts`, pure + unit-tested):
+   MediaWiki title normalization, canonical∪alias title index,
+   `resolveTitle`, `detectEntityLinks(wikitext)` → { linked entity ids,
+   unknown targets } (unknowns = candidate pages to import next — the
+   crawl frontier), `staleEntries(liveRevisions)`, `upsertPage`.
+3. **Client additions**: `queryInfo(titles)` (batch lastrevid +
+   redirect aliases), `recentChangesSince(iso)` (change feed);
+   `parseRedirect` in the wikitext utilities (real fixture committed).
+4. **Sync loop (when network lands)**: poll `recentChangesSince` ∩
+   ledger titles (aliases included) → stale set → re-import → PRs via
+   the admin queue; `queryInfo` refreshes aliases so future links keep
+   resolving. Unknown link targets feed the import frontier by rank
+   (link frequency).
+
+**Consequences**: linkage detection and update detection are testable
+offline today; the live loop only needs the network allowlist. The
+ledger seeds with the 3 fixture pages.
+
+---
+
+## ADR-080 — public-API additions: field-lifecycle registry, npm SDK, data-history
+
+**Date**: 2026-06-14
+
+**Context**: Maintainer direction (2026-06-14): the future public API must
+version "like Stripe" (explicit version pinning, headers), consumers must be
+able to know **when a field was created / renamed / deprecated / removed**,
+and per-datum provenance ("when was this value added/changed, by what
+source") must be queryable. PUBLIC_API_DESIGN.md (ADR-025) already fixes
+most of the versioning mechanics: MAJOR in the URL prefix + `X-API-Version`
+response header, frozen per-MAJOR wire adapters, drift strategies, impact
+analyzer, per-version OpenAPI archives — that design **stands**. This ADR
+records the maintainer-ratified additions. All of it remains
+**design-only** until the schema freeze (ADR-029 regime gate).
+
+**Decisions** (amend PUBLIC_API_DESIGN.md, implementation deferred):
+
+1. **Field-lifecycle registry** — a generated, machine-readable
+   `field-lifecycle.json`: for every property/relation/vocabulary-value,
+   `introduced_in` (API version + date), `deprecated_in?`, `removed_in?`,
+   `renamed_from?`. Source of truth: the committed compat snapshots
+   (ADR-042) diffed per release — no hand-maintained table. Exposed at
+   `GET /api/v1/meta/fields` and rendered in the doc site's changelog.
+   Pre-freeze, the same generator can already emit an internal changelog
+   from git history of `schema-snapshot.json` (nice-to-have, not gating).
+2. **Official npm SDK** — `@onepiece-wiki/api-client`, generated from the
+   archived OpenAPI of each release (typed responses, progression/lang
+   params, pagination helpers), version-aligned with the API (SDK
+   1.4.x ↔ API v1.4.x). Hand-written sugar stays thin; the generated
+   core guarantees the types never drift from the wire contract.
+3. **Per-entity data history** — `GET /api/v1/:type/:slug/history`:
+   the **in-universe** axes (since/source/epistemic per value — already
+   in the data) plus the **editorial** history (when added/changed, by
+   whom, which PR) derived from the entity file's git log at build time.
+   No runtime GitHub calls; the build pipeline emits a compact per-entity
+   history manifest.
+4. Versioning header confirmed as designed: URL carries MAJOR
+   (`/api/v1/`), `X-API-Version` carries the exact deployed version;
+   clients needing bit-exact behaviour pin the archived OpenAPI. No
+   per-request date-pinning à la Stripe `Stripe-Version` — the adapter
+   model (one frozen wire shape per MAJOR) makes it unnecessary at our
+   scale; revisit only if MINOR-level behaviour drift ever hurts a
+   consumer.
+
+**Consequences**: PUBLIC_API_DESIGN §8a/§9/§5 updated; open-questions list
+trimmed accordingly. No code in this PR.
+
+---
+
+## ADR-079 — Fandom-assisted ingestion programme (importers v1)
+
+**Date**: 2026-06-14
+
+**Context**: Maintainer direction (2026-06-14): use AI-assisted ingestion
+to fill the corpus at scale from onepiece.fandom.com, via the **MediaWiki
+content API** (`api.php?action=parse` / `action=query`, the same access
+path the DATA_EXPANSION_PLAN research used — plain scraping is blocked by
+Fandom). The tooling-before-ingest gate (ADR-032) is now satisfied:
+validate/coherence/compat gates, migration runner, admin moderation queue
+(W-B v1) and the provenance axes all exist.
+
+**Decision** — the `packages/importers` harness (currently a stub) becomes:
+
+1. **Fetcher**: MediaWiki API client (`action=parse` for wikitext +
+   sections, `action=query` for metadata/categories/images), with local
+   response cache (content-hashed, committed nowhere), polite rate
+   limiting, and a fixture recorder so parsers are tested offline.
+2. **Parsers**: per-entity-type wikitext mappers (infobox → properties,
+   `{{Qref}}` templates → `since`/`source` refs) emitting **schema-valid
+   entity JSON** through the generated Zod validators.
+3. **AI-assisted extraction** for prose-borne facts (relations, events),
+   under the plan's non-negotiable ingest rule: every fact stamped with
+   its **on-panel reveal source** from the Qref; identity/parentage/
+   capability facts default `review_status: not_reviewed` +
+   `assisted_by`; never `during_period` alone.
+4. **Output = PRs**, never direct writes: batches go through the existing
+   github-client flow, labelled `via-dashboard` + `import`, landing in
+   the admin queue for human review.
+5. **Licensing**: Fandom text is CC-BY-SA. We ingest **facts** (not
+   copyrightable) into structured JSON; we do **not** copy prose —
+   narratives are written fresh. Image files are NOT imported from
+   Fandom (rights unclear); images come through the existing upload
+   flow with per-file licensing.
+6. **Environment constraint (blocker for cloud sessions)**:
+   `onepiece.fandom.com` is currently denied by the sandbox network
+   policy (403 CONNECT). Import runs need either the domain allowlisted
+   in the Claude environment settings, a local run, or a scheduled CI
+   job with egress. Parser development is unaffected (fixtures).
+
+**Consequences**: ROADMAP Phase 3.5 (seed corpus) gets its engine;
+`packages/importers` gains its first real modules (own PR(s), starting
+with `manga-chapter`/`character` — the highest-volume, best-templated
+pages). The dashboard admin queue is the human gate.
+
+---
+
+## ADR-078 — qualifier-type registry: schema-driven qualifier UI
+
+**Date**: 2026-06-14
+
+**Context**: `apps/dashboard/src/form/qualifiers.ts` hardcoded the base
+qualifiers (epistemic_status, actual_value, event, believed_by,
+known_truth_by, assisted_by, review_status) and the common
+property-declared qualifiers (since, until, source, canon_scope,
+in_universe_date, given_by, context, name_type) — ids, value types,
+enum refs, entity-type filters, multiplicity and English-only labels.
+That violates "no property name is hardcoded in application code"
+(CLAUDE.md) and was the last W-A item (ADR-032; audit backlog #3).
+
+**Options**: (a) registry as schema files loaded into the catalogue;
+(b) a generated TS manifest; (c) keep hardcoding with a lint guard.
+(a) matches every other schema concept (discovery through the
+catalogue, one meta-schema, editor completion via `$schema`) and gives
+FR labels for free.
+
+**Decision**: New registry **`/data/schemas/qualifier-types/*.json`**
+(core; universe-scopable like every registry):
+
+1. Meta-schema `QualifierTypeSchema` (`kind: base|common`, localized
+   `labels` + optional `descriptions`, `value_type`, `enum_ref`,
+   `entity_type_filter`, `multi`, `mirrors_entry_value`, `order`) —
+   generated JSON meta-schema `qualifier-type.schema.json` alongside
+   the other four.
+2. Loader/meta-validator/`forUniverse`/`schema:check` carry a fifth
+   group `qualifierTypes` (15 entries: 7 base + 8 common, mirroring
+   the previous hardcoded tables 1:1 — behaviour-preserving).
+   `forUniverse` filters `entity_type_filter` like other applicability
+   lists (ADR-048).
+3. `/api/schemas` exposes `qualifierTypes`; the dashboard's
+   `resolveQualifiers(registry, locale, …)` derives every QualifierDef
+   from it (localized labels/descriptions; bespoke lean
+   `allowed_qualifiers` still fall back to a humanized id).
+4. **Not in the compat contract**: the registry is presentation/
+   discovery metadata; entity-JSON validation is unchanged (base
+   qualifiers stay typed in the generated validators + entity-loader).
+
+**Follow-ups**: migrate relation-qualifier labels + the residual
+`UI_STRINGS` qualifier-label overrides to the registry; consider a
+coherence check that `default_qualifiers` ids resolve against `common`
+entries.
+
+**Consequences**: W-A is complete (the `check:coherence` linter half
+already existed). Qualifier UI is schema-driven and FR-localized; a new
+qualifier is now a JSON file, not a code change.
+
+---
+
+## ADR-077 — C5 additive wave: fruit weaknesses/interactions, technique depth
+
+**Date**: 2026-06-14
+
+**Context**: The `[A]`-tagged C5/powers rows (DATA_EXPANSION_PLAN §C5 + §2A
+"Powers"). The `fighting-style` modelling call (open decision #5 — entity vs
+`concept` subtype) stays open, so `part-of-system` is deferred with it; named
+Haki applications as `technique` **data** need no schema change.
+
+**Decision** (all additive, one-piece-scoped):
+
+1. **devil-fruit** (v4): `weakness` (multi_enum → new vocab
+   `devil-fruit-drawback-kinds`, 9 values `[V]`, historised + spoiler);
+   `awakening_outcome` (enum → new vocab `awakening-outcomes`
+   successful/failed_berserk/partial — the Zoan berserk risk the `awakened`
+   boolean can't express); **`interacts-with-fruit`** relation (fruit →
+   fruit, required `interaction_kind` → new vocab `fruit-interaction-kinds`
+   superior_to/inferior_to/mutual_cancellation/nullifies/immune_to — Magu >
+   Mera, Yami nullifies, Gomu immune to Goro, many SBS-sourced);
+   **`held-by`** relation (fruit → character/organization/crew, historised
+   since/until — possession ≠ eating, the Ace → prize → Sabo chain).
+2. **technique** (v5): `is_secret` (boolean, historised + spoiler —
+   Rokuōgan), `requires_haki` (multi_enum → existing `haki-types`),
+   **`variant-of`** relation (technique → technique, optional
+   `variant_order` — Gear forms / sub-techniques; `derived-from` stays for
+   cross-style lineage).
+
+**Consequences**: 101 properties, 70 relations, 63 vocabularies; compat
+additive-only (17 entries). No migration. Remaining C5: the `[D]`
+fighting-style call + `part-of-system` + `acquisition_method` (ambiguous
+host — flagged), `technique-types` review `[V]`.
+
+---
+
+## ADR-076 — C9-rest additive wave 1: event phases, race/location/ship depth
+
+**Date**: 2026-06-14
+
+**Context**: First C9-rest slice (DATA_EXPANSION_PLAN §C9 + §2A), restricted
+to rows that are purely additive `[A]` and need no maintainer product call.
+The `[D]`/`[B]` C9 items stay open: `era` entity + structured in-universe
+temporal value (open decision #3), `ancient-weapon`/`artifact` (#6),
+`event_subtype` array + structured `outcome[]` (#7), inter-race relations
+(`[A][D]`), race population-status.
+
+**Decision** (all additive):
+
+1. **`part-of-event`** (core; event → event, single parent, optional
+   `phase_order` number, inverse "Has phase") — Marineford's ~10 ordered
+   phases each keep their own participants/location/outcome.
+2. **race** (v3): `slave_price` (number, berry, historised — the recurring
+   quantified field from the Sabaody/FMI prose), `danger_classification`
+   (enum, new vocab `danger-classifications` `type_a/b/c` — `[V]`
+   provisional), `hybrid-of` relation (race → race, e.g. Wotan = giant ×
+   fish-man).
+3. **location** (v4): `log_pose_time` (number, hours).
+4. **ship** (v4): `figurehead` (string descriptor).
+5. **bounty** (property v2): optional `reason` (string) qualifier — the
+   narrated cause of a raise; the event ref itself already fits the
+   universal `event` axis.
+6. Verified as already covered, no change: race homeland
+   (`originates-from`), event chains (`caused-by-event`/`causes-event`),
+   historised `population`, ship material (`made-of`, ADR-046).
+
+**Consequences**: 97 properties, 67 relations, 60 vocabularies; compat
+additive-only (7 entries). No migration.
+
+---
+
+## ADR-075 — chapter media enrichment: `is_color_spread` + `has-cover-story`
+
+**Date**: 2026-06-14
+
+**Context**: The last C7-deferred source-enrichment items (DATA_EXPANSION_PLAN
+§C7 "manga-chapter" row, parked with the C8 sources cluster): whether a chapter
+opens on a color spread, and the link from a chapter's title page to the
+cover-story mini-arc it hosts. Cover-story arcs are already plain `arc`s with
+`arc_subtype: cover_story` (ADR-047); what was missing is the per-chapter edge
+carrying the installment ordinal. Multi-title/per-edition titles stay folded
+into C1 (i18n editions).
+
+**Decision** (all additive, core):
+
+1. `is_color_spread` (boolean) on `manga-chapter` (v5→6).
+2. **`has-cover-story`** relation (manga-chapter → arc, single-valued,
+   inverse "Cover story in") with an optional `installment_number` (number)
+   qualifier — e.g. chapter 35 → arc "Buggy's Crew Adventure Chronicles",
+   installment 1. Prose description of a cover page stays in narratives.
+
+**Consequences**: 93 properties, 65 relations; compat additive-only. C7's
+deferred media enrichment is done; C8-rest is now fully shipped (volume
+ADR-071/073, sbs-qa ADR-074, adaptation m2m pre-existing, theme-song ADR-051).
+
+---
+
+## ADR-074 — `sbs-qa` entity: atomic SBS question/answer entries
+
+**Date**: 2026-06-14
+
+**Context**: The `sbs` entity models a whole column (one per tankōbon), but
+SBS-sourced facts — birthdays, blood types, heights, gag canon — are revealed
+by _individual questions_. Citing the whole column loses the locus (page,
+asker) and makes `clarifies-fact` coarse. This is the C8 `sbs-qa` item
+(DATA_EXPANSION_PLAN §C8, open decision #4 — resolved "as entity": Q&As are
+real reveal-sources and provenance precision is the point of the sources
+model).
+
+**Decision**: New **one-piece-scoped** entity `sbs-qa` (SBS is a One Piece
+publication feature), following the `databook`/`databook-card` nesting
+precedent:
+
+1. Properties (all new, one-piece-scoped): `question_key` + `answer_key`
+   (i18n_key, localizable, required), `asker_pen_name` (string — printed
+   reader P.N.), `page` (number ≥ 1, locus in the volume) + existing
+   `canon_scope` (typically `semi_canon`, ADR-047).
+2. **`qa-of`** relation (sbs-qa → sbs, single-valued, inverse "Has Q&A") —
+   mirror of `card-of`.
+3. Widened `features` and `clarifies-fact` `valid_from_types` += `sbs-qa`
+   (additive; applicability lists are not scope dependencies, ADR-048); a
+   Q&A can therefore feature characters and settle a property via
+   `clarifies-fact.property_name`.
+4. `display_name_properties: [question_key]`.
+
+**Consequences**: 36 entities, 92 properties, 64 relations (+ additive compat
+entries only). Facts should cite the `sbs-qa` entry when known, the `sbs`
+column as fallback (DATA_MODEL § sources). No migration.
+
+---
+
+## ADR-073 — drop the legacy `volume` string property (contract phase)
+
+**Date**: 2026-06-14
+
+**Context**: ADR-071 (expand phase) introduced the `volume` entity and the
+`part-of-volume` relation; the legacy free-text `volume` **string** property on
+`manga-chapter` / `sbs` was kept for the overlap. An audit of the corpus shows
+**no entity ever set the string property** (30 entities, 10 chapters, 0 SBS),
+so the "migrate" step is a recorded no-op and the contract can land now, before
+any ingest starts writing the deprecated shape. (ADR-072 is reserved by the
+in-flight PR #90 — image display `ui_hint.role`.)
+
+**Decision**:
+
+1. Remove `volume` from `manga-chapter` (v4→5) and `sbs` (v3→4); delete
+   `property-types/volume.json`.
+2. Migration `0005-drop-legacy-volume-property` (removeProperty; no-op on the
+   present corpus, kept as the historical record + third-party safety net).
+3. `compat:snapshot` updated — 3 breaking entries (property removed, two
+   entity-type property lists narrowed); PR label `schema-breaking`.
+
+**Consequences**: 88 property types (−1). Tankōbon linkage is exclusively the
+`part-of-volume` edge; future ingest must author `volume` entities directly.
+The expand→migrate→contract sequence for this field is complete.
+
+---
+
 ## ADR-071 — `volume` (tankōbon) entity + `part-of-volume` (expand phase)
 
 **Date**: 2026-06-14

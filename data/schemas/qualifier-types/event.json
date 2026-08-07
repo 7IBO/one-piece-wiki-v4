@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "event",
+  "schema_version": 1,
+  "kind": "base",
+  "order": 3,
+  "labels": {
+    "en": "Event",
+    "fr": "Évènement"
+  },
+  "descriptions": {
+    "en": "The event that caused or revealed this value.",
+    "fr": "L'évènement qui a causé ou révélé cette valeur."
+  },
+  "value_type": "entity_ref",
+  "entity_type_filter": [
+    "event"
+  ]
+}

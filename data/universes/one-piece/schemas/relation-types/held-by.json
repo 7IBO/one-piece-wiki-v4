@@ -1,0 +1,38 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "held-by",
+  "schema_version": 1,
+  "labels": {
+    "en": {
+      "active": "Held by",
+      "inverse": "Holds"
+    },
+    "fr": {
+      "active": "Détenu par",
+      "inverse": "Détient"
+    }
+  },
+  "valid_from_types": [
+    "devil-fruit"
+  ],
+  "valid_to_types": [
+    "character",
+    "organization",
+    "crew"
+  ],
+  "qualifiers": [
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    },
+    {
+      "id": "until",
+      "value_type": "source_ref",
+      "required": false
+    }
+  ],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true,
+  "historical": true
+}

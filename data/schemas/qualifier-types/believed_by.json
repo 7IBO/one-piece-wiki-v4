@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "believed_by",
+  "schema_version": 1,
+  "kind": "base",
+  "order": 4,
+  "labels": {
+    "en": "Believed by",
+    "fr": "Cru par"
+  },
+  "descriptions": {
+    "en": "Characters who hold this belief.",
+    "fr": "Personnages qui tiennent cette croyance."
+  },
+  "value_type": "entity_ref",
+  "entity_type_filter": [
+    "character"
+  ],
+  "multi": true
+}

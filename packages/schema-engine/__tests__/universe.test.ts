@@ -13,6 +13,7 @@ function cat(parts: {
   propertyTypes?: Record<string, Lite>;
   relationTypes?: Record<string, Lite>;
   vocabularies?: Record<string, Lite>;
+  qualifierTypes?: Record<string, Lite>;
 }): ValidatedCatalogue {
   const m = (o: Record<string, Lite> = {}) => new Map(Object.entries(o));
   return {
@@ -20,6 +21,7 @@ function cat(parts: {
     propertyTypes: m(parts.propertyTypes) as ValidatedCatalogue['propertyTypes'],
     relationTypes: m(parts.relationTypes) as ValidatedCatalogue['relationTypes'],
     vocabularies: m(parts.vocabularies) as ValidatedCatalogue['vocabularies'],
+    qualifierTypes: m(parts.qualifierTypes) as ValidatedCatalogue['qualifierTypes'],
     errors: [],
   };
 }

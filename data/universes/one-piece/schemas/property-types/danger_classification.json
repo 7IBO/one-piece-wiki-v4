@@ -1,0 +1,12 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "danger_classification",
+  "schema_version": 1,
+  "labels": { "en": "Danger classification", "fr": "Classification de dangerosité" },
+  "value_type": "enum",
+  "value_constraints": { "enum_ref": "danger-classifications" },
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["race"]
+}

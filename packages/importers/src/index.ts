@@ -95,3 +95,15 @@ export async function run<TSource, TEntity>(
 
   return { emitted, skipped };
 }
+
+// Fandom ingestion (ADR-079): MediaWiki client + wikitext utilities +
+// deterministic infobox mappers. See /docs/DECISIONS.md § ADR-079.
+export * from './emit-pr.ts';
+export * from './emit.ts';
+export * from './fandom/chapter.ts';
+export * from './fandom/character.ts';
+export * from './fandom/client.ts';
+export * from './fandom/crawl.ts';
+export * from './fandom/episode.ts';
+export * from './fandom/registry.ts';
+export * from './fandom/wikitext.ts';

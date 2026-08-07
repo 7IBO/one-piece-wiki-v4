@@ -181,7 +181,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (35)
+## 2. Entity types (36)
 
 | ID                    | Category   | Description                                                      | URL segment            |
 | --------------------- | ---------- | ---------------------------------------------------------------- | ---------------------- |
@@ -220,6 +220,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 | `live-performance`    | sources    | A stage adaptation (Premier Show, musical, kabuki, concert)      | `live-performances`    |
 | `merchandise`         | production | Official merch (figure, model kit, plush, apparel, card)         | `merchandise`          |
 | `volume`              | sources    | A collected manga volume (tankōbon)                              | `volumes`              |
+| `sbs-qa`              | sources    | An atomic SBS question/answer entry (semi-canon reveal locus)    | `sbs-qa`               |
 
 ### 2.1 Properties per entity type
 
@@ -229,22 +230,25 @@ property-type definitions are in section 3. Universal qualifiers
 
 #### `character`
 
-| Property          | Required | Historical | Localizable | Notes                                              |
-| ----------------- | -------- | ---------- | ----------- | -------------------------------------------------- |
-| `name`            | yes      | yes        | yes         | Multiple entries by name_type                      |
-| `epithet`         | no       | yes        | yes         | "Straw Hat", "Pirate Hunter"                       |
-| `occupation`      | no       | yes        | no          | Multi-enum `occupations`; profession (≠ crew role) |
-| `bounty`          | no       | yes        | no          | In berries                                         |
-| `age`             | no       | yes        | no          |                                                    |
-| `height`          | no       | yes        | no          | In cm                                              |
-| `weight`          | no       | yes        | no          | In kg (often unspecified)                          |
-| `birthday`        | no       | no         | no          | MM-DD format                                       |
-| `blood_type`      | no       | no         | no          | Enum `blood-types`: F/S/X/XF (One Piece system)    |
-| `gender`          | no       | no         | no          | Vocabulary `genders`                               |
-| `haki_types`      | no       | yes        | no          | Multi-enum `haki-types`                            |
-| `status`          | yes      | yes        | no          | Vocabulary `character-statuses`                    |
-| `birthplace`      | no       | no         | no          | entity_ref to `location`                           |
-| `description_key` | no       | no         | yes         | Short bio key                                      |
+| Property            | Required     | Historical                   | Localizable | Notes                                              |
+| ------------------- | ------------ | ---------------------------- | ----------- | -------------------------------------------------- |
+| `name`              | yes          | yes                          | yes         | Multiple entries by name_type                      |
+| `epithet`           | no           | yes                          | yes         | "Straw Hat", "Pirate Hunter"                       |
+| `occupation`        | no           | yes                          | no          | Multi-enum `occupations`; profession (≠ crew role) |
+| `bounty`            | no           | yes                          | no          | In berries                                         |
+| `age`               | no           | yes                          | no          |                                                    |
+| `height`            | no           | yes                          | no          | In cm                                              |
+| `weight`            | no           | yes                          | no          | In kg (often unspecified)                          |
+| `birthday`          | no           | no                           | no          | MM-DD format                                       |
+| `blood_type`        | no           | no                           | no          | Enum `blood-types`: F/S/X/XF (One Piece system)    |
+| `gender`            | no           | no                           | no          | Vocabulary `genders`                               |
+| `weakness`          | `multi_enum` | `devil-fruit-drawback-kinds` |             |                                                    |
+| `requires_haki`     | `multi_enum` | `haki-types`                 |             |                                                    |
+| `awakening_outcome` | `enum`       | `awakening-outcomes`         |             |                                                    |
+| `haki_types`        | no           | yes                          | no          | Multi-enum `haki-types`                            |
+| `status`            | yes          | yes                          | no          | Vocabulary `character-statuses`                    |
+| `birthplace`        | no           | no                           | no          | entity_ref to `location`                           |
+| `description_key`   | no           | no                           | yes         | Short bio key                                      |
 
 Allowed relations: `member-of`, `ate-fruit`, `uses-technique`,
 `wields-weapon`, `family-of`, `ally-of`, `enemy-of`, `mentor-of`,
@@ -260,10 +264,12 @@ Allowed relations: `member-of`, `ate-fruit`, `uses-technique`,
 | `name`                      | yes      | yes        | yes         | Common, true_name, etc.                  |
 | `classification`            | yes      | yes        | no          | Vocabulary `devil-fruit-classifications` |
 | `awakened`                  | no       | yes        | no          | Boolean                                  |
+| `awakening_outcome`         | no       | yes        | no          | Vocabulary `awakening-outcomes`          |
+| `weakness`                  | no       | yes        | no          | Multi — `devil-fruit-drawback-kinds`     |
 | `abilities_description_key` | no       | yes        | yes         | Short description key                    |
 
-Allowed relations: `eaten-by`, `enables-technique`, `depicted-by`,
-`sourced-from`.
+Allowed relations: `eaten-by`, `held-by`, `interacts-with-fruit`,
+`enables-technique`, `depicted-by`, `sourced-from`.
 
 ---
 
@@ -307,6 +313,7 @@ Allowed relations: `has-member`, `ally-of`, `enemy-of`, `based-in`,
 | `location_status`  | no       | yes        | no          | Vocabulary `location-statuses` |
 | `climate`          | no       | no         | yes         |                                |
 | `population`       | no       | yes        | no          |                                |
+| `log_pose_time`    | no       | no         | no          | Hours to set (Grand Line)      |
 | `description_key`  | no       | no         | yes         |                                |
 
 Allowed relations: `part-of-location`, `contains-location`,
@@ -320,10 +327,12 @@ Allowed relations: `part-of-location`, `contains-location`,
 | ----------------- | -------- | ---------- | ----------- | ---------------------------- |
 | `name`            | yes      | yes        | yes         |                              |
 | `technique_type`  | yes      | no         | no          | Vocabulary `technique-types` |
+| `is_secret`       | no       | yes        | no          | Boolean (e.g. Rokuōgan)      |
+| `requires_haki`   | no       | no         | no          | Multi — `haki-types`         |
 | `description_key` | no       | no         | yes         |                              |
 
 Allowed relations: `used-by`, `enabled-by-fruit`, `derived-from`,
-`depicted-by`.
+`variant-of`, `depicted-by`.
 
 ---
 
@@ -347,6 +356,7 @@ Allowed relations: `wielded-by`, `forged-by`, `depicted-by`.
 | `name`            | yes      | yes        | yes         |                         |
 | `ship_type`       | yes      | no         | no          | Vocabulary `ship-types` |
 | `crew_capacity`   | no       | no         | no          |                         |
+| `figurehead`      | no       | no         | no          | Freeform descriptor     |
 | `built_at`        | no       | no         | no          | source_ref              |
 | `destroyed_at`    | no       | no         | no          | source_ref              |
 | `description_key` | no       | no         | yes         |                         |
@@ -358,14 +368,17 @@ Allowed relations: `captained-by`, `crewed-by`, `flies-flag`,
 
 #### `race`
 
-| Property          | Required | Historical | Localizable | Notes   |
-| ----------------- | -------- | ---------- | ----------- | ------- |
-| `name`            | yes      | yes        | yes         |         |
-| `description_key` | no       | no         | yes         |         |
-| `lifespan`        | no       | no         | no          | Average |
-| `average_height`  | no       | no         | no          |         |
+| Property                | Required | Historical | Localizable | Notes                               |
+| ----------------------- | -------- | ---------- | ----------- | ----------------------------------- |
+| `name`                  | yes      | yes        | yes         |                                     |
+| `description_key`       | no       | no         | yes         |                                     |
+| `lifespan`              | no       | no         | no          | Average                             |
+| `average_height`        | no       | no         | no          |                                     |
+| `slave_price`           | no       | yes        | no          | Berry — recurring quantified field  |
+| `danger_classification` | no       | no         | no          | Vocabulary `danger-classifications` |
 
-Allowed relations: `has-member-race`, `originates-from`, `depicted-by`.
+Allowed relations: `has-member-race`, `hybrid-of`, `originates-from`,
+`depicted-by`.
 
 ---
 
@@ -396,18 +409,19 @@ appearances are `features`' generated inverse.)
 
 #### `manga-chapter`
 
-| Property      | Required | Historical | Localizable | Notes                         |
-| ------------- | -------- | ---------- | ----------- | ----------------------------- |
-| `number`      | yes      | no         | no          |                               |
-| `title_key`   | yes      | no         | yes         | Japanese title + translations |
-| `released_at` | yes      | no         | no          | ISO date; `territory: jp`     |
-| `volume`      | no       | no         | no          | Volume number/string          |
-| `page_count`  | no       | no         | no          |                               |
-| `canon_scope` | yes      | no         | no          | Always `manga`                |
-| `cover_image` | no       | no         | no          | entity_ref to `image`         |
+| Property          | Required | Historical | Localizable | Notes                         |
+| ----------------- | -------- | ---------- | ----------- | ----------------------------- |
+| `number`          | yes      | no         | no          |                               |
+| `title_key`       | yes      | no         | yes         | Japanese title + translations |
+| `released_at`     | yes      | no         | no          | ISO date; `territory: jp`     |
+| `page_count`      | no       | no         | no          |                               |
+| `is_color_spread` | no       | no         | no          | Opens on a color spread       |
+| `canon_scope`     | yes      | no         | no          | Always `manga`                |
+| `cover_image`     | no       | no         | no          | entity_ref to `image`         |
 
-Allowed relations: `features`, `part-of-arc`, `adapted-by`,
-`introduces-character`, `depicted-by`.
+Allowed relations: `features`, `part-of-arc`, `part-of-volume`,
+`has-cover-story`, `adapted-by`, `introduces-character`, `available-on`,
+`depicted-by`.
 
 ---
 
@@ -445,11 +459,24 @@ Allowed relations: `features`, `staffed-by`, `produced-by`, `available-on`,
 
 | Property      | Required | Historical | Localizable | Notes           |
 | ------------- | -------- | ---------- | ----------- | --------------- |
-| `volume`      | yes      | no         | no          | Volume number   |
 | `released_at` | yes      | no         | no          | `territory: jp` |
 | `canon_scope` | yes      | no         | no          | Always `sbs`    |
 
-Allowed relations: `features`, `clarifies-fact`.
+Allowed relations: `features`, `clarifies-fact`, `part-of-volume`.
+
+---
+
+#### `sbs-qa`
+
+| Property         | Required | Historical | Localizable | Notes                  |
+| ---------------- | -------- | ---------- | ----------- | ---------------------- |
+| `question_key`   | yes      | no         | yes         | i18n key               |
+| `answer_key`     | yes      | no         | yes         | i18n key               |
+| `asker_pen_name` | no       | no         | no          | Reader's printed P.N.  |
+| `page`           | no       | no         | no          | Page in the volume     |
+| `canon_scope`    | yes      | no         | no          | Typically `semi_canon` |
+
+Allowed relations: `qa-of`, `features`, `clarifies-fact`.
 
 ---
 
@@ -504,8 +531,8 @@ Allowed relations: `contains-arc`.
 | `is_public`     | no       | no         | no          | Boolean — affects propagation |
 
 Allowed relations: `participant`, `caused-death-of`,
-`occurs-during-arc`, `caused-by-event`, `causes-event`, `set-in`,
-`depicted-by`.
+`occurs-during-arc`, `caused-by-event`, `causes-event`, `part-of-event`,
+`set-in`, `depicted-by`.
 
 ---
 
@@ -554,7 +581,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (89)
+## 3. Property types (101)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -571,6 +598,8 @@ unit, and qualifier policy (section 6).
 | `alt_text_key`    | `i18n_key` | required for `image`         | —            |
 | `narrative_key`   | `i18n_key` | —                            | —            |
 | `title_key`       | `i18n_key` | —                            | —            |
+| `question_key`    | `i18n_key` | sbs-qa                       | —            |
+| `answer_key`      | `i18n_key` | sbs-qa                       | —            |
 
 ### 3.2 Numeric properties
 
@@ -582,8 +611,10 @@ unit, and qualifier policy (section 6).
 | `weight`          | `number`   | kg    | min:0                 |
 | `population`      | `number`   | —     | min:0                 |
 | `number`          | `number`   | —     | min:0                 |
-| `volume`          | `string`   | —     | (numeric or named)    |
 | `page_count`      | `number`   | —     | min:1                 |
+| `page`            | `number`   | —     | min:1 (sbs-qa locus)  |
+| `slave_price`     | `number`   | berry | min:0, historised     |
+| `log_pose_time`   | `number`   | hour  | min:0                 |
 | `runtime_minutes` | `number`   | min   | min:0                 |
 | `saga_number`     | `number`   | —     | min:1                 |
 | `arc_number`      | `number`   | —     | min:1                 |
@@ -612,59 +643,63 @@ unit, and qualifier policy (section 6).
 
 ### 3.4 Categorical (enum-backed)
 
-| Property              | Value type   | Vocabulary                    |
-| --------------------- | ------------ | ----------------------------- |
-| `status`              | `enum`       | `character-statuses`          |
-| `gender`              | `enum`       | `genders`                     |
-| `classification` (DF) | `enum`       | `devil-fruit-classifications` |
-| `location_subtype`    | `enum`       | `location-subtypes`           |
-| `region`              | `enum`       | `location-regions`            |
-| `location_status`     | `enum`       | `location-statuses`           |
-| `material_subtype`    | `enum`       | `material-subtypes`           |
-| `technique_type`      | `enum`       | `technique-types`             |
-| `weapon_type`         | `enum`       | `weapon-types`                |
-| `weapon_grade`        | `enum`       | `weapon-grades`               |
-| `ship_type`           | `enum`       | `ship-types`                  |
-| `organization_type`   | `enum`       | `org-types`                   |
-| `arc_subtype`         | `enum`       | `arc-subtypes`                |
-| `event_subtype`       | `enum`       | `event-subtypes`              |
-| `concept_subtype`     | `enum`       | `concept-subtypes`            |
-| `canon_scope`         | `enum`       | `canon-scopes`                |
-| `databook_subtype`    | `enum`       | `databook-subtypes`           |
-| `license`             | `enum`       | `image-licenses`              |
-| `format`              | `enum`       | `image-formats`               |
-| `haki_types`          | `multi_enum` | `haki-types`                  |
-| `person_roles`        | `multi_enum` | `person-roles`                |
-| `game_genre`          | `enum`       | `game-genres`                 |
-| `game_platforms`      | `multi_enum` | `game-platforms`              |
-| `special_kind`        | `enum`       | `special-kinds`               |
-| `performance_kind`    | `enum`       | `performance-kinds`           |
-| `merch_type`          | `enum`       | `merch-types`                 |
+| Property                | Value type   | Vocabulary                    |
+| ----------------------- | ------------ | ----------------------------- |
+| `status`                | `enum`       | `character-statuses`          |
+| `gender`                | `enum`       | `genders`                     |
+| `classification` (DF)   | `enum`       | `devil-fruit-classifications` |
+| `location_subtype`      | `enum`       | `location-subtypes`           |
+| `region`                | `enum`       | `location-regions`            |
+| `location_status`       | `enum`       | `location-statuses`           |
+| `danger_classification` | `enum`       | `danger-classifications`      |
+| `material_subtype`      | `enum`       | `material-subtypes`           |
+| `technique_type`        | `enum`       | `technique-types`             |
+| `weapon_type`           | `enum`       | `weapon-types`                |
+| `weapon_grade`          | `enum`       | `weapon-grades`               |
+| `ship_type`             | `enum`       | `ship-types`                  |
+| `organization_type`     | `enum`       | `org-types`                   |
+| `arc_subtype`           | `enum`       | `arc-subtypes`                |
+| `event_subtype`         | `enum`       | `event-subtypes`              |
+| `concept_subtype`       | `enum`       | `concept-subtypes`            |
+| `canon_scope`           | `enum`       | `canon-scopes`                |
+| `databook_subtype`      | `enum`       | `databook-subtypes`           |
+| `license`               | `enum`       | `image-licenses`              |
+| `format`                | `enum`       | `image-formats`               |
+| `haki_types`            | `multi_enum` | `haki-types`                  |
+| `person_roles`          | `multi_enum` | `person-roles`                |
+| `game_genre`            | `enum`       | `game-genres`                 |
+| `game_platforms`        | `multi_enum` | `game-platforms`              |
+| `special_kind`          | `enum`       | `special-kinds`               |
+| `performance_kind`      | `enum`       | `performance-kinds`           |
+| `merch_type`            | `enum`       | `merch-types`                 |
 
 ### 3.5 Boolean
 
-| Property                 | Value type | Notes                                  |
-| ------------------------ | ---------- | -------------------------------------- |
-| `awakened`               | `boolean`  | Devil Fruit                            |
-| `oda_supervised`         | `boolean`  | Film                                   |
-| `is_public`              | `boolean`  | Event — controls knowledge propagation |
-| `single_holder`          | `boolean`  | Title                                  |
-| `nullifies_devil_fruits` | `boolean`  | Material — `true` for Seastone         |
-| `anime_original`         | `boolean`  | Anime-episode — filler / anime-only    |
+| Property                 | Value type | Notes                                   |
+| ------------------------ | ---------- | --------------------------------------- |
+| `awakened`               | `boolean`  | Devil Fruit                             |
+| `oda_supervised`         | `boolean`  | Film                                    |
+| `is_public`              | `boolean`  | Event — controls knowledge propagation  |
+| `single_holder`          | `boolean`  | Title                                   |
+| `nullifies_devil_fruits` | `boolean`  | Material — `true` for Seastone          |
+| `anime_original`         | `boolean`  | Anime-episode — filler / anime-only     |
+| `is_color_spread`        | `boolean`  | Manga-chapter — opens on a color spread |
+| `is_secret`              | `boolean`  | Technique — secret / unrevealed variant |
 
 ### 3.6 References
 
-| Property        | Value type | Target type      |
-| --------------- | ---------- | ---------------- |
-| `url`           | `string`   | (R2 URL)         |
-| `attribution`   | `string`   | —                |
-| `source_origin` | `string`   | —                |
-| `climate`       | `string`   | —                |
-| `blood_type`    | `string`   | A, B, AB, O, +/− |
+| Property         | Value type | Target type      |
+| ---------------- | ---------- | ---------------- |
+| `url`            | `string`   | (R2 URL)         |
+| `attribution`    | `string`   | —                |
+| `source_origin`  | `string`   | —                |
+| `asker_pen_name` | `string`   | — (sbs-qa)       |
+| `climate`        | `string`   | —                |
+| `blood_type`     | `string`   | A, B, AB, O, +/− |
 
 ---
 
-## 4. Relation types (63)
+## 4. Relation types (70)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -704,6 +739,7 @@ generates inverses automatically when `inverse_inferred: true`.
 | Type              | From        | To         | Inverse           | Qualifiers   |
 | ----------------- | ----------- | ---------- | ----------------- | ------------ |
 | `belongs-to-race` | `character` | `race`     | `has-member-race` | —            |
+| `hybrid-of`       | `race`      | `race`     | `has-hybrid`      | —            |
 | `born-in`         | `character` | `location` | `birthplace-of`   | —            |
 | `resides-in`      | `character` | `location` | `home-of`         | since, until |
 | `originates-from` | `race`      | `location` | `origin-of-race`  | —            |
@@ -737,11 +773,11 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.8 Source ↔ entity
 
-| Type                   | From              | To          | Inverse                | Qualifiers                                                                  |
-| ---------------------- | ----------------- | ----------- | ---------------------- | --------------------------------------------------------------------------- |
-| `features`             | source types      | any entity  | `featured-in` _(gen.)_ | appearance_type (shown _or_ evoked; absorbs former `references`/`mentions`) |
-| `introduces-character` | source types      | `character` | `introduced-in`        | —                                                                           |
-| `clarifies-fact`       | `sbs`, `databook` | any entity  | `clarified-in`         | property_name                                                               |
+| Type                   | From                        | To          | Inverse                | Qualifiers                                                                  |
+| ---------------------- | --------------------------- | ----------- | ---------------------- | --------------------------------------------------------------------------- |
+| `features`             | source types                | any entity  | `featured-in` _(gen.)_ | appearance_type (shown _or_ evoked; absorbs former `references`/`mentions`) |
+| `introduces-character` | source types                | `character` | `introduced-in`        | —                                                                           |
+| `clarifies-fact`       | `sbs`, `sbs-qa`, `databook` | any entity  | `clarified-in`         | property_name                                                               |
 
 ### 4.9 Source ↔ source (adaptation)
 
@@ -751,14 +787,16 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.10 Narrative structure
 
-| Type                  | From                                      | To                   | Inverse           | Qualifiers |
-| --------------------- | ----------------------------------------- | -------------------- | ----------------- | ---------- |
-| `part-of-arc`         | `manga-chapter`, `event`, `anime-episode` | `arc`                | `(inferred)`      | —          |
-| `part-of-volume`      | `manga-chapter`, `sbs`                    | `volume`             | `collects`        | since      |
-| `part-of-series`      | `live-action-episode`                     | `live-action-series` | `(inferred)`      | since      |
-| `part-of-saga`        | `arc`                                     | `saga`               | `contains-arc`    | —          |
-| `occurs-during-arc`   | `event`                                   | `arc`                | `contains-event`  | —          |
-| `features-characters` | `arc`                                     | `character`          | `featured-in-arc` | role       |
+| Type                  | From                                      | To                   | Inverse           | Qualifiers         |
+| --------------------- | ----------------------------------------- | -------------------- | ----------------- | ------------------ |
+| `part-of-arc`         | `manga-chapter`, `event`, `anime-episode` | `arc`                | `(inferred)`      | —                  |
+| `part-of-volume`      | `manga-chapter`, `sbs`                    | `volume`             | `collects`        | since              |
+| `qa-of`               | `sbs-qa`                                  | `sbs`                | `has-qa`          | —                  |
+| `has-cover-story`     | `manga-chapter`                           | `arc`                | `cover-story-in`  | installment_number |
+| `part-of-series`      | `live-action-episode`                     | `live-action-series` | `(inferred)`      | since              |
+| `part-of-saga`        | `arc`                                     | `saga`               | `contains-arc`    | —                  |
+| `occurs-during-arc`   | `event`                                   | `arc`                | `contains-event`  | —                  |
+| `features-characters` | `arc`                                     | `character`          | `featured-in-arc` | role               |
 
 ### 4.11 Events
 
@@ -767,6 +805,7 @@ generates inverses automatically when `inverse_inferred: true`.
 | `participant`     | `event` | `character`, `crew`, `organization` | `participated-in` | side, role, outcome, notable_action |
 | `caused-death-of` | `event` | `character`                         | `died-in-event`   | cause                               |
 | `caused-by-event` | `event` | `event`                             | `causes-event`    | —                                   |
+| `part-of-event`   | `event` | `event`                             | `has-phase`       | phase_order                         |
 
 ### 4.12 Concept embodiment
 
@@ -817,7 +856,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (59)
+## 5. Vocabularies / Enums (63)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -1138,12 +1177,36 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 
 `gear`, `zoan_form`, `sulong`, `awakening`, `other`
 
+### 5.60 `danger-classifications`
+
+`type_a`, `type_b`, `type_c` — World-Government race danger tiers (values
+provisional `[V]`, to verify against canon before freeze).
+
+### 5.61 `devil-fruit-drawback-kinds`
+
+`seastone_water`, `elemental_inferiority`, `stamina_drain`, `lifespan_cost`,
+`no_intangibility_extra_damage`, `range_bound`, `requires_contact`,
+`requires_gesture`, `requires_knowledge` (`[V]` provisional)
+
+### 5.62 `fruit-interaction-kinds`
+
+`superior_to`, `inferior_to`, `mutual_cancellation`, `nullifies`, `immune_to`
+
+### 5.63 `awakening-outcomes`
+
+`successful`, `failed_berserk`, `partial`
+
 ---
 
 ## 6. Universal qualifiers
 
 Available on every historisable property value. They are NOT declared
-per-property; they are implicit.
+per-property; they are implicit. Since ADR-078 every base and common
+qualifier is declared in the **qualifier-type registry**
+(`/data/schemas/qualifier-types/*.json`, 15 entries: 7 `base` + 8
+`common`) with localized labels/descriptions and picker metadata; the
+dashboard derives its qualifier UI from the registry via
+`/api/schemas` — nothing is hardcoded.
 
 | Qualifier          | Value type           | Default     | Meaning                                       |
 | ------------------ | -------------------- | ----------- | --------------------------------------------- |
@@ -1234,7 +1297,7 @@ These exist on every entity, declared once in primitives.
 `arc`, `saga`, `manga-chapter`, `anime-episode`, `film`, `person`,
 `material`, `theme-song`, `company`, `databook-card`, `transformation`,
 `album`, `video-game`, `live-action-series`, `live-action-episode`,
-`anime-special`, `live-performance`, `merchandise`, `volume`
+`anime-special`, `live-performance`, `merchandise`, `volume`, `sbs-qa`
 
 ### 9.3 Entity types that can be `participant` of events
 
@@ -1258,10 +1321,11 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 35
-- **Property types**: 89 (some shared across multiple entity types)
-- **Relation types**: 63 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 59
+- **Entity types**: 36
+- **Property types**: 101 (some shared across multiple entity types)
+- **Relation types**: 70 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 63
+- **Qualifier types**: 15 (7 base + 8 common — the ADR-078 registry)
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)

@@ -80,6 +80,14 @@ export function forUniverse(
       valid_to_types: v.valid_to_types.filter(here),
     })),
     vocabularies: scopedMap(catalogue.vocabularies, universeId, (v) => v),
+    qualifierTypes: scopedMap(
+      catalogue.qualifierTypes,
+      universeId,
+      (v) =>
+        v.entity_type_filter === undefined
+          ? v
+          : { ...v, entity_type_filter: v.entity_type_filter.filter(here) },
+    ),
     errors: catalogue.errors,
   };
 }

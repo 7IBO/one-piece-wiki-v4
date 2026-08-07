@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "until",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 2,
+  "labels": {
+    "en": "Until",
+    "fr": "Jusqu'à"
+  },
+  "descriptions": {
+    "en": "When this value stops applying.",
+    "fr": "Jusqu'à quand la valeur s'applique."
+  },
+  "value_type": "source_ref",
+  "multi": true
+}

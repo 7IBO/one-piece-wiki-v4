@@ -13,6 +13,7 @@
 import {
   EntityTypeSchema,
   PropertyTypeSchema,
+  QualifierTypeSchema,
   RelationTypeSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
@@ -28,6 +29,7 @@ const META_SCHEMAS: ReadonlyArray<readonly [string, ZodTypeAny]> = [
   ['property-type', PropertyTypeSchema],
   ['relation-type', RelationTypeSchema],
   ['vocabulary', VocabularySchema],
+  ['qualifier-type', QualifierTypeSchema],
 ];
 
 /**

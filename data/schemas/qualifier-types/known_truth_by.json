@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "known_truth_by",
+  "schema_version": 1,
+  "kind": "base",
+  "order": 5,
+  "labels": {
+    "en": "Known truth by",
+    "fr": "Vérité connue de"
+  },
+  "descriptions": {
+    "en": "Characters who know the actual truth.",
+    "fr": "Personnages qui connaissent la vérité."
+  },
+  "value_type": "entity_ref",
+  "entity_type_filter": [
+    "character"
+  ],
+  "multi": true
+}

@@ -27,9 +27,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Search, X } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
+import { type JSX, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { api, type EntityDetail, type SchemaCatalogue } from '../api';
+import { api, type EntityDetail } from '../api';
+import { LoadFailed } from '../components/LoadFailed';
+import { useApiResource } from '../hooks/use-api-resource';
+
+// Stable fallback while the page resource is loading.
+const emptySources: readonly { id: string; type: string; slug: string; }[] = [];
 import { MultiEntityRefInput } from '../form/inputs';
 import { useLocale, useT } from '../form/locale';
 
@@ -207,12 +212,13 @@ function ApparitionsComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
   const t = useT();
-  const [entity, setEntity] = useState<EntityDetail | null>(null);
-  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
-  const [sources, setSources] = useState<readonly { id: string; type: string; slug: string; }[]>(
-    [],
+  const { data, error } = useApiResource(
+    () => Promise.all([api.getEntity(type, slug), api.schemas(), api.sources()]),
+    [type, slug],
   );
-  const [error, setError] = useState<string | null>(null);
+  const entity = data?.[0] ?? null;
+  const schemas = data?.[1] ?? null;
+  const sources = data?.[2] ?? emptySources;
   const [working, setWorking] = useState<WorkingState>(emptyWorking);
   // `others` is the slice of relations[] we DON'T touch on save —
   // re-attached verbatim so a save here can't accidentally drop a
@@ -221,18 +227,22 @@ function ApparitionsComponent(): JSX.Element {
   const [others, setOthers] = useState<readonly OtherRelation[]>([]);
   const [saving, setSaving] = useState(false);
 
-  useEffect(() => {
-    Promise.all([api.getEntity(type, slug), api.schemas(), api.sources()])
-      .then(([e, s, src]) => {
-        setEntity(e);
-        setSchemas(s);
-        setSources(src);
-        const split = splitRelations(e);
-        setWorking(buildInitial(split.apparitions));
-        setOthers(split.others);
-      })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
-  }, [type, slug]);
+  // Seed the working split from the entity once it lands (and whenever
+  // the route params re-trigger the fetch) — render-time adjustment
+  // (react.dev "you might not need an effect"), no effect chain /
+  // stale frame.
+  const [seededFrom, setSeededFrom] = useState<EntityDetail | null>(null);
+  if (entity !== seededFrom) {
+    setSeededFrom(entity);
+    if (entity === null) {
+      setWorking(emptyWorking);
+      setOthers([]);
+    } else {
+      const split = splitRelations(entity);
+      setWorking(buildInitial(split.apparitions));
+      setOthers(split.others);
+    }
+  }
 
   // entityTypes prop for MultiEntityRefInput — every schema type
   // sorted by locale label. Filtered per-section via `restrictTo`.
@@ -374,7 +384,7 @@ function ApparitionsComponent(): JSX.Element {
     }
   }
 
-  if (error !== null) return <p className='text-destructive'>Failed: {error}</p>;
+  if (error !== null) return <LoadFailed message={error} />;
   if (entity === null || schemas === null) {
     return (
       <div className='space-y-4'>

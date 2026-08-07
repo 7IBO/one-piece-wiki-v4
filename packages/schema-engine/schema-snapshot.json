@@ -285,6 +285,9 @@
         "awakened": {
           "required": false
         },
+        "awakening_outcome": {
+          "required": false
+        },
         "classification": {
           "required": true
         },
@@ -294,12 +297,17 @@
         "name": {
           "required": true
         },
+        "weakness": {
+          "required": false
+        },
         "zoan_model": {
           "required": false
         }
       },
       "allowed_relations": [
-        "depicted-by"
+        "depicted-by",
+        "held-by",
+        "interacts-with-fruit"
       ]
     },
     "event": {
@@ -328,6 +336,7 @@
         "caused-death-of",
         "depicted-by",
         "occurs-during-arc",
+        "part-of-event",
         "participant",
         "set-in"
       ]
@@ -485,6 +494,9 @@
         "location_subtype": {
           "required": true
         },
+        "log_pose_time": {
+          "required": false
+        },
         "name": {
           "required": true
         },
@@ -507,6 +519,9 @@
         "canon_scope": {
           "required": false
         },
+        "is_color_spread": {
+          "required": false
+        },
         "number": {
           "required": true
         },
@@ -521,9 +536,6 @@
         },
         "title_key": {
           "required": true
-        },
-        "volume": {
-          "required": false
         }
       },
       "allowed_relations": [
@@ -531,6 +543,7 @@
         "available-on",
         "depicted-by",
         "features",
+        "has-cover-story",
         "introduces-character",
         "part-of-arc",
         "part-of-volume"
@@ -615,6 +628,9 @@
         "average_height": {
           "required": false
         },
+        "danger_classification": {
+          "required": false
+        },
         "description_key": {
           "required": false
         },
@@ -623,10 +639,14 @@
         },
         "name": {
           "required": true
+        },
+        "slave_price": {
+          "required": false
         }
       },
       "allowed_relations": [
         "depicted-by",
+        "hybrid-of",
         "originates-from"
       ]
     },
@@ -654,15 +674,36 @@
         },
         "released_at": {
           "required": true
-        },
-        "volume": {
-          "required": true
         }
       },
       "allowed_relations": [
         "clarifies-fact",
         "features",
         "part-of-volume"
+      ]
+    },
+    "sbs-qa": {
+      "properties": {
+        "answer_key": {
+          "required": true
+        },
+        "asker_pen_name": {
+          "required": false
+        },
+        "canon_scope": {
+          "required": true
+        },
+        "page": {
+          "required": false
+        },
+        "question_key": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "clarifies-fact",
+        "features",
+        "qa-of"
       ]
     },
     "ship": {
@@ -677,6 +718,9 @@
           "required": false
         },
         "destroyed_at": {
+          "required": false
+        },
+        "figurehead": {
           "required": false
         },
         "name": {
@@ -713,8 +757,14 @@
         "description_key": {
           "required": false
         },
+        "is_secret": {
+          "required": false
+        },
         "name": {
           "required": true
+        },
+        "requires_haki": {
+          "required": false
         },
         "technique_type": {
           "required": true
@@ -725,7 +775,8 @@
         "depicted-by",
         "derived-from",
         "enabled-by-fruit",
-        "enabled-by-transformation"
+        "enabled-by-transformation",
+        "variant-of"
       ]
     },
     "theme-song": {
@@ -877,6 +928,12 @@
       "historical": false,
       "localizable": false
     },
+    "answer_key": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": true
+    },
     "arc_number": {
       "value_type": "number",
       "enum_ref": null,
@@ -886,6 +943,12 @@
     "arc_subtype": {
       "value_type": "enum",
       "enum_ref": "arc-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "asker_pen_name": {
+      "value_type": "string",
+      "enum_ref": null,
       "historical": false,
       "localizable": false
     },
@@ -904,6 +967,12 @@
     "awakened": {
       "value_type": "boolean",
       "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "awakening_outcome": {
+      "value_type": "enum",
+      "enum_ref": "awakening-outcomes",
       "historical": true,
       "localizable": false
     },
@@ -991,6 +1060,12 @@
       "historical": false,
       "localizable": false
     },
+    "danger_classification": {
+      "value_type": "enum",
+      "enum_ref": "danger-classifications",
+      "historical": false,
+      "localizable": false
+    },
     "databook_subtype": {
       "value_type": "enum",
       "enum_ref": "databook-subtypes",
@@ -1030,6 +1105,12 @@
     "event_subtype": {
       "value_type": "enum",
       "enum_ref": "event-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "figurehead": {
+      "value_type": "string",
+      "enum_ref": null,
       "historical": false,
       "localizable": false
     },
@@ -1111,6 +1192,12 @@
       "historical": true,
       "localizable": false
     },
+    "is_color_spread": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
     "is_cursed": {
       "value_type": "boolean",
       "enum_ref": null,
@@ -1121,6 +1208,12 @@
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
+      "localizable": false
+    },
+    "is_secret": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": true,
       "localizable": false
     },
     "last_source": {
@@ -1150,6 +1243,12 @@
     "location_subtype": {
       "value_type": "enum",
       "enum_ref": "location-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "log_pose_time": {
+      "value_type": "number",
+      "enum_ref": null,
       "historical": false,
       "localizable": false
     },
@@ -1207,6 +1306,12 @@
       "historical": false,
       "localizable": false
     },
+    "page": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
     "page_count": {
       "value_type": "number",
       "enum_ref": null,
@@ -1243,6 +1348,12 @@
       "historical": true,
       "localizable": false
     },
+    "question_key": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": true
+    },
     "record_label": {
       "value_type": "string",
       "enum_ref": null,
@@ -1258,6 +1369,12 @@
     "released_at": {
       "value_type": "date",
       "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "requires_haki": {
+      "value_type": "multi_enum",
+      "enum_ref": "haki-types",
       "historical": false,
       "localizable": false
     },
@@ -1289,6 +1406,12 @@
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
+      "localizable": false
+    },
+    "slave_price": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": true,
       "localizable": false
     },
     "source_origin": {
@@ -1357,10 +1480,10 @@
       "historical": true,
       "localizable": false
     },
-    "volume": {
-      "value_type": "string",
-      "enum_ref": null,
-      "historical": false,
+    "weakness": {
+      "value_type": "multi_enum",
+      "enum_ref": "devil-fruit-drawback-kinds",
+      "historical": true,
       "localizable": false
     },
     "weapon_grade": {
@@ -1679,7 +1802,8 @@
     "clarifies-fact": {
       "valid_from_types": [
         "databook",
-        "sbs"
+        "sbs",
+        "sbs-qa"
       ],
       "valid_to_types": [
         "character",
@@ -1948,6 +2072,7 @@
         "live-performance",
         "manga-chapter",
         "sbs",
+        "sbs-qa",
         "video-game"
       ],
       "valid_to_types": [
@@ -2055,6 +2180,76 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {}
+    },
+    "has-cover-story": {
+      "valid_from_types": [
+        "manga-chapter"
+      ],
+      "valid_to_types": [
+        "arc"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "installment_number": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "held-by": {
+      "valid_from_types": [
+        "devil-fruit"
+      ],
+      "valid_to_types": [
+        "character",
+        "crew",
+        "organization"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
+    "hybrid-of": {
+      "valid_from_types": [
+        "race"
+      ],
+      "valid_to_types": [
+        "race"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
+    "interacts-with-fruit": {
+      "valid_from_types": [
+        "devil-fruit"
+      ],
+      "valid_to_types": [
+        "devil-fruit"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "interaction_kind": {
+          "value_type": "enum",
+          "enum_ref": "fruit-interaction-kinds",
+          "required": true
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
     },
     "introduces-character": {
       "valid_from_types": [
@@ -2235,6 +2430,22 @@
       "inverse_inferred": true,
       "qualifiers": {}
     },
+    "part-of-event": {
+      "valid_from_types": [
+        "event"
+      ],
+      "valid_to_types": [
+        "event"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "phase_order": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "part-of-location": {
       "valid_from_types": [
         "location"
@@ -2412,6 +2623,16 @@
           "required": false
         }
       }
+    },
+    "qa-of": {
+      "valid_from_types": [
+        "sbs-qa"
+      ],
+      "valid_to_types": [
+        "sbs"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
     },
     "replaces": {
       "valid_from_types": [
@@ -2643,6 +2864,22 @@
         }
       }
     },
+    "variant-of": {
+      "valid_from_types": [
+        "technique"
+      ],
+      "valid_to_types": [
+        "technique"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "variant_order": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "voiced-by": {
       "valid_from_types": [
         "character"
@@ -2766,6 +3003,11 @@
       "training",
       "war"
     ],
+    "awakening-outcomes": [
+      "failed_berserk",
+      "partial",
+      "successful"
+    ],
     "blood-types": [
       "F",
       "S",
@@ -2837,6 +3079,11 @@
       "tactician",
       "vice_captain"
     ],
+    "danger-classifications": [
+      "type_a",
+      "type_b",
+      "type_c"
+    ],
     "databook-subtypes": [
       "blue",
       "gold",
@@ -2895,6 +3142,17 @@
       "special_paramecia",
       "unknown",
       "zoan"
+    ],
+    "devil-fruit-drawback-kinds": [
+      "elemental_inferiority",
+      "lifespan_cost",
+      "no_intangibility_extra_damage",
+      "range_bound",
+      "requires_contact",
+      "requires_gesture",
+      "requires_knowledge",
+      "seastone_water",
+      "stamina_drain"
     ],
     "dub-studios": [
       "4kids",
@@ -3025,6 +3283,13 @@
       "sworn_brother",
       "sworn_sister",
       "uncle"
+    ],
+    "fruit-interaction-kinds": [
+      "immune_to",
+      "inferior_to",
+      "mutual_cancellation",
+      "nullifies",
+      "superior_to"
     ],
     "game-genres": [
       "action",

@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "qa-of",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Q&A of", "inverse": "Has Q&A" },
+    "fr": { "active": "Q&R de", "inverse": "A pour Q&R" }
+  },
+  "valid_from_types": ["sbs-qa"],
+  "valid_to_types": ["sbs"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true,
+  "historical": false
+}

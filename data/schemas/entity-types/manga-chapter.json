@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "manga-chapter",
-  "schema_version": 4,
+  "schema_version": 6,
   "labels": { "en": "Manga chapter", "fr": "Chapitre du manga" },
   "url_segment": "chapters",
   "properties": [
@@ -9,8 +9,8 @@
     { "id": "title_key", "required": true, "historical": false, "localizable": true },
     { "id": "released_at", "required": true, "historical": false, "localizable": false },
     { "id": "publications", "required": false, "historical": true, "localizable": false },
-    { "id": "volume", "required": false, "historical": false, "localizable": false },
     { "id": "page_count", "required": false, "historical": false, "localizable": false },
+    { "id": "is_color_spread", "required": false, "historical": false, "localizable": false },
     { "id": "canon_scope", "required": false, "historical": false, "localizable": false }
   ],
   "display_name_properties": ["title_key"],
@@ -18,6 +18,7 @@
     "features",
     "part-of-arc",
     "part-of-volume",
+    "has-cover-story",
     "adapted-by",
     "introduces-character",
     "available-on",

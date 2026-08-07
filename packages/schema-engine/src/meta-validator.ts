@@ -8,6 +8,8 @@ import {
   type EntityTypeSchema as EntityType,
   PropertyTypeSchema,
   type PropertyTypeSchema as PropertyType,
+  QualifierTypeSchema,
+  type QualifierTypeSchema as QualifierType,
   RelationTypeSchema,
   type RelationTypeSchema as RelationType,
   VocabularySchema,
@@ -27,10 +29,11 @@ export type ValidatedCatalogue = {
   readonly propertyTypes: ReadonlyMap<string, PropertyType>;
   readonly relationTypes: ReadonlyMap<string, RelationType>;
   readonly vocabularies: ReadonlyMap<string, Vocabulary>;
+  readonly qualifierTypes: ReadonlyMap<string, QualifierType>;
   readonly errors: readonly MetaValidationError[];
 };
 
-export type { EntityType, PropertyType, RelationType, Vocabulary };
+export type { EntityType, PropertyType, QualifierType, RelationType, Vocabulary };
 
 function formatZodError(error: z.ZodError): string {
   return error.errors
@@ -74,6 +77,7 @@ export function validateCatalogue(catalogue: SchemaCatalogue): ValidatedCatalogu
   const propertyTypes = validateGroup(catalogue.propertyTypes, PropertyTypeSchema, errors);
   const relationTypes = validateGroup(catalogue.relationTypes, RelationTypeSchema, errors);
   const vocabularies = validateGroup(catalogue.vocabularies, VocabularySchema, errors);
+  const qualifierTypes = validateGroup(catalogue.qualifierTypes, QualifierTypeSchema, errors);
 
-  return { entityTypes, propertyTypes, relationTypes, vocabularies, errors };
+  return { entityTypes, propertyTypes, relationTypes, vocabularies, qualifierTypes, errors };
 }

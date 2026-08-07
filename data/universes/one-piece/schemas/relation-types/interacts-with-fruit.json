@@ -1,0 +1,37 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "interacts-with-fruit",
+  "schema_version": 1,
+  "labels": {
+    "en": {
+      "active": "Interacts with fruit",
+      "inverse": "Interacts with fruit"
+    },
+    "fr": {
+      "active": "Interagit avec le fruit",
+      "inverse": "Interagit avec le fruit"
+    }
+  },
+  "valid_from_types": [
+    "devil-fruit"
+  ],
+  "valid_to_types": [
+    "devil-fruit"
+  ],
+  "qualifiers": [
+    {
+      "id": "interaction_kind",
+      "value_type": "enum",
+      "enum_ref": "fruit-interaction-kinds",
+      "required": true
+    },
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    }
+  ],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": false
+}

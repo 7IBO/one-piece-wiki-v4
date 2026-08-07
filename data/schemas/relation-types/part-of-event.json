@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "part-of-event",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Part of event", "inverse": "Has phase" },
+    "fr": { "active": "Phase de l'évènement", "inverse": "A pour phase" }
+  },
+  "valid_from_types": ["event"],
+  "valid_to_types": ["event"],
+  "qualifiers": [
+    { "id": "phase_order", "value_type": "number", "required": false }
+  ],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true,
+  "historical": false
+}

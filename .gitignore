@@ -58,3 +58,7 @@ coverage/
 # ADR-017. Generated on first `bun run dev` so hot-reload doesn't
 # invalidate the cookie. Never committed; never used in production.
 apps/dashboard/.dev-session-secret
+
+# Fandom raw-response cache (importer, ADR-079) — provenance metadata
+# lives in data/import/; raw wikitext is NEVER committed.
+.cache/

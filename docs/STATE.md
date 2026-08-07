@@ -5,7 +5,84 @@ session can pick up mid-stream. Architectural _rationale_ lives in
 `/docs/DECISIONS.md` (ADRs); the build order in `/docs/ROADMAP.md`;
 this file is the current status + the open threads.
 
-**Last updated**: 2026-06-14
+**Last updated**: 2026-06-14 (evening — C8 cluster closed)
+
+**2026-06-14 (evening) — C8 closed + C9/C5 additive waves.** Catalogue **36
+entities / 101 properties / 70 relations / 63 vocabularies**. ADR-073
+(contract phase: legacy `volume` string dropped; migration `0005`, no-op on
+corpus), ADR-074 (`sbs-qa` + `qa-of`), ADR-075 (`is_color_spread` +
+`has-cover-story`), ADR-076 (C9 wave 1: `part-of-event` phases, race
+`slave_price`/`danger_classification`/`hybrid-of`, location `log_pose_time`,
+ship `figurehead`, bounty `reason`), ADR-077 (C5 wave: fruit
+`weakness`/`awakening_outcome`/`interacts-with-fruit`/`held-by`, technique
+`is_secret`/`requires_haki`/`variant-of`). `adapted-by` was already the
+non-linear many-to-many — no change needed. **C8 complete; C9/C5 additive
+halves complete.** All shipped on PR #91. **The rest of the data campaign is
+blocked on the maintainer `[D]` calls** (DATA_EXPANSION_PLAN §4): #1 C1
+edition-variant qualifier, #3 era/temporal value, #5 fighting-style
+modelling, #6 ancient-weapon/artifact, #7 event breaking changes. **Also on
+PR #91**: W-F closed (shared `useApiResource` + `LoadFailed`, ADR-032) and
+W-A closed (qualifier-type registry, ADR-078 — catalogue is now 36 / 101 /
+70 / 63 / **15 qualifier types**). NB: **ADR-072 is reserved by PR #90**
+(dashboard image display, open at the time of writing — disjoint files,
+merge order safe either way).
+
+**2026-06-14 (late) — maintainer vision drop, recorded.** Direction
+received in the maintainer's own words: (1) **Fandom-assisted ingestion**
+via the MediaWiki content API → **ADR-079** (importers v1 programme;
+BLOCKER for cloud runs: `onepiece.fandom.com` is denied by the session
+network policy — allowlist it in the Claude environment settings, or run
+imports locally/CI); (2) **public-API additions** → **ADR-080**
+(field-lifecycle registry generated from compat snapshots, official npm
+SDK, per-entity history endpoint; Stripe-style pinning confirmed as the
+existing URL-MAJOR + `X-API-Version` design; all still design-only,
+pre-freeze gate ADR-029 unchanged); (3) **dashboard UX coherence pass 2** and the SEO / partnerships /
+"incontournable" polish → parked in IDEAS.md pending their own ADRs
+(affiliate links explicitly need the dedicated ADR). **Importers v1 foundation
+shipped (same evening, PR #91)**: `packages/importers/src/fandom/` —
+`FandomClient` (action=parse, injectable fetch, response cache, rate
+limit), the wikitext utilities (nesting-aware template parser,
+`findTemplate`, `cleanValue`, `parseQrefs` → source ids,
+loose number/date parsing) and the first deterministic mapper
+(`mapChapter`: Chapter Box → corpus-shaped `manga-chapter` JSON +
+EN-title sidecar + warnings; validated against the generated Zod in
+tests — 10 tests, fixtures only). **Sync registry shipped
+(ADR-081)**: `data/import/fandom-pages.json` ledger + registry module
+(title normalization, redirect aliases, `detectEntityLinks`,
+`staleEntries`) + client `queryInfo`/`recentChangesSince` + real
+redirect fixture. Real fixtures from the maintainer replaced the
+hand-written ones (Qref params are `chap`/`ep`/`sbs`/`vol`; Chapter Box
+has no number/date params — ordinal from the page title; Episode Box
+ordinal is `#`). **Character mapper shipped** (real Hyougoro Char Box fixture):
+deterministic scalars with per-value provenance — Qref parsing is now
+recursive with named-backref resolution (`{{Qref|name=vivre card}}` →
+`databook-card:1329`), `{{Nihongo}}` alias/epithet parsing, MM-DD
+birthdays; affiliation/occupation/VAs surface as warnings for the AI
+pass. New Qref variants covered: `cover=`, `card=`, `ep2=`, long
+`chapter=`/`episode=`. **Emit adapter + CLI + sync workflow shipped**:
+`emit.ts` (corpus-layout file building; translation merge where
+existing keys win; entity files conflict-safe unless `--overwrite`),
+`bun run import:fandom <chapter|episode|character> <page…> [--stage]`
+end-to-end CLI (dry-run default; response cache under `.cache/fandom`),
+`import:fandom check-updates` (ledger vs live revisions, exit 2 =
+stale), and `.github/workflows/fandom-sync.yml` — **manual-only**
+(`workflow_dispatch`; the daily cron line is committed commented-out —
+enabling unattended runs is the maintainer's call). First live run
+needs only: local/CI execution (CI runners have egress) or the sandbox
+allowlist (ADR-079 §6). **Full-auto crawl shipped**:
+`crawl()` orchestrator (category seeding via `categoryMembers` with
+continuation, infobox **auto-detection** routing to the right mapper,
+one-hop redirect following, frontier of most-linked unknown pages,
+ranked report of unmapped infobox kinds = which mapper to build next),
+`import:fandom crawl --category X --limit N [--stage]` CLI, batch-PR
+plan/emit (`emit-pr.ts` → labels `via-dashboard`+`import` → admin
+queue), and `.github/workflows/fandom-import.yml` (**manual dispatch**
+with category/limit inputs: crawl → stage → gauntlet → draft PR via
+`gh`; nothing merges without a human). Remaining importer work:
+volume/databook-card + remaining infobox mappers (the crawl report
+ranks them by frequency), the AI prose-extraction pass. Next:
+W-B detail view, W-F2 UX conventions.
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below
@@ -101,10 +178,12 @@ From the 2026-06-13 audit. **Done this run**: db-builder derived fields
 (is_first, primary_canon_scope), display-name dedup, github-client
 save-flow tests, the migration helper. **Pending**:
 
-- **qualifiers schema-driven** — `apps/dashboard/src/form/qualifiers.ts`
-  hardcodes qualifier UI metadata (value-type, enum_ref,
-  entityTypeFilter); make it schema-derived. 4 layers, new schema
-  concept → **ADR-first**.
+- ~~**qualifiers schema-driven**~~ — **DONE (ADR-078):** the
+  qualifier-type registry (`/data/schemas/qualifier-types/**`, 7 base +
+  8 common) feeds loader → catalogue → `/api/schemas` →
+  `resolveQualifiers(registry, locale, …)`. Follow-ups tracked in the
+  ADR (relation-qualifier labels, UI_STRINGS overrides, coherence
+  check on `default_qualifiers` ids).
 - **db-builder inference engine** — public events reveal facts to
   participants; death events update status transitively. Needs Phase
   3.5 data to be useful.
@@ -144,10 +223,9 @@ nations), ADR-044 (C7-core: `person` entity + `voiced-by`/`portrayed-by` +
 `location_status` + crew territorial control), ADR-046 (materials: `material`
 entity + `made-of` + Seastone's `nullifies_devil_fruits`), ADR-047 (C8a:
 `semi_canon` tier + `wanted_poster`/`eyecatcher` + `arc_number`). **Remaining
-(committed order — user said "tout"):** C8-rest (`volume` tankōbon entity —
-needs expand→migrate→contract on the legacy `volume` string property; `sbs-qa` +
-`databook-card` entities; non-linear `adapts`/`adapted-by`; `theme-song` + C7's
-deferred source/media enrichment), C9-rest (race/concept additions,
+(committed order — user said "tout"):** ~~C8-rest~~ **done 2026-06-14 evening**
+(ADR-071/073 volume, ADR-074 sbs-qa, ADR-075 chapter enrichment — see the
+dated entry at the top), C9-rest (race/concept additions,
 ancient-weapon/artifact, event enrichment, `era` entity + the `[D]` structured
 in-universe temporal value — biggest), C5 (fighting-styles/Haki/techniques), C1
 (naming/i18n editions — invasive, deliberately last; note `name-types` already
@@ -249,25 +327,33 @@ demand (module-level cache like `api.ts`); derived aggregates are
 computed server-side or emitted as generated TS manifests under
 `packages/` (cf. `packages/schemas/generated`); image bytes stay on R2.
 
-- **W-F — UI-coherence foundation** (do first, low risk). Shared
-  resource-fetch hook (or adopt the already-bundled TanStack Query) to
-  kill the duplicated `useEffect`+`useState`+skeleton+`Failed:` pattern
-  in ~7 routes; a shared `<PRBanner>`/`<InfoBanner>` for the repeated
-  amber/primary callouts; replace raw `<a>`/`<button>` (in `__root.tsx`,
-  `types.$type.index.tsx`) with `<Button>`. God-module decomposition
-  (`EntityForm.tsx` 1876 L, `inputs.tsx` 1103 L, `server/server.ts`
-  1776 L) is a later **ADR-first** slice, done opportunistically as
-  W-B/C/D touch those files.
-- **W-A — coherence linter.** New `bun run check:coherence` in
-  `packages/schema-engine` (CI gate): asymmetric/missing inverse
-  relations, orphan refs, source-coverage gaps, untranslated `i18n_key`
-  (EN/FR), `canon_scope` inconsistencies, images with no `depicted-by`.
-  Plus make `form/qualifiers.ts` schema-driven (task #3) — **ADR-first**.
-- **W-B — admin queue + contributors** (pulls Phase 7.3 fwd; backend
-  already shipped). `GET /api/admin/pulls` (all open `via-dashboard`
-  PRs); gated `/admin/queue` (list + per-PR detail, server-side
-  structured diff reusing `DiffPopover`, staged image previews,
-  Approve-merge/Request-changes/Close → existing promote/reject).
+- **W-F — UI-coherence foundation** — **DONE 2026-06-14 evening.** The
+  `<Banner>`/`<Button>` halves had already shipped with the #85
+  overhaul; the last piece — the shared **`useApiResource`** hook
+  (`src/hooks/use-api-resource.ts`, no new dependency; note TanStack
+  Query is NOT actually in the dep tree despite the earlier note) +
+  the shared `<LoadFailed>` error banner — landed on PR #91, replacing
+  the duplicated `useEffect`+`useState`+`.catch(setError)`+`Failed:`
+  blocks in the 7 fetching routes (index, type list/table/new,
+  entity edit, apparitions, source cast). Route-local derived state
+  (cast/apparitions working sets, table drafts) seeds via
+  `useEffect`-on-data. God-module decomposition (`EntityForm.tsx`
+  1876 L, `inputs.tsx` 1103 L, `server/server.ts` 1776 L) remains a
+  later **ADR-first** slice, done opportunistically as W-B/C/D touch
+  those files.
+- **W-A — DONE 2026-06-14 evening.** The `check:coherence` linter half
+  had already shipped earlier; the last piece — the schema-driven
+  qualifier registry (ADR-078, `/data/schemas/qualifier-types/**`) —
+  landed on PR #91.
+- **W-B — admin queue + contributors** — **slice 1 DONE 2026-06-14
+  evening** (PR #91): `GET /api/admin/pulls` (github-client
+  `listAdminQueue` + contributor parsed from the Contributors bullet),
+  gated `/admin/queue` route (list, Approve-merge → promote, Reject →
+  reject, Review link), `admin` flag on `/api/auth/me`. **Slice 2 DONE
+  (same evening)**: in-app structured diff (`server/diff.ts` pure
+  helpers + `GET /api/admin/pulls/:n/detail` + expandable queue rows).
+  **Remaining W-B**: staged image previews, CI status,
+  Request-changes action, and the
   `GET /api/contributors` + `/contributors` route aggregating by
   **parsing the PR-body Contributors bullet** (bot owns commits, so
   GitHub's author APIs don't reflect humans). `packages/contribution-

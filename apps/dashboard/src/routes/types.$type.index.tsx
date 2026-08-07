@@ -11,10 +11,12 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowDown, ArrowUp, Plus, Search, Table2 } from 'lucide-react';
-import { type JSX, useDeferredValue, useEffect, useMemo, useState } from 'react';
-import { api, type EntityRef, type SchemaCatalogue } from '../api';
+import { type JSX, useDeferredValue, useMemo, useState } from 'react';
+import { api, type EntityRef } from '../api';
+import { LoadFailed } from '../components/LoadFailed';
 import { useEntityTypeLabel, useLocale, useT } from '../form/locale';
 import { useAllDrafts } from '../form/use-draft';
+import { useApiResource } from '../hooks/use-api-resource';
 
 export const Route = createFileRoute('/types/$type/')({
   component: TypeListComponent,
@@ -27,13 +29,25 @@ function TypeListComponent(): JSX.Element {
   const { type } = Route.useParams() as { type: string; };
   const locale = useLocale();
   const t = useT();
-  const [list, setList] = useState<EntityRef[] | null>(null);
-  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error } = useApiResource(
+    () => Promise.all([api.listEntities(type), api.schemas()]),
+    [type],
+  );
+  const list = data?.[0] ?? null;
+  const schemas = data?.[1] ?? null;
   const [query, setQuery] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const deferredQuery = useDeferredValue(query);
+
+  // Reset the search box when switching entity types — the render-time
+  // adjustment pattern (react.dev "you might not need an effect"), so
+  // there's no stale-frame flash and no effect chain.
+  const [prevType, setPrevType] = useState(type);
+  if (prevType !== type) {
+    setPrevType(type);
+    setQuery('');
+  }
 
   // Drafts keyed by entity id — used to flag rows that carry local
   // in-progress edits. Filtering is cheap (Set lookup) so we do it
@@ -45,19 +59,6 @@ function TypeListComponent(): JSX.Element {
     for (const d of drafts) if (d.entityId.startsWith(prefix)) set.add(d.entityId);
     return set;
   }, [drafts, type]);
-
-  useEffect(() => {
-    setList(null);
-    setQuery('');
-    Promise.all([api.listEntities(type), api.schemas()])
-      .then(([l, s]) => {
-        setList(l);
-        setSchemas(s);
-      })
-      .catch((e: unknown) => {
-        setError(e instanceof Error ? e.message : String(e));
-      });
-  }, [type]);
 
   const entityTypeLabel = useEntityTypeLabel(schemas, type);
 
@@ -91,7 +92,7 @@ function TypeListComponent(): JSX.Element {
   }, [list, deferredQuery, sortKey, sortDir, locale]);
 
   if (error !== null) {
-    return <p className='text-destructive'>Failed: {error}</p>;
+    return <LoadFailed message={error} />;
   }
 
   return (

@@ -115,6 +115,7 @@
       "name": "@onepiece-wiki/importers",
       "version": "0.0.0",
       "dependencies": {
+        "@onepiece-wiki/github-client": "workspace:*",
         "zod": "^3.23.8",
       },
       "devDependencies": {

@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "has-cover-story",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Has cover story", "inverse": "Cover story in" },
+    "fr": { "active": "A pour mini-aventure", "inverse": "Mini-aventure dans" }
+  },
+  "valid_from_types": ["manga-chapter"],
+  "valid_to_types": ["arc"],
+  "qualifiers": [
+    { "id": "installment_number", "value_type": "number", "required": false }
+  ],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true,
+  "historical": false
+}

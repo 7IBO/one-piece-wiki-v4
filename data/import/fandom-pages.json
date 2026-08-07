@@ -1,0 +1,25 @@
+{
+  "pages": [
+    {
+      "entityId": "anime-episode:1071",
+      "page": "Episode 1071",
+      "pageId": 341823,
+      "redirects": []
+    },
+    {
+      "entityId": "character:luffy",
+      "page": "Monkey D. Luffy",
+      "pageId": 1444,
+      "redirects": [
+        "Straw Hat Luffy",
+        "Luffy"
+      ]
+    },
+    {
+      "entityId": "manga-chapter:1044",
+      "page": "Chapter 1044",
+      "pageId": 333114,
+      "redirects": []
+    }
+  ]
+}

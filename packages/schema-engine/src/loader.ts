@@ -14,6 +14,7 @@ import { type DataSource, fsDataSource } from './data-source.ts';
 import {
   ENTITY_TYPES_DIR,
   PROPERTY_TYPES_DIR,
+  QUALIFIER_TYPES_DIR,
   RELATION_TYPES_DIR,
   UNIVERSES_DIR,
   VOCABULARY_DIR,
@@ -53,6 +54,7 @@ export type SchemaCatalogue = {
   readonly propertyTypes: readonly LoadedFile[];
   readonly relationTypes: readonly LoadedFile[];
   readonly vocabularies: readonly LoadedFile[];
+  readonly qualifierTypes: readonly LoadedFile[];
   readonly errors: readonly LoadError[];
 };
 
@@ -104,12 +106,14 @@ async function loadDir(
 export async function loadSchemas(source: DataSource = fsDataSource): Promise<SchemaCatalogue> {
   const errors: LoadError[] = [];
   // Shared core: /data/schemas/** (present in every universe).
-  const [entityTypes, propertyTypes, relationTypes, vocabularies] = await Promise.all([
-    loadDir(source, ENTITY_TYPES_DIR, errors),
-    loadDir(source, PROPERTY_TYPES_DIR, errors),
-    loadDir(source, RELATION_TYPES_DIR, errors),
-    loadDir(source, VOCABULARY_DIR, errors),
-  ]);
+  const [entityTypes, propertyTypes, relationTypes, vocabularies, qualifierTypes] = await Promise
+    .all([
+      loadDir(source, ENTITY_TYPES_DIR, errors),
+      loadDir(source, PROPERTY_TYPES_DIR, errors),
+      loadDir(source, RELATION_TYPES_DIR, errors),
+      loadDir(source, VOCABULARY_DIR, errors),
+      loadDir(source, QUALIFIER_TYPES_DIR, errors),
+    ]);
 
   // Per-universe: /data/universes/<id>/schemas/** — auto-scoped to <id>
   // and merged into the catalogue (ADR-035/036).
@@ -117,17 +121,19 @@ export async function loadSchemas(source: DataSource = fsDataSource): Promise<Sc
   for (const universe of universes) {
     const base = join(UNIVERSES_DIR, universe, 'schemas');
     // eslint-disable-next-line no-await-in-loop
-    const [et, pt, rt, vo] = await Promise.all([
+    const [et, pt, rt, vo, qt] = await Promise.all([
       loadDir(source, join(base, 'entity-types'), errors),
       loadDir(source, join(base, 'property-types'), errors),
       loadDir(source, join(base, 'relation-types'), errors),
       loadDir(source, join(base, 'vocabulary'), errors),
+      loadDir(source, join(base, 'qualifier-types'), errors),
     ]);
     for (const f of et) entityTypes.push(scopeToUniverse(f, universe));
     for (const f of pt) propertyTypes.push(scopeToUniverse(f, universe));
     for (const f of rt) relationTypes.push(scopeToUniverse(f, universe));
     for (const f of vo) vocabularies.push(scopeToUniverse(f, universe));
+    for (const f of qt) qualifierTypes.push(scopeToUniverse(f, universe));
   }
 
-  return { entityTypes, propertyTypes, relationTypes, vocabularies, errors };
+  return { entityTypes, propertyTypes, relationTypes, vocabularies, qualifierTypes, errors };
 }

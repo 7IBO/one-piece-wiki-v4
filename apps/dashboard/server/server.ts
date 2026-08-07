@@ -33,9 +33,11 @@ import {
   exchangeCode,
   findOpenPRForEntity,
   getFile,
+  getPullRequest,
   type GitHubAppConfig,
   installationClient,
   isAdmin,
+  listAdminQueue,
   listOpenContributions,
   loadConfig,
   type OpenContribution,
@@ -56,6 +58,7 @@ import { fileURLToPath } from 'node:url';
 import { promoteAndMergePR, rejectAndCleanupPR } from './admin-promote.ts';
 import { type DashboardSession, readDashboardSession } from './auth.ts';
 import { dashboardDataSource } from './data-source.ts';
+import { classifyDataPath, diffEntityFile, diffTranslationFile } from './diff.ts';
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
 import { buildCookie, clearCookie, newAnonymousSession, newGithubSession } from './session.ts';
 
@@ -287,6 +290,7 @@ async function handleSchemas(): Promise<Response> {
     propertyTypes: Object.fromEntries(snap.validated.propertyTypes),
     relationTypes: Object.fromEntries(snap.validated.relationTypes),
     vocabularies: Object.fromEntries(snap.validated.vocabularies),
+    qualifierTypes: Object.fromEntries(snap.validated.qualifierTypes),
   });
 }
 
@@ -1133,17 +1137,19 @@ async function handleSaveEntity(
  * decoupled from the cookie's internal layout so we can change the
  * cookie format without breaking clients.
  */
-function projectMe(session: DashboardSession): {
+function projectMe(session: DashboardSession, admin = false): {
   kind: 'github' | 'anonymous';
   login?: string;
   nickname?: string;
   displayName: string;
+  admin?: boolean;
 } {
   if (session.kind === 'github') {
     return {
       kind: 'github',
       login: session.login,
       displayName: session.login,
+      ...(admin ? { admin: true } : {}),
     };
   }
   return {
@@ -1237,9 +1243,9 @@ function rateLimitHit(bucket: string, key: string, limitPerHour: number): boolea
 const ANON_WRITE_LIMIT = Number(process.env['ANON_WRITE_LIMIT_PER_HOUR'] ?? '10');
 const ANON_UPLOAD_LIMIT = Number(process.env['ANON_UPLOAD_LIMIT_PER_HOUR'] ?? '20');
 
-function handleAuthMe(session: DashboardSession | null): Response {
+function handleAuthMe(session: DashboardSession | null, admin: boolean): Response {
   if (session === null) return unauthorized('Not signed in.');
-  return json(projectMe(session));
+  return json(projectMe(session, admin));
 }
 
 /**
@@ -1628,7 +1634,9 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     if (req.method === 'POST' && path === '/api/auth/sign-out') {
       return handleSignOut();
     }
-    if (req.method === 'GET' && path === '/api/auth/me') return handleAuthMe(session);
+    if (req.method === 'GET' && path === '/api/auth/me') {
+      return handleAuthMe(session, isAdminSession());
+    }
 
     if (req.method === 'GET' && path === '/api/me/contributions') {
       if (config === null) return json({ contributions: [] });
@@ -1656,6 +1664,68 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     if (req.method === 'GET' && path.startsWith('/api/preview/')) {
       const key = decodeURIComponent(path.slice('/api/preview/'.length));
       return await handlePreviewImage(session, key);
+    }
+
+    // GET /api/admin/pulls/:n/detail — server-side structured diff of
+    // one queue PR (entity properties/relations + translation keys) so
+    // the admin reviews in-app without reading raw JSON on GitHub
+    // (W-B slice 2). Admin-only.
+    const detailMatch = /^\/api\/admin\/pulls\/(\d+)\/detail$/.exec(path);
+    if (req.method === 'GET' && detailMatch !== null) {
+      if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
+      if (session === null) return unauthorized('Sign in first.');
+      if (!isAdminSession()) return forbidden('Admin only.');
+      const prNumber = Number(detailMatch[1]);
+      try {
+        const octokit = await installationClient(config);
+        const pr = await getPullRequest(octokit, config, prNumber);
+        const parse = (text: string | null | undefined): unknown => {
+          if (text === null || text === undefined) return null;
+          try {
+            return JSON.parse(text);
+          } catch {
+            return null;
+          }
+        };
+        const entities = [];
+        const translations = [];
+        for (const file of pr.files) {
+          if (!file.path.startsWith('data/')) continue;
+          const kind = classifyDataPath(file.path);
+          if (kind.kind === 'other') continue;
+          // eslint-disable-next-line no-await-in-loop
+          const [beforeFile, afterFile] = await Promise.all([
+            file.status === 'added' ? null : getFile(octokit, config, file.path, pr.baseBranch),
+            file.status === 'removed' ? null : getFile(octokit, config, file.path, pr.headSha),
+          ]);
+          const before = parse(beforeFile?.content);
+          const after = parse(afterFile?.content);
+          if (kind.kind === 'entity') entities.push(diffEntityFile(file.path, before, after));
+          else translations.push(diffTranslationFile(file.path, kind.locale, before, after));
+        }
+        return json({ prNumber, title: pr.title, entities, translations });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        process.stderr.write(`[admin-pull-detail] PR #${prNumber} failed: ${message}\n`);
+        return json({ error: message }, 500);
+      }
+    }
+
+    // GET /api/admin/pulls — the moderation queue: every open
+    // `via-dashboard` PR with its parsed contributor (W-B). Admin-only.
+    if (req.method === 'GET' && path === '/api/admin/pulls') {
+      if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
+      if (session === null) return unauthorized('Sign in first.');
+      if (!isAdminSession()) return forbidden('Admin only.');
+      try {
+        const octokit = await installationClient(config);
+        const pulls = await listAdminQueue(octokit, config);
+        return json({ pulls });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        process.stderr.write(`[admin-pulls] failed: ${message}\n`);
+        return json({ error: message }, 500);
+      }
     }
 
     // POST /api/admin/promote — approve a PR carrying staged

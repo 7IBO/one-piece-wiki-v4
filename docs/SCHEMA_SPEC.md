@@ -227,6 +227,19 @@ A qualifier is metadata on a value entry. Qualifiers come in two flavors:
 **base qualifiers** (implicit on every historisable property) and
 **property-declared qualifiers** (declared per property type).
 
+Both flavors are declared in the **qualifier-type registry**
+(`/data/schemas/qualifier-types/*.json`, meta-schema
+`qualifier-type.schema.json` — ADR-078). Each entry carries `kind`
+(`base` | `common`), localized `labels`/`descriptions`, `value_type`,
+optional `enum_ref` / `entity_type_filter` / `multi` /
+`mirrors_entry_value`, and a display `order`. The registry is loaded
+into the schema catalogue (exposed to the dashboard via `/api/schemas`
+as `qualifierTypes`) and is the single source the form generator
+derives qualifier UI from — application code must not hardcode
+qualifier ids or shapes. The tables below document the shipped
+registry contents; validation of entity JSON is unchanged (base
+qualifiers stay typed in the generated validators).
+
 #### Base qualifiers
 
 The following qualifiers are **implicit on every historisable property**.
@@ -276,7 +289,9 @@ Each property type declares its own qualifiers via two fields:
   options" affordance in the form. Editors who need them can reveal them;
   most edits won't.
 
-Common property-declared qualifiers across the model:
+Ids referenced in `default_qualifiers` (or in `allowed_qualifiers`
+without richer metadata) resolve against the registry's `common`
+entries. Common property-declared qualifiers across the model:
 
 | Qualifier          | Type                | Meaning                                           |
 | ------------------ | ------------------- | ------------------------------------------------- |

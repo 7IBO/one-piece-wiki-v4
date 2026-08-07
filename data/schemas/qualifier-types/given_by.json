@@ -1,0 +1,20 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "given_by",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 6,
+  "labels": {
+    "en": "Given by",
+    "fr": "Donné par"
+  },
+  "descriptions": {
+    "en": "Character(s) who gave the name.",
+    "fr": "Personnage(s) ayant donné le nom."
+  },
+  "value_type": "entity_ref",
+  "entity_type_filter": [
+    "character"
+  ],
+  "multi": true
+}
