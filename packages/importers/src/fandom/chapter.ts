@@ -53,7 +53,12 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
     return undefined;
   };
 
-  const numberRaw = get('chapter', 'number');
+  // The REAL Chapter Box (verified against the live API, 2026-06-14)
+  // carries NO chapter-number param — the ordinal lives in the page
+  // title ("Chapter 1044"). The infobox params are kept as fallback
+  // for oddly-titled pages.
+  const fromTitle = /^Chapter\s+(\d+)$/i.exec(page.title.trim());
+  const numberRaw = fromTitle?.[1] ?? get('chapter', 'number');
   const number = numberRaw === undefined ? null : parseLooseNumber(numberRaw);
   if (number === null) {
     // Without the ordinal there is no id/slug — not mappable.
@@ -66,7 +71,7 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
   };
   const translations: Record<string, string> = {};
 
-  const enTitle = get('ename', 'extitle', 'etitle');
+  const enTitle = get('ename', 'title', 'extitle', 'etitle');
   const romaji = get('rname', 'romanji', 'romaji');
   const title = enTitle ?? romaji;
   if (title !== undefined) {
@@ -75,6 +80,11 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
     warnings.push('no English/romaji title in infobox — title translation missing');
   }
 
+  // The real Chapter Box carries no release date/pages/volume — those
+  // live on the volume pages. Kept as best-effort for pages that do
+  // declare them; `released_at` is REQUIRED by the schema, so a
+  // chapter without one will (correctly) fail the validation gate and
+  // land in `skipped` until the date is supplied from another source.
   const dateRaw = get('date', 'reldate', 'release');
   if (dateRaw !== undefined) {
     const iso = parseLooseDate(dateRaw);
@@ -82,7 +92,9 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
       properties['released_at'] = { value: iso, territory: 'jp' };
     } else warnings.push(`unparseable release date: "${cleanValue(dateRaw)}"`);
   } else {
-    warnings.push('no release date in infobox');
+    warnings.push(
+      'no release date in infobox (required by the schema — supply from the volume page or manually)',
+    );
   }
 
   const pagesRaw = get('pages', 'page');

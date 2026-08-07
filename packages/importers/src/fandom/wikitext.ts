@@ -193,22 +193,30 @@ export type QrefSource = {
 };
 
 /**
- * Parse {{Qref}} citation templates into wiki source ids. Fandom's
- * Qref carries `Chapter=` / `Episode=` named params (plus prose
- * extras we ignore). Positional-only Qrefs are ambiguous → skipped.
+ * Parse {{Qref}} citation templates into wiki source ids. The REAL
+ * param names (verified against live API responses, 2026-06-14) are
+ * `chap=` / `ep=` / `sbs=` / `vol=` (long aliases kept defensively).
+ * A single Qref citing both manga and anime yields both ids —
+ * exactly the "record both manga + anime" convention of `since`.
+ * `name=`-only Qrefs are backrefs to an earlier definition → skipped.
  */
 export function parseQrefs(wikitext: string): readonly QrefSource[] {
   const out: QrefSource[] = [];
+  const num = (v: string | undefined): string | null => {
+    if (v === undefined) return null;
+    const t = v.trim();
+    return /^\d+$/.test(t) ? t : null;
+  };
   for (const t of parseTemplates(wikitext)) {
     if (t.name.toLowerCase() !== 'qref') continue;
-    const chapter = t.named['Chapter'] ?? t.named['chapter'];
-    if (chapter !== undefined && /^\d+$/.test(chapter.trim())) {
-      out.push({ sourceId: `manga-chapter:${chapter.trim()}` });
-    }
-    const episode = t.named['Episode'] ?? t.named['episode'];
-    if (episode !== undefined && /^\d+$/.test(episode.trim())) {
-      out.push({ sourceId: `anime-episode:${episode.trim()}` });
-    }
+    const chap = num(t.named['chap'] ?? t.named['chapter'] ?? t.named['Chapter']);
+    if (chap !== null) out.push({ sourceId: `manga-chapter:${chap}` });
+    const ep = num(t.named['ep'] ?? t.named['episode'] ?? t.named['Episode']);
+    if (ep !== null) out.push({ sourceId: `anime-episode:${ep}` });
+    const sbs = num(t.named['sbs'] ?? t.named['SBS']);
+    if (sbs !== null) out.push({ sourceId: `sbs:volume-${sbs}` });
+    const vol = num(t.named['vol'] ?? t.named['volume']);
+    if (vol !== null) out.push({ sourceId: `volume:${vol}` });
   }
   return out;
 }

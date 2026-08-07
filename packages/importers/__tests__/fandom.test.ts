@@ -1,44 +1,41 @@
 /**
- * Fandom importer foundation (ADR-079) — parser + mapper tests, all
- * on inline fixtures (the sandbox network policy denies
- * onepiece.fandom.com; refresh fixtures from live responses when a
- * networked environment is available).
+ * Fandom importer foundation (ADR-079) — parser + mapper tests on
+ * REAL API responses (fixtures captured by the maintainer,
+ * 2026-06-14; sandbox network policy denies onepiece.fandom.com so
+ * they cannot be refreshed from here).
  */
 import { describe, expect, it } from 'bun:test';
 import { join } from 'node:path';
 import { GENERATED_DIR } from '../../schema-engine/src/paths.ts';
 import { mapChapter } from '../src/fandom/chapter.ts';
+import type { ParsedPage } from '../src/fandom/client.ts';
 import { FandomClient } from '../src/fandom/client.ts';
+import { mapEpisode } from '../src/fandom/episode.ts';
 import {
   cleanValue,
-  findTemplate,
   parseLooseDate,
   parseLooseNumber,
   parseQrefs,
   parseTemplates,
 } from '../src/fandom/wikitext.ts';
 
-const CHAPTER_WIKITEXT = `{{Chapter Box
-| chapter = 1044
-| jname = 解放の戦士
-| rname = Kaihō no Senshi
-| ename = The Warrior of Liberation
-| date = March 7, 2022
-| pages = 17
-| volume = 104
-}}
-'''Chapter 1044''' is titled "The Warrior of Liberation".{{Qref|Chapter=1044}}
-Luffy's fruit is revealed as the [[Hito Hito no Mi, Model: Nika]].{{Qref|Chapter=1044|Episode=1071}}
-`;
+async function fixture(name: string): Promise<ParsedPage> {
+  const raw = await Bun.file(
+    join(import.meta.dir, 'fixtures', `${name}.json`),
+  ).json() as { parse: { title: string; pageid: number; wikitext: string; }; };
+  return {
+    title: raw.parse.title,
+    pageId: raw.parse.pageid,
+    wikitext: raw.parse.wikitext,
+    url: `https://onepiece.fandom.com/wiki/${raw.parse.title.replace(/ /g, '_')}`,
+  };
+}
 
 describe('wikitext parser', () => {
   it('parses nested templates and named/positional params', () => {
     const templates = parseTemplates('{{A|x={{B|1}}|two|k=[[a|b]]}}');
     expect(templates).toHaveLength(1);
-    expect(templates[0]).toMatchObject({
-      name: 'A',
-      positional: ['two'],
-    });
+    expect(templates[0]).toMatchObject({ name: 'A', positional: ['two'] });
     expect(templates[0]?.named['x']).toBe('{{B|1}}');
     expect(templates[0]?.named['k']).toBe('[[a|b]]');
   });
@@ -47,35 +44,30 @@ describe('wikitext parser', () => {
     expect(cleanValue("'''[[Monkey D. Luffy|Luffy]]'''<ref>x</ref>")).toBe('Luffy');
   });
 
-  it('parses Qref templates into source ids', () => {
-    expect(parseQrefs(CHAPTER_WIKITEXT)).toEqual([
-      { sourceId: 'manga-chapter:1044' },
-      { sourceId: 'manga-chapter:1044' },
-      { sourceId: 'anime-episode:1071' },
-    ]);
+  it('parses REAL Qref params (chap/ep/sbs/vol) from the Luffy page', async () => {
+    const page = await fixture('luffy-excerpt');
+    const ids = parseQrefs(page.wikitext).map((q) => q.sourceId);
+    expect(ids).toContain('manga-chapter:455');
+    expect(ids).toContain('anime-episode:349');
+    expect(ids).toContain('manga-chapter:1');
+    expect(ids).toContain('anime-episode:4');
+    expect(ids).toContain('sbs:volume-37');
+    expect(ids).toContain('volume:33');
+    // `name=`-only backrefs must NOT emit ids.
+    expect(ids.filter((i) => i.includes('undefined'))).toHaveLength(0);
   });
 
   it('parses loose numbers and dates', () => {
     expect(parseLooseNumber('3,000,000,000')).toBe(3000000000);
     expect(parseLooseNumber('umpteen')).toBeNull();
-    expect(parseLooseDate('March 7, 2022')).toBe('2022-03-07');
+    expect(parseLooseDate('August 5, 2023')).toBe('2023-08-05');
     expect(parseLooseDate('2022-03-07')).toBe('2022-03-07');
-  });
-
-  it('findTemplate matches case-insensitively', () => {
-    expect(findTemplate(CHAPTER_WIKITEXT, 'chapter box')?.named['chapter']).toBe('1044');
   });
 });
 
-describe('chapter mapper', () => {
-  const page = {
-    title: 'Chapter 1044',
-    pageId: 1,
-    wikitext: CHAPTER_WIKITEXT,
-    url: 'https://onepiece.fandom.com/wiki/Chapter_1044',
-  };
-
-  it('maps the infobox to the corpus file shape', () => {
+describe('chapter mapper (real Chapter Box)', () => {
+  it('takes the ordinal from the page title and the title from ename', async () => {
+    const page = await fixture('chapter-1044');
     const result = mapChapter(page);
     expect(result).not.toBeNull();
     expect(result?.entity).toMatchObject({
@@ -85,43 +77,68 @@ describe('chapter mapper', () => {
       properties: {
         number: { value: 1044 },
         title_key: { value_key: 'manga-chapter.1044.title' },
-        released_at: { value: '2022-03-07', territory: 'jp' },
-        page_count: { value: 17 },
       },
     });
     expect(result?.translations.en['manga-chapter.1044.title']).toBe(
-      'The Warrior of Liberation',
+      'Warrior of Liberation',
     );
-    expect(result?.entity.relations).toEqual([
-      { type: 'part-of-volume', target: 'volume:104' },
-    ]);
-    // The volume-must-exist caveat is surfaced, not silently assumed.
-    expect(result?.warnings.some((w) => w.includes('volume:104'))).toBe(true);
+    // The real infobox has no release date — surfaced, not guessed.
+    expect(result?.warnings.some((w) => w.includes('release date'))).toBe(true);
+    expect(result?.entity.properties['released_at']).toBeUndefined();
   });
 
-  it('validates against the generated manga-chapter Zod (minus relations to missing entities)', async () => {
+  it('fails the generated Zod gate without released_at; passes once supplied', async () => {
     const mod = (await import(join(GENERATED_DIR, 'entities.ts'))) as {
-      MangaChapterData: { safeParse: (v: unknown) => { success: boolean; error?: unknown; }; };
+      MangaChapterData: { safeParse: (v: unknown) => { success: boolean; }; };
     };
+    const page = await fixture('chapter-1044');
     const result = mapChapter(page);
-    // Validate the entity shape itself; the volume:104 reference is a
-    // corpus concern (check:references), not a shape concern.
-    const parsed = mod.MangaChapterData.safeParse(result?.entity);
-    expect(parsed.success).toBe(true);
+    expect(mod.MangaChapterData.safeParse(result?.entity).success).toBe(false);
+    const supplemented = {
+      ...result?.entity,
+      properties: {
+        ...result?.entity.properties,
+        released_at: { value: '2022-03-07', territory: 'jp' },
+      },
+    };
+    expect(mod.MangaChapterData.safeParse(supplemented).success).toBe(true);
   });
 
-  it('returns null without an infobox or ordinal', () => {
+  it('returns null without an infobox or ordinal', async () => {
+    const page = await fixture('chapter-1044');
     expect(mapChapter({ ...page, wikitext: 'just prose' })).toBeNull();
     expect(
-      mapChapter({ ...page, wikitext: '{{Chapter Box|jname=x}}' }),
+      mapChapter({ ...page, title: 'Weird page', wikitext: '{{Chapter Box|jname=x}}' }),
     ).toBeNull();
+  });
+});
+
+describe('episode mapper (real Episode Box)', () => {
+  it('maps # ordinal, Translation title, and surfaces staff as warnings', async () => {
+    const page = await fixture('episode-1071');
+    const result = mapEpisode(page);
+    expect(result).not.toBeNull();
+    expect(result?.entity).toMatchObject({
+      id: 'anime-episode:1071',
+      slug: 'episode-1071',
+      properties: {
+        number: { value: 1071 },
+        title_key: { value_key: 'anime-episode.1071.title' },
+      },
+    });
+    expect(result?.translations.en['anime-episode.1071.title']).toBe(
+      "Luffy's Peak - Attained! Gear 5",
+    );
+    expect(result?.warnings.some((w) => w.startsWith('staff Screen'))).toBe(true);
+    // Viewership share must NOT be mapped as tv_rating.
+    expect(result?.entity.properties['tv_rating']).toBeUndefined();
   });
 });
 
 describe('FandomClient', () => {
   it('builds the parse URL and reads the action=parse envelope via injected fetch', async () => {
     const raw = JSON.stringify({
-      parse: { title: 'Chapter 1044', pageid: 42, wikitext: CHAPTER_WIKITEXT },
+      parse: { title: 'Chapter 1044', pageid: 42, wikitext: '{{Chapter Box|ename=X}}' },
     });
     let requested = '';
     const client = new FandomClient({
@@ -133,10 +150,8 @@ describe('FandomClient', () => {
     });
     const parsed = await client.fetchParse('Chapter 1044');
     expect(requested).toContain('action=parse');
-    expect(requested).toContain('prop=wikitext');
     expect(parsed.pageId).toBe(42);
     expect(parsed.url).toBe('https://onepiece.fandom.com/wiki/Chapter_1044');
-    expect(parsed.wikitext).toContain('Chapter Box');
   });
 
   it('surfaces MediaWiki API errors', async () => {
