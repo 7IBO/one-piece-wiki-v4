@@ -83,7 +83,13 @@ runs 1–2 (2026-08-07): Fandom's chapter/episode categories hold **no
 direct articles** — only subcategories (One Piece Chapters → Chapters
 by Volume → Volume N) — so `categoryMembers` now descends `depth`
 subcategory levels (default 2, dedup + 300-category cap) and **throws
-on MediaWiki error envelopes** instead of returning an empty list. Remaining importer work:
+on MediaWiki error envelopes** instead of returning an empty list.
+Run 3 then hit the required-`released_at` gate (Chapter Box has no
+date → ADR-082 made it optional, v7); run 4 crawled/validated/pushed
+**24 chapters** but `gh pr create` died on the missing `import` label —
+PR #94 (Chapters 2–25) was opened + labelled manually, and the
+workflow now creates both labels idempotently before opening the PR.
+**First live import PR: #94.** Remaining importer work:
 volume/databook-card + remaining infobox mappers (the crawl report
 ranks them by frequency), the AI prose-extraction pass. Next:
 W-B detail view, W-F2 UX conventions.

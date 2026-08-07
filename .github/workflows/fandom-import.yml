@@ -60,6 +60,10 @@ jobs:
           git add data/
           git commit -m "data(import): crawl '${{ github.event.inputs.category }}' (run ${{ github.run_id }})"
           git push -u origin "$branch"
+          # Labels must exist before `gh pr create --label` (run 4 died on
+          # a missing `import` label) — create them idempotently.
+          gh label create via-dashboard --color 5319E7 --description "Opened through the dashboard PR flow" --force || true
+          gh label create import --color 0E8A16 --description "Automated Fandom import (ADR-079)" --force || true
           gh pr create --draft \
             --title "[DATA] Import from Fandom: ${{ github.event.inputs.category }} (run ${{ github.run_id }})" \
             --body "Automated crawl of category **${{ github.event.inputs.category }}** (limit ${{ github.event.inputs.limit }}). Deterministic infobox extraction only — review in the dashboard admin queue. See the run log for warnings, the import frontier, and unmapped infobox kinds." \
