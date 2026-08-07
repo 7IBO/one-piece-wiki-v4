@@ -53,9 +53,15 @@ tests — 10 tests, fixtures only). **Sync registry shipped
 redirect fixture. Real fixtures from the maintainer replaced the
 hand-written ones (Qref params are `chap`/`ep`/`sbs`/`vol`; Chapter Box
 has no number/date params — ordinal from the page title; Episode Box
-ordinal is `#`). Still needed before first live run: network access
-(ADR-079 §6), the character mapper (needs a page carrying a real
-`{{Char Box}}` — tabbed pages don't; try a minor character), and the
+ordinal is `#`). **Character mapper shipped** (real Hyougoro Char Box fixture):
+deterministic scalars with per-value provenance — Qref parsing is now
+recursive with named-backref resolution (`{{Qref|name=vivre card}}` →
+`databook-card:1329`), `{{Nihongo}}` alias/epithet parsing, MM-DD
+birthdays; affiliation/occupation/VAs surface as warnings for the AI
+pass. New Qref variants covered: `cover=`, `card=`, `ep2=`, long
+`chapter=`/`episode=`. Still needed before first live run: network
+access (ADR-079 §6 — note: a scheduled GitHub Actions job has normal
+egress and could run the sync without the sandbox allowlist), and the
 emit adapter (`stage-to-local`/`pr` modes of the Phase-2 runner). Next:
 W-B detail view, W-F2 UX conventions.
 
