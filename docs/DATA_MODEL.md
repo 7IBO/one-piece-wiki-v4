@@ -603,11 +603,11 @@ fruit's `classification`, true `name` and `zoan_model` together — see
         "since": "manga-chapter:1044"
       }
     ],
-    "volume": [{ "value": "104", "since": "manga-chapter:1044" }],
     "canon_scope": [{ "value": "manga", "since": "manga-chapter:1044" }]
   },
   "relations": [
     { "type": "part-of-arc", "target": "arc:wano" },
+    { "type": "part-of-volume", "target": "volume:104" },
     {
       "type": "adapted-by",
       "target": "anime-episode:1071",

@@ -401,7 +401,6 @@ appearances are `features`' generated inverse.)
 | `number`      | yes      | no         | no          |                               |
 | `title_key`   | yes      | no         | yes         | Japanese title + translations |
 | `released_at` | yes      | no         | no          | ISO date; `territory: jp`     |
-| `volume`      | no       | no         | no          | Volume number/string          |
 | `page_count`  | no       | no         | no          |                               |
 | `canon_scope` | yes      | no         | no          | Always `manga`                |
 | `cover_image` | no       | no         | no          | entity_ref to `image`         |
@@ -445,7 +444,6 @@ Allowed relations: `features`, `staffed-by`, `produced-by`, `available-on`,
 
 | Property      | Required | Historical | Localizable | Notes           |
 | ------------- | -------- | ---------- | ----------- | --------------- |
-| `volume`      | yes      | no         | no          | Volume number   |
 | `released_at` | yes      | no         | no          | `territory: jp` |
 | `canon_scope` | yes      | no         | no          | Always `sbs`    |
 
@@ -554,7 +552,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (89)
+## 3. Property types (88)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -582,7 +580,6 @@ unit, and qualifier policy (section 6).
 | `weight`          | `number`   | kg    | min:0                 |
 | `population`      | `number`   | —     | min:0                 |
 | `number`          | `number`   | —     | min:0                 |
-| `volume`          | `string`   | —     | (numeric or named)    |
 | `page_count`      | `number`   | —     | min:1                 |
 | `runtime_minutes` | `number`   | min   | min:0                 |
 | `saga_number`     | `number`   | —     | min:1                 |
@@ -1259,7 +1256,7 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 35
-- **Property types**: 89 (some shared across multiple entity types)
+- **Property types**: 88 (some shared across multiple entity types)
 - **Relation types**: 63 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 59
 - **Primitive value types**: 10

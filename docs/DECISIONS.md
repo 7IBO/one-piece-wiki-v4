@@ -8,6 +8,33 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-073 — drop the legacy `volume` string property (contract phase)
+
+**Date**: 2026-06-14
+
+**Context**: ADR-071 (expand phase) introduced the `volume` entity and the
+`part-of-volume` relation; the legacy free-text `volume` **string** property on
+`manga-chapter` / `sbs` was kept for the overlap. An audit of the corpus shows
+**no entity ever set the string property** (30 entities, 10 chapters, 0 SBS),
+so the "migrate" step is a recorded no-op and the contract can land now, before
+any ingest starts writing the deprecated shape. (ADR-072 is reserved by the
+in-flight PR #90 — image display `ui_hint.role`.)
+
+**Decision**:
+
+1. Remove `volume` from `manga-chapter` (v4→5) and `sbs` (v3→4); delete
+   `property-types/volume.json`.
+2. Migration `0005-drop-legacy-volume-property` (removeProperty; no-op on the
+   present corpus, kept as the historical record + third-party safety net).
+3. `compat:snapshot` updated — 3 breaking entries (property removed, two
+   entity-type property lists narrowed); PR label `schema-breaking`.
+
+**Consequences**: 88 property types (−1). Tankōbon linkage is exclusively the
+`part-of-volume` edge; future ingest must author `volume` entities directly.
+The expand→migrate→contract sequence for this field is complete.
+
+---
+
 ## ADR-071 — `volume` (tankōbon) entity + `part-of-volume` (expand phase)
 
 **Date**: 2026-06-14

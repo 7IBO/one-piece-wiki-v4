@@ -521,9 +521,6 @@
         },
         "title_key": {
           "required": true
-        },
-        "volume": {
-          "required": false
         }
       },
       "allowed_relations": [
@@ -653,9 +650,6 @@
           "required": false
         },
         "released_at": {
-          "required": true
-        },
-        "volume": {
           "required": true
         }
       },
@@ -1355,12 +1349,6 @@
       "value_type": "string",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
-    },
-    "volume": {
-      "value_type": "string",
-      "enum_ref": null,
-      "historical": false,
       "localizable": false
     },
     "weapon_grade": {
