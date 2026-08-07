@@ -89,7 +89,13 @@ date → ADR-082 made it optional, v7); run 4 crawled/validated/pushed
 **24 chapters** but `gh pr create` died on the missing `import` label —
 PR #94 (Chapters 2–25) was opened + labelled manually, and the
 workflow now creates both labels idempotently before opening the PR.
-**First live import PR: #94.** Remaining importer work:
+**First live import PRs: #94 (24 chapters) and #96 (8 episodes,
+run 5 — data+labels green).** One admin toggle still blocks full
+autonomy: the repo setting **"Allow GitHub Actions to create and
+approve pull requests"** (Settings → Actions → General → Workflow
+permissions) is off, so the workflow's final `gh pr create` is denied
+and the PR must be opened by hand from the pushed `import/fandom-*`
+branch until it is flipped. Remaining importer work:
 volume/databook-card + remaining infobox mappers (the crawl report
 ranks them by frequency), the AI prose-extraction pass. Next:
 W-B detail view, W-F2 UX conventions.
