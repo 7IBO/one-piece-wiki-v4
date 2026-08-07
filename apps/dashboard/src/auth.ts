@@ -17,6 +17,8 @@ export type CurrentUser =
     readonly kind: 'github';
     readonly login: string;
     readonly displayName: string;
+    /** True when the login is in the configured admin list. */
+    readonly admin?: boolean;
   }
   | {
     readonly kind: 'anonymous';

@@ -269,6 +269,81 @@ export type OpenContribution = {
 };
 
 /**
+ * One row of the admin moderation queue: an open `via-dashboard` PR,
+ * whoever opened it (W-B, admin queue). The contributor is recovered
+ * from the PR body's Contributors bullet (`save-flow.ts` authors it;
+ * the bot owns the commits per ADR-016, so PR author metadata is
+ * useless for attribution).
+ */
+export type QueueItem = {
+  readonly prNumber: number;
+  readonly htmlUrl: string;
+  readonly title: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly labels: readonly string[];
+  /** `type:slug` when the title parses as an entity PR, else null
+   *  (e.g. cast PRs — "[DATA] Update cast of <id>"). */
+  readonly entityId: string | null;
+  readonly contributor:
+    | { readonly kind: 'github'; readonly login: string; }
+    | { readonly kind: 'anonymous'; readonly nickname: string; }
+    | null;
+};
+
+/** Recover the contributor from the PR body's Contributors bullet. */
+export function parseContributorBullet(body: string): QueueItem['contributor'] {
+  const github = /^- @([A-Za-z0-9-]+)\s*$/m.exec(body);
+  if (github !== null && github[1] !== undefined) {
+    return { kind: 'github', login: github[1] };
+  }
+  const anonymous = /^- \*\*(.+?)\*\* _\(anonymous contributor\)_\s*$/m.exec(body);
+  if (anonymous !== null && anonymous[1] !== undefined) {
+    return { kind: 'anonymous', nickname: anonymous[1] };
+  }
+  return null;
+}
+
+/**
+ * Every open `via-dashboard` PR, newest activity first — the admin
+ * moderation queue (W-B). Unlike `listOpenContributions` there is no
+ * identity filter; the caller MUST be admin-gated (the server route
+ * is). Non-entity titles are kept (cast/bulk PRs belong in the queue
+ * too) with `entityId: null`.
+ */
+export async function listAdminQueue(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  limit = 50,
+): Promise<readonly QueueItem[]> {
+  const repoQ = `repo:${config.dataRepo.owner}/${config.dataRepo.repo}`;
+  const { data } = await octokit.search.issuesAndPullRequests({
+    q: `${repoQ} is:pr is:open label:via-dashboard`,
+    per_page: Math.min(limit, 100),
+    sort: 'updated',
+    order: 'desc',
+  });
+
+  return data.items.map((item) => {
+    const title = item.title ?? '';
+    const parsed = parseEntityTitle(title);
+    const labels = (item.labels ?? [])
+      .map((l) => (typeof l === 'string' ? l : l.name ?? ''))
+      .filter((n) => n !== '');
+    return {
+      prNumber: item.number,
+      htmlUrl: item.pull_request?.html_url ?? item.html_url,
+      title,
+      createdAt: item.created_at,
+      updatedAt: item.updated_at,
+      labels,
+      entityId: parsed === null ? null : `${parsed.entityType}:${parsed.entitySlug}`,
+      contributor: parseContributorBullet(item.body ?? ''),
+    };
+  });
+}
+
+/**
  * Find open PRs opened by a specific dashboard contributor. The match
  * is body-substring based because the PR body is the only canonical
  * place we record the contributor (no Co-authored-by trailer per

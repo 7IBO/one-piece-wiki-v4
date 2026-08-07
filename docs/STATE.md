@@ -289,11 +289,13 @@ computed server-side or emitted as generated TS manifests under
   had already shipped earlier; the last piece — the schema-driven
   qualifier registry (ADR-078, `/data/schemas/qualifier-types/**`) —
   landed on PR #91.
-- **W-B — admin queue + contributors** (pulls Phase 7.3 fwd; backend
-  already shipped). `GET /api/admin/pulls` (all open `via-dashboard`
-  PRs); gated `/admin/queue` (list + per-PR detail, server-side
-  structured diff reusing `DiffPopover`, staged image previews,
-  Approve-merge/Request-changes/Close → existing promote/reject).
+- **W-B — admin queue + contributors** — **slice 1 DONE 2026-06-14
+  evening** (PR #91): `GET /api/admin/pulls` (github-client
+  `listAdminQueue` + contributor parsed from the Contributors bullet),
+  gated `/admin/queue` route (list, Approve-merge → promote, Reject →
+  reject, Review link), `admin` flag on `/api/auth/me`. **Remaining
+  W-B**: per-PR in-app detail (structured diff via `DiffPopover`,
+  staged image previews, CI status, Request-changes action) and the
   `GET /api/contributors` + `/contributors` route aggregating by
   **parsing the PR-body Contributors bullet** (bot owns commits, so
   GitHub's author APIs don't reflect humans). `packages/contribution-

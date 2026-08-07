@@ -36,6 +36,7 @@ import {
   type GitHubAppConfig,
   installationClient,
   isAdmin,
+  listAdminQueue,
   listOpenContributions,
   loadConfig,
   type OpenContribution,
@@ -1134,17 +1135,19 @@ async function handleSaveEntity(
  * decoupled from the cookie's internal layout so we can change the
  * cookie format without breaking clients.
  */
-function projectMe(session: DashboardSession): {
+function projectMe(session: DashboardSession, admin = false): {
   kind: 'github' | 'anonymous';
   login?: string;
   nickname?: string;
   displayName: string;
+  admin?: boolean;
 } {
   if (session.kind === 'github') {
     return {
       kind: 'github',
       login: session.login,
       displayName: session.login,
+      ...(admin ? { admin: true } : {}),
     };
   }
   return {
@@ -1238,9 +1241,9 @@ function rateLimitHit(bucket: string, key: string, limitPerHour: number): boolea
 const ANON_WRITE_LIMIT = Number(process.env['ANON_WRITE_LIMIT_PER_HOUR'] ?? '10');
 const ANON_UPLOAD_LIMIT = Number(process.env['ANON_UPLOAD_LIMIT_PER_HOUR'] ?? '20');
 
-function handleAuthMe(session: DashboardSession | null): Response {
+function handleAuthMe(session: DashboardSession | null, admin: boolean): Response {
   if (session === null) return unauthorized('Not signed in.');
-  return json(projectMe(session));
+  return json(projectMe(session, admin));
 }
 
 /**
@@ -1629,7 +1632,9 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     if (req.method === 'POST' && path === '/api/auth/sign-out') {
       return handleSignOut();
     }
-    if (req.method === 'GET' && path === '/api/auth/me') return handleAuthMe(session);
+    if (req.method === 'GET' && path === '/api/auth/me') {
+      return handleAuthMe(session, isAdminSession());
+    }
 
     if (req.method === 'GET' && path === '/api/me/contributions') {
       if (config === null) return json({ contributions: [] });
@@ -1657,6 +1662,23 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     if (req.method === 'GET' && path.startsWith('/api/preview/')) {
       const key = decodeURIComponent(path.slice('/api/preview/'.length));
       return await handlePreviewImage(session, key);
+    }
+
+    // GET /api/admin/pulls — the moderation queue: every open
+    // `via-dashboard` PR with its parsed contributor (W-B). Admin-only.
+    if (req.method === 'GET' && path === '/api/admin/pulls') {
+      if (config === null) return serviceUnavailable(`Disabled: ${configError}`);
+      if (session === null) return unauthorized('Sign in first.');
+      if (!isAdminSession()) return forbidden('Admin only.');
+      try {
+        const octokit = await installationClient(config);
+        const pulls = await listAdminQueue(octokit, config);
+        return json({ pulls });
+      } catch (err) {
+        const message = err instanceof Error ? err.message : String(err);
+        process.stderr.write(`[admin-pulls] failed: ${message}\n`);
+        return json({ error: message }, 500);
+      }
     }
 
     // POST /api/admin/promote — approve a PR carrying staged

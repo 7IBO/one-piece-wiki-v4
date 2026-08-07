@@ -89,6 +89,21 @@ export type SchemaCatalogue = {
   readonly qualifierTypes: Record<string, QualifierTypeSchema>;
 };
 
+/** One row of the admin moderation queue (W-B). */
+export type QueueItem = {
+  readonly prNumber: number;
+  readonly htmlUrl: string;
+  readonly title: string;
+  readonly createdAt: string;
+  readonly updatedAt: string;
+  readonly labels: readonly string[];
+  readonly entityId: string | null;
+  readonly contributor:
+    | { readonly kind: 'github'; readonly login: string; }
+    | { readonly kind: 'anonymous'; readonly nickname: string; }
+    | null;
+};
+
 export type SourceRef = {
   readonly id: string;
   readonly type: string;
@@ -392,6 +407,18 @@ export const api = {
     }[];
   }> {
     return getJson('/api/me/contributions');
+  },
+  /** Admin moderation queue: every open via-dashboard PR (W-B). */
+  async adminPulls(): Promise<{ pulls: readonly QueueItem[]; }> {
+    return getJson('/api/admin/pulls');
+  },
+  /** Approve: promote staged images (if any) + squash-merge. Admin-only. */
+  async adminPromote(prNumber: number): Promise<unknown> {
+    return postJson('/api/admin/promote', { prNumber });
+  },
+  /** Reject: close the PR + delete its staged R2 objects. Admin-only. */
+  async adminReject(prNumber: number): Promise<unknown> {
+    return postJson('/api/admin/reject', { prNumber });
   },
   /** Manually drop every cached response — useful behind a "Refresh" button. */
   invalidateAll(): void {

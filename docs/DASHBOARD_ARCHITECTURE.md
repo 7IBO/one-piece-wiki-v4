@@ -384,6 +384,16 @@ button on the panel covers that case.
 
 ## Admin moderation queue (phase 7.3)
 
+**Shipped (v1, W-B slice 1):** `GET /api/admin/pulls` (admin-gated;
+`listAdminQueue` in github-client searches open `via-dashboard` PRs and
+parses the contributor from the body's Contributors bullet) + the
+`/admin/queue` route: list (title, labels, contributor, updated),
+Review-on-GitHub link, **Approve & merge** (→ `/api/admin/promote`) and
+**Reject** (→ `/api/admin/reject`). `/api/auth/me` now carries
+`admin: true` for configured admins so the client can gate the surface.
+The richer detail below (in-app structured diff, CI status,
+request-changes, staged-image thumbnails) is the tracked follow-up:
+
 Route `/admin/queue` (admin-only). Lists every open PR touching
 `data/**` with: contributor identity, age, branch, CI status, file
 count. Per-PR detail uses the same `DiffPopover` rendering as the

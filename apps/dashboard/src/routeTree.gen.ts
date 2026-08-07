@@ -13,6 +13,7 @@ import { Route as LoginRouteImport } from './routes/login'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TypesTypeRouteImport } from './routes/types.$type'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
+import { Route as AdminQueueRouteImport } from './routes/admin.queue'
 import { Route as TypesTypeIndexRouteImport } from './routes/types.$type.index'
 import { Route as TypesTypeTableRouteImport } from './routes/types.$type.table'
 import { Route as TypesTypeNewRouteImport } from './routes/types.$type.new'
@@ -39,6 +40,11 @@ const TypesTypeRoute = TypesTypeRouteImport.update({
 const ApiSplatRoute = ApiSplatRouteImport.update({
   id: '/api/$',
   path: '/api/$',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const AdminQueueRoute = AdminQueueRouteImport.update({
+  id: '/admin/queue',
+  path: '/admin/queue',
   getParentRoute: () => rootRouteImport,
 } as any)
 const TypesTypeIndexRoute = TypesTypeIndexRouteImport.update({
@@ -81,6 +87,7 @@ const TypesTypeSlugApparitionsRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/admin/queue': typeof AdminQueueRoute
   '/api/$': typeof ApiSplatRoute
   '/types/$type': typeof TypesTypeRouteWithChildren
   '/sources/$type/$slug': typeof SourcesTypeSlugRoute
@@ -94,6 +101,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/admin/queue': typeof AdminQueueRoute
   '/api/$': typeof ApiSplatRoute
   '/sources/$type/$slug': typeof SourcesTypeSlugRoute
   '/types/$type/new': typeof TypesTypeNewRoute
@@ -106,6 +114,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
+  '/admin/queue': typeof AdminQueueRoute
   '/api/$': typeof ApiSplatRoute
   '/types/$type': typeof TypesTypeRouteWithChildren
   '/sources/$type/$slug': typeof SourcesTypeSlugRoute
@@ -121,6 +130,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/login'
+    | '/admin/queue'
     | '/api/$'
     | '/types/$type'
     | '/sources/$type/$slug'
@@ -134,6 +144,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/login'
+    | '/admin/queue'
     | '/api/$'
     | '/sources/$type/$slug'
     | '/types/$type/new'
@@ -145,6 +156,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/login'
+    | '/admin/queue'
     | '/api/$'
     | '/types/$type'
     | '/sources/$type/$slug'
@@ -159,6 +171,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   LoginRoute: typeof LoginRoute
+  AdminQueueRoute: typeof AdminQueueRoute
   ApiSplatRoute: typeof ApiSplatRoute
   TypesTypeRoute: typeof TypesTypeRouteWithChildren
   SourcesTypeSlugRoute: typeof SourcesTypeSlugRoute
@@ -192,6 +205,13 @@ declare module '@tanstack/react-router' {
       path: '/api/$'
       fullPath: '/api/$'
       preLoaderRoute: typeof ApiSplatRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/admin/queue': {
+      id: '/admin/queue'
+      path: '/admin/queue'
+      fullPath: '/admin/queue'
+      preLoaderRoute: typeof AdminQueueRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/types/$type/': {
@@ -281,6 +301,7 @@ const TypesTypeRouteWithChildren = TypesTypeRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   LoginRoute: LoginRoute,
+  AdminQueueRoute: AdminQueueRoute,
   ApiSplatRoute: ApiSplatRoute,
   TypesTypeRoute: TypesTypeRouteWithChildren,
   SourcesTypeSlugRoute: SourcesTypeSlugRoute,

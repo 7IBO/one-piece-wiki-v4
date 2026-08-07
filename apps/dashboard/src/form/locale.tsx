@@ -85,6 +85,23 @@ export function useSetLocale(): (next: Locale) => void {
  * that uses it.
  */
 const UI_STRINGS = {
+  queueTitle: { en: 'Moderation queue', fr: 'File de modération' },
+  queueOpenPRs: { en: 'open PR(s)', fr: 'PR ouverte(s)' },
+  queueAdminOnly: {
+    en: 'Admin only — sign in with an admin GitHub account to moderate contributions.',
+    fr: 'Réservé aux admins — connectez-vous avec un compte GitHub admin pour modérer.',
+  },
+  queueRefresh: { en: 'Refresh', fr: 'Rafraîchir' },
+  queueEmpty: {
+    en: 'No open contributions. The queue is clear 🎉',
+    fr: 'Aucune contribution ouverte. La file est vide 🎉',
+  },
+  queueReview: { en: 'Review', fr: 'Examiner' },
+  queueApprove: { en: 'Approve & merge', fr: 'Approuver et fusionner' },
+  queueReject: { en: 'Reject', fr: 'Rejeter' },
+  queueWorking: { en: 'Working…', fr: 'En cours…' },
+  queueApproved: { en: 'PR #{n} merged.', fr: 'PR #{n} fusionnée.' },
+  queueRejected: { en: 'PR #{n} closed.', fr: 'PR #{n} fermée.' },
   pickOne: { en: '— pick one —', fr: '— choisir —' },
   pickSource: { en: '— pick a source —', fr: '— choisir une source —' },
   noMatch: { en: 'No match.', fr: 'Aucun résultat.' },
