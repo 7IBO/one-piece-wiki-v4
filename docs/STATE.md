@@ -38,9 +38,18 @@ SDK, per-entity history endpoint; Stripe-style pinning confirmed as the
 existing URL-MAJOR + `X-API-Version` design; all still design-only,
 pre-freeze gate ADR-029 unchanged); (3) **dashboard UX coherence pass 2** and the SEO / partnerships /
 "incontournable" polish → parked in IDEAS.md pending their own ADRs
-(affiliate links explicitly need the dedicated ADR). Next implementable
-slices, in order: importers fetcher+parsers (fixtures, no network
-needed), W-B detail view, W-F2 UX conventions.
+(affiliate links explicitly need the dedicated ADR). **Importers v1 foundation
+shipped (same evening, PR #91)**: `packages/importers/src/fandom/` —
+`FandomClient` (action=parse, injectable fetch, response cache, rate
+limit), the wikitext utilities (nesting-aware template parser,
+`findTemplate`, `cleanValue`, `parseQrefs` → source ids,
+loose number/date parsing) and the first deterministic mapper
+(`mapChapter`: Chapter Box → corpus-shaped `manga-chapter` JSON +
+EN-title sidecar + warnings; validated against the generated Zod in
+tests — 10 tests, fixtures only). Still needed before first live run:
+network access (ADR-079 §6), the character mapper, and the emit
+adapter (`stage-to-local`/`pr` modes of the Phase-2 runner). Next:
+W-B detail view, W-F2 UX conventions.
 
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
