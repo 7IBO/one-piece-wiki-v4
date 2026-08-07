@@ -193,32 +193,123 @@ export type QrefSource = {
 };
 
 /**
- * Parse {{Qref}} citation templates into wiki source ids. The REAL
- * param names (verified against live API responses, 2026-06-14) are
- * `chap=` / `ep=` / `sbs=` / `vol=` (long aliases kept defensively).
- * A single Qref citing both manga and anime yields both ids —
- * exactly the "record both manga + anime" convention of `since`.
- * `name=`-only Qrefs are backrefs to an earlier definition → skipped.
+ * Templates at every nesting level (infobox params carry Qrefs —
+ * verified on the live Char Box, 2026-06-14). Depth-first, outer
+ * before inner.
  */
-export function parseQrefs(wikitext: string): readonly QrefSource[] {
+export function parseTemplatesDeep(wikitext: string): readonly WikiTemplate[] {
+  const out: WikiTemplate[] = [];
+  const visit = (text: string): void => {
+    for (const t of parseTemplates(text)) {
+      out.push(t);
+      for (const v of [...t.positional, ...Object.values(t.named)]) {
+        if (v.includes('{{')) visit(v);
+      }
+    }
+  };
+  visit(wikitext);
+  return out;
+}
+
+function qrefSourceIds(t: WikiTemplate): readonly QrefSource[] {
   const out: QrefSource[] = [];
   const num = (v: string | undefined): string | null => {
     if (v === undefined) return null;
-    const t = v.trim();
-    return /^\d+$/.test(t) ? t : null;
+    const trimmed = v.trim();
+    return /^\d+$/.test(trimmed) ? trimmed : null;
   };
-  for (const t of parseTemplates(wikitext)) {
+  const chap = num(t.named['chap'] ?? t.named['chapter'] ?? t.named['Chapter']);
+  if (chap !== null) out.push({ sourceId: `manga-chapter:${chap}` });
+  const ep = num(t.named['ep'] ?? t.named['episode'] ?? t.named['Episode']);
+  if (ep !== null) out.push({ sourceId: `anime-episode:${ep}` });
+  const sbs = num(t.named['sbs'] ?? t.named['SBS']);
+  if (sbs !== null) out.push({ sourceId: `sbs:volume-${sbs}` });
+  const vol = num(t.named['vol'] ?? t.named['volume']);
+  if (vol !== null) out.push({ sourceId: `volume:${vol}` });
+  // `cover=N` cites chapter N's cover page; `ep2=N` a second episode;
+  // `card=N` a Vivre Card entry (our `databook-card`) — all verified
+  // against live responses 2026-06-14.
+  const cover = num(t.named['cover']);
+  if (cover !== null) out.push({ sourceId: `manga-chapter:${cover}` });
+  const ep2 = num(t.named['ep2']);
+  if (ep2 !== null) out.push({ sourceId: `anime-episode:${ep2}` });
+  const card = num(t.named['card']);
+  if (card !== null) out.push({ sourceId: `databook-card:${card}` });
+  return out;
+}
+
+/**
+ * Every named Qref DEFINITION in a page ({{Qref|name=X|chap=…}}) →
+ * its source ids. Later {{Qref|name=X}} backrefs resolve against
+ * this table (verified live: the Vivre-Card Qref is defined once on
+ * `age` and backreffed by `birth`/`height`/`blood type`).
+ */
+export function buildQrefTable(
+  wikitext: string,
+): ReadonlyMap<string, readonly QrefSource[]> {
+  const table = new Map<string, readonly QrefSource[]>();
+  for (const t of parseTemplatesDeep(wikitext)) {
     if (t.name.toLowerCase() !== 'qref') continue;
-    const chap = num(t.named['chap'] ?? t.named['chapter'] ?? t.named['Chapter']);
-    if (chap !== null) out.push({ sourceId: `manga-chapter:${chap}` });
-    const ep = num(t.named['ep'] ?? t.named['episode'] ?? t.named['Episode']);
-    if (ep !== null) out.push({ sourceId: `anime-episode:${ep}` });
-    const sbs = num(t.named['sbs'] ?? t.named['SBS']);
-    if (sbs !== null) out.push({ sourceId: `sbs:volume-${sbs}` });
-    const vol = num(t.named['vol'] ?? t.named['volume']);
-    if (vol !== null) out.push({ sourceId: `volume:${vol}` });
+    const name = t.named['name']?.trim();
+    if (name === undefined || name === '') continue;
+    const ids = qrefSourceIds(t);
+    if (ids.length > 0 && !table.has(name)) table.set(name, ids);
+  }
+  return table;
+}
+
+/**
+ * Parse {{Qref}} citation templates into wiki source ids, at every
+ * nesting depth. The REAL param names (verified against live API
+ * responses, 2026-06-14) are `chap=` / `ep=` / `sbs=` / `vol=` /
+ * `cover=` / `ep2=` / `card=` (long aliases kept defensively). Pass
+ * `table` (from buildQrefTable over the whole page) to also resolve
+ * `name=`-only backrefs; without it they are skipped.
+ */
+export function parseQrefs(
+  wikitext: string,
+  table?: ReadonlyMap<string, readonly QrefSource[]>,
+): readonly QrefSource[] {
+  const out: QrefSource[] = [];
+  for (const t of parseTemplatesDeep(wikitext)) {
+    if (t.name.toLowerCase() !== 'qref') continue;
+    const ids = qrefSourceIds(t);
+    if (ids.length > 0) {
+      out.push(...ids);
+      continue;
+    }
+    const name = t.named['name']?.trim();
+    if (name !== undefined && table !== undefined) {
+      out.push(...(table.get(name) ?? []));
+    }
   }
   return out;
+}
+
+export type NihongoName = {
+  /** The quoted display text ("Hyougoro of the Flower"). */
+  readonly text: string;
+  readonly kanji: string | null;
+  readonly romaji: string | null;
+};
+
+/**
+ * Parse a {{Nihongo|"Text"|kanji|romaji|…}} template value (the shape
+ * Char Box uses for alias/epithet — verified live 2026-06-14). Returns
+ * null when the value carries no Nihongo template.
+ */
+export function parseNihongo(value: string): NihongoName | null {
+  const t = parseTemplates(value).find((x) => x.name.toLowerCase() === 'nihongo');
+  if (t === undefined) return null;
+  const text = (t.positional[0] ?? '').replace(/^"|"$/g, '').trim();
+  if (text === '') return null;
+  const kanji = t.positional[1]?.trim() ?? null;
+  const romaji = t.positional[2]?.trim() ?? null;
+  return {
+    text,
+    kanji: kanji === '' ? null : kanji,
+    romaji: romaji === '' || romaji === null ? null : cleanValue(romaji),
+  };
 }
 
 /** Parse "3,000,000,000" / "3.000.000.000" → 3000000000; null when NaN. */
