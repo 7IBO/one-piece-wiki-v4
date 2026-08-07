@@ -285,6 +285,9 @@
         "awakened": {
           "required": false
         },
+        "awakening_outcome": {
+          "required": false
+        },
         "classification": {
           "required": true
         },
@@ -294,12 +297,17 @@
         "name": {
           "required": true
         },
+        "weakness": {
+          "required": false
+        },
         "zoan_model": {
           "required": false
         }
       },
       "allowed_relations": [
-        "depicted-by"
+        "depicted-by",
+        "held-by",
+        "interacts-with-fruit"
       ]
     },
     "event": {
@@ -749,8 +757,14 @@
         "description_key": {
           "required": false
         },
+        "is_secret": {
+          "required": false
+        },
         "name": {
           "required": true
+        },
+        "requires_haki": {
+          "required": false
         },
         "technique_type": {
           "required": true
@@ -761,7 +775,8 @@
         "depicted-by",
         "derived-from",
         "enabled-by-fruit",
-        "enabled-by-transformation"
+        "enabled-by-transformation",
+        "variant-of"
       ]
     },
     "theme-song": {
@@ -952,6 +967,12 @@
     "awakened": {
       "value_type": "boolean",
       "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "awakening_outcome": {
+      "value_type": "enum",
+      "enum_ref": "awakening-outcomes",
       "historical": true,
       "localizable": false
     },
@@ -1189,6 +1210,12 @@
       "historical": false,
       "localizable": false
     },
+    "is_secret": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
     "last_source": {
       "value_type": "source_ref",
       "enum_ref": null,
@@ -1345,6 +1372,12 @@
       "historical": false,
       "localizable": false
     },
+    "requires_haki": {
+      "value_type": "multi_enum",
+      "enum_ref": "haki-types",
+      "historical": false,
+      "localizable": false
+    },
     "runtime_minutes": {
       "value_type": "number",
       "enum_ref": null,
@@ -1444,6 +1477,12 @@
     "url": {
       "value_type": "string",
       "enum_ref": null,
+      "historical": true,
+      "localizable": false
+    },
+    "weakness": {
+      "value_type": "multi_enum",
+      "enum_ref": "devil-fruit-drawback-kinds",
       "historical": true,
       "localizable": false
     },
@@ -2158,6 +2197,29 @@
         }
       }
     },
+    "held-by": {
+      "valid_from_types": [
+        "devil-fruit"
+      ],
+      "valid_to_types": [
+        "character",
+        "crew",
+        "organization"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "hybrid-of": {
       "valid_from_types": [
         "race"
@@ -2167,6 +2229,27 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {}
+    },
+    "interacts-with-fruit": {
+      "valid_from_types": [
+        "devil-fruit"
+      ],
+      "valid_to_types": [
+        "devil-fruit"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "interaction_kind": {
+          "value_type": "enum",
+          "enum_ref": "fruit-interaction-kinds",
+          "required": true
+        },
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
     },
     "introduces-character": {
       "valid_from_types": [
@@ -2781,6 +2864,22 @@
         }
       }
     },
+    "variant-of": {
+      "valid_from_types": [
+        "technique"
+      ],
+      "valid_to_types": [
+        "technique"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "variant_order": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": false
+        }
+      }
+    },
     "voiced-by": {
       "valid_from_types": [
         "character"
@@ -2903,6 +3002,11 @@
       "tournament",
       "training",
       "war"
+    ],
+    "awakening-outcomes": [
+      "failed_berserk",
+      "partial",
+      "successful"
     ],
     "blood-types": [
       "F",
@@ -3039,6 +3143,17 @@
       "unknown",
       "zoan"
     ],
+    "devil-fruit-drawback-kinds": [
+      "elemental_inferiority",
+      "lifespan_cost",
+      "no_intangibility_extra_damage",
+      "range_bound",
+      "requires_contact",
+      "requires_gesture",
+      "requires_knowledge",
+      "seastone_water",
+      "stamina_drain"
+    ],
     "dub-studios": [
       "4kids",
       "funimation",
@@ -3168,6 +3283,13 @@
       "sworn_brother",
       "sworn_sister",
       "uncle"
+    ],
+    "fruit-interaction-kinds": [
+      "immune_to",
+      "inferior_to",
+      "mutual_cancellation",
+      "nullifies",
+      "superior_to"
     ],
     "game-genres": [
       "action",

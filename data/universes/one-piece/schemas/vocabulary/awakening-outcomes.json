@@ -1,0 +1,25 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "awakening-outcomes",
+  "schema_version": 1,
+  "values": {
+    "successful": {
+      "labels": {
+        "en": "Successful",
+        "fr": "Réussi"
+      }
+    },
+    "failed_berserk": {
+      "labels": {
+        "en": "Failed (berserk)",
+        "fr": "Échec (berserk)"
+      }
+    },
+    "partial": {
+      "labels": {
+        "en": "Partial",
+        "fr": "Partiel"
+      }
+    }
+  }
+}

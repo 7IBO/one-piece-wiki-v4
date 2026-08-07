@@ -1,0 +1,23 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "awakening_outcome",
+  "schema_version": 1,
+  "labels": {
+    "en": "Awakening outcome",
+    "fr": "Issue de l'éveil"
+  },
+  "value_type": "enum",
+  "value_constraints": {
+    "enum_ref": "awakening-outcomes"
+  },
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": [
+    "devil-fruit"
+  ],
+  "default_qualifiers": [
+    "since",
+    "source"
+  ]
+}

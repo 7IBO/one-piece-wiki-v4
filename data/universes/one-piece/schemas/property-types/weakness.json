@@ -1,0 +1,23 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "weakness",
+  "schema_version": 1,
+  "labels": {
+    "en": "Weaknesses",
+    "fr": "Faiblesses"
+  },
+  "value_type": "multi_enum",
+  "value_constraints": {
+    "enum_ref": "devil-fruit-drawback-kinds"
+  },
+  "historical": true,
+  "localizable": false,
+  "spoiler_sensitive": true,
+  "applies_to_entity_types": [
+    "devil-fruit"
+  ],
+  "default_qualifiers": [
+    "since",
+    "source"
+  ]
+}

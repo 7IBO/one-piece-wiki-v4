@@ -230,22 +230,25 @@ property-type definitions are in section 3. Universal qualifiers
 
 #### `character`
 
-| Property          | Required | Historical | Localizable | Notes                                              |
-| ----------------- | -------- | ---------- | ----------- | -------------------------------------------------- |
-| `name`            | yes      | yes        | yes         | Multiple entries by name_type                      |
-| `epithet`         | no       | yes        | yes         | "Straw Hat", "Pirate Hunter"                       |
-| `occupation`      | no       | yes        | no          | Multi-enum `occupations`; profession (≠ crew role) |
-| `bounty`          | no       | yes        | no          | In berries                                         |
-| `age`             | no       | yes        | no          |                                                    |
-| `height`          | no       | yes        | no          | In cm                                              |
-| `weight`          | no       | yes        | no          | In kg (often unspecified)                          |
-| `birthday`        | no       | no         | no          | MM-DD format                                       |
-| `blood_type`      | no       | no         | no          | Enum `blood-types`: F/S/X/XF (One Piece system)    |
-| `gender`          | no       | no         | no          | Vocabulary `genders`                               |
-| `haki_types`      | no       | yes        | no          | Multi-enum `haki-types`                            |
-| `status`          | yes      | yes        | no          | Vocabulary `character-statuses`                    |
-| `birthplace`      | no       | no         | no          | entity_ref to `location`                           |
-| `description_key` | no       | no         | yes         | Short bio key                                      |
+| Property            | Required     | Historical                   | Localizable | Notes                                              |
+| ------------------- | ------------ | ---------------------------- | ----------- | -------------------------------------------------- |
+| `name`              | yes          | yes                          | yes         | Multiple entries by name_type                      |
+| `epithet`           | no           | yes                          | yes         | "Straw Hat", "Pirate Hunter"                       |
+| `occupation`        | no           | yes                          | no          | Multi-enum `occupations`; profession (≠ crew role) |
+| `bounty`            | no           | yes                          | no          | In berries                                         |
+| `age`               | no           | yes                          | no          |                                                    |
+| `height`            | no           | yes                          | no          | In cm                                              |
+| `weight`            | no           | yes                          | no          | In kg (often unspecified)                          |
+| `birthday`          | no           | no                           | no          | MM-DD format                                       |
+| `blood_type`        | no           | no                           | no          | Enum `blood-types`: F/S/X/XF (One Piece system)    |
+| `gender`            | no           | no                           | no          | Vocabulary `genders`                               |
+| `weakness`          | `multi_enum` | `devil-fruit-drawback-kinds` |             |                                                    |
+| `requires_haki`     | `multi_enum` | `haki-types`                 |             |                                                    |
+| `awakening_outcome` | `enum`       | `awakening-outcomes`         |             |                                                    |
+| `haki_types`        | no           | yes                          | no          | Multi-enum `haki-types`                            |
+| `status`            | yes          | yes                          | no          | Vocabulary `character-statuses`                    |
+| `birthplace`        | no           | no                           | no          | entity_ref to `location`                           |
+| `description_key`   | no           | no                           | yes         | Short bio key                                      |
 
 Allowed relations: `member-of`, `ate-fruit`, `uses-technique`,
 `wields-weapon`, `family-of`, `ally-of`, `enemy-of`, `mentor-of`,
@@ -261,10 +264,12 @@ Allowed relations: `member-of`, `ate-fruit`, `uses-technique`,
 | `name`                      | yes      | yes        | yes         | Common, true_name, etc.                  |
 | `classification`            | yes      | yes        | no          | Vocabulary `devil-fruit-classifications` |
 | `awakened`                  | no       | yes        | no          | Boolean                                  |
+| `awakening_outcome`         | no       | yes        | no          | Vocabulary `awakening-outcomes`          |
+| `weakness`                  | no       | yes        | no          | Multi — `devil-fruit-drawback-kinds`     |
 | `abilities_description_key` | no       | yes        | yes         | Short description key                    |
 
-Allowed relations: `eaten-by`, `enables-technique`, `depicted-by`,
-`sourced-from`.
+Allowed relations: `eaten-by`, `held-by`, `interacts-with-fruit`,
+`enables-technique`, `depicted-by`, `sourced-from`.
 
 ---
 
@@ -322,10 +327,12 @@ Allowed relations: `part-of-location`, `contains-location`,
 | ----------------- | -------- | ---------- | ----------- | ---------------------------- |
 | `name`            | yes      | yes        | yes         |                              |
 | `technique_type`  | yes      | no         | no          | Vocabulary `technique-types` |
+| `is_secret`       | no       | yes        | no          | Boolean (e.g. Rokuōgan)      |
+| `requires_haki`   | no       | no         | no          | Multi — `haki-types`         |
 | `description_key` | no       | no         | yes         |                              |
 
 Allowed relations: `used-by`, `enabled-by-fruit`, `derived-from`,
-`depicted-by`.
+`variant-of`, `depicted-by`.
 
 ---
 
@@ -574,7 +581,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (97)
+## 3. Property types (101)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -677,6 +684,7 @@ unit, and qualifier policy (section 6).
 | `nullifies_devil_fruits` | `boolean`  | Material — `true` for Seastone          |
 | `anime_original`         | `boolean`  | Anime-episode — filler / anime-only     |
 | `is_color_spread`        | `boolean`  | Manga-chapter — opens on a color spread |
+| `is_secret`              | `boolean`  | Technique — secret / unrevealed variant |
 
 ### 3.6 References
 
@@ -691,7 +699,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (67)
+## 4. Relation types (70)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -848,7 +856,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (60)
+## 5. Vocabularies / Enums (63)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -1174,6 +1182,20 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 `type_a`, `type_b`, `type_c` — World-Government race danger tiers (values
 provisional `[V]`, to verify against canon before freeze).
 
+### 5.61 `devil-fruit-drawback-kinds`
+
+`seastone_water`, `elemental_inferiority`, `stamina_drain`, `lifespan_cost`,
+`no_intangibility_extra_damage`, `range_bound`, `requires_contact`,
+`requires_gesture`, `requires_knowledge` (`[V]` provisional)
+
+### 5.62 `fruit-interaction-kinds`
+
+`superior_to`, `inferior_to`, `mutual_cancellation`, `nullifies`, `immune_to`
+
+### 5.63 `awakening-outcomes`
+
+`successful`, `failed_berserk`, `partial`
+
 ---
 
 ## 6. Universal qualifiers
@@ -1295,9 +1317,9 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 36
-- **Property types**: 97 (some shared across multiple entity types)
-- **Relation types**: 67 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 60
+- **Property types**: 101 (some shared across multiple entity types)
+- **Relation types**: 70 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 63
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)

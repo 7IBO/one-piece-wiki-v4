@@ -1,0 +1,61 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "devil-fruit-drawback-kinds",
+  "schema_version": 1,
+  "values": {
+    "seastone_water": {
+      "labels": {
+        "en": "Seastone / water",
+        "fr": "Granit marin / eau"
+      }
+    },
+    "elemental_inferiority": {
+      "labels": {
+        "en": "Elemental inferiority",
+        "fr": "Infériorité élémentaire"
+      }
+    },
+    "stamina_drain": {
+      "labels": {
+        "en": "Stamina drain",
+        "fr": "Épuisement"
+      }
+    },
+    "lifespan_cost": {
+      "labels": {
+        "en": "Lifespan cost",
+        "fr": "Coût en espérance de vie"
+      }
+    },
+    "no_intangibility_extra_damage": {
+      "labels": {
+        "en": "Extra damage when tangible",
+        "fr": "Dégâts accrus si tangible"
+      }
+    },
+    "range_bound": {
+      "labels": {
+        "en": "Range-bound",
+        "fr": "Portée limitée"
+      }
+    },
+    "requires_contact": {
+      "labels": {
+        "en": "Requires contact",
+        "fr": "Contact requis"
+      }
+    },
+    "requires_gesture": {
+      "labels": {
+        "en": "Requires gesture",
+        "fr": "Geste requis"
+      }
+    },
+    "requires_knowledge": {
+      "labels": {
+        "en": "Requires knowledge",
+        "fr": "Connaissance requise"
+      }
+    }
+  }
+}

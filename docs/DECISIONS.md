@@ -8,6 +8,40 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-077 — C5 additive wave: fruit weaknesses/interactions, technique depth
+
+**Date**: 2026-06-14
+
+**Context**: The `[A]`-tagged C5/powers rows (DATA_EXPANSION_PLAN §C5 + §2A
+"Powers"). The `fighting-style` modelling call (open decision #5 — entity vs
+`concept` subtype) stays open, so `part-of-system` is deferred with it; named
+Haki applications as `technique` **data** need no schema change.
+
+**Decision** (all additive, one-piece-scoped):
+
+1. **devil-fruit** (v4): `weakness` (multi_enum → new vocab
+   `devil-fruit-drawback-kinds`, 9 values `[V]`, historised + spoiler);
+   `awakening_outcome` (enum → new vocab `awakening-outcomes`
+   successful/failed_berserk/partial — the Zoan berserk risk the `awakened`
+   boolean can't express); **`interacts-with-fruit`** relation (fruit →
+   fruit, required `interaction_kind` → new vocab `fruit-interaction-kinds`
+   superior_to/inferior_to/mutual_cancellation/nullifies/immune_to — Magu >
+   Mera, Yami nullifies, Gomu immune to Goro, many SBS-sourced);
+   **`held-by`** relation (fruit → character/organization/crew, historised
+   since/until — possession ≠ eating, the Ace → prize → Sabo chain).
+2. **technique** (v5): `is_secret` (boolean, historised + spoiler —
+   Rokuōgan), `requires_haki` (multi_enum → existing `haki-types`),
+   **`variant-of`** relation (technique → technique, optional
+   `variant_order` — Gear forms / sub-techniques; `derived-from` stays for
+   cross-style lineage).
+
+**Consequences**: 101 properties, 70 relations, 63 vocabularies; compat
+additive-only (17 entries). No migration. Remaining C5: the `[D]`
+fighting-style call + `part-of-system` + `acquisition_method` (ambiguous
+host — flagged), `technique-types` review `[V]`.
+
+---
+
 ## ADR-076 — C9-rest additive wave 1: event phases, race/location/ship depth
 
 **Date**: 2026-06-14

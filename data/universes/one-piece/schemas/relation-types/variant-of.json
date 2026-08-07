@@ -1,0 +1,31 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "variant-of",
+  "schema_version": 1,
+  "labels": {
+    "en": {
+      "active": "Variant of",
+      "inverse": "Has variant"
+    },
+    "fr": {
+      "active": "Variante de",
+      "inverse": "A pour variante"
+    }
+  },
+  "valid_from_types": [
+    "technique"
+  ],
+  "valid_to_types": [
+    "technique"
+  ],
+  "qualifiers": [
+    {
+      "id": "variant_order",
+      "value_type": "number",
+      "required": false
+    }
+  ],
+  "allow_multiple_concurrent": false,
+  "inverse_inferred": true,
+  "historical": false
+}
