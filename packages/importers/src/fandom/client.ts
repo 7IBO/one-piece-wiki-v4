@@ -39,6 +39,13 @@ export type ParsedPage = {
 
 const DEFAULT_BASE = 'https://onepiece.fandom.com';
 
+/**
+ * Hard cap on categories visited by one `categoryMembers` walk — the
+ * wiki has ~112 volume subcategories; 300 leaves headroom without
+ * letting a miswired seed (e.g. a root category) walk the whole wiki.
+ */
+const MAX_CATEGORY_WALK = 300;
+
 export class FandomClient {
   private readonly baseUrl: string;
   private readonly fetchImpl: typeof fetch;
@@ -195,32 +202,78 @@ export class FandomClient {
    * (`list=categorymembers`), following API continuation — the crawl
    * seed for "import EVERYTHING of a kind" (Chapters, Episodes,
    * Humans, …). Pass the bare name ("Chapters"), not "Category:…".
+   *
+   * Fandom's chapter/episode categories hold no articles directly —
+   * only subcategories (One Piece Chapters → Chapters by Volume →
+   * Volume N → the chapter pages). `depth` descends that many
+   * subcategory levels (default 0 = direct members only), deduplicated
+   * and capped at {@link MAX_CATEGORY_WALK} categories per call.
    */
-  async categoryMembers(category: string): Promise<readonly string[]> {
+  async categoryMembers(
+    category: string,
+    options: { readonly depth?: number; readonly log?: (line: string) => void; } = {},
+  ): Promise<readonly string[]> {
+    const log = options.log ?? ((): void => {});
     const titles: string[] = [];
-    let cmcontinue: string | undefined;
-    do {
-      const params = new URLSearchParams({
-        action: 'query',
-        list: 'categorymembers',
-        cmtitle: `Category:${category.replace(/^Category:/i, '')}`,
-        cmnamespace: '0',
-        cmlimit: '500',
-        format: 'json',
-        formatversion: '2',
-      });
-      if (cmcontinue !== undefined) params.set('cmcontinue', cmcontinue);
-      // eslint-disable-next-line no-await-in-loop
-      const raw = await this.fetchRaw(`${this.baseUrl}/api.php?${params.toString()}`);
-      const envelope = JSON.parse(raw) as {
-        query?: { categorymembers?: readonly { title?: string; }[]; };
-        continue?: { cmcontinue?: string; };
-      };
-      for (const m of envelope.query?.categorymembers ?? []) {
-        if (m.title !== undefined) titles.push(m.title);
+    const seenPages = new Set<string>();
+    const visited = new Set<string>();
+
+    const walk = async (cat: string, remaining: number): Promise<void> => {
+      const bare = cat.replace(/^Category:/i, '').trim();
+      const key = bare.toLowerCase();
+      if (visited.has(key) || visited.size >= MAX_CATEGORY_WALK) return;
+      visited.add(key);
+
+      const subcategories: string[] = [];
+      let cmcontinue: string | undefined;
+      do {
+        const params = new URLSearchParams({
+          action: 'query',
+          list: 'categorymembers',
+          cmtitle: `Category:${bare}`,
+          // 14 = the Category namespace — only asked for when we may descend.
+          cmnamespace: remaining > 0 ? '0|14' : '0',
+          cmlimit: '500',
+          format: 'json',
+          formatversion: '2',
+        });
+        if (cmcontinue !== undefined) params.set('cmcontinue', cmcontinue);
+        // eslint-disable-next-line no-await-in-loop
+        const raw = await this.fetchRaw(`${this.baseUrl}/api.php?${params.toString()}`);
+        const envelope = JSON.parse(raw) as {
+          error?: { code?: string; info?: string; };
+          query?: { categorymembers?: readonly { title?: string; ns?: number; }[]; };
+          continue?: { cmcontinue?: string; };
+        };
+        if (envelope.error !== undefined) {
+          throw new Error(
+            `MediaWiki error for category "${bare}": ${envelope.error.code ?? '?'} — ${
+              envelope.error.info ?? 'no info'
+            }`,
+          );
+        }
+        for (const m of envelope.query?.categorymembers ?? []) {
+          if (m.title === undefined) continue;
+          if (m.ns === 14 || m.title.startsWith('Category:')) {
+            subcategories.push(m.title);
+          } else if (!seenPages.has(m.title)) {
+            seenPages.add(m.title);
+            titles.push(m.title);
+          }
+        }
+        cmcontinue = envelope.continue?.cmcontinue;
+      } while (cmcontinue !== undefined);
+
+      if (remaining > 0 && subcategories.length > 0) {
+        log(`category "${bare}": ${subcategories.length} subcategorie(s), descending`);
+        for (const sub of subcategories) {
+          // eslint-disable-next-line no-await-in-loop
+          await walk(sub, remaining - 1);
+        }
       }
-      cmcontinue = envelope.continue?.cmcontinue;
-    } while (cmcontinue !== undefined);
+    };
+
+    await walk(category, options.depth ?? 0);
     return titles;
   }
 

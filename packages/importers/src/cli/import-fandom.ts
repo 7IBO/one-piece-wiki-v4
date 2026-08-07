@@ -49,18 +49,20 @@ const client = new FandomClient({
 });
 
 if (kind === 'crawl') {
-  // bun run import:fandom crawl --category Chapters --category Episodes
+  // bun run import:fandom crawl --category "One Piece Chapters" --depth 2
   //   [--page "Monkey D. Luffy"] [--limit 50] [--stage]
   const opt = (name: string): readonly string[] =>
     args.flatMap((a, i) => (a === `--${name}` && args[i + 1] !== undefined ? [args[i + 1]!] : []));
   const categories = opt('category');
   const seedPages = opt('page');
   const limit = Number(opt('limit')[0] ?? '25');
+  const categoryDepth = Number(opt('depth')[0] ?? '2');
   const registryPath = join(REPO_ROOT, 'data', 'import', 'fandom-pages.json');
   const registry = (await Bun.file(registryPath).json()) as FandomRegistry;
 
   const report = await crawl(client, { categories, pages: seedPages }, {
     limit,
+    categoryDepth,
     registry,
     log: (line) => process.stdout.write(`  ${line}\n`),
   });
@@ -139,7 +141,7 @@ if (kind === 'crawl') {
 } else {
   process.stderr.write(
     'Usage: bun run import:fandom <chapter|episode|character> <page…> [--stage] [--overwrite]\n'
-      + '       bun run import:fandom crawl --category <name>… [--page <title>…] [--limit N] [--stage]\n'
+      + '       bun run import:fandom crawl --category <name>… [--depth N] [--page <title>…] [--limit N] [--stage]\n'
       + '       bun run import:fandom check-updates\n',
   );
   process.exitCode = 1;
