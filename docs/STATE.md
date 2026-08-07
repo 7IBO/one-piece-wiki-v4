@@ -5,7 +5,18 @@ session can pick up mid-stream. Architectural _rationale_ lives in
 `/docs/DECISIONS.md` (ADRs); the build order in `/docs/ROADMAP.md`;
 this file is the current status + the open threads.
 
-**Last updated**: 2026-06-14
+**Last updated**: 2026-06-14 (evening — C8 cluster closed)
+
+**2026-06-14 (evening) — C8-rest shipped.** Catalogue **36 entities / 93
+properties / 65 relations / 59 vocabularies**. ADR-073 (contract phase: legacy
+`volume` string property dropped; migration `0005`, no-op on corpus), ADR-074
+(`sbs-qa` entity + `qa-of`, one-piece-scoped; `features`/`clarifies-fact`
+widened), ADR-075 (`is_color_spread` + `has-cover-story` on `manga-chapter`).
+The adaptation many-to-many needed nothing — `adapted-by` was already
+non-linear (`allow_multiple_concurrent` + `coverage`). **C8 is complete**;
+next in the committed order: C9-rest → C5 → C1. NB: **ADR-072 is reserved by
+PR #90** (dashboard image display, open at the time of writing — merge order
+safe either way, disjoint files).
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below
@@ -144,10 +155,9 @@ nations), ADR-044 (C7-core: `person` entity + `voiced-by`/`portrayed-by` +
 `location_status` + crew territorial control), ADR-046 (materials: `material`
 entity + `made-of` + Seastone's `nullifies_devil_fruits`), ADR-047 (C8a:
 `semi_canon` tier + `wanted_poster`/`eyecatcher` + `arc_number`). **Remaining
-(committed order — user said "tout"):** C8-rest (`volume` tankōbon entity —
-needs expand→migrate→contract on the legacy `volume` string property; `sbs-qa` +
-`databook-card` entities; non-linear `adapts`/`adapted-by`; `theme-song` + C7's
-deferred source/media enrichment), C9-rest (race/concept additions,
+(committed order — user said "tout"):** ~~C8-rest~~ **done 2026-06-14 evening**
+(ADR-071/073 volume, ADR-074 sbs-qa, ADR-075 chapter enrichment — see the
+dated entry at the top), C9-rest (race/concept additions,
 ancient-weapon/artifact, event enrichment, `era` entity + the `[D]` structured
 in-universe temporal value — biggest), C5 (fighting-styles/Haki/techniques), C1
 (naming/i18n editions — invasive, deliberately last; note `name-types` already

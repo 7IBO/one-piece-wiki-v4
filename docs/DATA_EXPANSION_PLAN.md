@@ -28,10 +28,12 @@ rule stands — concepts land in `DATA_MODEL.md` and an ADR _before_ code).
   entity + `made-of` + Seastone's `nullifies_devil_fruits`), C8a (ADR-047:
   `semi_canon` tier + `wanted_poster`/`eyecatcher` appearance types + `arc_number`
   ordinal), plus the cross-cutting relation epistemic axis (ADR-037) and the
-  `check:compat` lockfile (ADR-042). Remaining: **C8-rest** (the `volume`
-  tankōbon entity — needs an expand→migrate→contract on the legacy `volume`
-  string property; `sbs-qa` + `databook-card` entities; non-linear
-  `adapts`/`adapted-by`; `theme-song` + C7's deferred source/media enrichment),
+  `check:compat` lockfile (ADR-042). **C8 is now complete**: `volume` entity
+  ADR-071 (expand) + ADR-073 (contract — legacy string dropped), `sbs-qa`
+  ADR-074, `databook-card` (shipped with the new-domain clusters),
+  `theme-song` ADR-051, the adaptation many-to-many (already non-linear via
+  `adapted-by` + `coverage`), and the last C7-deferred chapter enrichment
+  ADR-075 (`is_color_spread`, `has-cover-story`). Remaining:
   **C9-rest** (race/concept additions,
   ancient-weapon/artifact, event enrichment, `era` entity + the `[D]` structured
   in-universe temporal value), C5 (fighting-styles/Haki/techniques), C1
@@ -207,10 +209,11 @@ relations, and the `adapts`/`adapted-by` many-to-many.
 **Shipped (ADR-047, C8a):** `canon-scopes += semi_canon` (the canon-≠-spoiler
 tier, §1.4), `appearance-types += wanted_poster/eyecatcher`, and `arc_number`
 (global arc ordinal). Cover-story arcs need **no** new entity — they are `arc`s
-with `arc_subtype: cover_story` (already in the vocab). **Remaining:** the
-`volume` tankōbon entity (requires expand→migrate→contract on the legacy free-text
-`volume` property on `manga-chapter`/`sbs`), `sbs-qa` + `databook-card` entities,
-non-linear `adapts`/`adapted-by`, and `theme-song`.
+with `arc_subtype: cover_story` (already in the vocab). **Cluster complete
+(2026-06-14):** `volume` entity ADR-071 + legacy-string contract ADR-073;
+`sbs-qa` ADR-074; `databook-card` (new-domain wave); `theme-song` ADR-051;
+`adapted-by` was already the non-linear many-to-many (`coverage` qualifier);
+`has-cover-story` + `is_color_spread` ADR-075.
 
 | Change                         | Detail                                                                                                                                                              | Tag   |
 | ------------------------------ | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----- |
