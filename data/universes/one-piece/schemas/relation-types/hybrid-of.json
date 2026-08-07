@@ -1,0 +1,15 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
+  "id": "hybrid-of",
+  "schema_version": 1,
+  "labels": {
+    "en": { "active": "Hybrid of", "inverse": "Has hybrid" },
+    "fr": { "active": "Hybride de", "inverse": "A pour hybride" }
+  },
+  "valid_from_types": ["race"],
+  "valid_to_types": ["race"],
+  "qualifiers": [],
+  "allow_multiple_concurrent": true,
+  "inverse_inferred": true,
+  "historical": false
+}

@@ -178,6 +178,10 @@ Events have:
 - A span (`first_source`, `last_source`)
 - A primary location (relation)
 - Participants (relations, with role and outcome qualifiers)
+- Optional **phases**: a long event decomposes into sub-events via
+  `part-of-event` (child → parent, ordered by the `phase_order`
+  qualifier), each phase carrying its own participants/location/outcome
+  (ADR-076 — e.g. the Battle of Marineford's ordered phases)
 - Effects (caused_death_of, set_up_event, …)
 - An optional narrative key for prose summary
 

@@ -328,6 +328,7 @@
         "caused-death-of",
         "depicted-by",
         "occurs-during-arc",
+        "part-of-event",
         "participant",
         "set-in"
       ]
@@ -485,6 +486,9 @@
         "location_subtype": {
           "required": true
         },
+        "log_pose_time": {
+          "required": false
+        },
         "name": {
           "required": true
         },
@@ -616,6 +620,9 @@
         "average_height": {
           "required": false
         },
+        "danger_classification": {
+          "required": false
+        },
         "description_key": {
           "required": false
         },
@@ -624,10 +631,14 @@
         },
         "name": {
           "required": true
+        },
+        "slave_price": {
+          "required": false
         }
       },
       "allowed_relations": [
         "depicted-by",
+        "hybrid-of",
         "originates-from"
       ]
     },
@@ -699,6 +710,9 @@
           "required": false
         },
         "destroyed_at": {
+          "required": false
+        },
+        "figurehead": {
           "required": false
         },
         "name": {
@@ -1025,6 +1039,12 @@
       "historical": false,
       "localizable": false
     },
+    "danger_classification": {
+      "value_type": "enum",
+      "enum_ref": "danger-classifications",
+      "historical": false,
+      "localizable": false
+    },
     "databook_subtype": {
       "value_type": "enum",
       "enum_ref": "databook-subtypes",
@@ -1064,6 +1084,12 @@
     "event_subtype": {
       "value_type": "enum",
       "enum_ref": "event-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "figurehead": {
+      "value_type": "string",
+      "enum_ref": null,
       "historical": false,
       "localizable": false
     },
@@ -1190,6 +1216,12 @@
     "location_subtype": {
       "value_type": "enum",
       "enum_ref": "location-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "log_pose_time": {
+      "value_type": "number",
+      "enum_ref": null,
       "historical": false,
       "localizable": false
     },
@@ -1341,6 +1373,12 @@
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
+      "localizable": false
+    },
+    "slave_price": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": true,
       "localizable": false
     },
     "source_origin": {
@@ -2120,6 +2158,16 @@
         }
       }
     },
+    "hybrid-of": {
+      "valid_from_types": [
+        "race"
+      ],
+      "valid_to_types": [
+        "race"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
+    },
     "introduces-character": {
       "valid_from_types": [
         "anime-episode",
@@ -2298,6 +2346,22 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {}
+    },
+    "part-of-event": {
+      "valid_from_types": [
+        "event"
+      ],
+      "valid_to_types": [
+        "event"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "phase_order": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": false
+        }
+      }
     },
     "part-of-location": {
       "valid_from_types": [
@@ -2910,6 +2974,11 @@
       "sniper",
       "tactician",
       "vice_captain"
+    ],
+    "danger-classifications": [
+      "type_a",
+      "type_b",
+      "type_c"
     ],
     "databook-subtypes": [
       "blue",

@@ -308,6 +308,7 @@ Allowed relations: `has-member`, `ally-of`, `enemy-of`, `based-in`,
 | `location_status`  | no       | yes        | no          | Vocabulary `location-statuses` |
 | `climate`          | no       | no         | yes         |                                |
 | `population`       | no       | yes        | no          |                                |
+| `log_pose_time`    | no       | no         | no          | Hours to set (Grand Line)      |
 | `description_key`  | no       | no         | yes         |                                |
 
 Allowed relations: `part-of-location`, `contains-location`,
@@ -348,6 +349,7 @@ Allowed relations: `wielded-by`, `forged-by`, `depicted-by`.
 | `name`            | yes      | yes        | yes         |                         |
 | `ship_type`       | yes      | no         | no          | Vocabulary `ship-types` |
 | `crew_capacity`   | no       | no         | no          |                         |
+| `figurehead`      | no       | no         | no          | Freeform descriptor     |
 | `built_at`        | no       | no         | no          | source_ref              |
 | `destroyed_at`    | no       | no         | no          | source_ref              |
 | `description_key` | no       | no         | yes         |                         |
@@ -359,14 +361,17 @@ Allowed relations: `captained-by`, `crewed-by`, `flies-flag`,
 
 #### `race`
 
-| Property          | Required | Historical | Localizable | Notes   |
-| ----------------- | -------- | ---------- | ----------- | ------- |
-| `name`            | yes      | yes        | yes         |         |
-| `description_key` | no       | no         | yes         |         |
-| `lifespan`        | no       | no         | no          | Average |
-| `average_height`  | no       | no         | no          |         |
+| Property                | Required | Historical | Localizable | Notes                               |
+| ----------------------- | -------- | ---------- | ----------- | ----------------------------------- |
+| `name`                  | yes      | yes        | yes         |                                     |
+| `description_key`       | no       | no         | yes         |                                     |
+| `lifespan`              | no       | no         | no          | Average                             |
+| `average_height`        | no       | no         | no          |                                     |
+| `slave_price`           | no       | yes        | no          | Berry — recurring quantified field  |
+| `danger_classification` | no       | no         | no          | Vocabulary `danger-classifications` |
 
-Allowed relations: `has-member-race`, `originates-from`, `depicted-by`.
+Allowed relations: `has-member-race`, `hybrid-of`, `originates-from`,
+`depicted-by`.
 
 ---
 
@@ -519,8 +524,8 @@ Allowed relations: `contains-arc`.
 | `is_public`     | no       | no         | no          | Boolean — affects propagation |
 
 Allowed relations: `participant`, `caused-death-of`,
-`occurs-during-arc`, `caused-by-event`, `causes-event`, `set-in`,
-`depicted-by`.
+`occurs-during-arc`, `caused-by-event`, `causes-event`, `part-of-event`,
+`set-in`, `depicted-by`.
 
 ---
 
@@ -569,7 +574,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (93)
+## 3. Property types (97)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -601,6 +606,8 @@ unit, and qualifier policy (section 6).
 | `number`          | `number`   | —     | min:0                 |
 | `page_count`      | `number`   | —     | min:1                 |
 | `page`            | `number`   | —     | min:1 (sbs-qa locus)  |
+| `slave_price`     | `number`   | berry | min:0, historised     |
+| `log_pose_time`   | `number`   | hour  | min:0                 |
 | `runtime_minutes` | `number`   | min   | min:0                 |
 | `saga_number`     | `number`   | —     | min:1                 |
 | `arc_number`      | `number`   | —     | min:1                 |
@@ -629,34 +636,35 @@ unit, and qualifier policy (section 6).
 
 ### 3.4 Categorical (enum-backed)
 
-| Property              | Value type   | Vocabulary                    |
-| --------------------- | ------------ | ----------------------------- |
-| `status`              | `enum`       | `character-statuses`          |
-| `gender`              | `enum`       | `genders`                     |
-| `classification` (DF) | `enum`       | `devil-fruit-classifications` |
-| `location_subtype`    | `enum`       | `location-subtypes`           |
-| `region`              | `enum`       | `location-regions`            |
-| `location_status`     | `enum`       | `location-statuses`           |
-| `material_subtype`    | `enum`       | `material-subtypes`           |
-| `technique_type`      | `enum`       | `technique-types`             |
-| `weapon_type`         | `enum`       | `weapon-types`                |
-| `weapon_grade`        | `enum`       | `weapon-grades`               |
-| `ship_type`           | `enum`       | `ship-types`                  |
-| `organization_type`   | `enum`       | `org-types`                   |
-| `arc_subtype`         | `enum`       | `arc-subtypes`                |
-| `event_subtype`       | `enum`       | `event-subtypes`              |
-| `concept_subtype`     | `enum`       | `concept-subtypes`            |
-| `canon_scope`         | `enum`       | `canon-scopes`                |
-| `databook_subtype`    | `enum`       | `databook-subtypes`           |
-| `license`             | `enum`       | `image-licenses`              |
-| `format`              | `enum`       | `image-formats`               |
-| `haki_types`          | `multi_enum` | `haki-types`                  |
-| `person_roles`        | `multi_enum` | `person-roles`                |
-| `game_genre`          | `enum`       | `game-genres`                 |
-| `game_platforms`      | `multi_enum` | `game-platforms`              |
-| `special_kind`        | `enum`       | `special-kinds`               |
-| `performance_kind`    | `enum`       | `performance-kinds`           |
-| `merch_type`          | `enum`       | `merch-types`                 |
+| Property                | Value type   | Vocabulary                    |
+| ----------------------- | ------------ | ----------------------------- |
+| `status`                | `enum`       | `character-statuses`          |
+| `gender`                | `enum`       | `genders`                     |
+| `classification` (DF)   | `enum`       | `devil-fruit-classifications` |
+| `location_subtype`      | `enum`       | `location-subtypes`           |
+| `region`                | `enum`       | `location-regions`            |
+| `location_status`       | `enum`       | `location-statuses`           |
+| `danger_classification` | `enum`       | `danger-classifications`      |
+| `material_subtype`      | `enum`       | `material-subtypes`           |
+| `technique_type`        | `enum`       | `technique-types`             |
+| `weapon_type`           | `enum`       | `weapon-types`                |
+| `weapon_grade`          | `enum`       | `weapon-grades`               |
+| `ship_type`             | `enum`       | `ship-types`                  |
+| `organization_type`     | `enum`       | `org-types`                   |
+| `arc_subtype`           | `enum`       | `arc-subtypes`                |
+| `event_subtype`         | `enum`       | `event-subtypes`              |
+| `concept_subtype`       | `enum`       | `concept-subtypes`            |
+| `canon_scope`           | `enum`       | `canon-scopes`                |
+| `databook_subtype`      | `enum`       | `databook-subtypes`           |
+| `license`               | `enum`       | `image-licenses`              |
+| `format`                | `enum`       | `image-formats`               |
+| `haki_types`            | `multi_enum` | `haki-types`                  |
+| `person_roles`          | `multi_enum` | `person-roles`                |
+| `game_genre`            | `enum`       | `game-genres`                 |
+| `game_platforms`        | `multi_enum` | `game-platforms`              |
+| `special_kind`          | `enum`       | `special-kinds`               |
+| `performance_kind`      | `enum`       | `performance-kinds`           |
+| `merch_type`            | `enum`       | `merch-types`                 |
 
 ### 3.5 Boolean
 
@@ -683,7 +691,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (65)
+## 4. Relation types (67)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -723,6 +731,7 @@ generates inverses automatically when `inverse_inferred: true`.
 | Type              | From        | To         | Inverse           | Qualifiers   |
 | ----------------- | ----------- | ---------- | ----------------- | ------------ |
 | `belongs-to-race` | `character` | `race`     | `has-member-race` | —            |
+| `hybrid-of`       | `race`      | `race`     | `has-hybrid`      | —            |
 | `born-in`         | `character` | `location` | `birthplace-of`   | —            |
 | `resides-in`      | `character` | `location` | `home-of`         | since, until |
 | `originates-from` | `race`      | `location` | `origin-of-race`  | —            |
@@ -788,6 +797,7 @@ generates inverses automatically when `inverse_inferred: true`.
 | `participant`     | `event` | `character`, `crew`, `organization` | `participated-in` | side, role, outcome, notable_action |
 | `caused-death-of` | `event` | `character`                         | `died-in-event`   | cause                               |
 | `caused-by-event` | `event` | `event`                             | `causes-event`    | —                                   |
+| `part-of-event`   | `event` | `event`                             | `has-phase`       | phase_order                         |
 
 ### 4.12 Concept embodiment
 
@@ -838,7 +848,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (59)
+## 5. Vocabularies / Enums (60)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -1159,6 +1169,11 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 
 `gear`, `zoan_form`, `sulong`, `awakening`, `other`
 
+### 5.60 `danger-classifications`
+
+`type_a`, `type_b`, `type_c` — World-Government race danger tiers (values
+provisional `[V]`, to verify against canon before freeze).
+
 ---
 
 ## 6. Universal qualifiers
@@ -1280,9 +1295,9 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 36
-- **Property types**: 93 (some shared across multiple entity types)
-- **Relation types**: 65 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 59
+- **Property types**: 97 (some shared across multiple entity types)
+- **Relation types**: 67 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 60
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)

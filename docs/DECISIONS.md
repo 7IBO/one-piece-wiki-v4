@@ -8,6 +8,41 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-076 — C9-rest additive wave 1: event phases, race/location/ship depth
+
+**Date**: 2026-06-14
+
+**Context**: First C9-rest slice (DATA_EXPANSION_PLAN §C9 + §2A), restricted
+to rows that are purely additive `[A]` and need no maintainer product call.
+The `[D]`/`[B]` C9 items stay open: `era` entity + structured in-universe
+temporal value (open decision #3), `ancient-weapon`/`artifact` (#6),
+`event_subtype` array + structured `outcome[]` (#7), inter-race relations
+(`[A][D]`), race population-status.
+
+**Decision** (all additive):
+
+1. **`part-of-event`** (core; event → event, single parent, optional
+   `phase_order` number, inverse "Has phase") — Marineford's ~10 ordered
+   phases each keep their own participants/location/outcome.
+2. **race** (v3): `slave_price` (number, berry, historised — the recurring
+   quantified field from the Sabaody/FMI prose), `danger_classification`
+   (enum, new vocab `danger-classifications` `type_a/b/c` — `[V]`
+   provisional), `hybrid-of` relation (race → race, e.g. Wotan = giant ×
+   fish-man).
+3. **location** (v4): `log_pose_time` (number, hours).
+4. **ship** (v4): `figurehead` (string descriptor).
+5. **bounty** (property v2): optional `reason` (string) qualifier — the
+   narrated cause of a raise; the event ref itself already fits the
+   universal `event` axis.
+6. Verified as already covered, no change: race homeland
+   (`originates-from`), event chains (`caused-by-event`/`causes-event`),
+   historised `population`, ship material (`made-of`, ADR-046).
+
+**Consequences**: 97 properties, 67 relations, 60 vocabularies; compat
+additive-only (7 entries). No migration.
+
+---
+
 ## ADR-075 — chapter media enrichment: `is_color_spread` + `has-cover-story`
 
 **Date**: 2026-06-14

@@ -33,8 +33,13 @@ rule stands — concepts land in `DATA_MODEL.md` and an ADR _before_ code).
   ADR-074, `databook-card` (shipped with the new-domain clusters),
   `theme-song` ADR-051, the adaptation many-to-many (already non-linear via
   `adapted-by` + `coverage`), and the last C7-deferred chapter enrichment
-  ADR-075 (`is_color_spread`, `has-cover-story`). Remaining:
-  **C9-rest** (race/concept additions,
+  ADR-075 (`is_color_spread`, `has-cover-story`). **C9-rest wave 1 shipped
+  (ADR-076)**: `part-of-event` phases, race `slave_price` +
+  `danger_classification` + `hybrid-of`, location `log_pose_time`, ship
+  `figurehead`, bounty `reason` qualifier. Remaining:
+  **C9-rest** (the `[D]`/`[B]` items — era entity + structured temporal value,
+  ancient-weapon/artifact, event_subtype array + outcome[], inter-race
+  relations, race population-status — plus concept additions,
   ancient-weapon/artifact, event enrichment, `era` entity + the `[D]` structured
   in-universe temporal value), C5 (fighting-styles/Haki/techniques), C1
   (naming/i18n editions — invasive, done last). The materials cluster covered

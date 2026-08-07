@@ -1,0 +1,10 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "danger-classifications",
+  "schema_version": 1,
+  "values": {
+    "type_a": { "labels": { "en": "Type A", "fr": "Type A" } },
+    "type_b": { "labels": { "en": "Type B", "fr": "Type B" } },
+    "type_c": { "labels": { "en": "Type C", "fr": "Type C" } }
+  }
+}
