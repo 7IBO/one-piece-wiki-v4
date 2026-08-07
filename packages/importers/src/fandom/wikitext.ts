@@ -238,3 +238,14 @@ export function parseLooseDate(value: string): string | null {
   // Date-only precision — Fandom release dates carry no time.
   return parsed.toISOString().slice(0, 10);
 }
+
+/**
+ * Detect a MediaWiki redirect page ("#REDIRECT [[Target]]", verified
+ * against a live response 2026-06-14). Returns the target title or
+ * null for regular content pages.
+ */
+export function parseRedirect(wikitext: string): string | null {
+  const m = /^\s*#REDIRECT\s*\[\[([^\]|#]+)/i.exec(wikitext);
+  if (m === null || m[1] === undefined) return null;
+  return m[1].trim();
+}

@@ -101,4 +101,5 @@ export async function run<TSource, TEntity>(
 export * from './fandom/chapter.ts';
 export * from './fandom/client.ts';
 export * from './fandom/episode.ts';
+export * from './fandom/registry.ts';
 export * from './fandom/wikitext.ts';

@@ -8,6 +8,46 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-081 — Fandom sync registry: page↔entity map, redirects, update detection
+
+**Date**: 2026-06-14
+
+**Context**: Maintainer direction: one-shot imports are not enough — the
+system must **know when Fandom updates a page** we imported and re-queue
+it, and must **resolve wikitext links** (which flow through redirect
+aliases like "Straw Hat Luffy") to our entity ids to detect entity
+linkages in content. Verified against live responses: redirect pages are
+`#REDIRECT [[Target]]` wikitext; `action=query&prop=info|redirects`
+returns `lastrevid` + inbound aliases; `list=recentchanges` is the
+change feed.
+
+**Decision** (extends the ADR-079 importers):
+
+1. **Committed ledger `data/import/fandom-pages.json`** (peer of
+   `data/migrations/applied.json` — reviewable import state, never
+   referenced by entity JSON): per entity — canonical page title,
+   pageId, redirect aliases, `lastRevId` + `lastImportedAt` of the last
+   import.
+2. **Registry module** (`fandom/registry.ts`, pure + unit-tested):
+   MediaWiki title normalization, canonical∪alias title index,
+   `resolveTitle`, `detectEntityLinks(wikitext)` → { linked entity ids,
+   unknown targets } (unknowns = candidate pages to import next — the
+   crawl frontier), `staleEntries(liveRevisions)`, `upsertPage`.
+3. **Client additions**: `queryInfo(titles)` (batch lastrevid +
+   redirect aliases), `recentChangesSince(iso)` (change feed);
+   `parseRedirect` in the wikitext utilities (real fixture committed).
+4. **Sync loop (when network lands)**: poll `recentChangesSince` ∩
+   ledger titles (aliases included) → stale set → re-import → PRs via
+   the admin queue; `queryInfo` refreshes aliases so future links keep
+   resolving. Unknown link targets feed the import frontier by rank
+   (link frequency).
+
+**Consequences**: linkage detection and update detection are testable
+offline today; the live loop only needs the network allowlist. The
+ledger seeds with the 3 fixture pages.
+
+---
+
 ## ADR-080 — public-API additions: field-lifecycle registry, npm SDK, data-history
 
 **Date**: 2026-06-14

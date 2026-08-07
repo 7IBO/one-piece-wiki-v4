@@ -46,9 +46,17 @@ limit), the wikitext utilities (nesting-aware template parser,
 loose number/date parsing) and the first deterministic mapper
 (`mapChapter`: Chapter Box → corpus-shaped `manga-chapter` JSON +
 EN-title sidecar + warnings; validated against the generated Zod in
-tests — 10 tests, fixtures only). Still needed before first live run:
-network access (ADR-079 §6), the character mapper, and the emit
-adapter (`stage-to-local`/`pr` modes of the Phase-2 runner). Next:
+tests — 10 tests, fixtures only). **Sync registry shipped
+(ADR-081)**: `data/import/fandom-pages.json` ledger + registry module
+(title normalization, redirect aliases, `detectEntityLinks`,
+`staleEntries`) + client `queryInfo`/`recentChangesSince` + real
+redirect fixture. Real fixtures from the maintainer replaced the
+hand-written ones (Qref params are `chap`/`ep`/`sbs`/`vol`; Chapter Box
+has no number/date params — ordinal from the page title; Episode Box
+ordinal is `#`). Still needed before first live run: network access
+(ADR-079 §6), the character mapper (needs a page carrying a real
+`{{Char Box}}` — tabbed pages don't; try a minor character), and the
+emit adapter (`stage-to-local`/`pr` modes of the Phase-2 runner). Next:
 W-B detail view, W-F2 UX conventions.
 
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by

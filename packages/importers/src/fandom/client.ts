@@ -101,6 +101,108 @@ export class FandomClient {
     };
   }
 
+  /**
+   * Live revision + redirect info for up to 50 titles in one call
+   * (`action=query&prop=info|redirects&redirects=1`). Returns, per
+   * canonical title: pageId, lastRevId, and the redirect aliases
+   * pointing at it — everything the sync registry (ADR-081) needs to
+   * detect updates and register aliases.
+   */
+  async queryInfo(titles: readonly string[]): Promise<
+    ReadonlyMap<
+      string,
+      { pageId: number; lastRevId: number; redirects: readonly string[]; }
+    >
+  > {
+    const params = new URLSearchParams({
+      action: 'query',
+      titles: titles.join('|'),
+      prop: 'info|redirects',
+      rdlimit: 'max',
+      redirects: '1',
+      format: 'json',
+      formatversion: '2',
+    });
+    const raw = await this.fetchRaw(`${this.baseUrl}/api.php?${params.toString()}`);
+    const envelope = JSON.parse(raw) as {
+      query?: {
+        pages?: readonly {
+          title?: string;
+          pageid?: number;
+          lastrevid?: number;
+          missing?: boolean;
+          redirects?: readonly { title?: string; }[];
+        }[];
+      };
+    };
+    const out = new Map<
+      string,
+      { pageId: number; lastRevId: number; redirects: readonly string[]; }
+    >();
+    for (const page of envelope.query?.pages ?? []) {
+      if (page.missing === true || page.title === undefined) continue;
+      out.set(page.title, {
+        pageId: page.pageid ?? 0,
+        lastRevId: page.lastrevid ?? 0,
+        redirects: (page.redirects ?? [])
+          .map((r) => r.title ?? '')
+          .filter((t) => t !== ''),
+      });
+    }
+    return out;
+  }
+
+  /**
+   * Main-namespace pages changed since `sinceIso`
+   * (`action=query&list=recentchanges`) — the polling feed for "Fandom
+   * updated a page we imported". Newest first, capped at 500/call.
+   */
+  async recentChangesSince(
+    sinceIso: string,
+  ): Promise<readonly { title: string; revId: number; timestamp: string; }[]> {
+    const params = new URLSearchParams({
+      action: 'query',
+      list: 'recentchanges',
+      rcnamespace: '0',
+      rcprop: 'title|ids|timestamp',
+      rclimit: '500',
+      // MediaWiki lists newest→oldest; rcend bounds the OLD side.
+      rcend: sinceIso,
+      format: 'json',
+      formatversion: '2',
+    });
+    const raw = await this.fetchRaw(`${this.baseUrl}/api.php?${params.toString()}`);
+    const envelope = JSON.parse(raw) as {
+      query?: {
+        recentchanges?: readonly {
+          title?: string;
+          revid?: number;
+          timestamp?: string;
+        }[];
+      };
+    };
+    return (envelope.query?.recentchanges ?? [])
+      .filter((c) => c.title !== undefined)
+      .map((c) => ({
+        title: c.title ?? '',
+        revId: c.revid ?? 0,
+        timestamp: c.timestamp ?? '',
+      }));
+  }
+
+  private async fetchRaw(url: string): Promise<string> {
+    const wait = this.lastRequestAt + this.minDelayMs - Date.now();
+    if (wait > 0) await new Promise((r) => setTimeout(r, wait));
+    this.lastRequestAt = Date.now();
+    const res = await this.fetchImpl(url, {
+      headers: {
+        'user-agent': 'onepiece-wiki-importer/0.1 (+https://one-piece.wiki)',
+      },
+    });
+    if (!res.ok) throw new Error(`Fandom API ${res.status} ${res.statusText}.`);
+    return await res.text();
+  }
+
   private async fetchLive(page: string): Promise<string> {
     const wait = this.lastRequestAt + this.minDelayMs - Date.now();
     if (wait > 0) await new Promise((r) => setTimeout(r, wait));
