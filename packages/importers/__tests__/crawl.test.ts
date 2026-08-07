@@ -42,6 +42,51 @@ describe('detectKind', () => {
   });
 });
 
+describe('categoryMembers', () => {
+  it('descends subcategories to the given depth and dedupes page titles', async () => {
+    const top = JSON.stringify({
+      query: {
+        categorymembers: [
+          { title: 'Category:Chapters by Volume', ns: 14 },
+          { title: 'Special Page', ns: 0 },
+        ],
+      },
+    });
+    const mid = JSON.stringify({
+      query: { categorymembers: [{ title: 'Category:Volume 1', ns: 14 }] },
+    });
+    const leaf = JSON.stringify({
+      query: {
+        categorymembers: [
+          { title: 'Chapter 1', ns: 0 },
+          { title: 'Special Page', ns: 0 }, // duplicate across categories
+        ],
+      },
+    });
+    const client = stubClient({
+      'cmtitle=Category:One Piece Chapters': top,
+      'cmtitle=Category:Chapters by Volume': mid,
+      'cmtitle=Category:Volume 1': leaf,
+    });
+
+    expect(await client.categoryMembers('One Piece Chapters', { depth: 2 })).toEqual([
+      'Special Page',
+      'Chapter 1',
+    ]);
+    // Default depth 0 collects direct main-namespace members only.
+    expect(await client.categoryMembers('One Piece Chapters')).toEqual(['Special Page']);
+  });
+
+  it('surfaces MediaWiki error envelopes instead of returning an empty list', async () => {
+    const client = stubClient({
+      'cmtitle=Category:Broken': JSON.stringify({
+        error: { code: 'invalidcategory', info: 'The category name is not valid.' },
+      }),
+    });
+    await expect(client.categoryMembers('Broken')).rejects.toThrow('invalidcategory');
+  });
+});
+
 describe('crawl', () => {
   it('seeds from categories, auto-detects, follows redirects, reports frontier + unknown boxes', async () => {
     const category = JSON.stringify({

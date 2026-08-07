@@ -18,6 +18,10 @@ on:
         description: 'Max pages to fetch this run'
         required: true
         default: '25'
+      depth:
+        description: 'Subcategory levels to descend (Fandom nests articles under e.g. Volume N)'
+        required: true
+        default: '2'
 
 permissions:
   contents: write
@@ -36,6 +40,7 @@ jobs:
         run: >
           bun run import:fandom crawl
           --category "${{ github.event.inputs.category }}"
+          --depth "${{ github.event.inputs.depth }}"
           --limit "${{ github.event.inputs.limit }}"
           --stage
       - name: Validate the staged corpus

@@ -74,11 +74,16 @@ allowlist (ADR-079 §6). **Full-auto crawl shipped**:
 continuation, infobox **auto-detection** routing to the right mapper,
 one-hop redirect following, frontier of most-linked unknown pages,
 ranked report of unmapped infobox kinds = which mapper to build next),
-`import:fandom crawl --category X --limit N [--stage]` CLI, batch-PR
-plan/emit (`emit-pr.ts` → labels `via-dashboard`+`import` → admin
-queue), and `.github/workflows/fandom-import.yml` (**manual dispatch**
-with category/limit inputs: crawl → stage → gauntlet → draft PR via
-`gh`; nothing merges without a human). Remaining importer work:
+`import:fandom crawl --category X --depth N --limit N [--stage]` CLI,
+batch-PR plan/emit (`emit-pr.ts` → labels `via-dashboard`+`import` →
+admin queue), and `.github/workflows/fandom-import.yml` (**manual
+dispatch** with category/depth/limit inputs: crawl → stage → gauntlet →
+draft PR via `gh`; nothing merges without a human). Live lesson from
+runs 1–2 (2026-08-07): Fandom's chapter/episode categories hold **no
+direct articles** — only subcategories (One Piece Chapters → Chapters
+by Volume → Volume N) — so `categoryMembers` now descends `depth`
+subcategory levels (default 2, dedup + 300-category cap) and **throws
+on MediaWiki error envelopes** instead of returning an empty list. Remaining importer work:
 volume/databook-card + remaining infobox mappers (the crawl report
 ranks them by frequency), the AI prose-extraction pass. Next:
 W-B detail view, W-F2 UX conventions.

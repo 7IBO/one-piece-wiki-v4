@@ -80,6 +80,12 @@ export async function crawl(
   options: {
     /** Hard cap on pages fetched (politeness + bounded runs). */
     readonly limit: number;
+    /**
+     * Subcategory levels to descend when seeding from categories —
+     * Fandom's chapter/episode categories only hold subcategories
+     * (e.g. One Piece Chapters → Chapters by Volume → Volume N).
+     */
+    readonly categoryDepth?: number;
     /** Registry used to resolve known links (frontier excludes them). */
     readonly registry?: FandomRegistry;
     readonly log?: (line: string) => void;
@@ -89,7 +95,10 @@ export async function crawl(
   const queue: string[] = [...(seeds.pages ?? [])];
   for (const category of seeds.categories ?? []) {
     // eslint-disable-next-line no-await-in-loop
-    const members = await client.categoryMembers(category);
+    const members = await client.categoryMembers(category, {
+      depth: options.categoryDepth ?? 0,
+      log,
+    });
     queue.push(...members);
     log(`category "${category}": ${members.length} page(s)`);
   }
