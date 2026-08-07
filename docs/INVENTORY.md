@@ -1201,7 +1201,12 @@ provisional `[V]`, to verify against canon before freeze).
 ## 6. Universal qualifiers
 
 Available on every historisable property value. They are NOT declared
-per-property; they are implicit.
+per-property; they are implicit. Since ADR-078 every base and common
+qualifier is declared in the **qualifier-type registry**
+(`/data/schemas/qualifier-types/*.json`, 15 entries: 7 `base` + 8
+`common`) with localized labels/descriptions and picker metadata; the
+dashboard derives its qualifier UI from the registry via
+`/api/schemas` — nothing is hardcoded.
 
 | Qualifier          | Value type           | Default     | Meaning                                       |
 | ------------------ | -------------------- | ----------- | --------------------------------------------- |
@@ -1320,6 +1325,7 @@ depicted by another image).
 - **Property types**: 101 (some shared across multiple entity types)
 - **Relation types**: 70 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 63
+- **Qualifier types**: 15 (7 base + 8 common — the ADR-078 registry)
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)

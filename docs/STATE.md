@@ -20,9 +20,13 @@ non-linear many-to-many — no change needed. **C8 complete; C9/C5 additive
 halves complete.** All shipped on PR #91. **The rest of the data campaign is
 blocked on the maintainer `[D]` calls** (DATA_EXPANSION_PLAN §4): #1 C1
 edition-variant qualifier, #3 era/temporal value, #5 fighting-style
-modelling, #6 ancient-weapon/artifact, #7 event breaking changes. NB:
-**ADR-072 is reserved by PR #90** (dashboard image display, open at the time
-of writing — disjoint files, merge order safe either way).
+modelling, #6 ancient-weapon/artifact, #7 event breaking changes. **Also on
+PR #91**: W-F closed (shared `useApiResource` + `LoadFailed`, ADR-032) and
+W-A closed (qualifier-type registry, ADR-078 — catalogue is now 36 / 101 /
+70 / 63 / **15 qualifier types**). NB: **ADR-072 is reserved by PR #90**
+(dashboard image display, open at the time of writing — disjoint files,
+merge order safe either way).
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below
@@ -118,10 +122,12 @@ From the 2026-06-13 audit. **Done this run**: db-builder derived fields
 (is_first, primary_canon_scope), display-name dedup, github-client
 save-flow tests, the migration helper. **Pending**:
 
-- **qualifiers schema-driven** — `apps/dashboard/src/form/qualifiers.ts`
-  hardcodes qualifier UI metadata (value-type, enum_ref,
-  entityTypeFilter); make it schema-derived. 4 layers, new schema
-  concept → **ADR-first**.
+- ~~**qualifiers schema-driven**~~ — **DONE (ADR-078):** the
+  qualifier-type registry (`/data/schemas/qualifier-types/**`, 7 base +
+  8 common) feeds loader → catalogue → `/api/schemas` →
+  `resolveQualifiers(registry, locale, …)`. Follow-ups tracked in the
+  ADR (relation-qualifier labels, UI_STRINGS overrides, coherence
+  check on `default_qualifiers` ids).
 - **db-builder inference engine** — public events reveal facts to
   participants; death events update status transitively. Needs Phase
   3.5 data to be useful.
@@ -279,11 +285,10 @@ computed server-side or emitted as generated TS manifests under
   1876 L, `inputs.tsx` 1103 L, `server/server.ts` 1776 L) remains a
   later **ADR-first** slice, done opportunistically as W-B/C/D touch
   those files.
-- **W-A — coherence linter.** New `bun run check:coherence` in
-  `packages/schema-engine` (CI gate): asymmetric/missing inverse
-  relations, orphan refs, source-coverage gaps, untranslated `i18n_key`
-  (EN/FR), `canon_scope` inconsistencies, images with no `depicted-by`.
-  Plus make `form/qualifiers.ts` schema-driven (task #3) — **ADR-first**.
+- **W-A — DONE 2026-06-14 evening.** The `check:coherence` linter half
+  had already shipped earlier; the last piece — the schema-driven
+  qualifier registry (ADR-078, `/data/schemas/qualifier-types/**`) —
+  landed on PR #91.
 - **W-B — admin queue + contributors** (pulls Phase 7.3 fwd; backend
   already shipped). `GET /api/admin/pulls` (all open `via-dashboard`
   PRs); gated `/admin/queue` (list + per-PR detail, server-side

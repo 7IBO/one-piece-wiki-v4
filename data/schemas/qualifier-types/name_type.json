@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "name_type",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 8,
+  "labels": {
+    "en": "Name type",
+    "fr": "Type de nom"
+  },
+  "descriptions": {
+    "en": "Which kind of name (alias, given, family…).",
+    "fr": "Quel type de nom (alias, donné, famille…)."
+  },
+  "value_type": "enum",
+  "enum_ref": "name-types"
+}

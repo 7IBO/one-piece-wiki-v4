@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "source",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 3,
+  "labels": {
+    "en": "Source",
+    "fr": "Source"
+  },
+  "descriptions": {
+    "en": "Source(s) citing the value.",
+    "fr": "Source(s) citant la valeur."
+  },
+  "value_type": "source_ref",
+  "multi": true
+}

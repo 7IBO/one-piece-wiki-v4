@@ -1,26 +1,35 @@
 /**
- * Qualifier registry for the entry editor.
+ * Qualifier resolution for the entry editor — schema-driven (ADR-078).
  *
  * Per /docs/SCHEMA_SPEC.md, every historisable property entry can carry
  * two flavors of qualifier:
  *
  *  1. **Base qualifiers** — implicit on every entry, provided by the
  *     schema engine (epistemic_status, actual_value, event,
- *     believed_by, known_truth_by, assisted_by, review_status). Property
- *     types MUST NOT redeclare them. We hardcode their value-types here.
+ *     believed_by, known_truth_by, assisted_by, review_status).
+ *     Property types MUST NOT redeclare them.
  *
  *  2. **Property-declared qualifiers** — listed by id in
  *     `default_qualifiers` (shown inline on the entry) or in
  *     `allowed_qualifiers` with full type info (shown behind "More
- *     options"). When a property declares only the id (e.g.
- *     `default_qualifiers: ["since", "source"]`) we resolve the id
- *     against the COMMON_QUALIFIERS table.
+ *     options").
+ *
+ * Both flavors are declared in the schema catalogue's **qualifier-type
+ * registry** (`/data/schemas/qualifier-types/**`, exposed via
+ * `/api/schemas` as `qualifierTypes`) — nothing is hardcoded here; the
+ * registry carries labels/descriptions (EN/FR), value types, enum
+ * refs, entity-type filters and multiplicity. Ids referenced in
+ * `default_qualifiers` (or lean `allowed_qualifiers`) resolve against
+ * the registry's `common` entries; `base` entries are appended to
+ * every entry's "More options".
  *
  * The form ignores the implementation detail of "default vs allowed"
  * by always showing every applicable qualifier. The maintainer chooses
  * which to fill; defaults stay visible inline, the rest collapse.
  */
+import type { QualifierTypeSchema } from '@onepiece-wiki/schemas';
 import type { ValueType } from './inputs';
+import type { Locale } from './locale';
 
 export type QualifierDef = {
   readonly id: string;
@@ -42,161 +51,36 @@ export type QualifierDef = {
   /**
    * When true, the qualifier holds an array of values. The form
    * renders a stacked list of pickers with a "+" affordance instead
-   * of a single input. Per inventory, `believed_by` and
-   * `known_truth_by` are `entity_ref[]`.
+   * of a single input.
    */
   readonly multi?: boolean;
 };
 
-/**
- * Base qualifiers — always available on every historisable entry.
- * Order chosen so the most common (epistemic_status) sits first.
- */
-export const BASE_QUALIFIERS: readonly QualifierDef[] = [
-  {
-    id: 'epistemic_status',
-    label: 'Epistemic status',
-    valueType: 'enum',
-    enumRef: 'epistemic-statuses',
-    description: 'What kind of truth this is. Defaults to "true".',
-  },
-  {
-    id: 'actual_value',
-    label: 'Actual value',
-    valueType: 'string',
-    mirrorValueType: true,
-    description: 'The real value when status is a false belief.',
-  },
-  {
-    id: 'event',
-    label: 'Event',
-    valueType: 'entity_ref',
-    entityTypeFilter: ['event'],
-    description: 'The event that caused or revealed this value.',
-  },
-  {
-    id: 'believed_by',
-    label: 'Believed by',
-    valueType: 'entity_ref',
-    entityTypeFilter: ['character'],
-    multi: true,
-    description: 'Characters who hold this belief.',
-  },
-  {
-    id: 'known_truth_by',
-    label: 'Known truth by',
-    valueType: 'entity_ref',
-    entityTypeFilter: ['character'],
-    multi: true,
-    description: 'Characters who know the actual truth.',
-  },
-  {
-    id: 'assisted_by',
-    label: 'Assisted by',
-    valueType: 'string',
-    description: 'AI agent that generated this value (absent = human).',
-  },
-  {
-    id: 'review_status',
-    label: 'Review status',
-    valueType: 'enum',
-    enumRef: 'review-statuses',
-    description: 'Human-review state. Defaults to "reviewed".',
-  },
-];
+export type QualifierRegistry = Record<string, QualifierTypeSchema>;
 
-/**
- * Common property-declared qualifiers referenced by id-only in
- * `default_qualifiers`. The schema spec lists these in
- * /docs/SCHEMA_SPEC.md § "Common property-declared qualifiers".
- */
-export const COMMON_QUALIFIERS: Record<string, QualifierDef> = {
-  since: {
-    id: 'since',
-    label: 'Since',
-    valueType: 'source_ref',
-    multi: true,
-    description: 'When this value starts applying. Record both manga + anime if you know both.',
-  },
-  until: {
-    id: 'until',
-    label: 'Until',
-    valueType: 'source_ref',
-    multi: true,
-    description: 'When this value stops applying.',
-  },
-  source: {
-    id: 'source',
-    label: 'Source',
-    valueType: 'source_ref',
-    multi: true,
-    description: 'Source(s) citing the value.',
-  },
-  canon_scope: {
-    id: 'canon_scope',
-    label: 'Canon scope',
-    valueType: 'enum',
-    enumRef: 'canon-scopes',
-    description: 'Restrict the value to a specific canon.',
-  },
-  in_universe_date: {
-    id: 'in_universe_date',
-    label: 'In-universe date',
-    valueType: 'string',
-    description: 'In-universe date (e.g. "12_years_before_story").',
-  },
-  // Used by name/epithet — who gave this name to the entity. Locked
-  // to characters: bystander events / chapters don't "give" names.
-  // Multi: a name/epithet can be coined by several people simultaneously
-  // (the crew agreeing on a nickname, or two characters using it
-  // independently before it becomes canon). The schema engine's
-  // BaseQualifierBag passthrough accepts both the legacy single-string
-  // shape and the new array — existing JSON keeps validating and
-  // migrates to the array form on next save through the form.
-  given_by: {
-    id: 'given_by',
-    label: 'Given by',
-    valueType: 'entity_ref',
-    entityTypeFilter: ['character'],
-    multi: true,
-    description: 'Character(s) who gave the name.',
-  },
-  // Used by name/epithet — short prose context (battlefield speech,
-  // bounty poster, etc.). Free-form string.
-  context: {
-    id: 'context',
-    label: 'Context',
-    valueType: 'string',
-    description: 'Short context for the value.',
-  },
-  // Used by name — what kind of name (alias, given, family…).
-  // Schema declares it with enum_ref so it's fine to keep as bare
-  // allowed_qualifiers; the COMMON entry below just gives it a nicer
-  // localized label.
-  name_type: {
-    id: 'name_type',
-    label: 'Name type',
-    valueType: 'enum',
-    enumRef: 'name-types',
-    description: 'Which kind of name (alias, given, family…).',
-  },
-};
+function toDef(q: QualifierTypeSchema, locale: Locale): QualifierDef {
+  const description = q.descriptions?.[locale] ?? q.descriptions?.en;
+  return {
+    id: q.id,
+    label: q.labels[locale] ?? q.labels.en,
+    valueType: q.value_type as ValueType,
+    ...(q.enum_ref !== undefined ? { enumRef: q.enum_ref } : {}),
+    ...(q.mirrors_entry_value ? { mirrorValueType: true } : {}),
+    ...(description !== undefined ? { description } : {}),
+    ...(q.entity_type_filter !== undefined ? { entityTypeFilter: q.entity_type_filter } : {}),
+    ...(q.multi ? { multi: true } : {}),
+  };
+}
 
-/**
- * Resolve the full set of qualifiers for a given property entry. The
- * order is: declared `default_qualifiers` (inline) → declared
- * `allowed_qualifiers` → base qualifiers (skip `since` if already in
- * defaults, since the form renders it as a top-level field).
- *
- * Returns a tuple { primary, secondary } so the EntryEditor can pin
- * the primary set inline and put the rest behind "More options".
- *
- * `source` is intentionally always demoted to secondary even when
- * declared in `default_qualifiers`. Inventory says `source` defaults
- * to `since`, and in practice they're identical the vast majority of
- * the time — showing both inline is duplicate noise. Maintainers who
- * need a different `source` can open "More options" and override.
- */
+function ofKind(
+  registry: QualifierRegistry,
+  kind: QualifierTypeSchema['kind'],
+): readonly QualifierTypeSchema[] {
+  return Object.values(registry)
+    .filter((q) => q.kind === kind)
+    .sort((a, b) => (a.order ?? Number.MAX_SAFE_INTEGER) - (b.order ?? Number.MAX_SAFE_INTEGER));
+}
+
 export type AllowedQualifierDecl = {
   readonly id: string;
   readonly value_type: string;
@@ -204,9 +88,27 @@ export type AllowedQualifierDecl = {
   readonly required?: boolean | undefined;
 };
 
+/**
+ * `source` is intentionally always demoted to secondary even when
+ * declared in `default_qualifiers`. Inventory says `source` defaults
+ * to `since`, and in practice they're identical the vast majority of
+ * the time — showing both inline is duplicate noise. Maintainers who
+ * need a different `source` can open "More options" and override.
+ */
 const ALWAYS_SECONDARY: ReadonlySet<string> = new Set(['source']);
 
+/**
+ * Resolve the full set of qualifiers for a given property entry. The
+ * order is: declared `default_qualifiers` (inline) → declared
+ * `allowed_qualifiers` → base qualifiers (skip anything in
+ * `pinnedIds`, which the form renders as top-level fields).
+ *
+ * Returns { primary, secondary } so the EntryEditor can pin the
+ * primary set inline and put the rest behind "More options".
+ */
 export function resolveQualifiers(
+  registry: QualifierRegistry,
+  locale: Locale,
   defaultIds: readonly string[],
   allowed: readonly AllowedQualifierDecl[],
   pinnedIds: readonly string[],
@@ -218,8 +120,9 @@ export function resolveQualifiers(
 
   for (const id of defaultIds) {
     if (seen.has(id)) continue;
-    const def = COMMON_QUALIFIERS[id];
-    if (def === undefined) continue;
+    const q = registry[id];
+    if (q === undefined) continue;
+    const def = toDef(q, locale);
     if (ALWAYS_SECONDARY.has(id)) secondary.push(def);
     else primary.push(def);
     seen.add(id);
@@ -228,14 +131,14 @@ export function resolveQualifiers(
   for (const decl of allowed) {
     if (seen.has(decl.id)) continue;
     // If the property declares a qualifier by id (no metadata beyond
-    // value_type), prefer the COMMON_QUALIFIERS entry's richer
-    // metadata (entityTypeFilter, multi, description, label) — the
+    // value_type), prefer the registry entry's richer metadata
+    // (entityTypeFilter, multi, description, localized label) — the
     // schema's lean shape only carries value_type + enum_ref +
     // required, which is too thin for a usable picker.
-    const common = COMMON_QUALIFIERS[decl.id];
-    const def: QualifierDef = common !== undefined
+    const q = registry[decl.id];
+    const def: QualifierDef = q !== undefined
       ? {
-        ...common,
+        ...toDef(q, locale),
         // Schema's `required` always wins — that's a per-property
         // call the maintainer made deliberately.
         ...(decl.required === true ? { required: true } : {}),
@@ -251,11 +154,11 @@ export function resolveQualifiers(
     seen.add(decl.id);
   }
 
-  for (const def of BASE_QUALIFIERS) {
-    if (seen.has(def.id)) continue;
-    if (pinnedSet.has(def.id)) continue;
-    secondary.push(def);
-    seen.add(def.id);
+  for (const q of ofKind(registry, 'base')) {
+    if (seen.has(q.id)) continue;
+    if (pinnedSet.has(q.id)) continue;
+    secondary.push(toDef(q, locale));
+    seen.add(q.id);
   }
 
   return { primary, secondary };

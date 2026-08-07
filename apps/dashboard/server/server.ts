@@ -287,6 +287,7 @@ async function handleSchemas(): Promise<Response> {
     propertyTypes: Object.fromEntries(snap.validated.propertyTypes),
     relationTypes: Object.fromEntries(snap.validated.relationTypes),
     vocabularies: Object.fromEntries(snap.validated.vocabularies),
+    qualifierTypes: Object.fromEntries(snap.validated.qualifierTypes),
   });
 }
 

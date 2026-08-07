@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "canon_scope",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 4,
+  "labels": {
+    "en": "Canon scope",
+    "fr": "Portée canonique"
+  },
+  "descriptions": {
+    "en": "Restrict the value to a specific canon.",
+    "fr": "Restreint la valeur à un canon spécifique."
+  },
+  "value_type": "enum",
+  "enum_ref": "canon-scopes"
+}

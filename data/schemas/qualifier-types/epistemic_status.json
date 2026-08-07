@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "epistemic_status",
+  "schema_version": 1,
+  "kind": "base",
+  "order": 1,
+  "labels": {
+    "en": "Epistemic status",
+    "fr": "Statut épistémique"
+  },
+  "descriptions": {
+    "en": "What kind of truth this is. Defaults to \"true\".",
+    "fr": "Nature de la vérité. Par défaut « true »."
+  },
+  "value_type": "enum",
+  "enum_ref": "epistemic-statuses"
+}

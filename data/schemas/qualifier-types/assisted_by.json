@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "assisted_by",
+  "schema_version": 1,
+  "kind": "base",
+  "order": 6,
+  "labels": {
+    "en": "Assisted by",
+    "fr": "Assisté par"
+  },
+  "descriptions": {
+    "en": "AI agent that generated this value (absent = human).",
+    "fr": "Agent IA ayant généré cette valeur (absent = humain)."
+  },
+  "value_type": "string"
+}

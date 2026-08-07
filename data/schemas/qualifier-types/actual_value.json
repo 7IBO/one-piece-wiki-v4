@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "actual_value",
+  "schema_version": 1,
+  "kind": "base",
+  "order": 2,
+  "labels": {
+    "en": "Actual value",
+    "fr": "Valeur réelle"
+  },
+  "descriptions": {
+    "en": "The real value when status is a false belief.",
+    "fr": "La valeur réelle quand le statut est une fausse croyance."
+  },
+  "value_type": "string",
+  "mirrors_entry_value": true
+}

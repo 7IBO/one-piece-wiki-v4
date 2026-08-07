@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "in_universe_date",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 5,
+  "labels": {
+    "en": "In-universe date",
+    "fr": "Date in-univers"
+  },
+  "descriptions": {
+    "en": "In-universe date (e.g. \"12_years_before_story\").",
+    "fr": "Date in-univers (ex. « 12_years_before_story »)."
+  },
+  "value_type": "string"
+}

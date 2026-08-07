@@ -8,6 +8,7 @@
 import type {
   EntityTypeSchema,
   PropertyTypeSchema,
+  QualifierTypeSchema,
   RelationTypeSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
@@ -85,6 +86,7 @@ export type SchemaCatalogue = {
   readonly propertyTypes: Record<string, PropertyTypeSchema>;
   readonly relationTypes: Record<string, RelationTypeSchema>;
   readonly vocabularies: Record<string, VocabularySchema>;
+  readonly qualifierTypes: Record<string, QualifierTypeSchema>;
 };
 
 export type SourceRef = {

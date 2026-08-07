@@ -224,6 +224,7 @@ function EntityEditComponent(): JSX.Element {
         propertyTypes={schemas.propertyTypes}
         relationTypes={schemas.relationTypes}
         vocabularies={schemas.vocabularies}
+        qualifierTypes={schemas.qualifierTypes}
         sources={sources}
         i18nKeys={i18nKeys}
         initialData={entity.data}

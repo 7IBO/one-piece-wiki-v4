@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "context",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 7,
+  "labels": {
+    "en": "Context",
+    "fr": "Contexte"
+  },
+  "descriptions": {
+    "en": "Short context for the value.",
+    "fr": "Court contexte pour la valeur."
+  },
+  "value_type": "string"
+}

@@ -8,6 +8,57 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-078 — qualifier-type registry: schema-driven qualifier UI
+
+**Date**: 2026-06-14
+
+**Context**: `apps/dashboard/src/form/qualifiers.ts` hardcoded the base
+qualifiers (epistemic_status, actual_value, event, believed_by,
+known_truth_by, assisted_by, review_status) and the common
+property-declared qualifiers (since, until, source, canon_scope,
+in_universe_date, given_by, context, name_type) — ids, value types,
+enum refs, entity-type filters, multiplicity and English-only labels.
+That violates "no property name is hardcoded in application code"
+(CLAUDE.md) and was the last W-A item (ADR-032; audit backlog #3).
+
+**Options**: (a) registry as schema files loaded into the catalogue;
+(b) a generated TS manifest; (c) keep hardcoding with a lint guard.
+(a) matches every other schema concept (discovery through the
+catalogue, one meta-schema, editor completion via `$schema`) and gives
+FR labels for free.
+
+**Decision**: New registry **`/data/schemas/qualifier-types/*.json`**
+(core; universe-scopable like every registry):
+
+1. Meta-schema `QualifierTypeSchema` (`kind: base|common`, localized
+   `labels` + optional `descriptions`, `value_type`, `enum_ref`,
+   `entity_type_filter`, `multi`, `mirrors_entry_value`, `order`) —
+   generated JSON meta-schema `qualifier-type.schema.json` alongside
+   the other four.
+2. Loader/meta-validator/`forUniverse`/`schema:check` carry a fifth
+   group `qualifierTypes` (15 entries: 7 base + 8 common, mirroring
+   the previous hardcoded tables 1:1 — behaviour-preserving).
+   `forUniverse` filters `entity_type_filter` like other applicability
+   lists (ADR-048).
+3. `/api/schemas` exposes `qualifierTypes`; the dashboard's
+   `resolveQualifiers(registry, locale, …)` derives every QualifierDef
+   from it (localized labels/descriptions; bespoke lean
+   `allowed_qualifiers` still fall back to a humanized id).
+4. **Not in the compat contract**: the registry is presentation/
+   discovery metadata; entity-JSON validation is unchanged (base
+   qualifiers stay typed in the generated validators + entity-loader).
+
+**Follow-ups**: migrate relation-qualifier labels + the residual
+`UI_STRINGS` qualifier-label overrides to the registry; consider a
+coherence check that `default_qualifiers` ids resolve against `common`
+entries.
+
+**Consequences**: W-A is complete (the `check:coherence` linter half
+already existed). Qualifier UI is schema-driven and FR-localized; a new
+qualifier is now a JSON file, not a code change.
+
+---
+
 ## ADR-077 — C5 additive wave: fruit weaknesses/interactions, technique depth
 
 **Date**: 2026-06-14

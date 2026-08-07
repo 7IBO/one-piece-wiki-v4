@@ -22,5 +22,6 @@ process.stdout.write(
   `OK: ${validated.entityTypes.size} entity types, `
     + `${validated.propertyTypes.size} property types, `
     + `${validated.relationTypes.size} relation types, `
-    + `${validated.vocabularies.size} vocabularies.\n`,
+    + `${validated.vocabularies.size} vocabularies, `
+    + `${validated.qualifierTypes.size} qualifier types.\n`,
 );
