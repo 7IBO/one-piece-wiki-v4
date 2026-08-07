@@ -59,10 +59,19 @@ recursive with named-backref resolution (`{{Qref|name=vivre card}}` →
 `databook-card:1329`), `{{Nihongo}}` alias/epithet parsing, MM-DD
 birthdays; affiliation/occupation/VAs surface as warnings for the AI
 pass. New Qref variants covered: `cover=`, `card=`, `ep2=`, long
-`chapter=`/`episode=`. Still needed before first live run: network
-access (ADR-079 §6 — note: a scheduled GitHub Actions job has normal
-egress and could run the sync without the sandbox allowlist), and the
-emit adapter (`stage-to-local`/`pr` modes of the Phase-2 runner). Next:
+`chapter=`/`episode=`. **Emit adapter + CLI + sync workflow shipped**:
+`emit.ts` (corpus-layout file building; translation merge where
+existing keys win; entity files conflict-safe unless `--overwrite`),
+`bun run import:fandom <chapter|episode|character> <page…> [--stage]`
+end-to-end CLI (dry-run default; response cache under `.cache/fandom`),
+`import:fandom check-updates` (ledger vs live revisions, exit 2 =
+stale), and `.github/workflows/fandom-sync.yml` — **manual-only**
+(`workflow_dispatch`; the daily cron line is committed commented-out —
+enabling unattended runs is the maintainer's call). First live run
+needs only: local/CI execution (CI runners have egress) or the sandbox
+allowlist (ADR-079 §6). Remaining importer work: PR emit mode wiring
+(github-client creds at the call site), volume/databook-card mappers,
+the AI prose-extraction pass. Next:
 W-B detail view, W-F2 UX conventions.
 
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by

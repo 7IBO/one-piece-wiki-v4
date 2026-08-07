@@ -1,0 +1,27 @@
+# Fandom sync check (ADR-079/081).
+#
+# Runs `import:fandom check-updates`: compares the live revision of
+# every page tracked in data/import/fandom-pages.json against the
+# ledger and reports the stale set (exit 2 = re-imports needed).
+#
+# DELIBERATELY manual-only for now (workflow_dispatch). The cron line
+# below is ready but commented out — enabling unattended runs is a
+# maintainer call (repo rule: scheduling/deploy config is never merged
+# blind). CI runners have normal egress, so this works without any
+# sandbox network allowlist.
+name: fandom-sync
+on:
+  workflow_dispatch:
+  # schedule:
+  #   - cron: '17 6 * * *' # daily 06:17 UTC — enable deliberately.
+
+jobs:
+  check-updates:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - name: Check tracked Fandom pages for updates
+        run: bun run import:fandom check-updates

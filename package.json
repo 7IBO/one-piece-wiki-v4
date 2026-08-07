@@ -32,7 +32,8 @@
     "check:frontend-extensions": "bun scripts/check-frontend-extensions.ts",
     "fix:frontend-extensions": "bun scripts/strip-frontend-extensions.ts",
     "setup:r2-cors": "bun scripts/setup-r2-cors.ts",
-    "doctor": "react-doctor --no-dead-code"
+    "doctor": "react-doctor --no-dead-code",
+    "import:fandom": "bun packages/importers/src/cli/import-fandom.ts"
   },
   "devDependencies": {
     "@aws-sdk/client-s3": "3.1048.0",
