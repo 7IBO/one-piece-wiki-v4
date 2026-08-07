@@ -1,0 +1,11 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
+  "id": "is_color_spread",
+  "schema_version": 1,
+  "labels": { "en": "Color spread", "fr": "Page couleur" },
+  "value_type": "boolean",
+  "historical": false,
+  "localizable": false,
+  "spoiler_sensitive": false,
+  "applies_to_entity_types": ["manga-chapter"]
+}

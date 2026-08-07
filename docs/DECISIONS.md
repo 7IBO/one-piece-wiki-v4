@@ -8,6 +8,32 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-075 — chapter media enrichment: `is_color_spread` + `has-cover-story`
+
+**Date**: 2026-06-14
+
+**Context**: The last C7-deferred source-enrichment items (DATA_EXPANSION_PLAN
+§C7 "manga-chapter" row, parked with the C8 sources cluster): whether a chapter
+opens on a color spread, and the link from a chapter's title page to the
+cover-story mini-arc it hosts. Cover-story arcs are already plain `arc`s with
+`arc_subtype: cover_story` (ADR-047); what was missing is the per-chapter edge
+carrying the installment ordinal. Multi-title/per-edition titles stay folded
+into C1 (i18n editions).
+
+**Decision** (all additive, core):
+
+1. `is_color_spread` (boolean) on `manga-chapter` (v5→6).
+2. **`has-cover-story`** relation (manga-chapter → arc, single-valued,
+   inverse "Cover story in") with an optional `installment_number` (number)
+   qualifier — e.g. chapter 35 → arc "Buggy's Crew Adventure Chronicles",
+   installment 1. Prose description of a cover page stays in narratives.
+
+**Consequences**: 93 properties, 65 relations; compat additive-only. C7's
+deferred media enrichment is done; C8-rest is now fully shipped (volume
+ADR-071/073, sbs-qa ADR-074, adaptation m2m pre-existing, theme-song ADR-051).
+
+---
+
 ## ADR-074 — `sbs-qa` entity: atomic SBS question/answer entries
 
 **Date**: 2026-06-14

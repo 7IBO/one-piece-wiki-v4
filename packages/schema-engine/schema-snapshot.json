@@ -507,6 +507,9 @@
         "canon_scope": {
           "required": false
         },
+        "is_color_spread": {
+          "required": false
+        },
         "number": {
           "required": true
         },
@@ -528,6 +531,7 @@
         "available-on",
         "depicted-by",
         "features",
+        "has-cover-story",
         "introduces-character",
         "part-of-arc",
         "part-of-volume"
@@ -1139,6 +1143,12 @@
       "value_type": "boolean",
       "enum_ref": null,
       "historical": true,
+      "localizable": false
+    },
+    "is_color_spread": {
+      "value_type": "boolean",
+      "enum_ref": null,
+      "historical": false,
       "localizable": false
     },
     "is_cursed": {
@@ -2093,6 +2103,22 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {}
+    },
+    "has-cover-story": {
+      "valid_from_types": [
+        "manga-chapter"
+      ],
+      "valid_to_types": [
+        "arc"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "installment_number": {
+          "value_type": "number",
+          "enum_ref": null,
+          "required": false
+        }
+      }
     },
     "introduces-character": {
       "valid_from_types": [

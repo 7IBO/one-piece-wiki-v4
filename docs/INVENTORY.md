@@ -397,17 +397,19 @@ appearances are `features`' generated inverse.)
 
 #### `manga-chapter`
 
-| Property      | Required | Historical | Localizable | Notes                         |
-| ------------- | -------- | ---------- | ----------- | ----------------------------- |
-| `number`      | yes      | no         | no          |                               |
-| `title_key`   | yes      | no         | yes         | Japanese title + translations |
-| `released_at` | yes      | no         | no          | ISO date; `territory: jp`     |
-| `page_count`  | no       | no         | no          |                               |
-| `canon_scope` | yes      | no         | no          | Always `manga`                |
-| `cover_image` | no       | no         | no          | entity_ref to `image`         |
+| Property          | Required | Historical | Localizable | Notes                         |
+| ----------------- | -------- | ---------- | ----------- | ----------------------------- |
+| `number`          | yes      | no         | no          |                               |
+| `title_key`       | yes      | no         | yes         | Japanese title + translations |
+| `released_at`     | yes      | no         | no          | ISO date; `territory: jp`     |
+| `page_count`      | no       | no         | no          |                               |
+| `is_color_spread` | no       | no         | no          | Opens on a color spread       |
+| `canon_scope`     | yes      | no         | no          | Always `manga`                |
+| `cover_image`     | no       | no         | no          | entity_ref to `image`         |
 
-Allowed relations: `features`, `part-of-arc`, `adapted-by`,
-`introduces-character`, `depicted-by`.
+Allowed relations: `features`, `part-of-arc`, `part-of-volume`,
+`has-cover-story`, `adapted-by`, `introduces-character`, `available-on`,
+`depicted-by`.
 
 ---
 
@@ -567,7 +569,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (92)
+## 3. Property types (93)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -658,14 +660,15 @@ unit, and qualifier policy (section 6).
 
 ### 3.5 Boolean
 
-| Property                 | Value type | Notes                                  |
-| ------------------------ | ---------- | -------------------------------------- |
-| `awakened`               | `boolean`  | Devil Fruit                            |
-| `oda_supervised`         | `boolean`  | Film                                   |
-| `is_public`              | `boolean`  | Event — controls knowledge propagation |
-| `single_holder`          | `boolean`  | Title                                  |
-| `nullifies_devil_fruits` | `boolean`  | Material — `true` for Seastone         |
-| `anime_original`         | `boolean`  | Anime-episode — filler / anime-only    |
+| Property                 | Value type | Notes                                   |
+| ------------------------ | ---------- | --------------------------------------- |
+| `awakened`               | `boolean`  | Devil Fruit                             |
+| `oda_supervised`         | `boolean`  | Film                                    |
+| `is_public`              | `boolean`  | Event — controls knowledge propagation  |
+| `single_holder`          | `boolean`  | Title                                   |
+| `nullifies_devil_fruits` | `boolean`  | Material — `true` for Seastone          |
+| `anime_original`         | `boolean`  | Anime-episode — filler / anime-only     |
+| `is_color_spread`        | `boolean`  | Manga-chapter — opens on a color spread |
 
 ### 3.6 References
 
@@ -680,7 +683,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (64)
+## 4. Relation types (65)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -767,15 +770,16 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.10 Narrative structure
 
-| Type                  | From                                      | To                   | Inverse           | Qualifiers |
-| --------------------- | ----------------------------------------- | -------------------- | ----------------- | ---------- |
-| `part-of-arc`         | `manga-chapter`, `event`, `anime-episode` | `arc`                | `(inferred)`      | —          |
-| `part-of-volume`      | `manga-chapter`, `sbs`                    | `volume`             | `collects`        | since      |
-| `qa-of`               | `sbs-qa`                                  | `sbs`                | `has-qa`          | —          |
-| `part-of-series`      | `live-action-episode`                     | `live-action-series` | `(inferred)`      | since      |
-| `part-of-saga`        | `arc`                                     | `saga`               | `contains-arc`    | —          |
-| `occurs-during-arc`   | `event`                                   | `arc`                | `contains-event`  | —          |
-| `features-characters` | `arc`                                     | `character`          | `featured-in-arc` | role       |
+| Type                  | From                                      | To                   | Inverse           | Qualifiers         |
+| --------------------- | ----------------------------------------- | -------------------- | ----------------- | ------------------ |
+| `part-of-arc`         | `manga-chapter`, `event`, `anime-episode` | `arc`                | `(inferred)`      | —                  |
+| `part-of-volume`      | `manga-chapter`, `sbs`                    | `volume`             | `collects`        | since              |
+| `qa-of`               | `sbs-qa`                                  | `sbs`                | `has-qa`          | —                  |
+| `has-cover-story`     | `manga-chapter`                           | `arc`                | `cover-story-in`  | installment_number |
+| `part-of-series`      | `live-action-episode`                     | `live-action-series` | `(inferred)`      | since              |
+| `part-of-saga`        | `arc`                                     | `saga`               | `contains-arc`    | —                  |
+| `occurs-during-arc`   | `event`                                   | `arc`                | `contains-event`  | —                  |
+| `features-characters` | `arc`                                     | `character`          | `featured-in-arc` | role               |
 
 ### 4.11 Events
 
@@ -1276,8 +1280,8 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 36
-- **Property types**: 92 (some shared across multiple entity types)
-- **Relation types**: 64 (canonical declared; inverses are build-generated)
+- **Property types**: 93 (some shared across multiple entity types)
+- **Relation types**: 65 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 59
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
