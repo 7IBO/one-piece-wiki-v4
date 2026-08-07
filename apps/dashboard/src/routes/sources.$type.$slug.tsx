@@ -28,7 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, GitPullRequest, Pencil, X } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useState } from 'react';
+import { type JSX, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type CastEntry, type CastResponse } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
@@ -83,11 +83,15 @@ function SourceCastComponent(): JSX.Element {
   const [working, setWorking] = useState<WorkingState>(emptyState);
   const [saving, setSaving] = useState(false);
 
-  // Seed the working selection from the server cast once it lands
-  // (and whenever the route params re-trigger the fetch).
-  useEffect(() => {
+  // Seed the working selection from the server cast once it lands (and
+  // whenever the route params re-trigger the fetch) — render-time
+  // adjustment (react.dev "you might not need an effect"), no effect
+  // chain / stale frame.
+  const [seededFrom, setSeededFrom] = useState<CastResponse | null>(null);
+  if (cast !== seededFrom) {
+    setSeededFrom(cast);
     setWorking(cast === null ? emptyState : buildInitialState(cast.cast));
-  }, [cast]);
+  }
 
   // entityTypes prop for MultiEntityRefInput — accepts every type
   // declared in the schema catalogue, sorted by locale label. The

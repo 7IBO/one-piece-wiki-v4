@@ -11,7 +11,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowDown, ArrowUp, Plus, Search, Table2 } from 'lucide-react';
-import { type JSX, useDeferredValue, useEffect, useMemo, useState } from 'react';
+import { type JSX, useDeferredValue, useMemo, useState } from 'react';
 import { api, type EntityRef } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
 import { useEntityTypeLabel, useLocale, useT } from '../form/locale';
@@ -40,6 +40,15 @@ function TypeListComponent(): JSX.Element {
   const [sortDir, setSortDir] = useState<SortDir>('asc');
   const deferredQuery = useDeferredValue(query);
 
+  // Reset the search box when switching entity types — the render-time
+  // adjustment pattern (react.dev "you might not need an effect"), so
+  // there's no stale-frame flash and no effect chain.
+  const [prevType, setPrevType] = useState(type);
+  if (prevType !== type) {
+    setPrevType(type);
+    setQuery('');
+  }
+
   // Drafts keyed by entity id — used to flag rows that carry local
   // in-progress edits. Filtering is cheap (Set lookup) so we do it
   // inline rather than memoising another pass.
@@ -50,12 +59,6 @@ function TypeListComponent(): JSX.Element {
     for (const d of drafts) if (d.entityId.startsWith(prefix)) set.add(d.entityId);
     return set;
   }, [drafts, type]);
-
-  // Reset the search box when switching entity types (the fetch itself
-  // resets via the hook's deps).
-  useEffect(() => {
-    setQuery('');
-  }, [type]);
 
   const entityTypeLabel = useEntityTypeLabel(schemas, type);
 

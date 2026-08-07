@@ -227,11 +227,14 @@ function TableComponent(): JSX.Element {
   const colsInitialized = useRef(false);
 
   // Reset the local edit state when switching entity types (the fetch
-  // itself resets via the hook's deps).
-  useEffect(() => {
+  // itself resets via the hook's deps) — render-time adjustment
+  // (react.dev "you might not need an effect"), no effect chain.
+  const [prevType, setPrevType] = useState(type);
+  if (prevType !== type) {
+    setPrevType(type);
     setDrafts(new Map());
     colsInitialized.current = false;
-  }, [type]);
+  }
 
   const entityType = schemas?.entityTypes[type];
   const propertyTypes = schemas?.propertyTypes ?? {};

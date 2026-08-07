@@ -27,7 +27,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Search, X } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
+import { type JSX, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type EntityDetail } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
@@ -228,17 +228,21 @@ function ApparitionsComponent(): JSX.Element {
   const [saving, setSaving] = useState(false);
 
   // Seed the working split from the entity once it lands (and whenever
-  // the route params re-trigger the fetch).
-  useEffect(() => {
+  // the route params re-trigger the fetch) — render-time adjustment
+  // (react.dev "you might not need an effect"), no effect chain /
+  // stale frame.
+  const [seededFrom, setSeededFrom] = useState<EntityDetail | null>(null);
+  if (entity !== seededFrom) {
+    setSeededFrom(entity);
     if (entity === null) {
       setWorking(emptyWorking);
       setOthers([]);
-      return;
+    } else {
+      const split = splitRelations(entity);
+      setWorking(buildInitial(split.apparitions));
+      setOthers(split.others);
     }
-    const split = splitRelations(entity);
-    setWorking(buildInitial(split.apparitions));
-    setOthers(split.others);
-  }, [entity]);
+  }
 
   // entityTypes prop for MultiEntityRefInput — every schema type
   // sorted by locale label. Filtered per-section via `restrictTo`.
