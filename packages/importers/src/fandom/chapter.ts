@@ -82,9 +82,9 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
 
   // The real Chapter Box carries no release date/pages/volume — those
   // live on the volume pages. Kept as best-effort for pages that do
-  // declare them; `released_at` is REQUIRED by the schema, so a
-  // chapter without one will (correctly) fail the validation gate and
-  // land in `skipped` until the date is supplied from another source.
+  // declare them; `released_at` is optional (schema v7) so the entity
+  // imports without it — the warning routes the gap to the volume-page
+  // mapper / AI pass instead of blocking the whole batch.
   const dateRaw = get('date', 'reldate', 'release');
   if (dateRaw !== undefined) {
     const iso = parseLooseDate(dateRaw);
@@ -92,9 +92,7 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
       properties['released_at'] = { value: iso, territory: 'jp' };
     } else warnings.push(`unparseable release date: "${cleanValue(dateRaw)}"`);
   } else {
-    warnings.push(
-      'no release date in infobox (required by the schema — supply from the volume page or manually)',
-    );
+    warnings.push('no release date in infobox — supply from the volume page or manually');
   }
 
   const pagesRaw = get('pages', 'page');
