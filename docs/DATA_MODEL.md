@@ -138,6 +138,17 @@ Every dated value points to a **source entity**: a manga chapter, anime
 episode, film, SBS volume, databook, etc. Sources are first-class entities,
 not metadata.
 
+Sources can be **nested for precision**: an `sbs` column (one per tankōbon,
+linked to its `volume` via `part-of-volume`) contains atomic **`sbs-qa`**
+entries — one question/answer pair each (`question_key` / `answer_key`,
+optional `asker_pen_name` and `page`), attached to their column via `qa-of`.
+An SBS-revealed fact (a birthday, a blood type) should cite the `sbs-qa`
+entry when known, or the `sbs` column as the coarser fallback; both carry
+`canon_scope` (typically `semi_canon`, see `/docs/CANON_MODEL.md`) and the
+`clarifies-fact` relation (with its `property_name` qualifier) points from
+the Q&A to the entity/property it settles. The same pattern covers databooks
+(`databook` → `databook-card` via `card-of`).
+
 The user's progression is a multi-dimensional cursor over sources:
 
 ```json

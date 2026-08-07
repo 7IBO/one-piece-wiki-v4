@@ -181,7 +181,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (35)
+## 2. Entity types (36)
 
 | ID                    | Category   | Description                                                      | URL segment            |
 | --------------------- | ---------- | ---------------------------------------------------------------- | ---------------------- |
@@ -220,6 +220,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 | `live-performance`    | sources    | A stage adaptation (Premier Show, musical, kabuki, concert)      | `live-performances`    |
 | `merchandise`         | production | Official merch (figure, model kit, plush, apparel, card)         | `merchandise`          |
 | `volume`              | sources    | A collected manga volume (tankōbon)                              | `volumes`              |
+| `sbs-qa`              | sources    | An atomic SBS question/answer entry (semi-canon reveal locus)    | `sbs-qa`               |
 
 ### 2.1 Properties per entity type
 
@@ -447,7 +448,21 @@ Allowed relations: `features`, `staffed-by`, `produced-by`, `available-on`,
 | `released_at` | yes      | no         | no          | `territory: jp` |
 | `canon_scope` | yes      | no         | no          | Always `sbs`    |
 
-Allowed relations: `features`, `clarifies-fact`.
+Allowed relations: `features`, `clarifies-fact`, `part-of-volume`.
+
+---
+
+#### `sbs-qa`
+
+| Property         | Required | Historical | Localizable | Notes                  |
+| ---------------- | -------- | ---------- | ----------- | ---------------------- |
+| `question_key`   | yes      | no         | yes         | i18n key               |
+| `answer_key`     | yes      | no         | yes         | i18n key               |
+| `asker_pen_name` | no       | no         | no          | Reader's printed P.N.  |
+| `page`           | no       | no         | no          | Page in the volume     |
+| `canon_scope`    | yes      | no         | no          | Typically `semi_canon` |
+
+Allowed relations: `qa-of`, `features`, `clarifies-fact`.
 
 ---
 
@@ -552,7 +567,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (88)
+## 3. Property types (92)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -569,6 +584,8 @@ unit, and qualifier policy (section 6).
 | `alt_text_key`    | `i18n_key` | required for `image`         | —            |
 | `narrative_key`   | `i18n_key` | —                            | —            |
 | `title_key`       | `i18n_key` | —                            | —            |
+| `question_key`    | `i18n_key` | sbs-qa                       | —            |
+| `answer_key`      | `i18n_key` | sbs-qa                       | —            |
 
 ### 3.2 Numeric properties
 
@@ -581,6 +598,7 @@ unit, and qualifier policy (section 6).
 | `population`      | `number`   | —     | min:0                 |
 | `number`          | `number`   | —     | min:0                 |
 | `page_count`      | `number`   | —     | min:1                 |
+| `page`            | `number`   | —     | min:1 (sbs-qa locus)  |
 | `runtime_minutes` | `number`   | min   | min:0                 |
 | `saga_number`     | `number`   | —     | min:1                 |
 | `arc_number`      | `number`   | —     | min:1                 |
@@ -651,17 +669,18 @@ unit, and qualifier policy (section 6).
 
 ### 3.6 References
 
-| Property        | Value type | Target type      |
-| --------------- | ---------- | ---------------- |
-| `url`           | `string`   | (R2 URL)         |
-| `attribution`   | `string`   | —                |
-| `source_origin` | `string`   | —                |
-| `climate`       | `string`   | —                |
-| `blood_type`    | `string`   | A, B, AB, O, +/− |
+| Property         | Value type | Target type      |
+| ---------------- | ---------- | ---------------- |
+| `url`            | `string`   | (R2 URL)         |
+| `attribution`    | `string`   | —                |
+| `source_origin`  | `string`   | —                |
+| `asker_pen_name` | `string`   | — (sbs-qa)       |
+| `climate`        | `string`   | —                |
+| `blood_type`     | `string`   | A, B, AB, O, +/− |
 
 ---
 
-## 4. Relation types (63)
+## 4. Relation types (64)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -734,11 +753,11 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.8 Source ↔ entity
 
-| Type                   | From              | To          | Inverse                | Qualifiers                                                                  |
-| ---------------------- | ----------------- | ----------- | ---------------------- | --------------------------------------------------------------------------- |
-| `features`             | source types      | any entity  | `featured-in` _(gen.)_ | appearance_type (shown _or_ evoked; absorbs former `references`/`mentions`) |
-| `introduces-character` | source types      | `character` | `introduced-in`        | —                                                                           |
-| `clarifies-fact`       | `sbs`, `databook` | any entity  | `clarified-in`         | property_name                                                               |
+| Type                   | From                        | To          | Inverse                | Qualifiers                                                                  |
+| ---------------------- | --------------------------- | ----------- | ---------------------- | --------------------------------------------------------------------------- |
+| `features`             | source types                | any entity  | `featured-in` _(gen.)_ | appearance_type (shown _or_ evoked; absorbs former `references`/`mentions`) |
+| `introduces-character` | source types                | `character` | `introduced-in`        | —                                                                           |
+| `clarifies-fact`       | `sbs`, `sbs-qa`, `databook` | any entity  | `clarified-in`         | property_name                                                               |
 
 ### 4.9 Source ↔ source (adaptation)
 
@@ -752,6 +771,7 @@ generates inverses automatically when `inverse_inferred: true`.
 | --------------------- | ----------------------------------------- | -------------------- | ----------------- | ---------- |
 | `part-of-arc`         | `manga-chapter`, `event`, `anime-episode` | `arc`                | `(inferred)`      | —          |
 | `part-of-volume`      | `manga-chapter`, `sbs`                    | `volume`             | `collects`        | since      |
+| `qa-of`               | `sbs-qa`                                  | `sbs`                | `has-qa`          | —          |
 | `part-of-series`      | `live-action-episode`                     | `live-action-series` | `(inferred)`      | since      |
 | `part-of-saga`        | `arc`                                     | `saga`               | `contains-arc`    | —          |
 | `occurs-during-arc`   | `event`                                   | `arc`                | `contains-event`  | —          |
@@ -1231,7 +1251,7 @@ These exist on every entity, declared once in primitives.
 `arc`, `saga`, `manga-chapter`, `anime-episode`, `film`, `person`,
 `material`, `theme-song`, `company`, `databook-card`, `transformation`,
 `album`, `video-game`, `live-action-series`, `live-action-episode`,
-`anime-special`, `live-performance`, `merchandise`, `volume`
+`anime-special`, `live-performance`, `merchandise`, `volume`, `sbs-qa`
 
 ### 9.3 Entity types that can be `participant` of events
 
@@ -1255,9 +1275,9 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 35
-- **Property types**: 88 (some shared across multiple entity types)
-- **Relation types**: 63 (canonical declared; inverses are build-generated)
+- **Entity types**: 36
+- **Property types**: 92 (some shared across multiple entity types)
+- **Relation types**: 64 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 59
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)

@@ -659,6 +659,30 @@
         "part-of-volume"
       ]
     },
+    "sbs-qa": {
+      "properties": {
+        "answer_key": {
+          "required": true
+        },
+        "asker_pen_name": {
+          "required": false
+        },
+        "canon_scope": {
+          "required": true
+        },
+        "page": {
+          "required": false
+        },
+        "question_key": {
+          "required": true
+        }
+      },
+      "allowed_relations": [
+        "clarifies-fact",
+        "features",
+        "qa-of"
+      ]
+    },
     "ship": {
       "properties": {
         "built_at": {
@@ -871,6 +895,12 @@
       "historical": false,
       "localizable": false
     },
+    "answer_key": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": true
+    },
     "arc_number": {
       "value_type": "number",
       "enum_ref": null,
@@ -880,6 +910,12 @@
     "arc_subtype": {
       "value_type": "enum",
       "enum_ref": "arc-subtypes",
+      "historical": false,
+      "localizable": false
+    },
+    "asker_pen_name": {
+      "value_type": "string",
+      "enum_ref": null,
       "historical": false,
       "localizable": false
     },
@@ -1201,6 +1237,12 @@
       "historical": false,
       "localizable": false
     },
+    "page": {
+      "value_type": "number",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
     "page_count": {
       "value_type": "number",
       "enum_ref": null,
@@ -1236,6 +1278,12 @@
       "enum_ref": null,
       "historical": true,
       "localizable": false
+    },
+    "question_key": {
+      "value_type": "i18n_key",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": true
     },
     "record_label": {
       "value_type": "string",
@@ -1667,7 +1715,8 @@
     "clarifies-fact": {
       "valid_from_types": [
         "databook",
-        "sbs"
+        "sbs",
+        "sbs-qa"
       ],
       "valid_to_types": [
         "character",
@@ -1936,6 +1985,7 @@
         "live-performance",
         "manga-chapter",
         "sbs",
+        "sbs-qa",
         "video-game"
       ],
       "valid_to_types": [
@@ -2400,6 +2450,16 @@
           "required": false
         }
       }
+    },
+    "qa-of": {
+      "valid_from_types": [
+        "sbs-qa"
+      ],
+      "valid_to_types": [
+        "sbs"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {}
     },
     "replaces": {
       "valid_from_types": [

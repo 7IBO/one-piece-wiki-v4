@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "sbs-qa",
+  "schema_version": 1,
+  "labels": { "en": "SBS Q&A", "fr": "Q&R SBS" },
+  "url_segment": "sbs-qa",
+  "properties": [
+    { "id": "question_key", "required": true, "historical": false, "localizable": true },
+    { "id": "answer_key", "required": true, "historical": false, "localizable": true },
+    { "id": "asker_pen_name", "required": false, "historical": false, "localizable": false },
+    { "id": "page", "required": false, "historical": false, "localizable": false },
+    { "id": "canon_scope", "required": true, "historical": false, "localizable": false }
+  ],
+  "display_name_properties": ["question_key"],
+  "allowed_relations": ["qa-of", "features", "clarifies-fact"],
+  "ui_hint": { "icon": "help-circle", "group": "sources" }
+}

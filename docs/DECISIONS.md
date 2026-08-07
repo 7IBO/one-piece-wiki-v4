@@ -8,6 +8,40 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-074 — `sbs-qa` entity: atomic SBS question/answer entries
+
+**Date**: 2026-06-14
+
+**Context**: The `sbs` entity models a whole column (one per tankōbon), but
+SBS-sourced facts — birthdays, blood types, heights, gag canon — are revealed
+by _individual questions_. Citing the whole column loses the locus (page,
+asker) and makes `clarifies-fact` coarse. This is the C8 `sbs-qa` item
+(DATA_EXPANSION_PLAN §C8, open decision #4 — resolved "as entity": Q&As are
+real reveal-sources and provenance precision is the point of the sources
+model).
+
+**Decision**: New **one-piece-scoped** entity `sbs-qa` (SBS is a One Piece
+publication feature), following the `databook`/`databook-card` nesting
+precedent:
+
+1. Properties (all new, one-piece-scoped): `question_key` + `answer_key`
+   (i18n_key, localizable, required), `asker_pen_name` (string — printed
+   reader P.N.), `page` (number ≥ 1, locus in the volume) + existing
+   `canon_scope` (typically `semi_canon`, ADR-047).
+2. **`qa-of`** relation (sbs-qa → sbs, single-valued, inverse "Has Q&A") —
+   mirror of `card-of`.
+3. Widened `features` and `clarifies-fact` `valid_from_types` += `sbs-qa`
+   (additive; applicability lists are not scope dependencies, ADR-048); a
+   Q&A can therefore feature characters and settle a property via
+   `clarifies-fact.property_name`.
+4. `display_name_properties: [question_key]`.
+
+**Consequences**: 36 entities, 92 properties, 64 relations (+ additive compat
+entries only). Facts should cite the `sbs-qa` entry when known, the `sbs`
+column as fallback (DATA_MODEL § sources). No migration.
+
+---
+
 ## ADR-073 — drop the legacy `volume` string property (contract phase)
 
 **Date**: 2026-06-14
