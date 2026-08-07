@@ -7,16 +7,22 @@ this file is the current status + the open threads.
 
 **Last updated**: 2026-06-14 (evening — C8 cluster closed)
 
-**2026-06-14 (evening) — C8-rest shipped.** Catalogue **36 entities / 93
-properties / 65 relations / 59 vocabularies**. ADR-073 (contract phase: legacy
-`volume` string property dropped; migration `0005`, no-op on corpus), ADR-074
-(`sbs-qa` entity + `qa-of`, one-piece-scoped; `features`/`clarifies-fact`
-widened), ADR-075 (`is_color_spread` + `has-cover-story` on `manga-chapter`).
-The adaptation many-to-many needed nothing — `adapted-by` was already
-non-linear (`allow_multiple_concurrent` + `coverage`). **C8 is complete**;
-next in the committed order: C9-rest → C5 → C1. NB: **ADR-072 is reserved by
-PR #90** (dashboard image display, open at the time of writing — merge order
-safe either way, disjoint files).
+**2026-06-14 (evening) — C8 closed + C9/C5 additive waves.** Catalogue **36
+entities / 101 properties / 70 relations / 63 vocabularies**. ADR-073
+(contract phase: legacy `volume` string dropped; migration `0005`, no-op on
+corpus), ADR-074 (`sbs-qa` + `qa-of`), ADR-075 (`is_color_spread` +
+`has-cover-story`), ADR-076 (C9 wave 1: `part-of-event` phases, race
+`slave_price`/`danger_classification`/`hybrid-of`, location `log_pose_time`,
+ship `figurehead`, bounty `reason`), ADR-077 (C5 wave: fruit
+`weakness`/`awakening_outcome`/`interacts-with-fruit`/`held-by`, technique
+`is_secret`/`requires_haki`/`variant-of`). `adapted-by` was already the
+non-linear many-to-many — no change needed. **C8 complete; C9/C5 additive
+halves complete.** All shipped on PR #91. **The rest of the data campaign is
+blocked on the maintainer `[D]` calls** (DATA_EXPANSION_PLAN §4): #1 C1
+edition-variant qualifier, #3 era/temporal value, #5 fighting-style
+modelling, #6 ancient-weapon/artifact, #7 event breaking changes. NB:
+**ADR-072 is reserved by PR #90** (dashboard image display, open at the time
+of writing — disjoint files, merge order safe either way).
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below
