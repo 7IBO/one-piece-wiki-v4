@@ -2,9 +2,11 @@ import { Card, CardDescription, CardHeader, CardTitle } from '@/components/ui/ca
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { type JSX, useEffect, useState } from 'react';
-import { api, type SchemaCatalogue } from '../api';
+import { api } from '../api';
 import { useCurrentUser } from '../auth';
+import { LoadFailed } from '../components/LoadFailed';
 import { useLocale, useT } from '../form/locale';
+import { useApiResource } from '../hooks/use-api-resource';
 import { MyContributions } from '../MyContributions';
 import { MyDrafts } from '../MyDrafts';
 
@@ -16,42 +18,36 @@ function IndexComponent(): JSX.Element {
   const locale = useLocale();
   const t = useT();
   const { user, loaded: userLoaded } = useCurrentUser();
-  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
+  const { data: schemas, error } = useApiResource(() => api.schemas(), []);
   const [counts, setCounts] = useState<Record<string, number>>({});
-  const [error, setError] = useState<string | null>(null);
 
+  // Fan-out count fetch once schemas land — deliberately NOT part of the
+  // page resource so the type grid renders as soon as schemas arrive and
+  // counts roll in after. `listEntities` is cached module-wide in api.ts
+  // so revisiting the home page is zero-RTT, and the command palette
+  // shares the same cache.
   useEffect(() => {
+    if (schemas === null) return;
     let cancelled = false;
-    api.schemas().then(async (cat) => {
-      if (cancelled) return;
-      setSchemas(cat);
-      // Fan-out count fetch. `listEntities` is cached module-wide
-      // in api.ts so revisiting the home page is zero-RTT, and the
-      // command palette shares the same cache.
-      const typeIds = Object.keys(cat.entityTypes);
-      const results = await Promise.all(
-        typeIds.map(async (id) => {
-          try {
-            const list = await api.listEntities(id);
-            return [id, list.length] as const;
-          } catch {
-            return [id, 0] as const;
-          }
-        }),
-      );
-      if (cancelled) return;
-      setCounts(Object.fromEntries(results));
-    }).catch((e: unknown) => {
-      if (cancelled) return;
-      setError(e instanceof Error ? e.message : String(e));
+    void Promise.all(
+      Object.keys(schemas.entityTypes).map(async (id) => {
+        try {
+          const list = await api.listEntities(id);
+          return [id, list.length] as const;
+        } catch {
+          return [id, 0] as const;
+        }
+      }),
+    ).then((results) => {
+      if (!cancelled) setCounts(Object.fromEntries(results));
     });
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [schemas]);
 
   if (error !== null) {
-    return <p className='text-destructive'>Failed to load schemas: {error}</p>;
+    return <LoadFailed message={error} />;
   }
   if (schemas === null) {
     return (

@@ -30,9 +30,11 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, GitPullRequest, Pencil, X } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { api, type CastEntry, type CastResponse, type SchemaCatalogue } from '../api';
+import { api, type CastEntry, type CastResponse } from '../api';
+import { LoadFailed } from '../components/LoadFailed';
 import { MultiEntityRefInput } from '../form/inputs';
 import { useLocale, useT } from '../form/locale';
+import { useApiResource } from '../hooks/use-api-resource';
 
 export const Route = createFileRoute('/sources/$type/$slug')({
   component: SourceCastComponent,
@@ -72,21 +74,20 @@ function SourceCastComponent(): JSX.Element {
   const t = useT();
   const navigate = useNavigate();
 
-  const [cast, setCast] = useState<CastResponse | null>(null);
-  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error } = useApiResource(
+    () => Promise.all([api.getCast(type, slug), api.schemas()]),
+    [type, slug],
+  );
+  const cast = data?.[0] ?? null;
+  const schemas = data?.[1] ?? null;
   const [working, setWorking] = useState<WorkingState>(emptyState);
   const [saving, setSaving] = useState(false);
 
+  // Seed the working selection from the server cast once it lands
+  // (and whenever the route params re-trigger the fetch).
   useEffect(() => {
-    Promise.all([api.getCast(type, slug), api.schemas()])
-      .then(([c, s]) => {
-        setCast(c);
-        setSchemas(s);
-        setWorking(buildInitialState(c.cast));
-      })
-      .catch((e: unknown) => setError(e instanceof Error ? e.message : String(e)));
-  }, [type, slug]);
+    setWorking(cast === null ? emptyState : buildInitialState(cast.cast));
+  }, [cast]);
 
   // entityTypes prop for MultiEntityRefInput — accepts every type
   // declared in the schema catalogue, sorted by locale label. The
@@ -195,7 +196,7 @@ function SourceCastComponent(): JSX.Element {
     }
   }
 
-  if (error !== null) return <p className='text-destructive'>Failed: {error}</p>;
+  if (error !== null) return <LoadFailed message={error} />;
   if (cast === null || schemas === null) {
     return (
       <div className='space-y-4'>

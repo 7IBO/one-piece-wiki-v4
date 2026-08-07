@@ -16,49 +16,41 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { resolveDisplayName } from '@onepiece-wiki/schemas';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, Film, GitPullRequest, Users } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useState } from 'react';
+import { type JSX, useMemo } from 'react';
 import { toast } from 'sonner';
-import { api, type EntityDetail, type SchemaCatalogue, type SourceRef } from '../api';
+import { api, type SourceRef } from '../api';
+import { LoadFailed } from '../components/LoadFailed';
 import { EntityForm } from '../form/EntityForm';
 import { useLocale, useT } from '../form/locale';
+import { useApiResource } from '../hooks/use-api-resource';
 
 export const Route = createFileRoute('/types/$type/$slug/')({
   component: EntityEditComponent,
 });
 
+// Stable fallbacks while the page resource is loading — module-level so
+// their identity doesn't churn re-renders.
+const emptySources: readonly SourceRef[] = [];
+const emptyKeys: readonly string[] = [];
+
 function EntityEditComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
   const t = useT();
-  const [entity, setEntity] = useState<EntityDetail | null>(null);
-  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
-  const [sources, setSources] = useState<readonly SourceRef[]>([]);
-  const [i18nKeys, setI18nKeys] = useState<readonly string[]>([]);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    Promise.all([
-      api.getEntity(type, slug),
-      api.schemas(),
-      api.sources(),
-      api.i18nKeys(),
-    ])
-      .then(([e, s, src, keys]) => {
-        setEntity(e);
-        setSchemas(s);
-        setSources(src);
-        setI18nKeys(keys);
-      })
-      .catch((e: unknown) => {
-        // Mirror to console so the full stack stays readable after
-        // the user navigates away — the inline `<p>Failed: …</p>`
-        // disappears on the next route change and the message is
-        // lost otherwise.
-        // eslint-disable-next-line no-console
-        console.error(`[entity:${type}/${slug}] load failed`, e);
-        setError(e instanceof Error ? e.message : String(e));
-      });
-  }, [type, slug]);
+  const { data, error } = useApiResource(
+    () =>
+      Promise.all([
+        api.getEntity(type, slug),
+        api.schemas(),
+        api.sources(),
+        api.i18nKeys(),
+      ]),
+    [type, slug],
+  );
+  const entity = data?.[0] ?? null;
+  const schemas = data?.[1] ?? null;
+  const sources = data?.[2] ?? emptySources;
+  const i18nKeys = data?.[3] ?? emptyKeys;
 
   const displayName = useMemo(
     () =>
@@ -80,7 +72,7 @@ function EntityEditComponent(): JSX.Element {
   }, [schemas, type, locale]);
 
   if (error !== null) {
-    return <p className='text-destructive'>Failed: {error}</p>;
+    return <LoadFailed message={error} />;
   }
   if (entity === null || schemas === null) {
     return (

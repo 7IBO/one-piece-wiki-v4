@@ -265,15 +265,20 @@ demand (module-level cache like `api.ts`); derived aggregates are
 computed server-side or emitted as generated TS manifests under
 `packages/` (cf. `packages/schemas/generated`); image bytes stay on R2.
 
-- **W-F — UI-coherence foundation** (do first, low risk). Shared
-  resource-fetch hook (or adopt the already-bundled TanStack Query) to
-  kill the duplicated `useEffect`+`useState`+skeleton+`Failed:` pattern
-  in ~7 routes; a shared `<PRBanner>`/`<InfoBanner>` for the repeated
-  amber/primary callouts; replace raw `<a>`/`<button>` (in `__root.tsx`,
-  `types.$type.index.tsx`) with `<Button>`. God-module decomposition
-  (`EntityForm.tsx` 1876 L, `inputs.tsx` 1103 L, `server/server.ts`
-  1776 L) is a later **ADR-first** slice, done opportunistically as
-  W-B/C/D touch those files.
+- **W-F — UI-coherence foundation** — **DONE 2026-06-14 evening.** The
+  `<Banner>`/`<Button>` halves had already shipped with the #85
+  overhaul; the last piece — the shared **`useApiResource`** hook
+  (`src/hooks/use-api-resource.ts`, no new dependency; note TanStack
+  Query is NOT actually in the dep tree despite the earlier note) +
+  the shared `<LoadFailed>` error banner — landed on PR #91, replacing
+  the duplicated `useEffect`+`useState`+`.catch(setError)`+`Failed:`
+  blocks in the 7 fetching routes (index, type list/table/new,
+  entity edit, apparitions, source cast). Route-local derived state
+  (cast/apparitions working sets, table drafts) seeds via
+  `useEffect`-on-data. God-module decomposition (`EntityForm.tsx`
+  1876 L, `inputs.tsx` 1103 L, `server/server.ts` 1776 L) remains a
+  later **ADR-first** slice, done opportunistically as W-B/C/D touch
+  those files.
 - **W-A — coherence linter.** New `bun run check:coherence` in
   `packages/schema-engine` (CI gate): asymmetric/missing inverse
   relations, orphan refs, source-coverage gaps, untranslated `i18n_key`

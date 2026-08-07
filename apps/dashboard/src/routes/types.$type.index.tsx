@@ -12,9 +12,11 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowDown, ArrowUp, Plus, Search, Table2 } from 'lucide-react';
 import { type JSX, useDeferredValue, useEffect, useMemo, useState } from 'react';
-import { api, type EntityRef, type SchemaCatalogue } from '../api';
+import { api, type EntityRef } from '../api';
+import { LoadFailed } from '../components/LoadFailed';
 import { useEntityTypeLabel, useLocale, useT } from '../form/locale';
 import { useAllDrafts } from '../form/use-draft';
+import { useApiResource } from '../hooks/use-api-resource';
 
 export const Route = createFileRoute('/types/$type/')({
   component: TypeListComponent,
@@ -27,9 +29,12 @@ function TypeListComponent(): JSX.Element {
   const { type } = Route.useParams() as { type: string; };
   const locale = useLocale();
   const t = useT();
-  const [list, setList] = useState<EntityRef[] | null>(null);
-  const [schemas, setSchemas] = useState<SchemaCatalogue | null>(null);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error } = useApiResource(
+    () => Promise.all([api.listEntities(type), api.schemas()]),
+    [type],
+  );
+  const list = data?.[0] ?? null;
+  const schemas = data?.[1] ?? null;
   const [query, setQuery] = useState('');
   const [sortKey, setSortKey] = useState<SortKey>('name');
   const [sortDir, setSortDir] = useState<SortDir>('asc');
@@ -46,17 +51,10 @@ function TypeListComponent(): JSX.Element {
     return set;
   }, [drafts, type]);
 
+  // Reset the search box when switching entity types (the fetch itself
+  // resets via the hook's deps).
   useEffect(() => {
-    setList(null);
     setQuery('');
-    Promise.all([api.listEntities(type), api.schemas()])
-      .then(([l, s]) => {
-        setList(l);
-        setSchemas(s);
-      })
-      .catch((e: unknown) => {
-        setError(e instanceof Error ? e.message : String(e));
-      });
   }, [type]);
 
   const entityTypeLabel = useEntityTypeLabel(schemas, type);
@@ -91,7 +89,7 @@ function TypeListComponent(): JSX.Element {
   }, [list, deferredQuery, sortKey, sortDir, locale]);
 
   if (error !== null) {
-    return <p className='text-destructive'>Failed: {error}</p>;
+    return <LoadFailed message={error} />;
   }
 
   return (
