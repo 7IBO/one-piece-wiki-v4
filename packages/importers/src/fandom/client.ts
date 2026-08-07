@@ -190,6 +190,40 @@ export class FandomClient {
       }));
   }
 
+  /**
+   * Every main-namespace page of a category
+   * (`list=categorymembers`), following API continuation — the crawl
+   * seed for "import EVERYTHING of a kind" (Chapters, Episodes,
+   * Humans, …). Pass the bare name ("Chapters"), not "Category:…".
+   */
+  async categoryMembers(category: string): Promise<readonly string[]> {
+    const titles: string[] = [];
+    let cmcontinue: string | undefined;
+    do {
+      const params = new URLSearchParams({
+        action: 'query',
+        list: 'categorymembers',
+        cmtitle: `Category:${category.replace(/^Category:/i, '')}`,
+        cmnamespace: '0',
+        cmlimit: '500',
+        format: 'json',
+        formatversion: '2',
+      });
+      if (cmcontinue !== undefined) params.set('cmcontinue', cmcontinue);
+      // eslint-disable-next-line no-await-in-loop
+      const raw = await this.fetchRaw(`${this.baseUrl}/api.php?${params.toString()}`);
+      const envelope = JSON.parse(raw) as {
+        query?: { categorymembers?: readonly { title?: string; }[]; };
+        continue?: { cmcontinue?: string; };
+      };
+      for (const m of envelope.query?.categorymembers ?? []) {
+        if (m.title !== undefined) titles.push(m.title);
+      }
+      cmcontinue = envelope.continue?.cmcontinue;
+    } while (cmcontinue !== undefined);
+    return titles;
+  }
+
   private async fetchRaw(url: string): Promise<string> {
     const wait = this.lastRequestAt + this.minDelayMs - Date.now();
     if (wait > 0) await new Promise((r) => setTimeout(r, wait));

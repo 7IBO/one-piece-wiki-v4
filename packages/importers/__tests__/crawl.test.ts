@@ -1,0 +1,133 @@
+/**
+ * Full-auto crawl (ADR-079/081): kind auto-detection, category
+ * seeding, redirect following, frontier + unknown-box reporting, and
+ * batch-PR plan assembly — all on fixture-backed fetch stubs.
+ */
+import { describe, expect, it } from 'bun:test';
+import { join } from 'node:path';
+import { buildImportPRPlan } from '../src/emit-pr.ts';
+import { FandomClient } from '../src/fandom/client.ts';
+import { crawl, detectKind } from '../src/fandom/crawl.ts';
+
+async function fixtureRaw(name: string): Promise<string> {
+  return await Bun.file(join(import.meta.dir, 'fixtures', `${name}.json`)).text();
+}
+
+function stubClient(routes: Record<string, string>): FandomClient {
+  return new FandomClient({
+    minDelayMs: 0,
+    fetchImpl: ((url: string | URL | Request) => {
+      const s = decodeURIComponent(String(url)).replace(/\+/g, ' ');
+      for (const [needle, raw] of Object.entries(routes)) {
+        if (s.includes(needle)) return Promise.resolve(new Response(raw, { status: 200 }));
+      }
+      return Promise.resolve(
+        new Response(JSON.stringify({ error: { code: 'missingtitle', info: 'nope' } })),
+      );
+    }) as typeof fetch,
+  });
+}
+
+describe('detectKind', () => {
+  it('routes known infoboxes, reports unknown ones, skips boxless pages', async () => {
+    const chapter = JSON.parse(await fixtureRaw('chapter-1044')) as {
+      parse: { wikitext: string; };
+    };
+    expect(detectKind(chapter.parse.wikitext)).toEqual({ kind: 'chapter' });
+    expect(detectKind('{{Crew Box|name=Straw Hats}}')).toEqual({
+      kind: 'unknown',
+      box: 'Crew Box',
+    });
+    expect(detectKind('just prose')).toEqual({ kind: 'none' });
+  });
+});
+
+describe('crawl', () => {
+  it('seeds from categories, auto-detects, follows redirects, reports frontier + unknown boxes', async () => {
+    const category = JSON.stringify({
+      query: {
+        categorymembers: [
+          { title: 'Chapter 1044' },
+          { title: 'Hyougoro' },
+          { title: 'Monkey D. Luffy/Personality and Relationships' }, // redirect page
+          { title: 'Straw Hat Pirates' }, // unknown box
+        ],
+      },
+    });
+    const crewPage = JSON.stringify({
+      parse: {
+        title: 'Straw Hat Pirates',
+        pageid: 7,
+        wikitext: '{{Crew Box|name=Straw Hats}} They sail with [[Going Merry]].',
+      },
+    });
+    const personality = JSON.stringify({
+      parse: {
+        title: 'Monkey D. Luffy/Personality',
+        pageid: 9,
+        wikitext: '{{Char Box|ename=Monkey D. Luffy|first={{Qref|chap=1|ep=1}}}}',
+      },
+    });
+    const client = stubClient({
+      'list=categorymembers': category,
+      'page=Chapter 1044': await fixtureRaw('chapter-1044'),
+      'page=Hyougoro': await fixtureRaw('hyougoro'),
+      'page=Monkey D. Luffy/Personality and Relationships': await fixtureRaw(
+        'redirect-personality',
+      ),
+      'page=Monkey D. Luffy/Personality': personality,
+      'page=Straw Hat Pirates': crewPage,
+    });
+
+    const report = await crawl(client, { categories: ['Test'] }, { limit: 10 });
+
+    expect(report.results.map((r) => r.mapped.entity.id).sort()).toEqual([
+      'character:hyogoro',
+      'character:monkey-d-luffy',
+      'manga-chapter:1044',
+    ]);
+    const redirected = report.results.find((r) => r.redirectedFrom !== undefined);
+    expect(redirected?.redirectedFrom).toBe('Monkey D. Luffy/Personality and Relationships');
+    expect(report.unknownBoxes).toEqual([{ box: 'Crew Box', count: 1 }]);
+    expect(report.failures.some((f) => f.reason.includes('Crew Box'))).toBe(true);
+    // The crew page's link feeds the frontier.
+    expect(report.frontier.some((f) => f.title === 'Going Merry')).toBe(true);
+  });
+
+  it('respects the fetch limit', async () => {
+    const client = stubClient({ 'page=Chapter 1044': await fixtureRaw('chapter-1044') });
+    const report = await crawl(
+      client,
+      { pages: ['Chapter 1044', 'Hyougoro', 'Episode 1071'] },
+      { limit: 1 },
+    );
+    expect(report.results.length + report.failures.length).toBe(1);
+  });
+});
+
+describe('buildImportPRPlan', () => {
+  it('assembles one reviewable batch PR from a crawl report', async () => {
+    const client = stubClient({
+      'page=Chapter 1044': await fixtureRaw('chapter-1044'),
+      'page=Hyougoro': await fixtureRaw('hyougoro'),
+    });
+    const report = await crawl(client, { pages: ['Chapter 1044', 'Hyougoro'] }, { limit: 5 });
+    const plan = buildImportPRPlan(report, { runId: 'test-1' });
+    expect(plan).not.toBeNull();
+    expect(plan?.branch).toBe('import/fandom-test-1');
+    expect(plan?.title).toContain('Import 2 entities');
+    expect(plan?.body).toContain('`manga-chapter:1044`');
+    expect(plan?.body).toContain('**Warnings (review before merge):**');
+    // Entity + translation files for both results.
+    expect(plan?.files.length).toBe(4);
+  });
+
+  it('returns null on an empty report', () => {
+    expect(
+      buildImportPRPlan(
+        { results: [], frontier: [], unknownBoxes: [], failures: [] },
+        { runId: 'x' },
+      ),
+    ).toBeNull();
+  });
+});
