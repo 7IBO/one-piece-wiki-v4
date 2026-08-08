@@ -43,19 +43,11 @@ import {
 } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
-import { Check, ChevronsUpDown, Columns3, ListFilter, MoreHorizontal, Search } from 'lucide-react';
+import { Check, ChevronsUpDown, Columns3, ListFilter, Search } from 'lucide-react';
 import { type JSX, type ReactNode, useDeferredValue, useMemo, useRef, useState } from 'react';
-import { toast } from 'sonner';
 import { api, type AuditRow, type Completeness, type SchemaCatalogue } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
 import { type Locale, useLocale, useT } from '../form/locale';
@@ -67,11 +59,6 @@ export const Route = createFileRoute('/explore')({
 
 /** Rows above this count switch from a plain list to virtualization. */
 const VIRTUALIZE_THRESHOLD = 100;
-
-/** Value types the explorer edits inline (latest entry only). Anything
- *  else — refs, multi_enum, markdown, localizable keys — goes through
- *  the full entity page. Mirrors the table view's `INLINE_EDITABLE`. */
-const INLINE_EDITABLE = new Set(['string', 'number', 'boolean', 'enum', 'date']);
 
 type Filters = {
   readonly types: readonly string[];
@@ -124,17 +111,6 @@ function expectedLabelOf(
   return id;
 }
 
-function vocabLabelOf(
-  schemas: SchemaCatalogue,
-  enumRef: string | undefined,
-  valueId: string,
-  locale: Locale,
-): string {
-  if (enumRef === undefined) return valueId;
-  const term = schemas.vocabularies[enumRef]?.values[valueId];
-  return term?.labels[locale] ?? term?.labels.en ?? valueId;
-}
-
 /** The entity-type's declaration of a property, when declared. The
  *  decl's `historical` / `localizable` overrides drive how the JSON
  *  is shaped on disk, so they win over the property-type defaults —
@@ -153,57 +129,6 @@ function declOf(
   };
 }
 
-/** Can this row's cell for this property be edited inline? */
-function cellEditable(
-  schemas: SchemaCatalogue,
-  entityType: string,
-  propertyId: string,
-): boolean {
-  const decl = declOf(schemas, entityType, propertyId);
-  const pt = schemas.propertyTypes[propertyId];
-  if (decl === undefined || pt === undefined) return false;
-  if (decl.localizable) return false;
-  if (!INLINE_EDITABLE.has(pt.value_type)) return false;
-  if (pt.value_type === 'enum') {
-    const enumRef = pt.value_constraints?.enum_ref;
-    if (enumRef === undefined || schemas.vocabularies[enumRef] === undefined) return false;
-  }
-  return true;
-}
-
-/** Latest stored scalar for a row's property (`raw.value` of the last
- *  entry) — the value inline editing targets. */
-function latestRawValue(row: AuditRow, propertyId: string): unknown {
-  const pv = row.values.find((v) => v.property === propertyId);
-  const last = pv?.entries[pv.entries.length - 1];
-  return last?.raw?.value;
-}
-
-function isPlainObject(v: unknown): v is Record<string, unknown> {
-  return typeof v === 'object' && v !== null && !Array.isArray(v);
-}
-
-/** Write an edited scalar back into the property's on-disk shape,
- *  preserving the latest entry's qualifiers — mirrors the table
- *  view's `writeCell` (historical → replace the LAST entry of the
- *  array; non-historical → the singleton object). */
-function writeLatestValue(original: unknown, historical: boolean, next: unknown): unknown {
-  const entries = historical
-    ? (Array.isArray(original) ? original : original === undefined || original === null ? [] : [
-      original,
-    ])
-    : [original];
-  const latest = entries[entries.length - 1];
-  const base = isPlainObject(latest) ? latest : {};
-  const nextEntry = { ...base, value: next };
-  return historical
-    ? (Array.isArray(original) && original.length > 0
-      ? [...original.slice(0, -1), nextEntry]
-      : [nextEntry])
-    : nextEntry;
-}
-
-/** Same visual language as the per-type list rows (ADR-083 meter). */
 function RowMeter({ value }: { value: Completeness; }): JSX.Element | null {
   const t = useT();
   if (value.expected <= 0) return null;
@@ -362,243 +287,63 @@ function FilterToggle(p: {
 
 /** Inline editor for one cell — the right control for the value_type,
  *  committing on blur / Enter / pick, cancelling on Escape. */
-function CellEditor(p: {
-  valueType: string;
-  enumRef: string | undefined;
-  schemas: SchemaCatalogue;
-  locale: Locale;
-  initial: unknown;
-  onCommit: (next: unknown) => void;
-  onCancel: () => void;
-}): JSX.Element {
-  const t = useT();
-  const cancelled = useRef(false);
-
-  if (p.valueType === 'enum') {
-    const vocab = p.schemas.vocabularies[p.enumRef ?? ''];
-    const options = Object.entries(vocab?.values ?? {}).map(([id, v]) => ({
-      id,
-      label: v.labels[p.locale] ?? v.labels.en ?? id,
-    }));
-    const current = typeof p.initial === 'string' && p.initial !== '' ? p.initial : undefined;
-    return (
-      <Select
-        value={current}
-        onValueChange={(v) => {
-          if (v !== undefined && v !== null && v !== '') p.onCommit(v);
-        }}
-        defaultOpen
-        onOpenChange={(open) => {
-          if (!open) p.onCancel();
-        }}
-      >
-        <SelectTrigger className='w-full max-w-56'>
-          <SelectValue placeholder={t('pickOne')}>
-            {current !== undefined
-              ? vocabLabelOf(p.schemas, p.enumRef, current, p.locale)
-              : null}
-          </SelectValue>
-        </SelectTrigger>
-        <SelectContent>
-          {options.map((o) => (
-            <SelectItem key={o.id} value={o.id}>
-              {o.label}
-            </SelectItem>
-          ))}
-        </SelectContent>
-      </Select>
-    );
-  }
-
-  // string / number / date share the input recipe.
-  const initialText = p.initial === undefined || p.initial === null ? '' : String(p.initial);
-  const commitText = (text: string): void => {
-    if (cancelled.current) return;
-    const trimmed = text.trim();
-    // An emptied field cancels rather than writing an empty value —
-    // clearing values goes through the full form.
-    if (trimmed === '') {
-      p.onCancel();
-      return;
-    }
-    if (p.valueType === 'number') {
-      const n = Number(trimmed);
-      if (!Number.isFinite(n)) {
-        p.onCancel();
-        return;
-      }
-      p.onCommit(n);
-      return;
-    }
-    p.onCommit(trimmed);
-  };
-  return (
-    <Input
-      autoFocus
-      type={p.valueType === 'number' ? 'number' : p.valueType === 'date' ? 'date' : 'text'}
-      defaultValue={initialText}
-      aria-label={t('exploreEditValue')}
-      className={p.valueType === 'date' ? 'w-44 font-mono' : 'max-w-56'}
-      onBlur={(e) => commitText(e.currentTarget.value)}
-      onKeyDown={(e) => {
-        if (e.key === 'Enter') {
-          e.preventDefault();
-          commitText(e.currentTarget.value);
-        } else if (e.key === 'Escape') {
-          cancelled.current = true;
-          p.onCancel();
-        }
-      }}
-    />
-  );
-}
-
-/** One property cell in columns mode. */
+/** One READ-ONLY property cell in columns mode. Missing values are a
+ *  plain muted dash (title carries the hint) — no amber chips, no
+ *  inline editor (2026-08 feedback). */
 function ValueCell(p: {
   row: AuditRow;
   propertyId: string;
   schemas: SchemaCatalogue;
   locale: Locale;
-  draft: { readonly has: boolean; readonly value: unknown; };
-  editing: boolean;
-  onStartEdit: () => void;
-  onCommit: (next: unknown) => void;
-  onCancel: () => void;
 }): JSX.Element {
   const t = useT();
-  const pt = p.schemas.propertyTypes[p.propertyId];
   const declared = declOf(p.schemas, p.row.type, p.propertyId) !== undefined;
-  const editable = cellEditable(p.schemas, p.row.type, p.propertyId);
   const pv = p.row.values.find((v) => v.property === p.propertyId);
   const entries = pv?.entries ?? [];
   const label = propertyLabelOf(p.schemas, p.propertyId, p.locale);
-  const latestValue = p.draft.has ? p.draft.value : latestRawValue(p.row, p.propertyId);
-
-  let content: JSX.Element;
-  if (!declared) {
-    // The selected entity types don't all share every chosen column —
-    // an undeclared property is a plain muted dash, NOT a warning.
-    content = (
-      <span className='text-muted-foreground/50 text-xs' title={t('exploreNotApplicable')}>
-        —
-      </span>
-    );
-  } else if (p.editing && pt !== undefined) {
-    content = (
-      <CellEditor
-        valueType={pt.value_type}
-        enumRef={pt.value_constraints?.enum_ref}
-        schemas={p.schemas}
-        locale={p.locale}
-        initial={latestValue}
-        onCommit={p.onCommit}
-        onCancel={p.onCancel}
-      />
-    );
-  } else {
-    const missing = !p.draft.has && entries.length === 0;
-    const body = p.draft.has
-      ? (
-        <span className='text-primary flex items-center gap-1.5 text-xs font-medium'>
-          <span aria-hidden='true' className='bg-primary size-1.5 shrink-0 rounded-full' />
-          {formatDraft(p.draft.value, p.propertyId, p.schemas, p.locale)}
-        </span>
-      )
-      : missing
-      ? (
-        // Missing value → amber WARNING chip (advisory, never an error).
-        <span
-          title={t('missingValue')}
-          className='inline-block rounded-md border border-amber-500/40 bg-amber-500/5 px-1.5 text-xs text-amber-500'
-        >
-          —
-        </span>
-      )
-      : (
-        <span className='block space-y-0.5'>
-          {entries.map((entry, i) => (
-            <span key={i} className='block break-words text-xs'>
-              {entry.display}
-              {entry.since !== undefined
-                ? <span className='text-muted-foreground ml-1.5'>{entry.since}</span>
-                : null}
-            </span>
-          ))}
-        </span>
-      );
-    content = editable
-      ? (
-        <button
-          type='button'
-          onClick={() => {
-            // Booleans toggle in place — no editor state needed.
-            if (pt?.value_type === 'boolean') p.onCommit(!(latestValue === true));
-            else p.onStartEdit();
-          }}
-          aria-label={`${t('exploreEditValue')} — ${label}`}
-          className='hover:bg-accent/40 -mx-1 block w-full min-w-0 rounded px-1 py-0.5 text-left'
-        >
-          {body}
-        </button>
-      )
-      : <span className='block min-w-0 py-0.5'>{body}</span>;
-  }
 
   return (
-    <div className='flex min-w-0 items-start gap-1'>
-      <div className='min-w-0 flex-1'>
-        <p className='text-muted-foreground truncate text-xs'>{label}</p>
-        {content}
-      </div>
-      {/* "More options" — complex cases go through the full page. */}
-      {declared && !p.editing
+    <div className='min-w-0'>
+      <p className='text-muted-foreground truncate text-xs'>{label}</p>
+      {!declared
         ? (
-          <Link
-            to='/types/$type/$slug'
-            params={{ type: p.row.type, slug: p.row.slug }}
-            aria-label={t('fullPage')}
-            title={t('fullPage')}
-            className='text-muted-foreground/60 hover:text-foreground mt-0.5 shrink-0'
-          >
-            <MoreHorizontal className='size-3.5' aria-hidden='true' />
-          </Link>
+          <span className='text-muted-foreground/50 text-xs' title={t('exploreNotApplicable')}>
+            —
+          </span>
         )
-        : null}
+        : entries.length === 0
+        ? (
+          <span className='text-muted-foreground text-xs italic' title={t('missingValue')}>
+            —
+          </span>
+        )
+        : (
+          <span className='block space-y-0.5'>
+            {entries.map((entry, i) => (
+              <span key={i} className='block break-words text-xs'>
+                {entry.display}
+                {entry.since !== undefined
+                  ? <span className='text-muted-foreground ml-1.5'>{entry.since}</span>
+                  : null}
+              </span>
+            ))}
+          </span>
+        )}
     </div>
   );
 }
 
-/** Localized display for a pending draft scalar — vocabulary label
- *  for enums, ✓/× booleans, localized number + unit. */
-function formatDraft(
-  value: unknown,
-  propertyId: string,
-  schemas: SchemaCatalogue,
-  locale: Locale,
-): string {
-  const pt = schemas.propertyTypes[propertyId];
-  if (value === true) return '✓';
-  if (value === false) return '×';
-  if (pt?.value_type === 'enum' && typeof value === 'string') {
-    return vocabLabelOf(schemas, pt.value_constraints?.enum_ref, value, locale);
-  }
-  if (typeof value === 'number') {
-    const formatted = value.toLocaleString(locale);
-    return pt?.unit !== undefined ? `${formatted} ${pt.unit}` : formatted;
-  }
-  return String(value ?? '—');
-}
-
+/**
+ * One explorer row — a pure READ surface (2026-08 feedback: inline
+ * editing removed, warning walls toned down). The completeness meter
+ * is THE gap signal; missing fields collapse to one muted line, and
+ * edits happen on the entity page (row title links there).
+ */
 function ExploreRow(p: {
   row: AuditRow;
   schemas: SchemaCatalogue | null;
   locale: Locale;
   chosenProps: readonly string[];
-  draft: Readonly<Record<string, unknown>> | undefined;
-  editingProp: string | null;
-  onStartEdit: (propertyId: string) => void;
-  onCommit: (propertyId: string, next: unknown) => void;
-  onCancelEdit: () => void;
 }): JSX.Element {
   const t = useT();
   const { row } = p;
@@ -619,28 +364,33 @@ function ExploreRow(p: {
       <Badge variant='outline' className='shrink-0 font-normal'>
         {typeLabelOf(p.schemas, row.type, p.locale)}
       </Badge>
-      {nTranslations > 0
-        ? (
-          <span className='shrink-0 rounded-md border border-amber-500/40 bg-amber-500/5 px-1.5 text-xs text-amber-500'>
-            {t('exploreMissingTranslationsBadge').replace('{n}', String(nTranslations))}
-          </span>
-        )
-        : null}
-      {nValues > 0
-        ? (
-          <span className='shrink-0 rounded-md border border-amber-500/40 bg-amber-500/5 px-1.5 text-xs text-amber-500'>
-            {t('exploreMissingValuesBadge').replace('{n}', String(nValues))}
-          </span>
-        )
-        : null}
     </p>
   );
 
+  // Quiet gap summary — ONE muted line instead of a wall of amber
+  // chips ("trop de warning"): expected-but-missing field labels,
+  // then the missing-translations count.
+  const gapSummary = nValues > 0 || nTranslations > 0
+    ? (
+      <p className='text-muted-foreground/80 text-xs'>
+        {nValues > 0
+          ? `${t('exploreMissingValuesBadge').replace('{n}', String(nValues))} : ${
+            row.missingRecommended.map((id) => expectedLabelOf(p.schemas, id, p.locale))
+              .join(' · ')
+          }`
+          : null}
+        {nValues > 0 && nTranslations > 0 ? ' — ' : null}
+        {nTranslations > 0
+          ? t('exploreMissingTranslationsBadge').replace('{n}', String(nTranslations))
+          : null}
+      </p>
+    )
+    : null;
+
   const schemas = p.schemas;
   if (columnsMode && schemas !== null) {
-    // Columns mode: one cell per chosen property; the completeness
-    // meter / x/y count is deliberately hidden ("on n'affiche pas le
-    // 1/1") — the amber chips carry the missing-value signal.
+    // Columns mode: one read-only cell per chosen property; the meter
+    // / x/y count is deliberately hidden ("on n'affiche pas le 1/1").
     return (
       <div className='space-y-2 px-[var(--page-px)] py-2.5 sm:px-4'>
         {header}
@@ -652,13 +402,6 @@ function ExploreRow(p: {
               propertyId={pid}
               schemas={schemas}
               locale={p.locale}
-              draft={p.draft !== undefined && pid in p.draft
-                ? { has: true, value: p.draft[pid] }
-                : { has: false, value: undefined }}
-              editing={p.editingProp === pid}
-              onStartEdit={() => p.onStartEdit(pid)}
-              onCommit={(next) => p.onCommit(pid, next)}
-              onCancel={p.onCancelEdit}
             />
           ))}
         </div>
@@ -666,10 +409,8 @@ function ExploreRow(p: {
     );
   }
 
-  // Default mode: always-expanded compact row — the values summary
-  // sits directly under the entity line (no click-to-open, no pencil).
-  // Scalar values edit INLINE here too: tap a value to swap it for the
-  // same CellEditor the columns mode uses (booleans toggle in place).
+  // Default mode: always-expanded compact read row — the values
+  // summary sits directly under the entity line.
   return (
     <div className='space-y-2 px-[var(--page-px)] py-2.5 sm:px-4'>
       <div className='flex items-start gap-3'>
@@ -680,29 +421,15 @@ function ExploreRow(p: {
         ? <p className='text-muted-foreground text-xs italic'>{t('exploreNoValues')}</p>
         : (
           <dl className='space-y-1'>
-            {row.values.map((pv) => {
-              const pt = schemas?.propertyTypes[pv.property];
-              const editable = schemas !== null
-                && cellEditable(schemas, row.type, pv.property);
-              const hasDraft = p.draft !== undefined && pv.property in p.draft;
-              const draftValue = hasDraft ? p.draft?.[pv.property] : undefined;
-              const latestValue = hasDraft ? draftValue : latestRawValue(row, pv.property);
-              const isEditing = p.editingProp === pv.property;
-              const valueBody = hasDraft && schemas !== null
-                ? (
-                  <span className='text-primary flex items-center gap-1.5 font-medium'>
-                    <span
-                      aria-hidden='true'
-                      className='bg-primary size-1.5 shrink-0 rounded-full'
-                    />
-                    {formatDraft(draftValue, pv.property, schemas, p.locale)}
-                  </span>
-                )
-                : pv.entries.length === 0
-                ? <span className='text-muted-foreground italic'>—</span>
-                : (
-                  <>
-                    {pv.entries.map((entry, i) => (
+            {row.values.map((pv) => (
+              <div key={pv.property} className='flex flex-wrap gap-x-3 gap-y-0.5 text-xs'>
+                <dt className='text-muted-foreground w-32 shrink-0 truncate pt-0.5'>
+                  {propertyLabelOf(p.schemas, pv.property, p.locale)}
+                </dt>
+                <dd className='min-w-0 flex-1 space-y-0.5'>
+                  {pv.entries.length === 0
+                    ? <span className='text-muted-foreground italic'>—</span>
+                    : pv.entries.map((entry, i) => (
                       <div key={i} className='flex flex-wrap items-baseline gap-x-2'>
                         <span className='min-w-0 break-words'>{entry.display}</span>
                         {entry.since !== undefined
@@ -714,64 +441,12 @@ function ExploreRow(p: {
                           : null}
                       </div>
                     ))}
-                  </>
-                );
-              return (
-                <div key={pv.property} className='flex flex-wrap gap-x-3 gap-y-0.5 text-xs'>
-                  <dt className='text-muted-foreground w-32 shrink-0 truncate pt-0.5'>
-                    {propertyLabelOf(p.schemas, pv.property, p.locale)}
-                  </dt>
-                  <dd className='min-w-0 flex-1 space-y-0.5'>
-                    {isEditing && schemas !== null && pt !== undefined
-                      ? (
-                        <CellEditor
-                          valueType={pt.value_type}
-                          enumRef={pt.value_constraints?.enum_ref}
-                          schemas={schemas}
-                          locale={p.locale}
-                          initial={latestValue}
-                          onCommit={(next) => p.onCommit(pv.property, next)}
-                          onCancel={p.onCancelEdit}
-                        />
-                      )
-                      : editable
-                      ? (
-                        <button
-                          type='button'
-                          onClick={() => {
-                            if (pt?.value_type === 'boolean') {
-                              p.onCommit(pv.property, !(latestValue === true));
-                            } else p.onStartEdit(pv.property);
-                          }}
-                          aria-label={`${t('exploreEditValue')} — ${
-                            propertyLabelOf(p.schemas, pv.property, p.locale)
-                          }`}
-                          className='hover:bg-accent/40 -mx-1 block w-full min-w-0 rounded px-1 py-0.5 text-left'
-                        >
-                          {valueBody}
-                        </button>
-                      )
-                      : <span className='block py-0.5'>{valueBody}</span>}
-                  </dd>
-                </div>
-              );
-            })}
+                </dd>
+              </div>
+            ))}
           </dl>
         )}
-      {nValues > 0
-        ? (
-          <div className='flex flex-wrap gap-1'>
-            {row.missingRecommended.map((id) => (
-              <span
-                key={id}
-                className='rounded-md border border-amber-500/40 bg-amber-500/5 px-1.5 text-xs text-amber-500'
-              >
-                {expectedLabelOf(p.schemas, id, p.locale)}
-              </span>
-            ))}
-          </div>
-        )
-        : null}
+      {gapSummary}
     </div>
   );
 }
@@ -813,13 +488,6 @@ function ExploreComponent(): JSX.Element {
 
   const [filters, setFilters] = useState<Filters>(EMPTY_FILTERS);
   const [chosenProps, setChosenProps] = useState<readonly string[]>([]);
-  const [drafts, setDrafts] = useState<ReadonlyMap<string, Readonly<Record<string, unknown>>>>(
-    new Map(),
-  );
-  const [editingCell, setEditingCell] = useState<
-    { entityId: string; propertyId: string; } | null
-  >(null);
-  const [saving, setSaving] = useState<{ done: number; total: number; } | null>(null);
   const deferredQuery = useDeferredValue(filters.query);
 
   const typeOptions = useMemo(
@@ -883,92 +551,6 @@ function ExploreComponent(): JSX.Element {
     || filters.missingValues
     || filters.hideComplete;
 
-  const rowById = useMemo(
-    () => new Map((rows ?? []).map((r) => [r.id, r])),
-    [rows],
-  );
-
-  function commitCell(entityId: string, propertyId: string, next: unknown): void {
-    setEditingCell(null);
-    const row = rowById.get(entityId);
-    if (row === undefined) return;
-    setDrafts((prev) => {
-      const map = new Map(prev);
-      const current: Record<string, unknown> = { ...map.get(entityId) };
-      const original = latestRawValue(row, propertyId);
-      // Re-committing the original value clears the pending edit.
-      if (Object.is(next, original)) delete current[propertyId];
-      else current[propertyId] = next;
-      if (Object.keys(current).length === 0) map.delete(entityId);
-      else map.set(entityId, current);
-      return map;
-    });
-  }
-
-  /**
-   * One PR per edited entity via the SAME save endpoint as the table
-   * view (`api.saveEntity`): fetch the entity fresh (full data + SHA +
-   * translations), splice each edited scalar into the latest entry of
-   * its property (qualifiers preserved), save sequentially to stay
-   * inside GitHub rate limits.
-   */
-  async function saveAll(): Promise<void> {
-    if (drafts.size === 0 || schemas === null) return;
-    const items = [...drafts.entries()];
-    setSaving({ done: 0, total: items.length });
-    let opened = 0;
-    const failures: { id: string; message: string; }[] = [];
-    for (const [entityId, edits] of items) {
-      const row = rowById.get(entityId);
-      if (row === undefined) continue;
-      try {
-        // eslint-disable-next-line no-await-in-loop
-        const detail = await api.getEntity(row.type, row.slug);
-        const nextData: Record<string, unknown> = { ...detail.data };
-        const baseProps: Record<string, unknown> = isPlainObject(detail.data['properties'])
-          ? { ...detail.data['properties'] }
-          : {};
-        for (const [propertyId, value] of Object.entries(edits)) {
-          const decl = declOf(schemas, row.type, propertyId);
-          baseProps[propertyId] = writeLatestValue(
-            baseProps[propertyId],
-            decl?.historical ?? false,
-            value,
-          );
-        }
-        nextData['properties'] = baseProps;
-        // eslint-disable-next-line no-await-in-loop
-        await api.saveEntity(row.type, row.slug, nextData, detail.sha, detail.translations);
-        opened += 1;
-      } catch (err) {
-        const message = err instanceof Error ? err.message : String(err);
-        failures.push({ id: entityId, message });
-        // eslint-disable-next-line no-console
-        console.error(`[explore save] ${entityId} failed:`, message);
-      }
-      setSaving((s) => s === null ? null : { done: s.done + 1, total: s.total });
-    }
-    setSaving(null);
-    if (failures.length === 0) {
-      toast.success(`${opened} ${t('bulkSaveDone')}`);
-      setDrafts(new Map());
-      reload();
-      return;
-    }
-    const first = failures[0]!;
-    const hint = /401|unauthorized|sign in/i.test(first.message)
-      ? ' — sign in first'
-      : /503|app not/i.test(first.message)
-      ? ' — GitHub App not installed on the data repo'
-      : '';
-    toast.error(`${failures.length} ${t('bulkSaveFailed')} (${opened} ok)`, {
-      description: `${first.id}: ${first.message}${hint}${
-        failures.length > 1 ? ` (+${failures.length - 1} more — see console)` : ''
-      }`,
-      duration: 10_000,
-    });
-  }
-
   // Virtualize only past the threshold — rows re-measure via
   // measureElement (ResizeObserver), so variable heights stay correct.
   const listRef = useRef<HTMLDivElement>(null);
@@ -992,13 +574,6 @@ function ExploreComponent(): JSX.Element {
       schemas={schemas}
       locale={locale}
       chosenProps={activeProps}
-      draft={drafts.get(row.id)}
-      editingProp={editingCell !== null && editingCell.entityId === row.id
-        ? editingCell.propertyId
-        : null}
-      onStartEdit={(propertyId) => setEditingCell({ entityId: row.id, propertyId })}
-      onCommit={(propertyId, next) => commitCell(row.id, propertyId, next)}
-      onCancelEdit={() => setEditingCell(null)}
     />
   );
 
@@ -1131,50 +706,6 @@ function ExploreComponent(): JSX.Element {
             </ul>
           </Card>
         )}
-
-      {
-        /* Sticky save bar — appears only with pending edits; one
-          primary action (Save), one PR per edited entity. z-40 sits
-          above the mobile BottomNav on purpose: while edits are
-          pending, saving/cancelling IS the primary navigation. */
-      }
-      {drafts.size > 0
-        ? (
-          <>
-            <div aria-hidden='true' className='h-16' />
-            <div
-              className='border-border bg-background fixed inset-x-0 bottom-0 z-40 flex items-center justify-between gap-3 border-t px-[var(--page-px)] py-3 sm:px-6 lg:left-64'
-              style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0.75rem)' }}
-            >
-              <span className='text-muted-foreground text-xs'>
-                {t('exploreEditsCount').replace('{n}', String(drafts.size))}
-              </span>
-              <div className='flex shrink-0 items-center gap-2'>
-                <Button
-                  type='button'
-                  variant='outline'
-                  disabled={saving !== null}
-                  onClick={() => {
-                    setDrafts(new Map());
-                    setEditingCell(null);
-                  }}
-                >
-                  {t('cancel')}
-                </Button>
-                <Button
-                  type='button'
-                  disabled={saving !== null}
-                  onClick={() => void saveAll()}
-                >
-                  {saving !== null
-                    ? `${t('bulkSavingProgress')} ${saving.done}/${saving.total}…`
-                    : t('exploreSaveChanges').replace('{n}', String(drafts.size))}
-                </Button>
-              </div>
-            </div>
-          </>
-        )
-        : null}
     </div>
   );
 }

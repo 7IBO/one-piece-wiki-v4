@@ -19,8 +19,9 @@
  *
  * Rendered below the entity form. Lazy: fetches on mount via
  * useApiResource, independent of the form's own resources.
- * Collapsed by default on mobile, open from `sm:` up (decided in a
- * post-hydration effect so SSR markup stays deterministic).
+ * Collapsed by default on EVERY viewport ("par défaut, rien
+ * d'ouvert", maintainer decision 2026-08-08) — the user opens it
+ * explicitly.
  */
 import { Badge } from '@/components/ui/badge';
 import { Banner } from '@/components/ui/banner';
@@ -35,7 +36,7 @@ import type {
 } from '@onepiece-wiki/schemas';
 import { Link } from '@tanstack/react-router';
 import { ChevronDown, Info, Link2, Pencil, TriangleAlert } from 'lucide-react';
-import { type JSX, useEffect, useState } from 'react';
+import { type JSX, useState } from 'react';
 import {
   api,
   type DisplayName,
@@ -65,8 +66,11 @@ type LinkRow = {
   readonly qualifiers: Record<string, unknown>;
 };
 
-/** Lookup context for resolving qualifier keys/values to labels. */
-type LabelCtx = {
+/** Lookup context for resolving qualifier keys/values to labels.
+ *  Exported for the read-only inferred-relations section
+ *  (`InferredRelations` in form/RelationsEditor), which resolves the
+ *  same incoming rows. */
+export type LabelCtx = {
   readonly relationTypes: Record<string, RelationTypeSchema>;
   readonly qualifierTypes: Record<string, QualifierTypeSchema>;
   readonly vocabularies: Record<string, VocabularySchema>;
@@ -91,8 +95,9 @@ function formatQualifierValue(value: unknown, enumRef: string | undefined, ctx: 
 
 /** `Depuis : Chapitre 1 · Camp : Alliés de Barbe Blanche` — keys via
  *  the qualifier-type registry, enum values via vocabularies (the
- *  relation type's qualifier declaration carries the `enum_ref`). */
-function formatQualifiers(
+ *  relation type's qualifier declaration carries the `enum_ref`).
+ *  Exported for the inferred-relations section (see LabelCtx). */
+export function formatQualifiers(
   relationTypeId: string,
   qualifiers: Record<string, unknown>,
   ctx: LabelCtx,
@@ -181,7 +186,11 @@ function LinkRows(
                           type='button'
                           title={t('linksEditHere')}
                           aria-label={t('linksEditHere')}
-                          className='text-muted-foreground hover:text-foreground ml-auto shrink-0 p-1 transition-colors'
+                          // `self-center` — the row is `items-baseline`
+                          // (so wrapped qualifier text lines up), but a
+                          // p-1 icon button has no meaningful baseline
+                          // and rendered visibly low next to the text.
+                          className='text-muted-foreground hover:text-foreground ml-auto shrink-0 self-center p-1 transition-colors'
                           onClick={() => {
                             document
                               .getElementById(relationAnchorId(relationType))
@@ -200,7 +209,8 @@ function LinkRows(
                           params={row.otherRoute}
                           title={t('linksEditOnOther')}
                           aria-label={t('linksEditOnOther')}
-                          className='text-muted-foreground hover:text-foreground ml-auto shrink-0 p-1 transition-colors'
+                          // Same `self-center` fix as the button above.
+                          className='text-muted-foreground hover:text-foreground ml-auto shrink-0 self-center p-1 transition-colors'
                         >
                           <Pencil className='size-3' aria-hidden />
                         </Link>
@@ -248,13 +258,9 @@ export function EntityLinksPanel(
 ): JSX.Element {
   const t = useT();
   const locale = useLocale();
-  // Collapsed by default on mobile, open ≥sm. Decided post-hydration
-  // (same pattern as LocaleProvider) so SSR + first client render
-  // agree; the one-frame collapsed flash on desktop is accepted.
+  // Collapsed by default everywhere — no post-hydration auto-open
+  // ("par défaut, rien d'ouvert", maintainer decision 2026-08-08).
   const [open, setOpen] = useState(false);
-  useEffect(() => {
-    if (window.matchMedia('(min-width: 640px)').matches) setOpen(true);
-  }, []);
 
   const { data, error, reload } = useApiResource(
     () => api.entityLinks(type, slug),

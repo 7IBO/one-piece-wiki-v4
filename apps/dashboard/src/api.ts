@@ -250,6 +250,38 @@ export type EntityHistory =
   | { readonly kind: 'ok'; readonly commits: readonly HistoryCommit[]; }
   | { readonly kind: 'unavailable'; readonly message: string; };
 
+/** One entity touched by a global-history commit: resolved display
+ *  name, deep-link route (null when the entity no longer exists) and
+ *  its semantic change groups — same shape as the per-entity page. */
+export type GlobalHistoryEntity = {
+  readonly entityId: string;
+  readonly displayName: DisplayName;
+  readonly route: EntityRoute;
+  readonly changes: readonly HistoryChangeGroup[];
+  readonly changesTruncated: number;
+};
+
+/** One row of `GET /api/history` — a commit touching the data tree,
+ *  with per-entity semantic changes on the newest commits only
+ *  (server budget); non-entity files are only counted. */
+export type GlobalHistoryCommit = {
+  readonly sha: string;
+  readonly shortSha: string;
+  readonly message: string;
+  readonly authorName: string;
+  readonly authorLogin?: string;
+  readonly date: string;
+  readonly htmlUrl: string;
+  readonly entities: readonly GlobalHistoryEntity[];
+  readonly otherFilesCount: number;
+};
+
+/** Result of `api.globalHistory` — same 503 folding as
+ *  `EntityHistory` (informational banner in dev, not an error). */
+export type GlobalHistory =
+  | { readonly kind: 'ok'; readonly commits: readonly GlobalHistoryCommit[]; }
+  | { readonly kind: 'unavailable'; readonly message: string; };
+
 /** Machine-readable slice of one audit entry — the stored `value` OR
  *  `value_key` plus the raw `since` id(s). Powers the explorer's
  *  inline editors; `display` stays authoritative for read mode. */
@@ -331,6 +363,36 @@ async function getJson<T>(path: string): Promise<T> {
   const response = await fetch(path);
   if (!response.ok) throw new Error(`${response.status} ${response.statusText}: ${path}`);
   return (await response.json()) as T;
+}
+
+/**
+ * Shared fetcher for the two history endpoints: a 503 (GitHub App
+ * credentials not configured — the dev case) folds into the
+ * `unavailable` variant instead of throwing, so the history pages
+ * render an informational banner rather than the error state; any
+ * other failure throws like `getJson`.
+ */
+async function fetchHistory<C>(
+  path: string,
+): Promise<
+  { readonly kind: 'ok'; readonly commits: readonly C[]; } | {
+    readonly kind: 'unavailable';
+    readonly message: string;
+  }
+> {
+  const response = await fetch(path);
+  if (response.status === 503) {
+    let message = '';
+    try {
+      const parsed = (await response.json()) as { error?: unknown; };
+      if (typeof parsed.error === 'string') message = parsed.error;
+    } catch {
+      // body wasn't JSON — keep the empty message.
+    }
+    return { kind: 'unavailable', message };
+  }
+  if (!response.ok) throw new Error(`${response.status} ${response.statusText}: ${path}`);
+  return { kind: 'ok', commits: (await response.json()) as C[] };
 }
 
 /**
@@ -510,22 +572,21 @@ export const api = {
     slug: string,
     locale: 'en' | 'fr' = 'en',
   ): Promise<EntityHistory> {
-    const path = `/api/entities/${encodeURIComponent(type)}/${
-      encodeURIComponent(slug)
-    }/history?locale=${locale}`;
-    const response = await fetch(path);
-    if (response.status === 503) {
-      let message = '';
-      try {
-        const parsed = (await response.json()) as { error?: unknown; };
-        if (typeof parsed.error === 'string') message = parsed.error;
-      } catch {
-        // body wasn't JSON — keep the empty message.
-      }
-      return { kind: 'unavailable', message };
-    }
-    if (!response.ok) throw new Error(`${response.status} ${response.statusText}: ${path}`);
-    return { kind: 'ok', commits: (await response.json()) as HistoryCommit[] };
+    return fetchHistory<HistoryCommit>(
+      `/api/entities/${encodeURIComponent(type)}/${
+        encodeURIComponent(slug)
+      }/history?locale=${locale}`,
+    );
+  },
+  /**
+   * Recent commits across ALL wiki data (newest first, capped
+   * server-side at 30), each with the touched entities' semantic
+   * change groups (newest commits only — server budget). Not cached:
+   * any save changes it and the /history page is the only caller.
+   * Same 503-to-`unavailable` folding as `entityHistory`.
+   */
+  async globalHistory(locale: 'en' | 'fr' = 'en'): Promise<GlobalHistory> {
+    return fetchHistory<GlobalHistoryCommit>(`/api/history?locale=${locale}`);
   },
   /**
    * Cross-type audit rows for the /explore data explorer. Not cached:
