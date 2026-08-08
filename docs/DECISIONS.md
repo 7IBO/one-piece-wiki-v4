@@ -8,6 +8,65 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-087 — Providers generalised: `streaming-platform` + `available-on` cover purchase/reading (no new type)
+
+**Date**: 2026-08-08
+
+**Context**: Maintainer direction: a generic "providers" structure
+(manga on Amazon, Crunchyroll, …) — "les id ne changent pas, la
+génération des liens se fera à part". ADR-084 already made availability
+id-first (`external_id` on the edge + `link_template` on the platform).
+The question was whether covering purchase/reading (Amazon, e-books,
+online readers) needs a more general `provider` entity type.
+
+**Options**:
+
+1. New `provider` entity type + new `sold-by`/`readable-on` relations —
+   duplicates `streaming-platform` (whose labels are already the generic
+   "Platform"/"Plateforme" and whose `platform-kinds` vocabulary already
+   has `streaming`/`reader`/`store`), splits the "everything on X" query
+   across two types, and would force migrating ADR-052/084 work.
+2. Rename `streaming-platform` → `provider` — ids are immutable
+   (CLAUDE.md); a rename is a breaking migration for zero modelling gain.
+3. **Widen what exists, additively**: `streaming-platform` IS the
+   provider type (its id is historical, its labels/vocabulary are
+   already generic); extend `available-on` to the purchase targets.
+
+**Choice**: option 3, everything additive:
+
+- `available-on` v2 → v3: `valid_from_types` += `volume` (Amazon ASINs
+  are per volume — the main purchase unit ADR-084 named but could not
+  target). `external_id` + platform `link_template` work unchanged.
+- `volume` v1 → v2: `allowed_relations` += `available-on`.
+- `platform-kinds.store` label broadened: "Digital store"/"Boutique
+  numérique" → "Store (purchase)"/"Boutique (achat)" — Amazon sells
+  physical volumes too; a separate `retailer` value was considered and
+  rejected (the kind describes the access mode, not the fulfilment
+  channel; label-only change, not in the compat contract).
+- Qualifier registry (ADR-078 follow-up, needed for localized display):
+  `external_id`, `verified_at`, `url`, `region`,
+  `requires_subscription`, `subtitle_langs`, `dub_langs` added to
+  `/data/schemas/qualifier-types/` (kind `common`, 20 → 27 entries) —
+  without them the dashboard fell back to humanized English ids in
+  both locales for every `available-on` qualifier.
+- Corpus seeds: `streaming-platform:amazon` (store,
+  `https://www.amazon.fr/dp/{id}`), `crunchyroll` (streaming,
+  `https://www.crunchyroll.com/watch/{id}`), `manga-plus` (reader,
+  `https://mangaplus.shueisha.co.jp/viewer/{id}`), `netflix`
+  (streaming, `https://www.netflix.com/title/{id}`); `volume:1` with
+  `available-on → amazon` (`external_id` = ASIN/ISBN-10) and
+  `manga-chapter:1` with `available-on → manga-plus` (`external_id`
+  `1000486`) + the factual `part-of-volume → volume:1`.
+
+**Consequences**: one provider graph for watch/read/buy — "everything
+on Amazon" stays a single query; no data migration, compat diff purely
+additive (snapshot regenerated). Still out of scope (unchanged from
+ADR-084): per-region templates (amazon.fr vs amazon.com), the
+"at least one of external_id/url" coherence rule, affiliate links
+(own ADR per STATE).
+
+---
+
 ## ADR-086 — Artifact materializes the inverse of EVERY relation edge (+ translations/narratives tables)
 
 **Date**: 2026-08-08

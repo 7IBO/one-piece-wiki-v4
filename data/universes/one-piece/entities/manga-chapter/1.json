@@ -19,6 +19,18 @@
     {
       "type": "part-of-arc",
       "target": "arc:east-blue"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:1"
+    },
+    {
+      "type": "available-on",
+      "target": "streaming-platform:manga-plus",
+      "qualifiers": {
+        "external_id": "1000486",
+        "verified_at": "2026-08-08"
+      }
     }
   ]
 }

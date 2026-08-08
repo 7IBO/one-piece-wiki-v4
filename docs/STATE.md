@@ -5,7 +5,27 @@ session can pick up mid-stream. Architectural _rationale_ lives in
 `/docs/DECISIONS.md` (ADRs); the build order in `/docs/ROADMAP.md`;
 this file is the current status + the open threads.
 
-**Last updated**: 2026-08-08 (build pipeline: materialized inverses + content tables)
+**Last updated**: 2026-08-08 (providers generalised, ADR-087)
+
+**2026-08-08 — providers generalised (ADR-087).** Maintainer's
+"structure providers" (Amazon/Crunchyroll/…): NO new entity type —
+`streaming-platform` is already the generic provider node (generic
+labels + `platform-kinds` streaming/reader/store). Additive widening
+only: `available-on` v3 (`valid_from_types` += `volume`), `volume` v2
+(`allowed_relations` += `available-on`), `store` label broadened to
+"Store (purchase)"/"Boutique (achat)". Corpus seeds: 4 providers with
+`link_template` (`amazon` `…/dp/{id}`, `crunchyroll` `…/watch/{id}`,
+`manga-plus` `…/viewer/{id}`, `netflix` `…/title/{id}`), `volume:1`
+(→ amazon, `external_id` ISBN-10) and `manga-chapter:1` (→ manga-plus,
+`external_id` 1000486, + factual `part-of-volume`). Qualifier registry
+completed for `available-on` (ADR-078 follow-up: `external_id`,
+`verified_at`, `url`, `region`, `requires_subscription`,
+`subtitle_langs`, `dub_langs` — 27 qualifier types; the edge editor no
+longer shows humanized English ids in FR). Compat snapshot
+regenerated (purely additive). Crunchyroll/netflix are seed-only for
+now (advisory UNREFERENCED warnings) — they get edges when
+anime-episode availability data lands. Per-region templates +
+"external_id-or-url" coherence rule still parked (ADR-084/087).
 
 **2026-08-08 — build pipeline: materialized inverses + translations/
 narratives in the artifact (ADR-086).** `packages/db-builder` extended

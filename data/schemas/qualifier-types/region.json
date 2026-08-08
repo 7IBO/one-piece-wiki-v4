@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "region",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 63,
+  "labels": {
+    "en": "Region",
+    "fr": "Région"
+  },
+  "descriptions": {
+    "en": "Region/country where this availability applies (e.g. FR, US, worldwide).",
+    "fr": "Région/pays où cette disponibilité s'applique (ex. FR, US, monde entier)."
+  },
+  "value_type": "string"
+}

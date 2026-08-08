@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "url",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 62,
+  "labels": {
+    "en": "URL",
+    "fr": "URL"
+  },
+  "descriptions": {
+    "en": "Direct link — only for platforms without a usable link template (prefer the external id).",
+    "fr": "Lien direct — uniquement pour les plateformes sans modèle de lien utilisable (préférer l'identifiant externe)."
+  },
+  "value_type": "string"
+}
