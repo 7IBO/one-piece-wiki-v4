@@ -342,9 +342,14 @@ function TableComponent(): JSX.Element {
       const data: Record<string, unknown> = { ...original.data };
       const baseProps = (original.data['properties'] as Record<string, unknown> | undefined) ?? {};
       data['properties'] = { ...baseProps, ...draft.properties };
+      // Inline cells only edit UI-locale text; ja / ja-latn maps pass
+      // through unchanged so a bulk save never drops stored Japanese
+      // translations (ADR-095).
       const translations: Translations = {
         en: { ...original.translations.en, ...draft.translations.en },
         fr: { ...original.translations.fr, ...draft.translations.fr },
+        ja: { ...original.translations.ja, ...draft.translations.ja },
+        'ja-latn': { ...original.translations['ja-latn'], ...draft.translations['ja-latn'] },
       };
       try {
         // Intentionally sequential: parallel PR opens would hammer

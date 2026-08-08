@@ -65,7 +65,7 @@ import {
   loadSchemas,
   validateCatalogue,
 } from '@onepiece-wiki/schema-engine';
-import { nameKeyFor, Slug as SlugSchema } from '@onepiece-wiki/schemas';
+import { type DataLocale, nameKeyFor, Slug as SlugSchema } from '@onepiece-wiki/schemas';
 import { randomBytes } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
@@ -90,6 +90,11 @@ import {
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
 import { blockingRuleFindings, ruleBlockedResponse } from './rule-block.ts';
 import { buildCookie, clearCookie, newAnonymousSession, newGithubSession } from './session.ts';
+import {
+  readTranslationRecord,
+  translationExtraFiles,
+  type TranslationRecord,
+} from './translations.ts';
 
 /**
  * Cross-runtime module dir. Bun exposes `import.meta.dir` but the
@@ -209,33 +214,21 @@ function dataPath(type: string, fileBase: string): string {
   return `data/universes/${UNIVERSE}/entities/${type}/${fileBase}.json`;
 }
 
-const LOCALES = ['en', 'fr'] as const;
-type Locale = typeof LOCALES[number];
-
-function translationsPath(locale: Locale, type: string, fileBase: string): string {
-  return `data/universes/${UNIVERSE}/translations/${locale}/${type}/${fileBase}.json`;
-}
+/** UI/display locale — drives label + display-name resolution. The
+ *  DATA locales a translation value can exist in (`en`/`fr`/`ja`/
+ *  `ja-latn`) live in `./translations.ts` — see ADR-095. */
+type Locale = 'en' | 'fr';
 
 async function readTranslationsFor(
   type: string,
   fileBase: string,
-): Promise<Record<Locale, Record<string, string>>> {
-  const out = { en: {}, fr: {} } as Record<Locale, Record<string, string>>;
-  for (const locale of LOCALES) {
-    const path = resolve(REPO_ROOT, translationsPath(locale, type, fileBase));
-    try {
-      // eslint-disable-next-line no-await-in-loop
-      const text = await dashboardDataSource.readTextFile(path);
-      if (text === null) continue;
-      const parsed = JSON.parse(text) as unknown;
-      if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
-        out[locale] = parsed as Record<string, string>;
-      }
-    } catch {
-      // malformed file → empty translations for this locale; that's fine.
-    }
-  }
-  return out;
+): Promise<TranslationRecord> {
+  return readTranslationRecord(
+    (relativePath) => dashboardDataSource.readTextFile(resolve(REPO_ROOT, relativePath)),
+    UNIVERSE,
+    type,
+    fileBase,
+  );
 }
 
 async function findEntity(snap: CatalogueSnapshot, type: string, slug: string) {
@@ -514,7 +507,7 @@ async function handleGetEntity(
     | null = null;
   let sha: string | null = null;
   let data: Record<string, unknown> = entity.data;
-  let translationsOverride: Record<Locale, Record<string, string>> | null = null;
+  let translationsOverride: TranslationRecord | null = null;
 
   if (config !== null && !githubInstallMissing) {
     try {
@@ -616,8 +609,8 @@ async function handleGetEntity(
  * Read translation files for the entity off a PR branch. Mirrors
  * `readTranslationsFor` (which reads the local filesystem) but goes
  * through Octokit so we see the contributor's in-flight translation
- * edits. Returns the same `{en, fr}` shape; missing files become
- * empty objects so the form can render every key.
+ * edits. Returns the same all-data-locales record; missing files
+ * become empty objects so the form can render every key.
  */
 async function readTranslationsFromBranch(
   octokit: Awaited<ReturnType<typeof installationClient>>,
@@ -625,23 +618,16 @@ async function readTranslationsFromBranch(
   type: string,
   fileBase: string,
   branch: string,
-): Promise<Record<Locale, Record<string, string>>> {
-  const out = { en: {}, fr: {} } as Record<Locale, Record<string, string>>;
-  for (const locale of LOCALES) {
-    // eslint-disable-next-line no-await-in-loop
-    const f = await getFile(octokit, cfg, translationsPath(locale, type, fileBase), branch);
-    if (f === null) continue;
-    try {
-      const parsed = JSON.parse(f.content) as unknown;
-      if (parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)) {
-        out[locale] = parsed as Record<string, string>;
-      }
-    } catch {
-      // Malformed — leave empty for this locale. Same forgiving
-      // behaviour as the local-file reader.
-    }
-  }
-  return out;
+): Promise<TranslationRecord> {
+  return readTranslationRecord(
+    async (relativePath) => {
+      const f = await getFile(octokit, cfg, relativePath, branch);
+      return f?.content ?? null;
+    },
+    UNIVERSE,
+    type,
+    fileBase,
+  );
 }
 
 /**
@@ -1423,7 +1409,7 @@ async function handleCreateEntity(
   const payload = body as {
     slug?: string;
     data?: Record<string, unknown>;
-    translations?: Partial<Record<Locale, Record<string, string>>>;
+    translations?: Partial<Record<DataLocale, Record<string, string>>>;
   };
   if (typeof payload.slug !== 'string' || payload.slug.length === 0) {
     return badRequest('Body.slug must be a non-empty string.');
@@ -1491,20 +1477,7 @@ async function handleCreateEntity(
   const path = dataPath(type, slug);
   const newContent = `${JSON.stringify(data, null, 2)}\n`;
 
-  const extraFiles: { path: string; content: string; }[] = [];
-  for (const locale of LOCALES) {
-    const map = payload.translations?.[locale];
-    if (map === undefined) continue;
-    const filtered: Record<string, string> = {};
-    for (const [k, v] of Object.entries(map)) {
-      if (typeof v === 'string' && v.length > 0) filtered[k] = v;
-    }
-    if (Object.keys(filtered).length === 0) continue;
-    extraFiles.push({
-      path: translationsPath(locale, type, slug),
-      content: `${JSON.stringify(filtered, null, 2)}\n`,
-    });
-  }
+  const extraFiles = translationExtraFiles(UNIVERSE, type, slug, payload.translations);
 
   const octokit = await installationClient(cfg);
   try {
@@ -1566,7 +1539,7 @@ async function handleSaveEntity(
   const payload = body as {
     data?: Record<string, unknown>;
     sha?: string | null;
-    translations?: Partial<Record<Locale, Record<string, string>>>;
+    translations?: Partial<Record<DataLocale, Record<string, string>>>;
   };
   if (payload.data === undefined || typeof payload.data !== 'object' || payload.data === null) {
     return badRequest('Body.data must be the entity object.');
@@ -1639,22 +1612,9 @@ async function handleSaveEntity(
   const path = dataPath(type, fileBase);
   const newContent = `${JSON.stringify(payload.data, null, 2)}\n`;
 
-  const extraFiles: { path: string; content: string; }[] = [];
-  for (const locale of LOCALES) {
-    const map = payload.translations?.[locale];
-    if (map === undefined) continue;
-    // Only write if the locale has at least one translation; otherwise
-    // skip to avoid creating empty files in the PR.
-    const filtered: Record<string, string> = {};
-    for (const [k, v] of Object.entries(map)) {
-      if (typeof v === 'string' && v.length > 0) filtered[k] = v;
-    }
-    if (Object.keys(filtered).length === 0) continue;
-    extraFiles.push({
-      path: translationsPath(locale, type, fileBase),
-      content: `${JSON.stringify(filtered, null, 2)}\n`,
-    });
-  }
+  // Only locales with at least one non-empty translation get a file —
+  // see translationExtraFiles (empty files never appear in the PR).
+  const extraFiles = translationExtraFiles(UNIVERSE, type, fileBase, payload.translations);
 
   // The dashboard bot is always the sole commit author. The
   // contributor (GitHub login OR anonymous nickname) is surfaced

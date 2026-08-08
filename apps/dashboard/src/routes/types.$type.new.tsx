@@ -30,7 +30,7 @@ import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, GitPullRequest } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
-import { api, type SourceRef } from '../api';
+import { api, normalizeTranslations, type SourceRef } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
 import { EntityForm } from '../form/EntityForm';
 import { useLocale, useT } from '../form/locale';
@@ -111,10 +111,10 @@ function EntityCreateComponent(): JSX.Element {
     [type, slug, nameEn, nameKey],
   );
   const initialTranslations = useMemo(
-    () => ({
-      en: nameEn !== '' ? { [nameKey]: nameEn } : {},
-      fr: {},
-    }),
+    () =>
+      normalizeTranslations({
+        en: nameEn !== '' ? { [nameKey]: nameEn } : {},
+      }),
     [nameEn, nameKey],
   );
 

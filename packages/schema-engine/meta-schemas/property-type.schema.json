@@ -88,6 +88,9 @@
     "localizable": {
       "type": "boolean"
     },
+    "romanizable": {
+      "type": "boolean"
+    },
     "spoiler_sensitive": {
       "type": "boolean",
       "default": false

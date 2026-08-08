@@ -20,13 +20,16 @@ import { MobileSheet, MobileSheetContent, MobileSheetTrigger } from '@/component
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { buildEntitySchema, propertyEntrySchema } from '@onepiece-wiki/schema-engine/entity-schema';
 import { evaluateRules, type RuleFinding } from '@onepiece-wiki/schema-engine/rules';
-import type {
-  EntityTypeSchema,
-  PropertyTypeSchema,
-  QualifierTypeSchema,
-  RelationTypeSchema,
-  RuleSchema,
-  VocabularySchema,
+import {
+  DATA_LOCALES,
+  type DataLocale,
+  type EntityTypeSchema,
+  type PropertyTypeSchema,
+  type QualifierTypeSchema,
+  type RelationTypeSchema,
+  type RuleSchema,
+  translationLocalesFor,
+  type VocabularySchema,
 } from '@onepiece-wiki/schemas';
 import { useLocation, useNavigate } from '@tanstack/react-router';
 import {
@@ -285,9 +288,9 @@ function isEntryEmpty(
   if (propertyType.localizable) {
     const key = entry['value_key'];
     if (typeof key === 'string' && key !== '') {
-      const en = translations.en[key] ?? '';
-      const fr = translations.fr[key] ?? '';
-      if (en !== '' || fr !== '') return false;
+      // ANY data locale counts as content — a ja-only name is a real
+      // entry, not an empty stub (ADR-095).
+      if (DATA_LOCALES.some((loc) => (translations[loc]?.[key] ?? '') !== '')) return false;
     }
   } else {
     const v = entry['value'];
@@ -765,11 +768,13 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
       const key = String(removed['value_key'] ?? '');
       if (key !== '') {
         setTranslations((prev) => {
-          const en = { ...prev.en };
-          const fr = { ...prev.fr };
-          delete en[key];
-          delete fr[key];
-          return { en, fr };
+          const next = { ...prev } as Record<DataLocale, Record<string, string>>;
+          for (const loc of DATA_LOCALES) {
+            const map = { ...next[loc] };
+            delete map[key];
+            next[loc] = map;
+          }
+          return next;
         });
       }
     }
@@ -817,7 +822,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     closeEditingLocally();
   }
 
-  function updateTranslation(locale: 'en' | 'fr', key: string, value: string): void {
+  function updateTranslation(locale: DataLocale, key: string, value: string): void {
     setTranslations((prev) => {
       const next = { ...prev[locale] };
       if (value === '') delete next[key];
@@ -1671,7 +1676,7 @@ type PropertyRowProps = {
   onUpdate: (idx: number, next: PropertyEntry) => void;
   onAdd: () => void;
   onRemove: (idx: number) => void;
-  onTranslate: (locale: 'en' | 'fr', key: string, value: string) => void;
+  onTranslate: (locale: DataLocale, key: string, value: string) => void;
   /** Auto-fill a sibling property's value; no-op if already set.
    *  Used today by the image uploader to populate format / width /
    *  height after a successful upload. */
@@ -1961,7 +1966,7 @@ type EntryEditorProps = {
   asPanel: boolean;
   onUpdate: (next: PropertyEntry) => void;
   onRemove: () => void;
-  onTranslate: (locale: 'en' | 'fr', key: string, value: string) => void;
+  onTranslate: (locale: DataLocale, key: string, value: string) => void;
   setEmptyProperty: (propertyId: string, value: unknown) => void;
 };
 
@@ -2248,7 +2253,7 @@ type EntryValueProps = {
   /** Slug-derived display name (e.g. "Monkey D Luffy"). */
   fallbackName?: string | undefined;
   onUpdate: (next: PropertyEntry) => void;
-  onTranslate: (locale: 'en' | 'fr', key: string, value: string) => void;
+  onTranslate: (locale: DataLocale, key: string, value: string) => void;
   setEmptyProperty: (propertyId: string, value: unknown) => void;
 };
 
@@ -2321,16 +2326,23 @@ function LocalizedValueField(p: {
   entry: PropertyEntry;
   translations: Translations;
   fallbackName?: string | undefined;
-  onTranslate: (locale: Locale, key: string, value: string) => void;
+  onTranslate: (locale: DataLocale, key: string, value: string) => void;
 }): JSX.Element {
   const locale = useLocale();
   const t = useT();
   const i18nKey = String(p.entry[p.valueField] ?? '');
 
-  const valueAt = (loc: Locale): string => p.translations[loc][i18nKey] ?? '';
+  // Data locales this property offers (ADR-095): the UI locales plus
+  // `ja` on every localizable value, plus `ja-latn` ONLY when the
+  // property type is flagged `romanizable` (name-like values). The
+  // inline row still shows the active UI locale only — ja/ja-latn
+  // live behind the globe popover with the other locales.
+  const offeredLocales = translationLocalesFor(p.propertyType);
+
+  const valueAt = (loc: DataLocale): string => p.translations[loc]?.[i18nKey] ?? '';
   const activeValue = valueAt(locale);
-  const filledCount = SUPPORTED_LOCALES.filter((loc) => valueAt(loc) !== '').length;
-  const totalLocales = SUPPORTED_LOCALES.length;
+  const filledCount = offeredLocales.filter((loc) => valueAt(loc) !== '').length;
+  const totalLocales = offeredLocales.length;
 
   // The placeholder previews another-locale value when one exists, so
   // the maintainer can crib a translation. Stays italic so it can't
@@ -2407,8 +2419,16 @@ function LocalizedValueField(p: {
               </span>
             </div>
             <div className='space-y-1.5'>
-              {SUPPORTED_LOCALES.map((loc) => {
+              {offeredLocales.map((loc) => {
                 const filled = valueAt(loc) !== '';
+                // ja / ja-latn are data locales, not UI locales: label
+                // them explicitly (日本語 / Japonais, Rōmaji) and keep a
+                // compact code in the prefix box ('rō' for ja-latn).
+                const label = loc === 'ja'
+                  ? t('localeJa')
+                  : loc === 'ja-latn'
+                  ? t('localeJaLatn')
+                  : null;
                 return (
                   <div
                     key={loc}
@@ -2416,8 +2436,11 @@ function LocalizedValueField(p: {
                       loc === locale ? 'ring-1 ring-primary/40' : ''
                     }`}
                   >
-                    <span className='bg-muted/60 text-muted-foreground border-input relative flex w-7 shrink-0 items-center justify-center border-r font-mono text-[10px] uppercase'>
-                      {loc}
+                    <span
+                      title={label ?? undefined}
+                      className='bg-muted/60 text-muted-foreground border-input relative flex w-7 shrink-0 items-center justify-center border-r font-mono text-[10px] uppercase'
+                    >
+                      {loc === 'ja-latn' ? 'rō' : loc}
                       {
                         /* Tiny filled/empty dot so a contributor scanning
                           the popover sees at a glance which locales still
@@ -2434,7 +2457,8 @@ function LocalizedValueField(p: {
                       type='text'
                       value={valueAt(loc)}
                       onChange={(e) => p.onTranslate(loc, i18nKey, e.target.value)}
-                      placeholder={fallbackValue !== null ? fallbackValue.text : ''}
+                      aria-label={label ?? undefined}
+                      placeholder={label ?? (fallbackValue !== null ? fallbackValue.text : '')}
                       disabled={i18nKey === ''}
                       className='flex-1 min-w-0 bg-transparent px-2 text-base placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-xs'
                     />
