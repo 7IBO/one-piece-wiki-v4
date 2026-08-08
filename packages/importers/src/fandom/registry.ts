@@ -46,7 +46,7 @@ export function normalizeTitle(raw: string): string {
   return spaced[0]!.toUpperCase() + spaced.slice(1);
 }
 
-type TitleIndex = ReadonlyMap<string, FandomPageLink>;
+export type TitleIndex = ReadonlyMap<string, FandomPageLink>;
 
 /** Canonical titles ∪ redirect aliases → page link, pre-normalized. */
 export function buildTitleIndex(registry: FandomRegistry): TitleIndex {

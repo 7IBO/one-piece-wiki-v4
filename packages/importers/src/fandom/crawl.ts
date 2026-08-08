@@ -16,22 +16,27 @@
  */
 import type { MapperEmit } from '../emit.ts';
 import { mapChapter } from './chapter.ts';
-import { mapCharacter } from './character.ts';
+import { type CharacterMapContext, mapCharacter } from './character.ts';
 import type { FandomClient, ParsedPage } from './client.ts';
 import { mapEpisode } from './episode.ts';
 import type { FandomRegistry } from './registry.ts';
-import { detectEntityLinks, normalizeTitle } from './registry.ts';
+import { buildTitleIndex, detectEntityLinks, normalizeTitle } from './registry.ts';
 import { findTemplate, parseRedirect, parseTemplates } from './wikitext.ts';
 
 export type MapperKind = 'chapter' | 'episode' | 'character';
 
 type Mapper = (page: ParsedPage) => (MapperEmit & { warnings: readonly string[]; }) | null;
 
-const MAPPERS: Record<MapperKind, Mapper> = {
-  chapter: mapChapter,
-  episode: mapEpisode,
-  character: mapCharacter,
-};
+/** Mapper table bound to the run's resolution context — the character
+ *  mapper resolves relation links via the registry's title index and
+ *  occupations via the vocabulary map. */
+function buildMappers(ctx: CharacterMapContext): Record<MapperKind, Mapper> {
+  return {
+    chapter: mapChapter,
+    episode: mapEpisode,
+    character: (page) => mapCharacter(page, ctx),
+  };
+}
 
 /** Infobox template name → mapper kind (grows with each new mapper). */
 const BOX_TO_KIND: readonly (readonly [string, MapperKind])[] = [
@@ -86,8 +91,12 @@ export async function crawl(
      * (e.g. One Piece Chapters → Chapters by Volume → Volume N).
      */
     readonly categoryDepth?: number;
-    /** Registry used to resolve known links (frontier excludes them). */
+    /** Registry used to resolve known links (frontier excludes them)
+     *  AND to resolve relation targets in the character mapper. */
     readonly registry?: FandomRegistry;
+    /** Lowercased occupation label/id → occupations vocabulary id —
+     *  enables the character mapper's occupation matching. */
+    readonly occupations?: ReadonlyMap<string, string>;
     readonly log?: (line: string) => void;
   },
 ): Promise<CrawlReport> {
@@ -109,6 +118,10 @@ export async function crawl(
   const boxCounts = new Map<string, number>();
   const seen = new Set<string>();
   const registry: FandomRegistry = options.registry ?? { pages: [] };
+  const mappers = buildMappers({
+    titleIndex: buildTitleIndex(registry),
+    ...(options.occupations !== undefined ? { occupations: options.occupations } : {}),
+  });
 
   let fetched = 0;
   for (const title of queue) {
@@ -161,7 +174,7 @@ export async function crawl(
       continue;
     }
 
-    const mapped = MAPPERS[detected.kind](page);
+    const mapped = mappers[detected.kind](page);
     if (mapped === null) {
       failures.push({ page: page.title, reason: `${detected.kind} mapper returned null` });
       continue;

@@ -208,6 +208,35 @@ commit's changed lines inline (server fetches per-commit patches for
 the newest 25 commits, `+`/`-` lines capped at 30 with a truncation
 count — what changed is visible without clicking through to GitHub).
 
+## 2026-08-08 (e) — Fandom character mapper v2
+
+Two real defects fixed and two deterministic-resolution passes added
+(`packages/importers/src/fandom/character.ts`, 224 tests green):
+
+- **status vocab bug**: the mapper emitted the raw Fandom word
+  `deceased`, which the `character-statuses` enum (`dead`,
+  `presumed_dead`, `missing`, …) rejects at validation. Now mapped
+  through longest-match patterns (incl. "Presumed Deceased"), with the
+  status line's own Qref as `since` when cited.
+- **bounty was not mapped at all**: `parseBountyEntries` parses the
+  newest-first `<br>`-separated history into chronological entries
+  with per-value `since` from each line's {{Qref}} (manga chapter
+  preferred), skipping numberless lines and flagging unsourced ones.
+- **registry-resolved relations**: affiliation/origin/residence/devil
+  fruit `[[wikilinks]]` now resolve through the committed sync
+  registry (exact title/redirect matches only) → `member-of` /
+  `originates-from` / `resides-in` / `ate-fruit` relations with
+  per-line `since`; "former"-annotated lines, unknown pages, and
+  wrong-type targets stay warnings.
+- **occupation matching**: exact case-insensitive matches against the
+  `occupations` vocabulary labels (en/fr/id) become the multi_enum
+  value; fuzzy strings stay warnings.
+
+The CLI + crawl orchestrator thread the context (registry title index
+
+- occupations index) automatically; calling the mapper without a
+  context degrades to v1 warnings-only behaviour.
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below
