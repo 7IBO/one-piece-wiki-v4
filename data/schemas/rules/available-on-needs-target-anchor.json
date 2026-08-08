@@ -1,0 +1,23 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "available-on-needs-target-anchor",
+  "schema_version": 1,
+  "severity": "warning",
+  "labels": {
+    "en": "Availability without a target anchor",
+    "fr": "Disponibilité sans ancre de cible"
+  },
+  "messages": {
+    "en": "An `available-on` edge without `external_id` or `url` can never produce a working link at build time — the platform's `link_template` has nothing to fill `{id}` with. Add the platform's stable content id (preferred) or a full URL.",
+    "fr": "Une arête `available-on` sans `external_id` ni `url` ne pourra jamais produire de lien fonctionnel au build — le `link_template` de la plateforme n'a rien pour remplir `{id}`. Ajoutez l'identifiant de contenu stable de la plateforme (préféré) ou une URL complète."
+  },
+  "scope": "relation",
+  "relation_type": "available-on",
+  "relation_expect": [
+    {
+      "qualifier_present_one_of": {
+        "qualifiers": ["external_id", "url"]
+      }
+    }
+  ]
+}

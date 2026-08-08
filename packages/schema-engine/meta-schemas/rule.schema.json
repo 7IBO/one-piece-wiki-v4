@@ -89,11 +89,15 @@
       "type": "string",
       "enum": [
         "entity",
-        "entry"
+        "entry",
+        "relation"
       ],
       "default": "entity"
     },
     "entry_property": {
+      "type": "string"
+    },
+    "relation_type": {
       "type": "string"
     },
     "when": {
@@ -277,6 +281,91 @@
           "until_not_before_since": {
             "type": "object",
             "properties": {},
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "relation_when": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "qualifier_equals": {
+            "type": "object",
+            "properties": {
+              "qualifier": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+              },
+              "value": {}
+            },
+            "required": [
+              "qualifier"
+            ],
+            "additionalProperties": false
+          },
+          "target_type_is": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false
+          }
+        },
+        "additionalProperties": false
+      },
+      "default": []
+    },
+    "relation_expect": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "qualifier_present": {
+            "type": "object",
+            "properties": {
+              "qualifier": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+              }
+            },
+            "required": [
+              "qualifier"
+            ],
+            "additionalProperties": false
+          },
+          "qualifier_present_one_of": {
+            "type": "object",
+            "properties": {
+              "qualifiers": {
+                "type": "array",
+                "items": {
+                  "type": "string",
+                  "minLength": 1,
+                  "maxLength": 60,
+                  "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+                },
+                "minItems": 1
+              }
+            },
+            "required": [
+              "qualifiers"
+            ],
             "additionalProperties": false
           }
         },

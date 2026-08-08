@@ -398,8 +398,13 @@ Notable rules:
 
 ## Formatting
 
-`oxfmt` (or `dprint` as fallback) runs on every commit via lefthook and is
-checked in CI. Configuration in `dprint.json` at the root.
+`dprint` runs on every commit via lefthook and is checked in CI (`oxfmt`
+remains under consideration for when it stabilises — see CLAUDE.md).
+Configuration in `dprint.json` at the root; the WASM plugins are pinned as
+npm devDependencies (`@dprint/typescript` et al.) so CI and offline
+environments never fetch from plugins.dprint.dev. Always run it through
+`bun run format` — a globally-installed `dprint` CLI of a different
+version corrupts the plugin cache.
 
 Width: 100 columns. Semicolons: yes. Quotes: single. Trailing commas: all
 where valid.

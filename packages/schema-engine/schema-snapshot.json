@@ -1241,7 +1241,7 @@
     "link_template": {
       "value_type": "string",
       "enum_ref": null,
-      "historical": false,
+      "historical": true,
       "localizable": false
     },
     "location_status": {

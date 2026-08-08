@@ -15,7 +15,34 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-08 (public reader app skeleton, `apps/web`)
+**Last updated**: 2026-08-08 (reliquats notés — ADR-089/090, fixes docs)
+
+**2026-08-08 — inventaire "tout ce qui est noté mais pas dans le
+code", vague 1 (ADR-089 + ADR-090).** Sweep of every deferred note
+(IDEAS.md, ADR-087 leftovers, ADR-009 follow-ups): (a) **ADR-089**
+fixes the affiliate-links architecture (canonical URLs only in
+`/data`, render-time decoration from deploy config, `rel="sponsored
+nofollow"` + mandatory disclosure) — design-only, implementation
+gated on a real signed program; the IDEAS.md bullet now points at
+it. (b) **ADR-090**: the rule DSL gains `scope: 'relation'`
+(`relation_type` selector, edge conditions `qualifier_equals` /
+`target_type_is`, expectations `qualifier_present` /
+`qualifier_present_one_of`; findings anchor `relationType` /
+`relationIndex`) — shipped rule
+`available-on-needs-target-anchor` (advisory: an `available-on`
+edge needs `external_id` OR `url`); and `link_template` became
+multi-entry with a `region` qualifier per the `publications`
+precedent (entry without region = worldwide default; migration
+`0006-link-template-per-region`, streaming-platform v2→3, amazon
+seed shows `.com` default + `.fr` FR). (c) ADR-009 leftovers
+closed: CONVENTIONS.md formatter section now states the real dprint
+setup (npm-pinned plugins, `bun run format` only), DATA_MODEL.md
+Luffy ₿3B example unified on `manga-chapter:1053`. **Still blocked
+on environment (egress to onepiece.fandom.com)**: live validation
+of the volume-mapper fixture and any arc-mapper work. **Kept
+parked deliberately**: knowledge graph (gated on the spoiler
+filter, per IDEAS.md), public-app feature parking lot (ADR-027
+list), AI ingest / schema admin / Yjs / mobile-app entries.
 
 **2026-08-08 — public reader app skeleton (`apps/web`, Phase 6.0
 foundation).** New workspace `@onepiece-wiki/web` (TanStack Start +

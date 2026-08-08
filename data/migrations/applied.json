@@ -4,6 +4,7 @@
     "0002-unify-release-dates",
     "0003-drop-canonicity",
     "0004-merge-references-into-features",
-    "0005-drop-legacy-volume-property"
+    "0005-drop-legacy-volume-property",
+    "0006-link-template-per-region"
   ]
 }

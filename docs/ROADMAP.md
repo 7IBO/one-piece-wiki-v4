@@ -983,6 +983,10 @@ Areas under consideration but not scheduled:
   demand emerges
 - **Cross-universe** (Naruto, Bleach, …)
 - **Mobile apps**
+- **Affiliate links on platform availability** — architecture fixed by
+  ADR-089 (canonical URLs in `/data`, render-time decoration from deploy
+  config, `rel="sponsored nofollow"` + mandatory disclosure); gated on an
+  actual signed affiliate program, not on engineering.
 
 ## Anti-patterns by phase
 

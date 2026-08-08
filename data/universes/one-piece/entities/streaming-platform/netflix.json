@@ -1,14 +1,26 @@
 {
   "id": "streaming-platform:netflix",
   "type": "streaming-platform",
-  "schema_version": 2,
+  "schema_version": 3,
   "slug": "netflix",
   "canonical_name_key": "streaming-platform.netflix.name",
   "properties": {
-    "name": [{ "value_key": "streaming-platform.netflix.name" }],
-    "platform_kind": { "value": "streaming" },
-    "homepage_url": { "value": "https://www.netflix.com" },
-    "link_template": { "value": "https://www.netflix.com/title/{id}" }
+    "name": [
+      {
+        "value_key": "streaming-platform.netflix.name"
+      }
+    ],
+    "platform_kind": {
+      "value": "streaming"
+    },
+    "homepage_url": {
+      "value": "https://www.netflix.com"
+    },
+    "link_template": [
+      {
+        "value": "https://www.netflix.com/title/{id}"
+      }
+    ]
   },
   "relations": []
 }
