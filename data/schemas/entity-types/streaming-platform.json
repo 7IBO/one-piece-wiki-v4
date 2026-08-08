@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "streaming-platform",
-  "schema_version": 2,
+  "schema_version": 3,
   "labels": { "en": "Platform", "fr": "Plateforme" },
   "url_segment": "platforms",
   "properties": [

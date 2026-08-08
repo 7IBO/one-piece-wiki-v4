@@ -115,7 +115,7 @@ query date.
 "bounty": [
   { "value": 30000000,   "since": "manga-chapter:119"  },
   { "value": 100000000,  "since": "manga-chapter:432"  },
-  { "value": 3000000000, "since": "manga-chapter:1058" }
+  { "value": 3000000000, "since": "manga-chapter:1053" }
 ]
 ```
 

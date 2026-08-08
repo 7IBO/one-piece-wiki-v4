@@ -1,14 +1,30 @@
 {
   "id": "streaming-platform:amazon",
   "type": "streaming-platform",
-  "schema_version": 2,
+  "schema_version": 3,
   "slug": "amazon",
   "canonical_name_key": "streaming-platform.amazon.name",
   "properties": {
-    "name": [{ "value_key": "streaming-platform.amazon.name" }],
-    "platform_kind": { "value": "store" },
-    "homepage_url": { "value": "https://www.amazon.fr" },
-    "link_template": { "value": "https://www.amazon.fr/dp/{id}" }
+    "name": [
+      {
+        "value_key": "streaming-platform.amazon.name"
+      }
+    ],
+    "platform_kind": {
+      "value": "store"
+    },
+    "homepage_url": {
+      "value": "https://www.amazon.fr"
+    },
+    "link_template": [
+      {
+        "value": "https://www.amazon.com/dp/{id}"
+      },
+      {
+        "value": "https://www.amazon.fr/dp/{id}",
+        "region": "FR"
+      }
+    ]
   },
   "relations": []
 }

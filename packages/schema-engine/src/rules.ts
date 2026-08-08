@@ -11,6 +11,10 @@
  * findings make `check:coherence` fail and the dashboard save
  * endpoint refuse (422). The engine itself only REPORTS enforcement;
  * callers decide what to do with it.
+ *
+ * ADR-090: `scope: 'relation'` visits stored relation EDGES (filtered
+ * by `relation_type`) the way `entry` visits property entries, with
+ * edge-level conditions/expectations on qualifiers.
  */
 import type { Rule } from './meta-validator.ts';
 
@@ -25,6 +29,10 @@ export type RuleFinding = {
   readonly property?: string;
   /** Entry index (0-based) for entry-scoped findings. */
   readonly entryIndex?: number;
+  /** Relation type + edge index (0-based within the entity's stored
+   *  `relations` array) for relation-scoped findings (ADR-090). */
+  readonly relationType?: string;
+  readonly relationIndex?: number;
 };
 
 type EntryRecord = Record<string, unknown>;
@@ -111,6 +119,21 @@ function conditionHolds(entity: EntityLike, c: Rule['when'][number]): boolean {
   return true;
 }
 
+type RelationEdge = NonNullable<EntityLike['relations']>[number];
+
+function relationConditionHolds(edge: RelationEdge, c: Rule['relation_when'][number]): boolean {
+  if (c.qualifier_equals !== undefined) {
+    const { qualifier, value } = c.qualifier_equals;
+    const v = edge.qualifiers?.[qualifier];
+    if (!qualifierIsSet(v)) return false;
+    if (value !== undefined && v !== value) return false;
+  }
+  if (c.target_type_is !== undefined) {
+    if (edge.target.split(':')[0] !== String(c.target_type_is.type)) return false;
+  }
+  return true;
+}
+
 function entryConditionHolds(entry: EntryRecord, c: Rule['entry_when'][number]): boolean {
   if (c.qualifier_equals !== undefined) {
     const { qualifier, value } = c.qualifier_equals;
@@ -170,6 +193,39 @@ export function evaluateRules(
           }
         });
       }
+      continue;
+    }
+
+    if (rule.scope === 'relation') {
+      const edges = entity.relations ?? [];
+      edges.forEach((edge, relationIndex) => {
+        if (
+          rule.relation_type !== undefined
+          && rule.relation_type !== '*'
+          && edge.type !== rule.relation_type
+        ) return;
+        if (!rule.relation_when.every((c) => relationConditionHolds(edge, c))) return;
+        for (const exp of rule.relation_expect) {
+          let ok = true;
+          if (exp.qualifier_present !== undefined) {
+            ok = qualifierIsSet(edge.qualifiers?.[exp.qualifier_present.qualifier]);
+          } else if (exp.qualifier_present_one_of !== undefined) {
+            ok = exp.qualifier_present_one_of.qualifiers.some((q) =>
+              qualifierIsSet(edge.qualifiers?.[String(q)])
+            );
+          }
+          if (!ok) {
+            findings.push({
+              ruleId: rule.id,
+              severity: rule.severity,
+              enforcement: rule.enforcement,
+              messages: rule.messages,
+              relationType: edge.type,
+              relationIndex,
+            });
+          }
+        }
+      });
       continue;
     }
 

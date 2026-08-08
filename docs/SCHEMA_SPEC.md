@@ -724,18 +724,20 @@ and the save/create endpoints refuse the payload with
 localized messages. Reserve `blocking` for structurally-always-wrong
 shapes — canon-knowledge rules stay advisory.
 
-| Field                         | Type     | Required    | Description                                                            |
-| ----------------------------- | -------- | ----------- | ---------------------------------------------------------------------- |
-| `id` / `schema_version`       |          | yes         | Standard schema identity                                               |
-| `universes`                   | string[] | no          | Omitted = core                                                         |
-| `severity`                    | enum     | yes         | `info` \| `warning` (display weight of the finding)                    |
-| `enforcement`                 | enum     | no          | `advisory` (default) \| `blocking` (ADR-088 — refuses saves, CI error) |
-| `labels` / `messages`         | object   | yes         | Localized name + editor-facing finding text (mention exceptions!)      |
-| `applies_to_entity_types`     | string[] | no          | Omitted/empty = all types                                              |
-| `scope`                       | enum     | no          | `entity` (default) or `entry`                                          |
-| `entry_property`              | string   | scope=entry | Property id, or `*` for every property                                 |
-| `when` / `expect`             | array    | entity      | Conditions (all hold) / expectations (each violation = finding)        |
-| `entry_when` / `entry_expect` | array    | entry       | Entry-level conditions / expectations                                  |
+| Field                               | Type     | Required       | Description                                                            |
+| ----------------------------------- | -------- | -------------- | ---------------------------------------------------------------------- |
+| `id` / `schema_version`             |          | yes            | Standard schema identity                                               |
+| `universes`                         | string[] | no             | Omitted = core                                                         |
+| `severity`                          | enum     | yes            | `info` \| `warning` (display weight of the finding)                    |
+| `enforcement`                       | enum     | no             | `advisory` (default) \| `blocking` (ADR-088 — refuses saves, CI error) |
+| `labels` / `messages`               | object   | yes            | Localized name + editor-facing finding text (mention exceptions!)      |
+| `applies_to_entity_types`           | string[] | no             | Omitted/empty = all types                                              |
+| `scope`                             | enum     | no             | `entity` (default), `entry` or `relation` (ADR-090)                    |
+| `entry_property`                    | string   | scope=entry    | Property id, or `*` for every property                                 |
+| `relation_type`                     | string   | scope=relation | Relation-type id, or `*`/omitted for every edge                        |
+| `when` / `expect`                   | array    | entity         | Conditions (all hold) / expectations (each violation = finding)        |
+| `entry_when` / `entry_expect`       | array    | entry          | Entry-level conditions / expectations                                  |
+| `relation_when` / `relation_expect` | array    | relation       | Edge-level conditions / expectations                                   |
 
 Condition kinds: `property_latest_equals`, `has_active_relation`
 (active = no `until`; optional `target` / `target_type`),
@@ -743,6 +745,11 @@ Condition kinds: `property_latest_equals`, `has_active_relation`
 `property_present`, `max_concurrent_relations`. Entry kinds:
 `qualifier_equals`, `value_equals` → `qualifier_present`,
 `until_not_before_since` (numeric same-type source comparison).
+Relation kinds (ADR-090): `qualifier_equals`, `target_type_is` →
+`qualifier_present`, `qualifier_present_one_of` (at least one of the
+listed qualifiers set — e.g. `available-on` needs `external_id` or
+`url`). Relation-scope findings anchor via `relationType` /
+`relationIndex` instead of `property` / `entryIndex`.
 
 The engine is `packages/schema-engine/src/rules.ts` — browser-safe,
 shared by CI and the dashboard so a finding on screen is exactly a

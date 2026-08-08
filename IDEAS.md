@@ -784,10 +784,11 @@ chapter / episode publication. Deferred to Phase 9+ at earliest.
 - **SEO / visibility programme** for the public reading app: prerendered
   entity pages, structured data (schema.org), sitemaps per progression-safe
   surface, canonical URLs (slugs already stable), i18n hreflang.
-- **Streaming-platform partnerships / affiliate links**: `available-on`
-  already models the links; affiliation itself needs the dedicated ADR
-  (FTC disclosure, `rel="sponsored nofollow"`, program/tag model) noted in
-  STATE — do NOT bolt onto `available-on` without it.
+- **Streaming-platform partnerships / affiliate links**: RESOLVED into
+  ADR-089 (2026-08-08) — architecture fixed (canonical URLs in `/data`,
+  render-time decoration from deploy config, `rel="sponsored nofollow"` +
+  mandatory disclosure). Implementation stays gated on an actual signed
+  program; any future PR starts from the ADR-089 contract.
 - **"Incontournable" polish track**: Wikipedia-depth entity pages but
   fluid/responsive; reading-position cursor UX ("I'm at episode N /
   chapter M") as the first-run experience; manga↔anime cross-medium jump

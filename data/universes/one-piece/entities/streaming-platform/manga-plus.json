@@ -1,14 +1,26 @@
 {
   "id": "streaming-platform:manga-plus",
   "type": "streaming-platform",
-  "schema_version": 2,
+  "schema_version": 3,
   "slug": "manga-plus",
   "canonical_name_key": "streaming-platform.manga-plus.name",
   "properties": {
-    "name": [{ "value_key": "streaming-platform.manga-plus.name" }],
-    "platform_kind": { "value": "reader" },
-    "homepage_url": { "value": "https://mangaplus.shueisha.co.jp" },
-    "link_template": { "value": "https://mangaplus.shueisha.co.jp/viewer/{id}" }
+    "name": [
+      {
+        "value_key": "streaming-platform.manga-plus.name"
+      }
+    ],
+    "platform_kind": {
+      "value": "reader"
+    },
+    "homepage_url": {
+      "value": "https://mangaplus.shueisha.co.jp"
+    },
+    "link_template": [
+      {
+        "value": "https://mangaplus.shueisha.co.jp/viewer/{id}"
+      }
+    ]
   },
   "relations": []
 }

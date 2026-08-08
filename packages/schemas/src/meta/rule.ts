@@ -77,6 +77,29 @@ export const RuleEntryExpectation = z.object({
   until_not_before_since: z.object({}).optional(),
 });
 
+/** Relation-scope condition/expectation (rule.scope === 'relation').
+ *  The rule runs once per relation EDGE of `relation_type` (or every
+ *  edge when omitted / `*`) stored on the entity. ADR-090. */
+export const RuleRelationCondition = z.object({
+  /** Edge has this qualifier set to `value` (or just set, if omitted). */
+  qualifier_equals: z
+    .object({ qualifier: Slug, value: z.unknown().optional() })
+    .optional(),
+  /** The edge's target entity-type equals `type`. */
+  target_type_is: z.object({ type: Slug }).optional(),
+});
+
+export const RuleRelationExpectation = z.object({
+  /** Edge should carry this qualifier (non-empty). */
+  qualifier_present: z.object({ qualifier: Slug }).optional(),
+  /** Edge should carry AT LEAST ONE of these qualifiers (non-empty).
+   *  E.g. `available-on` needs `external_id` or `url` to ever yield a
+   *  usable link at build time (ADR-087/ADR-090). */
+  qualifier_present_one_of: z
+    .object({ qualifiers: z.array(Slug).min(1) })
+    .optional(),
+});
+
 export const RuleSchema = z.object({
   $schema: z.string().optional(),
   id: Slug,
@@ -98,13 +121,18 @@ export const RuleSchema = z.object({
   messages: LocalizedLabel,
   /** Entity types the rule runs on. Empty/omitted = every type. */
   applies_to_entity_types: z.array(Slug).optional(),
-  scope: z.enum(['entity', 'entry']).default('entity'),
+  scope: z.enum(['entity', 'entry', 'relation']).default('entity'),
   /** For scope 'entry': which property's entries to visit — a
    *  property id, or `*` for every property. */
   entry_property: z.string().optional(),
+  /** For scope 'relation': which relation type's edges to visit — a
+   *  relation-type id, or `*`/omitted for every edge (ADR-090). */
+  relation_type: z.string().optional(),
   when: z.array(RuleCondition).default([]),
   expect: z.array(RuleExpectation).default([]),
   entry_when: z.array(RuleEntryCondition).default([]),
   entry_expect: z.array(RuleEntryExpectation).default([]),
+  relation_when: z.array(RuleRelationCondition).default([]),
+  relation_expect: z.array(RuleRelationExpectation).default([]),
 });
 export type RuleSchema = z.infer<typeof RuleSchema>;

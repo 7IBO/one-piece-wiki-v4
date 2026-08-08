@@ -8,6 +8,95 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-090 — Relation-scope rules + per-region `link_template`
+
+**Date**: 2026-08-08
+
+**Context**: Two leftovers explicitly deferred by ADR-087: (a) nothing
+checks that an `available-on` edge is COMPLETE — an edge with neither
+`external_id` nor `url` can never yield a working link at build time,
+and the failure would only surface much later as a silent hole in the
+public app; (b) `link_template` was seeded single-valued, but store
+links are region-split in reality (amazon.fr vs amazon.com) and the
+`region` qualifier already exists in the registry.
+
+**Options considered**:
+
+1. Check availability completeness in the build pipeline only —
+   too late; the editor who typed the edge is gone.
+2. Hardcode an `available-on` check in the dashboard — violates the
+   "no property names in application code" rule.
+3. **Extend the declarative rule DSL with a `relation` scope**
+   (chosen): rules gain `scope: 'relation'` + `relation_type`
+   selector + edge-level conditions (`qualifier_equals`,
+   `target_type_is`) and expectations (`qualifier_present`,
+   `qualifier_present_one_of`) — the exact `entry`-scope pattern
+   applied to relation edges. The completeness check ships as plain
+   rule data (`available-on-needs-target-anchor`, advisory), and any
+   future edge-shape rule costs zero engine code.
+
+For per-region templates, `link_template` follows the established
+`publications` precedent (parallel values distinguished by a
+qualifier on a multi-entry property): `historical: true`, entries
+carry an optional `region` qualifier, the entry WITHOUT `region` is
+the worldwide default. Migration `0006-link-template-per-region`
+wraps the 4 seeds (streaming-platform schema v2→3); the amazon seed
+now demonstrates the shape (`.com` default + `.fr` FR override).
+Link resolution stays deferred to the build (ADR-087): resolvers pick
+the viewer-region entry, falling back to the default entry.
+
+**Consequences**: rule catalogue 6→7 (advisory), rule DSL covers
+entity / entry / relation scopes (documented in SCHEMA_SPEC);
+`RuleFinding` gains `relationType` / `relationIndex` anchors — the
+dashboard shows relation-scope findings in the general findings
+panel (no per-property anchor). `check:compat` reports the
+link_template shape change; accepted consciously under the beta
+directive (0 users).
+
+---
+
+## ADR-089 — Affiliate links: design decided, implementation gated on a real program
+
+**Date**: 2026-08-08
+
+**Context**: The maintainer's vision notes streaming/reading-platform
+partnerships and affiliate links as a monetisation avenue. ADR-084 and
+ADR-087 deliberately kept `available-on` free of any affiliate
+concern ("do NOT bolt onto `available-on` without a dedicated ADR").
+This is that ADR. No affiliate program is signed today and the
+project has 0 users, so this decision fixes the ARCHITECTURE so that
+enabling affiliation later is a config change, not a data migration.
+
+**Decision**:
+
+1. **Repo data stays canonical forever.** `/data` holds only
+   canonical URLs, templates and stable `external_id`s. No affiliate
+   tag, campaign id or tracking parameter ever lands in `/data` —
+   they are commercial deploy-time state, not knowledge about One
+   Piece. This keeps the corpus reusable (public API, SDK, forks)
+   and keeps contributor PRs free of monetisation review burden.
+2. **Decoration happens at render/build time.** When a program
+   exists, the public web app decorates outbound platform links from
+   a deploy-time config (env / private config file), keyed by
+   platform slug — e.g. `{ "amazon": { "param": "tag",
+   "value": "<associate-tag>" } }`. The dashboard NEVER decorates
+   (it is an editorial tool).
+3. **Compliance is part of the feature, not an afterthought.**
+   Decorated links MUST carry `rel="sponsored nofollow"` and the
+   surrounding page MUST render a localized disclosure notice
+   (FTC / EU transparency requirements). An affiliate config with a
+   missing disclosure string is a build error.
+4. **Not implemented now.** No keys exist, so no code ships in this
+   ADR beyond the documented contract. The `available-on` wire
+   shape is already sufficient (template + external_id → final URL,
+   ADR-087); decoration composes on top of the resolved URL.
+
+**Consequences**: IDEAS.md's affiliate bullet is resolved into this
+ADR; any future implementation PR references ADR-089 and starts from
+the contract above. Monetisation stays invisible to the data layer.
+
+---
+
 ## ADR-088 — Rules gain an opt-in `enforcement: 'blocking'` notch
 
 **Date**: 2026-08-08
