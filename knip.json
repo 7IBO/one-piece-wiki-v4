@@ -1,6 +1,9 @@
 {
   "$schema": "https://unpkg.com/knip@5/schema.json",
   "ignoreDependencies": [
+    "@dprint/json",
+    "@dprint/markdown",
+    "@dprint/typescript",
     "@onepiece-wiki/tsconfig",
     "@types/diff",
     "@types/react-dom",
@@ -25,6 +28,15 @@
     },
     "apps/preview": {
       "entry": ["src/server.ts"]
+    },
+    "apps/web": {
+      "entry": [
+        "vite.config.ts",
+        "scripts/ensure-db.ts",
+        "src/router.tsx",
+        "src/routeTree.gen.ts",
+        "src/routes/**/*.{ts,tsx}"
+      ]
     },
     "packages/*": {
       "entry": ["src/index.ts", "src/cli/*.ts", "src/*.css"]

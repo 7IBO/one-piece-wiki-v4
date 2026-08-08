@@ -15,7 +15,37 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-08 (blocking rule enforcement, ADR-088)
+**Last updated**: 2026-08-08 (public reader app skeleton, `apps/web`)
+
+**2026-08-08 — public reader app skeleton (`apps/web`, Phase 6.0
+foundation).** New workspace `@onepiece-wiki/web` (TanStack Start +
+Base UI + Tailwind v4, dev port 4200): the read-only public site over
+the SQLite artifact, first consumer of the ADR-086 additions
+(materialized inverse relations with per-direction `label`, plus the
+`translations` / `narratives` tables). Structure: `server/db.ts`
+(prepared `bun:sqlite` statements, lazy singleton, walk-up artifact
+discovery + `ONEPIECE_DB_PATH` override), `server/catalogue.ts`
+(schema-engine catalogue, fs in dev / glob bundle in prod — dashboard
+recipe), `server/views.ts` (display-ready view models: localized
+names, schema/vocab labels, epistemic badges + `actual_value`, both
+relation directions from `source_entity_id` alone), `src/api.ts`
+(server functions). Routes `/`, `/t/<type>`, `/e/<type>/<slug>`;
+`web_locale` cookie FR/EN with SSR-correct first paint; dark-first
+editorial theme (Fraunces/Inter display/body), tiny built-in markdown
+renderer (no new render dep). Turbo: `web#build` depends on
+`db-builder#build:db`; dev auto-builds the artifact when missing
+(`scripts/ensure-db.ts`). Verified: Playwright run over home /
+characters / Luffy (properties, both relation directions, FR toggle,
+404), `vite build` + `.output` smoke test under Bun, 9 new bun tests
+(markdown parser + real-artifact view models incl. Sabo epistemic
+history — suite skips when the artifact is absent). Gotcha logged in
+`server/views.ts`: a mixed `import { type X, fn }` from the
+bun:sqlite-backed module lost its value specifiers in the dev SSR
+transform — namespace import instead. Not yet (later 6.x): spoiler
+cursor, search, per-type templates, SEO/SSG, locale routes, images.
+Vercel deploy config for this app is intentionally untouched
+(dashboard-only `vercel.json`; deploy wiring is a flagged follow-up
+per CLAUDE.md §7).
 
 **2026-08-08 — rules gain opt-in `enforcement: 'blocking'`
 (ADR-088).** Maintainer's "custom rules between entities in the Zod

@@ -3,6 +3,7 @@
  * catalogue + entity map so each rule is exercised in isolation, without
  * touching /data.
  */
+import { RuleSchema } from '@onepiece-wiki/schemas';
 import { describe, expect, it } from 'bun:test';
 import { checkCoherence, checkEntityVersions, checkSchemaCoherence } from '../src/coherence.ts';
 import type { LoadedEntity } from '../src/entity-loader.ts';
@@ -333,5 +334,47 @@ describe('checkEntityVersions', () => {
       versionCatalogue({ character: 3 }),
     );
     expect(findings).toEqual([]);
+  });
+});
+
+describe('checkCoherence — declarative rule findings (ADR-085/088)', () => {
+  function ruleCatalogue(rules: RuleSchema[]): ValidatedCatalogue {
+    return {
+      ...catalogue({ character: { allowed_relations: [] } }, {}),
+      rules: new Map(rules.map((r) => [r.id, r])) as ValidatedCatalogue['rules'],
+    };
+  }
+  const baseRule = {
+    schema_version: 1,
+    severity: 'warning',
+    labels: { en: 'x', fr: 'x' },
+    messages: { en: 'until precedes since', fr: 'until avant since' },
+    scope: 'entry',
+    entry_property: '*',
+    entry_expect: [{ until_not_before_since: {} }],
+  } as const;
+  function violatingEntity(): Map<string, LoadedEntity> {
+    const e = entity('character:x');
+    (e as LoadedEntity).data['properties'] = {
+      epithet: [{ value_key: 'k', since: 'manga-chapter:600', until: 'manga-chapter:96' }],
+    };
+    return entityMap(e);
+  }
+
+  it('reports an advisory rule finding as a warning', () => {
+    const rule = RuleSchema.parse({ ...baseRule, id: 'advisory-rule' });
+    const findings = checkCoherence(violatingEntity(), ruleCatalogue([rule]))
+      .filter((f) => f.code === 'RULE_FINDING');
+    expect(findings).toHaveLength(1);
+    expect(findings[0]!.severity).toBe('warning');
+  });
+
+  it('reports a BLOCKING rule finding as an error (fails CI)', () => {
+    const rule = RuleSchema.parse({ ...baseRule, id: 'blocking-rule', enforcement: 'blocking' });
+    const findings = checkCoherence(violatingEntity(), ruleCatalogue([rule]))
+      .filter((f) => f.code === 'RULE_FINDING');
+    expect(findings).toHaveLength(1);
+    expect(findings[0]!.severity).toBe('error');
+    expect(findings[0]!.path).toBe('properties.epithet[0]');
   });
 });

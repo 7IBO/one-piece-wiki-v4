@@ -9,6 +9,14 @@
     "build:db": {
       "cache": false
     },
+    "dev": {
+      "cache": false,
+      "persistent": true
+    },
+    "@onepiece-wiki/web#build": {
+      "dependsOn": ["^build", "@onepiece-wiki/db-builder#build:db"],
+      "outputs": [".output/**", ".vercel/output/**"]
+    },
     "typecheck": {
       "dependsOn": ["^typecheck"],
       "inputs": [

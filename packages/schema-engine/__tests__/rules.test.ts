@@ -123,3 +123,57 @@ describe('evaluateRules — entry scope', () => {
     expect(evaluateRules(crossType, [rule])).toHaveLength(0);
   });
 });
+
+describe('evaluateRules — enforcement (ADR-088)', () => {
+  it('defaults enforcement to advisory when the rule file omits it', async () => {
+    const rule = await loadRule('active-marine-with-bounty');
+    expect(rule.enforcement).toBe('advisory');
+    const findings = evaluateRules(
+      {
+        type: 'character',
+        properties: { bounty: [{ value: 100 }] },
+        relations: [{ type: 'member-of', target: 'organization:marines' }],
+      },
+      [rule],
+    );
+    expect(findings).toHaveLength(1);
+    expect(findings[0]!.enforcement).toBe('advisory');
+  });
+
+  it('carries blocking enforcement through to the finding', async () => {
+    // until-not-before-since is the shipped blocking example — a
+    // structurally-always-wrong shape, no canon exception possible.
+    const rule = await loadRule('until-not-before-since');
+    expect(rule.enforcement).toBe('blocking');
+    const findings = evaluateRules(
+      {
+        type: 'character',
+        properties: {
+          epithet: [{ value_key: 'k', since: 'manga-chapter:600', until: 'manga-chapter:96' }],
+        },
+      },
+      [rule],
+    );
+    expect(findings).toHaveLength(1);
+    expect(findings[0]!.enforcement).toBe('blocking');
+  });
+
+  it('parses an explicit advisory enforcement', () => {
+    const rule = RuleSchema.parse({
+      id: 'explicit-advisory',
+      schema_version: 1,
+      severity: 'info',
+      enforcement: 'advisory',
+      labels: { en: 'x', fr: 'x' },
+      messages: { en: 'x', fr: 'x' },
+      scope: 'entity',
+      expect: [{ property_absent: { property: 'bounty' } }],
+    });
+    const findings = evaluateRules(
+      { type: 'character', properties: { bounty: [{ value: 1 }] } },
+      [rule],
+    );
+    expect(findings).toHaveLength(1);
+    expect(findings[0]!.enforcement).toBe('advisory');
+  });
+});

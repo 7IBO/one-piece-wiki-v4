@@ -249,6 +249,10 @@ const UI_STRINGS = {
   invalidValue: { en: 'invalid value', fr: 'valeur invalide' },
   notSet: { en: 'not set', fr: 'non défini' },
   coherenceAdvisories: { en: 'Coherence checks', fr: 'Vérifications de cohérence' },
+  coherenceBlocking: {
+    en: 'Blocking coherence rules — save will be refused',
+    fr: 'Règles de cohérence bloquantes — l’enregistrement sera refusé',
+  },
   incompleteEntriesExcluded: {
     en: 'Incomplete entries are kept as a draft and left out of the PR until finished.',
     fr:

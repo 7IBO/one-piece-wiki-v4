@@ -8,6 +8,56 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-088 — Rules gain an opt-in `enforcement: 'blocking'` notch
+
+**Date**: 2026-08-08
+
+**Context**: Maintainer asked for "custom rules between entities in the
+Zod verification" — i.e. some declarative rules should actually be able
+to refuse a save, not just advise. ADR-085 made every rule advisory on
+principle: canon knowledge ("a Marine has no bounty") always has
+exceptions, so blocking would force data lies. But a small class of
+rules encodes STRUCTURAL impossibilities — `until` preceding `since`
+on the same numeric source axis can never be right in any canon — and
+for those, advisory undersells the defect.
+
+**Options**:
+
+1. Keep everything advisory (status quo) — structurally-broken data
+   can be saved and only surfaces as a CI warning nobody blocks on.
+2. Promote such checks into the Zod entity schema — wrong layer: the
+   check spans qualifier pairs, and the rule DSL already expresses it;
+   duplicating it in Zod splits the coherence knowledge in two places.
+3. **Optional `enforcement: 'advisory' | 'blocking'` on `RuleSchema`
+   (default `advisory`)** — the rule stays a reviewable data file; the
+   consumers change behaviour on the flag.
+
+**Choice**: option 3.
+
+- `blocking` means: the dashboard save/create endpoints re-evaluate the
+  applicable rules on the save payload (same `evaluateRules` engine)
+  and REFUSE with **422** `code: 'rule_blocked'` + the rule's localized
+  messages; the form maps the findings onto fields exactly like Zod
+  issues (red), and shows them red live pre-save (save button stays
+  enabled — the server is the gate). `check:coherence` reports the
+  finding as an **error** (non-zero exit) instead of a warning.
+- `advisory` (default, and the absent-field behaviour): unchanged
+  ADR-085 semantics — amber panel, save allowed, CI warning.
+- **Policy**: `blocking` is reserved for structural impossibilities.
+  The five canon-knowledge rules (marine bounty, devil fruits,
+  epistemic anti-patterns, death anchor) STAY advisory. Exactly one
+  rule ships blocking as the example: `until-not-before-since` — its
+  check already returns "incomparable" (no finding) for cross-type or
+  non-numeric refs, so it cannot false-positive on a canon exception.
+
+**Consequences**: the ADR-085 principle survives (nothing canon-shaped
+blocks); structurally-impossible data is now stopped at the door in
+both the dashboard and CI. Adding a blocking rule stays a data PR, but
+reviewers must apply the structural-impossibility bar. Rules remain
+excluded from the wire-compat contract.
+
+---
+
 ## ADR-087 — Providers generalised: `streaming-platform` + `available-on` cover purchase/reading (no new type)
 
 **Date**: 2026-08-08
