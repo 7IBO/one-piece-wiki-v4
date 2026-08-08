@@ -292,8 +292,15 @@ function isEntryEmpty(
   } else {
     const v = entry['value'];
     if (v !== undefined && v !== null) {
-      if (typeof v !== 'string') return false; // numbers, booleans, arrays, objects
-      if (v !== '') return false;
+      if (Array.isArray(v)) {
+        // A multi_enum seed is `[]` — zero selections is NOT content
+        // (2026-08 feedback: an untouched occupation entry was saved).
+        if (v.length > 0) return false;
+      } else if (typeof v !== 'string') {
+        return false; // numbers, booleans, objects
+      } else if (v !== '') {
+        return false;
+      }
     }
   }
 
