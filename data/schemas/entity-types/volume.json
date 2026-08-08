@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "volume",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": { "en": "Volume", "fr": "Tome" },
   "url_segment": "volumes",
   "properties": [
@@ -10,6 +10,6 @@
     { "id": "released_at", "required": false, "historical": false, "localizable": false }
   ],
   "display_name_properties": ["title_key"],
-  "allowed_relations": ["depicted-by"],
+  "allowed_relations": ["depicted-by", "available-on"],
   "ui_hint": { "icon": "book", "group": "sources" }
 }

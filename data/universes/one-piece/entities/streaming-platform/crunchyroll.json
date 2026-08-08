@@ -1,0 +1,14 @@
+{
+  "id": "streaming-platform:crunchyroll",
+  "type": "streaming-platform",
+  "schema_version": 2,
+  "slug": "crunchyroll",
+  "canonical_name_key": "streaming-platform.crunchyroll.name",
+  "properties": {
+    "name": [{ "value_key": "streaming-platform.crunchyroll.name" }],
+    "platform_kind": { "value": "streaming" },
+    "homepage_url": { "value": "https://www.crunchyroll.com" },
+    "link_template": { "value": "https://www.crunchyroll.com/watch/{id}" }
+  },
+  "relations": []
+}

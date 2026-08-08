@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "requires_subscription",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 64,
+  "labels": {
+    "en": "Requires subscription",
+    "fr": "Abonnement requis"
+  },
+  "descriptions": {
+    "en": "Whether a paid subscription is needed to access the content.",
+    "fr": "Indique si un abonnement payant est nécessaire pour accéder au contenu."
+  },
+  "value_type": "boolean"
+}

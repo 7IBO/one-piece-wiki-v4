@@ -5,6 +5,6 @@
   "values": {
     "streaming": { "labels": { "en": "Streaming (video)", "fr": "Streaming (vidéo)" } },
     "reader": { "labels": { "en": "Manga reader", "fr": "Lecture manga" } },
-    "store": { "labels": { "en": "Digital store", "fr": "Boutique numérique" } }
+    "store": { "labels": { "en": "Store (purchase)", "fr": "Boutique (achat)" } }
   }
 }

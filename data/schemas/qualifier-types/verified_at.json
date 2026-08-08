@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "verified_at",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 61,
+  "labels": {
+    "en": "Verified on",
+    "fr": "Vérifié le"
+  },
+  "descriptions": {
+    "en": "When the availability (id or link) was last checked by a human.",
+    "fr": "Date de la dernière vérification humaine de la disponibilité (id ou lien)."
+  },
+  "value_type": "date"
+}

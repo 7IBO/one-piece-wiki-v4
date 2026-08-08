@@ -1,0 +1,14 @@
+{
+  "id": "streaming-platform:amazon",
+  "type": "streaming-platform",
+  "schema_version": 2,
+  "slug": "amazon",
+  "canonical_name_key": "streaming-platform.amazon.name",
+  "properties": {
+    "name": [{ "value_key": "streaming-platform.amazon.name" }],
+    "platform_kind": { "value": "store" },
+    "homepage_url": { "value": "https://www.amazon.fr" },
+    "link_template": { "value": "https://www.amazon.fr/dp/{id}" }
+  },
+  "relations": []
+}

@@ -875,6 +875,7 @@
         }
       },
       "allowed_relations": [
+        "available-on",
         "depicted-by"
       ]
     },
@@ -1608,7 +1609,8 @@
         "film",
         "live-action-episode",
         "live-action-series",
-        "manga-chapter"
+        "manga-chapter",
+        "volume"
       ],
       "valid_to_types": [
         "streaming-platform"

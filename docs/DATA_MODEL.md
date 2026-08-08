@@ -445,12 +445,20 @@ ADR-011 for the deferral decision.
 
 ### Availability links
 
-Source entities (`anime-episode`, `manga-chapter`, `film`,
+Source entities (`anime-episode`, `manga-chapter`, `volume`, `film`,
 `live-action-series`, `live-action-episode`, `anime-special`) link to
 where a real-world viewer can legally watch, read, or buy them via the
 **`available-on` relation** to a reusable **`streaming-platform`**
 entity (ADR-052 — the platform is a first-class node: "everything on
-Crunchyroll" is a query). This is **real-world presentation metadata,
+Crunchyroll" is a query). Despite its historical id,
+`streaming-platform` is the **generic provider type** (ADR-087): its
+labels are simply "Platform"/"Plateforme" and its `platform_kind`
+(`platform-kinds` vocabulary: `streaming` / `reader` / `store`) covers
+video streaming, online manga readers, and purchase storefronts alike —
+Amazon, Crunchyroll, MANGA Plus and Netflix are all the same shape.
+There is no separate "provider" entity type, and no new relation per
+access mode: watching an episode, reading a chapter online, and buying
+a volume are all `available-on` edges. This is **real-world presentation metadata,
 not in-universe data** — it is exempt from spoiler filtering (a
 streaming link reveals nothing about the story), though the source
 page it lives on is still reachability-gated as usual.

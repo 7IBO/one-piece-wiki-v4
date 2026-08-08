@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "dub_langs",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 66,
+  "labels": {
+    "en": "Dub languages",
+    "fr": "Langues de doublage"
+  },
+  "descriptions": {
+    "en": "Comma-separated audio/dub languages offered by the platform.",
+    "fr": "Langues audio/doublage proposées par la plateforme, séparées par des virgules."
+  },
+  "value_type": "string"
+}

@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "external_id",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 60,
+  "labels": {
+    "en": "External id",
+    "fr": "Identifiant externe"
+  },
+  "descriptions": {
+    "en": "The platform's stable product/catalog id (ASIN, episode id, viewer id…) — links are generated from it via the platform's link template.",
+    "fr": "L'identifiant produit/catalogue stable de la plateforme (ASIN, id d'épisode, id de lecteur…) — les liens sont générés à partir de lui via le modèle de lien de la plateforme."
+  },
+  "value_type": "string"
+}

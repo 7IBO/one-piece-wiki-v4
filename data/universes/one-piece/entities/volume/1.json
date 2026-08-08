@@ -1,0 +1,28 @@
+{
+  "id": "volume:1",
+  "type": "volume",
+  "schema_version": 2,
+  "slug": "volume-1",
+  "properties": {
+    "number": {
+      "value": 1
+    },
+    "title_key": {
+      "value_key": "volume.1.title"
+    },
+    "released_at": {
+      "value": "1997-12-24",
+      "territory": "jp"
+    }
+  },
+  "relations": [
+    {
+      "type": "available-on",
+      "target": "streaming-platform:amazon",
+      "qualifiers": {
+        "external_id": "2723488527",
+        "verified_at": "2026-08-08"
+      }
+    }
+  ]
+}
