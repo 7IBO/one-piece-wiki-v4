@@ -772,6 +772,41 @@ async function handleEntityLinks(type: string, slug: string): Promise<Response> 
 // Cap on the number of commits returned by the entity-history
 // endpoint — one page of GitHub's listCommits, newest first.
 const HISTORY_COMMIT_CAP = 50;
+// Per-commit diff detail costs one extra API call each (getCommit) —
+// only the newest commits carry inline diff lines.
+const HISTORY_DIFF_CAP = 25;
+// Changed lines kept per commit; the rest is summarised as a count.
+const HISTORY_DIFF_LINE_CAP = 30;
+
+/** The entity file's changed lines (`+`/`-`, no context) in one
+ *  commit, or null when the diff is unavailable (binary, too large,
+ *  API error — the row simply renders without the inline diff). */
+async function commitDiffFor(
+  octokit: Awaited<ReturnType<typeof installationClient>>,
+  cfg: GitHubAppConfig,
+  ref: string,
+  filePath: string,
+): Promise<{ lines: string[]; truncated: number; } | null> {
+  try {
+    const { data } = await octokit.repos.getCommit({
+      owner: cfg.dataRepo.owner,
+      repo: cfg.dataRepo.repo,
+      ref,
+    });
+    const file = data.files?.find((f) => f.filename === filePath);
+    if (file?.patch === undefined) return null;
+    const changed = file.patch.split('\n').filter((line) =>
+      (line.startsWith('+') && !line.startsWith('+++'))
+      || (line.startsWith('-') && !line.startsWith('---'))
+    );
+    return {
+      lines: changed.slice(0, HISTORY_DIFF_LINE_CAP),
+      truncated: Math.max(changed.length - HISTORY_DIFF_LINE_CAP, 0),
+    };
+  } catch {
+    return null;
+  }
+}
 
 /**
  * GET /api/entities/:type/:slug/history →
@@ -805,14 +840,24 @@ async function handleEntityHistory(
   const fileBase = entity.id.split(':')[1] ?? slug;
   try {
     const octokit = await installationClient(cfg);
+    const filePath = dataPath(type, fileBase);
     const { data } = await octokit.repos.listCommits({
       owner: cfg.dataRepo.owner,
       repo: cfg.dataRepo.repo,
-      path: dataPath(type, fileBase),
+      path: filePath,
       per_page: HISTORY_COMMIT_CAP,
     });
-    const commits = data.slice(0, HISTORY_COMMIT_CAP).map((c) => {
+    const listed = data.slice(0, HISTORY_COMMIT_CAP);
+    // Inline diffs so the page shows WHAT changed without a click —
+    // one getCommit per commit, newest HISTORY_DIFF_CAP only.
+    const diffs = await Promise.all(
+      listed.map((c, i) =>
+        i < HISTORY_DIFF_CAP ? commitDiffFor(octokit, cfg, c.sha, filePath) : null
+      ),
+    );
+    const commits = listed.map((c, i) => {
       const login = c.author?.login ?? null;
+      const diff = diffs[i] ?? null;
       return {
         sha: c.sha,
         shortSha: c.sha.slice(0, 7),
@@ -821,6 +866,7 @@ async function handleEntityHistory(
         ...(login !== null ? { authorLogin: login } : {}),
         date: c.commit.author?.date ?? c.commit.committer?.date ?? '',
         htmlUrl: c.html_url,
+        ...(diff !== null ? { diffLines: diff.lines, diffTruncated: diff.truncated } : {}),
       };
     });
     return json(commits);

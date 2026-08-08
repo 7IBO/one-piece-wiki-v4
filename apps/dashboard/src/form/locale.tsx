@@ -640,6 +640,10 @@ const UI_STRINGS = {
     en: 'Open this commit on GitHub',
     fr: 'Ouvrir ce commit sur GitHub',
   },
+  historyDiffMore: {
+    en: '… {n} more changed line(s)',
+    fr: '… {n} ligne(s) modifiée(s) de plus',
+  },
   // /explore v2 — property-column picker + inline editing
   explorePropsFilter: { en: 'Displayed properties', fr: 'Propriétés affichées' },
   exploreEditValue: { en: 'Edit value', fr: 'Modifier la valeur' },

@@ -226,6 +226,12 @@ export type HistoryCommit = {
   readonly authorLogin?: string;
   readonly date: string;
   readonly htmlUrl: string;
+  /** Changed lines of the entity file (`+`/`-` prefixed, no diff
+   *  context), present on the newest commits only — the history page
+   *  shows what changed without a click. */
+  readonly diffLines?: readonly string[];
+  /** Changed lines beyond the server's per-commit cap. */
+  readonly diffTruncated?: number;
 };
 
 /** Result of `api.entityHistory`. The endpoint's 503 (GitHub App

@@ -200,7 +200,13 @@ Accept-Language fallback for first visits), so the first paint is
 already in the user's language — no EN→FR flash, `<html lang>` correct
 server-side, and locale-dependent fetches (`/api/audit?locale=`) fire
 once instead of EN-then-FR. localStorage kept as legacy fallback,
-reconciled post-hydration.
+reconciled post-hydration. Also: /explore filters no longer sticky
+(maintainer call), inline editing extended to the DEFAULT explore mode
+(tap a value in the always-expanded rows — same CellEditor as columns
+mode, booleans toggle in place), and the history page shows each
+commit's changed lines inline (server fetches per-commit patches for
+the newest 25 commits, `+`/`-` lines capped at 30 with a truncation
+count — what changed is visible without clicking through to GitHub).
 
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,

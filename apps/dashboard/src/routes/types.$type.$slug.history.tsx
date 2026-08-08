@@ -188,42 +188,79 @@ function EntityHistoryComponent(): JSX.Element {
           <Card bleed size='sm' className='py-0'>
             <ul className='divide-border divide-y'>
               {commits.map((c) => (
-                <li key={c.sha} className='flex items-center gap-3 px-4 py-2.5'>
-                  <div className='min-w-0 flex-1'>
-                    <p className='truncate text-sm font-medium'>
-                      {firstLine(c.message)}
-                    </p>
-                    <p className='text-muted-foreground mt-0.5 truncate text-xs'>
-                      <span
-                        {...(c.authorLogin !== undefined
-                          ? { title: `@${c.authorLogin}` }
-                          : {})}
-                      >
-                        {c.authorName}
-                      </span>
-                      {' · '}
-                      <span title={c.date}>{formatCommitDate(c.date, locale)}</span>
-                    </p>
+                <li key={c.sha} className='px-4 py-2.5'>
+                  <div className='flex items-start gap-3'>
+                    <div className='min-w-0 flex-1'>
+                      <p className='truncate text-sm font-medium'>
+                        {firstLine(c.message)}
+                      </p>
+                      <p className='text-muted-foreground mt-0.5 truncate text-xs'>
+                        <span
+                          {...(c.authorLogin !== undefined
+                            ? { title: `@${c.authorLogin}` }
+                            : {})}
+                        >
+                          {c.authorName}
+                        </span>
+                        {' · '}
+                        <span title={c.date}>{formatCommitDate(c.date, locale)}</span>
+                      </p>
+                    </div>
+                    <Badge variant='secondary' className='shrink-0 font-mono text-xs'>
+                      {c.shortSha}
+                    </Badge>
+                    <Button
+                      render={
+                        <a
+                          href={c.htmlUrl}
+                          target='_blank'
+                          rel='noreferrer'
+                          aria-label={t('historyOpenCommit')}
+                          title={t('historyOpenCommit')}
+                        />
+                      }
+                      variant='ghost'
+                      size='icon'
+                      className='text-muted-foreground hover:text-foreground shrink-0'
+                    >
+                      <ExternalLink className='size-4' />
+                    </Button>
                   </div>
-                  <Badge variant='secondary' className='shrink-0 font-mono text-xs'>
-                    {c.shortSha}
-                  </Badge>
-                  <Button
-                    render={
-                      <a
-                        href={c.htmlUrl}
-                        target='_blank'
-                        rel='noreferrer'
-                        aria-label={t('historyOpenCommit')}
-                        title={t('historyOpenCommit')}
-                      />
-                    }
-                    variant='ghost'
-                    size='icon'
-                    className='text-muted-foreground hover:text-foreground shrink-0'
-                  >
-                    <ExternalLink className='size-4' />
-                  </Button>
+                  {
+                    /* Changed lines, visible without a click. `+` rows
+                    green, `-` rows red; long diffs end with a muted
+                    "+n more" count (the full diff is one commit-link
+                    away). Newest commits only — older rows have no
+                    diffLines (server per-commit API budget). */
+                  }
+                  {c.diffLines !== undefined && c.diffLines.length > 0
+                    ? (
+                      <div className='bg-muted/20 mt-2 overflow-x-auto rounded-md border px-2.5 py-1.5 font-mono text-xs leading-relaxed'>
+                        {c.diffLines.map((line, i) => (
+                          <div
+                            key={i}
+                            className={`whitespace-pre ${
+                              line.startsWith('+')
+                                ? 'text-emerald-600 dark:text-emerald-400'
+                                : 'text-red-600 dark:text-red-400'
+                            }`}
+                          >
+                            {line}
+                          </div>
+                        ))}
+                        {(c.diffTruncated ?? 0) > 0
+                          ? (
+                            <div className='text-muted-foreground mt-0.5'>
+                              {t('historyDiffMore').replace(
+                                '{n}',
+                                String(c.diffTruncated),
+                              )}
+                            </div>
+                          )
+                          : null}
+                      </div>
+                    )
+                    : null}
                 </li>
               ))}
             </ul>
