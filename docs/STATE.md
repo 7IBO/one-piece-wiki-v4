@@ -100,6 +100,32 @@ volume/databook-card + remaining infobox mappers (the crawl report
 ranks them by frequency), the AI prose-extraction pass. Next:
 W-B detail view, W-F2 UX conventions.
 
+**2026-08-08 — dashboard redesign (UX audit → ADR-083 → W-F2 layout
+system → read-first form).** Grounded in a 9-agent code audit (124
+file-anchored findings) + real Playwright screenshots (9 routes × 3
+viewports, before/after). Shipped: **ADR-083** `recommended` property
+tier + `recommended_relations` (schema-checked, flagged on
+character/manga-chapter/anime-episode); **layout tokens** `--header-h`
+/ `--page-px` + `bleed` utility (mobile full-bleed surfaces, `<Card
+bleed>`); unified radii/focus/invalid recipes; ≥16px mobile form
+controls (no iOS focus-zoom); single mobile nav (hamburger removed,
+BottomNav Rules-of-Hooks crash fixed); **read-first entity form**
+(filled rows collapse to value+provenance+×N summaries — Luffy mobile
+page 3100px → ~1500px; recommended-empty rows visible with amber tag;
+**live client Zod** via the browser-safe `entity-schema.ts` extraction
+— same validator at form/server/CLI); **completeness meters**
+(PropertyNav "x/y of a complete article", per-row list meters via
+`server/completeness.ts`, content-based fill semantics); richer lists
+(two-line rows + meters, grouped home with empty types collapsed,
+localized plurals, actionable empty states); admin queue
+(primary+overflow, confirm dialogs, `reloading` guard against
+double-approve); drafts undo toasts; LoadFailed retry;
+stale-while-refetch `useApiResource`; apparitions display names +
+fallback "Other" group + pending badges. New W-F2 §layout/borders/
+responsive + §field-states conventions in CONVENTIONS.md. Follow-ups
+tracked in ROADMAP §4 task 5 (narratives editor, cross-field rules
+ADR, microcopy sweep, external-images licensing decision).
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below

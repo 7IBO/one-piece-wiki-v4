@@ -71,7 +71,7 @@ function AdminQueueComponent(): JSX.Element {
   const { user, loaded } = useCurrentUser();
   const isAdmin = user?.kind === 'github' && user.admin === true;
 
-  const { data, error, reload } = useApiResource(
+  const { data, error, reload, reloading } = useApiResource(
     () => (isAdmin ? api.adminPulls() : Promise.resolve({ pulls: [] as readonly QueueItem[] })),
     [isAdmin],
   );
@@ -189,7 +189,7 @@ function AdminQueueComponent(): JSX.Element {
                       variant='default'
                       size='sm'
                       className='gap-1'
-                      disabled={busy === pr.prNumber}
+                      disabled={busy === pr.prNumber || reloading}
                       onClick={() => setExpanded((e) => (e === pr.prNumber ? null : pr.prNumber))}
                       aria-expanded={expanded === pr.prNumber}
                     >
@@ -209,7 +209,7 @@ function AdminQueueComponent(): JSX.Element {
                             variant='ghost'
                             size='icon-sm'
                             aria-label={t('moreOptions')}
-                            disabled={busy !== null}
+                            disabled={busy !== null || reloading}
                           />
                         }
                       >
@@ -221,7 +221,7 @@ function AdminQueueComponent(): JSX.Element {
                           variant='ghost'
                           size='sm'
                           className='w-full justify-start gap-1.5'
-                          disabled={busy !== null}
+                          disabled={busy !== null || reloading}
                           onClick={() => requestAction('approve', pr)}
                         >
                           <Check className='size-3.5' />
@@ -232,7 +232,7 @@ function AdminQueueComponent(): JSX.Element {
                           variant='ghost'
                           size='sm'
                           className='text-destructive hover:text-destructive w-full justify-start gap-1.5'
-                          disabled={busy !== null}
+                          disabled={busy !== null || reloading}
                           onClick={() => requestAction('reject', pr)}
                         >
                           <X className='size-3.5' />

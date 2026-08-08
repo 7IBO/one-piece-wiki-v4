@@ -49,11 +49,34 @@ export function completenessExpectation(
 }
 
 /**
+ * True when at least one entry of the property carries actual content
+ * — a non-empty `value` or a non-empty `value_key`. Presence alone is
+ * NOT enough: an importer or hand edit can persist `{ "value": "" }`,
+ * and counting it would make this meter disagree with the form's
+ * content-based `isEntryEmpty` semantics on the same entity.
+ */
+function propertyHasContent(value: unknown): boolean {
+  const entryList = Array.isArray(value) ? value : [value];
+  for (const entry of entryList) {
+    if (entry === null || entry === undefined || typeof entry !== 'object') continue;
+    const record = entry as Record<string, unknown>;
+    const v = record['value'];
+    if (Array.isArray(v)) {
+      if (v.length > 0) return true;
+    } else if (v !== undefined && v !== null && (typeof v !== 'string' || v !== '')) {
+      return true;
+    }
+    const key = record['value_key'];
+    if (typeof key === 'string' && key !== '') return true;
+  }
+  return false;
+}
+
+/**
  * Count how many expected fields the entity actually carries.
  *
- * - A property is filled when its key is present with ≥1 entry:
- *   historical properties hold an array (length ≥ 1), non-historical
- *   ones hold a single entry object (presence counts).
+ * - A property is filled when ≥1 entry has actual content (non-empty
+ *   `value` or `value_key`) — mirrors the form's `isEntryEmpty`.
  * - A recommended relation is filled when ≥1 relation of that type
  *   exists, regardless of target.
  *
@@ -75,7 +98,7 @@ export function computeCompleteness(
   for (const id of expectation.propertyIds) {
     const value = properties[id];
     if (value === undefined || value === null) continue;
-    if (Array.isArray(value) ? value.length > 0 : true) filled += 1;
+    if (propertyHasContent(value)) filled += 1;
   }
 
   if (expectation.relationTypeIds.length > 0) {

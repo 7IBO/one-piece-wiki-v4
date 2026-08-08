@@ -800,7 +800,7 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
               }}
               placeholder='1, 5-10, 96, 432-450'
               rows={3}
-              className='border-input bg-background focus-visible:border-ring w-full rounded-md border px-2 py-1.5 font-mono text-xs outline-none'
+              className='border-input bg-background focus-visible:border-ring w-full rounded-md border px-2 py-1.5 font-mono text-base outline-none sm:text-xs'
             />
             {rangeError !== null
               ? (

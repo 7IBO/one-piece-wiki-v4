@@ -31,7 +31,7 @@ import { toast } from 'sonner';
 import { api } from './api';
 import { useCurrentUser } from './auth';
 import { useLocale, useT } from './form/locale';
-import { clearAllDrafts, clearDraft, readDraft, useAllDrafts } from './form/use-draft';
+import { clearAllDrafts, clearDraft, readDraft, useAllDrafts, writeDraft } from './form/use-draft';
 
 function relativeTime(savedAt: number, locale: 'en' | 'fr'): string {
   const diff = Date.now() - savedAt;
@@ -202,11 +202,28 @@ export function DraftsIndicator(): JSX.Element | null {
                   <Button
                     variant='ghost'
                     size='icon'
-                    className='size-7 text-muted-foreground hover:text-destructive'
+                    className='size-8 text-muted-foreground hover:text-destructive'
                     aria-label={t('discard')}
                     title={t('discard')}
                     onClick={() => {
-                      void clearDraft(d.entityId).then(refresh);
+                      // Same snapshot+undo path as MyDrafts (review
+                      // finding, 2026-08): a mis-click next to every
+                      // row must not be irreversible.
+                      void (async () => {
+                        const snapshot = await readDraft(d.entityId);
+                        await clearDraft(d.entityId);
+                        refresh();
+                        if (snapshot === null) return;
+                        toast(t('draftDiscarded'), {
+                          action: {
+                            label: t('undo'),
+                            onClick: () => {
+                              void writeDraft(d.entityId, snapshot.data, snapshot.translations)
+                                .then(refresh);
+                            },
+                          },
+                        });
+                      })();
                     }}
                   >
                     <Trash2 className='size-3.5' />

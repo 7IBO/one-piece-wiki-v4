@@ -30,6 +30,7 @@ import {
   AlertCircle,
   Check,
   ChevronDown,
+  Circle,
   Globe,
   ListTreeIcon,
   MoreHorizontal,
@@ -890,21 +891,18 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     );
   }
 
-  // Recommended-but-hidden properties (ADR-083) float to the top of
-  // the "+ Add property" picker with a visible tag, so completing an
-  // article is a guided path rather than a memory exercise.
-  const adderItems = [...hidden]
-    .sort((a, b) => Number(b.recommended ?? false) - Number(a.recommended ?? false))
-    .map((decl) => {
-      const pt = props.propertyTypes[decl.id];
-      const label = pt?.labels[locale] ?? pt?.labels.en ?? decl.id;
-      const isRec = decl.recommended ?? false;
-      return {
-        value: decl.id,
-        label: isRec ? `${label} · ${t('recommendedTag')}` : label,
-        searchText: `${label} ${decl.id}`,
-      };
-    });
+  // Only genuinely-optional properties reach the picker — required and
+  // recommended ones always render on the page (ADR-083), so no
+  // ordering/tagging is needed here.
+  const adderItems = hidden.map((decl) => {
+    const pt = props.propertyTypes[decl.id];
+    const label = pt?.labels[locale] ?? pt?.labels.en ?? decl.id;
+    return {
+      value: decl.id,
+      label,
+      searchText: `${label} ${decl.id}`,
+    };
+  });
 
   return (
     <div className='pb-24'>
@@ -1217,8 +1215,12 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   const isHistorical = p.propertyType.historical;
   const isLocalizable = p.propertyType.localizable;
 
-  const isRequiredMissing = p.required && p.entries.length === 0;
-  const isRecommendedMissing = !p.required && p.recommended && p.entries.length === 0;
+  // Content-based, not presence-based — mirrors the nav's
+  // `isEntryEmpty` semantics so the row highlight and the sidebar dot
+  // never disagree about the same property (review finding, 2026-08).
+  const hasContent = p.entries.some((e) => !isEntryEmpty(e, p.propertyType, p.translations));
+  const isRequiredMissing = p.required && !hasContent;
+  const isRecommendedMissing = !p.required && p.recommended && !hasContent;
   const hasError = (p.errors?.length ?? 0) > 0;
 
   const [open, setOpen] = useState(p.defaultOpen);
@@ -1348,7 +1350,9 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
             >
               {hasError
                 ? <AlertCircle className='text-destructive size-3.5 shrink-0' aria-hidden />
-                : <Check className='size-3.5 shrink-0 text-emerald-500/80' aria-hidden />}
+                : hasContent
+                ? <Check className='size-3.5 shrink-0 text-emerald-500/80' aria-hidden />
+                : <Circle className='size-3 shrink-0 text-amber-500/70' aria-hidden />}
               <span className='w-32 shrink-0 truncate sm:w-40'>{labelBlock}</span>
               <span className='min-w-0 flex-1 truncate text-sm'>
                 {summary ?? <span className='text-muted-foreground'>—</span>}
@@ -1814,7 +1818,7 @@ function LocalizedValueField(p: {
           onChange={(e) => p.onTranslate(locale, i18nKey, e.target.value)}
           placeholder={placeholder}
           disabled={i18nKey === ''}
-          className='flex-1 min-w-0 bg-transparent px-2 text-xs placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+          className='flex-1 min-w-0 bg-transparent px-2 text-base placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-xs'
         />
         {
           /* Translations popover trigger — pinned right inside the same
@@ -1882,7 +1886,7 @@ function LocalizedValueField(p: {
                       onChange={(e) => p.onTranslate(loc, i18nKey, e.target.value)}
                       placeholder={fallbackValue !== null ? fallbackValue.text : ''}
                       disabled={i18nKey === ''}
-                      className='flex-1 min-w-0 bg-transparent px-2 text-xs placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+                      className='flex-1 min-w-0 bg-transparent px-2 text-base placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-xs'
                     />
                   </div>
                 );
