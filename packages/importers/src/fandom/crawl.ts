@@ -21,9 +21,10 @@ import type { FandomClient, ParsedPage } from './client.ts';
 import { mapEpisode } from './episode.ts';
 import type { FandomRegistry } from './registry.ts';
 import { buildTitleIndex, detectEntityLinks, normalizeTitle } from './registry.ts';
+import { mapVolume } from './volume.ts';
 import { findTemplate, parseRedirect, parseTemplates } from './wikitext.ts';
 
-export type MapperKind = 'chapter' | 'episode' | 'character';
+export type MapperKind = 'chapter' | 'episode' | 'character' | 'volume';
 
 type Mapper = (page: ParsedPage) => (MapperEmit & { warnings: readonly string[]; }) | null;
 
@@ -35,6 +36,7 @@ function buildMappers(ctx: CharacterMapContext): Record<MapperKind, Mapper> {
     chapter: mapChapter,
     episode: mapEpisode,
     character: (page) => mapCharacter(page, ctx),
+    volume: mapVolume,
   };
 }
 
@@ -43,6 +45,7 @@ const BOX_TO_KIND: readonly (readonly [string, MapperKind])[] = [
   ['chapter box', 'chapter'],
   ['episode box', 'episode'],
   ['char box', 'character'],
+  ['volume box', 'volume'],
 ];
 
 /**

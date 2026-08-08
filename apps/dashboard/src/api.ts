@@ -331,6 +331,22 @@ export type AuditResponse = {
   readonly rows: readonly AuditRow[];
 };
 
+// ── Narratives (per-locale prose Markdown — DATA_MODEL § Narratives) ──
+
+/** `GET /api/entities/:type/:slug/narrative` — raw Markdown per
+ *  locale, `null` when no narrative file exists for that locale. */
+export type NarrativeContent = {
+  readonly en: string | null;
+  readonly fr: string | null;
+};
+
+/** Body of the narrative save — only the touched locales are sent.
+ *  Empty/blank text deletes the locale's file server-side. */
+export type NarrativeSaveBody = {
+  readonly en?: string;
+  readonly fr?: string;
+};
+
 export type PresignResult = {
   readonly uploadUrl: string;
   /**
@@ -685,6 +701,36 @@ export const api = {
     }[];
   }> {
     return getJson('/api/me/contributions');
+  },
+  // ── Narratives (per-locale prose Markdown) ──
+  /**
+   * Both locale narratives of an entity (raw Markdown, `null` when
+   * absent). Not cached: the editor fetches lazily on panel mount and
+   * freshness matters right after a save.
+   */
+  async getNarrative(type: string, slug: string): Promise<NarrativeContent> {
+    return getJson<NarrativeContent>(
+      `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/narrative`,
+    );
+  },
+  /**
+   * Save one or both locale narratives. Opens (or resumes) a PR
+   * carrying only the touched `.md` files — entity JSON is never
+   * involved. Empty text deletes the locale's file.
+   */
+  async saveNarrative(
+    type: string,
+    slug: string,
+    body: NarrativeSaveBody,
+  ): Promise<SaveResult> {
+    const result = await postJson<SaveResult>(
+      `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/narrative`,
+      body,
+    );
+    // A narrative save can open a NEW PR on the entity — the entity
+    // page's resume-PR banner reads from getEntity, so drop caches.
+    invalidateAfterSave();
+    return result;
   },
   /** Admin moderation queue: every open via-dashboard PR (W-B). */
   async adminPulls(): Promise<{ pulls: readonly QueueItem[]; }> {

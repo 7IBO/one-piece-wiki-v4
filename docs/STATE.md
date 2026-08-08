@@ -5,7 +5,23 @@ session can pick up mid-stream. Architectural _rationale_ lives in
 `/docs/DECISIONS.md` (ADRs); the build order in `/docs/ROADMAP.md`;
 this file is the current status + the open threads.
 
-**Last updated**: 2026-06-14 (evening — C8 cluster closed)
+**Last updated**: 2026-08-08 (narrative editor v1)
+
+**2026-08-08 — Narrative editor v1 (the missing content brick).**
+Path convention settled and documented in DATA_MODEL § Narratives:
+`data/universes/<u>/narratives/<locale>/<entityType>/<fileBase>.md`,
+`<fileBase>` = the entity JSON's basename (pairs 1:1 with the entity
+file). Server: `GET/POST /api/entities/:type/:slug/narrative`
+(server/narrative.ts pure helpers, unit-tested; POST reuses the
+entity-save PR flow via the new `submitNarrativeEdit` in
+github-client — resume-PR routing included; emptied text deletes the
+file, `commitMultipleFiles` now supports `content: null` deletions).
+Dashboard: collapsed "Narratif" section on the entity page
+(`NarrativeEditor.tsx`, EN/FR tabs + word counter + concision hint,
+read-only until signed in). Prod data source now bundles
+`data/**/*.md`. No optimistic locking on narratives in v1 (cast-flow
+trade-off). Open thread: `[[type:slug]]` link validation + build
+pipeline parsing of narratives still unimplemented (phase later).
 
 **2026-06-14 (evening) — C8 closed + C9/C5 additive waves.** Catalogue **36
 entities / 101 properties / 70 relations / 63 vocabularies**. ADR-073
@@ -306,6 +322,24 @@ still discards never-filled entries) instead of leaving the page;
 explicit close pops the pushed entry so the stack stays balanced;
 deep-linked `?edit` restores the editor. Drawer/new-entity forms keep
 local-only state (`syncEditorToUrl` opt-in).
+
+## 2026-08-08 (i) — Fandom volume mapper
+
+`mapVolume` (`packages/importers/src/fandom/volume.ts`): Volume Box →
+`volume` entity (number from the "Volume N" page title, EN title →
+`volume.<n>.title` sidecar, JP release → `released_at` territory jp).
+Schema gaps stay warnings: isbn/pages (no property), EN release
+(`released_at` single-valued), chapters range (belongs on the chapter
+side as `part-of-volume` — the warning lists the ordinal range).
+Wired into `detectKind`/crawl + the CLI (`import:fandom volume …`).
+**Fixture `volume-12.json` is SYNTHETIC** (network policy still denies
+onepiece.fandom.com) — validate against a live capture on the first
+CI run and replace, like chapter-1044/episode-1071 were. **Arc mapper
+deliberately NOT built**: corpus arc ids are editorial shorthand
+(`arc:wano` ↔ "Wano Country Arc"), so deterministic slugify would mint
+diverging duplicates, and the required historical `name` needs a
+human-chosen `since` anchor — arc pages keep ranking via
+`unknownBoxes` until a live Arc Box capture proves a clean path.
 
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,

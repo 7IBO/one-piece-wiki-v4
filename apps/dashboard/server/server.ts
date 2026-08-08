@@ -9,6 +9,7 @@
  *   GET  /api/entities/:type
  *   GET  /api/entities/:type/:slug         { data, sha }
  *   GET  /api/entities/:type/:slug/links   { outgoing, incoming, conflicts }
+ *   GET  /api/entities/:type/:slug/narrative  { en: string|null, fr: string|null }
  *   GET  /api/entities/:type/:slug/history commits touching the entity file
  *                                          (503 without GitHub credentials)
  *   GET  /api/history                      recent commits across ALL data,
@@ -26,6 +27,9 @@
  *   POST /api/uploads/presign               mint R2 PUT URL
  *   POST /api/entities/:type                opens a PR creating a new entity
  *   POST /api/entities/:type/:slug          opens a PR with the edit
+ *   POST /api/entities/:type/:slug/narrative  {en?, fr?} → PR with the
+ *                                           narrative .md files (empty
+ *                                           text deletes the file)
  *   GET  /api/sources/:type/:slug/cast      reverse-scan apparitions on a source
  *   POST /api/sources/:type/:slug/cast      bulk add/remove cast → single PR
  *
@@ -50,6 +54,7 @@ import {
   type OpenContribution,
   OptimisticLockError,
   submitEntityEdit,
+  submitNarrativeEdit,
   submitSourceCastEdit,
 } from '@onepiece-wiki/github-client';
 import {
@@ -74,6 +79,12 @@ import {
   type HistoryDiffContext,
 } from './history-diff.ts';
 import { computeEntityLinks } from './links.ts';
+import {
+  NARRATIVE_LOCALES,
+  narrativePath,
+  normalizeNarrativeText,
+  parseNarrativeSave,
+} from './narrative.ts';
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
 import { buildCookie, clearCookie, newAnonymousSession, newGithubSession } from './session.ts';
 
@@ -775,6 +786,127 @@ async function handleEntityLinks(type: string, slug: string): Promise<Response> 
     })),
     conflicts: links.conflicts,
   });
+}
+
+// ── Narratives (per-locale prose Markdown — see /docs/DATA_MODEL.md
+// § Narratives). Content ≠ structure: these handlers only ever touch
+// `data/universes/<u>/narratives/<locale>/<type>/<fileBase>.md`,
+// never entity JSON. Pure helpers live in server/narrative.ts
+// (unit-tested); the PR mechanics reuse the same github-client flow
+// as entity saves (`submitNarrativeEdit`). ──
+
+/**
+ * GET /api/entities/:type/:slug/narrative →
+ *   { en: string | null, fr: string | null }
+ *
+ * Reads both locale files off the data source (fs in dev, in-memory
+ * Vite bundle in prod — same lag-until-redeploy as every other read,
+ * ADR-019). `null` = no narrative for that locale yet.
+ */
+async function handleGetNarrative(type: string, slug: string): Promise<Response> {
+  const snap = await snapshot();
+  const entity = await findEntity(snap, type, slug);
+  if (entity === undefined) return notFound(`No entity of type ${type} with slug ${slug}`);
+  const fileBase = entity.id.split(':')[1] ?? slug;
+  const out: Record<string, string | null> = { en: null, fr: null };
+  for (const locale of NARRATIVE_LOCALES) {
+    const path = resolve(REPO_ROOT, narrativePath(UNIVERSE, locale, type, fileBase));
+    // eslint-disable-next-line no-await-in-loop
+    out[locale] = await dashboardDataSource.readTextFile(path);
+  }
+  return json(out);
+}
+
+/**
+ * POST /api/entities/:type/:slug/narrative — body `{ en?, fr? }`.
+ * Opens (or resumes) a PR carrying the touched narrative .md files:
+ * non-empty text is normalized and written, empty/blank text DELETES
+ * the locale's file. Same auth, rate-limit and resume-PR mechanics as
+ * the entity save endpoint; guards live in the dispatcher.
+ */
+async function handleSaveNarrative(
+  cfg: GitHubAppConfig,
+  session: DashboardSession,
+  type: string,
+  slug: string,
+  req: Request,
+): Promise<Response> {
+  if (session.kind === 'github' && isBlockedLogin(session.login)) {
+    return forbidden(`User @${session.login} is blocked.`);
+  }
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch (err) {
+    return badRequest(`Invalid JSON: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  const parsed = parseNarrativeSave(body);
+  if (!parsed.ok) return badRequest(parsed.error);
+
+  let anonymousNickname: string | null = null;
+  if (session.kind === 'anonymous') {
+    const checked = normalizeNickname(session.nickname);
+    if (checked !== null && typeof checked === 'object') return badRequest(checked.error);
+    anonymousNickname = checked;
+  }
+
+  const snap = await snapshot();
+  const entity = await findEntity(snap, type, slug);
+  if (entity === undefined) return notFound(`No entity of type ${type} with slug ${slug}`);
+  const fileBase = entity.id.split(':')[1] ?? slug;
+
+  // One file per submitted locale. Normalized text → write; empty
+  // after normalization → delete (`content: null`, a no-op when the
+  // file doesn't exist — commitMultipleFiles skips it).
+  const files: { path: string; content: string | null; }[] = [];
+  for (const locale of NARRATIVE_LOCALES) {
+    const raw = parsed.value[locale];
+    if (raw === undefined) continue;
+    files.push({
+      path: narrativePath(UNIVERSE, locale, type, fileBase),
+      content: normalizeNarrativeText(raw),
+    });
+  }
+
+  const octokit = await installationClient(cfg);
+  // Resume-editing routing — identical to handleSaveEntity: an open
+  // PR by this contributor on this entity receives the commit instead
+  // of a parallel PR appearing.
+  let existingPR:
+    | { number: number; htmlUrl: string; headBranch: string; }
+    | undefined;
+  if (session.kind === 'github' || (session.kind === 'anonymous' && session.nickname !== '')) {
+    try {
+      const identity = session.kind === 'github'
+        ? { kind: 'github' as const, login: session.login }
+        : { kind: 'anonymous' as const, nickname: session.nickname };
+      const open = await findOpenPRForEntity(octokit, cfg, identity, entity.id);
+      if (open !== null) {
+        existingPR = {
+          number: open.number,
+          htmlUrl:
+            `https://github.com/${cfg.dataRepo.owner}/${cfg.dataRepo.repo}/pull/${open.number}`,
+          headBranch: open.headBranch,
+        };
+      }
+    } catch (err) {
+      process.stderr.write(
+        `[resume-pr] narrative-lookup failed for ${entity.id}: ${
+          err instanceof Error ? err.message : String(err)
+        }\n`,
+      );
+    }
+  }
+  const pr = await submitNarrativeEdit(octokit, cfg, {
+    entityId: entity.id,
+    files,
+    contributorLogin: session.kind === 'github' ? session.login : null,
+    contributorId: session.kind === 'github' ? session.userId : null,
+    ...(anonymousNickname !== null ? { anonymousNickname } : {}),
+    ...(existingPR !== undefined ? { existingPR } : {}),
+  });
+  return json({ ok: true, pr });
 }
 
 // Cap on the number of commits returned by the entity-history
@@ -2271,6 +2403,30 @@ export async function handleApiRequest(req: Request): Promise<Response> {
         historyMatch[2]!,
         url.searchParams.get('locale') === 'fr' ? 'fr' : 'en',
       );
+    }
+
+    // GET/POST /api/entities/:type/:slug/narrative — per-locale prose
+    // Markdown. Matched BEFORE the per-entity regex (like /links and
+    // /history) so "narrative" never parses as a slug. Same write
+    // guards as the entity save endpoint.
+    const narrativeMatch = /^\/api\/entities\/([^/]+)\/([^/]+)\/narrative$/.exec(path);
+    if (narrativeMatch !== null) {
+      const [, nType = '', nSlug = ''] = narrativeMatch;
+      if (req.method === 'GET') return await handleGetNarrative(nType, nSlug);
+      if (req.method === 'POST') {
+        if (config === null) return serviceUnavailable(`Save disabled: ${configError}`);
+        if (session === null) {
+          return unauthorized('Sign in (anonymous or GitHub) before saving.');
+        }
+        if (!isAdminSession()) {
+          if (rateLimitHit('save', rateLimitKey(), ANON_WRITE_LIMIT)) {
+            return tooManyRequests(
+              `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
+            );
+          }
+        }
+        return await handleSaveNarrative(config, session, nType, nSlug, req);
+      }
     }
 
     const entityMatch = /^\/api\/entities\/([^/]+)\/([^/]+)$/.exec(path);

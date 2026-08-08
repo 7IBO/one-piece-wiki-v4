@@ -26,8 +26,9 @@ import { FandomClient, type ParsedPage } from '../fandom/client.ts';
 import { crawl } from '../fandom/crawl.ts';
 import { mapEpisode } from '../fandom/episode.ts';
 import { buildTitleIndex, type FandomRegistry, staleEntries } from '../fandom/registry.ts';
+import { mapVolume } from '../fandom/volume.ts';
 
-type MapperKind = 'chapter' | 'episode' | 'character';
+type MapperKind = 'chapter' | 'episode' | 'character' | 'volume';
 
 const REGISTRY_PATH = join(REPO_ROOT, 'data', 'import', 'fandom-pages.json');
 
@@ -71,6 +72,7 @@ async function buildMappers(): Promise<
     chapter: mapChapter,
     episode: mapEpisode,
     character: (page) => mapCharacter(page, ctx),
+    volume: mapVolume,
   };
 }
 
@@ -145,7 +147,8 @@ if (kind === 'crawl') {
     process.exitCode = 2; // distinct from crash — "work to do".
   }
 } else if (
-  kind !== undefined && ['chapter', 'episode', 'character'].includes(kind) && pages.length > 0
+  kind !== undefined && ['chapter', 'episode', 'character', 'volume'].includes(kind)
+  && pages.length > 0
 ) {
   const mapper = (await buildMappers())[kind as MapperKind];
   let failures = 0;
@@ -178,7 +181,7 @@ if (kind === 'crawl') {
   if (failures > 0) process.exitCode = 1;
 } else {
   process.stderr.write(
-    'Usage: bun run import:fandom <chapter|episode|character> <page…> [--stage] [--overwrite]\n'
+    'Usage: bun run import:fandom <chapter|episode|character|volume> <page…> [--stage] [--overwrite]\n'
       + '       bun run import:fandom crawl --category <name>… [--depth N] [--page <title>…] [--limit N] [--stage]\n'
       + '       bun run import:fandom check-updates\n',
   );

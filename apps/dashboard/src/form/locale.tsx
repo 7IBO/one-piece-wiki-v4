@@ -685,6 +685,26 @@ const UI_STRINGS = {
     fr: 'Générées depuis les relations stockées sur les entités liées — modifiez-les là-bas.',
   },
   autoBadge: { en: 'auto', fr: 'auto' },
+  // Narrative editor (per-entity prose Markdown)
+  narrativeTitle: { en: 'Narrative', fr: 'Narratif' },
+  narrativeHint: {
+    en:
+      'Short prose summary (1–3 paragraphs, Markdown + [[type:slug]] links). Keep it concise — much lighter than a Fandom article.',
+    fr:
+      'Résumé en prose court (1 à 3 paragraphes, Markdown + liens [[type:slug]]). Restez concis — bien plus léger qu’un article Fandom.',
+  },
+  narrativePlaceholder: {
+    en: 'One to three short paragraphs…',
+    fr: 'Un à trois courts paragraphes…',
+  },
+  narrativeWords: { en: '{n} word(s)', fr: '{n} mot(s)' },
+  narrativeEmptyDeletes: {
+    en: 'Leaving a language empty removes its narrative file.',
+    fr: 'Laisser une langue vide supprime son fichier narratif.',
+  },
+  narrativeSave: { en: 'Save narrative', fr: 'Enregistrer le narratif' },
+  narrativeSaving: { en: 'Saving…', fr: 'Enregistrement…' },
+  narrativeNone: { en: 'No narrative yet', fr: 'Pas encore de narratif' },
 } as const;
 
 /**

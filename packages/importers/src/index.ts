@@ -106,4 +106,5 @@ export * from './fandom/client.ts';
 export * from './fandom/crawl.ts';
 export * from './fandom/episode.ts';
 export * from './fandom/registry.ts';
+export * from './fandom/volume.ts';
 export * from './fandom/wikitext.ts';
