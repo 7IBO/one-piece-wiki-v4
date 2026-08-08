@@ -8,6 +8,41 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-095 — Japanese data locales: `ja` + `ja-latn`, dashboard-only, romanization restricted to name-like values
+
+**Date**: 2026-08-08
+
+**Context**: Maintainer directive: capture the ORIGINAL Japanese
+names, and their romanization, without touching the UI languages or
+the public wiki. Romanization only makes sense on name-like data
+("nom etc"), never on descriptions or free text.
+
+**Decision**:
+
+1. Two locale tiers: `Locale` (UI: en/fr, unchanged) vs new
+   `DataLocale` (en/fr/ja/ja-latn) — the locales a translation VALUE
+   may exist in. `ja-latn` is the proper BCP-47 subtag for romanized
+   Japanese (not an invented "ja-rom").
+2. New optional property-type flag **`romanizable`**: only flagged
+   properties offer a `ja-latn` input. Flagged: `name`, `epithet`,
+   `title_key`. The restriction is schema-driven — no property list
+   in application code.
+3. Dashboard entity form: 日本語 input on every localizable value,
+   Rōmaji input behind the `romanizable` flag. No locale switcher
+   change anywhere; the public wiki ignores both in v1 (they land in
+   the artifact's `translations` table for future rendering — e.g. an
+   "original name" infobox row). Narratives stay en/fr.
+4. Storage: the existing per-locale translation tree grows `ja/` and
+   `ja-latn/` dirs on first write. Missing = untranslated; no
+   completeness check requires them.
+
+**Consequences**: additive; save flow and translation plumbing are
+typed on `DataLocale` end-to-end (en/fr required, ja/ja-latn
+optional). Seeded Luffy's name/epithet in both new locales as the
+proving example.
+
+---
+
 ## ADR-094 — In-universe documents as first-class entities
 
 **Date**: 2026-08-08

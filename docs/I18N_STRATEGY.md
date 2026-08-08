@@ -240,6 +240,31 @@ Adding e.g. Japanese means:
 
 The data model never needs to change to support a new locale.
 
+## Data locales vs UI locales (ADR-095)
+
+Since 2026-08-08 the locale set is two-tiered:
+
+- **UI locales** (`Locale`: `en`, `fr`) — what the dashboard and the
+  public wiki chrome render in, what display-name resolution falls
+  back through. Unchanged.
+- **Data locales** (`DataLocale`: `en`, `fr`, `ja`, `ja-latn`) — the
+  locales a TRANSLATION VALUE may exist in. `ja` is the original
+  Japanese script; `ja-latn` (proper BCP-47 subtag) is the romanized
+  transliteration.
+
+`ja` and `ja-latn` are **editable in the dashboard only**: the entity
+form offers a 日本語 input on every localizable value, and a Rōmaji
+input ONLY on property types flagged `romanizable: true` (`name`,
+`epithet`, `title_key` — name-like values; never descriptions,
+narratives or any free text). Neither appears in any locale switcher,
+and the public wiki does not render them in v1 (they ride the
+`translations` table for future use — e.g. a "original name" infobox
+row). Narratives stay `en`/`fr`.
+
+Storage is the normal per-locale tree
+(`translations/ja/…`, `translations/ja-latn/…`); missing files mean
+"not translated yet" and no completeness check requires them.
+
 ## Locale-specific formatting
 
 Numbers (especially bounties), dates, and units follow locale conventions:
