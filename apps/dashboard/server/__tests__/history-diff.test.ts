@@ -18,10 +18,44 @@ const ctx: HistoryDiffContext = {
         dead: { labels: { en: 'Dead', fr: 'Mort' } },
       },
     }],
+    ['epistemic-statuses', {
+      values: {
+        confirmed: { labels: { en: 'Confirmed', fr: 'Confirmé' } },
+      },
+    }],
+    ['family-relations', {
+      values: {
+        sworn_brother: { labels: { en: 'Sworn brother', fr: 'Frère juré' } },
+      },
+    }],
+  ]),
+  qualifierTypes: new Map([
+    ['epistemic_status', {
+      labels: { en: 'Epistemic status', fr: 'Statut épistémique' },
+      value_type: 'enum',
+      enum_ref: 'epistemic-statuses',
+    }],
+    ['event', { labels: { en: 'Event', fr: 'Évènement' }, value_type: 'entity_ref' }],
+    ['until', { labels: { en: 'Until', fr: "Jusqu'à" }, value_type: 'source_ref' }],
+    // Registry says plain string — the enum_ref for relation edges
+    // comes from the relation type's own qualifier declaration.
+    ['relation_kind', {
+      labels: { en: 'Relation kind', fr: 'Type de lien' },
+      value_type: 'string',
+    }],
+  ]),
+  relationTypes: new Map([
+    ['member-of', {
+      qualifiers: [{ id: 'relation_kind', value_type: 'enum', enum_ref: 'family-relations' }],
+    }],
   ]),
   translations: { en: { 'c.x.name': 'Test Guy' }, fr: {} },
   displayNameFor: (id) =>
-    id === 'crew:straw-hat-pirates' ? { en: 'Straw Hat Pirates', fr: null } : undefined,
+    id === 'crew:straw-hat-pirates'
+      ? { en: 'Straw Hat Pirates', fr: null }
+      : id === 'event:marineford'
+      ? { en: 'Battle of Marineford', fr: 'Bataille de Marineford' }
+      : undefined,
   locale: 'en',
   propertyLabel: (id) => ({ bounty: 'Bounty', status: 'Status', name: 'Name' }[id] ?? id),
   relationLabel: (id) => (id === 'member-of' ? 'Member of' : id),
@@ -101,6 +135,117 @@ describe('diffEntityData', () => {
     const changes = diffEntityData(null, before, ctx);
     expect(changes.map((g) => g.label).sort()).toEqual(['Bounty', 'Status']);
     expect(changes.every((g) => g.removed.length === 0)).toBe(true);
+  });
+
+  it('renders every other qualifier of a property entry as "Label : Valeur"', () => {
+    const after = {
+      ...before,
+      properties: {
+        ...before.properties,
+        status: [
+          { value: 'alive', since: 'manga-chapter:1' },
+          {
+            value: 'dead',
+            since: 'manga-chapter:574',
+            epistemic_status: 'confirmed',
+            event: 'event:marineford',
+          },
+        ],
+      },
+    };
+    const changes = diffEntityData(before, after, ctx);
+    expect(changes).toEqual([
+      {
+        label: 'Status',
+        added: [
+          'Dead · C574 · Epistemic status : Confirmed · Event : Battle of Marineford',
+        ],
+        removed: [],
+      },
+    ]);
+  });
+
+  it('compacts until like since and joins qualifier arrays with a comma', () => {
+    const after = {
+      ...before,
+      properties: {
+        ...before.properties,
+        bounty: [{
+          value: 550_000_000,
+          since: 'manga-chapter:550',
+          until: ['manga-chapter:574', 'manga-chapter:600'],
+        }],
+      },
+    };
+    const changes = diffEntityData(before, after, ctx);
+    expect(changes).toEqual([
+      {
+        label: 'Bounty',
+        added: ['550,000,000 ฿ · C550 · Until : C574, C600'],
+        removed: ['550,000,000 ฿ · C550'],
+      },
+    ]);
+  });
+
+  it('falls back to the raw key and value for unregistered qualifiers', () => {
+    const after = {
+      ...before,
+      properties: {
+        ...before.properties,
+        status: [
+          { value: 'alive', since: 'manga-chapter:1', mystery_flag: 'raw_token' },
+        ],
+      },
+    };
+    const changes = diffEntityData(before, after, ctx);
+    expect(changes).toEqual([
+      {
+        label: 'Status',
+        added: ['Alive · C1 · mystery_flag : raw_token'],
+        removed: ['Alive · C1'],
+      },
+    ]);
+  });
+
+  it('resolves relation qualifiers via the relation-type declaration enum_ref', () => {
+    const after = {
+      ...before,
+      relations: [{
+        type: 'member-of',
+        target: 'crew:straw-hat-pirates',
+        qualifiers: { since: 'manga-chapter:5', relation_kind: 'sworn_brother' },
+      }],
+    };
+    const changes = diffEntityData(before, after, ctx);
+    expect(changes).toEqual([
+      {
+        label: 'Member of',
+        added: ['Straw Hat Pirates · C5 · Relation kind : Sworn brother'],
+        removed: [],
+      },
+    ]);
+  });
+
+  it('resolves qualifier labels and enum values in the requested locale', () => {
+    const frCtx: HistoryDiffContext = { ...ctx, locale: 'fr' };
+    const after = {
+      ...before,
+      properties: {
+        ...before.properties,
+        status: [
+          { value: 'alive', since: 'manga-chapter:1' },
+          { value: 'dead', since: 'manga-chapter:574', epistemic_status: 'confirmed' },
+        ],
+      },
+    };
+    const changes = diffEntityData(before, after, frCtx);
+    expect(changes).toEqual([
+      {
+        label: 'Status',
+        added: ['Mort · C574 · Statut épistémique : Confirmé'],
+        removed: [],
+      },
+    ]);
   });
 
   it('ignores untouched properties and key-order churn', () => {

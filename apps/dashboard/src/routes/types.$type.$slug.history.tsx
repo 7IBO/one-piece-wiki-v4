@@ -10,7 +10,6 @@
  * In dev the endpoint answers 503 (no GitHub App credentials) — that
  * state renders as an informational Banner, not an error.
  */
-import { Badge } from '@/components/ui/badge';
 import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Card } from '@/components/ui/card';
@@ -20,6 +19,7 @@ import { createFileRoute, Link } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, Info } from 'lucide-react';
 import { type JSX, useMemo } from 'react';
 import { api, type HistoryCommit } from '../api';
+import { HistoryChangeGroups, HistoryCommitHeader } from '../components/HistoryChangeGroups';
 import { LoadFailed } from '../components/LoadFailed';
 import { useLocale, useT } from '../form/locale';
 import { useApiResource } from '../hooks/use-api-resource';
@@ -43,32 +43,6 @@ const UNIVERSE_ID = 'one-piece';
 function entityHistoryUrl(type: string, entityId: string): string {
   const idSlugPart = entityId.slice(entityId.indexOf(':') + 1);
   return `${DATA_REPO_URL}/commits/main/data/universes/${UNIVERSE_ID}/entities/${type}/${idSlugPart}.json`;
-}
-
-/**
- * Localized commit date: relative ("2 days ago" / "il y a 2 jours")
- * within the last month, absolute (`Intl.DateTimeFormat`, medium
- * style) beyond that. The row keeps the raw ISO date in `title` so
- * the exact timestamp is always one hover away.
- */
-function formatCommitDate(iso: string, locale: 'en' | 'fr'): string {
-  const d = new Date(iso);
-  if (Number.isNaN(d.getTime())) return iso;
-  const diffMs = Date.now() - d.getTime();
-  const diffDays = Math.floor(diffMs / 86_400_000);
-  if (diffDays < 30) {
-    const rtf = new Intl.RelativeTimeFormat(locale, { numeric: 'auto' });
-    if (diffDays >= 1) return rtf.format(-diffDays, 'day');
-    const diffHours = Math.floor(diffMs / 3_600_000);
-    if (diffHours >= 1) return rtf.format(-diffHours, 'hour');
-    return rtf.format(-Math.max(Math.floor(diffMs / 60_000), 0), 'minute');
-  }
-  return new Intl.DateTimeFormat(locale, { dateStyle: 'medium' }).format(d);
-}
-
-function firstLine(message: string): string {
-  const nl = message.indexOf('\n');
-  return nl < 0 ? message : message.slice(0, nl);
 }
 
 function EntityHistoryComponent(): JSX.Element {
@@ -191,89 +165,19 @@ function EntityHistoryComponent(): JSX.Element {
             <ul className='divide-border divide-y'>
               {commits.map((c) => (
                 <li key={c.sha} className='px-4 py-2.5'>
-                  <div className='flex items-start gap-3'>
-                    <div className='min-w-0 flex-1'>
-                      <p className='truncate text-sm font-medium'>
-                        {firstLine(c.message)}
-                      </p>
-                      <p className='text-muted-foreground mt-0.5 truncate text-xs'>
-                        <span
-                          {...(c.authorLogin !== undefined
-                            ? { title: `@${c.authorLogin}` }
-                            : {})}
-                        >
-                          {c.authorName}
-                        </span>
-                        {' · '}
-                        <span title={c.date}>{formatCommitDate(c.date, locale)}</span>
-                      </p>
-                    </div>
-                    <Badge variant='secondary' className='shrink-0 font-mono text-xs'>
-                      {c.shortSha}
-                    </Badge>
-                    <Button
-                      render={
-                        <a
-                          href={c.htmlUrl}
-                          target='_blank'
-                          rel='noreferrer'
-                          aria-label={t('historyOpenCommit')}
-                          title={t('historyOpenCommit')}
-                        />
-                      }
-                      variant='ghost'
-                      size='icon'
-                      className='text-muted-foreground hover:text-foreground shrink-0'
-                    >
-                      <ExternalLink className='size-4' />
-                    </Button>
-                  </div>
+                  <HistoryCommitHeader commit={c} locale={locale} />
                   {
-                    /* Semantic changes, visible without a click:
-                    property/relation label, then removed values in
-                    red (−) and added values in green (+) — resolved
-                    displays, never raw JSON. Newest commits only —
-                    older rows have no changes (server API budget). */
+                    /* Semantic changes, visible without a click —
+                    shared renderer with the global /history page.
+                    Newest commits only — older rows have no changes
+                    (server API budget). */
                   }
-                  {c.changes !== undefined && c.changes.length > 0
+                  {c.changes !== undefined
                     ? (
-                      <div className='bg-muted/20 mt-2 space-y-2 rounded-md border px-2.5 py-2 text-xs'>
-                        {c.changes.map((group) => (
-                          <div key={group.label}>
-                            <p className='text-muted-foreground text-[11px] font-medium tracking-wide uppercase'>
-                              {group.label}
-                            </p>
-                            {group.removed.map((line, i) => (
-                              <p
-                                key={`r${i}`}
-                                className='flex items-baseline gap-1.5 text-red-600 dark:text-red-400'
-                              >
-                                <span aria-hidden className='shrink-0'>−</span>
-                                <span className='min-w-0 break-words'>{line}</span>
-                              </p>
-                            ))}
-                            {group.added.map((line, i) => (
-                              <p
-                                key={`a${i}`}
-                                className='flex items-baseline gap-1.5 text-emerald-600 dark:text-emerald-400'
-                              >
-                                <span aria-hidden className='shrink-0'>+</span>
-                                <span className='min-w-0 break-words'>{line}</span>
-                              </p>
-                            ))}
-                          </div>
-                        ))}
-                        {(c.changesTruncated ?? 0) > 0
-                          ? (
-                            <p className='text-muted-foreground'>
-                              {t('historyDiffMore').replace(
-                                '{n}',
-                                String(c.changesTruncated),
-                              )}
-                            </p>
-                          )
-                          : null}
-                      </div>
+                      <HistoryChangeGroups
+                        groups={c.changes}
+                        truncated={c.changesTruncated ?? 0}
+                      />
                     )
                     : null}
                 </li>

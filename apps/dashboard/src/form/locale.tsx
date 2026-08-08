@@ -644,6 +644,20 @@ const UI_STRINGS = {
     en: '… {n} more changed line(s)',
     fr: '… {n} ligne(s) modifiée(s) de plus',
   },
+  // Global data history page (/history)
+  historyGlobalTitle: { en: 'History', fr: 'Historique' },
+  historyGlobalSubtitle: {
+    en: 'Recent changes across all wiki data.',
+    fr: 'Changements récents sur toutes les données du wiki.',
+  },
+  historyGlobalEmpty: {
+    en: 'No data commits yet.',
+    fr: 'Aucun commit de données pour le moment.',
+  },
+  historyOtherFiles: {
+    en: '+ {n} other file(s) in this commit',
+    fr: '+ {n} autre(s) fichier(s) dans ce commit',
+  },
   // /explore v2 — property-column picker + inline editing
   explorePropsFilter: { en: 'Displayed properties', fr: 'Propriétés affichées' },
   exploreEditValue: { en: 'Edit value', fr: 'Modifier la valeur' },
@@ -659,6 +673,18 @@ const UI_STRINGS = {
     en: '{n} entity(ies) edited — one PR each',
     fr: '{n} entité(s) modifiée(s) — une PR chacune',
   },
+  // Inferred inverse relations (read-only section under the form) —
+  // incoming edges stored on OTHER entities; the pipeline generates
+  // the inverse so nothing needs to be duplicated in the JSON.
+  inferredRelationsTitle: {
+    en: 'Inverse relations (automatic)',
+    fr: 'Relations inverses (automatiques)',
+  },
+  inferredRelationsHint: {
+    en: 'Generated from relations stored on the linked entities — edit them there.',
+    fr: 'Générées depuis les relations stockées sur les entités liées — modifiez-les là-bas.',
+  },
+  autoBadge: { en: 'auto', fr: 'auto' },
 } as const;
 
 /**

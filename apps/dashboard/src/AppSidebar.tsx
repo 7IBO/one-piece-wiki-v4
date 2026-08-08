@@ -73,6 +73,17 @@ export function AppSidebar(): JSX.Element {
       >
         {t('exploreTitle')}
       </Link>
+      {/* Global data history — recent commits across all entities. */}
+      <Link
+        to='/history'
+        className={`-mt-2 block rounded-md px-2 py-1.5 text-xs uppercase tracking-wide transition-colors ${
+          location.pathname === '/history'
+            ? 'bg-accent text-accent-foreground'
+            : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+        }`}
+      >
+        {t('historyGlobalTitle')}
+      </Link>
       {groups.map((g) => (
         <div key={g.groupId}>
           <p className='text-muted-foreground mb-1 px-2 text-[10px] font-semibold uppercase tracking-wide'>

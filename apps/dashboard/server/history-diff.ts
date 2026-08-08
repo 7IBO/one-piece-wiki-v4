@@ -23,12 +23,38 @@ export type HistoryChangeGroup = {
   readonly removed: readonly string[];
 };
 
+/* Structural "Like" types (same pattern as audit.ts) so tests build
+ * fixtures without the full Zod-inferred schemas. The validated
+ * catalogue types are structurally assignable to these. */
+
+type QualifierTypeLike = {
+  readonly labels: { readonly en?: string; readonly fr?: string; };
+  readonly value_type?: string | undefined;
+  readonly enum_ref?: string | undefined;
+};
+
+type RelationQualifierDeclLike = {
+  readonly id: string;
+  readonly value_type?: string | undefined;
+  readonly enum_ref?: string | undefined;
+};
+
+type RelationTypeLike = {
+  readonly qualifiers?: readonly RelationQualifierDeclLike[] | undefined;
+};
+
 export type HistoryDiffContext =
   & Pick<
     AuditContext,
     'propertyTypes' | 'vocabularies' | 'translations' | 'displayNameFor' | 'locale'
   >
   & {
+    /** Qualifier-type registry — labels + value types for the extra
+     *  qualifiers carried by entries/edges (ADR-078; never hardcoded). */
+    readonly qualifierTypes: ReadonlyMap<string, QualifierTypeLike>;
+    /** Relation-type catalogue — a relation qualifier's `enum_ref`
+     *  lives on the relation type's own declaration, not the registry. */
+    readonly relationTypes: ReadonlyMap<string, RelationTypeLike>;
     /** Localized label for a property id (falls back to the id). */
     readonly propertyLabel: (id: string) => string;
     /** Localized ACTIVE label for a relation-type id. */
@@ -76,16 +102,87 @@ function multisetDiff(a: readonly unknown[], b: readonly unknown[]): readonly un
   return out;
 }
 
-/** One property entry as a display line: resolved value + compact
- *  provenance suffix (" · C1053") when the entry carries `since`. */
+/**
+ * Display for one qualifier VALUE, resolved by its declared value
+ * type: `source_ref` compacts like `since` ("C574"), `entity_ref`
+ * resolves to a display name, enums resolve through vocabularies,
+ * arrays join their resolved items with a comma (same rules as the
+ * links panel's `formatQualifierValue`).
+ */
+function qualifierValueDisplay(
+  value: unknown,
+  valueType: string | undefined,
+  enumRef: string | undefined,
+  ctx: HistoryDiffContext,
+): string {
+  if (Array.isArray(value)) {
+    return value.map((v) => qualifierValueDisplay(v, valueType, enumRef, ctx)).join(', ');
+  }
+  const other: 'en' | 'fr' = ctx.locale === 'fr' ? 'en' : 'fr';
+  if (typeof value === 'string') {
+    if (valueType === 'source_ref') return ctx.sourceDisplay(value);
+    if (valueType === 'entity_ref') {
+      const name = ctx.displayNameFor(value);
+      return name?.[ctx.locale] ?? name?.[other]
+        ?? (value.includes(':') ? value.split(':')[1]! : value);
+    }
+    if (enumRef !== undefined) {
+      const term = ctx.vocabularies.get(enumRef)?.values[value];
+      const label = term?.labels[ctx.locale] ?? term?.labels[other];
+      if (label !== undefined) return label;
+    }
+    return value;
+  }
+  if (typeof value === 'number' || typeof value === 'boolean') return String(value);
+  return stableSerialize(value);
+}
+
+/**
+ * Every OTHER qualifier carried by an entry/edge, as `Label : Valeur`
+ * parts (the links panel's format — key labels via the qualifier-type
+ * registry, never raw snake_case). `skip` holds the fields already
+ * rendered (value/value_key + since); `declarations` are the relation
+ * type's own qualifier declarations, which carry the `enum_ref` for
+ * relation qualifiers (the registry is the fallback).
+ */
+function qualifierParts(
+  record: Record<string, unknown>,
+  skip: ReadonlySet<string>,
+  declarations: readonly RelationQualifierDeclLike[] | undefined,
+  ctx: HistoryDiffContext,
+): string[] {
+  const parts: string[] = [];
+  for (const [key, value] of Object.entries(record)) {
+    if (skip.has(key) || value === undefined || value === null) continue;
+    const registry = ctx.qualifierTypes.get(key);
+    const declaration = declarations?.find((d) => d.id === key);
+    const label = registry?.labels[ctx.locale] ?? registry?.labels.en ?? key;
+    const valueType = declaration?.value_type ?? registry?.value_type;
+    const enumRef = declaration?.enum_ref ?? registry?.enum_ref;
+    parts.push(`${label} : ${qualifierValueDisplay(value, valueType, enumRef, ctx)}`);
+  }
+  return parts;
+}
+
+/** Entry fields that are NOT extra qualifiers: the value itself and
+ *  the `since` provenance, both already rendered ahead of the suffix. */
+const ENTRY_VALUE_FIELDS: ReadonlySet<string> = new Set(['value', 'value_key', 'since']);
+const EDGE_RENDERED_FIELDS: ReadonlySet<string> = new Set(['since']);
+
+/** One property entry as a display line: resolved value, compact
+ *  provenance (" · C1053") when the entry carries `since`, then each
+ *  other qualifier as ` · Label : Valeur` (links-panel format). */
 function entryLine(entry: unknown, propertyId: string, ctx: HistoryDiffContext): string {
   const propertyType = ctx.propertyTypes.get(propertyId);
   const display = entryDisplay(entry, propertyType, ctx);
   const since = entrySince(entry, ctx.sourceDisplay);
-  return since !== undefined ? `${display} · ${since}` : display;
+  const parts = since !== undefined ? [display, since] : [display];
+  parts.push(...qualifierParts(plainObject(entry), ENTRY_VALUE_FIELDS, undefined, ctx));
+  return parts.join(' · ');
 }
 
-/** One relation edge as a display line: target name + compact since. */
+/** One relation edge as a display line: target name, compact since,
+ *  then each other qualifier as ` · Label : Valeur`. */
 function relationLine(edge: unknown, ctx: HistoryDiffContext): string {
   const record = plainObject(edge);
   const target = typeof record['target'] === 'string' ? record['target'] : '';
@@ -94,7 +191,11 @@ function relationLine(edge: unknown, ctx: HistoryDiffContext): string {
     ?? (target.includes(':') ? target.split(':')[1]! : target);
   const qualifiers = plainObject(record['qualifiers']);
   const since = entrySince(qualifiers, ctx.sourceDisplay);
-  return since !== undefined ? `${display} · ${since}` : display;
+  const typeId = typeof record['type'] === 'string' ? record['type'] : '';
+  const declarations = ctx.relationTypes.get(typeId)?.qualifiers;
+  const parts = since !== undefined ? [display, since] : [display];
+  parts.push(...qualifierParts(qualifiers, EDGE_RENDERED_FIELDS, declarations, ctx));
+  return parts.join(' · ');
 }
 
 /**

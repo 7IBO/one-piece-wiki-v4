@@ -11,6 +11,9 @@
  *   GET  /api/entities/:type/:slug/links   { outgoing, incoming, conflicts }
  *   GET  /api/entities/:type/:slug/history commits touching the entity file
  *                                          (503 without GitHub credentials)
+ *   GET  /api/history                      recent commits across ALL data,
+ *                                          with per-entity semantic changes
+ *                                          (503 without GitHub credentials)
  *
  * Auth (ADR-017 — stateless signed-cookie sessions):
  *   GET  /api/auth/login/github             302 to GitHub OAuth
@@ -783,6 +786,62 @@ const HISTORY_DIFF_CAP = 25;
 // Change lines kept per commit; the rest is summarised as a count.
 const HISTORY_DIFF_LINE_CAP = 20;
 
+/**
+ * Diff context shared by the entity + global history endpoints — the
+ * same display machinery as /api/audit (vocabulary labels, translated
+ * keys, display names, compact `C96` provenance), plus the qualifier
+ * registry + relation-type catalogue so extra qualifiers render as
+ * localized `Label : Valeur` parts (links-panel format).
+ */
+function historyDiffContextFor(
+  snap: CatalogueSnapshot,
+  names: Map<string, { en: string | null; fr: string | null; }>,
+  translations: Record<Locale, Record<string, string>>,
+  locale: Locale,
+): HistoryDiffContext {
+  return {
+    propertyTypes: snap.validated.propertyTypes,
+    vocabularies: snap.validated.vocabularies,
+    qualifierTypes: snap.validated.qualifierTypes,
+    relationTypes: snap.validated.relationTypes,
+    translations,
+    displayNameFor: (id) => names.get(id),
+    locale,
+    propertyLabel: (id) => {
+      const pt = snap.validated.propertyTypes.get(id);
+      return pt?.labels[locale] ?? pt?.labels.en ?? id;
+    },
+    relationLabel: (id) => {
+      const rt = snap.validated.relationTypes.get(id);
+      return rt?.labels[locale]?.active ?? rt?.labels.en.active ?? id;
+    },
+    sourceDisplay: (id) => sourceIdDisplay(id, (eid) => names.get(eid), locale),
+  };
+}
+
+/**
+ * Per-commit line budget so an import touching 30 properties doesn't
+ * wall the page — groups kept whole until HISTORY_DIFF_LINE_CAP, the
+ * rest summarised as a truncated-line count.
+ */
+function capChangeGroups(
+  changes: readonly HistoryChangeGroup[],
+): { kept: readonly HistoryChangeGroup[]; truncated: number; } {
+  const kept: HistoryChangeGroup[] = [];
+  let truncated = 0;
+  let lines = 0;
+  for (const group of changes) {
+    const size = group.added.length + group.removed.length;
+    if (lines + size > HISTORY_DIFF_LINE_CAP && kept.length > 0) {
+      truncated += size;
+      continue;
+    }
+    kept.push(group);
+    lines += size;
+  }
+  return { kept, truncated };
+}
+
 /** The entity file's parsed JSON at one ref, or null (file absent at
  *  that ref, unparsable, or API error — the diff degrades quietly). */
 async function entityJsonAt(
@@ -863,22 +922,7 @@ async function handleEntityHistory(
     );
     const names = await buildDisplayNames(snap);
     const translations = await readTranslationsFor(type, fileBase);
-    const diffCtx: HistoryDiffContext = {
-      propertyTypes: snap.validated.propertyTypes,
-      vocabularies: snap.validated.vocabularies,
-      translations,
-      displayNameFor: (id) => names.get(id),
-      locale,
-      propertyLabel: (id) => {
-        const pt = snap.validated.propertyTypes.get(id);
-        return pt?.labels[locale] ?? pt?.labels.en ?? id;
-      },
-      relationLabel: (id) => {
-        const rt = snap.validated.relationTypes.get(id);
-        return rt?.labels[locale]?.active ?? rt?.labels.en.active ?? id;
-      },
-      sourceDisplay: (id) => sourceIdDisplay(id, (eid) => names.get(eid), locale),
-    };
+    const diffCtx = historyDiffContextFor(snap, names, translations, locale);
 
     const commits = listed.map((c, i) => {
       const login = c.author?.login ?? null;
@@ -895,22 +939,11 @@ async function handleEntityHistory(
           changes = diffEntityData(previous, versions[i] ?? null, diffCtx);
         }
       }
-      // Per-commit line budget so an import touching 30 properties
-      // doesn't wall the page — groups kept whole until the cap.
       let truncated = 0;
       if (changes !== null) {
-        let kept: HistoryChangeGroup[] = [];
-        let lines = 0;
-        for (const group of changes) {
-          const size = group.added.length + group.removed.length;
-          if (lines + size > HISTORY_DIFF_LINE_CAP && kept.length > 0) {
-            truncated += size;
-            continue;
-          }
-          kept.push(group);
-          lines += size;
-        }
-        changes = kept;
+        const capped = capChangeGroups(changes);
+        changes = capped.kept;
+        truncated = capped.truncated;
       }
       return {
         sha: c.sha,
@@ -933,6 +966,131 @@ async function handleEntityHistory(
     }
     const message = err instanceof Error ? err.message : String(err);
     process.stderr.write(`[entity-history] ${entity.id} failed: ${message}\n`);
+    return json({ error: message }, 500);
+  }
+}
+
+// Global history (/history page): one page of recent data commits…
+const GLOBAL_HISTORY_COMMIT_CAP = 30;
+// …of which only the newest carry per-entity semantic changes — each
+// detailed commit costs one getCommit + two getContent per entity.
+const GLOBAL_HISTORY_DETAIL_CAP = 12;
+// Entity files diffed per commit; the rest counts as "other files".
+const GLOBAL_HISTORY_ENTITY_CAP = 5;
+
+// `data/universes/<id>/entities/<type>/<fileBase>.json` — the only
+// commit files the global history diffs semantically. No entity type
+// is hardcoded: type + fileBase come from the path itself.
+const ENTITY_FILE_RE = /^data\/universes\/[^/]+\/entities\/([^/]+)\/([^/]+)\.json$/;
+
+/**
+ * GET /api/history →
+ *   [{ sha, shortSha, message, authorName, authorLogin?, date, htmlUrl,
+ *      entities: [{ entityId, displayName, route,
+ *                   changes, changesTruncated }],
+ *      otherFilesCount }]
+ *
+ * Recent commits touching `/data` on the data repo's default branch
+ * (newest first, one `listCommits` page). For the newest
+ * GLOBAL_HISTORY_DETAIL_CAP commits, `getCommit` lists the touched
+ * files; each entity file (up to GLOBAL_HISTORY_ENTITY_CAP) is diffed
+ * semantically against the first parent's version — same machinery as
+ * the per-entity endpoint. Non-entity files (and over-cap entity
+ * files) are counted in `otherFilesCount`, never diffed. Undetailed
+ * commits ship `entities: []` / `otherFilesCount: 0`. The
+ * GitHub-credentials 503 guard lives in the dispatcher.
+ */
+async function handleGlobalHistory(cfg: GitHubAppConfig, locale: Locale): Promise<Response> {
+  if (githubInstallMissing) {
+    return serviceUnavailable(
+      `History unavailable: the GitHub App is not installed on ${cfg.dataRepo.owner}/${cfg.dataRepo.repo}.`,
+    );
+  }
+  const snap = await snapshot();
+  try {
+    const octokit = await installationClient(cfg);
+    const { data: listed } = await octokit.repos.listCommits({
+      owner: cfg.dataRepo.owner,
+      repo: cfg.dataRepo.repo,
+      path: 'data',
+      per_page: GLOBAL_HISTORY_COMMIT_CAP,
+    });
+    const names = await buildDisplayNames(snap);
+
+    const detailCount = Math.min(listed.length, GLOBAL_HISTORY_DETAIL_CAP);
+    const details = await Promise.all(
+      listed.slice(0, detailCount).map(async (c) => {
+        const { data: commit } = await octokit.repos.getCommit({
+          owner: cfg.dataRepo.owner,
+          repo: cfg.dataRepo.repo,
+          ref: c.sha,
+        });
+        const parentSha = commit.parents[0]?.sha ?? null;
+        const entityFiles: { type: string; fileBase: string; filePath: string; }[] = [];
+        let otherFilesCount = 0;
+        for (const file of commit.files ?? []) {
+          const m = ENTITY_FILE_RE.exec(file.filename);
+          if (m !== null && entityFiles.length < GLOBAL_HISTORY_ENTITY_CAP) {
+            entityFiles.push({ type: m[1]!, fileBase: m[2]!, filePath: file.filename });
+          } else {
+            otherFilesCount += 1;
+          }
+        }
+        const entities = await Promise.all(
+          entityFiles.map(async ({ type, fileBase, filePath }) => {
+            const [after, before, translations] = await Promise.all([
+              entityJsonAt(octokit, cfg, c.sha, filePath),
+              parentSha !== null
+                ? entityJsonAt(octokit, cfg, parentSha, filePath)
+                : Promise.resolve(null),
+              readTranslationsFor(type, fileBase),
+            ]);
+            const entityId = `${type}:${fileBase}`;
+            const diffCtx = historyDiffContextFor(snap, names, translations, locale);
+            const { kept, truncated } = capChangeGroups(diffEntityData(before, after, diffCtx));
+            // Route resolved from the live snapshot (the file base may
+            // differ from the slug); null for entities deleted since.
+            const live = snap.entities.get(entityId);
+            return {
+              entityId,
+              displayName: names.get(entityId) ?? { en: null, fr: null },
+              route: live !== undefined
+                ? { type: live.type, slug: String(live.data['slug'] ?? '') }
+                : null,
+              changes: kept,
+              changesTruncated: truncated,
+            };
+          }),
+        );
+        return { entities, otherFilesCount };
+      }),
+    );
+
+    const commits = listed.map((c, i) => {
+      const login = c.author?.login ?? null;
+      const detail = i < detailCount ? details[i] : undefined;
+      return {
+        sha: c.sha,
+        shortSha: c.sha.slice(0, 7),
+        message: c.commit.message,
+        authorName: c.commit.author?.name ?? login ?? 'unknown',
+        ...(login !== null ? { authorLogin: login } : {}),
+        date: c.commit.author?.date ?? c.commit.committer?.date ?? '',
+        htmlUrl: c.html_url,
+        entities: detail?.entities ?? [],
+        otherFilesCount: detail?.otherFilesCount ?? 0,
+      };
+    });
+    return json(commits);
+  } catch (err) {
+    if (looksLikeMissingInstallation(err)) {
+      githubInstallMissing = true;
+      return serviceUnavailable(
+        `History unavailable: the GitHub App is not installed on ${cfg.dataRepo.owner}/${cfg.dataRepo.repo}.`,
+      );
+    }
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`[global-history] failed: ${message}\n`);
     return json({ error: message }, 500);
   }
 }
@@ -2084,6 +2242,19 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     const linksMatch = /^\/api\/entities\/([^/]+)\/([^/]+)\/links$/.exec(path);
     if (req.method === 'GET' && linksMatch !== null) {
       return await handleEntityLinks(linksMatch[1]!, linksMatch[2]!);
+    }
+
+    // GET /api/history — recent commits across ALL data, with
+    // per-entity semantic changes (global history page). Same 503
+    // guard as the per-entity endpoint below.
+    if (req.method === 'GET' && path === '/api/history') {
+      if (config === null) {
+        return serviceUnavailable(`History requires the GitHub connection: ${configError}`);
+      }
+      return await handleGlobalHistory(
+        config,
+        url.searchParams.get('locale') === 'fr' ? 'fr' : 'en',
+      );
     }
 
     // GET /api/entities/:type/:slug/history — commits touching the
