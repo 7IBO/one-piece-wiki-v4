@@ -299,7 +299,13 @@ section (incoming edges from the links API, grouped by inverse label,
 "auto" badge, pencil to the storing entity). (6) History lines carry
 every qualifier ("Mort · C574 · Statut épistémique : Confirmé") and a
 GLOBAL /history page lists recent data commits with per-entity change
-groups (sidebar link under Explorer).
+groups (sidebar link under Explorer). Follow-up: the open entry editor
+mirrors into `?edit=<propertyId>.<index>` on the entity route —
+opening pushes a history entry, browser Back CLOSES the editor (and
+still discards never-filled entries) instead of leaving the page;
+explicit close pops the pushed entry so the stack stays balanced;
+deep-linked `?edit` restores the editor. Drawer/new-entity forms keep
+local-only state (`syncEditorToUrl` opt-in).
 
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
