@@ -17,7 +17,7 @@ export const Route = createFileRoute('/t/$type')({
     return view;
   },
   head: ({ loaderData }) => ({
-    meta: [{ title: `${loaderData?.label ?? 'Archive'} — Grand Line Archives` }],
+    meta: [{ title: `${loaderData?.label ?? 'Wiki'} — One Piece Wiki` }],
   }),
   component: TypeListPage,
 });

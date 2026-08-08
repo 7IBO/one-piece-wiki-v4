@@ -1,11 +1,14 @@
 /**
- * View-model assembly for the public reader app. Everything the pages
+ * View-model assembly for the public wiki app. Everything the pages
  * render is resolved HERE, server-side: localized entity names (via
  * the artifact's `translations` table), property/relation/vocabulary
  * labels (via the schema catalogue — never hardcoded, per CLAUDE.md),
- * relation direction labels (via the ADR-086 `label` column), and
- * narrative markdown. Components receive display-ready strings plus
- * link targets and implement zero business logic.
+ * relation direction labels (via the ADR-086 `label` column), spoiler
+ * gating against the reader's progression cursor (WEB_APP.md), canon
+ * scope preference, per-type wiki templates (ADR-091 presentation
+ * bindings, each degrading to the generic rendering), and narrative
+ * markdown. Components receive display-ready strings plus link
+ * targets and implement zero business logic.
  */
 import type {
   EntityType,
@@ -20,9 +23,13 @@ import { getCatalogue } from './catalogue.ts';
 // the dev SSR transform (bindings came back undefined). The namespace
 // form is transform-proof; keep type imports separate.
 import * as db from './db.ts';
-import type { EntityRow, PropertyRow } from './db.ts';
+import type { EntityRow, PropertyRow, RelationRow } from './db.ts';
+import { type LinkTemplateEntry, resolveAvailabilityUrl } from './links.ts';
+import { cursorActive, EMPTY_CURSOR, isSourceVisible, type ProgressCursor } from './progress.ts';
 
 export type Locale = 'en' | 'fr';
+export type { ProgressCursor };
+export { EMPTY_CURSOR };
 
 // ---------------------------------------------------------------------------
 // Shared shapes
@@ -41,6 +48,13 @@ export type LabelledValue = {
   readonly value: string;
   /** Present when the qualifier value is itself an entity reference. */
   readonly chip?: EntityChip;
+};
+
+/** A spoiler-checked, display-ready image slot. */
+export type ImageView = {
+  readonly url: string;
+  readonly alt: string;
+  readonly attribution: string | null;
 };
 
 // ---------------------------------------------------------------------------
@@ -103,6 +117,7 @@ export type PropertyView = {
 export type RelationItemView = {
   readonly target: EntityChip;
   readonly since: EntityChip | null;
+  readonly until: EntityChip | null;
   readonly epistemic: { readonly status: string; readonly label: string; } | null;
   readonly qualifiers: readonly LabelledValue[];
 };
@@ -116,16 +131,171 @@ export type RelationGroupView = {
   readonly items: readonly RelationItemView[];
 };
 
+/** One infobox line: a property's latest spoiler-visible value. */
+export type InfoboxRowView = {
+  readonly id: string;
+  readonly label: string;
+  readonly entry: PropertyEntryView;
+};
+
+/** One infobox line built from relation edges (e.g. devil fruit, captain). */
+export type InfoboxRelationRowView = {
+  readonly key: string;
+  readonly label: string;
+  readonly chips: readonly EntityChip[];
+};
+
+// ---------------------------------------------------------------------------
+// Per-type templates (ADR-091)
+
+/** A linked entity with an optional portrait and a short note (role…). */
+export type MemberThumbView = {
+  readonly chip: EntityChip;
+  readonly image: ImageView | null;
+  readonly note: string | null;
+};
+
+export type MemberRowView = {
+  readonly chip: EntityChip;
+  readonly image: ImageView | null;
+  readonly role: string | null;
+  readonly rank: string | null;
+  readonly since: EntityChip | null;
+  readonly until: EntityChip | null;
+};
+
+export type CrewSectionView = {
+  readonly crew: EntityChip;
+  readonly label: string;
+  readonly role: string | null;
+  readonly rank: string | null;
+  /** The OTHER members of the same crew, for the affiliation section. */
+  readonly members: readonly MemberThumbView[];
+};
+
+export type SourceItemView = {
+  readonly chip: EntityChip;
+  readonly number: number | null;
+  readonly current: boolean;
+};
+
+export type CastGroupView = {
+  readonly type: string;
+  readonly typeLabel: string;
+  readonly items: readonly MemberThumbView[];
+};
+
+export type AvailabilityItemView = {
+  readonly platform: EntityChip;
+  readonly url: string | null;
+};
+
+export type CharacterTemplateView = {
+  readonly kind: 'character';
+  readonly crews: readonly CrewSectionView[];
+};
+
+export type CrewTemplateView = {
+  readonly kind: 'crew';
+  readonly members: readonly MemberRowView[];
+  readonly former: readonly MemberRowView[];
+};
+
+export type SourceTemplateView = {
+  readonly kind: 'source';
+  readonly number: number | null;
+  readonly prev: EntityChip | null;
+  readonly next: EntityChip | null;
+  readonly arc:
+    | {
+      readonly chip: EntityChip;
+      readonly label: string;
+      readonly items: readonly SourceItemView[];
+    }
+    | null;
+  readonly cast: readonly CastGroupView[];
+  readonly availability: readonly AvailabilityItemView[];
+};
+
+export type ArcTemplateView = {
+  readonly kind: 'arc';
+  readonly chapters: readonly SourceItemView[];
+  readonly episodes: readonly SourceItemView[];
+  readonly arcs: readonly SourceItemView[];
+};
+
+export type FruitTemplateView = {
+  readonly kind: 'devil-fruit';
+  readonly users: readonly MemberRowView[];
+  readonly former: readonly MemberRowView[];
+};
+
+export type GenericTemplateView = { readonly kind: 'generic'; };
+
+export type TemplateView =
+  | CharacterTemplateView
+  | CrewTemplateView
+  | SourceTemplateView
+  | ArcTemplateView
+  | FruitTemplateView
+  | GenericTemplateView;
+
 export type EntityView = {
+  readonly kind: 'entity';
   readonly id: string;
   readonly type: string;
   readonly typeLabel: string;
   readonly slug: string;
   readonly name: string;
   readonly firstAppearance: EntityChip | null;
+  readonly image: ImageView | null;
+  readonly infobox: readonly InfoboxRowView[];
+  readonly infoboxRelations: readonly InfoboxRelationRowView[];
   readonly properties: readonly PropertyView[];
   readonly relations: readonly RelationGroupView[];
   readonly narrative: string | null;
+  readonly template: TemplateView;
+  /** The canon scope to attach to outgoing entity links (`?scope=`). */
+  readonly propagateScope: string | null;
+};
+
+/**
+ * "Not yet in your progression": the reader's cursor is behind every
+ * appearance anchor of this entity — show the name, withhold the data.
+ */
+export type GatedEntityView = {
+  readonly kind: 'gated';
+  readonly type: string;
+  readonly typeLabel: string;
+  readonly slug: string;
+  readonly name: string;
+};
+
+export type EntityPageView = EntityView | GatedEntityView;
+
+// ---------------------------------------------------------------------------
+// Presentation bindings (ADR-091) — every binding degrades to the
+// generic template when the id is absent from the catalogue or data.
+
+const LIVE_ACTION_SCOPE = 'live_action';
+const LIVE_ACTION_TYPES: ReadonlySet<string> = new Set([
+  'live-action-series',
+  'live-action-episode',
+]);
+/** Default-scope preference: unqualified + these canon scopes. */
+const DEFAULT_SCOPES: ReadonlySet<string> = new Set(['manga', 'anime']);
+/** depicted-by role ranking for the infobox portrait slot. */
+const ROLE_PRIORITY: Readonly<Record<string, number>> = {
+  primary_portrait: 0,
+  cover: 1,
+  group_photo: 2,
+  secondary_portrait: 3,
+};
+/** Relation ids surfaced as infobox rows, per entity type. */
+const INFOBOX_RELATIONS: Readonly<Record<string, readonly string[]>> = {
+  character: ['ate-fruit'],
+  crew: ['captained-by', 'led-by'],
+  organization: ['captained-by', 'led-by'],
 };
 
 // ---------------------------------------------------------------------------
@@ -182,9 +352,7 @@ function resolveEntityName(row: EntityRow, cat: ValidatedCatalogue, locale: Loca
   return humanize(row.slug);
 }
 
-function chipFor(id: string, cat: ValidatedCatalogue, locale: Locale): EntityChip | null {
-  const row = db.getEntityById(id);
-  if (row === null) return null;
+function chipForRow(row: EntityRow, cat: ValidatedCatalogue, locale: Locale): EntityChip {
   return {
     id: row.id,
     type: row.type,
@@ -194,12 +362,56 @@ function chipFor(id: string, cat: ValidatedCatalogue, locale: Locale): EntityChi
   };
 }
 
+function chipFor(id: string, cat: ValidatedCatalogue, locale: Locale): EntityChip | null {
+  const row = db.getEntityById(id);
+  return row === null ? null : chipForRow(row, cat, locale);
+}
+
 /** Chip for a possibly-dangling reference: falls back to the raw id. */
 function chipOrPlaceholder(id: string, cat: ValidatedCatalogue, locale: Locale): EntityChip {
   const chip = chipFor(id, cat, locale);
   if (chip !== null) return chip;
   const [type = '', slug = id] = id.includes(':') ? id.split(':', 2) : ['', id];
   return { id, type, typeLabel: humanize(type), slug, name: humanize(slug) };
+}
+
+// ---------------------------------------------------------------------------
+// Raw-data helpers (structural reads of well-known property shapes)
+
+function isRecord(value: unknown): value is Record<string, unknown> {
+  return value !== null && typeof value === 'object' && !Array.isArray(value);
+}
+
+/** All entries of one property from an entity's raw data blob. */
+function rawPropertyEntries(
+  row: EntityRow,
+  propertyId: string,
+): readonly Record<string, unknown>[] {
+  const properties = row.data['properties'];
+  if (!isRecord(properties)) return [];
+  const raw = properties[propertyId];
+  if (raw === null || raw === undefined) return [];
+  const entries = Array.isArray(raw) ? raw : [raw];
+  return entries.filter(isRecord);
+}
+
+/** Latest spoiler-visible scalar `value` of a property, or null. */
+function latestRawValue(
+  row: EntityRow,
+  propertyId: string,
+  cursor: ProgressCursor,
+): unknown {
+  const entries = rawPropertyEntries(row, propertyId).filter((entry) => {
+    const since = entry['since'];
+    return typeof since === 'string' ? isSourceVisible(since, cursor) : true;
+  });
+  const last = entries[entries.length - 1];
+  return last === undefined ? null : last['value'] ?? null;
+}
+
+function readNumber(row: EntityRow, cursor: ProgressCursor): number | null {
+  const value = latestRawValue(row, 'number', cursor);
+  return typeof value === 'number' && Number.isFinite(value) ? value : null;
 }
 
 // ---------------------------------------------------------------------------
@@ -305,9 +517,11 @@ type QualifierDef = {
   readonly enumRef: string | undefined;
 };
 
+type LocalQualifier = { id: string; value_type: string; enum_ref?: string | undefined; };
+
 function qualifierDefFor(
   id: string,
-  local: readonly { id: string; value_type: string; enum_ref?: string | undefined; }[],
+  local: readonly LocalQualifier[],
   cat: ValidatedCatalogue,
 ): QualifierDef {
   const own = local.find((q) => q.id === id);
@@ -357,7 +571,7 @@ function displayQualifierValue(
 
 function collectQualifiers(
   payload: Record<string, unknown>,
-  local: readonly { id: string; value_type: string; enum_ref?: string | undefined; }[],
+  local: readonly LocalQualifier[],
   cat: ValidatedCatalogue,
   locale: Locale,
 ): readonly LabelledValue[] {
@@ -373,6 +587,161 @@ function collectQualifiers(
     });
   }
   return out;
+}
+
+/** Localized label of one enum-ish qualifier on a relation edge. */
+function edgeQualifierLabel(
+  edge: RelationRow,
+  qualifierId: string,
+  schema: RelationType | undefined,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+): string | null {
+  const raw = edge.qualifiers?.[qualifierId];
+  if (raw === null || raw === undefined) return null;
+  const def = qualifierDefFor(qualifierId, schema?.qualifiers ?? [], cat);
+  return displayQualifierValue(raw, def, cat, locale).value;
+}
+
+// ---------------------------------------------------------------------------
+// Spoiler + canon-scope filtering
+
+/** Property entry kept after filtering, with reveal-safety metadata. */
+type FilteredEntry = {
+  readonly row: PropertyRow;
+  /** A later entry of the same property is visible under the cursor. */
+  readonly hasLaterVisible: boolean;
+};
+
+function entryCanonScope(entry: PropertyRow): string | null {
+  const raw = entry.value['canon_scope'];
+  return typeof raw === 'string' ? raw : null;
+}
+
+/**
+ * Apply the spoiler cursor then the canon-scope rule to one property's
+ * entry list (WEB_APP.md): entries anchored beyond the cursor are
+ * dropped; entries scoped to a DIFFERENT canon scope than the active
+ * one are dropped from the page (default scope = unqualified +
+ * manga/anime).
+ */
+function filterPropertyEntries(
+  entries: readonly PropertyRow[],
+  cursor: ProgressCursor,
+  scope: string | null,
+): readonly FilteredEntry[] {
+  const visible = entries.filter((entry) => {
+    if (!isSourceVisible(entry.since_source, cursor)) return false;
+    const entryScope = entryCanonScope(entry);
+    if (entryScope === null) return true;
+    return scope === null ? DEFAULT_SCOPES.has(entryScope) : entryScope === scope;
+  });
+  return visible.map((row) => ({
+    row,
+    hasLaterVisible: visible.some((other) => other.entry_index > row.entry_index),
+  }));
+}
+
+/**
+ * Latest entry for the infobox: entries qualified with the active
+ * scope win over unqualified ones; otherwise the last visible entry.
+ */
+function latestForInfobox(
+  entries: readonly FilteredEntry[],
+  scope: string | null,
+): FilteredEntry | null {
+  if (scope !== null) {
+    const scoped = entries.filter((e) => entryCanonScope(e.row) === scope);
+    const lastScoped = scoped[scoped.length - 1];
+    if (lastScoped !== undefined) return lastScoped;
+  }
+  return entries[entries.length - 1] ?? null;
+}
+
+/**
+ * A relation edge is visible when its `since` anchor is within the
+ * cursor AND its target is not itself a beyond-cursor source entity
+ * (a chapter you have not read must not surface through edges).
+ */
+function isEdgeVisible(edge: RelationRow, cursor: ProgressCursor): boolean {
+  return isSourceVisible(edge.since_source, cursor)
+    && isSourceVisible(edge.target_entity_id, cursor);
+}
+
+/** `until` anchor reached: the relation visibly ended for this reader. */
+function edgeEnded(edge: RelationRow, cursor: ProgressCursor): boolean {
+  return edge.until_source !== null && isSourceVisible(edge.until_source, cursor);
+}
+
+// ---------------------------------------------------------------------------
+// Images (depicted-by → image entities, spoiler + scope aware)
+
+function imageOrigin(image: EntityRow): string | null {
+  const value = latestRawValue(image, 'source_origin', EMPTY_CURSOR);
+  return typeof value === 'string' ? value : null;
+}
+
+function buildImageView(
+  image: EntityRow,
+  cursor: ProgressCursor,
+  locale: Locale,
+  fallbackAlt: string,
+): ImageView | null {
+  const urls = rawPropertyEntries(image, 'url').filter((entry) => {
+    const since = entry['since'];
+    return typeof since === 'string' ? isSourceVisible(since, cursor) : true;
+  });
+  const url = urls[urls.length - 1]?.['value'];
+  if (typeof url !== 'string' || url === '') return null;
+  const altKeyEntry = rawPropertyEntries(image, 'alt_text_key')[0]?.['value_key'];
+  const alt = typeof altKeyEntry === 'string'
+    ? db.getTranslation(locale, altKeyEntry) ?? fallbackAlt
+    : fallbackAlt;
+  const attribution = latestRawValue(image, 'attribution', cursor);
+  return {
+    url,
+    alt,
+    attribution: typeof attribution === 'string' ? attribution : null,
+  };
+}
+
+/**
+ * Pick the entity's display image among its `depicted-by` targets:
+ * spoiler-hidden images (`spoiler_since` beyond cursor) are excluded,
+ * the active canon scope steers `source_origin` preference
+ * (live_action scope prefers live_action origins; default prefers
+ * everything else), then the depiction `role` ranks candidates.
+ * Null = no visible image (the UI renders a typographic placeholder).
+ */
+function resolveEntityImage(
+  row: EntityRow,
+  edges: readonly RelationRow[],
+  cursor: ProgressCursor,
+  scope: string | null,
+  locale: Locale,
+  name: string,
+): ImageView | null {
+  type Candidate = { view: ImageView; originScore: number; roleScore: number; };
+  const candidates: Candidate[] = [];
+  for (const edge of edges) {
+    if (edge.relation_type !== 'depicted-by') continue;
+    if (!isSourceVisible(edge.since_source, cursor)) continue;
+    const image = db.getEntityById(edge.target_entity_id);
+    if (image === null) continue;
+    const spoilerSince = latestRawValue(image, 'spoiler_since', EMPTY_CURSOR);
+    if (typeof spoilerSince === 'string' && !isSourceVisible(spoilerSince, cursor)) continue;
+    const view = buildImageView(image, cursor, locale, name);
+    if (view === null) continue;
+    const origin = imageOrigin(image);
+    const originScore = scope === LIVE_ACTION_SCOPE
+      ? (origin === LIVE_ACTION_SCOPE ? 0 : 1)
+      : (origin === LIVE_ACTION_SCOPE ? 1 : 0);
+    const role = edge.qualifiers?.['role'];
+    const roleScore = typeof role === 'string' ? ROLE_PRIORITY[role] ?? 4 : 5;
+    candidates.push({ view, originScore, roleScore });
+  }
+  candidates.sort((a, b) => a.originScore - b.originScore || a.roleScore - b.roleScore);
+  return candidates[0]?.view ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -426,11 +795,44 @@ export async function buildTypeListView(
   return { type, label: entityTypeLabel(cat, type, locale), items };
 }
 
+function buildEntryView(
+  entry: FilteredEntry,
+  schema: PropertyType | undefined,
+  localQualifiers: readonly LocalQualifier[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): PropertyEntryView {
+  const value = displayValue(entry.row.value, 'value', schema, cat, locale);
+  // Epistemic non-leak (WEB_APP.md § spoiler gating, rule 4): with an
+  // active cursor, the concealed truth (`actual_value`) is shown only
+  // once the revealing entry — by construction a LATER entry — is
+  // itself visible. Without a cursor the wiki default shows all.
+  const revealSafe = !cursorActive(cursor) || entry.hasLaterVisible;
+  const actual = revealSafe
+    ? displayValue(entry.row.value, 'actual_value', schema, cat, locale)
+    : null;
+  const reviewStatus = entry.row.value['review_status'];
+  return {
+    display: value?.display ?? '—',
+    valueChip: value?.chip ?? null,
+    since: entry.row.since_source === null ? null : chipFor(entry.row.since_source, cat, locale),
+    until: entry.row.until_source === null ? null : chipFor(entry.row.until_source, cat, locale),
+    epistemic: epistemicView(cat, entry.row.epistemic_status, locale),
+    actualDisplay: actual?.display ?? null,
+    event: entry.row.event_id === null ? null : chipFor(entry.row.event_id, cat, locale),
+    qualifiers: collectQualifiers(entry.row.value, localQualifiers, cat, locale),
+    autoImported: reviewStatus === 'auto_imported',
+  };
+}
+
 function buildPropertyViews(
   row: EntityRow,
   cat: ValidatedCatalogue,
   locale: Locale,
-): readonly PropertyView[] {
+  cursor: ProgressCursor,
+  scope: string | null,
+): { properties: readonly PropertyView[]; infobox: readonly InfoboxRowView[]; } {
   const typeSchema = cat.entityTypes.get(row.type);
   const declaredOrder = new Map<string, number>(
     (typeSchema?.properties ?? []).map((p, i) => [p.id, i]),
@@ -442,48 +844,48 @@ function buildPropertyViews(
     else bucket.push(prop);
   }
   const views: PropertyView[] = [];
+  const infobox: InfoboxRowView[] = [];
   for (const [propertyId, entries] of byProperty) {
     const schema = cat.propertyTypes.get(propertyId);
     const localQualifiers = schema?.allowed_qualifiers ?? [];
+    const filtered = filterPropertyEntries(entries, cursor, scope);
+    if (filtered.length === 0) continue;
+    const label = schema === undefined ? humanize(propertyId) : pickLabel(schema.labels, locale);
     views.push({
       id: propertyId,
-      label: schema === undefined ? humanize(propertyId) : pickLabel(schema.labels, locale),
-      entries: entries.map((entry): PropertyEntryView => {
-        const value = displayValue(entry.value, 'value', schema, cat, locale);
-        const actual = displayValue(entry.value, 'actual_value', schema, cat, locale);
-        const reviewStatus = entry.value['review_status'];
-        return {
-          display: value?.display ?? '—',
-          valueChip: value?.chip ?? null,
-          since: entry.since_source === null ? null : chipFor(entry.since_source, cat, locale),
-          until: entry.until_source === null ? null : chipFor(entry.until_source, cat, locale),
-          epistemic: epistemicView(cat, entry.epistemic_status, locale),
-          actualDisplay: actual?.display ?? null,
-          event: entry.event_id === null ? null : chipFor(entry.event_id, cat, locale),
-          qualifiers: collectQualifiers(entry.value, localQualifiers, cat, locale),
-          autoImported: reviewStatus === 'auto_imported',
-        };
-      }),
+      label,
+      entries: filtered.map((entry) =>
+        buildEntryView(entry, schema, localQualifiers, cat, locale, cursor)
+      ),
     });
+    const latest = latestForInfobox(filtered, scope);
+    if (latest !== null) {
+      infobox.push({
+        id: propertyId,
+        label,
+        entry: buildEntryView(latest, schema, localQualifiers, cat, locale, cursor),
+      });
+    }
   }
-  return views.sort((a, b) => {
-    const ai = declaredOrder.get(a.id) ?? Number.MAX_SAFE_INTEGER;
-    const bi = declaredOrder.get(b.id) ?? Number.MAX_SAFE_INTEGER;
-    return ai - bi || a.id.localeCompare(b.id);
-  });
+  const order = (id: string): number => declaredOrder.get(id) ?? Number.MAX_SAFE_INTEGER;
+  const byOrder = (a: { id: string; }, b: { id: string; }): number =>
+    order(a.id) - order(b.id) || a.id.localeCompare(b.id);
+  return { properties: views.sort(byOrder), infobox: infobox.sort(byOrder) };
 }
 
 function buildRelationViews(
-  row: EntityRow,
+  edges: readonly RelationRow[],
   cat: ValidatedCatalogue,
   locale: Locale,
+  consumed: ReadonlySet<string>,
 ): readonly RelationGroupView[] {
   const groups = new Map<string, {
     label: string;
     inverse: boolean;
     items: RelationItemView[];
   }>();
-  for (const rel of db.listRelationsFrom(row.id)) {
+  for (const rel of edges) {
+    if (consumed.has(rel.relation_type)) continue;
     const baseType = rel.relation_type.replace(/\.inverse$/, '');
     const schema: RelationType | undefined = cat.relationTypes.get(baseType);
     // Direction label comes from the artifact's `label` column
@@ -498,6 +900,7 @@ function buildRelationViews(
     const item: RelationItemView = {
       target: chipOrPlaceholder(rel.target_entity_id, cat, locale),
       since: rel.since_source === null ? null : chipFor(rel.since_source, cat, locale),
+      until: rel.until_source === null ? null : chipFor(rel.until_source, cat, locale),
       epistemic: epistemicView(cat, rel.epistemic_status, locale),
       qualifiers: rel.qualifiers === null
         ? []
@@ -518,25 +921,503 @@ function buildRelationViews(
     .sort((a, b) => Number(a.inverse) - Number(b.inverse) || a.label.localeCompare(b.label));
 }
 
+// ---------------------------------------------------------------------------
+// Template builders (each degrades to `generic` when data is missing)
+
+function resolveEdgeLabel(edge: RelationRow, cat: ValidatedCatalogue, locale: Locale): string {
+  if (edge.label !== null) {
+    const fromArtifact = edge.label[locale] ?? edge.label['en'];
+    if (fromArtifact !== undefined) return fromArtifact;
+  }
+  const baseType = edge.relation_type.replace(/\.inverse$/, '');
+  const schema = cat.relationTypes.get(baseType);
+  if (schema === undefined) return humanize(baseType);
+  const pair = schema.labels[locale] ?? schema.labels.en;
+  return edge.is_inferred ? pair.inverse : pair.active;
+}
+
+function memberThumb(
+  target: EntityRow,
+  note: string | null,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): MemberThumbView {
+  const chip = chipForRow(target, cat, locale);
+  return {
+    chip,
+    image: resolveEntityImage(
+      target,
+      db.listRelationsFrom(target.id),
+      cursor,
+      scope,
+      locale,
+      chip.name,
+    ),
+    note,
+  };
+}
+
+function memberRow(
+  edge: RelationRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): MemberRowView | null {
+  const target = db.getEntityById(edge.target_entity_id);
+  if (target === null) return null;
+  const chip = chipForRow(target, cat, locale);
+  const schema = cat.relationTypes.get(edge.relation_type.replace(/\.inverse$/, ''));
+  return {
+    chip,
+    image: resolveEntityImage(
+      target,
+      db.listRelationsFrom(target.id),
+      cursor,
+      scope,
+      locale,
+      chip.name,
+    ),
+    role: edgeQualifierLabel(edge, 'role', schema, cat, locale),
+    rank: edgeQualifierLabel(edge, 'held_rank', schema, cat, locale),
+    since: edge.since_source === null ? null : chipFor(edge.since_source, cat, locale),
+    until: edge.until_source === null || !isSourceVisible(edge.until_source, cursor)
+      ? null
+      : chipFor(edge.until_source, cat, locale),
+  };
+}
+
+function buildCharacterTemplate(
+  row: EntityRow,
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): CharacterTemplateView {
+  const crews: CrewSectionView[] = [];
+  for (const edge of edges) {
+    if (edge.relation_type !== 'member-of') continue;
+    const crewRow = db.getEntityById(edge.target_entity_id);
+    if (crewRow === null) continue;
+    const schema = cat.relationTypes.get('member-of');
+    const members: MemberThumbView[] = [];
+    for (const memberEdge of db.listRelationsFrom(crewRow.id)) {
+      if (memberEdge.relation_type !== 'member-of.inverse') continue;
+      if (memberEdge.target_entity_id === row.id) continue;
+      if (!isEdgeVisible(memberEdge, cursor)) continue;
+      const target = db.getEntityById(memberEdge.target_entity_id);
+      if (target === null) continue;
+      members.push(memberThumb(
+        target,
+        edgeQualifierLabel(memberEdge, 'role', schema, cat, locale),
+        cat,
+        locale,
+        cursor,
+        scope,
+      ));
+    }
+    crews.push({
+      crew: chipForRow(crewRow, cat, locale),
+      label: resolveEdgeLabel(edge, cat, locale),
+      role: edgeQualifierLabel(edge, 'role', schema, cat, locale),
+      rank: edgeQualifierLabel(edge, 'held_rank', schema, cat, locale),
+      members: members.sort((a, b) => a.chip.name.localeCompare(b.chip.name)),
+    });
+  }
+  return { kind: 'character', crews };
+}
+
+function splitCurrentFormer(
+  edges: readonly RelationRow[],
+  relationType: string,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): { current: MemberRowView[]; former: MemberRowView[]; } {
+  const current: MemberRowView[] = [];
+  const former: MemberRowView[] = [];
+  for (const edge of edges) {
+    if (edge.relation_type !== relationType) continue;
+    const view = memberRow(edge, cat, locale, cursor, scope);
+    if (view === null) continue;
+    (edgeEnded(edge, cursor) ? former : current).push(view);
+  }
+  const byName = (a: MemberRowView, b: MemberRowView): number =>
+    a.chip.name.localeCompare(b.chip.name);
+  return { current: current.sort(byName), former: former.sort(byName) };
+}
+
+function buildCrewTemplate(
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): CrewTemplateView {
+  const { current, former } = splitCurrentFormer(
+    edges,
+    'member-of.inverse',
+    cat,
+    locale,
+    cursor,
+    scope,
+  );
+  return { kind: 'crew', members: current, former };
+}
+
+function buildFruitTemplate(
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): FruitTemplateView {
+  const { current, former } = splitCurrentFormer(
+    edges,
+    'ate-fruit.inverse',
+    cat,
+    locale,
+    cursor,
+    scope,
+  );
+  return { kind: 'devil-fruit', users: current, former };
+}
+
+function sourceItem(
+  target: EntityRow,
+  currentId: string,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): SourceItemView {
+  return {
+    chip: chipForRow(target, cat, locale),
+    number: readNumber(target, cursor),
+    current: target.id === currentId,
+  };
+}
+
+const byNumber = (a: SourceItemView, b: SourceItemView): number =>
+  (a.number ?? Number.MAX_SAFE_INTEGER) - (b.number ?? Number.MAX_SAFE_INTEGER)
+  || a.chip.name.localeCompare(b.chip.name);
+
+/** Siblings of one relation-inverse type on a container entity. */
+function containedSources(
+  containerId: string,
+  inverseType: string,
+  targetType: string | null,
+  currentId: string,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): SourceItemView[] {
+  const items: SourceItemView[] = [];
+  for (const edge of db.listRelationsFrom(containerId)) {
+    if (edge.relation_type !== inverseType) continue;
+    if (!isEdgeVisible(edge, cursor)) continue;
+    const target = db.getEntityById(edge.target_entity_id);
+    if (target === null) continue;
+    if (targetType !== null && target.type !== targetType) continue;
+    items.push(sourceItem(target, currentId, cat, locale, cursor));
+  }
+  return items.sort(byNumber);
+}
+
+/** Prev/next same-type source by numeric slug suffix (WEB_APP.md). */
+function adjacentSource(
+  row: EntityRow,
+  delta: number,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): EntityChip | null {
+  const match = /^(.*?)(\d+)$/.exec(row.slug);
+  if (match === null) return null;
+  const [, prefix = '', digits = ''] = match;
+  const n = Number(digits) + delta;
+  if (n < 0) return null;
+  const sibling = db.getEntityBySlug(row.type, `${prefix}${n}`);
+  if (sibling === null) return null;
+  if (!isSourceVisible(sibling.id, cursor)) return null;
+  return chipForRow(sibling, cat, locale);
+}
+
+function buildAvailability(
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): AvailabilityItemView[] {
+  const items: AvailabilityItemView[] = [];
+  for (const edge of edges) {
+    if (edge.relation_type !== 'available-on') continue;
+    const platform = db.getEntityById(edge.target_entity_id);
+    if (platform === null) continue;
+    const templates: LinkTemplateEntry[] = rawPropertyEntries(platform, 'link_template')
+      .filter((entry) => typeof entry['value'] === 'string')
+      .map((entry) => ({
+        template: entry['value'] as string,
+        region: typeof entry['region'] === 'string' ? entry['region'] : null,
+      }));
+    const homepage = latestRawValue(platform, 'homepage_url', cursor);
+    const urlOverride = edge.qualifiers?.['url'];
+    const externalId = edge.qualifiers?.['external_id'];
+    items.push({
+      platform: chipForRow(platform, cat, locale),
+      url: resolveAvailabilityUrl({
+        locale,
+        urlOverride: typeof urlOverride === 'string' ? urlOverride : null,
+        externalId: typeof externalId === 'string' ? externalId : null,
+        templates,
+        homepage: typeof homepage === 'string' ? homepage : null,
+      }),
+    });
+  }
+  return items.sort((a, b) => a.platform.name.localeCompare(b.platform.name));
+}
+
+function buildCast(
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): CastGroupView[] {
+  const groups = new Map<string, { typeLabel: string; items: MemberThumbView[]; }>();
+  for (const edge of edges) {
+    if (edge.relation_type !== 'features') continue;
+    const target = db.getEntityById(edge.target_entity_id);
+    if (target === null) continue;
+    const schema = cat.relationTypes.get('features');
+    const note = edgeQualifierLabel(edge, 'appearance_type', schema, cat, locale);
+    const thumb = memberThumb(target, note, cat, locale, cursor, scope);
+    const bucket = groups.get(target.type);
+    if (bucket === undefined) {
+      groups.set(target.type, {
+        typeLabel: entityTypeLabel(cat, target.type, locale),
+        items: [thumb],
+      });
+    } else bucket.items.push(thumb);
+  }
+  return [...groups.entries()].map(([type, group]) => ({
+    type,
+    typeLabel: group.typeLabel,
+    items: group.items.sort((a, b) => a.chip.name.localeCompare(b.chip.name)),
+  })).sort((a, b) => b.items.length - a.items.length || a.typeLabel.localeCompare(b.typeLabel));
+}
+
+function buildSourceTemplate(
+  row: EntityRow,
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): SourceTemplateView {
+  let arc: SourceTemplateView['arc'] = null;
+  const arcEdge = edges.find((edge) =>
+    edge.relation_type === 'part-of-arc' || edge.relation_type === 'occurs-during-arc'
+  );
+  if (arcEdge !== undefined) {
+    const arcRow = db.getEntityById(arcEdge.target_entity_id);
+    if (arcRow !== null) {
+      arc = {
+        chip: chipForRow(arcRow, cat, locale),
+        label: resolveEdgeLabel(arcEdge, cat, locale),
+        items: containedSources(
+          arcRow.id,
+          'part-of-arc.inverse',
+          row.type,
+          row.id,
+          cat,
+          locale,
+          cursor,
+        ),
+      };
+    }
+  }
+  return {
+    kind: 'source',
+    number: readNumber(row, cursor),
+    prev: adjacentSource(row, -1, cat, locale, cursor),
+    next: adjacentSource(row, 1, cat, locale, cursor),
+    arc,
+    cast: buildCast(edges, cat, locale, cursor, scope),
+    availability: buildAvailability(edges, cat, locale, cursor),
+  };
+}
+
+function buildArcTemplate(
+  row: EntityRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): ArcTemplateView {
+  return {
+    kind: 'arc',
+    chapters: containedSources(
+      row.id,
+      'part-of-arc.inverse',
+      'manga-chapter',
+      row.id,
+      cat,
+      locale,
+      cursor,
+    ),
+    episodes: containedSources(
+      row.id,
+      'part-of-arc.inverse',
+      'anime-episode',
+      row.id,
+      cat,
+      locale,
+      cursor,
+    ),
+    arcs: containedSources(row.id, 'part-of-saga.inverse', 'arc', row.id, cat, locale, cursor),
+  };
+}
+
+/** Relation type keys a template consumed — excluded from the generic
+ *  connection groups so sections do not repeat. `depicted-by` always
+ *  feeds the infobox portrait slot. */
+function consumedRelationKeys(row: EntityRow, template: TemplateView): ReadonlySet<string> {
+  const consumed = new Set<string>(['depicted-by']);
+  for (const key of INFOBOX_RELATIONS[row.type] ?? []) consumed.add(key);
+  switch (template.kind) {
+    case 'character':
+      consumed.add('member-of');
+      break;
+    case 'crew':
+      consumed.add('member-of.inverse');
+      break;
+    case 'source':
+      consumed.add('part-of-arc');
+      consumed.add('occurs-during-arc');
+      consumed.add('features');
+      consumed.add('available-on');
+      break;
+    case 'arc':
+      consumed.add('part-of-arc.inverse');
+      consumed.add('part-of-saga.inverse');
+      break;
+    case 'devil-fruit':
+      consumed.add('ate-fruit.inverse');
+      break;
+    case 'generic':
+      break;
+  }
+  return consumed;
+}
+
+function buildTemplate(
+  row: EntityRow,
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): TemplateView {
+  switch (row.type) {
+    case 'character':
+      return buildCharacterTemplate(row, edges, cat, locale, cursor, scope);
+    case 'crew':
+    case 'organization':
+      return buildCrewTemplate(edges, cat, locale, cursor, scope);
+    case 'manga-chapter':
+    case 'anime-episode':
+      return buildSourceTemplate(row, edges, cat, locale, cursor, scope);
+    case 'arc':
+    case 'saga':
+      return buildArcTemplate(row, cat, locale, cursor);
+    case 'devil-fruit':
+      return buildFruitTemplate(edges, cat, locale, cursor, scope);
+    default:
+      return { kind: 'generic' };
+  }
+}
+
+function buildInfoboxRelations(
+  row: EntityRow,
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+): readonly InfoboxRelationRowView[] {
+  const rows: InfoboxRelationRowView[] = [];
+  for (const key of INFOBOX_RELATIONS[row.type] ?? []) {
+    const matching = edges.filter((edge) => edge.relation_type === key);
+    const first = matching[0];
+    if (first === undefined) continue;
+    rows.push({
+      key,
+      label: resolveEdgeLabel(first, cat, locale),
+      chips: matching.map((edge) => chipOrPlaceholder(edge.target_entity_id, cat, locale)),
+    });
+  }
+  return rows;
+}
+
+/** The canon scope outgoing links should carry (WEB_APP.md § scope). */
+function scopeToPropagate(
+  row: EntityRow,
+  cursor: ProgressCursor,
+  incoming: string | null,
+): string | null {
+  if (LIVE_ACTION_TYPES.has(row.type)) return LIVE_ACTION_SCOPE;
+  const canonScope = latestRawValue(row, 'canon_scope', cursor);
+  if (canonScope === LIVE_ACTION_SCOPE) return LIVE_ACTION_SCOPE;
+  return incoming;
+}
+
 export async function buildEntityView(
   type: string,
   slug: string,
   locale: Locale,
-): Promise<EntityView | null> {
+  cursor: ProgressCursor = EMPTY_CURSOR,
+  scope: string | null = null,
+): Promise<EntityPageView | null> {
   const cat = await getCatalogue();
   const row = db.getEntityBySlug(type, slug);
   if (row === null) return null;
+  const typeLabel = entityTypeLabel(cat, row.type, locale);
+  const name = resolveEntityName(row, cat, locale);
+
+  // Progression gate (WEB_APP.md rule 3): when every appearance anchor
+  // sits beyond the cursor — or the entity IS a beyond-cursor source
+  // (a chapter you have not reached) — show the name and withhold
+  // everything else.
+  if (
+    !isSourceVisible(row.id, cursor)
+    || (row.first_appearance_source !== null
+      && !isSourceVisible(row.first_appearance_source, cursor))
+  ) {
+    return { kind: 'gated', type: row.type, typeLabel, slug: row.slug, name };
+  }
+
+  const edges = db.listRelationsFrom(row.id).filter((edge) => isEdgeVisible(edge, cursor));
+  const template = buildTemplate(row, edges, cat, locale, cursor, scope);
+  const consumed = consumedRelationKeys(row, template);
+  const { properties, infobox } = buildPropertyViews(row, cat, locale, cursor, scope);
   return {
+    kind: 'entity',
     id: row.id,
     type: row.type,
-    typeLabel: entityTypeLabel(cat, row.type, locale),
+    typeLabel,
     slug: row.slug,
-    name: resolveEntityName(row, cat, locale),
+    name,
     firstAppearance: row.first_appearance_source === null
       ? null
       : chipFor(row.first_appearance_source, cat, locale),
-    properties: buildPropertyViews(row, cat, locale),
-    relations: buildRelationViews(row, cat, locale),
+    image: resolveEntityImage(row, edges, cursor, scope, locale, name),
+    infobox,
+    infoboxRelations: buildInfoboxRelations(row, edges, cat, locale),
+    properties,
+    relations: buildRelationViews(edges, cat, locale, consumed),
     narrative: db.getNarrative(row.id, locale),
+    template,
+    propagateScope: scopeToPropagate(row, cursor, scope),
   };
 }
