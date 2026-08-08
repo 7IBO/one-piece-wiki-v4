@@ -31,11 +31,10 @@ import type {
 import {
   AlertCircle,
   Check,
-  ChevronDown,
+  ChevronRight,
   Circle,
   Globe,
   ListTreeIcon,
-  MoreHorizontal,
   Plus,
   X,
 } from 'lucide-react';
@@ -54,7 +53,7 @@ import {
 import { type Locale, SUPPORTED_LOCALES, useLocale, useQualifierLabel, useT } from './locale';
 import { type NavEntry, propertyAnchorId, PropertyNav } from './PropertyNav';
 import { type QualifierDef, resolveQualifiers } from './qualifiers';
-import { QualifierSheet } from './QualifierSheet';
+import { QualifierRowList, SideSheet } from './QualifierSheet';
 import { type RelationEntry, RelationsEditor } from './RelationsEditor';
 import { useDraftAutosave, useStoredDraft } from './use-draft';
 
@@ -1017,7 +1016,6 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         required={decl.required ?? false}
         recommended={decl.recommended ?? false}
         heldBack={heldBack.has(decl.id)}
-        defaultOpen={false}
         propertyType={propertyType}
         valueType={valueType}
         valueField={valueField}
@@ -1357,7 +1355,6 @@ type PropertyRowProps = {
   required: boolean;
   /** ADR-083 completeness tier — expected on a complete article. */
   recommended: boolean;
-  defaultOpen: boolean;
   propertyType: PropertyTypeSchema;
   valueType: ValueType;
   valueField: 'value' | 'value_key';
@@ -1410,30 +1407,27 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   const isRecommendedMissing = !p.required && p.recommended && !hasContent;
   const hasError = (p.errors?.length ?? 0) > 0;
 
-  const [open, setOpen] = useState(p.defaultOpen);
+  // Which entry's edit sheet is open (2026-08 feedback: values render
+  // as a full-width read list; tapping one opens a side sheet that
+  // groups value + every option, like "More options").
+  const [editingIndex, setEditingIndex] = useState<number | null>(null);
   // Render-time state adjustments (react.dev pattern, not effects):
-  // an incoming error must force the editors visible, and the first
-  // entry seeded from outside (sidebar reveal, importer draft) must
-  // not land inside a collapsed row.
-  const [prevHasError, setPrevHasError] = useState(hasError);
-  if (prevHasError !== hasError) {
-    setPrevHasError(hasError);
-    if (hasError) setOpen(true);
-  }
+  // a just-added entry (Add button, sidebar reveal, importer draft)
+  // opens its sheet immediately; removals clamp a stale index.
   const entryCount = p.entries.length;
   const [prevCount, setPrevCount] = useState(entryCount);
   if (prevCount !== entryCount) {
     setPrevCount(entryCount);
-    if (prevCount === 0 && entryCount > 0) setOpen(true);
+    if (entryCount > prevCount) setEditingIndex(entryCount - 1);
+    else if (editingIndex !== null && editingIndex >= entryCount) setEditingIndex(null);
   }
 
   const locale = p.locale;
-  // One line per entry (2026-08 feedback): value + compact provenance
-  // ("C96 · E45"), stacked in data order, capped at 4 lines.
-  const MAX_SUMMARY_LINES = 4;
+  // One full-width line per entry: value + compact provenance
+  // ("C96 · E45"), stacked in data order.
   const entryLines = useMemo(
     () =>
-      p.entries.slice(0, MAX_SUMMARY_LINES).map((entry) => ({
+      p.entries.map((entry) => ({
         value: summariseEntry({
           entry,
           propertyType: p.propertyType,
@@ -1458,7 +1452,6 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
       isHistorical,
     ],
   );
-  const extraEntryCount = Math.max(0, p.entries.length - MAX_SUMMARY_LINES);
 
   // The error ring beats the required-missing ring — a server-rejected
   // value is a hard blocker the maintainer must look at first, before
@@ -1543,12 +1536,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
         )
         : (
           <>
-            <button
-              type='button'
-              onClick={() => setOpen((o) => !o)}
-              aria-expanded={open}
-              className='hover:bg-accent/40 -mx-1 flex w-full items-start gap-2 rounded-md px-1 py-1 text-left transition-colors'
-            >
+            <div className='flex items-center gap-2'>
               <span className='flex h-5 items-center'>
                 {hasError
                   ? <AlertCircle className='text-destructive size-3.5 shrink-0' aria-hidden />
@@ -1558,34 +1546,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
                   ? <Check className='size-3.5 shrink-0 text-emerald-500/80' aria-hidden />
                   : <Circle className='size-3 shrink-0 text-amber-500/70' aria-hidden />}
               </span>
-              <span className='w-32 shrink-0 truncate pt-0.5 sm:w-40'>{labelBlock}</span>
-              <span className='min-w-0 flex-1 space-y-0.5'>
-                {entryLines.length === 0
-                  ? <span className='text-muted-foreground text-sm'>—</span>
-                  : entryLines.map((line, i) => (
-                    <span key={i} className='flex items-baseline justify-between gap-2'>
-                      <span className='min-w-0 truncate text-sm'>
-                        {line.value !== ''
-                          ? line.value
-                          : <span className='text-muted-foreground'>—</span>}
-                      </span>
-                      {line.since !== null
-                        ? (
-                          <span className='text-muted-foreground shrink-0 text-xs tabular-nums'>
-                            {line.since}
-                          </span>
-                        )
-                        : null}
-                    </span>
-                  ))}
-                {extraEntryCount > 0
-                  ? (
-                    <span className='text-muted-foreground block text-xs tabular-nums'>
-                      +{extraEntryCount}
-                    </span>
-                  )
-                  : null}
-              </span>
+              {labelBlock}
               {p.heldBack
                 ? (
                   <Badge
@@ -1597,49 +1558,83 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
                   </Badge>
                 )
                 : null}
-              <ChevronDown
-                className={`text-muted-foreground size-3.5 shrink-0 transition-transform ${
-                  open ? 'rotate-180' : ''
-                }`}
-                aria-hidden
-              />
-            </button>
+              {isHistorical
+                ? (
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    size='icon'
+                    className='text-muted-foreground hover:text-foreground ml-auto size-6'
+                    onClick={p.onAdd}
+                    aria-label={t('addEntry')}
+                    title={t('addEntry')}
+                  >
+                    <Plus className='size-3.5' />
+                  </Button>
+                )
+                : null}
+            </div>
             {schemaBadges}
-            {open
-              ? (
-                <div className='mt-2 space-y-2'>
-                  {p.entries.map((entry, idx) => (
-                    <EntryCard
-                      key={idx}
-                      entry={entry}
-                      propertyType={p.propertyType}
-                      valueType={p.valueType}
-                      valueField={p.valueField}
-                      translations={p.translations}
-                      valueCtx={p.valueCtx}
-                      vocabularies={p.vocabularies}
-                      qualifierTypes={p.qualifierTypes}
-                      fallbackName={p.fallbackName}
-                      showRemove={isHistorical || !p.required || p.entries.length > 1}
-                      onUpdate={(next) => p.onUpdate(idx, next)}
-                      onRemove={() => p.onRemove(idx)}
-                      onTranslate={p.onTranslate}
-                      setEmptyProperty={p.setEmptyProperty}
-                    />
-                  ))}
-                  {isHistorical
+            {
+              /* Full-width value lines under the label (2026-08
+                feedback): each line is the entry's summary + compact
+                provenance; tapping it opens the entry's edit sheet
+                where value + every option live together. */
+            }
+            <div className='mt-0.5 space-y-0.5 pl-5'>
+              {entryLines.map((line, idx) => (
+                <button
+                  key={idx}
+                  type='button'
+                  onClick={() => setEditingIndex(idx)}
+                  aria-haspopup='dialog'
+                  className='hover:bg-accent/40 -mx-1 flex w-full items-baseline gap-2 rounded-md px-1 py-1 text-left transition-colors'
+                >
+                  <span className='min-w-0 flex-1 break-words text-sm'>
+                    {line.value !== ''
+                      ? line.value
+                      : <span className='text-muted-foreground'>—</span>}
+                  </span>
+                  {line.since !== null
                     ? (
-                      <button
-                        type='button'
-                        onClick={p.onAdd}
-                        className='border-input/60 text-muted-foreground hover:border-input hover:text-foreground hover:bg-accent/40 flex w-full items-center justify-center gap-1 rounded-md border border-dashed py-2 text-xs transition-colors'
-                      >
-                        <Plus className='size-3.5' />
-                        {t('addEntry')}
-                      </button>
+                      <span className='text-muted-foreground shrink-0 text-xs tabular-nums'>
+                        {line.since}
+                      </span>
                     )
                     : null}
-                </div>
+                  <ChevronRight
+                    className='text-muted-foreground/60 size-3.5 shrink-0 self-center'
+                    aria-hidden
+                  />
+                </button>
+              ))}
+            </div>
+            {editingIndex !== null && p.entries[editingIndex] !== undefined
+              ? (
+                <EntryEditSheet
+                  open
+                  onClose={() => setEditingIndex(null)}
+                  title={isHistorical && p.entries.length > 1
+                    ? `${p.propertyLabel} · ${t('entryWord')} ${editingIndex + 1}`
+                    : p.propertyLabel}
+                  entry={p.entries[editingIndex]!}
+                  propertyType={p.propertyType}
+                  valueType={p.valueType}
+                  valueField={p.valueField}
+                  translations={p.translations}
+                  valueCtx={p.valueCtx}
+                  vocabularies={p.vocabularies}
+                  qualifierTypes={p.qualifierTypes}
+                  fallbackName={p.fallbackName}
+                  canRemove={isHistorical || !p.required || p.entries.length > 1}
+                  onUpdate={(next) => p.onUpdate(editingIndex, next)}
+                  onRemove={() => {
+                    p.onRemove(editingIndex);
+                    setEditingIndex(null);
+                  }}
+                  onTranslate={p.onTranslate}
+                  setEmptyProperty={p.setEmptyProperty}
+                />
               )
               : null}
           </>
@@ -1675,7 +1670,11 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   );
 }
 
-type EntryCardProps = {
+type EntryEditSheetProps = {
+  open: boolean;
+  onClose: () => void;
+  /** Sheet header — the property label (+ entry ordinal). */
+  title: string;
   entry: PropertyEntry;
   propertyType: PropertyTypeSchema;
   valueType: ValueType;
@@ -1685,7 +1684,7 @@ type EntryCardProps = {
   vocabularies: Record<string, VocabularySchema>;
   qualifierTypes: Record<string, QualifierTypeSchema>;
   fallbackName?: string | undefined;
-  showRemove: boolean;
+  canRemove: boolean;
   onUpdate: (next: PropertyEntry) => void;
   onRemove: () => void;
   onTranslate: (locale: 'en' | 'fr', key: string, value: string) => void;
@@ -1693,11 +1692,13 @@ type EntryCardProps = {
 };
 
 /**
- * One historisable entry rendered as a compact, self-contained card.
- * Body: value (or EN/FR), then `since` (for historical), then a
- * "More options" Collapsible that exposes every remaining qualifier.
+ * One entry's full editor in a right-side sheet (2026-08 feedback:
+ * "regrouper les options ensemble"): the value input at the top, the
+ * `since` anchor for historicals, then EVERY remaining qualifier in
+ * the list-all pattern — no separate "More options" hop. The remove
+ * action lives in the sheet footer.
  */
-function EntryCard(p: EntryCardProps): JSX.Element {
+function EntryEditSheet(p: EntryEditSheetProps): JSX.Element {
   const t = useT();
   const locale = useLocale();
   const qLabel = useQualifierLabel();
@@ -1734,9 +1735,8 @@ function EntryCard(p: EntryCardProps): JSX.Element {
     [allQualifiers],
   );
 
-  // The set of qualifier ids the user has actually populated. Drives
-  // both the trigger badge and the QualifierSheet's "show only set"
-  // behaviour.
+  // The set of qualifier ids the user has actually populated —
+  // drives which rows show their editor vs the "—" expander.
   const setIds = useMemo(() => {
     const s = new Set<string>();
     for (const q of allQualifiers) {
@@ -1748,19 +1748,30 @@ function EntryCard(p: EntryCardProps): JSX.Element {
     }
     return s;
   }, [allQualifiers, p.entry]);
-  const setQualifierCount = setIds.size;
 
   return (
-    <div className='border-input/70 bg-card/40 relative flex flex-col gap-1.5 rounded-md border p-1.5 sm:p-2'>
-      {
-        /* ✕ is absolute top-right INSIDE the card. To stop it from
-          cutting into the qualifier rows below (DEPUIS / CHAPITRE
-          pickers), we DON'T pad the whole card — instead the value
-          row alone carries `pr-7` so the input + globe leave a 28px
-          gutter for the X. Qualifier rows render with full card
-          width and reach the same right edge as the X. */
-      }
-      <div className='pr-7'>
+    <SideSheet
+      open={p.open}
+      onClose={p.onClose}
+      title={p.title}
+      {...(p.canRemove
+        ? {
+          footer: (
+            <Button
+              type='button'
+              variant='ghost'
+              size='sm'
+              className='text-muted-foreground hover:text-destructive hover:bg-destructive/10 w-full gap-1.5'
+              onClick={p.onRemove}
+            >
+              <X className='size-3.5' />
+              {t('removeEntry')}
+            </Button>
+          ),
+        }
+        : {})}
+    >
+      <div className='border-border/40 border-b pb-3'>
         <EntryValue
           propertyType={p.propertyType}
           valueType={p.valueType}
@@ -1777,51 +1788,28 @@ function EntryCard(p: EntryCardProps): JSX.Element {
 
       {p.propertyType.historical
         ? (
-          <QualifierField
-            qualifier={{
-              id: 'since',
-              label: 'Since',
-              valueType: 'source_ref',
-              required: true,
-              multi: true,
-            }}
-            value={p.entry['since']}
-            valueCtx={p.valueCtx}
-            vocabularies={p.vocabularies}
-            propertyValueType={p.valueType}
-            onChange={(v) => setQualifier('since', v)}
-          />
+          <div className='border-border/40 border-b pb-2.5'>
+            <QualifierField
+              qualifier={{
+                id: 'since',
+                label: 'Since',
+                valueType: 'source_ref',
+                required: true,
+                multi: true,
+              }}
+              value={p.entry['since']}
+              valueCtx={p.valueCtx}
+              vocabularies={p.vocabularies}
+              propertyValueType={p.valueType}
+              onChange={(v) => setQualifier('since', v)}
+            />
+          </div>
         )
         : null}
 
-      {
-        /* More-options sheet — slides in from the right. Renders only
-          the qualifiers actually set + an "Add qualifier" picker, so
-          a property with 12 allowed qualifiers doesn't dump 12 empty
-          inputs on the maintainer's face. */
-      }
       {allQualifiers.length > 0
         ? (
-          <QualifierSheet
-            trigger={
-              <Button
-                type='button'
-                variant='ghost'
-                size='sm'
-                className='text-muted-foreground -ml-1 h-6 gap-1 px-1.5 text-[10px]'
-                aria-label={t('moreOptions')}
-              >
-                <MoreHorizontal className='size-3' />
-                {t('moreOptions')}
-                {setQualifierCount > 0
-                  ? (
-                    <span className='bg-primary text-primary-foreground inline-flex h-3 min-w-3 items-center justify-center rounded-full px-1 text-[8px] font-medium leading-none'>
-                      {setQualifierCount}
-                    </span>
-                  )
-                  : null}
-              </Button>
-            }
+          <QualifierRowList
             qualifiers={allQualifiers.map((q) => ({
               id: q.id,
               label: qLabel(q.id, q.label),
@@ -1845,22 +1833,7 @@ function EntryCard(p: EntryCardProps): JSX.Element {
           />
         )
         : null}
-
-      {p.showRemove
-        ? (
-          <Button
-            type='button'
-            variant='ghost'
-            size='icon'
-            className='absolute right-1 top-1 size-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10'
-            onClick={p.onRemove}
-            aria-label={t('removeEntry')}
-          >
-            <X className='size-3' />
-          </Button>
-        )
-        : null}
-    </div>
+    </SideSheet>
   );
 }
 

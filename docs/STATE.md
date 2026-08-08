@@ -237,6 +237,21 @@ The CLI + crawl orchestrator thread the context (registry title index
 - occupations index) automatically; calling the mapper without a
   context degrades to v1 warnings-only behaviour.
 
+## 2026-08-08 (f) — entity form: value list + per-entry side sheet
+
+Maintainer-requested rework of the property rows: the inline accordion
+(EntryCards expanding in place) is gone. Each property now shows its
+label + a FULL-WIDTH read list of value lines (summary + compact
+provenance, one line per entry); tapping a line opens a right-side
+sheet that groups the value input, the `since` anchor and EVERY other
+qualifier in one surface (the "More options" list-all pattern, no
+second hop). Remove lives in the sheet footer; adding an entry (or
+revealing a property from the Sections nav) opens the new entry's
+sheet immediately. `QualifierSheet.tsx` was split into reusable
+`SideSheet` (controlled panel) + `QualifierRowList` (list-all body) +
+the original trigger-owned `QualifierSheet` (still used by the
+relations editor).
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below
