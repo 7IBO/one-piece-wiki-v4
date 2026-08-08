@@ -668,6 +668,8 @@ function ExploreRow(p: {
 
   // Default mode: always-expanded compact row — the values summary
   // sits directly under the entity line (no click-to-open, no pencil).
+  // Scalar values edit INLINE here too: tap a value to swap it for the
+  // same CellEditor the columns mode uses (booleans toggle in place).
   return (
     <div className='space-y-2 px-[var(--page-px)] py-2.5 sm:px-4'>
       <div className='flex items-start gap-3'>
@@ -678,15 +680,29 @@ function ExploreRow(p: {
         ? <p className='text-muted-foreground text-xs italic'>{t('exploreNoValues')}</p>
         : (
           <dl className='space-y-1'>
-            {row.values.map((pv) => (
-              <div key={pv.property} className='flex flex-wrap gap-x-3 gap-y-0.5 text-xs'>
-                <dt className='text-muted-foreground w-32 shrink-0 truncate'>
-                  {propertyLabelOf(p.schemas, pv.property, p.locale)}
-                </dt>
-                <dd className='min-w-0 flex-1 space-y-0.5'>
-                  {pv.entries.length === 0
-                    ? <span className='text-muted-foreground italic'>—</span>
-                    : pv.entries.map((entry, i) => (
+            {row.values.map((pv) => {
+              const pt = schemas?.propertyTypes[pv.property];
+              const editable = schemas !== null
+                && cellEditable(schemas, row.type, pv.property);
+              const hasDraft = p.draft !== undefined && pv.property in p.draft;
+              const draftValue = hasDraft ? p.draft?.[pv.property] : undefined;
+              const latestValue = hasDraft ? draftValue : latestRawValue(row, pv.property);
+              const isEditing = p.editingProp === pv.property;
+              const valueBody = hasDraft && schemas !== null
+                ? (
+                  <span className='text-primary flex items-center gap-1.5 font-medium'>
+                    <span
+                      aria-hidden='true'
+                      className='bg-primary size-1.5 shrink-0 rounded-full'
+                    />
+                    {formatDraft(draftValue, pv.property, schemas, p.locale)}
+                  </span>
+                )
+                : pv.entries.length === 0
+                ? <span className='text-muted-foreground italic'>—</span>
+                : (
+                  <>
+                    {pv.entries.map((entry, i) => (
                       <div key={i} className='flex flex-wrap items-baseline gap-x-2'>
                         <span className='min-w-0 break-words'>{entry.display}</span>
                         {entry.since !== undefined
@@ -698,9 +714,48 @@ function ExploreRow(p: {
                           : null}
                       </div>
                     ))}
-                </dd>
-              </div>
-            ))}
+                  </>
+                );
+              return (
+                <div key={pv.property} className='flex flex-wrap gap-x-3 gap-y-0.5 text-xs'>
+                  <dt className='text-muted-foreground w-32 shrink-0 truncate pt-0.5'>
+                    {propertyLabelOf(p.schemas, pv.property, p.locale)}
+                  </dt>
+                  <dd className='min-w-0 flex-1 space-y-0.5'>
+                    {isEditing && schemas !== null && pt !== undefined
+                      ? (
+                        <CellEditor
+                          valueType={pt.value_type}
+                          enumRef={pt.value_constraints?.enum_ref}
+                          schemas={schemas}
+                          locale={p.locale}
+                          initial={latestValue}
+                          onCommit={(next) => p.onCommit(pv.property, next)}
+                          onCancel={p.onCancelEdit}
+                        />
+                      )
+                      : editable
+                      ? (
+                        <button
+                          type='button'
+                          onClick={() => {
+                            if (pt?.value_type === 'boolean') {
+                              p.onCommit(pv.property, !(latestValue === true));
+                            } else p.onStartEdit(pv.property);
+                          }}
+                          aria-label={`${t('exploreEditValue')} — ${
+                            propertyLabelOf(p.schemas, pv.property, p.locale)
+                          }`}
+                          className='hover:bg-accent/40 -mx-1 block w-full min-w-0 rounded px-1 py-0.5 text-left'
+                        >
+                          {valueBody}
+                        </button>
+                      )
+                      : <span className='block py-0.5'>{valueBody}</span>}
+                  </dd>
+                </div>
+              );
+            })}
           </dl>
         )}
       {nValues > 0
@@ -964,7 +1019,11 @@ function ExploreComponent(): JSX.Element {
         /* Sticky toolbar — same offset/bleed recipe as the type lists.
           Every control shares the search input's height (h-10 → sm:h-8). */
       }
-      <div className='bleed bg-background sticky top-[var(--header-h)] z-10 flex flex-wrap items-center gap-2 border-b px-[var(--page-px)] py-2 sm:px-0'>
+      {
+        /* Filters scroll away with the page (maintainer call 2026-08:
+        "je veux pas que les filtres soient sticky"). */
+      }
+      <div className='bleed bg-background flex flex-wrap items-center gap-2 border-b px-[var(--page-px)] py-2 sm:px-0'>
         <div className='relative min-w-48 flex-1'>
           <Search className='text-muted-foreground absolute left-2.5 top-1/2 size-4 -translate-y-1/2' />
           <Input
