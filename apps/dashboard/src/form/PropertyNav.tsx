@@ -28,6 +28,8 @@ export type NavEntry = {
   readonly id: string;
   readonly label: string;
   readonly required: boolean;
+  /** ADR-083 completeness tier — expected on a complete article. */
+  readonly recommended: boolean;
   readonly filled: boolean;
   /** Section taxonomy id from the form's FORM_SECTIONS. */
   readonly sectionId: string;
@@ -146,6 +148,11 @@ export function PropertyNav(p: PropertyNavProps): JSX.Element {
   const totalFilled = p.entries.filter((e) => e.filled).length;
   const totalRequiredMissing = p.entries.filter((e) => e.required && !e.filled).length;
   const totalProgress = p.entries.length === 0 ? 0 : totalFilled / p.entries.length;
+  // ADR-083 completeness: how much of the required+recommended tier is
+  // filled — the "is this a complete article yet" number, distinct from
+  // the raw filled/total progress above.
+  const expected = p.entries.filter((e) => e.required || e.recommended);
+  const expectedFilled = expected.filter((e) => e.filled).length;
 
   return (
     <nav className='flex max-h-[calc(100vh-8rem)] flex-col text-sm'>
@@ -161,6 +168,20 @@ export function PropertyNav(p: PropertyNavProps): JSX.Element {
           filledLabel={t('filledProgress')}
           missingLabel={t('requiredMissing')}
         />
+        {expected.length > 0
+          ? (
+            <p className='text-muted-foreground mt-1.5 text-[11px] tabular-nums'>
+              <span
+                className={expectedFilled === expected.length
+                  ? 'text-emerald-600'
+                  : 'text-amber-600'}
+              >
+                {expectedFilled}/{expected.length}
+              </span>{' '}
+              {t('completenessLabel')}
+            </p>
+          )
+          : null}
       </div>
       <div className='flex-1 overflow-y-auto pr-1'>
         <ul className='space-y-3'>
@@ -269,6 +290,11 @@ function StatusIcon({ entry }: { entry: NavEntry; }): JSX.Element {
   }
   if (entry.required) {
     return <Dot className='text-amber-500 size-4 shrink-0' />;
+  }
+  // Recommended-but-empty (ADR-083): amber hollow — louder than plain
+  // optional, quieter than required-missing.
+  if (entry.recommended) {
+    return <Circle className='text-amber-500/70 size-2.5 shrink-0' />;
   }
   return <Circle className='text-muted-foreground/40 size-2.5 shrink-0' />;
 }

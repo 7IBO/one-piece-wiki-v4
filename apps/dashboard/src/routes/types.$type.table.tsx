@@ -212,7 +212,7 @@ function TableComponent(): JSX.Element {
   const locale = useLocale();
   const t = useT();
   const drawer = useEntityDrawer();
-  const { data, error } = useApiResource(
+  const { data, error, reload } = useApiResource(
     () => Promise.all([api.tableEntities(type), api.schemas()]),
     [type],
   );
@@ -389,7 +389,7 @@ function TableComponent(): JSX.Element {
   }
 
   if (error !== null) {
-    return <LoadFailed message={error} />;
+    return <LoadFailed message={error} onRetry={reload} />;
   }
 
   const entityTypeLabel = entityType?.labels[locale] ?? entityType?.labels.en ?? type;

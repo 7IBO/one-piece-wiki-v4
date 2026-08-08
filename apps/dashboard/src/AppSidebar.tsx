@@ -13,44 +13,9 @@ import { type JSX, useMemo } from 'react';
 import { useCurrentUser, useSignOut } from './auth';
 import { useLocale } from './form/locale';
 import { useSchemaCatalogue } from './hooks/use-schema-catalogue';
+import { groupTypesByUiHint, type TypeGroup } from './lib/type-groups';
 
-const GROUP_LABELS: Record<string, { en: string; fr: string; }> = {
-  people: { en: 'People', fr: 'Personnages' },
-  groups: { en: 'Groups', fr: 'Groupes' },
-  places: { en: 'Places', fr: 'Lieux' },
-  powers: { en: 'Powers', fr: 'Pouvoirs' },
-  objects: { en: 'Objects', fr: 'Objets' },
-  vehicles: { en: 'Vehicles', fr: 'Véhicules' },
-  sources: { en: 'Sources', fr: 'Sources' },
-  narrative: { en: 'Narrative', fr: 'Récit' },
-  events: { en: 'Events', fr: 'Évènements' },
-  abstract: { en: 'Abstract', fr: 'Abstrait' },
-  concepts: { en: 'Concepts', fr: 'Concepts' },
-  media: { en: 'Media', fr: 'Médias' },
-  other: { en: 'Other', fr: 'Autres' },
-};
-
-const GROUP_ORDER: readonly string[] = [
-  'people',
-  'groups',
-  'places',
-  'powers',
-  'objects',
-  'vehicles',
-  'sources',
-  'narrative',
-  'events',
-  'abstract',
-  'concepts',
-  'media',
-  'other',
-];
-
-type GroupedType = {
-  groupId: string;
-  groupLabel: string;
-  items: readonly { id: string; label: string; }[];
-};
+type SidebarItem = { id: string; label: string; group: string | undefined; };
 
 export function AppSidebar(): JSX.Element {
   const locale = useLocale();
@@ -59,34 +24,21 @@ export function AppSidebar(): JSX.Element {
   const { user, loaded: userLoaded } = useCurrentUser();
   const schemas = useSchemaCatalogue();
 
-  const groups = useMemo<readonly GroupedType[]>(() => {
+  const groups = useMemo<readonly TypeGroup<SidebarItem>[]>(() => {
     if (schemas === null) return [];
-    const buckets = new Map<string, { id: string; label: string; }[]>();
-    for (const et of Object.values(schemas.entityTypes)) {
-      const gid = et.ui_hint?.group ?? 'other';
-      const label = et.labels[locale] ?? et.labels.en;
-      const list = buckets.get(gid) ?? [];
-      list.push({ id: et.id, label });
-      buckets.set(gid, list);
-    }
-    for (const list of buckets.values()) list.sort((a, b) => a.label.localeCompare(b.label));
-    return GROUP_ORDER
-      .filter((g) => buckets.has(g))
-      .map((g) => ({
-        groupId: g,
-        groupLabel: GROUP_LABELS[g]?.[locale] ?? GROUP_LABELS[g]?.en ?? g,
-        items: buckets.get(g) ?? [],
-      }))
-      .concat(
-        // Anything with an unknown group falls through to the end.
-        [...buckets.keys()]
-          .filter((g) => !GROUP_ORDER.includes(g))
-          .map((g) => ({
-            groupId: g,
-            groupLabel: g,
-            items: buckets.get(g) ?? [],
-          })),
-      );
+    // Grouping (order, labels, unknown-group fallthrough) is shared
+    // with the home page grid via lib/type-groups so both surfaces
+    // cluster types identically.
+    const items: SidebarItem[] = Object.values(schemas.entityTypes).map((et) => ({
+      id: et.id,
+      label: et.labels[locale] ?? et.labels.en,
+      group: et.ui_hint?.group,
+    }));
+    return groupTypesByUiHint(
+      items,
+      { group: (it) => it.group, label: (it) => it.label },
+      locale,
+    );
   }, [schemas, locale]);
 
   if (schemas === null) {

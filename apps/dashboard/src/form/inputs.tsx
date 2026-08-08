@@ -797,8 +797,10 @@ function sourceTypeLabel(typeId: string, locale: Locale): string {
 /** Format a source for combobox display: "1043 — Two Crewmates" if a
  *  title translation exists, else just "1043" (or slug for sources
  *  without numbers like films). The type label lives OUTSIDE the
- *  picker as a chip so we never repeat it here. */
-function formatSourceLabel(src: SourceRef, locale: Locale): string {
+ *  picker as a chip so we never repeat it here. Exported so list rows
+ *  (e.g. the apparitions page) resolve the same display names as the
+ *  pickers. */
+export function formatSourceLabel(src: SourceRef, locale: Locale): string {
   const title = src.displayName[locale] ?? src.displayName.en;
   if (src.number !== null) {
     return title !== null && title !== '' ? `${src.number} — ${title}` : String(src.number);

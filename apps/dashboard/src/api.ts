@@ -18,12 +18,25 @@ export type DisplayName = {
   readonly fr: string | null;
 };
 
+/**
+ * Per-row completeness (ADR-083): `expected` counts the entity-type's
+ * required + recommended properties plus its `recommended_relations`;
+ * `filled` counts how many of those the entity actually carries.
+ * Advisory only — drives the list-row meter, never validation.
+ */
+export type Completeness = {
+  readonly filled: number;
+  readonly expected: number;
+};
+
 export type EntityRef = {
   readonly id: string;
   readonly type: string;
   readonly slug: string;
   readonly canonical_name_key: string | null;
   readonly displayName: DisplayName;
+  /** Optional: present on list responses from servers aware of ADR-083. */
+  readonly completeness?: Completeness;
 };
 
 export type Translations = {

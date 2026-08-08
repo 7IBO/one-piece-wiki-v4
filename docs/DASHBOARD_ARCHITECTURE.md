@@ -281,6 +281,28 @@ const navItems = entityTypes.map((et) => ({
 
 Adding a new entity type adds it to the menu automatically.
 
+The `ui_hint.group` taxonomy (group order + localized labels + the
+unknown-group fallthrough) lives in one shared module,
+`apps/dashboard/src/lib/type-groups.ts`, used by both the sidebar and
+the home page grid so the two surfaces always cluster types
+identically. The home page renders groups in that fixed order (never
+reordered by entity count) and folds types with zero entities into a
+single collapsed "Empty types (N)" section at the end.
+
+## Entity list: per-row completeness (ADR-083)
+
+`GET /api/entities/:type` attaches a `completeness: { filled, expected }`
+pair to every row. `expected` counts the entity-type declaration's
+properties flagged `required` or `recommended` plus its
+`recommended_relations`; `filled` counts those the entity actually
+carries (≥1 entry for a property, ≥1 relation of the recommended type).
+Computed in `apps/dashboard/server/completeness.ts` from the
+already-loaded snapshot — schema-driven (no property name in code), no
+extra I/O, O(entities) per request. Advisory only: validation never
+blocks on it. The type list route renders it as a subtle
+`filled/expected` meter per row (amber while incomplete, muted
+checkmark when full); the home page shows counts only.
+
 ## Authentication (phase 1 — admin-only)
 
 - A GitHub App is installed on the data repo

@@ -52,7 +52,7 @@ function EntityCreateComponent(): JSX.Element {
   const t = useT();
   const navigate = useNavigate();
 
-  const { data, error } = useApiResource(
+  const { data, error, reload } = useApiResource(
     () => Promise.all([api.schemas(), api.sources(), api.i18nKeys()]),
     [],
   );
@@ -119,7 +119,7 @@ function EntityCreateComponent(): JSX.Element {
   );
 
   if (error !== null) {
-    return <LoadFailed message={error} />;
+    return <LoadFailed message={error} onRetry={reload} />;
   }
   if (schemas === null) {
     return (

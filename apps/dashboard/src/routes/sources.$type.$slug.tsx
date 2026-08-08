@@ -74,7 +74,7 @@ function SourceCastComponent(): JSX.Element {
   const t = useT();
   const navigate = useNavigate();
 
-  const { data, error } = useApiResource(
+  const { data, error, reload } = useApiResource(
     () => Promise.all([api.getCast(type, slug), api.schemas()]),
     [type, slug],
   );
@@ -200,7 +200,7 @@ function SourceCastComponent(): JSX.Element {
     }
   }
 
-  if (error !== null) return <LoadFailed message={error} />;
+  if (error !== null) return <LoadFailed message={error} onRetry={reload} />;
   if (cast === null || schemas === null) {
     return (
       <div className='space-y-4'>

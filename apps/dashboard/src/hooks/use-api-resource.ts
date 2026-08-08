@@ -8,6 +8,11 @@ import { useCallback, useEffect, useRef, useState } from 'react';
  * `data === null → skeleton` branches keep working — and a failure
  * lands in `error` as a message string.
  *
+ * `reload()` is stale-while-refetch: the previous `data` stays on
+ * screen while the fetch re-runs (`reloading` flips true), so a retry
+ * or an in-place refresh never blanks the page back to a skeleton.
+ * Only a `deps` change resets `data` to `null`.
+ *
  * Stale responses are dropped on unmount/re-run, and every failure is
  * mirrored to the console so the stack stays readable after the inline
  * error unmounts on the next route change.
@@ -15,6 +20,8 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 export interface ApiResource<T> {
   readonly data: T | null;
   readonly error: string | null;
+  /** True while `reload()` is re-fetching with previous data kept. */
+  readonly reloading: boolean;
   /** Re-run the fetch with the same deps (e.g. after an in-place save). */
   readonly reload: () => void;
 }
@@ -25,6 +32,7 @@ export function useApiResource<T>(
 ): ApiResource<T> {
   const [data, setData] = useState<T | null>(null);
   const [error, setError] = useState<string | null>(null);
+  const [reloading, setReloading] = useState(false);
   const [nonce, setNonce] = useState(0);
 
   // Latest loader without making it a dependency — callers pass inline
@@ -32,19 +40,33 @@ export function useApiResource<T>(
   const loadRef = useRef(load);
   loadRef.current = load;
 
+  // Previous deps snapshot so the effect can tell "deps changed"
+  // (reset to null → skeleton) apart from "reload() bumped the nonce"
+  // (keep previous data → stale-while-refetch).
+  const prevDeps = useRef<readonly unknown[] | null>(null);
+
   useEffect(() => {
+    const depsChanged = prevDeps.current === null
+      || prevDeps.current.length !== deps.length
+      || deps.some((d, i) => !Object.is(d, prevDeps.current?.[i]));
+    prevDeps.current = deps;
     let cancelled = false;
-    setData(null);
+    if (depsChanged) setData(null);
     setError(null);
+    setReloading(!depsChanged);
     loadRef.current()
       .then((d) => {
-        if (!cancelled) setData(d);
+        if (cancelled) return;
+        setData(d);
+        setReloading(false);
       })
       .catch((e: unknown) => {
         // Keep the full stack readable after the inline error unmounts.
         // eslint-disable-next-line no-console
         console.error(e);
-        if (!cancelled) setError(e instanceof Error ? e.message : String(e));
+        if (cancelled) return;
+        setError(e instanceof Error ? e.message : String(e));
+        setReloading(false);
       });
     return () => {
       cancelled = true;
@@ -57,5 +79,5 @@ export function useApiResource<T>(
     setNonce((n) => n + 1);
   }, []);
 
-  return { data, error, reload };
+  return { data, error, reloading, reload };
 }

@@ -512,6 +512,26 @@ shippable on its own.
    - Container query primitives in `tailwind.config` for components
      that render in both full-page and drawer contexts
 
+5. **Redesign follow-ups** (2026-08-07 UX audit + ADR-083; the
+   layout/field-state/completeness core shipped with the audit PR)
+   - **Narratives editor** — the "light text section" on entity pages:
+     read/write `/data/universes/<u>/narratives/<locale>/<type>/<id>.md`
+     through the PR flow, light Markdown + `[[entity]]` autocomplete
+     (concept already fully specced in DATA_MODEL § Narratives; this is
+     UI + one server route, no data-model change).
+   - **Cross-field recommendation rules** — "status=alive but died_at
+     set" hints. Parked in IDEAS.md; requires its own ADR (declarative
+     rules evaluated by the same engine as `check:coherence`, surfaced
+     as non-blocking form banners). First rules come from
+     EPISTEMIC_MODEL's documented anti-patterns.
+   - **Microcopy/i18n sweep** — the audit counted ~35 hardcoded English
+     strings across chrome; fold them into the locale catalogue.
+   - **External images decision** — Fandom/onepiece-api image ingestion
+     is currently FORBIDDEN (ADR-079 §5 + IMAGES.md licence policy).
+     Any import affordance needs a maintainer ADR reversing that with a
+     licence/attribution answer; until then the sanctioned path is
+     metadata-only import + the native licence-first upload flow.
+
 ## Phase 5 — Referential and schema management
 
 **Scheduling**: deferred until the dashboard volume justifies it
