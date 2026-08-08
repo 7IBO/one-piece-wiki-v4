@@ -94,7 +94,7 @@ describe('diffEntityData', () => {
     };
     const changes = diffEntityData(before, after, ctx);
     expect(changes).toEqual([
-      { label: 'Status', added: ['Dead · C574'], removed: [] },
+      { label: 'Status', added: [{ text: 'Dead · C574' }], removed: [] },
     ]);
   });
 
@@ -110,8 +110,8 @@ describe('diffEntityData', () => {
     expect(changes).toEqual([
       {
         label: 'Bounty',
-        added: ['600,000,000 ฿ · C550'],
-        removed: ['550,000,000 ฿ · C550'],
+        added: [{ text: '600,000,000 ฿ · C550' }],
+        removed: [{ text: '550,000,000 ฿ · C550' }],
       },
     ]);
   });
@@ -127,7 +127,7 @@ describe('diffEntityData', () => {
     };
     const changes = diffEntityData(before, after, ctx);
     expect(changes).toEqual([
-      { label: 'Member of', added: ['Straw Hat Pirates · C5'], removed: [] },
+      { label: 'Member of', added: [{ text: 'Straw Hat Pirates · C5' }], removed: [] },
     ]);
   });
 
@@ -137,7 +137,7 @@ describe('diffEntityData', () => {
     expect(changes.every((g) => g.removed.length === 0)).toBe(true);
   });
 
-  it('renders every other qualifier of a property entry as "Label : Valeur"', () => {
+  it('splits every other qualifier of a property entry into "Label : Valeur" details', () => {
     const after = {
       ...before,
       properties: {
@@ -157,15 +157,16 @@ describe('diffEntityData', () => {
     expect(changes).toEqual([
       {
         label: 'Status',
-        added: [
-          'Dead · C574 · Epistemic status : Confirmed · Event : Battle of Marineford',
-        ],
+        added: [{
+          text: 'Dead · C574',
+          details: 'Epistemic status : Confirmed · Event : Battle of Marineford',
+        }],
         removed: [],
       },
     ]);
   });
 
-  it('compacts until like since and joins qualifier arrays with a comma', () => {
+  it('compacts until like since in details and joins qualifier arrays with a comma', () => {
     const after = {
       ...before,
       properties: {
@@ -181,8 +182,8 @@ describe('diffEntityData', () => {
     expect(changes).toEqual([
       {
         label: 'Bounty',
-        added: ['550,000,000 ฿ · C550 · Until : C574, C600'],
-        removed: ['550,000,000 ฿ · C550'],
+        added: [{ text: '550,000,000 ฿ · C550', details: 'Until : C574, C600' }],
+        removed: [{ text: '550,000,000 ฿ · C550' }],
       },
     ]);
   });
@@ -201,8 +202,8 @@ describe('diffEntityData', () => {
     expect(changes).toEqual([
       {
         label: 'Status',
-        added: ['Alive · C1 · mystery_flag : raw_token'],
-        removed: ['Alive · C1'],
+        added: [{ text: 'Alive · C1', details: 'mystery_flag : raw_token' }],
+        removed: [{ text: 'Alive · C1' }],
       },
     ]);
   });
@@ -220,7 +221,10 @@ describe('diffEntityData', () => {
     expect(changes).toEqual([
       {
         label: 'Member of',
-        added: ['Straw Hat Pirates · C5 · Relation kind : Sworn brother'],
+        added: [{
+          text: 'Straw Hat Pirates · C5',
+          details: 'Relation kind : Sworn brother',
+        }],
         removed: [],
       },
     ]);
@@ -242,7 +246,7 @@ describe('diffEntityData', () => {
     expect(changes).toEqual([
       {
         label: 'Status',
-        added: ['Mort · C574 · Statut épistémique : Confirmé'],
+        added: [{ text: 'Mort · C574', details: 'Statut épistémique : Confirmé' }],
         removed: [],
       },
     ]);

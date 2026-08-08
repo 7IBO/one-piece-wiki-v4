@@ -12,15 +12,17 @@
  *    meter and the full values summary. No click-to-open, no per-row
  *    edit button (the row title links to the entity page).
  *  - Properties chosen: one cell per chosen property per row; the
- *    meter and x/y count are hidden; missing values render as an
- *    amber "—" WARNING chip. Clicking an editable cell swaps in the
- *    right inline editor for its value_type (string/number → input,
- *    enum → select, boolean → toggle, date → date input); commits
- *    land in a local draft store and a sticky save bar opens ONE PR
- *    per edited entity through the same `saveEntity` endpoint as the
- *    table view. Complex value types (refs, multi_enum, localizable
- *    i18n keys…) stay read-only inline — the "⋯" affordance links to
- *    the full entity page.
+ *    meter and x/y count are hidden; missing values render as a muted
+ *    "—". An info line per chosen property sits above the list
+ *    (declaring entity types + filled-entity count, all resolved from
+ *    the schema catalogue), and a "relevant types only" toggle
+ *    (default ON) restricts the list to entities whose type declares
+ *    at least one chosen property.
+ *
+ * The page is READ-ONLY (2026-08 feedback — no inline editing): every
+ * value line links to the entity page with `?edit=<propertyId>.<i>`,
+ * which opens that entry's editor there — the detail surface — and
+ * browser Back closes it.
  *
  * The client stays dumb by design: displays (vocabulary labels,
  *  translated keys, number+unit, ✓/×, compact `since` provenance)
@@ -285,11 +287,11 @@ function FilterToggle(p: {
   );
 }
 
-/** Inline editor for one cell — the right control for the value_type,
- *  committing on blur / Enter / pick, cancelling on Escape. */
 /** One READ-ONLY property cell in columns mode. Missing values are a
  *  plain muted dash (title carries the hint) — no amber chips, no
- *  inline editor (2026-08 feedback). */
+ *  inline editor (2026-08 feedback). Each value line links to the
+ *  entity page with `?edit=<propertyId>.<i>` — the entry's detail
+ *  opens there, in the same editor as the entity form. */
 function ValueCell(p: {
   row: AuditRow;
   propertyId: string;
@@ -320,12 +322,19 @@ function ValueCell(p: {
         : (
           <span className='block space-y-0.5'>
             {entries.map((entry, i) => (
-              <span key={i} className='block break-words text-xs'>
+              <Link
+                key={i}
+                to='/types/$type/$slug'
+                params={{ type: p.row.type, slug: p.row.slug }}
+                search={{ edit: `${p.propertyId}.${i}` }}
+                title={t('exploreOpenEntry')}
+                className='hover:bg-muted/60 -mx-1 block break-words rounded px-1 text-xs'
+              >
                 {entry.display}
                 {entry.since !== undefined
                   ? <span className='text-muted-foreground ml-1.5'>{entry.since}</span>
                   : null}
-              </span>
+              </Link>
             ))}
           </span>
         )}
@@ -430,7 +439,18 @@ function ExploreRow(p: {
                   {pv.entries.length === 0
                     ? <span className='text-muted-foreground italic'>—</span>
                     : pv.entries.map((entry, i) => (
-                      <div key={i} className='flex flex-wrap items-baseline gap-x-2'>
+                      /* Each value line links to the entity page with
+                        `?edit=<propertyId>.<i>` — the entry's detail
+                        opens there (same editor as the entity form),
+                        browser Back closes it. Discreet hover bg. */
+                      <Link
+                        key={i}
+                        to='/types/$type/$slug'
+                        params={{ type: row.type, slug: row.slug }}
+                        search={{ edit: `${pv.property}.${i}` }}
+                        title={t('exploreOpenEntry')}
+                        className='hover:bg-muted/60 -mx-1 flex flex-wrap items-baseline gap-x-2 rounded px-1'
+                      >
                         <span className='min-w-0 break-words'>{entry.display}</span>
                         {entry.since !== undefined
                           ? (
@@ -439,7 +459,7 @@ function ExploreRow(p: {
                             </span>
                           )
                           : null}
-                      </div>
+                      </Link>
                     ))}
                 </dd>
               </div>
@@ -525,11 +545,43 @@ function ExploreComponent(): JSX.Element {
     [chosenProps, propertyOptions],
   );
 
+  // "Relevant types only" (default ON): with ≥1 chosen property, keep
+  // only entities whose TYPE declares at least one of them — the
+  // point of picking "Age" is seeing the types that carry it.
+  const [relevantOnly, setRelevantOnly] = useState(true);
+  const relevantTypes = useMemo(() => {
+    if (schemas === null || activeProps.length === 0) return null;
+    const declaring = new Set<string>();
+    for (const et of Object.values(schemas.entityTypes)) {
+      if (et.properties.some((d) => activeProps.includes(d.id))) declaring.add(et.id);
+    }
+    return declaring;
+  }, [schemas, activeProps]);
+
+  // Per-chosen-property info line data: which entity types declare the
+  // property (schema catalogue, localized labels) + how many entities
+  // have a value for it on their audit row. No data hardcoded.
+  const propertyInfos = useMemo(() => {
+    if (schemas === null || rows === null || activeProps.length === 0) return null;
+    return activeProps.map((pid) => ({
+      id: pid,
+      label: propertyLabelOf(schemas, pid, locale),
+      declaredBy: Object.values(schemas.entityTypes)
+        .filter((et) => et.properties.some((d) => d.id === pid))
+        .map((et) => et.labels[locale] ?? et.labels.en ?? et.id)
+        .sort((a, b) => a.localeCompare(b)),
+      filledCount: rows.filter((row) =>
+        row.values.some((pv) => pv.property === pid && pv.entries.length > 0)
+      ).length,
+    }));
+  }, [schemas, rows, activeProps, locale]);
+
   const filtered = useMemo(() => {
     if (rows === null) return null;
     const q = deferredQuery.trim().toLowerCase();
     return rows.filter((row) => {
       if (filters.types.length > 0 && !filters.types.includes(row.type)) return false;
+      if (relevantOnly && relevantTypes !== null && !relevantTypes.has(row.type)) return false;
       if (filters.missingTranslations && row.missingTranslations.length === 0) return false;
       if (filters.missingValues && row.missingRecommended.length === 0) return false;
       if (filters.hideComplete && isComplete(row)) return false;
@@ -543,7 +595,7 @@ function ExploreComponent(): JSX.Element {
       }
       return true;
     });
-  }, [rows, filters, deferredQuery, locale]);
+  }, [rows, filters, deferredQuery, locale, relevantOnly, relevantTypes]);
 
   const hasActiveFilters = filters.types.length > 0
     || filters.query !== ''
@@ -629,6 +681,15 @@ function ExploreComponent(): JSX.Element {
           onChange={setChosenProps}
           clearLabel={t('exploreClearFilters')}
         />
+        {activeProps.length > 0
+          ? (
+            <FilterToggle
+              active={relevantOnly}
+              label={t('exploreRelevantTypesOnly')}
+              onToggle={() => setRelevantOnly((v) => !v)}
+            />
+          )
+          : null}
         <FilterToggle
           active={filters.missingTranslations}
           label={t('exploreMissingTranslationsToggle')}
@@ -646,6 +707,27 @@ function ExploreComponent(): JSX.Element {
           onToggle={() => setFilters((f) => ({ ...f, hideComplete: !f.hideComplete }))}
         />
       </div>
+
+      {
+        /* One discreet info line per chosen property: which entity
+          types declare it (schema catalogue, localized labels) and how
+          many entities carry a value for it. */
+      }
+      {propertyInfos !== null
+        ? (
+          <div className='space-y-0.5'>
+            {propertyInfos.map((info) => (
+              <p key={info.id} className='text-muted-foreground text-xs'>
+                <span className='text-foreground font-medium'>{info.label}</span>
+                {' — '}
+                {t('exploreDeclaredBy').replace('{types}', info.declaredBy.join(', '))}
+                {' · '}
+                {t('exploreFilledCount').replace('{n}', String(info.filledCount))}
+              </p>
+            ))}
+          </div>
+        )
+        : null}
 
       {rows === null || filtered === null
         ? <ExploreSkeleton />

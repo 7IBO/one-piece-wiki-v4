@@ -5,7 +5,29 @@ session can pick up mid-stream. Architectural _rationale_ lives in
 `/docs/DECISIONS.md` (ADRs); the build order in `/docs/ROADMAP.md`;
 this file is the current status + the open threads.
 
-**Last updated**: 2026-08-08 (narrative editor v1)
+**Last updated**: 2026-08-08 (history quiet lines + explore detail links)
+
+**2026-08-08 — history quiet lines + explore entry links + property
+info (maintainer feedback batch).** (1) History pages toned down: the
+change-line wire format went from `string` to
+`{ text, details? }` (`server/history-diff.ts` `HistoryChangeLine` —
+`text` = value · compact since, `details` = the other qualifiers
+`Label : Valeur`-joined); the shared renderer shows only `text` in the
+normal foreground with the −/+ sign alone tinted (emerald/red at 70%),
+and `details` unfolds behind a per-line "voir plus" — nothing open by
+default. (2) /explore stays read-only but every value line (both
+modes) is now a discreet link to the entity page with
+`?edit=<propertyId>.<entryIndex>`, opening that entry's editor there
+(Back closes it, per the existing URL-mirror). (3) With ≥1 chosen
+property, /explore shows one info line per property (declaring entity
+types from the catalogue + filled-entity count from the audit rows)
+and a "types concernés uniquement" toggle (default ON) restricting the
+list to entities whose type declares a chosen property. New UI_STRINGS
+keys appended (historySeeMore/Less, exploreOpenEntry,
+exploreDeclaredBy, exploreFilledCount, exploreRelevantTypesOnly).
+Verified: 258 bun tests (history-diff tests adapted), typecheck, lint,
+format, dashboard build, Playwright pass (mocked history API,
+explore→editor deep link, Âge info line + filter).
 
 **2026-08-08 — Narrative editor v1 (the missing content brick).**
 Path convention settled and documented in DATA_MODEL § Narratives:

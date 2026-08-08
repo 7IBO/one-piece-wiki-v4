@@ -218,13 +218,21 @@ export type EntityLinks = {
 
 /** One commit touching an entity's data file — a row of
  *  `GET /api/entities/:type/:slug/history` (in-app history page). */
+/** One change line — `text` is the compact value + `since` shown by
+ *  default ("Mort · C574"); `details` carries the other qualifiers
+ *  (`Label : Valeur`, ` · `-joined) behind a per-line "see more". */
+export type HistoryChangeLine = {
+  readonly text: string;
+  readonly details?: string;
+};
+
 /** One property/relation-type change bucket inside a commit — labels
  *  and value lines arrive fully resolved (localized labels, vocab
  *  labels, translated keys, compact `C96` provenance), never JSON. */
 export type HistoryChangeGroup = {
   readonly label: string;
-  readonly added: readonly string[];
-  readonly removed: readonly string[];
+  readonly added: readonly HistoryChangeLine[];
+  readonly removed: readonly HistoryChangeLine[];
 };
 
 export type HistoryCommit = {
