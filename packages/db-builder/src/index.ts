@@ -1,4 +1,5 @@
 export * from './builder.ts';
+export * from './content.ts';
 export * from './extract.ts';
 export * from './manifest.ts';
 export * from './paths.ts';

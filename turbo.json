@@ -6,6 +6,9 @@
       "dependsOn": ["^build"],
       "outputs": [".output/**", ".vercel/output/**", "dist/**"]
     },
+    "build:db": {
+      "cache": false
+    },
     "typecheck": {
       "dependsOn": ["^typecheck"],
       "inputs": [

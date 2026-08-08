@@ -3,7 +3,7 @@
  * The extractor is pure: it does not touch the database. The writer
  * inserts the rows in a single transaction.
  */
-import type { LoadedEntity, ValidatedCatalogue } from '@onepiece-wiki/schema-engine';
+import type { LoadedEntity, RelationType, ValidatedCatalogue } from '@onepiece-wiki/schema-engine';
 
 export type EntityRow = {
   id: string;
@@ -43,6 +43,12 @@ export type RelationRow = {
   believed_by: string | null;
   known_truth_by: string | null;
   revealed_since: string | null;
+  /**
+   * Localized display label for THIS row's direction, as a sorted
+   * locale → string JSON object: the relation type's `active` labels on
+   * a stored edge, its `inverse` labels on a materialized inverse edge.
+   */
+  label: string | null;
   is_inferred: number;
 };
 
@@ -205,6 +211,29 @@ function extractPropertyRows(entity: LoadedEntity): PropertyRow[] {
   return rows;
 }
 
+/**
+ * Serialize the localized labels of one direction of a relation type
+ * (locale keys sorted for deterministic output). Null when the type is
+ * unknown to the catalogue — validation makes that impossible on a real
+ * build, but synthetic fixtures may omit the definition.
+ */
+function relationLabel(
+  def: RelationType | undefined,
+  direction: 'active' | 'inverse',
+): string | null {
+  if (def?.labels === undefined) return null;
+  const byLocale: Record<string, string> = {};
+  for (const locale of Object.keys(def.labels).sort()) {
+    const pair = (def.labels as Record<string, { active: string; inverse: string; }>)[locale];
+    if (pair !== undefined) byLocale[locale] = pair[direction];
+  }
+  return JSON.stringify(byLocale);
+}
+
+function edgeKey(relationType: string, sourceId: string, targetId: string): string {
+  return `${relationType} ${sourceId} ${targetId}`;
+}
+
 function extractRelationRows(
   entity: LoadedEntity,
   catalogue: ValidatedCatalogue,
@@ -226,7 +255,7 @@ function extractRelationRows(
       : null;
     const since = qualifiersObj !== null ? asString(qualifiersObj['since']) : null;
     const until = qualifiersObj !== null ? asString(qualifiersObj['until']) : null;
-    // Relation base qualifiers (ADR-037). The generated inverse edge
+    // Relation base qualifiers (ADR-037). The materialized inverse edge
     // carries the same epistemic state — a hidden link is equally hidden
     // in both directions.
     const epistemicStatus = (qualifiersObj !== null
@@ -251,25 +280,46 @@ function extractRelationRows(
       believed_by: believedBy,
       known_truth_by: knownTruthBy,
       revealed_since: revealedSince,
+      label: relationLabel(catalogue.relationTypes.get(relationType), 'active'),
       is_inferred: 0,
     });
+  }
+  return rows;
+}
 
-    const relationDef = catalogue.relationTypes.get(relationType);
-    if (relationDef?.inverse_inferred === true) {
-      rows.push({
-        source_entity_id: target,
-        target_entity_id: entity.id,
-        relation_type: `${relationType}.inverse`,
-        qualifiers: qualifiersObj !== null ? JSON.stringify(qualifiersObj) : null,
-        since_source: since,
-        until_source: until,
-        epistemic_status: epistemicStatus,
-        believed_by: believedBy,
-        known_truth_by: knownTruthBy,
-        revealed_since: revealedSince,
-        is_inferred: 1,
-      });
+/**
+ * Materialize the inverse edge B→A for EVERY stored edge A→B, for every
+ * relation type — the JSON source stores one direction only, the
+ * artifact carries both. Inverse rows get `is_inferred = 1`, the base
+ * type id suffixed `.inverse`, the type's localized `inverse` labels,
+ * and every qualifier/axis mirrored (ADR-037: a hidden link is equally
+ * hidden in both directions).
+ *
+ * Dedup: when the opposite direction is ALSO stored in the JSON (known
+ * double-stored symmetric edges, e.g. the `family-of` ace↔luffy pairs),
+ * no inverse is materialized for either side — the two stored rows
+ * already cover both directions.
+ */
+function materializeInverses(
+  stored: readonly RelationRow[],
+  catalogue: ValidatedCatalogue,
+): RelationRow[] {
+  const storedKeys = new Set(
+    stored.map((r) => edgeKey(r.relation_type, r.source_entity_id, r.target_entity_id)),
+  );
+  const rows: RelationRow[] = [];
+  for (const r of stored) {
+    if (storedKeys.has(edgeKey(r.relation_type, r.target_entity_id, r.source_entity_id))) {
+      continue; // Opposite direction is double-stored — skip the inferred copy.
     }
+    rows.push({
+      ...r,
+      source_entity_id: r.target_entity_id,
+      target_entity_id: r.source_entity_id,
+      relation_type: `${r.relation_type}.inverse`,
+      label: relationLabel(catalogue.relationTypes.get(r.relation_type), 'inverse'),
+      is_inferred: 1,
+    });
   }
   return rows;
 }
@@ -324,6 +374,11 @@ export function extract(
     out.appearances.push(...extractAppearanceRows(entity));
   }
 
+  // Materialize the inverse of every stored edge (deduplicated against
+  // double-stored symmetric edges). Runs after the entity loop because
+  // the dedup needs the full set of stored edges.
+  out.relations.push(...materializeInverses(out.relations, catalogue));
+
   // Derived: an entity's primary canon scope is the canon_scope declared
   // by the source where it first appears. Resolved here because it needs
   // the full entity map to look the source up.
@@ -349,6 +404,8 @@ export function extract(
     a.source_entity_id.localeCompare(b.source_entity_id)
     || a.relation_type.localeCompare(b.relation_type)
     || a.target_entity_id.localeCompare(b.target_entity_id)
+    || (a.since_source ?? '').localeCompare(b.since_source ?? '')
+    || (a.qualifiers ?? '').localeCompare(b.qualifiers ?? '')
   );
   out.appearances.sort((a, b) =>
     a.entity_id.localeCompare(b.entity_id) || a.source_id.localeCompare(b.source_id)

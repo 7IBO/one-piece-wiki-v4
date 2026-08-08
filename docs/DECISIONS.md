@@ -8,6 +8,60 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-086 — Artifact materializes the inverse of EVERY relation edge (+ translations/narratives tables)
+
+**Date**: 2026-08-08
+
+**Context**: The SQLite artifact is the foundation of the future public
+site + API, which must answer "incoming edges of X" without reverse
+scans (today the dashboard's links panel scans every entity). The
+pipeline only materialized inverses for `inverse_inferred: true` types,
+inverse rows carried no display label, the three known double-stored
+symmetric `family-of` pairs (ace↔luffy, ace↔sabo, luffy↔sabo — found by
+`SYMMETRIC_RELATION_STORED_TWICE`) would have produced duplicate rows,
+and the artifact carried neither translations nor narratives.
+
+**Options**:
+
+1. Keep flag-gated inverse generation; read side reverse-scans the
+   rest — pushes graph logic into every consumer.
+2. Materialize both directions for every edge in the artifact,
+   dedup against double-stored opposites — one invariant, JSON keeps
+   single-direction storage.
+3. Rewrite the JSON to store both directions — violates "source stores
+   one direction", explodes editing surface.
+
+**Choice**: Option 2.
+
+- Every stored edge A→B gets a materialized B→A row: `is_inferred = 1`,
+  `relation_type` = `<id>.inverse` (existing SDK convention kept), new
+  `label` column = the type's localized `inverse` labels (stored rows
+  carry the `active` labels), all qualifiers + the ADR-037 epistemic
+  axis mirrored.
+- Dedup invariant: if the opposite direction is itself stored (the
+  double-stored symmetric edges), neither side generates an inferred
+  copy.
+- `inverse_inferred` is reinterpreted as editorial metadata ("editors
+  maintain one side only") and no longer gates materialization
+  (SCHEMA_SPEC updated).
+- New artifact tables `translations` (universe, locale, key, value) and
+  `narratives` (universe, entity_id, locale, markdown) load the two
+  content trees; the builder errors on narratives whose derived
+  entity id is unknown.
+- CLI: `bun run build:db` (root script + uncached turbo task;
+  `build:data` kept as alias). Output remains `/dist/onepiece.db` +
+  manifest with `relations_inferred` / `translations` / `narratives`
+  counts. Build stays byte-deterministic (verified: identical sha256
+  across runs).
+
+**Rationale**: the artifact is derived and disposable, so carrying both
+directions costs nothing at the source of truth while making every
+read-side consumer (site, API, SDK) graph-complete; the dedup rule maps
+exactly onto the maintainer's "double storage is informative, never an
+error" call.
+
+---
+
 ## ADR-085 — Declarative coherence rules (advisory, schema-driven)
 
 **Date**: 2026-08-08
