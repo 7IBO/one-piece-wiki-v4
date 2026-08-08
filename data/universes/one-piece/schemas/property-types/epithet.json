@@ -6,6 +6,7 @@
   "value_type": "i18n_key",
   "historical": true,
   "localizable": true,
+  "romanizable": true,
   "spoiler_sensitive": false,
   "default_qualifiers": ["since", "source"],
   "allowed_qualifiers": [

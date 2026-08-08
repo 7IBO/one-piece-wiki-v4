@@ -724,6 +724,11 @@ const UI_STRINGS = {
     en: 'Relevant types only',
     fr: 'Types concernés uniquement',
   },
+  // Data-locale translation inputs (ADR-095). `ja`/`ja-latn` are data
+  // locales, NOT UI locales — these strings only label the extra
+  // inputs in the translations popover.
+  localeJa: { en: '日本語', fr: 'Japonais' },
+  localeJaLatn: { en: 'Rōmaji', fr: 'Rōmaji' },
 } as const;
 
 /**

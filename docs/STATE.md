@@ -15,7 +15,25 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-08 (ADR-091..094 : wiki public v1, sync Fandom, références, documents)
+**Last updated**: 2026-08-08 (ADR-095 : locales de données ja / ja-latn)
+
+**2026-08-08 — One Piece Wiki v1 + sync Fandom livrés sur main (PR
+#115, ADR-091/092/093/094).** `apps/web` est devenu le wiki public
+(layout wiki, curseur anti-spoil SSR `web_progress`, layouts par type
+avec dégradation générique, contexte `?scope=`, strip contribution →
+dashboard, footer GitHub + Buy Me a Coffee) — 31 tests + 35 checks
+Playwright ; captures envoyées au mainteneur. `packages/importers` a
+gagné `fandom:analyze` (sweep structurel complet, rapport
+JSON+MD + GAPS) et `fandom:updates` (file de deltas par révisions vs
+registre ADR-081) — 68 tests fixtures ; l'egress Fandom reste bloqué
+ici (CONNECT 403), exécution live côté mainteneur. Références
+externes + documents in-universe promus d'IDEAS (voir entrée
+précédente). **ADR-095 en cours** : locales de données `ja` +
+`ja-latn` éditables au dashboard uniquement (Rōmaji restreint aux
+propriétés `romanizable: true` — name/epithet/title_key), jamais en
+UI ni sur le wiki v1, narratifs en/fr inchangés. **Wave 3 toujours en
+file** : provenance par item sur `believed_by` (séquencée après
+ADR-095 — même surface EntityForm).
 
 **2026-08-08 — promotions IDEAS : références externes (ADR-093) +
 documents in-universe (ADR-094).** Both parked entries promoted per

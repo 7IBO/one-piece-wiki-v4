@@ -13,7 +13,7 @@
  */
 import { del, get, keys as idbKeys, set } from 'idb-keyval';
 import { useCallback, useEffect, useRef, useState } from 'react';
-import type { Translations } from '../api';
+import { normalizeTranslations, type Translations } from '../api';
 
 type EntityData = Record<string, unknown>;
 
@@ -60,7 +60,9 @@ export async function readDraft(entityId: string): Promise<StoredDraft | null> {
       void del(storageKey(entityId));
       return null;
     }
-    return raw;
+    // Drafts persisted before ADR-095 only carry `{en, fr}` — fill the
+    // missing data-locale maps so form code can index them safely.
+    return { ...raw, translations: normalizeTranslations(raw.translations) };
   } catch {
     return null;
   }

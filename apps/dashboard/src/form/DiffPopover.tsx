@@ -5,7 +5,8 @@
  *
  *  - **Properties** — each touched property id, with a short before /
  *    after rendering. Arrays/objects are JSON-stringified compact.
- *  - **Translations** — touched i18n keys, per-locale (en / fr).
+ *  - **Translations** — touched i18n keys, per data locale
+ *    (en / fr / ja / ja-latn — ADR-095).
  *  - **Relations** — total count delta + added/removed targets per
  *    relation type so multi-target edits stay readable.
  *
@@ -14,6 +15,7 @@
  */
 import { Button } from '@/components/ui/button';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { DATA_LOCALES, type DataLocale } from '@onepiece-wiki/schemas';
 import { diffLines } from 'diff';
 import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
 import { type JSX, useMemo, useState } from 'react';
@@ -46,7 +48,7 @@ type PropertyDiff = {
 
 type TranslationDiff = {
   readonly key: string;
-  readonly locale: Locale;
+  readonly locale: DataLocale;
   readonly before: DiffCell;
   readonly after: DiffCell;
 };
@@ -662,7 +664,7 @@ function computeDiff(p: {
   propertyDiffs.sort((a, b) => a.label.localeCompare(b.label));
 
   const translationDiffs: TranslationDiff[] = [];
-  for (const locale of ['en', 'fr'] as const) {
+  for (const locale of DATA_LOCALES) {
     const init = p.initialTranslations[locale] ?? {};
     const curr = p.translations[locale] ?? {};
     const keys = new Set([...Object.keys(init), ...Object.keys(curr)]);

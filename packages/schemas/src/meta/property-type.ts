@@ -46,6 +46,16 @@ export const PropertyTypeSchema = z.object({
   unit: z.string().optional(),
   historical: z.boolean(),
   localizable: z.boolean(),
+  /**
+   * `ja-latn` (romanized Japanese) transliteration allowed (ADR-095).
+   * Only meaningful on `localizable` property types: when true, the
+   * dashboard offers a `ja-latn` translation input next to `ja`.
+   * Reserved for **name-like values** (`name`, `epithet`, `title_key`)
+   * — free-text/description-like keys must never set it (romanizing
+   * prose is meaningless). `ja` itself needs no flag: every localizable
+   * value accepts original-script Japanese.
+   */
+  romanizable: z.boolean().optional(),
   spoiler_sensitive: z.boolean().default(false),
   applies_to_entity_types: z.array(Slug).optional(),
   default_qualifiers: z.array(Slug).default([]),

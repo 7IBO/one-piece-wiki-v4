@@ -59,6 +59,50 @@ describe('loadTranslationRows', () => {
     ]);
   });
 
+  it('picks up ja / ja-latn locale directories like any other locale (ADR-095)', async () => {
+    const root = makeUniversesDir();
+    write(
+      root,
+      'one-piece/translations/en/character/luffy.json',
+      JSON.stringify({ 'character.luffy.name.common': 'Monkey D. Luffy' }),
+    );
+    write(
+      root,
+      'one-piece/translations/ja/character/luffy.json',
+      JSON.stringify({ 'character.luffy.name.common': 'モンキー・D・ルフィ' }),
+    );
+    write(
+      root,
+      'one-piece/translations/ja-latn/character/luffy.json',
+      JSON.stringify({ 'character.luffy.name.common': 'Monkī Dī Rufi' }),
+    );
+
+    const rows = await loadTranslationRows(root);
+    // The loader globs locale directories — new locales appear as
+    // additive rows; en/fr rows are untouched (the web app only
+    // queries en/fr and keeps working unchanged).
+    expect(rows).toEqual([
+      {
+        universe: 'one-piece',
+        locale: 'en',
+        key: 'character.luffy.name.common',
+        value: 'Monkey D. Luffy',
+      },
+      {
+        universe: 'one-piece',
+        locale: 'ja',
+        key: 'character.luffy.name.common',
+        value: 'モンキー・D・ルフィ',
+      },
+      {
+        universe: 'one-piece',
+        locale: 'ja-latn',
+        key: 'character.luffy.name.common',
+        value: 'Monkī Dī Rufi',
+      },
+    ]);
+  });
+
   it('returns [] when the translations tree is absent', async () => {
     const root = makeUniversesDir();
     mkdirSync(join(root, 'one-piece'), { recursive: true });

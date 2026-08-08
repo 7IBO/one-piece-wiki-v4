@@ -56,10 +56,31 @@ export const IsoDate = z
   .transform((value) => value as Brand<string, 'IsoDate'>);
 export type IsoDate = z.infer<typeof IsoDate>;
 
+/**
+ * Two locale tiers (ADR-095):
+ *
+ *  - **UI locales** (`Locale`) — the languages the dashboard/web chrome
+ *    renders in and that display-fallback chains resolve through. Stays
+ *    `en`/`fr`; adding a UI locale means translating UI_STRINGS, schema
+ *    labels, narratives, etc.
+ *  - **Data locales** (`DataLocale`) — the languages a TRANSLATION VALUE
+ *    can exist in. Superset of the UI locales: adds `ja` (original
+ *    Japanese script, e.g. 「モンキー・D・ルフィ」) and `ja-latn`
+ *    (romanized Japanese — proper BCP-47 `Latn` script subtag). These
+ *    are stored data surfaced in the dashboard's translation inputs
+ *    (and later consumers); they never appear in a locale switcher and
+ *    never participate in display fallback.
+ */
 export const Locale = z.enum(['en', 'fr']);
 export type Locale = z.infer<typeof Locale>;
 export const LOCALES: readonly Locale[] = ['en', 'fr'] as const;
 export const DEFAULT_LOCALE: Locale = 'en';
+
+/** Locales a translation value can be stored in — see `Locale` above
+ *  for the UI-vs-data tier distinction (ADR-095). */
+export const DataLocale = z.enum(['en', 'fr', 'ja', 'ja-latn']);
+export type DataLocale = z.infer<typeof DataLocale>;
+export const DATA_LOCALES: readonly DataLocale[] = ['en', 'fr', 'ja', 'ja-latn'] as const;
 
 export const LocalizedLabel = z.object({
   en: z.string().min(1),

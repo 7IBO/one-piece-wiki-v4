@@ -5,13 +5,15 @@
  * implementation from "write JSON file directly" to "open PR via
  * Octokit" without affecting this surface.
  */
-import type {
-  EntityTypeSchema,
-  PropertyTypeSchema,
-  QualifierTypeSchema,
-  RelationTypeSchema,
-  RuleSchema,
-  VocabularySchema,
+import {
+  DATA_LOCALES,
+  type DataLocale,
+  type EntityTypeSchema,
+  type PropertyTypeSchema,
+  type QualifierTypeSchema,
+  type RelationTypeSchema,
+  type RuleSchema,
+  type VocabularySchema,
 } from '@onepiece-wiki/schemas';
 
 export type DisplayName = {
@@ -40,10 +42,29 @@ export type EntityRef = {
   readonly completeness?: Completeness;
 };
 
-export type Translations = {
-  readonly en: Record<string, string>;
-  readonly fr: Record<string, string>;
-};
+/**
+ * Per-entity translation maps, one per DATA locale (ADR-095): the UI
+ * locales `en`/`fr` plus `ja` (original Japanese script) and `ja-latn`
+ * (romanized Japanese). Every key is present — the server normalizes
+ * missing locale files to `{}` — so form code can index any data
+ * locale without branching. `ja`/`ja-latn` are stored data surfaced
+ * only in the form's translation inputs; display fallback chains and
+ * the locale switcher stay `en`/`fr`.
+ */
+export type Translations = Readonly<Record<DataLocale, Record<string, string>>>;
+
+/**
+ * Fill missing data-locale maps with `{}` (stable key order). Guards
+ * the boundaries where a pre-ADR-095 `{en, fr}` record can still
+ * appear — e.g. IndexedDB drafts persisted by an older session.
+ */
+export function normalizeTranslations(
+  raw: Partial<Record<DataLocale, Record<string, string>>>,
+): Translations {
+  const out = {} as Record<DataLocale, Record<string, string>>;
+  for (const locale of DATA_LOCALES) out[locale] = raw[locale] ?? {};
+  return out;
+}
 
 export type EntityDetail = {
   readonly id: string;
