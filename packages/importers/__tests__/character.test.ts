@@ -5,8 +5,9 @@
 import { describe, expect, it } from 'bun:test';
 import { join } from 'node:path';
 import { GENERATED_DIR } from '../../schema-engine/src/paths.ts';
-import { mapCharacter, parseBirthday } from '../src/fandom/character.ts';
+import { mapCharacter, parseBirthday, parseBountyEntries } from '../src/fandom/character.ts';
 import type { ParsedPage } from '../src/fandom/client.ts';
+import { buildTitleIndex } from '../src/fandom/registry.ts';
 import { parseNihongo, parseQrefs } from '../src/fandom/wikitext.ts';
 
 async function hyougoro(): Promise<ParsedPage> {
@@ -103,5 +104,118 @@ describe('character mapper (real Char Box)', () => {
     const page = await hyougoro();
     expect(mapCharacter({ ...page, wikitext: 'prose only' })).toBeNull();
     expect(mapCharacter({ ...page, wikitext: '{{Char Box|jname=x}}' })).toBeNull();
+  });
+});
+
+function syntheticPage(wikitext: string): ParsedPage {
+  return {
+    title: 'Test Page',
+    pageId: 1,
+    wikitext,
+    url: 'https://onepiece.fandom.com/wiki/Test_Page',
+  };
+}
+
+describe('bounty history parsing', () => {
+  it('parses newest-first <br> lines into chronological entries with per-value since', () => {
+    const { entries, warnings } = parseBountyEntries(
+      '{{B}} 3,000,000,000{{Qref|chap=1053}}<br/>1,500,000,000{{Qref|chap=903}}'
+        + '<br>500,000,000{{Qref|chap=801|ep=746}}',
+      new Map(),
+    );
+    expect(warnings).toEqual([]);
+    expect(entries).toEqual([
+      { value: 500_000_000, since: 'manga-chapter:801' },
+      { value: 1_500_000_000, since: 'manga-chapter:903' },
+      { value: 3_000_000_000, since: 'manga-chapter:1053' },
+    ]);
+  });
+
+  it('keeps already-chronological lists, skips numberless lines, flags missing Qrefs', () => {
+    const { entries, warnings } = parseBountyEntries(
+      '50{{Qref|chap=98}}<br>Unknown<br>100', // oldest-first, one dud
+      new Map(),
+    );
+    expect(entries).toEqual([{ value: 50, since: 'manga-chapter:98' }, { value: 100 }]);
+    expect(warnings.some((w) => w.includes('without a number'))).toBe(true);
+    expect(warnings.some((w) => w.includes('no Qref'))).toBe(true);
+  });
+});
+
+describe('status vocabulary mapping', () => {
+  const base = '{{Char Box|ename=Test Guy|first=Chapter 1{{Qref|chap=1}}';
+
+  it.each([
+    ['Deceased{{Qref|chap=574}}', 'dead', 'manga-chapter:574'],
+    ['Presumed Deceased', 'presumed_dead', 'manga-chapter:1'],
+    ['Missing', 'missing', 'manga-chapter:1'],
+    ['Unknown', 'unknown', 'manga-chapter:1'],
+  ])('maps "%s" → %s', (raw, expected, since) => {
+    const result = mapCharacter(syntheticPage(`${base}|status=${raw}}}`));
+    expect(result!.entity.properties['status']).toEqual([{ value: expected, since }]);
+  });
+});
+
+describe('registry-resolved relations + occupation matching', () => {
+  const titleIndex = buildTitleIndex({
+    pages: [
+      {
+        entityId: 'crew:straw-hat-pirates',
+        page: 'Straw Hat Pirates',
+        pageId: 10,
+        redirects: ['Strawhat Crew'],
+      },
+      { entityId: 'location:wano', page: 'Wano Country', pageId: 11, redirects: [] },
+      { entityId: 'devil-fruit:gomu-gomu', page: 'Gomu Gomu no Mi', pageId: 12, redirects: [] },
+      { entityId: 'character:zoro', page: 'Roronoa Zoro', pageId: 13, redirects: [] },
+    ],
+  });
+  const occupations = new Map([
+    ['pirate', 'pirate'],
+    ['captain', 'captain'],
+    ['cook', 'cook'],
+  ]);
+  const page = syntheticPage(
+    '{{Char Box|ename=Test Guy|first=Chapter 1{{Qref|chap=1}}'
+      + '|affiliation=[[Straw Hat Pirates]]{{Qref|chap=5}}<br>[[Roronoa Zoro]]'
+      + '|origin=[[Wano Country]]'
+      + '|residence=[[Nowhere Island]]'
+      + '|dfname=[[Gomu Gomu no Mi]]'
+      + '|occupation=Pirate; Captain<br>Cartographer<br>Cook (former)}}',
+  );
+
+  it('emits relations for registry-resolved targets of the right type only', () => {
+    const result = mapCharacter(page, { titleIndex, occupations });
+    expect(result!.entity.relations).toEqual([
+      {
+        type: 'member-of',
+        target: 'crew:straw-hat-pirates',
+        qualifiers: { since: 'manga-chapter:5' },
+      },
+      { type: 'originates-from', target: 'location:wano' },
+      { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu' },
+    ]);
+    // Wrong-type target (a character can't be a member-of target),
+    // unknown page, and former lines all surface as warnings.
+    expect(result!.warnings.some((w) => w.includes('not a valid member-of target'))).toBe(true);
+    expect(result!.warnings.some((w) => w.includes('unresolved "[[Nowhere Island]]"'))).toBe(true);
+  });
+
+  it('matches occupations exactly against the vocabulary, flags the rest', () => {
+    const result = mapCharacter(page, { titleIndex, occupations });
+    expect(result!.entity.properties['occupation']).toEqual([
+      { value: ['pirate', 'captain'], since: 'manga-chapter:1' },
+    ]);
+    expect(result!.warnings.some((w) => w.includes('"Cartographer" has no vocabulary match')))
+      .toBe(true);
+    expect(result!.warnings.some((w) => w.includes('"Cook (former)" is former'))).toBe(true);
+  });
+
+  it('degrades to v1 warnings without a context', () => {
+    const result = mapCharacter(page);
+    expect(result!.entity.relations).toEqual([]);
+    expect(result!.entity.properties['occupation']).toBeUndefined();
+    expect(result!.warnings.some((w) => w.startsWith('affiliation:'))).toBe(true);
+    expect(result!.warnings.some((w) => w.startsWith('occupation:'))).toBe(true);
   });
 });

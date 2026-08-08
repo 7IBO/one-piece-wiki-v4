@@ -2,17 +2,25 @@
  * Fandom "Char Box" → `character` entity mapper (ADR-079). Param
  * names verified against the live Hyougoro response (2026-06-14):
  * `jname`/`rname`/`ename`, `first` (debut chapter+episode Qref),
- * `alias`/`epithet` ({{Nihongo}} values), `age`/`birth`/`height`/
- * `blood type` (note the space) sourced to Vivre Card Qrefs
+ * `alias`/`epithet` ({{Nihongo}} values), `bounty` (newest-first
+ * `<br>`-separated history with per-value Qrefs), `age`/`birth`/
+ * `height`/`blood type` (note the space) sourced to Vivre Card Qrefs
  * (`card=N` → our `databook-card:N`), `jva`/`Funi eva` (voice
  * actors), `affiliation`/`occupation`/`origin`/`residence`.
  *
- * Deterministic scalars only. Everything needing entity resolution
- * (affiliations → member-of, VAs → person + voiced-by, occupations →
- * the `occupations` vocab) or judgement is surfaced as warnings for
- * the AI-extraction / human pass — never guessed.
+ * Deterministic mapping only — but "deterministic" includes two
+ * resolution passes fed by COMMITTED project state (never guessed):
+ *  - `[[wikilink]]` targets in affiliation/origin/residence/devil
+ *    fruit params resolve against the Fandom sync registry
+ *    (data/import/fandom-pages.json) → member-of / originates-from /
+ *    resides-in / ate-fruit relations when the target entity exists;
+ *  - occupation strings match EXACTLY (case-insensitive) against the
+ *    `occupations` vocabulary labels → the multi_enum value.
+ * Anything unresolved, "former"-annotated, or fuzzy stays a warning
+ * for the AI-extraction / human pass.
  */
 import type { ParsedPage } from './client.ts';
+import { extractWikiLinks, resolveTitle, type TitleIndex } from './registry.ts';
 import {
   buildQrefTable,
   cleanValue,
@@ -20,6 +28,7 @@ import {
   parseLooseNumber,
   parseNihongo,
   parseQrefs,
+  type QrefSource,
 } from './wikitext.ts';
 
 export type CharacterMapResult = {
@@ -40,6 +49,86 @@ const INFOBOX_NAMES = ['Char Box', 'Charbox', 'Character Box', 'Infobox characte
 
 /** Current character schema_version — keep in sync with the type. */
 export const CHARACTER_SCHEMA_VERSION = 5;
+
+/**
+ * Optional resolution context. Both members come from COMMITTED
+ * project state; without them the mapper degrades to v1 behaviour
+ * (warnings instead of relations/occupation values).
+ */
+export type CharacterMapContext = {
+  /** `buildTitleIndex(registry)` over data/import/fandom-pages.json. */
+  readonly titleIndex?: TitleIndex;
+  /** Lowercased occupation label (en/fr) AND value id → value id. */
+  readonly occupations?: ReadonlyMap<string, string>;
+};
+
+/**
+ * `character-statuses` vocabulary mapping, longest-match first so
+ * "Presumed Deceased" hits `presumed_dead` before `dead`. v1 emitted
+ * the raw Fandom word "deceased", which the enum rejects.
+ */
+const STATUS_PATTERNS: readonly (readonly [RegExp, string])[] = [
+  [/presumed\s+(dead|deceased)/, 'presumed_dead'],
+  [/deceased|dead/, 'dead'],
+  [/missing/, 'missing'],
+  [/in\s+hiding/, 'in_hiding'],
+  [/incapacitated/, 'incapacitated'],
+  [/unknown/, 'unknown'],
+  [/alive/, 'alive'],
+];
+
+/** Split a raw param value on `<br>` variants (per-line sub-values —
+ *  the Char Box convention for bounty history and affiliation lists). */
+function splitOnBr(raw: string): readonly string[] {
+  return raw.split(/<br\s*\/?>/i).map((s) => s.trim()).filter((s) => s !== '');
+}
+
+/** `since` candidate from a segment's Qrefs — chapters anchor better
+ *  than episodes in the corpus, so manga refs win when both cite. */
+function bestSinceOf(sources: readonly QrefSource[]): string | null {
+  const chapter = sources.find((s) => s.sourceId.startsWith('manga-chapter:'));
+  return chapter?.sourceId ?? sources[0]?.sourceId ?? null;
+}
+
+export type BountyParse = {
+  readonly entries: readonly { readonly value: number; readonly since?: string; }[];
+  readonly warnings: readonly string[];
+};
+
+/**
+ * Parse the Char Box `bounty` param into chronological historical
+ * entries. Fandom lists the history NEWEST first, one value per
+ * `<br>` line, each line citing its reveal via {{Qref}} — detected by
+ * comparing first/last values and reversed when needed. Annotations
+ * ("(frozen)", {{B}} symbols) are stripped; a line without a leading
+ * number (e.g. "Unknown") is skipped with a warning.
+ */
+export function parseBountyEntries(
+  raw: string,
+  qrefTable: ReadonlyMap<string, readonly QrefSource[]>,
+): BountyParse {
+  const warnings: string[] = [];
+  const parsed: { value: number; since?: string; }[] = [];
+  for (const segment of splitOnBr(raw)) {
+    const cleaned = cleanValue(segment);
+    const numberMatch = /(\d[\d,.]*)/.exec(cleaned);
+    const value = numberMatch !== null ? parseLooseNumber(numberMatch[1]!) : null;
+    if (value === null) {
+      if (cleaned !== '') warnings.push(`bounty line without a number: "${cleaned}" — skipped`);
+      continue;
+    }
+    const since = bestSinceOf(parseQrefs(segment, qrefTable));
+    if (since === null) {
+      warnings.push(`bounty ${value.toLocaleString('en')} has no Qref — emitted without since`);
+      parsed.push({ value });
+    } else parsed.push({ value, since });
+  }
+  // Chronological order (oldest first) — the corpus convention.
+  const first = parsed[0]?.value;
+  const last = parsed[parsed.length - 1]?.value;
+  if (first !== undefined && last !== undefined && first > last) parsed.reverse();
+  return { entries: parsed, warnings };
+}
 
 const MONTHS: Record<string, string> = {
   january: '01',
@@ -75,7 +164,10 @@ function slugify(name: string): string {
     .replace(/^-+|-+$/g, '');
 }
 
-export function mapCharacter(page: ParsedPage): CharacterMapResult | null {
+export function mapCharacter(
+  page: ParsedPage,
+  ctx: CharacterMapContext = {},
+): CharacterMapResult | null {
   const box = findTemplate(page.wikitext, ...INFOBOX_NAMES);
   if (box === null) return null;
 
@@ -156,12 +248,25 @@ export function mapCharacter(page: ParsedPage): CharacterMapResult | null {
     warnings.push('no status param — defaulted to alive (Fandom convention; verify)');
   } else {
     const cleaned = cleanValue(statusRaw).toLowerCase();
-    const value = cleaned.includes('deceased') ? 'deceased' : null;
-    if (value !== null) properties['status'] = [{ value, ...since }];
-    else {
+    const hit = STATUS_PATTERNS.find(([pattern]) => pattern.test(cleaned));
+    if (hit !== undefined) {
+      const statusSource = sourceOf(statusRaw);
+      properties['status'] = [{
+        value: hit[1],
+        ...(statusSource !== null ? { since: statusSource } : since),
+      }];
+    } else {
       properties['status'] = [{ value: 'alive', ...since }];
       warnings.push(`unmapped status "${cleanValue(statusRaw)}" — defaulted to alive`);
     }
+  }
+
+  // Bounty history — the corpus' flagship historisable property.
+  const bountyRaw = get('bounty');
+  if (bountyRaw !== undefined) {
+    const bounty = parseBountyEntries(bountyRaw, qrefTable);
+    warnings.push(...bounty.warnings);
+    if (bounty.entries.length > 0) properties['bounty'] = [...bounty.entries];
   }
 
   const ageRaw = get('age');
@@ -201,13 +306,99 @@ export function mapCharacter(page: ParsedPage): CharacterMapResult | null {
     properties['blood_type'] = { value: cleanValue(bloodRaw) };
   }
 
-  // Needs-resolution params → warnings (AI/human pass; never guessed).
+  // Relation params resolve their [[wikilinks]] through the sync
+  // registry — exact-title (and redirect-alias) matches only. Lines
+  // annotated "former" need an `until` a page fact can't provide, so
+  // they stay warnings; so do targets we don't know or whose entity
+  // type the relation doesn't accept.
+  const relations: Record<string, unknown>[] = [];
+  const resolveRelationParam = (
+    raw: string | undefined,
+    param: string,
+    relationType: string,
+    targetTypes: readonly string[],
+  ): void => {
+    if (raw === undefined) return;
+    if (ctx.titleIndex === undefined) {
+      warnings.push(`${param}: "${cleanValue(raw)}" — needs ${relationType} resolution`);
+      return;
+    }
+    for (const segment of splitOnBr(raw)) {
+      if (/\bformer\b/i.test(cleanValue(segment))) {
+        warnings.push(
+          `${param} line "${cleanValue(segment)}" is former — needs an until qualifier (human)`,
+        );
+        continue;
+      }
+      const segmentSource = bestSinceOf(parseQrefs(segment, qrefTable));
+      for (const target of extractWikiLinks(segment)) {
+        const link = resolveTitle(ctx.titleIndex, target);
+        if (link === null) {
+          warnings.push(`${param}: unresolved "[[${target}]]" — import that page first`);
+          continue;
+        }
+        const targetType = link.entityId.split(':')[0] ?? '';
+        if (!targetTypes.includes(targetType)) {
+          warnings.push(
+            `${param}: "[[${target}]]" resolved to ${link.entityId} — not a valid ${relationType} target`,
+          );
+          continue;
+        }
+        relations.push({
+          type: relationType,
+          target: link.entityId,
+          ...(segmentSource !== null ? { qualifiers: { since: segmentSource } } : {}),
+        });
+      }
+    }
+  };
+  resolveRelationParam(get('affiliation'), 'affiliation', 'member-of', [
+    'crew',
+    'organization',
+  ]);
+  resolveRelationParam(get('origin'), 'origin', 'originates-from', ['location']);
+  resolveRelationParam(get('residence'), 'residence', 'resides-in', ['location']);
+  resolveRelationParam(get('dfname', 'dfename'), 'devil fruit', 'ate-fruit', ['devil-fruit']);
+
+  // Occupation: EXACT (case-insensitive) matches against the
+  // occupations vocabulary become the multi_enum value; anything
+  // fuzzy stays a warning.
+  const occupationRaw = get('occupation');
+  if (occupationRaw !== undefined) {
+    if (ctx.occupations === undefined) {
+      warnings.push(
+        `occupation: "${cleanValue(occupationRaw)}" — needs occupation multi_enum mapping`,
+      );
+    } else {
+      const matched: string[] = [];
+      for (const segment of splitOnBr(occupationRaw)) {
+        const cleaned = cleanValue(segment);
+        if (/\bformer\b/i.test(cleaned)) {
+          warnings.push(`occupation "${cleaned}" is former — needs an until qualifier (human)`);
+          continue;
+        }
+        for (const item of cleaned.split(/[;,]/)) {
+          const label = item.replace(/\([^)]*\)/g, '').trim().toLowerCase();
+          if (label === '') continue;
+          const valueId = ctx.occupations.get(label);
+          if (valueId === undefined) {
+            warnings.push(`occupation "${item.trim()}" has no vocabulary match — human pass`);
+          } else if (!matched.includes(valueId)) matched.push(valueId);
+        }
+      }
+      if (matched.length > 0) {
+        const occupationSource = bestSinceOf(parseQrefs(occupationRaw, qrefTable));
+        properties['occupation'] = [{
+          value: matched,
+          ...(occupationSource !== null ? { since: occupationSource } : since),
+        }];
+      }
+    }
+  }
+
+  // Params still out of deterministic reach → warnings (AI/human pass).
   for (
     const [param, note] of [
-      ['affiliation', 'member-of relations (targets must resolve to crew/organization entities)'],
-      ['occupation', 'occupation multi_enum (map against the occupations vocabulary)'],
-      ['origin', 'origin/birthplace relation (resolve to location entities)'],
-      ['residence', 'resides-in relation (resolve to location entities)'],
       ['jva', 'voiced-by → person entity (JP)'],
       ['Funi eva', 'voiced-by → person entity (EN dub)'],
     ] as const
@@ -224,7 +415,7 @@ export function mapCharacter(page: ParsedPage): CharacterMapResult | null {
       slug,
       canonical_name_key: nameKey,
       properties,
-      relations: [],
+      relations,
     },
     translations: { en: translations },
     warnings,

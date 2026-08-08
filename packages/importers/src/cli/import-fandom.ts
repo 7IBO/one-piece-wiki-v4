@@ -25,18 +25,54 @@ import { mapCharacter } from '../fandom/character.ts';
 import { FandomClient, type ParsedPage } from '../fandom/client.ts';
 import { crawl } from '../fandom/crawl.ts';
 import { mapEpisode } from '../fandom/episode.ts';
-import { type FandomRegistry, staleEntries } from '../fandom/registry.ts';
+import { buildTitleIndex, type FandomRegistry, staleEntries } from '../fandom/registry.ts';
 
 type MapperKind = 'chapter' | 'episode' | 'character';
 
-const MAPPERS: Record<
-  MapperKind,
-  (page: ParsedPage) => (MapperEmit & { warnings: readonly string[]; }) | null
-> = {
-  chapter: mapChapter,
-  episode: mapEpisode,
-  character: mapCharacter,
-};
+const REGISTRY_PATH = join(REPO_ROOT, 'data', 'import', 'fandom-pages.json');
+
+async function loadRegistry(): Promise<FandomRegistry> {
+  return (await Bun.file(REGISTRY_PATH).json()) as FandomRegistry;
+}
+
+/**
+ * Lowercased occupation labels (en/fr) and raw value ids → value id,
+ * from the committed `occupations` vocabulary — feeds the character
+ * mapper's exact-match occupation resolution.
+ */
+async function loadOccupationIndex(): Promise<ReadonlyMap<string, string>> {
+  const vocabPath = join(
+    REPO_ROOT,
+    'data',
+    'universes',
+    'one-piece',
+    'schemas',
+    'vocabulary',
+    'occupations.json',
+  );
+  const vocab = (await Bun.file(vocabPath).json()) as {
+    values: Record<string, { labels: { en?: string; fr?: string; }; }>;
+  };
+  const index = new Map<string, string>();
+  for (const [id, term] of Object.entries(vocab.values)) {
+    index.set(id.toLowerCase(), id);
+    if (term.labels.en !== undefined) index.set(term.labels.en.toLowerCase(), id);
+    if (term.labels.fr !== undefined) index.set(term.labels.fr.toLowerCase(), id);
+  }
+  return index;
+}
+
+async function buildMappers(): Promise<
+  Record<MapperKind, (page: ParsedPage) => (MapperEmit & { warnings: readonly string[]; }) | null>
+> {
+  const [registry, occupations] = await Promise.all([loadRegistry(), loadOccupationIndex()]);
+  const ctx = { titleIndex: buildTitleIndex(registry), occupations };
+  return {
+    chapter: mapChapter,
+    episode: mapEpisode,
+    character: (page) => mapCharacter(page, ctx),
+  };
+}
 
 const args = process.argv.slice(2);
 const stage = args.includes('--stage');
@@ -57,13 +93,14 @@ if (kind === 'crawl') {
   const seedPages = opt('page');
   const limit = Number(opt('limit')[0] ?? '25');
   const categoryDepth = Number(opt('depth')[0] ?? '2');
-  const registryPath = join(REPO_ROOT, 'data', 'import', 'fandom-pages.json');
-  const registry = (await Bun.file(registryPath).json()) as FandomRegistry;
+  const registry = await loadRegistry();
+  const occupations = await loadOccupationIndex();
 
   const report = await crawl(client, { categories, pages: seedPages }, {
     limit,
     categoryDepth,
     registry,
+    occupations,
     log: (line) => process.stdout.write(`  ${line}\n`),
   });
 
@@ -91,8 +128,7 @@ if (kind === 'crawl') {
   }
   if (!stage) process.stdout.write('(dry-run — pass --stage to write files)\n');
 } else if (kind === 'check-updates') {
-  const registryPath = join(REPO_ROOT, 'data', 'import', 'fandom-pages.json');
-  const registry = (await Bun.file(registryPath).json()) as FandomRegistry;
+  const registry = await loadRegistry();
   const titles = registry.pages.map((p) => p.page);
   const info = await client.queryInfo(titles);
   const live = new Map([...info.entries()].map(([t, i]) => [t, i.lastRevId]));
@@ -108,8 +144,10 @@ if (kind === 'crawl') {
     }
     process.exitCode = 2; // distinct from crash — "work to do".
   }
-} else if (kind !== undefined && kind in MAPPERS && pages.length > 0) {
-  const mapper = MAPPERS[kind as MapperKind];
+} else if (
+  kind !== undefined && ['chapter', 'episode', 'character'].includes(kind) && pages.length > 0
+) {
+  const mapper = (await buildMappers())[kind as MapperKind];
   let failures = 0;
   for (const page of pages) {
     // eslint-disable-next-line no-await-in-loop
