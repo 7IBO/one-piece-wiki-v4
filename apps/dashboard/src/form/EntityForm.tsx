@@ -18,7 +18,7 @@ import { Combobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
 import { MobileSheet, MobileSheetContent, MobileSheetTrigger } from '@/components/ui/mobile-sheet';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
-import { buildEntitySchema } from '@onepiece-wiki/schema-engine/entity-schema';
+import { buildEntitySchema, propertyEntrySchema } from '@onepiece-wiki/schema-engine/entity-schema';
 import type {
   EntityTypeSchema,
   PropertyTypeSchema,
@@ -332,6 +332,54 @@ function stripEmptyProperties(
   return { ...data, properties: out };
 }
 
+/**
+ * Save/diff normalisation with the draft-tier rule (2026-08 feedback):
+ * a property whose entries don't ALL pass their entry schema (missing
+ * `since`, half-typed value, bad enum) is **held back** — the payload
+ * and the diff carry the property's on-disk state instead, so an
+ * unfinished edit is never listed as an unsaved change, never blocks
+ * the PR, and can never accidentally delete the entry it was editing.
+ * The editor state keeps the work-in-progress (and the draft autosave
+ * persists it); the row shows a "draft" badge while held back.
+ *
+ * Disk data always passes CI validation, so held-back properties can
+ * only come from in-session edits — substituting the initial value is
+ * therefore always safe.
+ */
+function normalizeForSave(
+  data: EntityData,
+  propertyTypes: Record<string, PropertyTypeSchema>,
+  translations: Translations,
+  entrySchemas: ReadonlyMap<string, { safeParse: (v: unknown) => { success: boolean; }; }>,
+  initialNormalized: EntityData,
+): { normalized: EntityData; heldBack: ReadonlySet<string>; } {
+  const stripped = stripEmptyProperties(data, propertyTypes, translations);
+  const props = stripped.properties;
+  if (props === undefined || props === null) {
+    return { normalized: stripped, heldBack: new Set() };
+  }
+  const heldBack = new Set<string>();
+  const out: Record<string, PropertyValue> = {};
+  const initialProps = initialNormalized.properties ?? {};
+  for (const [propertyId, value] of Object.entries(props)) {
+    const schema = entrySchemas.get(propertyId);
+    const complete = schema === undefined
+      || entries(value as PropertyValue).every((e) => schema.safeParse(e).success);
+    if (complete) {
+      out[propertyId] = value as PropertyValue;
+      continue;
+    }
+    heldBack.add(propertyId);
+    const initial = initialProps[propertyId];
+    if (initial !== undefined) out[propertyId] = initial;
+    // Absent initially → the property simply stays out of the payload.
+  }
+  // A property deleted in-session but present on disk stays deleted
+  // (that's a real, complete change) — only held-back substitutions
+  // re-inject initial values, handled above.
+  return { normalized: { ...stripped, properties: out }, heldBack };
+}
+
 function enumValuesFor(
   propertyType: PropertyTypeSchema,
   vocabularies: Record<string, VocabularySchema>,
@@ -413,9 +461,35 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     () => JSON.stringify(props.initialTranslations),
     [props.initialTranslations],
   );
-  const currentDataNormalized = useMemo(
-    () => stripEmptyProperties(data, props.propertyTypes, translations),
-    [data, props.propertyTypes, translations],
+  // One entry-level Zod per property (browser-safe module, same
+  // validator as server/CLI) — drives the draft-tier hold-back rule.
+  const entrySchemas = useMemo(() => {
+    const vocabMap = new Map(Object.entries(props.vocabularies));
+    const out = new Map<string, { safeParse: (v: unknown) => { success: boolean; }; }>();
+    for (const [id, pt] of Object.entries(props.propertyTypes)) {
+      out.set(
+        id,
+        propertyEntrySchema(
+          pt.value_type as Parameters<typeof propertyEntrySchema>[0],
+          pt.localizable ?? false,
+          pt.value_constraints,
+          vocabMap,
+        ),
+      );
+    }
+    return out;
+  }, [props.propertyTypes, props.vocabularies]);
+
+  const { normalized: currentDataNormalized, heldBack } = useMemo(
+    () =>
+      normalizeForSave(
+        data,
+        props.propertyTypes,
+        translations,
+        entrySchemas,
+        initialDataNormalized,
+      ),
+    [data, props.propertyTypes, translations, entrySchemas, initialDataNormalized],
   );
   const currentDataString = useMemo(
     () => JSON.stringify(currentDataNormalized),
@@ -600,8 +674,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
           if (issue.path[0] !== 'properties' || typeof issue.path[1] !== 'string') continue;
           if (issue.path.length <= 2) continue; // absence — the tier UI owns it
           const id = issue.path[1];
-          const subPath = issue.path.slice(2).join('.');
-          (byProperty[id] ??= []).push(`${subPath}: ${issue.message}`);
+          (byProperty[id] ??= []).push(formatIssueLine(issue.path.slice(2), issue.message));
         }
       }
       // Only touch state when the picture actually changed — the
@@ -618,6 +691,37 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataString, dirty, liveSchema]);
+
+  /**
+   * Human-readable issue line (2026-08 feedback: "0.since: Invalid
+   * input" is not a sentence). "Entrée 2 · Depuis : valeur manquante"
+   * — entry index is 1-based, field ids resolve through the qualifier
+   * registry, and the two stock Zod messages are localized.
+   */
+  function formatIssueLine(subPath: readonly (string | number)[], message: string): string {
+    const msg = message === 'Required'
+      ? t('missingValue')
+      : message === 'Invalid input'
+      ? t('invalidValue')
+      : message;
+    const parts: string[] = [];
+    const [first, second] = subPath;
+    let fieldSeg: string | number | undefined;
+    if (first !== undefined && /^\d+$/.test(String(first))) {
+      parts.push(`${t('entryWord')} ${Number(first) + 1}`);
+      fieldSeg = second;
+    } else {
+      fieldSeg = first;
+    }
+    if (fieldSeg !== undefined) {
+      const id = String(fieldSeg);
+      const qt = props.qualifierTypes[id];
+      const label = qt?.labels[locale] ?? qt?.labels.en
+        ?? (id === 'value' || id === 'value_key' ? null : id);
+      if (label !== null) parts.push(label);
+    }
+    return parts.length > 0 ? `${parts.join(' · ')} : ${msg}` : msg;
+  }
 
   async function handleSave(): Promise<void> {
     setSaving(true);
@@ -646,9 +750,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
           const formatted = issue.message;
           if (issue.path[0] === 'properties' && typeof issue.path[1] === 'string') {
             const id = issue.path[1];
-            const subPath = issue.path.slice(2).join('.');
-            const prefix = subPath === '' ? '' : `${subPath}: `;
-            (byProperty[id] ??= []).push(`${prefix}${formatted}`);
+            (byProperty[id] ??= []).push(formatIssueLine(issue.path.slice(2), formatted));
           } else {
             const p = issue.path.join('.') || '<root>';
             topLevel.push(`${p}: ${formatted}`);
@@ -869,6 +971,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         propertyLabel={propertyLabel}
         required={decl.required ?? false}
         recommended={decl.recommended ?? false}
+        heldBack={heldBack.has(decl.id)}
         defaultOpen={false}
         propertyType={propertyType}
         valueType={valueType}
@@ -1067,6 +1170,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                 entityType={props.entityType}
                 relationTypes={props.relationTypes}
                 vocabularies={props.vocabularies}
+                qualifierTypes={props.qualifierTypes}
                 valueCtx={{
                   enumValues: [],
                   sources: props.sources,
@@ -1099,8 +1203,8 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
             className='border-border bg-background/95 fixed bottom-0 left-0 right-0 z-40 border-t backdrop-blur lg:left-[16rem]'
             style={{ paddingBottom: 'max(env(safe-area-inset-bottom), 0px)' }}
           >
-            <div className='mx-auto flex w-full max-w-[100rem] items-center justify-between gap-3 px-6 py-3'>
-              <div className='text-muted-foreground text-xs flex items-center gap-2'>
+            <div className='mx-auto flex w-full max-w-[100rem] items-center justify-between gap-3 px-[var(--page-px)] py-2.5 sm:px-6 sm:py-3'>
+              <div className='text-muted-foreground min-w-0 flex-1 truncate text-xs flex items-center gap-2'>
                 {dirty
                   ? (
                     <>
@@ -1130,12 +1234,22 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                       </span>
                     </>
                   )
-                  : <span>{t('noChanges')}</span>}
+                  : <span className='truncate'>{t('noChanges')}</span>}
+                {heldBack.size > 0
+                  ? (
+                    <span
+                      className='text-amber-600 shrink-0'
+                      title={t('incompleteEntriesExcluded')}
+                    >
+                      {heldBack.size} {t('draftLabel')}
+                    </span>
+                  )
+                  : null}
                 {error !== null
-                  ? <span className='text-destructive ml-3'>{error}</span>
+                  ? <span className='text-destructive ml-3 truncate'>{error}</span>
                   : null}
               </div>
-              <div className='flex items-center gap-2'>
+              <div className='flex shrink-0 items-center gap-2'>
                 {
                   /* Sign-in prompt — shown when no session is present.
                     The save button stays disabled until the user picks
@@ -1146,7 +1260,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
                   ? (
                     <a
                       href='/login'
-                      className='text-muted-foreground hover:text-foreground text-[11px] underline-offset-2 hover:underline'
+                      className='text-muted-foreground hover:text-foreground text-[11px] whitespace-nowrap underline-offset-2 hover:underline'
                       title={t('signInToSave')}
                     >
                       {t('signInToSave')}
@@ -1192,6 +1306,9 @@ type PropertyRowProps = {
    *  Renders as a red ring + bullet list under the entries. Undefined
    *  / empty = no error to show. */
   errors?: readonly string[];
+  /** Draft tier (2026-08): the property has incomplete entries and is
+   *  held out of the diff/PR until finished — amber ring + badge. */
+  heldBack: boolean;
   onUpdate: (idx: number, next: PropertyEntry) => void;
   onAdd: () => void;
   onRemove: (idx: number) => void;
@@ -1241,35 +1358,46 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   }
 
   const locale = p.locale;
-  const summary = summariseProperty({
-    propertyType: p.propertyType,
-    valueType: p.valueType,
-    valueField: p.valueField,
-    entries: p.entries,
-    translations: p.translations,
-    vocabularies: p.vocabularies,
-    sources: p.valueCtx.sources,
-    locale,
-  });
-  // Provenance chip: the latest entry's `since` source, resolved to a
-  // display name — the one historisation axis worth surfacing on the
-  // collapsed line (the rest stay in the expanded card).
-  const sinceLabel = useMemo(() => {
-    if (!isHistorical || p.entries.length === 0) return null;
-    const last = p.entries[p.entries.length - 1]!;
-    const raw = last['since'];
-    const id = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '');
-    if (id === '') return null;
-    const src = p.valueCtx.sources.find((s) => s.id === id);
-    return src?.displayName[locale] ?? src?.displayName.en ?? id.split(':')[1] ?? id;
-  }, [isHistorical, p.entries, p.valueCtx.sources, locale]);
+  // One line per entry (2026-08 feedback): value + compact provenance
+  // ("C96 · E45"), stacked in data order, capped at 4 lines.
+  const MAX_SUMMARY_LINES = 4;
+  const entryLines = useMemo(
+    () =>
+      p.entries.slice(0, MAX_SUMMARY_LINES).map((entry) => ({
+        value: summariseEntry({
+          entry,
+          propertyType: p.propertyType,
+          valueType: p.valueType,
+          valueField: p.valueField,
+          translations: p.translations,
+          vocabularies: p.vocabularies,
+          sources: p.valueCtx.sources,
+          locale,
+        }),
+        since: isHistorical ? shortSinceLabel(entry, p.valueCtx.sources) : null,
+      })),
+    [
+      p.entries,
+      p.propertyType,
+      p.valueType,
+      p.valueField,
+      p.translations,
+      p.vocabularies,
+      p.valueCtx.sources,
+      locale,
+      isHistorical,
+    ],
+  );
+  const extraEntryCount = Math.max(0, p.entries.length - MAX_SUMMARY_LINES);
 
   // The error ring beats the required-missing ring — a server-rejected
   // value is a hard blocker the maintainer must look at first, before
-  // worrying about missing optionals or required-empty hints.
+  // worrying about missing optionals or required-empty hints. Held-back
+  // drafts (incomplete entries excluded from the PR) share the amber
+  // treatment: attention, not failure.
   const ringClass = hasError
     ? 'bg-destructive/5 ring-1 ring-destructive/40 ring-inset'
-    : isRequiredMissing
+    : isRequiredMissing || p.heldBack
     ? 'bg-amber-500/5 ring-1 ring-amber-500/30 ring-inset'
     : '';
 
@@ -1346,29 +1474,54 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
               type='button'
               onClick={() => setOpen((o) => !o)}
               aria-expanded={open}
-              className='hover:bg-accent/40 -mx-1 flex w-full items-center gap-2 rounded-md px-1 py-1 text-left transition-colors'
+              className='hover:bg-accent/40 -mx-1 flex w-full items-start gap-2 rounded-md px-1 py-1 text-left transition-colors'
             >
-              {hasError
-                ? <AlertCircle className='text-destructive size-3.5 shrink-0' aria-hidden />
-                : hasContent
-                ? <Check className='size-3.5 shrink-0 text-emerald-500/80' aria-hidden />
-                : <Circle className='size-3 shrink-0 text-amber-500/70' aria-hidden />}
-              <span className='w-32 shrink-0 truncate sm:w-40'>{labelBlock}</span>
-              <span className='min-w-0 flex-1 truncate text-sm'>
-                {summary ?? <span className='text-muted-foreground'>—</span>}
+              <span className='flex h-5 items-center'>
+                {hasError
+                  ? <AlertCircle className='text-destructive size-3.5 shrink-0' aria-hidden />
+                  : p.heldBack
+                  ? <Circle className='size-3 shrink-0 text-amber-500/70' aria-hidden />
+                  : hasContent
+                  ? <Check className='size-3.5 shrink-0 text-emerald-500/80' aria-hidden />
+                  : <Circle className='size-3 shrink-0 text-amber-500/70' aria-hidden />}
               </span>
-              {entryCount > 1
+              <span className='w-32 shrink-0 truncate pt-0.5 sm:w-40'>{labelBlock}</span>
+              <span className='min-w-0 flex-1 space-y-0.5'>
+                {entryLines.length === 0
+                  ? <span className='text-muted-foreground text-sm'>—</span>
+                  : entryLines.map((line, i) => (
+                    <span key={i} className='flex items-baseline justify-between gap-2'>
+                      <span className='min-w-0 truncate text-sm'>
+                        {line.value !== ''
+                          ? line.value
+                          : <span className='text-muted-foreground'>—</span>}
+                      </span>
+                      {line.since !== null
+                        ? (
+                          <span className='text-muted-foreground shrink-0 text-xs tabular-nums'>
+                            {line.since}
+                          </span>
+                        )
+                        : null}
+                    </span>
+                  ))}
+                {extraEntryCount > 0
+                  ? (
+                    <span className='text-muted-foreground block text-xs tabular-nums'>
+                      +{extraEntryCount}
+                    </span>
+                  )
+                  : null}
+              </span>
+              {p.heldBack
                 ? (
-                  <span className='text-muted-foreground shrink-0 text-xs tabular-nums'>
-                    ×{entryCount}
-                  </span>
-                )
-                : null}
-              {sinceLabel !== null
-                ? (
-                  <span className='text-muted-foreground hidden max-w-40 shrink-0 truncate text-xs sm:inline'>
-                    {sinceLabel}
-                  </span>
+                  <Badge
+                    variant='outline'
+                    className='border-amber-500/40 font-normal text-amber-600'
+                    title={t('incompleteEntriesExcluded')}
+                  >
+                    {t('draftLabel')}
+                  </Badge>
                 )
                 : null}
               {schemaBadges}
@@ -1627,65 +1780,90 @@ function EntryCard(p: EntryCardProps): JSX.Element {
 }
 
 /**
- * Build a one-line summary for the property's collapsed accordion
- * header. Localizable / enum / source_ref / number / boolean each get
- * a sensible compact rendering.
+ * Compact display string for ONE entry — the unit of the collapsed
+ * header's stacked lines. Localizable / enum / source_ref / number /
+ * boolean each get a sensible rendering; enum ids always resolve
+ * through their vocabulary so raw keys ("scientist") never leak into
+ * the UI.
  */
-function summariseProperty(args: {
+function summariseEntry(args: {
+  entry: PropertyEntry;
   propertyType: PropertyTypeSchema;
   valueType: ValueType;
   valueField: 'value' | 'value_key';
-  entries: readonly PropertyEntry[];
   translations: Translations;
   vocabularies: Record<string, VocabularySchema>;
   sources: readonly SourceRef[];
   locale: Locale;
-}): string | null {
-  if (args.entries.length === 0) return null;
-  const last = args.entries[args.entries.length - 1]!;
-  const raw = last[args.valueField];
-  let display: string;
+}): string {
+  const raw = args.entry[args.valueField];
+  const enumRef = args.propertyType.value_constraints?.enum_ref;
+  const enumLabelFor = (id: string): string => {
+    if (enumRef === undefined) return id;
+    const v = args.vocabularies[enumRef]?.values[id];
+    return v?.labels[args.locale] ?? v?.labels.en ?? id;
+  };
   if (args.propertyType.localizable) {
     const key = String(raw ?? '');
-    display = args.translations[args.locale][key]
+    return args.translations[args.locale][key]
       ?? args.translations.en[key]
       ?? '—';
-  } else if (args.valueType === 'enum') {
-    const enumRef = args.propertyType.value_constraints?.enum_ref;
-    const id = String(raw ?? '');
-    if (enumRef !== undefined) {
-      const v = args.vocabularies[enumRef]?.values[id];
-      display = v?.labels[args.locale] ?? v?.labels.en ?? id;
-    } else {
-      display = id;
-    }
-  } else if (args.valueType === 'multi_enum') {
+  }
+  if (args.valueType === 'enum') return enumLabelFor(String(raw ?? ''));
+  if (args.valueType === 'multi_enum') {
     const ids = Array.isArray(raw) ? (raw as unknown[]).map(String) : [];
-    display = ids.length === 0 ? '—' : ids.join(', ');
-  } else if (args.valueType === 'source_ref' || args.valueType === 'entity_ref') {
+    return ids.length === 0 ? '—' : ids.map(enumLabelFor).join(', ');
+  }
+  if (args.valueType === 'source_ref' || args.valueType === 'entity_ref') {
     const id = String(raw ?? '');
     const src = args.sources.find((s) => s.id === id);
-    display = src?.displayName[args.locale]
+    return src?.displayName[args.locale]
       ?? src?.displayName.en
       ?? (id.includes(':') ? id.split(':')[1]! : id)
       ?? '—';
-  } else if (args.valueType === 'boolean') {
-    display = raw === true ? '✓' : raw === false ? '×' : '—';
-  } else if (args.valueType === 'number') {
-    if (typeof raw !== 'number') {
-      display = '—';
-    } else {
-      const formatted = raw.toLocaleString(args.locale);
-      display = args.propertyType.unit !== undefined
-        ? `${formatted} ${args.propertyType.unit}`
-        : formatted;
-    }
-  } else {
-    display = raw === undefined || raw === null || raw === '' ? '—' : String(raw);
   }
-  // Entry count renders as its own ×N chip in the collapsed header —
-  // the summary is the latest value alone.
-  return display;
+  if (args.valueType === 'boolean') return raw === true ? '✓' : raw === false ? '×' : '—';
+  if (args.valueType === 'number') {
+    if (typeof raw !== 'number') return '—';
+    const formatted = raw.toLocaleString(args.locale);
+    return args.propertyType.unit !== undefined
+      ? `${formatted} ${args.propertyType.unit}`
+      : formatted;
+  }
+  return raw === undefined || raw === null || raw === '' ? '—' : String(raw);
+}
+
+/** Compact per-type source abbreviations for the stacked provenance
+ *  column ("C96 · E45"). Unknown types fall back to the number/slug. */
+const SOURCE_ABBR: Record<string, string> = {
+  'manga-chapter': 'C',
+  'anime-episode': 'E',
+  film: 'F',
+  sbs: 'SBS ',
+  databook: 'DB ',
+  'databook-card': 'VC ',
+};
+
+function shortSinceLabel(
+  entry: PropertyEntry,
+  sources: readonly SourceRef[],
+): string | null {
+  const raw = entry['since'];
+  const ids = Array.isArray(raw)
+    ? (raw as unknown[]).map(String).filter((s) => s !== '')
+    : typeof raw === 'string' && raw !== ''
+    ? [raw]
+    : [];
+  if (ids.length === 0) return null;
+  return ids
+    .map((id) => {
+      const [type, slug] = id.split(':');
+      const src = sources.find((s) => s.id === id);
+      const short = src?.number ?? slug ?? id;
+      const abbr = SOURCE_ABBR[type ?? ''];
+      return abbr !== undefined ? `${abbr}${short}` : String(short);
+    })
+    .join(' · ');
 }
 
 type EntryValueProps = {

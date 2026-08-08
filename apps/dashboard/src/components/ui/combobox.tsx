@@ -218,9 +218,14 @@ function VirtualizedList(p: {
                   <span className='flex-1 truncate'>
                     {item.label}
                   </span>
+                  {
+                    /* Slug hint: desktop-only — on mobile it crowds the
+                    label, which is what the maintainer actually scans
+                    (2026-08 feedback). */
+                  }
                   {item.hint !== undefined
                     ? (
-                      <span className='text-muted-foreground ml-2 font-mono text-[10px]'>
+                      <span className='text-muted-foreground ml-2 hidden font-mono text-[11px] sm:inline'>
                         {item.hint}
                       </span>
                     )

@@ -49,7 +49,19 @@ const LocaleContext = createContext<LocaleContextValue>({
 });
 
 export function LocaleProvider({ children }: { children: ReactNode; }): JSX.Element {
-  const [locale, setLocaleState] = useState<Locale>(detectInitialLocale);
+  // HYDRATION: the first client render MUST match the server-rendered
+  // HTML ('en' — the server can't see localStorage). Seeding useState
+  // from localStorage made the hydration render diverge ('fr'), and
+  // React does NOT patch attribute mismatches (aria-pressed,
+  // className…) during hydration — the header switcher stayed frozen
+  // on EN while the app state was 'fr', so clicking FR no-oped.
+  // Detect the stored/browser locale in a post-hydration effect
+  // instead; the setState re-renders everything through React and the
+  // DOM ends up consistent (at the cost of a one-frame 'en' flash).
+  const [locale, setLocaleState] = useState<Locale>('en');
+  useEffect(() => {
+    setLocaleState(detectInitialLocale());
+  }, []);
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
     try {
@@ -203,6 +215,15 @@ const UI_STRINGS = {
   requiredMissing: { en: 'required missing', fr: 'requis manquants' },
   completenessLabel: { en: 'of a complete article', fr: 'd’un article complet' },
   recommendedTag: { en: 'Recommended', fr: 'Recommandé' },
+  entryWord: { en: 'Entry', fr: 'Entrée' },
+  missingValue: { en: 'missing value', fr: 'valeur manquante' },
+  invalidValue: { en: 'invalid value', fr: 'valeur invalide' },
+  notSet: { en: 'not set', fr: 'non défini' },
+  incompleteEntriesExcluded: {
+    en: 'Incomplete entries are kept as a draft and left out of the PR until finished.',
+    fr:
+      'Les entrées incomplètes restent en brouillon et sont exclues de la PR tant qu’elles ne sont pas terminées.',
+  },
   required: { en: 'required', fr: 'requis' },
   optional: { en: 'optional', fr: 'optionnel' },
   // Anonymous nickname (used on the /login page now that identity
@@ -494,6 +515,11 @@ const UI_STRINGS = {
     en: 'The `appears-in` relation schema is missing or has no `valid_from_types`.',
     fr: "Le schéma `appears-in` est absent ou n'a pas de `valid_from_types`.",
   },
+  // Header locale switcher
+  interfaceLanguage: { en: 'Interface language', fr: 'Langue de l’interface' },
+  // Entity header — link to the entity file's GitHub commit history
+  history: { en: 'History', fr: 'Historique' },
+  notOnGithubYet: { en: 'not on GitHub yet', fr: 'pas encore sur GitHub' },
 } as const;
 
 /**

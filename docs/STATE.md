@@ -126,6 +126,23 @@ responsive + §field-states conventions in CONVENTIONS.md. Follow-ups
 tracked in ROADMAP §4 task 5 (narratives editor, cross-field rules
 ADR, microcopy sweep, external-images licensing decision).
 
+**2026-08-08 (b) — UX v2 feedback batch (live mobile test) + ADR-084.**
+All 20 tester points fixed on main: draft-tier hold-back (incomplete
+entries stay out of diff/PR, amber "brouillon" badge — no more instant
+red errors), humanized validation lines ("Entrée 2 · Depuis : valeur
+manquante"), stacked per-entry summaries with C/E provenance, vocab
+labels resolved everywhere (no raw "scientist"), multi-enum as a
+stay-open select, source-type select trigger localized, relation
+registry labels (relation_kind/known_publicly_since added → 17
+qualifier types), multi-target relation add fixed (no more dead empty
+chip), qualifier sheet lists ALL options with "—", locale switch
+hydration bug fixed (SSR mismatch) + switcher is a Select, popups
+full-width on mobile, drawer padding/footer responsive, save bar
+responsive, sections-sheet reveal+scroll fixed, entity header History
+link → GitHub file history. **ADR-084**: availability by stable
+`external_id` + platform `link_template` (url now optional) — product
+ids (ASIN, episode ids) stored once, links generated later.
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below

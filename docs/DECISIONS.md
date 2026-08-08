@@ -8,6 +8,61 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-084 — Availability by stable external id (`external_id` + platform `link_template`)
+
+**Date**: 2026-08-08
+
+**Context**: Maintainer direction: store the stable product/catalog ids
+of every platform (Amazon ASINs for manga volumes/chapters, episode ids
+for streaming/readers, etc.) — "la liste des providers peut évoluer mais
+les id ne changent pas, la génération des liens se fera à part". Today
+`available-on` (ADR-052) requires a full `url` qualifier per edge. URLs
+rot, platform catalogues restructure their paths, and a per-edge URL
+means N edits when a platform changes its URL scheme. Link generation
+should be data-driven from something that does not change.
+
+**Options**:
+
+1. Keep the required `url` per edge — perishable, N-edit updates on any
+   platform URL-scheme change, no commerce/id data at all.
+2. Per-platform URL fields on the source entity (`amazon_url`,
+   `crunchyroll_url`, …) — hardcodes provider names into the schema,
+   dies on every new provider, still stores perishable URLs.
+3. **Stable `external_id` on the edge + platform-owned link template**:
+   the edge stores the id that never changes; the platform entity owns
+   the one place that knows how to turn ids into URLs.
+
+**Choice**: option 3.
+
+- `available-on` gains an optional **`external_id`** qualifier
+  (`value_type: string`) — the platform's stable product/catalog id
+  (ASIN, episode id, title id…).
+- **`url` relaxes from required to optional** (`available-on` v1 → v2).
+  An edge may carry `external_id`, `url`, or both; prefer `external_id`,
+  use `url` only for platforms without a usable template. "At least one
+  of external_id/url" cannot be expressed in the qualifier schema today
+  — recorded as a **`check:coherence` follow-up** (like
+  `MISSING_TEMPORAL_ANCHOR` for since/during_period).
+- `streaming-platform` (v1 → v2) gains a **`link_template`** property
+  (new property-type `link_template`, `value_type: string`, core,
+  non-localizable, non-historical, `required: false` /
+  `recommended: true`). The template contains the literal placeholder
+  `{id}`, e.g. `https://www.amazon.fr/dp/{id}`. Link generation is
+  `template.replace('{id}', external_id)`, performed by the build
+  pipeline / public app — **generated links are never stored per edge**.
+
+**Consequences**: platform URL-scheme changes become a one-line template
+edit; availability data becomes durable ids instead of perishable URLs;
+`verified_at` keeps its freshness role for the ids themselves. No `/data`
+migration (widening: no existing edge loses validity). Out of scope,
+noted for later: multiple templates per platform (per-region storefronts
+— amazon.fr vs amazon.com), and the coherence rule above. Distinct from
+`external_refs` (ADR-026): that is cross-database reconciliation ids on
+the entity; `external_id` here is a per-platform catalog id on the
+availability edge, for link generation and commerce.
+
+---
+
 ## ADR-083 — Field importance tiers: `recommended` properties + `recommended_relations`
 
 **Date**: 2026-08-07

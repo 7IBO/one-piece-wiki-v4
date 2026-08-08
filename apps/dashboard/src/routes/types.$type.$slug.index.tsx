@@ -33,6 +33,21 @@ export const Route = createFileRoute('/types/$type/$slug/')({
 const emptySources: readonly SourceRef[] = [];
 const emptyKeys: readonly string[] = [];
 
+// TODO: read the data-repo origin from a client-exposed env var (the
+// server already knows it as config.dataRepo) instead of hardcoding.
+const DATA_REPO_URL = 'https://github.com/7IBO/one-piece-wiki-v4';
+const UNIVERSE_ID = 'one-piece';
+
+/**
+ * GitHub commit-history URL for the entity's JSON file. The path is
+ * derived from the route type + the entity id's slug part — no entity
+ * type is hardcoded.
+ */
+function entityHistoryUrl(type: string, entityId: string): string {
+  const idSlugPart = entityId.slice(entityId.indexOf(':') + 1);
+  return `${DATA_REPO_URL}/commits/main/data/universes/${UNIVERSE_ID}/entities/${type}/${idSlugPart}.json`;
+}
+
 function EntityEditComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
@@ -120,37 +135,57 @@ function EntityEditComponent(): JSX.Element {
         <div className='mt-1 flex flex-wrap items-center gap-x-2 gap-y-1'>
           {displayName !== null
             ? (
-              <>
-                <h1 className='min-w-0 flex-1 truncate text-xl font-semibold tracking-tight'>
-                  {displayName}
-                </h1>
-                <span className='text-muted-foreground min-w-0 max-w-full truncate font-mono text-[10px] basis-full sm:basis-auto'>
-                  {entity.id}
-                </span>
-              </>
+              <h1 className='min-w-0 flex-1 truncate text-xl font-semibold tracking-tight'>
+                {displayName}
+              </h1>
             )
             : (
               <h1 className='min-w-0 flex-1 truncate text-xl font-semibold tracking-tight font-mono text-muted-foreground'>
                 {entity.id}
               </h1>
             )}
-          {entity.sha !== null
-            ? (
-              <Badge
-                variant='secondary'
-                className='ml-auto w-fit shrink-0 font-mono text-[10px]'
-              >
-                {entity.sha.slice(0, 7)}
-              </Badge>
-            )
-            : (
-              <Badge
-                variant='outline'
-                className='text-amber-500 ml-auto w-fit shrink-0 text-[10px]'
-              >
-                not on GitHub yet
-              </Badge>
-            )}
+          {
+            /* id + history live on the SAME line: below sm they wrap
+              to their own row (basis-full) with the history affordance
+              pushed to the right edge; at sm+ the row sits after the
+              flex-1 title, i.e. at the page's right edge. */
+          }
+          <div className='flex min-w-0 max-w-full basis-full items-center gap-2 sm:basis-auto'>
+            {displayName !== null
+              ? (
+                <span className='text-muted-foreground min-w-0 truncate font-mono text-[10px]'>
+                  {entity.id}
+                </span>
+              )
+              : null}
+            {entity.sha !== null
+              ? (
+                <Button
+                  render={
+                    <a
+                      href={entityHistoryUrl(type, entity.id)}
+                      target='_blank'
+                      rel='noreferrer'
+                    />
+                  }
+                  variant='ghost'
+                  size='xs'
+                  className='text-muted-foreground hover:text-foreground ml-auto shrink-0 gap-1 text-xs no-underline'
+                >
+                  {t('history')}
+                  <span className='font-mono'>· {entity.sha.slice(0, 7)}</span>
+                  <ExternalLink className='size-3' />
+                </Button>
+              )
+              : (
+                <Badge
+                  variant='outline'
+                  className='text-amber-500 ml-auto w-fit shrink-0 text-[10px]'
+                >
+                  {t('notOnGithubYet')}
+                </Badge>
+              )}
+          </div>
         </div>
         {
           /* Apparitions hub entry-points (ADR-021). Mutually

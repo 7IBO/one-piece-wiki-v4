@@ -111,10 +111,22 @@ export function PropertyNav(p: PropertyNavProps): JSX.Element {
     const anchor = entry.kind === 'relation'
       ? relationAnchorId(entry.id)
       : propertyAnchorId(entry.id);
-    requestAnimationFrame(() => {
+    // A hidden property revealed by the click above mounts its row on a
+    // LATER render — one rAF was too early and the scroll silently
+    // no-oped (2026-08 feedback: "clicking an un-added property does
+    // nothing"). Retry across a few frames until the anchor exists;
+    // also survives the mobile Sections sheet closing via onPick.
+    let attempts = 0;
+    const tryScroll = (): void => {
       const el = document.getElementById(anchor);
-      if (el !== null) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-    });
+      if (el !== null) {
+        el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        return;
+      }
+      attempts += 1;
+      if (attempts < 30) requestAnimationFrame(tryScroll);
+    };
+    requestAnimationFrame(tryScroll);
     p.onPick?.(entry.id);
   }
 

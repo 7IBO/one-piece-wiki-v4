@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "known_publicly_since",
+  "schema_version": 1,
+  "kind": "common",
+  "value_type": "source_ref",
+  "order": 41,
+  "labels": {
+    "en": "Known publicly since",
+    "fr": "Connu publiquement depuis"
+  },
+  "descriptions": {
+    "en": "Source at which the link becomes public knowledge in-universe.",
+    "fr": "Source à partir de laquelle le lien devient de notoriété publique dans l’univers."
+  }
+}

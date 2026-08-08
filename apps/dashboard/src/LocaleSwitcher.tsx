@@ -1,14 +1,22 @@
 /**
- * Tiny EN / FR toggle that sits in the dashboard header. Drives the
+ * Compact locale Select in the dashboard header. Drives the
  * `useLocale()` reactive value app-wide — chrome labels, enum
  * displays, source titles, the active translation field, the
  * navigator entity-type sidebar labels, all of them switch live.
  *
- * Renders as two segmented chips so the current locale is obvious at
- * a glance (no extra dropdown click to discover what's set).
+ * A single small Select (was: two segmented EN/FR chips) — the
+ * trigger always shows the current locale, and the dropdown lists
+ * the alternatives.
  */
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { type JSX } from 'react';
-import { type Locale, SUPPORTED_LOCALES, useLocale, useSetLocale } from './form/locale';
+import { type Locale, SUPPORTED_LOCALES, useLocale, useSetLocale, useT } from './form/locale';
 
 const LABELS: Record<Locale, string> = {
   en: 'EN',
@@ -18,30 +26,31 @@ const LABELS: Record<Locale, string> = {
 export function LocaleSwitcher(): JSX.Element {
   const current = useLocale();
   const setLocale = useSetLocale();
+  const t = useT();
   return (
-    <div
-      className='border-input inline-flex overflow-hidden rounded-md border'
-      role='group'
-      aria-label='Interface language'
+    <Select
+      value={current}
+      onValueChange={(v) => setLocale(v === 'fr' ? 'fr' : 'en')}
     >
-      {SUPPORTED_LOCALES.map((loc) => {
-        const active = loc === current;
-        return (
-          <button
-            key={loc}
-            type='button'
-            onClick={() => setLocale(loc)}
-            aria-pressed={active}
-            className={`h-7 px-2.5 font-mono text-[11px] uppercase transition-colors ${
-              active
-                ? 'bg-primary text-primary-foreground'
-                : 'text-muted-foreground hover:bg-accent hover:text-foreground'
-            }`}
-          >
+      {
+        /* `max-sm:h-8!` keeps the header switcher compact on mobile —
+          the shared trigger recipe bumps sm-size triggers to h-9 for
+          touch, but this one lives in the dense header row. */
+      }
+      <SelectTrigger
+        size='sm'
+        aria-label={t('interfaceLanguage')}
+        className='max-sm:h-8! font-mono uppercase'
+      >
+        <SelectValue>{(v: Locale) => LABELS[v]}</SelectValue>
+      </SelectTrigger>
+      <SelectContent className='min-w-24' aria-label={t('interfaceLanguage')}>
+        {SUPPORTED_LOCALES.map((loc) => (
+          <SelectItem key={loc} value={loc} className='font-mono text-xs uppercase'>
             {LABELS[loc]}
-          </button>
-        );
-      })}
-    </div>
+          </SelectItem>
+        ))}
+      </SelectContent>
+    </Select>
   );
 }

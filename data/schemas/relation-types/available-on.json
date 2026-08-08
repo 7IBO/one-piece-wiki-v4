@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
   "id": "available-on",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": {
     "en": { "active": "Available on", "inverse": "Hosts" },
     "fr": { "active": "Disponible sur", "inverse": "Héberge" }
@@ -16,7 +16,8 @@
   ],
   "valid_to_types": ["streaming-platform"],
   "qualifiers": [
-    { "id": "url", "value_type": "string", "required": true },
+    { "id": "external_id", "value_type": "string", "required": false },
+    { "id": "url", "value_type": "string", "required": false },
     { "id": "region", "value_type": "string", "required": false },
     { "id": "requires_subscription", "value_type": "boolean", "required": false },
     { "id": "subtitle_langs", "value_type": "string", "required": false },

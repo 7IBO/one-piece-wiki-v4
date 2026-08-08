@@ -396,42 +396,40 @@ ADR-011 for the deferral decision.
 
 ### Availability links
 
-Source entities (`anime-episode`, `manga-chapter`, `film`) can carry
-an `availability` property: where a real-world viewer can legally
-watch or read that source. This is **real-world presentation
-metadata, not in-universe data** — it is exempt from spoiler
-filtering (a streaming link reveals nothing about the story), though
-the source page it lives on is still reachability-gated as usual.
+Source entities (`anime-episode`, `manga-chapter`, `film`,
+`live-action-series`, `live-action-episode`, `anime-special`) link to
+where a real-world viewer can legally watch, read, or buy them via the
+**`available-on` relation** to a reusable **`streaming-platform`**
+entity (ADR-052 — the platform is a first-class node: "everything on
+Crunchyroll" is a query). This is **real-world presentation metadata,
+not in-universe data** — it is exempt from spoiler filtering (a
+streaming link reveals nothing about the story), though the source
+page it lives on is still reachability-gated as usual.
 
-Each entry names a platform (from the `streaming-platforms`
-vocabulary), a URL, a `kind` (`watch` or `read`), and optional
-region / subtitle / dub / subscription / `verified_at` qualifiers:
+Availability is **id-first** (ADR-084). Each `available-on` edge
+preferably carries the platform's **stable external id** for the
+product — an Amazon ASIN, a Crunchyroll episode id, a MANGA Plus title
+id — via the `external_id` qualifier, plus the usual optional
+`region` / `requires_subscription` / `subtitle_langs` / `dub_langs` /
+`verified_at` qualifiers. The full URL is **generated, never stored
+per edge**: the `streaming-platform` entity carries a `link_template`
+property containing the literal placeholder `{id}` (e.g.
+`https://www.amazon.fr/dp/{id}`), and the build pipeline / public app
+produces the link with `template.replace('{id}', external_id)`.
+Platform URL formats can change without touching thousands of edges —
+one template edit regenerates every link.
 
-```json
-"availability": [
-  {
-    "platform": "crunchyroll",
-    "url": "https://www.crunchyroll.com/...",
-    "kind": "watch",
-    "region": "US",
-    "subtitle_langs": ["en", "fr"],
-    "requires_subscription": true,
-    "verified_at": "2026-06-13"
-  },
-  {
-    "platform": "manga-plus",
-    "url": "https://mangaplus.shueisha.co.jp/...",
-    "kind": "read",
-    "region": "FR"
-  }
-]
-```
+The `url` qualifier remains for platforms without a usable template
+(no predictable URL scheme). An edge may carry `external_id`, `url`,
+or both (a stored `url` wins over generation when both are present);
+at least one is expected — enforcing that is a `check:coherence`
+follow-up (see ADR-084).
 
 Distinct from `external_refs` (ADR-026), which holds stable
-cross-database _identifiers_ (`tmdb_id`, `mal_id`). Availability
-holds perishable _URLs_ with their own freshness lifecycle. Full
-rationale and the platform vocabulary in ADR-028; this concept is
-implemented when the Phase 6.1 episode/chapter templates need it.
+cross-_database_ identifiers (`tmdb_id`, `mal_id`) for data
+reconciliation. `external_id` on `available-on` is a per-platform
+_catalog/product_ id whose purpose is link generation and commerce.
+Original rationale and platform vocabulary in ADR-028/ADR-052.
 
 ### Succession over time
 

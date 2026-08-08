@@ -214,6 +214,12 @@ export function EnumInput(
  * the generated schema is `z.array(...)`). Chip toggles stay simple at
  * any vocab size; output preserves vocabulary order for stable diffs.
  */
+/**
+ * Multi-enum picker (2026-08 feedback): a select-style dropdown
+ * instead of a wall of chip toggles. The popup STAYS OPEN across
+ * picks so several values land in one visit; the trigger shows the
+ * selected labels (localized, never raw vocab ids).
+ */
 export function MultiEnumInput(
   { value, onChange, enumValues, disabled }: InputProps<readonly string[]> & {
     enumValues: readonly EnumValue[];
@@ -221,6 +227,7 @@ export function MultiEnumInput(
 ): JSX.Element {
   const locale = useLocale();
   const t = useT();
+  const [open, setOpen] = useState(false);
   const selected = new Set(value ?? []);
   function toggle(id: string): void {
     const next = new Set(selected);
@@ -231,29 +238,54 @@ export function MultiEnumInput(
   if (enumValues.length === 0) {
     return <p className='text-muted-foreground text-xs'>{t('noMatch')}</p>;
   }
+  const selectedLabels = enumValues
+    .filter((v) => selected.has(v.id))
+    .map((v) => enumLabel(v, locale));
   return (
-    <div className='flex flex-wrap gap-1.5'>
-      {enumValues.map((v) => {
-        const on = selected.has(v.id);
-        return (
-          <button
-            key={v.id}
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger
+        render={
+          <Button
             type='button'
+            variant='outline'
             disabled={disabled === true}
-            aria-pressed={on}
-            onClick={() => toggle(v.id)}
-            className={cn(
-              'rounded-md border px-2 py-0.5 text-xs transition disabled:opacity-50',
-              on
-                ? 'border-primary bg-primary/10 text-foreground'
-                : 'border-input text-muted-foreground hover:bg-accent/40',
-            )}
-          >
-            {enumLabel(v, locale)}
-          </button>
-        );
-      })}
-    </div>
+            className='h-10 w-full justify-between rounded-md px-2 text-base font-normal sm:h-8 sm:text-xs'
+          />
+        }
+      >
+        <span className={cn('truncate', selectedLabels.length === 0 && 'text-muted-foreground')}>
+          {selectedLabels.length > 0 ? selectedLabels.join(', ') : t('pickOne')}
+        </span>
+        <ChevronsUpDown className='text-muted-foreground ml-2 size-3.5 shrink-0' />
+      </PopoverTrigger>
+      <PopoverContent className='w-(--anchor-width) min-w-48 p-0' align='start'>
+        <Command>
+          {enumValues.length > 8 ? <CommandInput placeholder={t('search')} /> : null}
+          <CommandList>
+            <CommandEmpty>{t('noMatch')}</CommandEmpty>
+            <CommandGroup>
+              {enumValues.map((v) => {
+                const on = selected.has(v.id);
+                const label = enumLabel(v, locale);
+                return (
+                  <CommandItem
+                    key={v.id}
+                    value={`${label} ${v.id}`}
+                    // Toggling keeps the popup open on purpose — the
+                    // whole point of a multi-select is picking several
+                    // values in one visit.
+                    onSelect={() => toggle(v.id)}
+                  >
+                    <span className='flex-1 truncate'>{label}</span>
+                    {on ? <Check className='text-primary ml-2 size-4' /> : null}
+                  </CommandItem>
+                );
+              })}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
   );
 }
 
