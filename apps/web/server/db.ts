@@ -55,6 +55,7 @@ export type RelationRow = {
   readonly relation_type: string;
   readonly qualifiers: Record<string, unknown> | null;
   readonly since_source: string | null;
+  readonly until_source: string | null;
   readonly epistemic_status: string;
   readonly label: Record<string, string> | null;
   readonly is_inferred: boolean;
@@ -123,7 +124,7 @@ function getStatements(): Statements {
     ),
     relationsFrom: db.prepare(
       `SELECT target_entity_id, relation_type, qualifiers, since_source,
-              epistemic_status, label, is_inferred
+              until_source, epistemic_status, label, is_inferred
          FROM relations WHERE source_entity_id = ?
          ORDER BY is_inferred, relation_type`,
     ),
@@ -188,6 +189,7 @@ export function listRelationsFrom(entityId: string): readonly RelationRow[] {
       ? null
       : parseJson<Record<string, unknown>>(row['qualifiers']),
     since_source: (row['since_source'] as string | null) ?? null,
+    until_source: (row['until_source'] as string | null) ?? null,
     epistemic_status: row['epistemic_status'] as string,
     label: row['label'] === null ? null : parseJson<Record<string, string>>(row['label']),
     is_inferred: Number(row['is_inferred']) === 1,

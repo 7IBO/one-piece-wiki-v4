@@ -310,6 +310,28 @@
         "interacts-with-fruit"
       ]
     },
+    "document": {
+      "properties": {
+        "document_kind": {
+          "required": true
+        },
+        "first_source": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "narrative_key": {
+          "required": false
+        }
+      },
+      "allowed_relations": [
+        "depicted-by",
+        "held-by",
+        "issued-by",
+        "profiles"
+      ]
+    },
     "event": {
       "properties": {
         "event_subtype": {
@@ -650,6 +672,23 @@
         "originates-from"
       ]
     },
+    "reference": {
+      "properties": {
+        "accessed_at": {
+          "required": false
+        },
+        "name": {
+          "required": true
+        },
+        "reference_kind": {
+          "required": true
+        },
+        "url": {
+          "required": true
+        }
+      },
+      "allowed_relations": []
+    },
     "saga": {
       "properties": {
         "name": {
@@ -908,6 +947,12 @@
     }
   },
   "propertyTypes": {
+    "accessed_at": {
+      "value_type": "date",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
     "age": {
       "value_type": "number",
       "enum_ref": null,
@@ -1097,6 +1142,12 @@
     "disc_count": {
       "value_type": "number",
       "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "document_kind": {
+      "value_type": "enum",
+      "enum_ref": "document-kinds",
       "historical": false,
       "localizable": false
     },
@@ -1367,6 +1418,12 @@
     "record_label": {
       "value_type": "string",
       "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
+    "reference_kind": {
+      "value_type": "enum",
+      "enum_ref": "reference-kinds",
       "historical": false,
       "localizable": false
     },
@@ -1930,6 +1987,7 @@
         "crew",
         "databook-card",
         "devil-fruit",
+        "document",
         "event",
         "film",
         "live-action-episode",
@@ -2215,7 +2273,8 @@
     },
     "held-by": {
       "valid_from_types": [
-        "devil-fruit"
+        "devil-fruit",
+        "document"
       ],
       "valid_to_types": [
         "character",
@@ -2280,6 +2339,29 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {}
+    },
+    "issued-by": {
+      "valid_from_types": [
+        "document"
+      ],
+      "valid_to_types": [
+        "character",
+        "crew",
+        "organization"
+      ],
+      "inverse_inferred": true,
+      "qualifiers": {
+        "since": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        },
+        "until": {
+          "value_type": "source_ref",
+          "enum_ref": null,
+          "required": false
+        }
+      }
     },
     "led-by": {
       "valid_from_types": [
@@ -2624,7 +2706,8 @@
     },
     "profiles": {
       "valid_from_types": [
-        "databook-card"
+        "databook-card",
+        "document"
       ],
       "valid_to_types": [
         "character",
@@ -3170,6 +3253,17 @@
       "seastone_water",
       "stamina_drain"
     ],
+    "document-kinds": [
+      "flag",
+      "letter",
+      "manuscript",
+      "map",
+      "newspaper",
+      "other",
+      "photograph",
+      "vivre_card",
+      "wanted_poster"
+    ],
     "dub-studios": [
       "4kids",
       "funimation",
@@ -3585,6 +3679,16 @@
       "tw",
       "uk",
       "us"
+    ],
+    "reference-kinds": [
+      "article",
+      "fan_database",
+      "interview",
+      "official_site",
+      "other",
+      "scan",
+      "social_post",
+      "video"
     ],
     "release-territories": [
       "asia",

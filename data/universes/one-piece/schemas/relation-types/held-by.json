@@ -13,7 +13,8 @@
     }
   },
   "valid_from_types": [
-    "devil-fruit"
+    "devil-fruit",
+    "document"
   ],
   "valid_to_types": [
     "character",

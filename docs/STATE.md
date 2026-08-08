@@ -15,7 +15,24 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-08 (reliquats notés — ADR-089/090, fixes docs)
+**Last updated**: 2026-08-08 (ADR-091..094 : wiki public v1, sync Fandom, références, documents)
+
+**2026-08-08 — promotions IDEAS : références externes (ADR-093) +
+documents in-universe (ADR-094).** Both parked entries promoted per
+the IDEAS contract (ROADMAP follow-up 6 + ADRs + DATA_MODEL sections
+first). ADR-093: core `reference` entity type (`url` required,
+`reference_kind` vocab, `accessed_at`) + `attested_by` BASE qualifier
+(entity_ref→reference, multi, order 8) available on every entry via
+the ADR-078 registry; `BaseQualifierBag` types it; the coherence
+UNREFERENCED scan counts it; seeded
+`reference:onepiece-com-character-log` attesting Luffy's epithet.
+ADR-094: one-piece `document` entity type (`document_kind` vocab,
+`first_source`, `narrative_key`) + new `issued-by` relation +
+`profiles`/`held-by`/`depicted-by` extended to document; seeded
+`document:luffy-first-wanted-poster` (profiles character:luffy since
+manga-chapter:96). 37 entities, all additive (compat snapshot
+updated). Wave 3 (per-item provenance on `believed_by`) stays queued
+— big cross-cutting migration, own ADR needed.
 
 **2026-08-08 — inventaire "tout ce qui est noté mais pas dans le
 code", vague 1 (ADR-089 + ADR-090).** Sweep of every deferred note

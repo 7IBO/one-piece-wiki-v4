@@ -15,7 +15,10 @@
     "epithet": [
       {
         "value_key": "character.luffy.epithet.straw-hat",
-        "since": "manga-chapter:96"
+        "since": "manga-chapter:96",
+        "attested_by": [
+          "reference:onepiece-com-character-log"
+        ]
       }
     ],
     "bounty": [

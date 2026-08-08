@@ -3,13 +3,30 @@
   "id": "profiles",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Profiles", "inverse": "Profiled by" },
-    "fr": { "active": "Décrit", "inverse": "Décrit par" }
+    "en": {
+      "active": "Profiles",
+      "inverse": "Profiled by"
+    },
+    "fr": {
+      "active": "Décrit",
+      "inverse": "Décrit par"
+    }
   },
-  "valid_from_types": ["databook-card"],
-  "valid_to_types": ["character", "devil-fruit", "ship"],
+  "valid_from_types": [
+    "databook-card",
+    "document"
+  ],
+  "valid_to_types": [
+    "character",
+    "devil-fruit",
+    "ship"
+  ],
   "qualifiers": [
-    { "id": "since", "value_type": "source_ref", "required": false }
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,

@@ -1,0 +1,21 @@
+{
+  "batchcomplete": true,
+  "query": {
+    "allcategories": [
+      {
+        "category": "Islands",
+        "size": 212,
+        "pages": 200,
+        "files": 0,
+        "subcats": 12
+      },
+      {
+        "category": "Video Games",
+        "size": 55,
+        "pages": 55,
+        "files": 0,
+        "subcats": 0
+      }
+    ]
+  }
+}

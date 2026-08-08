@@ -7,6 +7,6 @@
   "historical": true,
   "localizable": false,
   "spoiler_sensitive": false,
-  "applies_to_entity_types": ["image"],
+  "applies_to_entity_types": ["image", "reference"],
   "default_qualifiers": ["since"]
 }

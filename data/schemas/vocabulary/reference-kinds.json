@@ -1,0 +1,31 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "reference-kinds",
+  "schema_version": 1,
+  "values": {
+    "interview": {
+      "labels": { "en": "Interview", "fr": "Interview" }
+    },
+    "social_post": {
+      "labels": { "en": "Social media post", "fr": "Publication réseaux sociaux" }
+    },
+    "official_site": {
+      "labels": { "en": "Official website", "fr": "Site officiel" }
+    },
+    "article": {
+      "labels": { "en": "Press article", "fr": "Article de presse" }
+    },
+    "video": {
+      "labels": { "en": "Video", "fr": "Vidéo" }
+    },
+    "scan": {
+      "labels": { "en": "Printed-material scan", "fr": "Scan de support imprimé" }
+    },
+    "fan_database": {
+      "labels": { "en": "Fan database", "fr": "Base de données de fans" }
+    },
+    "other": {
+      "labels": { "en": "Other", "fr": "Autre" }
+    }
+  }
+}

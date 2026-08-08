@@ -15,28 +15,13 @@ A reference from another doc to an entry here is a forward-pointer
 
 ---
 
-## In-universe documents as first-class entities
+## In-universe documents as first-class entities — PROMOTED (ADR-094, 2026-08-08)
 
-Wanted posters, vivre cards, newspapers, letters, maps, photographs,
-flags, manuscripts. Would become a new entity type `document` with
-subtypes (`wanted-poster`, `vivre-card`, `newspaper`, …).
-
-Enables queries like:
-
-- "all wanted posters issued by the Marines"
-- "all vivre cards currently held by Luffy"
-- "the front page of the World Economic News Paper at chapter N"
-
-**Migration path** (non-destructive): existing images depicting such
-objects stay as `image` entities. A `document` entity is created per
-object (e.g. `document:luffy-wanted-poster-30m`) and carries a
-`depicted-by` relation to its image. Existing `depicted-by` relations
-from people to the poster-image are rewired to the document entity
-when they're "depicting the document" rather than "depicting the
-person".
-
-See ADR-011 for the deferral rationale. Detailed image-to-document
-walkthrough at the bottom of `/docs/IMAGES.md`.
+Implemented: `document` entity type + `document-kinds` vocabulary +
+`issued-by` relation, with `profiles` / `held-by` / `depicted-by`
+extended. The non-destructive image→document rewiring path described
+here lives on in ADR-094; the IMAGES.md walkthrough still applies
+when actual poster images arrive.
 
 ## Knowledge graph (per-character knowledge)
 
@@ -49,22 +34,11 @@ know about Sabo's survival at chapter 730?
 Out of Phase 1 scope. Promote when the basic spoiler filter is
 shipped and contributors are asking for finer-grained POV filtering.
 
-## External attestation references
+## External attestation references — PROMOTED (ADR-093, 2026-08-08)
 
-Wikipedia-style references to external evidence (Oda interview
-transcripts, vivre card scans, fan databases) for facts that wouldn't
-fit cleanly into the canonical-source model (chapters / episodes /
-SBS / databooks).
-
-Would add:
-
-- a `reference` entity type (with url, accessed_at, type, …)
-- an `attested_by` qualifier on historisable values pointing at a
-  `reference`
-
-Distinct from in-universe `source` (which always points at a
-canonical entity). Useful for trivia like "Oda confirmed on Twitter
-that character X is Y years old."
+Implemented: core `reference` entity type (url, reference_kind,
+accessed_at) + `attested_by` base qualifier (entity_ref → reference,
+multi) on every historisable entry. `source` stays canonical-only.
 
 ## Fan theories
 

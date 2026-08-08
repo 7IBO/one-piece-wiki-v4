@@ -1,0 +1,35 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
+  "id": "reference",
+  "schema_version": 1,
+  "labels": { "en": "External reference", "fr": "Référence externe" },
+  "url_segment": "references",
+  "properties": [
+    {
+      "id": "name",
+      "required": true,
+      "historical": false,
+      "localizable": true
+    },
+    {
+      "id": "url",
+      "required": true,
+      "historical": false,
+      "localizable": false
+    },
+    {
+      "id": "reference_kind",
+      "required": true,
+      "historical": false,
+      "localizable": false
+    },
+    {
+      "id": "accessed_at",
+      "required": false,
+      "historical": false,
+      "localizable": false
+    }
+  ],
+  "allowed_relations": [],
+  "ui_hint": { "icon": "link", "group": "meta" }
+}

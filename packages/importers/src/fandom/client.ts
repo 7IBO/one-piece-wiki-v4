@@ -37,6 +37,34 @@ export type ParsedPage = {
   readonly url: string;
 };
 
+/** One category row from `list=allcategories` + `acprop=size`. */
+export type CategoryInfo = {
+  /** Bare category name (no `Category:` prefix). */
+  readonly name: string;
+  /** Total members (pages + files + subcats). */
+  readonly size: number;
+  /** Main-namespace article members. */
+  readonly pages: number;
+  readonly subcats: number;
+};
+
+/** Latest-revision info for one page (`prop=revisions`). */
+export type RevisionInfo = {
+  readonly pageId: number;
+  readonly revId: number;
+  readonly timestamp: string;
+};
+
+/** Batched `prop=revisions&redirects=1` result (ADR-092 updates). */
+export type RevisionsQueryResult = {
+  /** Canonical title → latest revision. */
+  readonly pages: ReadonlyMap<string, RevisionInfo>;
+  /** Redirect source title → target title (`query.redirects`). */
+  readonly redirects: ReadonlyMap<string, string>;
+  /** Titles the wiki reports as missing (deleted/renamed away). */
+  readonly missing: ReadonlySet<string>;
+};
+
 const DEFAULT_BASE = 'https://onepiece.fandom.com';
 
 /**
@@ -58,6 +86,11 @@ export class FandomClient {
     this.fetchImpl = options.fetchImpl ?? fetch;
     this.cacheDir = options.cacheDir;
     this.minDelayMs = options.minDelayMs ?? 1000;
+  }
+
+  /** Wiki origin this client talks to (report provenance). */
+  get origin(): string {
+    return this.baseUrl;
   }
 
   parseUrl(page: string): string {
@@ -277,15 +310,249 @@ export class FandomClient {
     return titles;
   }
 
+  /**
+   * All categories of the wiki with their member counts
+   * (`list=allcategories&acprop=size`), following API continuation —
+   * the category half of the ADR-092 structural sweep.
+   */
+  async allCategories(
+    options: { readonly log?: (line: string) => void; } = {},
+  ): Promise<readonly CategoryInfo[]> {
+    const log = options.log ?? ((): void => {});
+    const out: CategoryInfo[] = [];
+    let accontinue: string | undefined;
+    do {
+      const params = new URLSearchParams({
+        action: 'query',
+        list: 'allcategories',
+        acprop: 'size',
+        aclimit: '500',
+        format: 'json',
+        formatversion: '2',
+      });
+      if (accontinue !== undefined) params.set('accontinue', accontinue);
+      const raw = await this.fetchRaw(`${this.baseUrl}/api.php?${params.toString()}`);
+      const envelope = JSON.parse(raw) as {
+        error?: { code?: string; info?: string; };
+        query?: {
+          allcategories?: readonly {
+            category?: string;
+            size?: number;
+            pages?: number;
+            subcats?: number;
+          }[];
+        };
+        continue?: { accontinue?: string; };
+      };
+      if (envelope.error !== undefined) {
+        throw new Error(
+          `MediaWiki error for allcategories: ${envelope.error.code ?? '?'} — ${
+            envelope.error.info ?? 'no info'
+          }`,
+        );
+      }
+      for (const c of envelope.query?.allcategories ?? []) {
+        if (c.category === undefined) continue;
+        out.push({
+          name: c.category,
+          size: c.size ?? 0,
+          pages: c.pages ?? 0,
+          subcats: c.subcats ?? 0,
+        });
+      }
+      accontinue = envelope.continue?.accontinue;
+      log(`allcategories: ${out.length} so far`);
+    } while (accontinue !== undefined);
+    return out;
+  }
+
+  /**
+   * Every page title of the Template namespace
+   * (`list=allpages&apnamespace=10`), following continuation. Titles
+   * come back WITHOUT the `Template:` prefix; `/doc`-style subpages
+   * are skipped. The ADR-092 analyzer filters these down to infoboxes
+   * by name — this wiki names them "* Box" (Char Box, Chapter Box…),
+   * not "Infobox *", so an `apprefix=Infobox` query would miss them
+   * all; enumerating the whole namespace is the shape the API supports
+   * that catches both conventions.
+   */
+  async templateTitles(
+    options: { readonly log?: (line: string) => void; } = {},
+  ): Promise<readonly string[]> {
+    const log = options.log ?? ((): void => {});
+    const out: string[] = [];
+    let apcontinue: string | undefined;
+    do {
+      const params = new URLSearchParams({
+        action: 'query',
+        list: 'allpages',
+        apnamespace: '10',
+        aplimit: '500',
+        format: 'json',
+        formatversion: '2',
+      });
+      if (apcontinue !== undefined) params.set('apcontinue', apcontinue);
+      const raw = await this.fetchRaw(`${this.baseUrl}/api.php?${params.toString()}`);
+      const envelope = JSON.parse(raw) as {
+        error?: { code?: string; info?: string; };
+        query?: { allpages?: readonly { title?: string; }[]; };
+        continue?: { apcontinue?: string; };
+      };
+      if (envelope.error !== undefined) {
+        throw new Error(
+          `MediaWiki error for allpages(ns10): ${envelope.error.code ?? '?'} — ${
+            envelope.error.info ?? 'no info'
+          }`,
+        );
+      }
+      for (const p of envelope.query?.allpages ?? []) {
+        if (p.title === undefined) continue;
+        const bare = p.title.replace(/^Template:/i, '');
+        if (bare.includes('/')) continue; // /doc, /sandbox subpages
+        out.push(bare);
+      }
+      apcontinue = envelope.continue?.apcontinue;
+      log(`templates: ${out.length} so far`);
+    } while (apcontinue !== undefined);
+    return out;
+  }
+
+  /**
+   * Main-namespace pages transcluding a template
+   * (`list=embeddedin`), ONE batch only (≤500) — the ADR-092 analyzer
+   * uses the batch both as a capped popularity signal and as the pool
+   * to sample pages from, without walking full continuation on every
+   * template.
+   */
+  async embeddedIn(
+    template: string,
+    options: { readonly limit?: number; } = {},
+  ): Promise<readonly string[]> {
+    const limit = Math.min(options.limit ?? 500, 500);
+    const bare = template.replace(/^Template:/i, '');
+    const params = new URLSearchParams({
+      action: 'query',
+      list: 'embeddedin',
+      eititle: `Template:${bare}`,
+      einamespace: '0',
+      eilimit: String(limit),
+      format: 'json',
+      formatversion: '2',
+    });
+    const raw = await this.fetchRaw(`${this.baseUrl}/api.php?${params.toString()}`);
+    const envelope = JSON.parse(raw) as {
+      error?: { code?: string; info?: string; };
+      query?: { embeddedin?: readonly { title?: string; }[]; };
+    };
+    if (envelope.error !== undefined) {
+      throw new Error(
+        `MediaWiki error for embeddedin "${bare}": ${envelope.error.code ?? '?'} — ${
+          envelope.error.info ?? 'no info'
+        }`,
+      );
+    }
+    return (envelope.query?.embeddedin ?? [])
+      .map((p) => p.title ?? '')
+      .filter((t) => t !== '');
+  }
+
+  /**
+   * Latest revision (id + timestamp) and redirect status for up to 50
+   * titles in one call (`prop=revisions&rvprop=ids|timestamp&
+   * redirects=1`) — the ADR-092 update-detection batch. With multiple
+   * titles MediaWiki returns exactly the latest revision per page.
+   */
+  async queryRevisions(titles: readonly string[]): Promise<RevisionsQueryResult> {
+    if (titles.length > 50) {
+      throw new Error(`queryRevisions takes at most 50 titles per batch (got ${titles.length}).`);
+    }
+    const params = new URLSearchParams({
+      action: 'query',
+      titles: titles.join('|'),
+      prop: 'revisions',
+      rvprop: 'ids|timestamp',
+      redirects: '1',
+      format: 'json',
+      formatversion: '2',
+    });
+    const raw = await this.fetchRaw(`${this.baseUrl}/api.php?${params.toString()}`);
+    const envelope = JSON.parse(raw) as {
+      error?: { code?: string; info?: string; };
+      query?: {
+        redirects?: readonly { from?: string; to?: string; }[];
+        pages?: readonly {
+          title?: string;
+          pageid?: number;
+          missing?: boolean;
+          revisions?: readonly { revid?: number; timestamp?: string; }[];
+        }[];
+      };
+    };
+    if (envelope.error !== undefined) {
+      throw new Error(
+        `MediaWiki error for revisions query: ${envelope.error.code ?? '?'} — ${
+          envelope.error.info ?? 'no info'
+        }`,
+      );
+    }
+    const pages = new Map<string, RevisionInfo>();
+    const missing = new Set<string>();
+    for (const page of envelope.query?.pages ?? []) {
+      if (page.title === undefined) continue;
+      if (page.missing === true) {
+        missing.add(page.title);
+        continue;
+      }
+      const rev = page.revisions?.[0];
+      if (rev?.revid === undefined) continue;
+      pages.set(page.title, {
+        pageId: page.pageid ?? 0,
+        revId: rev.revid,
+        timestamp: rev.timestamp ?? '',
+      });
+    }
+    const redirects = new Map<string, string>();
+    for (const r of envelope.query?.redirects ?? []) {
+      if (r.from !== undefined && r.to !== undefined) redirects.set(r.from, r.to);
+    }
+    return { pages, redirects, missing };
+  }
+
+  /**
+   * Wrap a transport-level fetch failure (DNS, refused CONNECT, TLS…)
+   * into an actionable message: in cloud sandboxes the proxy denies
+   * onepiece.fandom.com with CONNECT 403, and every CLI must fail FAST
+   * with a clear "Fandom unreachable" instead of a bare stack trace.
+   */
+  private unreachableError(err: unknown): Error {
+    const detail = err instanceof Error ? err.message : String(err);
+    return new Error(
+      `Fandom unreachable: ${detail} — ${this.baseUrl} needs direct egress; `
+        + 'cloud Claude sandboxes deny it at the proxy (CONNECT 403). '
+        + 'Run this from a machine or CI runner with egress (ADR-079 §6).',
+    );
+  }
+
   private async fetchRaw(url: string): Promise<string> {
     const wait = this.lastRequestAt + this.minDelayMs - Date.now();
     if (wait > 0) await new Promise((r) => setTimeout(r, wait));
     this.lastRequestAt = Date.now();
-    const res = await this.fetchImpl(url, {
-      headers: {
-        'user-agent': 'onepiece-wiki-importer/0.1 (+https://one-piece.wiki)',
-      },
-    });
+    let res: Response;
+    try {
+      res = await this.fetchImpl(url, {
+        headers: {
+          'user-agent': 'onepiece-wiki-importer/0.1 (+https://one-piece.wiki)',
+        },
+      });
+    } catch (err) {
+      throw this.unreachableError(err);
+    }
+    // A sandbox proxy denial surfaces as a plain 403 response, not a
+    // fetch rejection — treat it as unreachable too (and a genuine
+    // Fandom-side 403 equally means "you cannot reach it from here").
+    if (res.status === 403) {
+      throw this.unreachableError(new Error(`API returned 403 ${res.statusText}`));
+    }
     if (!res.ok) throw new Error(`Fandom API ${res.status} ${res.statusText}.`);
     return await res.text();
   }
@@ -294,12 +561,21 @@ export class FandomClient {
     const wait = this.lastRequestAt + this.minDelayMs - Date.now();
     if (wait > 0) await new Promise((r) => setTimeout(r, wait));
     this.lastRequestAt = Date.now();
-    const res = await this.fetchImpl(this.parseUrl(page), {
-      headers: {
-        // Identify ourselves — polite-bot policy for MediaWiki APIs.
-        'user-agent': 'onepiece-wiki-importer/0.1 (+https://one-piece.wiki)',
-      },
-    });
+    let res: Response;
+    try {
+      res = await this.fetchImpl(this.parseUrl(page), {
+        headers: {
+          // Identify ourselves — polite-bot policy for MediaWiki APIs.
+          'user-agent': 'onepiece-wiki-importer/0.1 (+https://one-piece.wiki)',
+        },
+      });
+    } catch (err) {
+      throw this.unreachableError(err);
+    }
+    // See fetchRaw: proxy CONNECT denials surface as plain 403s.
+    if (res.status === 403) {
+      throw this.unreachableError(new Error(`API returned 403 ${res.statusText} for "${page}"`));
+    }
     if (!res.ok) {
       throw new Error(`Fandom API ${res.status} ${res.statusText} for "${page}".`);
     }

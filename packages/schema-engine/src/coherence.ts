@@ -82,7 +82,10 @@ type RelationRecord = {
 /** Every entity id pointed at by `from`, across relations + property axes. */
 function collectReferencedIds(entities: ReadonlyMap<string, LoadedEntity>): ReadonlySet<string> {
   const referenced = new Set<string>();
-  const axisFields = ['since', 'until', 'source', 'event'] as const;
+  // `attested_by` (ADR-093) is an entity_ref[] base qualifier pointing
+  // at `reference:*` — counted so an attesting reference isn't flagged
+  // UNREFERENCED.
+  const axisFields = ['since', 'until', 'source', 'event', 'attested_by'] as const;
   // Relations additionally carry the epistemic base qualifiers (ADR-037):
   // `revealed_since` (source_ref) and `believed_by` / `known_truth_by`
   // (entity_ref[]). Count them so a secret-keeper or reveal source is not

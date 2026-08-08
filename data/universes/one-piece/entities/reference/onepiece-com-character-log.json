@@ -1,0 +1,26 @@
+{
+  "id": "reference:onepiece-com-character-log",
+  "type": "reference",
+  "schema_version": 1,
+  "slug": "onepiece-com-character-log",
+  "canonical_name_key": "reference.onepiece-com-character-log.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "reference.onepiece-com-character-log.name"
+      }
+    ],
+    "url": [
+      {
+        "value": "https://one-piece.com/log/character/"
+      }
+    ],
+    "reference_kind": {
+      "value": "official_site"
+    },
+    "accessed_at": {
+      "value": "2026-08-08"
+    }
+  },
+  "relations": []
+}

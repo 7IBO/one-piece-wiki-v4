@@ -1,0 +1,25 @@
+{
+  "batchcomplete": true,
+  "continue": {
+    "accontinue": "Islands",
+    "continue": "-||"
+  },
+  "query": {
+    "allcategories": [
+      {
+        "category": "Characters",
+        "size": 1328,
+        "pages": 1310,
+        "files": 2,
+        "subcats": 16
+      },
+      {
+        "category": "Article Maintenance",
+        "size": 40,
+        "pages": 40,
+        "files": 0,
+        "subcats": 0
+      }
+    ]
+  }
+}

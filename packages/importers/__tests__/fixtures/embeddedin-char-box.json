@@ -1,0 +1,17 @@
+{
+  "batchcomplete": true,
+  "query": {
+    "embeddedin": [
+      {
+        "pageid": 21590,
+        "ns": 0,
+        "title": "Hyougoro"
+      },
+      {
+        "pageid": 1444,
+        "ns": 0,
+        "title": "Monkey D. Luffy"
+      }
+    ]
+  }
+}

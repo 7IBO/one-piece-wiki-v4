@@ -1,0 +1,18 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "attested_by",
+  "schema_version": 1,
+  "kind": "base",
+  "order": 8,
+  "labels": {
+    "en": "Attested by",
+    "fr": "Attesté par"
+  },
+  "descriptions": {
+    "en": "External reference(s) backing this value when it doesn't come from a canonical source (interview, official site, social post…).",
+    "fr": "Référence(s) externe(s) appuyant cette valeur quand elle ne vient pas d'une source canonique (interview, site officiel, publication…)."
+  },
+  "value_type": "entity_ref",
+  "entity_type_filter": ["reference"],
+  "multi": true
+}

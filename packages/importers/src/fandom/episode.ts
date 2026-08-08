@@ -27,13 +27,45 @@ export type EpisodeMapResult = {
   readonly warnings: readonly string[];
 };
 
-const INFOBOX_NAMES = ['Episode Box', 'Episodebox', 'Infobox episode'];
+/** Infobox template names this mapper recognises (ADR-092 analyzer). */
+export const EPISODE_INFOBOX_NAMES: readonly string[] = [
+  'Episode Box',
+  'Episodebox',
+  'Infobox episode',
+];
+
+/**
+ * Infobox params the mapper reads — mapped to properties or
+ * deliberately surfaced as warnings. Consumed by the `fandom:analyze`
+ * field-inventory report (ADR-092); keep in sync with the `get(...)`
+ * calls in {@link mapEpisode}.
+ */
+export const EPISODE_HANDLED_PARAMS: readonly string[] = [
+  '#',
+  'number',
+  'episode',
+  'Translation',
+  'translation',
+  'entitle',
+  'Screen',
+  'Art',
+  'Ad',
+  'Ed',
+];
+
+/**
+ * Params seen and DELIBERATELY not mapped: `rating` is the Japanese
+ * viewership share, not the `tv_rating` content rating (see the
+ * module docblock). The analyzer reports these as `ignored`, not as
+ * gaps.
+ */
+export const EPISODE_IGNORED_PARAMS: readonly string[] = ['rating'];
 
 /** Current anime-episode schema_version — keep in sync with the type. */
 export const ANIME_EPISODE_SCHEMA_VERSION = 3;
 
 export function mapEpisode(page: ParsedPage): EpisodeMapResult | null {
-  const box = findTemplate(page.wikitext, ...INFOBOX_NAMES);
+  const box = findTemplate(page.wikitext, ...EPISODE_INFOBOX_NAMES);
   if (box === null) return null;
 
   const warnings: string[] = [];

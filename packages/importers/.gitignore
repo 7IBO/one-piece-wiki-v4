@@ -1,0 +1,3 @@
+# fandom:analyze / fandom:updates output (ADR-092) — build artifacts,
+# reviewed as run-to-run diffs locally, never committed.
+reports/
