@@ -250,7 +250,16 @@ revealing a property from the Sections nav) opens the new entry's
 sheet immediately. `QualifierSheet.tsx` was split into reusable
 `SideSheet` (controlled panel) + `QualifierRowList` (list-all body) +
 the original trigger-owned `QualifierSheet` (still used by the
-relations editor).
+relations editor). Hotfix (same day): the SSR locale read broke
+in the PRODUCTION bundle only — Rollup rewrote the loader's dynamic
+`import('@tanstack/react-start/server')` into a self-import of the
+SSR chunk, whose exports don't carry the h3 helpers ("getCookie is
+not a function" on Vercel; dev was fine). Fixed by moving the read
+into a `createServerFn` with static imports — the server-fn compiler
+extracts the handler cleanly from both bundles. Verified on the built
+nitro server (curl: cookie→fr, Accept-Language→fr, default→en) plus a
+full Playwright pass against the prod build (form sheet, links panel,
+explore locale=fr single fetch, history banner).
 
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
