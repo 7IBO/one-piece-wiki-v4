@@ -5,7 +5,39 @@ session can pick up mid-stream. Architectural _rationale_ lives in
 `/docs/DECISIONS.md` (ADRs); the build order in `/docs/ROADMAP.md`;
 this file is the current status + the open threads.
 
-**Last updated**: 2026-08-08 (providers generalised, ADR-087)
+> **DIRECTIVE MAINTENEUR (2026-08-08, valable jusqu'à révocation
+> explicite)** : le projet est en BÊTA avec 0 utilisateur. Aucune
+> dépendance externe à préserver — la priorité absolue est la base la
+> plus solide possible, même au prix de très grosses migrations,
+> refontes ou refactors complets. Ne pas ajouter de couches de
+> compatibilité/dépréciation pour protéger des usages inexistants ;
+> `check:compat` sert à DÉTECTER les breaking changes pour les faire
+> consciemment, pas à les interdire. Casser + migrer le corpus d'un
+> coup est le mode normal.
+
+**Last updated**: 2026-08-08 (blocking rule enforcement, ADR-088)
+
+**2026-08-08 — rules gain opt-in `enforcement: 'blocking'`
+(ADR-088).** Maintainer's "custom rules between entities in the Zod
+verification": `RuleSchema` grew an optional
+`enforcement: 'advisory' | 'blocking'` (default advisory — the
+ADR-085 principle is untouched, all five canon-knowledge rules stay
+advisory). Blocking = the dashboard save/create endpoints re-run
+`evaluateRules` on the save payload and refuse with
+`422 { code: 'rule_blocked', findings }` (server gate in
+`apps/dashboard/server/rule-block.ts`, wired in handleSaveEntity +
+handleCreateEntity BEFORE any GitHub call); the form shows blocking
+findings red live (entity-level panel + per-property, error styling;
+save button stays enabled, the server refuses) and maps the 422 onto
+the same red field/top-level surfaces as Zod issues
+(`ruleBlockedFindings` guard in src/api.ts); `check:coherence`
+reports blocking RULE_FINDINGs as errors (non-zero exit). Exactly one
+rule shipped blocking as the structural example:
+`until-not-before-since` (incomparable refs already yield no finding,
+so no canon false-positive is possible). Tests: rules.test.ts
+(enforcement default/blocking), coherence.test.ts (severity mapping),
+server rule-block.test.ts (422 payload). Docs: DATA_MODEL /
+SCHEMA_SPEC § Rules + ADR-088.
 
 **2026-08-08 — providers generalised (ADR-087).** Maintainer's
 "structure providers" (Amazon/Crunchyroll/…): NO new entity type —

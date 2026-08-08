@@ -19,45 +19,66 @@
       }
     ],
     "bounty": [
-      { "value": 30000000, "since": "manga-chapter:96" },
-      { "value": 100000000, "since": "manga-chapter:432" },
-      { "value": 1500000000, "since": "manga-chapter:1043" },
-      { "value": 3000000000, "since": "manga-chapter:1053" }
+      {
+        "value": 30000000,
+        "since": "manga-chapter:96"
+      },
+      {
+        "value": 100000000,
+        "since": "manga-chapter:432"
+      },
+      {
+        "value": 1500000000,
+        "since": "manga-chapter:1043"
+      },
+      {
+        "value": 3000000000,
+        "since": "manga-chapter:1053"
+      }
     ],
     "status": [
-      { "value": "alive", "since": "manga-chapter:1" }
+      {
+        "value": "alive",
+        "since": "manga-chapter:1"
+      }
     ]
   },
   "relations": [
     {
       "type": "member-of",
       "target": "crew:straw-hat-pirates",
-      "qualifiers": { "role": "captain", "since": "manga-chapter:1" }
+      "qualifiers": {
+        "role": "captain",
+        "since": "manga-chapter:1"
+      }
     },
     {
       "type": "ate-fruit",
       "target": "devil-fruit:gomu-gomu",
-      "qualifiers": { "since": "manga-chapter:1" }
-    },
-    {
-      "type": "family-of",
-      "target": "character:ace",
-      "qualifiers": { "relation_kind": "sworn_brother" }
+      "qualifiers": {
+        "since": "manga-chapter:1"
+      }
     },
     {
       "type": "family-of",
       "target": "character:sabo",
-      "qualifiers": { "relation_kind": "sworn_brother" }
+      "qualifiers": {
+        "relation_kind": "sworn_brother"
+      }
     },
     {
       "type": "depicted-by",
       "target": "image:luffy-primary-portrait",
-      "qualifiers": { "role": "primary_portrait" }
+      "qualifiers": {
+        "role": "primary_portrait"
+      }
     },
     {
       "type": "depicted-by",
       "target": "image:straw-hats-group",
-      "qualifiers": { "role": "group_photo" }
+      "qualifiers": {
+        "role": "group_photo"
+      }
     }
   ]
 }
