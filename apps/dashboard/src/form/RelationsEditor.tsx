@@ -21,6 +21,7 @@ import { Combobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
 import type {
   EntityTypeSchema,
+  QualifierTypeSchema,
   RelationTypeSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
@@ -49,6 +50,10 @@ export type RelationsEditorProps = {
   entityType: EntityTypeSchema;
   relationTypes: Record<string, RelationTypeSchema>;
   vocabularies: Record<string, VocabularySchema>;
+  /** Qualifier registry (ADR-078) — labels for relation-declared
+   *  qualifiers (relation_kind, known_publicly_since, …) resolve here
+   *  before falling back to a humanised id. */
+  qualifierTypes: Record<string, QualifierTypeSchema>;
   valueCtx: ValueInputContext;
   relations: readonly RelationEntry[];
   onChange: (next: RelationEntry[]) => void;
@@ -168,6 +173,23 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
     p.onChange([...p.relations, { type: typeId, target }]);
   }
 
+  // Types revealed via the global "+ Add relation" picker that have no
+  // entry yet. For MULTI-concurrent types the old behaviour appended a
+  // blank `{target: ''}` entry, which rendered as an empty chip whose
+  // click opened the qualifier sheet — a dead end with no way to pick
+  // the target (2026-08 feedback, "Ami de"). Revealing the group
+  // instead shows its own target picker without fabricating an entry.
+  const [revealedTypes, setRevealedTypes] = useState<readonly string[]>([]);
+
+  function addFromGlobalPicker(typeId: string): void {
+    const rt = p.relationTypes[typeId];
+    if (rt?.allow_multiple_concurrent === true) {
+      setRevealedTypes((prev) => (prev.includes(typeId) ? prev : [...prev, typeId]));
+      return;
+    }
+    add(typeId);
+  }
+
   // Group entries by type so we can render multi-concurrent relations
   // as ONE chip-multi card per type (family-of with 5 family members
   // becomes one row instead of five). Preserve original index for
@@ -185,9 +207,15 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
   }, [p.relations]);
 
   // Render order: each type at most once, in the order it first
-  // appears in the relations array, followed by groups newly added
-  // by the bottom picker (already at the end).
-  const renderedTypes = useMemo(() => [...groupedByType.keys()], [groupedByType]);
+  // appears in the relations array, followed by entry-less groups the
+  // global picker revealed (their picker is how the first entry lands).
+  const renderedTypes = useMemo(() => {
+    const out = [...groupedByType.keys()];
+    for (const typeId of revealedTypes) {
+      if (!out.includes(typeId)) out.push(typeId);
+    }
+    return out;
+  }, [groupedByType, revealedTypes]);
 
   return (
     <section className='space-y-3'>
@@ -231,6 +259,7 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
                       groupEntries={groupEntries}
                       valueCtx={p.valueCtx}
                       vocabularies={p.vocabularies}
+                      qualifierTypes={p.qualifierTypes}
                       onAddTarget={(target) => add(typeId, target)}
                       onRemoveAt={(index) => remove(index)}
                       onSetQualifierAt={(index, qid, v) => setQualifier(index, qid, v)}
@@ -250,6 +279,7 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
                       relation={entry}
                       relationType={p.relationTypes[entry.type]}
                       vocabularies={p.vocabularies}
+                      qualifierTypes={p.qualifierTypes}
                       valueCtx={p.valueCtx}
                       onTargetChange={(target) => update(index, { target })}
                       onSetQualifier={(qid, v) => setQualifier(index, qid, v)}
@@ -266,7 +296,7 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
         ? (
           <Combobox
             value={undefined}
-            onChange={(typeId) => add(typeId)}
+            onChange={(typeId) => addFromGlobalPicker(typeId)}
             items={adderItems}
             placeholder={`+ ${t('addRelation')} (${allowedTypeIds.length} ${t('typesAvailable')})`}
             emptyText={t('noMatch')}
@@ -285,6 +315,7 @@ type RelationCardProps = {
   relation: RelationEntry;
   relationType: RelationTypeSchema | undefined;
   vocabularies: Record<string, VocabularySchema>;
+  qualifierTypes: Record<string, QualifierTypeSchema>;
   valueCtx: ValueInputContext;
   onTargetChange: (target: string) => void;
   onSetQualifier: (qid: string, value: unknown) => void;
@@ -300,14 +331,20 @@ function RelationCard(p: RelationCardProps): JSX.Element {
     if (p.relationType === undefined) return [];
     return p.relationType.qualifiers
       .filter((q) => q.id !== 'since' && q.id !== 'until') // pinned inline
-      .map((q) => ({
-        id: q.id,
-        label: humanize(q.id),
-        valueType: q.value_type as ValueType,
-        ...(q.enum_ref !== undefined ? { enumRef: q.enum_ref } : {}),
-        ...(q.required === true ? { required: true } : {}),
-      }));
-  }, [p.relationType]);
+      .map((q) => {
+        // Registry labels first (ADR-078) — relation-declared
+        // qualifiers like relation_kind stay localized instead of
+        // falling back to a humanised English id.
+        const qt = p.qualifierTypes[String(q.id)];
+        return {
+          id: q.id,
+          label: qt?.labels[locale] ?? qt?.labels.en ?? humanize(q.id),
+          valueType: q.value_type as ValueType,
+          ...(q.enum_ref !== undefined ? { enumRef: q.enum_ref } : {}),
+          ...(q.required === true ? { required: true } : {}),
+        };
+      });
+  }, [p.relationType, p.qualifierTypes, locale]);
 
   // De-duplicate base qualifiers that the relation type already declares.
   const baseQualifiers = useMemo(() => {
@@ -482,6 +519,7 @@ function MultiTargetRelationGroup(p: {
   groupEntries: readonly { entry: RelationEntry; index: number; }[];
   valueCtx: ValueInputContext;
   vocabularies: Record<string, VocabularySchema>;
+  qualifierTypes: Record<string, QualifierTypeSchema>;
   onAddTarget: (target: string) => void;
   onRemoveAt: (index: number) => void;
   onSetQualifierAt: (index: number, qid: string, value: unknown) => void;
@@ -494,17 +532,20 @@ function MultiTargetRelationGroup(p: {
   // declared qualifiers (including the inline since/until) + the
   // universal base set (epistemic_status, event, source, …).
   const qualifierShapes: readonly QualifierShape[] = useMemo(() => {
-    const declared = p.relationType.qualifiers.map((q) => ({
-      id: q.id,
-      label: humanize(q.id),
-      valueType: q.value_type as ValueType,
-      ...(q.enum_ref !== undefined ? { enumRef: q.enum_ref } : {}),
-      ...(q.required === true ? { required: true } : {}),
-    }));
+    const declared = p.relationType.qualifiers.map((q) => {
+      const qt = p.qualifierTypes[String(q.id)];
+      return {
+        id: q.id,
+        label: qt?.labels[locale] ?? qt?.labels.en ?? humanize(q.id),
+        valueType: q.value_type as ValueType,
+        ...(q.enum_ref !== undefined ? { enumRef: q.enum_ref } : {}),
+        ...(q.required === true ? { required: true } : {}),
+      };
+    });
     const declaredIds = new Set<string>(declared.map((d) => String(d.id)));
     const base = BASE_RELATION_QUALIFIERS.filter((q) => !declaredIds.has(q.id));
     return [...declared, ...base];
-  }, [p.relationType]);
+  }, [p.relationType, p.qualifierTypes, locale]);
 
   const taken = useMemo(
     () => new Set(p.groupEntries.map((g) => g.entry.target).filter((t) => t !== '')),
@@ -637,7 +678,11 @@ function TargetChip(p: {
             type='button'
             className='hover:bg-muted-foreground/10 inline-flex items-center gap-1 rounded-[2px] px-1.5 py-0.5 transition-colors'
           >
-            <span className='truncate max-w-[14rem]'>{p.displayName}</span>
+            <span className='truncate max-w-[14rem]'>
+              {p.displayName !== ''
+                ? p.displayName
+                : <span className='text-amber-600 italic'>{t('notSet')}</span>}
+            </span>
             {setIds.size > 0
               ? (
                 <span

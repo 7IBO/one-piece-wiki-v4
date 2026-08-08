@@ -163,8 +163,11 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
         // above this drawer's own backdrop and any shallower drawer.
         style={{ willChange: 'transform', zIndex: 45 + depth * 10 }}
       >
-        {/* Header */}
-        <div className='border-border flex shrink-0 items-baseline gap-3 border-b px-5 py-3'>
+        {
+          /* Header — horizontal padding is the page gutter on mobile
+            (the drawer covers the full viewport there), roomier at sm+. */
+        }
+        <div className='border-border flex shrink-0 items-baseline gap-3 border-b px-[var(--page-px)] py-3 sm:px-6'>
           <div className='min-w-0 flex-1'>
             <p className='text-muted-foreground text-[10px] uppercase tracking-wide'>
               {t('editingType')} {typeLabel}
@@ -194,7 +197,7 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
         </div>
 
         {/* Body — scrollable */}
-        <div className='min-h-0 flex-1 overflow-y-auto px-5 py-4'>
+        <div className='min-h-0 flex-1 overflow-y-auto px-[var(--page-px)] py-4 sm:px-6'>
           {error !== null
             ? <p className='text-destructive text-sm'>Failed: {error}</p>
             : entity === null || schemas === null
@@ -251,9 +254,13 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
             )}
         </div>
 
-        {/* Footer */}
-        <div className='border-border bg-card flex shrink-0 items-center justify-between gap-3 border-t px-5 py-3'>
-          <span className='text-muted-foreground text-xs'>
+        {
+          /* Footer — wraps on narrow screens: the status text drops to
+            its own line (basis-full below sm) while the buttons keep a
+            single row, so the long primary label never truncates. */
+        }
+        <div className='border-border bg-card flex shrink-0 flex-wrap items-center justify-between gap-x-3 gap-y-1.5 border-t px-[var(--page-px)] py-3 sm:px-6'>
+          <span className='text-muted-foreground min-w-0 text-xs max-sm:basis-full'>
             {status.saving
               ? t('openingPr')
               : status.dirty
@@ -263,7 +270,7 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
               ? <span className='text-destructive ml-2'>{status.error}</span>
               : null}
           </span>
-          <div className='flex gap-2'>
+          <div className='ml-auto flex shrink-0 gap-2'>
             <Button
               variant='outline'
               size='sm'

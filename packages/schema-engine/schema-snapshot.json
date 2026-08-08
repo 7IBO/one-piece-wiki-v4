@@ -532,7 +532,7 @@
           "required": false
         },
         "released_at": {
-          "required": true
+          "required": false
         },
         "title_key": {
           "required": true
@@ -741,6 +741,9 @@
     "streaming-platform": {
       "properties": {
         "homepage_url": {
+          "required": false
+        },
+        "link_template": {
           "required": false
         },
         "name": {
@@ -1234,6 +1237,12 @@
       "historical": false,
       "localizable": false
     },
+    "link_template": {
+      "value_type": "string",
+      "enum_ref": null,
+      "historical": false,
+      "localizable": false
+    },
     "location_status": {
       "value_type": "enum",
       "enum_ref": "location-statuses",
@@ -1611,6 +1620,11 @@
           "enum_ref": null,
           "required": false
         },
+        "external_id": {
+          "value_type": "string",
+          "enum_ref": null,
+          "required": false
+        },
         "region": {
           "value_type": "string",
           "enum_ref": null,
@@ -1634,7 +1648,7 @@
         "url": {
           "value_type": "string",
           "enum_ref": null,
-          "required": true
+          "required": false
         },
         "verified_at": {
           "value_type": "date",

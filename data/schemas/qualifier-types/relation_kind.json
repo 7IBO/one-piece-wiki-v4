@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "relation_kind",
+  "schema_version": 1,
+  "kind": "common",
+  "value_type": "string",
+  "order": 40,
+  "labels": {
+    "en": "Relation kind",
+    "fr": "Type de lien"
+  },
+  "descriptions": {
+    "en": "The nature of the family/social link (brother, adoptive father, sworn sibling…).",
+    "fr": "La nature du lien familial/social (frère, père adoptif, frère juré…)."
+  }
+}

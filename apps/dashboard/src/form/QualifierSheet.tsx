@@ -20,13 +20,14 @@
  *    its open animations introduced jank on slow machines.
  *  - Animates only `transform` (GPU-friendly) and skips a backdrop so
  *    the page stays clickable and scroll-smooth behind.
- *  - Renders **only the qualifiers the user has set**, plus a small
- *    "+ Add qualifier" picker at the bottom listing the unset ones.
+ *  - Lists **every available qualifier** (2026-08 feedback): set or
+ *    just-revealed ones show their editor, the rest render as a
+ *    "LABEL   —" line that expands on tap — the full option space is
+ *    always visible, like the entity page's property list.
  *    Adds-and-removes operate through `onSetQualifier(id, value)` —
  *    setting `undefined` removes the qualifier.
  */
 import { Button } from '@/components/ui/button';
-import { Combobox } from '@/components/ui/combobox';
 import { Settings2, X } from 'lucide-react';
 import type { JSX, ReactElement, ReactNode } from 'react';
 import { cloneElement, useEffect, useRef, useState } from 'react';
@@ -130,29 +131,24 @@ export function QualifierSheet(p: QualifierSheetProps): JSX.Element {
     return () => window.removeEventListener('keydown', onKey);
   }, [open]);
 
-  const visibleIds = (() => {
+  // 2026-08 feedback: the sheet lists EVERY available qualifier, like
+  // the entity page's property list — set/revealed ones show their
+  // editor, the rest show a "label — —" line that expands on tap. No
+  // separate add-picker: what exists is always visible.
+  const rows = (() => {
     const seen = new Set<string>();
-    const out: string[] = [];
+    const out: { id: string; label: string; editing: boolean; }[] = [];
     for (const q of p.qualifiers) {
-      if (p.setIds.has(q.id) || reveal.includes(q.id)) {
-        if (!seen.has(q.id)) {
-          out.push(q.id);
-          seen.add(q.id);
-        }
-      }
+      if (seen.has(q.id)) continue;
+      seen.add(q.id);
+      out.push({
+        id: q.id,
+        label: q.label,
+        editing: p.setIds.has(q.id) || reveal.includes(q.id),
+      });
     }
     return out;
   })();
-
-  const addable = p.qualifiers.filter(
-    (q) => !p.setIds.has(q.id) && !reveal.includes(q.id),
-  );
-
-  const addItems = addable.map((q) => ({
-    value: q.id,
-    label: q.label,
-    searchText: `${q.label} ${q.id}`,
-  }));
 
   function add(id: string): void {
     setReveal((prev) => prev.includes(id) ? prev : [...prev, id]);
@@ -235,27 +231,30 @@ export function QualifierSheet(p: QualifierSheetProps): JSX.Element {
                 ref={bodyRef}
                 className='min-h-0 flex-1 space-y-3 overflow-y-auto px-4 py-4'
               >
-                {visibleIds.map((id) => (
+                {rows.map((row) => (
                   // Tagged wrapper so the post-add focus effect can find
                   // the just-rendered row and focus its first input.
-                  <div key={id} data-qualifier-row={id}>
-                    {p.renderField(id)}
+                  <div
+                    key={row.id}
+                    data-qualifier-row={row.id}
+                    className='border-border/40 border-b pb-2.5 last:border-0 last:pb-0'
+                  >
+                    {row.editing
+                      ? p.renderField(row.id)
+                      : (
+                        <button
+                          type='button'
+                          onClick={() => add(row.id)}
+                          className='hover:bg-accent/40 -mx-1 flex w-full items-baseline justify-between gap-2 rounded-md px-1 py-1.5 text-left transition-colors'
+                        >
+                          <span className='text-muted-foreground text-xs font-medium tracking-wide uppercase'>
+                            {row.label}
+                          </span>
+                          <span className='text-muted-foreground text-sm'>—</span>
+                        </button>
+                      )}
                   </div>
                 ))}
-
-                {addable.length > 0
-                  ? (
-                    <div className={visibleIds.length > 0 ? 'border-t pt-3' : undefined}>
-                      <Combobox
-                        value={undefined}
-                        onChange={add}
-                        items={addItems}
-                        placeholder={`+ ${t('addProperty')} (${addable.length} ${t('available')})`}
-                        emptyText={t('noMatch')}
-                      />
-                    </div>
-                  )
-                  : null}
               </div>
             </div>
           </>,
