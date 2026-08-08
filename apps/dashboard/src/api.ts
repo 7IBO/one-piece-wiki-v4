@@ -218,6 +218,15 @@ export type EntityLinks = {
 
 /** One commit touching an entity's data file — a row of
  *  `GET /api/entities/:type/:slug/history` (in-app history page). */
+/** One property/relation-type change bucket inside a commit — labels
+ *  and value lines arrive fully resolved (localized labels, vocab
+ *  labels, translated keys, compact `C96` provenance), never JSON. */
+export type HistoryChangeGroup = {
+  readonly label: string;
+  readonly added: readonly string[];
+  readonly removed: readonly string[];
+};
+
 export type HistoryCommit = {
   readonly sha: string;
   readonly shortSha: string;
@@ -226,12 +235,11 @@ export type HistoryCommit = {
   readonly authorLogin?: string;
   readonly date: string;
   readonly htmlUrl: string;
-  /** Changed lines of the entity file (`+`/`-` prefixed, no diff
-   *  context), present on the newest commits only — the history page
-   *  shows what changed without a click. */
-  readonly diffLines?: readonly string[];
-  /** Changed lines beyond the server's per-commit cap. */
-  readonly diffTruncated?: number;
+  /** Semantic changes of this commit (newest commits only) — the
+   *  history page shows what changed without a click. */
+  readonly changes?: readonly HistoryChangeGroup[];
+  /** Change lines beyond the server's per-commit budget. */
+  readonly changesTruncated?: number;
 };
 
 /** Result of `api.entityHistory`. The endpoint's 503 (GitHub App
@@ -497,8 +505,14 @@ export const api = {
    * variant instead of throwing; any other failure throws like
    * `getJson` so `useApiResource` surfaces `<LoadFailed>`.
    */
-  async entityHistory(type: string, slug: string): Promise<EntityHistory> {
-    const path = `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/history`;
+  async entityHistory(
+    type: string,
+    slug: string,
+    locale: 'en' | 'fr' = 'en',
+  ): Promise<EntityHistory> {
+    const path = `/api/entities/${encodeURIComponent(type)}/${
+      encodeURIComponent(slug)
+    }/history?locale=${locale}`;
     const response = await fetch(path);
     if (response.status === 503) {
       let message = '';
