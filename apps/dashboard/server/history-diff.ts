@@ -16,11 +16,22 @@
  */
 import { type AuditContext, entryDisplay, entrySince } from './audit.ts';
 
+/**
+ * One change line, split for the quiet-by-default rendering (2026-08
+ * feedback): `text` is the compact value + `since` provenance shown by
+ * default ("Mort · C574"); `details` carries the OTHER qualifiers
+ * (`Label : Valeur`, ` · `-joined) behind a per-line "see more".
+ */
+export type HistoryChangeLine = {
+  readonly text: string;
+  readonly details?: string;
+};
+
 export type HistoryChangeGroup = {
   /** Localized property / relation-type label. */
   readonly label: string;
-  readonly added: readonly string[];
-  readonly removed: readonly string[];
+  readonly added: readonly HistoryChangeLine[];
+  readonly removed: readonly HistoryChangeLine[];
 };
 
 /* Structural "Like" types (same pattern as audit.ts) so tests build
@@ -169,21 +180,33 @@ function qualifierParts(
 const ENTRY_VALUE_FIELDS: ReadonlySet<string> = new Set(['value', 'value_key', 'since']);
 const EDGE_RENDERED_FIELDS: ReadonlySet<string> = new Set(['since']);
 
-/** One property entry as a display line: resolved value, compact
- *  provenance (" · C1053") when the entry carries `since`, then each
- *  other qualifier as ` · Label : Valeur` (links-panel format). */
-function entryLine(entry: unknown, propertyId: string, ctx: HistoryDiffContext): string {
+/** `text` + optional `details` from the already-rendered head parts
+ *  (value · since) and the extra-qualifier parts. */
+function changeLine(
+  headParts: readonly string[],
+  qualifiers: readonly string[],
+): HistoryChangeLine {
+  const text = headParts.join(' · ');
+  return qualifiers.length > 0 ? { text, details: qualifiers.join(' · ') } : { text };
+}
+
+/** One property entry as a change line: `text` = resolved value +
+ *  compact provenance ("Mort · C574") when the entry carries `since`;
+ *  every other qualifier goes to `details` as `Label : Valeur`
+ *  (links-panel format), shown by the client only on demand. */
+function entryLine(entry: unknown, propertyId: string, ctx: HistoryDiffContext): HistoryChangeLine {
   const propertyType = ctx.propertyTypes.get(propertyId);
   const display = entryDisplay(entry, propertyType, ctx);
   const since = entrySince(entry, ctx.sourceDisplay);
-  const parts = since !== undefined ? [display, since] : [display];
-  parts.push(...qualifierParts(plainObject(entry), ENTRY_VALUE_FIELDS, undefined, ctx));
-  return parts.join(' · ');
+  return changeLine(
+    since !== undefined ? [display, since] : [display],
+    qualifierParts(plainObject(entry), ENTRY_VALUE_FIELDS, undefined, ctx),
+  );
 }
 
-/** One relation edge as a display line: target name, compact since,
- *  then each other qualifier as ` · Label : Valeur`. */
-function relationLine(edge: unknown, ctx: HistoryDiffContext): string {
+/** One relation edge as a change line: `text` = target name + compact
+ *  since; every other qualifier goes to `details` as `Label : Valeur`. */
+function relationLine(edge: unknown, ctx: HistoryDiffContext): HistoryChangeLine {
   const record = plainObject(edge);
   const target = typeof record['target'] === 'string' ? record['target'] : '';
   const name = ctx.displayNameFor(target);
@@ -193,9 +216,10 @@ function relationLine(edge: unknown, ctx: HistoryDiffContext): string {
   const since = entrySince(qualifiers, ctx.sourceDisplay);
   const typeId = typeof record['type'] === 'string' ? record['type'] : '';
   const declarations = ctx.relationTypes.get(typeId)?.qualifiers;
-  const parts = since !== undefined ? [display, since] : [display];
-  parts.push(...qualifierParts(qualifiers, EDGE_RENDERED_FIELDS, declarations, ctx));
-  return parts.join(' · ');
+  return changeLine(
+    since !== undefined ? [display, since] : [display],
+    qualifierParts(qualifiers, EDGE_RENDERED_FIELDS, declarations, ctx),
+  );
 }
 
 /**
@@ -233,8 +257,10 @@ export function diffEntityData(
   const addedRels = multisetDiff(newRels, oldRels);
   const removedRels = multisetDiff(oldRels, newRels);
   if (addedRels.length > 0 || removedRels.length > 0) {
-    const byType = new Map<string, { added: string[]; removed: string[]; }>();
-    const bucket = (typeId: string): { added: string[]; removed: string[]; } => {
+    const byType = new Map<string, { added: HistoryChangeLine[]; removed: HistoryChangeLine[]; }>();
+    const bucket = (
+      typeId: string,
+    ): { added: HistoryChangeLine[]; removed: HistoryChangeLine[]; } => {
       const existing = byType.get(typeId);
       if (existing !== undefined) return existing;
       const fresh = { added: [], removed: [] };

@@ -705,6 +705,21 @@ const UI_STRINGS = {
   narrativeSave: { en: 'Save narrative', fr: 'Enregistrer le narratif' },
   narrativeSaving: { en: 'Saving…', fr: 'Enregistrement…' },
   narrativeNone: { en: 'No narrative yet', fr: 'Pas encore de narratif' },
+  historySeeMore: { en: 'see more', fr: 'voir plus' },
+  historySeeLess: { en: 'see less', fr: 'voir moins' },
+  exploreOpenEntry: {
+    en: 'Open this entry on the entity page',
+    fr: 'Ouvrir cette entrée sur la fiche',
+  },
+  exploreDeclaredBy: { en: 'declared by: {types}', fr: 'déclaré par : {types}' },
+  exploreFilledCount: {
+    en: '{n} filled entity(ies)',
+    fr: '{n} entité(s) renseignée(s)',
+  },
+  exploreRelevantTypesOnly: {
+    en: 'Relevant types only',
+    fr: 'Types concernés uniquement',
+  },
 } as const;
 
 /**
