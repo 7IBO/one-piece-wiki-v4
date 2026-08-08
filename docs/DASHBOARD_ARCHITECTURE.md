@@ -329,8 +329,14 @@ endpoints) returns `{ rows }`, one row per entity in the snapshot:
   way lists render values: translated `value_key`, vocabulary labels
   for enum/multi_enum (resolved through the catalogue, never
   hardcoded), `number` + unit, boolean ✓/×, display names for
-  entity/source refs; plus the entry's `since` provenance. One string
-  per entry, EN-first with FR fallback.
+  entity/source refs. One string per entry, EN-first with FR
+  fallback. The entry's `since` provenance is a COMPACT display
+  ("C96", "E45", "SBS 4", a film's display name…) resolved through
+  the server-side `SOURCE_ABBR` map + display names — never the raw
+  `type:slug` id. Additively (explorer v2), each entry also carries
+  `raw {value | value_key, since}` (the machine-readable slice
+  inline editors need) and each property carries `valueType` /
+  `enumRef` from the catalogue.
 
 All per-entity computation is pure in `apps/dashboard/server/audit.ts`
 (unit-tested in `server/__tests__/audit.test.ts`); the handler in
@@ -339,19 +345,47 @@ display names. Payload is a few hundred KB at catalogue scale —
 accepted, same O(entities) budget as `/api/sources`.
 
 **Route**: `/explore` (`apps/dashboard/src/routes/explore.tsx`, sidebar
-entry under Overview). Sticky toolbar with an entity-type multi-select
-(stay-open checkbox popover fed by the schema catalogue), a
-name/slug/id search box, and three toggle filters: missing
-translations, missing values (`missingRecommended` non-empty), and
-hide-complete (nothing missing on either axis). Rows show the display
-name, a type chip, amber "N missing translations" / "N missing values"
-badges and the ADR-083 completeness meter; each row expands
-(Collapsible) to the full values list (property labels localized from
-the catalogue, every entry with its `since`) and the missing lists in
-full. Rows virtualize via `@tanstack/react-virtual` past 100 entries.
-The per-row edit button opens the existing `EntityEditDrawer` (normal
-schema-driven form + PR flow); closing the drawer refetches the audit
-(stale-while-refetch, list stays on screen).
+entry under Overview). Sticky toolbar with a name/slug/id search box,
+an entity-type multi-select and a "Displayed properties" multi-select
+(both the same stay-open Popover+Command pattern as the form's
+multi-enum picker — localized label rows with a right-side check, NO
+raw ids, fixed `w-64` popup, trigger height matching the search input
+`h-10 → sm:h-8`), plus three toggle filters: missing translations,
+missing values (`missingRecommended` non-empty), and hide-complete
+(nothing missing on either axis). The property picker lists every
+property DECLARED by the selected entity types (all types when the
+filter is empty), from the schema catalogue.
+
+Rows show the display name (linking to the entity page), a type chip
+and amber "N missing translations" / "N missing values" badges —
+never the slug/id. Two modes:
+
+- **No property chosen (default)**: rows are always-expanded compact —
+  the full values summary (property labels localized from the
+  catalogue, every entry with its compact `since`) plus the
+  missing-expected chips sit directly under the entity line, with the
+  ADR-083 completeness meter. No click-to-open, no per-row edit
+  button/drawer.
+- **Properties chosen (columns mode)**: one cell per chosen property
+  per row; the completeness meter / x-of-y count is hidden. A missing
+  value renders an amber "—" warning chip (advisory, not an error);
+  a property not declared by that row's type renders a plain muted
+  dash. Editable cells (non-localizable `string` / `number` /
+  `boolean` / `enum` / `date` — the LATEST entry of historical
+  properties, the singleton otherwise) swap in the matching inline
+  editor on click (input / select / toggle / date input), committing
+  on blur/Enter/pick into a local draft store; Escape cancels. A "⋯"
+  affordance on each cell links to the full entity page for complex
+  cases (refs, multi_enum, markdown, localizable keys stay read-only
+  inline). A sticky save bar (one primary button, "Save N change(s)")
+  opens ONE PR per edited entity through the same `api.saveEntity`
+  endpoint as the table view — the save fetches each entity fresh
+  (data + SHA + translations) and splices the edited scalar into the
+  latest entry, preserving its qualifiers; Cancel resets the drafts.
+
+Rows virtualize via `@tanstack/react-virtual` past 100 entries; a
+successful save refetches the audit (stale-while-refetch, list stays
+on screen).
 
 ## Entity links panel + inverse-coherence detection
 
@@ -396,6 +430,33 @@ kind labels), then "Incoming links" / "Outgoing links" sections
 grouped by relation type (inverse resp. active labels from the
 catalogue), each row a deep link to the other entity plus its compact
 qualifiers. Localized EN/FR via the `UI_STRINGS` pattern.
+
+## In-app entity history (`/types/$type/$slug/history`)
+
+`GET /api/entities/:type/:slug/history` lists the commits touching the
+entity's JSON data file on the data repo's default branch, newest
+first, capped at 50 (one page of Octokit `repos.listCommits` with a
+`path` filter, through the same installation client + `DATA_REPO`
+config as every other GitHub call). Each row is
+`{ sha, shortSha, message, authorName, authorLogin?, date, htmlUrl }`.
+The file path is derived from the entity id's slug part
+(`type:fileBase` → `data/universes/<universe>/entities/<type>/<fileBase>.json`)
+— no entity type is hardcoded. Without GitHub App credentials (local
+dev) or with the App not installed, the endpoint answers a clean
+`503 { error }`.
+
+The client surface is the
+`apps/dashboard/src/routes/types.$type.$slug.history.tsx` page: entity
+display name + localized "History"/"Historique" header, a back link to
+the entity page, a "View on GitHub" outline button (the external
+commit-history link that used to sit in the entity page header), and
+the commit list in a full-bleed Card (`divide-y` rows: message first
+line, author + localized relative/absolute date, mono short-SHA chip,
+external link to the commit). `api.entityHistory` folds the 503 into
+an `unavailable` variant which renders as an info Banner ("History
+requires the GitHub connection — unavailable in dev"); other failures
+render `<LoadFailed>` with retry. The entity page header's "History ·
+<shortSha>" affordance is an internal link to this page.
 
 ## Authentication (phase 1 — admin-only)
 

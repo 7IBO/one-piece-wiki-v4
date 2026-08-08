@@ -23,6 +23,14 @@ import { fileURLToPath } from 'node:url';
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const FRONTEND_ROOT = resolve(ROOT, 'apps/dashboard/src');
 
+/**
+ * Generated artifacts we don't author. TanStack Router's codegen
+ * emits `import type ... from './router.tsx'` and re-adds the
+ * extension every time the dev server regenerates the file, so
+ * flagging it just produces an unfixable loop.
+ */
+const IGNORED_FILES = new Set([resolve(FRONTEND_ROOT, 'routeTree.gen.ts')]);
+
 const PATTERN = /(?:\bfrom\s*|\bimport\s*\(?\s*)['"]((?:\.{1,2}\/|@\/)[^'"\n]+\.tsx?)['"]/g;
 
 async function* walk(dir: string): AsyncGenerator<string> {
@@ -50,6 +58,7 @@ async function filesToScan(): Promise<readonly string[]> {
 const offenders: { file: string; line: number; match: string; }[] = [];
 
 for (const path of await filesToScan()) {
+  if (IGNORED_FILES.has(resolve(path))) continue;
   // Sequential reads on purpose — keeps memory bounded and the
   // offender list deterministic (parallel reads would arrive in
   // race-y order on slow filesystems).

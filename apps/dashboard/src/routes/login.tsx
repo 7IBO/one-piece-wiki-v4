@@ -129,7 +129,6 @@ function LoginPage(): JSX.Element {
           </p>
           <input
             type='text'
-            autoFocus
             value={nickname}
             onChange={(e) => setNickname(e.target.value.slice(0, 32))}
             placeholder={t('nicknamePlaceholder')}

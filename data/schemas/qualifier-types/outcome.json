@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "outcome",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 52,
+  "labels": {
+    "en": "Outcome",
+    "fr": "Issue"
+  },
+  "descriptions": {
+    "en": "How the linked event ended for this participant (survived, killed, captured…).",
+    "fr": "Comment l’événement lié s’est terminé pour ce participant (survécu, tué, capturé…)."
+  },
+  "value_type": "enum",
+  "enum_ref": "event-outcomes"
+}

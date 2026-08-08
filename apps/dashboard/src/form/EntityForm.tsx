@@ -592,10 +592,15 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   function setEntries(propertyId: string, historical: boolean, list: PropertyEntry[]): void {
     setData((prev) => {
       const properties = { ...prev.properties };
-      if (historical) {
+      if (list.length === 0) {
+        // Removing the last entry DELETES the key — writing `{}` left a
+        // phantom empty entry that made the remove ✕ look dead
+        // (2026-08 feedback, the birthday row).
+        delete properties[propertyId];
+      } else if (historical) {
         properties[propertyId] = list;
       } else {
-        properties[propertyId] = list[0] ?? {};
+        properties[propertyId] = list[0]!;
       }
       return { ...prev, properties };
     });
@@ -1486,9 +1491,12 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
     </Label>
   );
 
+  // Own row below the header — inlining these in the header flex made
+  // them collide with the value summary on narrow screens (badges and
+  // "C96"-style since refs rendered on top of each other).
   const schemaBadges = p.showSchemaDetails
     ? (
-      <span className='ml-auto flex flex-wrap items-center gap-1'>
+      <div className='mt-1 flex w-full flex-wrap items-center gap-1 pl-5'>
         <span className='text-muted-foreground font-mono text-[11px]'>{p.propertyId}</span>
         <Badge variant='secondary' className='font-normal'>{p.valueType}</Badge>
         {isHistorical
@@ -1497,7 +1505,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
         {isLocalizable
           ? <Badge variant='outline' className='font-normal'>localizable</Badge>
           : null}
-      </span>
+      </div>
     )
     : null;
 
@@ -1520,7 +1528,6 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
                 </Badge>
               )
               : null}
-            {schemaBadges}
             <Button
               type='button'
               variant={isRequiredMissing ? 'default' : 'outline'}
@@ -1531,6 +1538,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
               <Plus className='size-3.5' />
               {isHistorical ? t('addEntry') : t('setValue')}
             </Button>
+            {schemaBadges}
           </div>
         )
         : (
@@ -1589,7 +1597,6 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
                   </Badge>
                 )
                 : null}
-              {schemaBadges}
               <ChevronDown
                 className={`text-muted-foreground size-3.5 shrink-0 transition-transform ${
                   open ? 'rotate-180' : ''
@@ -1597,6 +1604,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
                 aria-hidden
               />
             </button>
+            {schemaBadges}
             {open
               ? (
                 <div className='mt-2 space-y-2'>

@@ -21,6 +21,7 @@ import { Route as TypesTypeNewRouteImport } from './routes/types.$type.new'
 import { Route as TypesTypeSlugRouteImport } from './routes/types.$type.$slug'
 import { Route as SourcesTypeSlugRouteImport } from './routes/sources.$type.$slug'
 import { Route as TypesTypeSlugIndexRouteImport } from './routes/types.$type.$slug.index'
+import { Route as TypesTypeSlugHistoryRouteImport } from './routes/types.$type.$slug.history'
 import { Route as TypesTypeSlugApparitionsRouteImport } from './routes/types.$type.$slug.apparitions'
 
 const LoginRoute = LoginRouteImport.update({
@@ -83,6 +84,11 @@ const TypesTypeSlugIndexRoute = TypesTypeSlugIndexRouteImport.update({
   path: '/',
   getParentRoute: () => TypesTypeSlugRoute,
 } as any)
+const TypesTypeSlugHistoryRoute = TypesTypeSlugHistoryRouteImport.update({
+  id: '/history',
+  path: '/history',
+  getParentRoute: () => TypesTypeSlugRoute,
+} as any)
 const TypesTypeSlugApparitionsRoute =
   TypesTypeSlugApparitionsRouteImport.update({
     id: '/apparitions',
@@ -103,6 +109,7 @@ export interface FileRoutesByFullPath {
   '/types/$type/table': typeof TypesTypeTableRoute
   '/types/$type/': typeof TypesTypeIndexRoute
   '/types/$type/$slug/apparitions': typeof TypesTypeSlugApparitionsRoute
+  '/types/$type/$slug/history': typeof TypesTypeSlugHistoryRoute
   '/types/$type/$slug/': typeof TypesTypeSlugIndexRoute
 }
 export interface FileRoutesByTo {
@@ -116,6 +123,7 @@ export interface FileRoutesByTo {
   '/types/$type/table': typeof TypesTypeTableRoute
   '/types/$type': typeof TypesTypeIndexRoute
   '/types/$type/$slug/apparitions': typeof TypesTypeSlugApparitionsRoute
+  '/types/$type/$slug/history': typeof TypesTypeSlugHistoryRoute
   '/types/$type/$slug': typeof TypesTypeSlugIndexRoute
 }
 export interface FileRoutesById {
@@ -132,6 +140,7 @@ export interface FileRoutesById {
   '/types/$type/table': typeof TypesTypeTableRoute
   '/types/$type/': typeof TypesTypeIndexRoute
   '/types/$type/$slug/apparitions': typeof TypesTypeSlugApparitionsRoute
+  '/types/$type/$slug/history': typeof TypesTypeSlugHistoryRoute
   '/types/$type/$slug/': typeof TypesTypeSlugIndexRoute
 }
 export interface FileRouteTypes {
@@ -149,6 +158,7 @@ export interface FileRouteTypes {
     | '/types/$type/table'
     | '/types/$type/'
     | '/types/$type/$slug/apparitions'
+    | '/types/$type/$slug/history'
     | '/types/$type/$slug/'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -162,6 +172,7 @@ export interface FileRouteTypes {
     | '/types/$type/table'
     | '/types/$type'
     | '/types/$type/$slug/apparitions'
+    | '/types/$type/$slug/history'
     | '/types/$type/$slug'
   id:
     | '__root__'
@@ -177,6 +188,7 @@ export interface FileRouteTypes {
     | '/types/$type/table'
     | '/types/$type/'
     | '/types/$type/$slug/apparitions'
+    | '/types/$type/$slug/history'
     | '/types/$type/$slug/'
   fileRoutesById: FileRoutesById
 }
@@ -276,6 +288,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TypesTypeSlugIndexRouteImport
       parentRoute: typeof TypesTypeSlugRoute
     }
+    '/types/$type/$slug/history': {
+      id: '/types/$type/$slug/history'
+      path: '/history'
+      fullPath: '/types/$type/$slug/history'
+      preLoaderRoute: typeof TypesTypeSlugHistoryRouteImport
+      parentRoute: typeof TypesTypeSlugRoute
+    }
     '/types/$type/$slug/apparitions': {
       id: '/types/$type/$slug/apparitions'
       path: '/apparitions'
@@ -288,11 +307,13 @@ declare module '@tanstack/react-router' {
 
 interface TypesTypeSlugRouteChildren {
   TypesTypeSlugApparitionsRoute: typeof TypesTypeSlugApparitionsRoute
+  TypesTypeSlugHistoryRoute: typeof TypesTypeSlugHistoryRoute
   TypesTypeSlugIndexRoute: typeof TypesTypeSlugIndexRoute
 }
 
 const TypesTypeSlugRouteChildren: TypesTypeSlugRouteChildren = {
   TypesTypeSlugApparitionsRoute: TypesTypeSlugApparitionsRoute,
+  TypesTypeSlugHistoryRoute: TypesTypeSlugHistoryRoute,
   TypesTypeSlugIndexRoute: TypesTypeSlugIndexRoute,
 }
 

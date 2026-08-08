@@ -19,6 +19,7 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { useT } from '@/form/locale';
 import { cn } from '@/lib/utils';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Check, ChevronsUpDown } from 'lucide-react';
@@ -54,6 +55,7 @@ export function Combobox(
     triggerClassName?: string;
   },
 ): JSX.Element {
+  const t = useT();
   const [open, setOpenState] = useState(false);
   const [query, setQuery] = useState('');
   const selected = items.find((i) => i.value === value);
@@ -107,7 +109,7 @@ export function Combobox(
       >
         <Command shouldFilter={false}>
           <CommandInput
-            placeholder='Search…'
+            placeholder={t('search')}
             value={query}
             onValueChange={setQuery}
           />
@@ -147,6 +149,7 @@ function VirtualizedList(p: {
   emptyText: string;
   onPick: (value: string) => void;
 }): JSX.Element {
+  const t = useT();
   const scrollRef = useRef<HTMLDivElement>(null);
 
   const filtered = useMemo(() => {
@@ -173,7 +176,7 @@ function VirtualizedList(p: {
                 className='text-foreground hover:bg-accent w-full rounded px-2 py-1 text-left text-sm'
                 onClick={() => p.onPick(p.query)}
               >
-                Use “{p.query}”
+                {t('use')} “{p.query}”
               </button>
             )
             : p.emptyText}

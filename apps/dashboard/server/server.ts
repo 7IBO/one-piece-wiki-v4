@@ -9,6 +9,8 @@
  *   GET  /api/entities/:type
  *   GET  /api/entities/:type/:slug         { data, sha }
  *   GET  /api/entities/:type/:slug/links   { outgoing, incoming, conflicts }
+ *   GET  /api/entities/:type/:slug/history commits touching the entity file
+ *                                          (503 without GitHub credentials)
  *
  * Auth (ADR-017 — stateless signed-cookie sessions):
  *   GET  /api/auth/login/github             302 to GitHub OAuth
@@ -380,7 +382,7 @@ async function handleI18nKeys(): Promise<Response> {
  * few hundred KB at catalogue scale — accepted (same O(entities)
  * budget as /api/sources).
  */
-async function handleAudit(): Promise<Response> {
+async function handleAudit(locale: 'en' | 'fr'): Promise<Response> {
   const snap = await snapshot();
   const names = await buildDisplayNames(snap);
   const rows = await Promise.all(
@@ -396,14 +398,17 @@ async function handleAudit(): Promise<Response> {
           translations,
           displayName: names.get(entity.id) ?? { en: null, fr: null },
           displayNameFor: (id) => names.get(id),
+          locale,
         },
       );
     }),
   );
-  // Stable order: type buckets, then display name (EN) / slug within.
+  // Stable order: type buckets, then display name in the requested
+  // locale (slug fallback) within.
   rows.sort((a, b) => {
     if (a.type !== b.type) return a.type.localeCompare(b.type);
-    return (a.displayName.en ?? a.slug).localeCompare(b.displayName.en ?? b.slug);
+    return (a.displayName[locale] ?? a.displayName.en ?? a.slug)
+      .localeCompare(b.displayName[locale] ?? b.displayName.en ?? b.slug);
   });
   return json({ rows });
 }
@@ -762,6 +767,74 @@ async function handleEntityLinks(type: string, slug: string): Promise<Response> 
     })),
     conflicts: links.conflicts,
   });
+}
+
+// Cap on the number of commits returned by the entity-history
+// endpoint — one page of GitHub's listCommits, newest first.
+const HISTORY_COMMIT_CAP = 50;
+
+/**
+ * GET /api/entities/:type/:slug/history →
+ *   [{ sha, shortSha, message, authorName, authorLogin?, date, htmlUrl }]
+ *
+ * Commit history of the entity's data file on the data repo's default
+ * branch (newest first, capped at HISTORY_COMMIT_CAP), via Octokit's
+ * `repos.listCommits` with a `path` filter. The file path is derived
+ * from the entity id's slug part — the same derivation the entity
+ * page uses for its GitHub history URL — so no entity type is
+ * hardcoded. The GitHub-credentials guard (503 when `config` is
+ * null — the dev case) lives in the dispatcher; the not-installed
+ * case is folded into the same 503 here.
+ */
+async function handleEntityHistory(
+  cfg: GitHubAppConfig,
+  type: string,
+  slug: string,
+): Promise<Response> {
+  const snap = await snapshot();
+  const entity = await findEntity(snap, type, slug);
+  if (entity === undefined) return notFound(`No entity of type ${type} with slug ${slug}`);
+  if (githubInstallMissing) {
+    return serviceUnavailable(
+      `History unavailable: the GitHub App is not installed on ${cfg.dataRepo.owner}/${cfg.dataRepo.repo}.`,
+    );
+  }
+  // Entity ids are `type:fileBase` where the file base may differ
+  // from the slug (character:ace ↔ portgas-d-ace) — derive the JSON
+  // path from the id, exactly like the entity page's history URL.
+  const fileBase = entity.id.split(':')[1] ?? slug;
+  try {
+    const octokit = await installationClient(cfg);
+    const { data } = await octokit.repos.listCommits({
+      owner: cfg.dataRepo.owner,
+      repo: cfg.dataRepo.repo,
+      path: dataPath(type, fileBase),
+      per_page: HISTORY_COMMIT_CAP,
+    });
+    const commits = data.slice(0, HISTORY_COMMIT_CAP).map((c) => {
+      const login = c.author?.login ?? null;
+      return {
+        sha: c.sha,
+        shortSha: c.sha.slice(0, 7),
+        message: c.commit.message,
+        authorName: c.commit.author?.name ?? login ?? 'unknown',
+        ...(login !== null ? { authorLogin: login } : {}),
+        date: c.commit.author?.date ?? c.commit.committer?.date ?? '',
+        htmlUrl: c.html_url,
+      };
+    });
+    return json(commits);
+  } catch (err) {
+    if (looksLikeMissingInstallation(err)) {
+      githubInstallMissing = true;
+      return serviceUnavailable(
+        `History unavailable: the GitHub App is not installed on ${cfg.dataRepo.owner}/${cfg.dataRepo.repo}.`,
+      );
+    }
+    const message = err instanceof Error ? err.message : String(err);
+    process.stderr.write(`[entity-history] ${entity.id} failed: ${message}\n`);
+    return json({ error: message }, 500);
+  }
 }
 
 /**
@@ -1852,7 +1925,9 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     if (req.method === 'GET' && path === '/api/i18n-keys') return await handleI18nKeys();
     // Cross-type audit for the /explore data explorer (public read,
     // like the other catalogue endpoints).
-    if (req.method === 'GET' && path === '/api/audit') return await handleAudit();
+    if (req.method === 'GET' && path === '/api/audit') {
+      return await handleAudit(url.searchParams.get('locale') === 'fr' ? 'fr' : 'en');
+    }
 
     // Per-source cast (apparitions hub — ADR-021).
     const castMatch = /^\/api\/sources\/([^/]+)\/([^/]+)\/cast$/.exec(path);
@@ -1909,6 +1984,17 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     const linksMatch = /^\/api\/entities\/([^/]+)\/([^/]+)\/links$/.exec(path);
     if (req.method === 'GET' && linksMatch !== null) {
       return await handleEntityLinks(linksMatch[1]!, linksMatch[2]!);
+    }
+
+    // GET /api/entities/:type/:slug/history — commits touching the
+    // entity's data file (in-app history page). Clean 503 when the
+    // GitHub App credentials aren't configured (the dev case).
+    const historyMatch = /^\/api\/entities\/([^/]+)\/([^/]+)\/history$/.exec(path);
+    if (req.method === 'GET' && historyMatch !== null) {
+      if (config === null) {
+        return serviceUnavailable(`History requires the GitHub connection: ${configError}`);
+      }
+      return await handleEntityHistory(config, historyMatch[1]!, historyMatch[2]!);
     }
 
     const entityMatch = /^\/api\/entities\/([^/]+)\/([^/]+)$/.exec(path);
