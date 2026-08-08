@@ -382,7 +382,7 @@ async function handleI18nKeys(): Promise<Response> {
  * few hundred KB at catalogue scale — accepted (same O(entities)
  * budget as /api/sources).
  */
-async function handleAudit(): Promise<Response> {
+async function handleAudit(locale: 'en' | 'fr'): Promise<Response> {
   const snap = await snapshot();
   const names = await buildDisplayNames(snap);
   const rows = await Promise.all(
@@ -398,14 +398,17 @@ async function handleAudit(): Promise<Response> {
           translations,
           displayName: names.get(entity.id) ?? { en: null, fr: null },
           displayNameFor: (id) => names.get(id),
+          locale,
         },
       );
     }),
   );
-  // Stable order: type buckets, then display name (EN) / slug within.
+  // Stable order: type buckets, then display name in the requested
+  // locale (slug fallback) within.
   rows.sort((a, b) => {
     if (a.type !== b.type) return a.type.localeCompare(b.type);
-    return (a.displayName.en ?? a.slug).localeCompare(b.displayName.en ?? b.slug);
+    return (a.displayName[locale] ?? a.displayName.en ?? a.slug)
+      .localeCompare(b.displayName[locale] ?? b.displayName.en ?? b.slug);
   });
   return json({ rows });
 }
@@ -1922,7 +1925,9 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     if (req.method === 'GET' && path === '/api/i18n-keys') return await handleI18nKeys();
     // Cross-type audit for the /explore data explorer (public read,
     // like the other catalogue endpoints).
-    if (req.method === 'GET' && path === '/api/audit') return await handleAudit();
+    if (req.method === 'GET' && path === '/api/audit') {
+      return await handleAudit(url.searchParams.get('locale') === 'fr' ? 'fr' : 'en');
+    }
 
     // Per-source cast (apparitions hub — ADR-021).
     const castMatch = /^\/api\/sources\/([^/]+)\/([^/]+)\/cast$/.exec(path);

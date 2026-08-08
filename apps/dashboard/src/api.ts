@@ -512,8 +512,8 @@ export const api = {
    * the route is the only caller, the payload is cheap at catalogue
    * scale, and the explorer refetches after each drawer edit.
    */
-  async audit(): Promise<AuditResponse> {
-    return getJson<AuditResponse>('/api/audit');
+  async audit(locale: 'en' | 'fr' = 'en'): Promise<AuditResponse> {
+    return getJson<AuditResponse>(`/api/audit?locale=${locale}`);
   },
   /**
    * Reverse-scan apparitions for a source entity (ADR-021). Returns

@@ -63,6 +63,7 @@ const ctx: AuditContext = {
   displayName: { en: 'Monkey D. Luffy', fr: null },
   displayNameFor: (id) =>
     id === 'crew:straw-hat-pirates' ? { en: 'Straw Hat Pirates', fr: null } : undefined,
+  locale: 'en',
 };
 
 describe('missingRecommendedFor', () => {
@@ -151,7 +152,12 @@ describe('referencedI18nKeys / missingTranslationsFor', () => {
 });
 
 describe('entryDisplay', () => {
-  const displayCtx = { translations, vocabularies, displayNameFor: ctx.displayNameFor };
+  const displayCtx = {
+    translations,
+    vocabularies,
+    displayNameFor: ctx.displayNameFor,
+    locale: 'en' as const,
+  };
 
   it('resolves value_key through translations (en first, fr fallback, — when untranslated)', () => {
     expect(
@@ -179,6 +185,16 @@ describe('entryDisplay', () => {
     // Unknown id never crashes — falls back to the raw id.
     expect(entryDisplay({ value: 'zombie' }, propertyTypes.get('status'), displayCtx))
       .toBe('zombie');
+  });
+
+  it('resolves in the requested locale first, other locale as fallback', () => {
+    const frCtx = { ...displayCtx, locale: 'fr' as const };
+    expect(entryDisplay({ value: 'alive' }, propertyTypes.get('status'), frCtx))
+      .toBe('En vie');
+    // FR translation missing → EN fallback, never the raw key.
+    expect(
+      entryDisplay({ value_key: 'character.luffy.name.common' }, propertyTypes.get('name'), frCtx),
+    ).toBe('Monkey D. Luffy');
   });
 
   it('formats number + unit, plain number, boolean ✓/×', () => {

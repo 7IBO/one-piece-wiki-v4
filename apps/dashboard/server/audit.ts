@@ -113,6 +113,9 @@ export type AuditContext = {
   /** Resolve an entity/source id to its display name (for
    *  `entity_ref` / `source_ref` values). Undefined = unknown id. */
   readonly displayNameFor: (entityId: string) => AuditDisplayName | undefined;
+  /** Display locale for value strings (translations, vocabulary
+   *  labels, ref names) — the other locale is the fallback. */
+  readonly locale: 'en' | 'fr';
 };
 
 function plainObject(value: unknown): Record<string, unknown> {
@@ -205,23 +208,23 @@ export function missingTranslationsFor(
  * client stays dumb: translated `value_key`, vocabulary labels for
  * enum/multi_enum (via the catalogue, never hardcoded), `number` with
  * its unit, boolean ✓/×, display names for entity/source refs. The
- * response carries ONE string per entry, resolved EN-first with FR
- * fallback (the display-name pair already covers the row title's
- * locale switch; per-value locale nuance isn't worth doubling the
- * payload).
+ * response carries ONE string per entry, resolved in `ctx.locale`
+ * with the other locale as fallback (the caller re-fetches on locale
+ * switch — cheaper than doubling every display in the payload).
  */
 export function entryDisplay(
   entry: unknown,
   propertyType: PropertyTypeLike | undefined,
-  ctx: Pick<AuditContext, 'translations' | 'vocabularies' | 'displayNameFor'>,
+  ctx: Pick<AuditContext, 'translations' | 'vocabularies' | 'displayNameFor' | 'locale'>,
 ): string {
+  const other: 'en' | 'fr' = ctx.locale === 'fr' ? 'en' : 'fr';
   if (entry === null || typeof entry !== 'object') {
     return entry === undefined || entry === null || entry === '' ? '—' : String(entry);
   }
   const record = entry as Record<string, unknown>;
   const key = record['value_key'];
   if (typeof key === 'string' && key !== '') {
-    return ctx.translations.en[key] ?? ctx.translations.fr[key] ?? '—';
+    return ctx.translations[ctx.locale][key] ?? ctx.translations[other][key] ?? '—';
   }
   const raw = record['value'];
   const valueType = propertyType?.value_type;
@@ -229,7 +232,7 @@ export function entryDisplay(
   const vocabLabelFor = (id: string): string => {
     if (enumRef === undefined) return id;
     const term = ctx.vocabularies.get(enumRef)?.values[id];
-    return term?.labels.en ?? term?.labels.fr ?? id;
+    return term?.labels[ctx.locale] ?? term?.labels[other] ?? id;
   };
   if (valueType === 'enum') {
     return raw === undefined || raw === null ? '—' : vocabLabelFor(String(raw));
@@ -243,13 +246,13 @@ export function entryDisplay(
   }
   if (valueType === 'number') {
     if (typeof raw !== 'number') return '—';
-    const formatted = raw.toLocaleString('en');
+    const formatted = raw.toLocaleString(ctx.locale);
     return propertyType?.unit !== undefined ? `${formatted} ${propertyType.unit}` : formatted;
   }
   if (valueType === 'entity_ref' || valueType === 'source_ref') {
     if (typeof raw !== 'string' || raw === '') return '—';
     const name = ctx.displayNameFor(raw);
-    return name?.en ?? name?.fr ?? (raw.includes(':') ? raw.split(':')[1]! : raw);
+    return name?.[ctx.locale] ?? name?.[other] ?? (raw.includes(':') ? raw.split(':')[1]! : raw);
   }
   return raw === undefined || raw === null || raw === '' ? '—' : String(raw);
 }
@@ -278,6 +281,7 @@ const SOURCE_ABBR: Record<string, string> = {
 export function sourceIdDisplay(
   id: string,
   displayNameFor: (entityId: string) => AuditDisplayName | undefined,
+  locale: 'en' | 'fr' = 'en',
 ): string {
   const sep = id.indexOf(':');
   const type = sep === -1 ? '' : id.slice(0, sep);
@@ -285,7 +289,7 @@ export function sourceIdDisplay(
   const abbr = SOURCE_ABBR[type];
   if (abbr !== undefined && /^\d+$/.test(slug)) return `${abbr}${slug}`;
   const name = displayNameFor(id);
-  const display = name?.en ?? name?.fr;
+  const display = locale === 'fr' ? name?.fr ?? name?.en : name?.en ?? name?.fr;
   if (display !== undefined && display !== null && display !== '') return display;
   return abbr !== undefined ? `${abbr}${slug}` : slug;
 }
@@ -329,7 +333,7 @@ export function buildAuditRow(
 ): AuditRow {
   const expectation = completenessExpectation(ctx.entityType);
   const properties = plainObject(entity.data['properties']);
-  const sourceDisplay = (id: string): string => sourceIdDisplay(id, ctx.displayNameFor);
+  const sourceDisplay = (id: string): string => sourceIdDisplay(id, ctx.displayNameFor, ctx.locale);
   const values: AuditPropertyValues[] = Object.entries(properties).map(([property, rawList]) => {
     const propertyType = ctx.propertyTypes.get(property);
     const enumRef = propertyType?.value_constraints?.enum_ref;

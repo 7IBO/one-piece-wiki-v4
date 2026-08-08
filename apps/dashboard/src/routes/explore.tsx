@@ -746,9 +746,12 @@ function ExploreSkeleton(): JSX.Element {
 function ExploreComponent(): JSX.Element {
   const locale = useLocale();
   const t = useT();
+  // Locale is a fetch dependency: value displays (translations,
+  // vocabulary labels, ref names) are resolved server-side in the
+  // requested locale, so switching FR/EN refetches the rows.
   const { data, error, reload } = useApiResource(
-    () => Promise.all([api.audit(), api.schemas()]),
-    [],
+    () => Promise.all([api.audit(locale), api.schemas()]),
+    [locale],
   );
   const rows = data?.[0].rows ?? null;
   const schemas = data?.[1] ?? null;
