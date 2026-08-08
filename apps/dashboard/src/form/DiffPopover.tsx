@@ -119,7 +119,7 @@ export function DiffPopover(p: {
                     key={`${d.locale}-${d.key}`}
                     label={
                       <span>
-                        <span className='bg-muted text-muted-foreground mr-1.5 rounded-[3px] px-1 py-0.5 font-mono text-[9px] uppercase'>
+                        <span className='bg-muted text-muted-foreground mr-1.5 rounded-md px-1 py-0.5 font-mono text-[9px] uppercase'>
                           {d.locale}
                         </span>
                         {d.key}
@@ -200,7 +200,7 @@ function DiffRow(
         ? (
           <button
             type='button'
-            className='hover:bg-muted/40 -mx-2 flex w-[calc(100%+1rem)] flex-col gap-0.5 rounded-[3px] px-2 py-0.5 text-left'
+            className='hover:bg-muted/40 -mx-2 flex w-[calc(100%+1rem)] flex-col gap-0.5 rounded-md px-2 py-0.5 text-left'
             onClick={() => setOpen((v) => !v)}
             aria-expanded={open}
           >
@@ -265,7 +265,7 @@ function SplitDiff({ before, after }: { before: string; after: string; }): JSX.E
   }, [chunks]);
 
   return (
-    <div className='border-border bg-muted/30 mt-1.5 ml-4 overflow-hidden rounded-[3px] border'>
+    <div className='border-border bg-muted/30 mt-1.5 ml-4 overflow-hidden rounded-md border'>
       <div className='max-h-[24rem] overflow-auto font-mono text-[10px] leading-snug'>
         <table className='w-full table-fixed border-collapse'>
           <tbody>
@@ -611,7 +611,7 @@ function RelationDiffRow({ diff }: { diff: RelationDiff; }): JSX.Element {
         {diff.added.map((t) => (
           <span
             key={`+${t}`}
-            className='bg-emerald-500/10 text-emerald-500 inline-flex items-center gap-0.5 rounded-[3px] px-1.5 py-0.5 font-mono text-[10px]'
+            className='bg-emerald-500/10 text-emerald-500 inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 font-mono text-[10px]'
           >
             + {t}
           </span>
@@ -619,7 +619,7 @@ function RelationDiffRow({ diff }: { diff: RelationDiff; }): JSX.Element {
         {diff.removed.map((t) => (
           <span
             key={`-${t}`}
-            className='bg-destructive/10 text-destructive inline-flex items-center gap-0.5 rounded-[3px] px-1.5 py-0.5 font-mono text-[10px] line-through'
+            className='bg-destructive/10 text-destructive inline-flex items-center gap-0.5 rounded-md px-1.5 py-0.5 font-mono text-[10px] line-through'
           >
             − {t}
           </span>

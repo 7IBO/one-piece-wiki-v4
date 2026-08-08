@@ -37,7 +37,7 @@ function EntityEditComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
   const t = useT();
-  const { data, error } = useApiResource(
+  const { data, error, reload } = useApiResource(
     () =>
       Promise.all([
         api.getEntity(type, slug),
@@ -72,7 +72,7 @@ function EntityEditComponent(): JSX.Element {
   }, [schemas, type, locale]);
 
   if (error !== null) {
-    return <LoadFailed message={error} />;
+    return <LoadFailed message={error} onRetry={reload} />;
   }
   if (entity === null || schemas === null) {
     return (

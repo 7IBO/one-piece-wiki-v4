@@ -57,6 +57,7 @@ import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promoteAndMergePR, rejectAndCleanupPR } from './admin-promote.ts';
 import { type DashboardSession, readDashboardSession } from './auth.ts';
+import { completenessExpectation, computeCompleteness } from './completeness.ts';
 import { dashboardDataSource } from './data-source.ts';
 import { classifyDataPath, diffEntityFile, diffTranslationFile } from './diff.ts';
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
@@ -365,6 +366,11 @@ async function handleI18nKeys(): Promise<Response> {
 async function handleListEntities(type: string): Promise<Response> {
   const snap = await snapshot();
   const names = await buildDisplayNames(snap);
+  // Per-row completeness (ADR-083): the expectation is derived once
+  // per request from the entity-type declaration (schema-driven — no
+  // property name in code), then applied to each already-loaded
+  // entity. O(entities), no extra I/O.
+  const expectation = completenessExpectation(snap.validated.entityTypes.get(type));
   const list = [...snap.entities.values()]
     .filter((e) => e.type === type)
     .map((e) => ({
@@ -373,6 +379,7 @@ async function handleListEntities(type: string): Promise<Response> {
       slug: e.data['slug'],
       canonical_name_key: e.data['canonical_name_key'] ?? null,
       displayName: names.get(e.id) ?? { en: null, fr: null },
+      completeness: computeCompleteness(e.data, expectation),
     }))
     .sort((a, b) => {
       const an = names.get(a.id)?.en ?? String(a.slug);

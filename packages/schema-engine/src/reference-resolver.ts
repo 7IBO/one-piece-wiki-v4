@@ -48,6 +48,18 @@ export function resolveReferences(catalogue: ValidatedCatalogue): readonly Refer
         });
       }
     }
+    // ADR-083 — the completeness tier can only recommend what the type allows.
+    const allowedSet = new Set(entityType.allowed_relations);
+    for (const [index, rel] of (entityType.recommended_relations ?? []).entries()) {
+      if (!allowedSet.has(rel)) {
+        errors.push({
+          code: 'REFERENCE_NOT_FOUND',
+          source: `entity-types/${id}`,
+          path: `recommended_relations[${index}]`,
+          target: `allowed_relations/${rel}`,
+        });
+      }
+    }
   }
 
   for (const [id, propertyType] of catalogue.propertyTypes) {

@@ -1,5 +1,6 @@
 import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
+import { Card } from '@/components/ui/card';
 import { Input } from '@/components/ui/input';
 import {
   Select,
@@ -10,9 +11,9 @@ import {
 } from '@/components/ui/select';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ArrowDown, ArrowUp, Plus, Search, Table2 } from 'lucide-react';
+import { ArrowDown, ArrowUp, Check, Plus, Search, Table2 } from 'lucide-react';
 import { type JSX, useDeferredValue, useMemo, useState } from 'react';
-import { api, type EntityRef } from '../api';
+import { api, type Completeness, type EntityRef } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
 import { useEntityTypeLabel, useLocale, useT } from '../form/locale';
 import { useAllDrafts } from '../form/use-draft';
@@ -25,11 +26,68 @@ export const Route = createFileRoute('/types/$type/')({
 type SortKey = 'name' | 'slug' | 'id';
 type SortDir = 'asc' | 'desc';
 
+/**
+ * Per-row completeness meter (ADR-083). Renders `filled/expected` in
+ * text-xs with a 2px progress bar: amber count while expected fields
+ * are missing, muted count + checkmark once complete. Hidden entirely
+ * when the type declares no expected fields (`expected === 0`).
+ */
+function RowCompleteness({ value }: { value: Completeness; }): JSX.Element | null {
+  const t = useT();
+  if (value.expected <= 0) return null;
+  const full = value.filled >= value.expected;
+  const pct = Math.min(100, Math.round((value.filled / value.expected) * 100));
+  const label = t('completenessOf')
+    .replace('{filled}', String(value.filled))
+    .replace('{expected}', String(value.expected));
+  return (
+    <div
+      className='flex shrink-0 flex-col items-end gap-1'
+      title={full ? `${label} — ${t('completeWord')}` : label}
+    >
+      <span
+        className={`flex items-center gap-1 text-xs tabular-nums ${
+          full ? 'text-muted-foreground' : 'text-amber-500'
+        }`}
+      >
+        {full ? <Check aria-hidden='true' className='size-3' /> : null}
+        {value.filled}/{value.expected}
+      </span>
+      <div aria-hidden='true' className='bg-muted h-0.5 w-14 overflow-hidden rounded-full sm:w-16'>
+        <div className='bg-primary h-full rounded-full' style={{ width: `${pct}%` }} />
+      </div>
+      <span className='sr-only'>{label}</span>
+    </div>
+  );
+}
+
+/** Two-line skeleton rows shaped like the real list rows. */
+function ListSkeleton(): JSX.Element {
+  return (
+    <Card bleed className='gap-0 py-0'>
+      <ul className='divide-border divide-y'>
+        {Array.from({ length: 8 }).map((_, i) => (
+          <li key={i} className='flex items-center gap-3 px-[var(--page-px)] py-2.5 sm:px-4'>
+            <div className='min-w-0 flex-1 space-y-1.5'>
+              <Skeleton className='h-4 w-44 max-w-full' />
+              <Skeleton className='h-3 w-28 max-w-full' />
+            </div>
+            <div className='flex shrink-0 flex-col items-end gap-1'>
+              <Skeleton className='h-3 w-8' />
+              <Skeleton className='h-0.5 w-14 sm:w-16' />
+            </div>
+          </li>
+        ))}
+      </ul>
+    </Card>
+  );
+}
+
 function TypeListComponent(): JSX.Element {
   const { type } = Route.useParams() as { type: string; };
   const locale = useLocale();
   const t = useT();
-  const { data, error } = useApiResource(
+  const { data, error, reload } = useApiResource(
     () => Promise.all([api.listEntities(type), api.schemas()]),
     [type],
   );
@@ -91,23 +149,26 @@ function TypeListComponent(): JSX.Element {
     return sorted;
   }, [list, deferredQuery, sortKey, sortDir, locale]);
 
+  // Localized singular/plural — never "1 entities".
+  const countOf = (n: number): string => `${n} ${n === 1 ? t('entityWord') : t('entitiesWord')}`;
+
   if (error !== null) {
-    return <LoadFailed message={error} />;
+    return <LoadFailed message={error} onRetry={reload} />;
   }
 
   return (
-    <div className='space-y-4'>
-      <div className='flex items-baseline justify-between gap-3'>
+    <div className='space-y-4 sm:space-y-5'>
+      <div className='flex flex-wrap items-baseline justify-between gap-x-3 gap-y-2'>
         <div>
-          <h1 className='text-2xl font-semibold tracking-tight'>
+          <h1 className='text-xl font-semibold tracking-tight sm:text-2xl'>
             {entityTypeLabel ?? <Skeleton className='inline-block h-7 w-40 align-middle' />}
           </h1>
           <p className='text-muted-foreground text-sm'>
             {list === null
               ? t('loading')
-              : display?.length === list.length
-              ? `${list.length} ${t('entitiesWord')}`
-              : `${display?.length ?? 0} ${t('ofWord')} ${list.length} ${t('entitiesWord')}`}
+              : display === null || display.length === list.length
+              ? countOf(list.length)
+              : `${display.length} ${t('ofWord')} ${countOf(list.length)}`}
           </p>
         </div>
         <div className='flex items-center gap-2'>
@@ -118,7 +179,7 @@ function TypeListComponent(): JSX.Element {
             className='gap-1.5'
           >
             <Plus className='size-3.5' />
-            New
+            {t('newButton')}
           </Button>
           <Button
             render={<Link to='/types/$type/table' params={{ type }} />}
@@ -132,14 +193,20 @@ function TypeListComponent(): JSX.Element {
         </div>
       </div>
 
-      <div className='bg-background sticky top-0 z-10 flex flex-wrap items-center gap-2 border-b py-2'>
-        <div className='relative flex-1 min-w-64'>
+      {
+        /* Sticky toolbar: offset by the app-header height (at top-0 it
+          slid underneath the header) and full-bleed below `sm` so the
+          bleeding list rows never peek past its background at the
+          gutter edges while scrolling. */
+      }
+      <div className='bleed bg-background sticky top-[var(--header-h)] z-10 flex flex-wrap items-center gap-2 border-b px-[var(--page-px)] py-2 sm:px-0'>
+        <div className='relative min-w-56 flex-1'>
           <Search className='text-muted-foreground absolute left-2.5 top-1/2 size-4 -translate-y-1/2' />
           <Input
             type='search'
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            placeholder='Search by name, slug or id…'
+            placeholder={t('searchEntitiesPlaceholder')}
             className='pl-8'
           />
         </div>
@@ -168,7 +235,7 @@ function TypeListComponent(): JSX.Element {
           variant='outline'
           size='icon-lg'
           onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
-          aria-label={sortDir === 'asc' ? 'Sort descending' : 'Sort ascending'}
+          aria-label={sortDir === 'asc' ? t('sortDescending') : t('sortAscending')}
         >
           {sortDir === 'asc' ? <ArrowUp className='size-4' /> : <ArrowDown className='size-4' />}
         </Button>
@@ -186,52 +253,79 @@ function TypeListComponent(): JSX.Element {
         : null}
 
       {list === null
-        ? <Skeleton className='h-64 w-full' />
+        ? <ListSkeleton />
         : display === null || display.length === 0
         ? (
-          <div className='text-muted-foreground rounded-md border border-dashed p-8 text-center text-sm'>
-            {list.length === 0 ? t('noEntitiesYet') : t('noMatchSearch')}
+          <div className='rounded-md border border-dashed p-8 text-center'>
+            <p className='text-muted-foreground text-sm'>
+              {list.length === 0 ? t('noEntitiesYet') : t('noMatchSearch')}
+            </p>
+            {list.length === 0
+              ? (
+                <Button
+                  render={<Link to='/types/$type/new' params={{ type }} />}
+                  variant='outline'
+                  size='sm'
+                  className='mt-4 gap-1.5'
+                >
+                  <Plus className='size-3.5' />
+                  {t('createFirstEntity')}
+                </Button>
+              )
+              : null}
           </div>
         )
         : (
-          <ul className='divide-border divide-y rounded-md border'>
-            {display.map((e) => {
-              const name = e.displayName[locale] ?? e.displayName.en ?? e.slug;
-              const hasDraft = draftIdsForType.has(e.id);
-              return (
-                <li key={e.id}>
-                  <Link
-                    to='/types/$type/$slug'
-                    params={{ type: e.type, slug: e.slug }}
-                    className='hover:bg-accent/40 flex items-center gap-2 px-4 py-2.5 text-sm font-medium'
-                  >
-                    {
-                      /* Amber dot mirrors the EntityForm + header
-                        DraftsIndicator semantics: one colour means
-                        "local pending work" across every surface. */
-                    }
-                    {hasDraft
-                      ? (
-                        <span
-                          aria-label={t('draftBadge')}
-                          title={t('draftBadge')}
-                          className='inline-block size-1.5 shrink-0 rounded-full bg-amber-500'
-                        />
-                      )
-                      : null}
-                    <span className='min-w-0 truncate'>{name}</span>
-                    {hasDraft
-                      ? (
-                        <span className='ml-auto shrink-0 rounded-[3px] border border-amber-500/40 bg-amber-500/5 px-1.5 py-0.5 text-[10px] uppercase tracking-wide text-amber-500'>
-                          {t('draftBadge')}
-                        </span>
-                      )
-                      : null}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+          <Card bleed className='gap-0 py-0'>
+            <ul className='divide-border divide-y'>
+              {display.map((e) => {
+                const name = e.displayName[locale] ?? e.displayName.en ?? e.slug;
+                const hasDraft = draftIdsForType.has(e.id);
+                return (
+                  <li key={e.id}>
+                    <Link
+                      to='/types/$type/$slug'
+                      params={{ type: e.type, slug: e.slug }}
+                      className='hover:bg-accent/40 flex items-center gap-3 px-[var(--page-px)] py-2.5 sm:px-4'
+                    >
+                      <div className='min-w-0 flex-1'>
+                        <p className='flex items-center gap-2 text-sm font-medium'>
+                          {
+                            /* Amber dot mirrors the EntityForm + header
+                              DraftsIndicator semantics: one colour means
+                              "local pending work" across every surface. */
+                          }
+                          {hasDraft
+                            ? (
+                              <span
+                                aria-label={t('draftBadge')}
+                                title={t('draftBadge')}
+                                className='inline-block size-1.5 shrink-0 rounded-full bg-amber-500'
+                              />
+                            )
+                            : null}
+                          <span className='min-w-0 truncate'>{name}</span>
+                          {hasDraft
+                            ? (
+                              <span className='shrink-0 rounded-md border border-amber-500/40 bg-amber-500/5 px-1.5 text-xs text-amber-500'>
+                                {t('draftBadge')}
+                              </span>
+                            )
+                            : null}
+                        </p>
+                        <p className='text-muted-foreground truncate font-mono text-xs'>
+                          {e.slug}
+                        </p>
+                      </div>
+                      {e.completeness !== undefined
+                        ? <RowCompleteness value={e.completeness} />
+                        : null}
+                    </Link>
+                  </li>
+                );
+              })}
+            </ul>
+          </Card>
         )}
     </div>
   );

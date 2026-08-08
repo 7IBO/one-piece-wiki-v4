@@ -87,6 +87,12 @@ body[data-scroll-locked] {
 }
 
 :root {
+  /* Layout tokens (W-F2 §layout). --header-h is the single source of
+   * truth for every sticky offset (sidebar top, save bars); --page-px
+   * is the mobile page gutter that the `bleed` utility cancels for
+   * full-width cards/lists on small screens. */
+  --header-h: 3.5rem;
+  --page-px: 0.75rem;
   --background: oklch(1 0 0);
   --foreground: oklch(0.145 0 0);
   --card: oklch(1 0 0);
@@ -153,6 +159,17 @@ body[data-scroll-locked] {
     --sidebar-accent-foreground: oklch(0.985 0 0);
     --sidebar-border: oklch(1 0 0 / 10%);
     --sidebar-ring: oklch(0.556 0 0);
+  }
+}
+
+/* Full-bleed on mobile (W-F2 §mobile): cancels the page gutter so
+ * cards, lists and tables span edge-to-edge below `sm`. Pairs with
+ * Card's `bleed` prop, which also drops the side borders + radius.
+ * No-op from `sm:` up, where surfaces go back to boxed. */
+@utility bleed {
+  margin-inline: calc(var(--page-px) * -1);
+  @media (min-width: 640px) {
+    margin-inline: 0;
   }
 }
 

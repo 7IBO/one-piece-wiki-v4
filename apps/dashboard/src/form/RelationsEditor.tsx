@@ -200,7 +200,7 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
 
       {p.relations.length === 0
         ? (
-          <div className='text-muted-foreground rounded-[3px] border border-dashed p-4 text-center text-xs'>
+          <div className='text-muted-foreground rounded-md border border-dashed p-4 text-center text-xs'>
             {t('noRelations')}
           </div>
         )
@@ -339,7 +339,7 @@ function RelationCard(p: RelationCardProps): JSX.Element {
   const setQualifierCount = setIds.size;
 
   return (
-    <li className='border-input/70 bg-card/40 relative flex flex-col gap-2 rounded-[3px] border p-2'>
+    <li className='border-input/70 bg-card/40 relative flex flex-col gap-2 rounded-md border p-2'>
       {
         /* Isolated × in the top-right corner — separated from any other
           control to avoid mis-clicks on a destructive action. */
@@ -512,7 +512,7 @@ function MultiTargetRelationGroup(p: {
   );
 
   return (
-    <li className='border-input/70 bg-card/40 flex flex-col gap-2 rounded-[3px] border p-2'>
+    <li className='border-input/70 bg-card/40 flex flex-col gap-2 rounded-md border p-2'>
       <div className='flex items-center gap-2'>
         <Badge variant='secondary' className='font-normal'>
           {relationLabel(p.relationType, locale)}
@@ -629,7 +629,7 @@ function TargetChip(p: {
   );
 
   return (
-    <div className='bg-muted text-foreground inline-flex items-center gap-0.5 rounded-[3px] px-0.5 py-0.5 text-[11px]'>
+    <div className='bg-muted text-foreground inline-flex items-center gap-0.5 rounded-md px-0.5 py-0.5 text-[11px]'>
       <QualifierSheet
         title={`${p.displayName} · ${relationLabel(p.relationType, locale)}`}
         trigger={

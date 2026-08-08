@@ -5,14 +5,26 @@ import { cn } from '@/lib/utils';
 function Card({
   className,
   size = 'default',
+  bleed = false,
   ...props
-}: React.ComponentProps<'div'> & { size?: 'default' | 'sm'; }) {
+}: React.ComponentProps<'div'> & {
+  size?: 'default' | 'sm';
+  /**
+   * Full-bleed on mobile (W-F2 §mobile): below `sm` the card spans
+   * edge-to-edge — page gutter cancelled, side strokes and radius
+   * dropped, kept as a flat section between hairlines. Boxed again
+   * from `sm:` up. Use on top-level page surfaces (lists, panels),
+   * never on cards nested inside another padded container.
+   */
+  bleed?: boolean;
+}) {
   return (
     <div
       data-slot='card'
       data-size={size}
       className={cn(
         'group/card flex flex-col gap-4 overflow-hidden rounded-xl bg-card py-4 text-sm text-card-foreground ring-1 ring-foreground/10 has-data-[slot=card-footer]:pb-0 has-[>img:first-child]:pt-0 data-[size=sm]:gap-3 data-[size=sm]:py-3 data-[size=sm]:has-data-[slot=card-footer]:pb-0 *:[img:first-child]:rounded-t-xl *:[img:last-child]:rounded-b-xl',
+        bleed && 'bleed max-sm:rounded-none max-sm:border-y max-sm:ring-0',
         className,
       )}
       {...props}

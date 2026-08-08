@@ -26,17 +26,30 @@ import { Input } from '@/components/ui/input';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { ChevronDown, ChevronLeft, ChevronRight, ExternalLink, Search, X } from 'lucide-react';
+import {
+  ChevronDown,
+  ChevronLeft,
+  ChevronRight,
+  ExternalLink,
+  Search,
+  Undo2,
+  X,
+} from 'lucide-react';
 import { type JSX, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
-import { api, type EntityDetail } from '../api';
+import { api, type EntityDetail, type SourceRef } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
 import { useApiResource } from '../hooks/use-api-resource';
 
 // Stable fallback while the page resource is loading.
-const emptySources: readonly { id: string; type: string; slug: string; }[] = [];
-import { MultiEntityRefInput } from '../form/inputs';
+const emptySources: readonly SourceRef[] = [];
+import { formatSourceLabel, MultiEntityRefInput } from '../form/inputs';
 import { useLocale, useT } from '../form/locale';
+
+// Bucket key for appearances whose source-type is NOT in
+// `appears-in.valid_to_types` — rendered in a fallback "Other" group
+// so they're never silently hidden while still being counted.
+const OTHER_GROUP = '__other';
 
 // Threshold above which a section collapses by default — keeps the
 // page from becoming an infinite scroll for ubiquitous characters
@@ -212,7 +225,7 @@ function ApparitionsComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
   const t = useT();
-  const { data, error } = useApiResource(
+  const { data, error, reload } = useApiResource(
     () => Promise.all([api.getEntity(type, slug), api.schemas(), api.sources()]),
     [type, slug],
   );
@@ -267,15 +280,19 @@ function ApparitionsComponent(): JSX.Element {
     return et?.labels[locale] ?? et?.labels.en ?? entityType;
   };
 
-  // Display-name lookup for source ids (chapters / episodes / …).
-  // `/api/sources` already returns the per-source display name +
-  // chapter/episode number, so we use that instead of slug-only.
+  // Display-name lookup for source ids (chapters / episodes / …) —
+  // the same resolution the pickers use (`formatSourceLabel`), so rows
+  // show "1043 — Two Crewmates" instead of the raw entity id. Ids not
+  // in the /api/sources catalogue fall back to the raw id.
   const sourceLabelFor = (id: string): string => {
     const src = sources.find((s) => s.id === id);
-    return src?.slug !== undefined ? `${sourceTypeOf(id)}:${src.slug}` : id;
+    return src === undefined ? id : formatSourceLabel(src, locale);
   };
 
-  // Group working state back by source-type for render.
+  // Group working state back by source-type for render. Entries
+  // removed this session stay listed (badged "removed") so unsaved
+  // deletions remain visible; source-types outside `valid_to_types`
+  // collect into a fallback "Other" group instead of vanishing.
   const grouped = useMemo(() => {
     const buckets = new Map<string, string[]>();
     for (const id of working.current) {
@@ -284,10 +301,38 @@ function ApparitionsComponent(): JSX.Element {
       list.push(id);
       buckets.set(st, list);
     }
-    return sourceTypes.map((st) => ({
+    const removedBuckets = new Map<string, string[]>();
+    for (const id of working.initial) {
+      if (working.current.has(id)) continue;
+      const st = sourceTypeOf(id);
+      const list = removedBuckets.get(st) ?? [];
+      list.push(id);
+      removedBuckets.set(st, list);
+    }
+    const known = new Set(sourceTypes);
+    const groups = sourceTypes.map((st) => ({
       sourceType: st,
+      fallback: false,
       targets: sortByTrailingNumber(buckets.get(st) ?? []),
+      removedTargets: sortByTrailingNumber(removedBuckets.get(st) ?? []),
     }));
+    const otherCurrent: string[] = [];
+    const otherRemoved: string[] = [];
+    for (const [st, ids] of buckets) {
+      if (!known.has(st)) otherCurrent.push(...ids);
+    }
+    for (const [st, ids] of removedBuckets) {
+      if (!known.has(st)) otherRemoved.push(...ids);
+    }
+    if (otherCurrent.length > 0 || otherRemoved.length > 0) {
+      groups.push({
+        sourceType: OTHER_GROUP,
+        fallback: true,
+        targets: sortByTrailingNumber(otherCurrent),
+        removedTargets: sortByTrailingNumber(otherRemoved),
+      });
+    }
+    return groups;
   }, [working, sourceTypes]);
 
   const added = useMemo(() => {
@@ -301,6 +346,8 @@ function ApparitionsComponent(): JSX.Element {
     return out;
   }, [working]);
   const dirty = added.length > 0 || removed.length > 0;
+  // Session-added set for the per-row "added" badge.
+  const addedSet = useMemo(() => new Set(added), [added]);
 
   function removeTarget(target: string): void {
     setWorking((prev) => {
@@ -310,12 +357,18 @@ function ApparitionsComponent(): JSX.Element {
     });
   }
 
-  function removeAllOfType(sourceType: string): void {
+  function removeTargets(targets: readonly string[]): void {
     setWorking((prev) => {
       const current = new Set(prev.current);
-      for (const id of prev.current) {
-        if (sourceTypeOf(id) === sourceType) current.delete(id);
-      }
+      for (const id of targets) current.delete(id);
+      return { ...prev, current };
+    });
+  }
+
+  function restoreTarget(target: string): void {
+    setWorking((prev) => {
+      const current = new Set(prev.current);
+      current.add(target);
       return { ...prev, current };
     });
   }
@@ -384,7 +437,7 @@ function ApparitionsComponent(): JSX.Element {
     }
   }
 
-  if (error !== null) return <LoadFailed message={error} />;
+  if (error !== null) return <LoadFailed message={error} onRetry={reload} />;
   if (entity === null || schemas === null) {
     return (
       <div className='space-y-4'>
@@ -453,13 +506,19 @@ function ApparitionsComponent(): JSX.Element {
               <ApparitionGroup
                 key={group.sourceType}
                 sourceType={group.sourceType}
-                typeLabel={typeLabel(group.sourceType)}
+                typeLabel={group.fallback
+                  ? t('apparitionsOtherGroup')
+                  : typeLabel(group.sourceType)}
+                fallback={group.fallback}
                 targets={group.targets}
+                removedTargets={group.removedTargets}
+                addedSet={addedSet}
                 qualifiers={working.qualifiers}
                 sourceLabelFor={sourceLabelFor}
                 entityTypes={entityTypes}
                 onRemoveTarget={removeTarget}
-                onRemoveAll={() => removeAllOfType(group.sourceType)}
+                onRestoreTarget={restoreTarget}
+                onRemoveAll={() => removeTargets(group.targets)}
                 onPickerChange={(next) => setTypeMembership(group.sourceType, new Set(next))}
               />
             ))}
@@ -506,12 +565,22 @@ function ApparitionsComponent(): JSX.Element {
 type ApparitionGroupProps = {
   sourceType: string;
   typeLabel: string;
+  /** Fallback bucket for source-types outside `valid_to_types`:
+   *  rendered so nothing is silently hidden, but without add
+   *  affordances (the schema doesn't accept these types). */
+  fallback?: boolean;
   /** Already sorted (numeric-aware) targets for this source-type. */
   targets: readonly string[];
+  /** Targets removed this session — still rendered (muted + badged
+   *  "removed") so unsaved deletions stay visible until save. */
+  removedTargets: readonly string[];
+  /** Targets added this session (badged "added"). */
+  addedSet: ReadonlySet<string>;
   qualifiers: ReadonlyMap<string, Record<string, unknown>>;
   sourceLabelFor: (id: string) => string;
   entityTypes: readonly { id: string; label: string; }[];
   onRemoveTarget: (target: string) => void;
+  onRestoreTarget: (target: string) => void;
   onRemoveAll: () => void;
   onPickerChange: (next: readonly string[]) => void;
 };
@@ -542,8 +611,9 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
   // Range view is gated by "all current ids look like
   // <sourceType>:<integer>" — guards against offering the textarea
   // for film/SBS/databook where slugs are non-numeric and the
-  // round-trip parse/format would lose data.
-  const supportsRange = isNumericIdSet(p.targets, p.sourceType);
+  // round-trip parse/format would lose data. The fallback "Other"
+  // group never offers it (its bucket key is not a real source type).
+  const supportsRange = p.fallback !== true && isNumericIdSet(p.targets, p.sourceType);
   const [rangeMode, setRangeMode] = useState(false);
   const [rangeDraft, setRangeDraft] = useState<string | null>(null);
   const [rangeError, setRangeError] = useState<string | null>(null);
@@ -552,14 +622,23 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
   // update so external mutations (e.g. add via picker, undo) reflect.
   const rangeValue = rangeDraft ?? formatNumericRange(p.targets);
 
+  // Fast membership check for the per-row "removed" state.
+  const removedSet = useMemo(() => new Set(p.removedTargets), [p.removedTargets]);
+
+  // The rendered list interleaves current targets with the ones
+  // removed this session (kept visible + badged), re-sorted so a
+  // removed chapter stays in chronological position.
   const filtered = useMemo(() => {
+    const all = p.removedTargets.length === 0
+      ? p.targets
+      : sortByTrailingNumber([...p.targets, ...p.removedTargets]);
     const q = query.trim().toLowerCase();
-    if (q === '') return p.targets;
-    return p.targets.filter((id) =>
+    if (q === '') return all;
+    return all.filter((id) =>
       id.toLowerCase().includes(q)
       || p.sourceLabelFor(id).toLowerCase().includes(q)
     );
-  }, [p.targets, p.sourceLabelFor, query]);
+  }, [p.targets, p.removedTargets, p.sourceLabelFor, query]);
 
   // First/last summary — uses the numeric-aware sort already applied
   // upstream, so the first element really is the earliest in
@@ -581,6 +660,12 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
   });
 
   function renderRow(target: string): JSX.Element {
+    // Per-target type/slug rather than p.sourceType so rows in the
+    // fallback "Other" group (mixed types) still link correctly.
+    const rowType = sourceTypeOf(target);
+    const rowSlug = sourceSlugOf(target);
+    const isRemoved = removedSet.has(target);
+    const isAdded = p.addedSet.has(target);
     const quals = p.qualifiers.get(target);
     const qualLine = quals === undefined
       ? ''
@@ -589,78 +674,111 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
       <div className='flex items-center gap-2 px-3 py-2 text-sm'>
         <Link
           to='/sources/$type/$slug'
-          params={{ type: p.sourceType, slug: sourceSlugOf(target) }}
-          className='hover:underline truncate'
+          params={{ type: rowType, slug: rowSlug }}
+          className={isRemoved
+            ? 'text-muted-foreground hover:underline truncate line-through'
+            : 'hover:underline truncate'}
         >
           {p.sourceLabelFor(target)}
         </Link>
+        {isAdded
+          ? (
+            <Badge variant='outline' className='shrink-0 border-amber-500/40 text-amber-500'>
+              {t('apparitionAdded')}
+            </Badge>
+          )
+          : null}
+        {isRemoved
+          ? (
+            <Badge variant='outline' className='text-destructive shrink-0 border-destructive/40'>
+              {t('apparitionRemoved')}
+            </Badge>
+          )
+          : null}
         {qualLine !== ''
           ? <span className='text-muted-foreground text-[11px]'>{qualLine}</span>
           : null}
         <Link
           to='/types/$type/$slug'
-          params={{ type: p.sourceType, slug: sourceSlugOf(target) }}
+          params={{ type: rowType, slug: rowSlug }}
+          aria-label={t('openEntityPage')}
+          title={t('openEntityPage')}
           className='text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11px]'
         >
           <ExternalLink className='size-3' />
         </Link>
-        <Button
-          variant='ghost'
-          size='icon'
-          className='ml-auto'
-          onClick={() => p.onRemoveTarget(target)}
-          aria-label={t('removeApparition')}
-        >
-          <X className='size-4' />
-        </Button>
+        {isRemoved
+          ? (
+            <Button
+              variant='ghost'
+              size='icon'
+              className='ml-auto'
+              onClick={() => p.onRestoreTarget(target)}
+              aria-label={t('restore')}
+              title={t('restore')}
+            >
+              <Undo2 className='size-4' />
+            </Button>
+          )
+          : (
+            <Button
+              variant='ghost'
+              size='icon'
+              className='ml-auto'
+              onClick={() => p.onRemoveTarget(target)}
+              aria-label={t('removeApparition')}
+            >
+              <X className='size-4' />
+            </Button>
+          )}
       </div>
     );
   }
 
   return (
     <section className='space-y-2'>
-      <header
-        className='flex items-center gap-2 cursor-pointer select-none'
-        onClick={() => setExpanded((v) => !v)}
-        role='button'
-        tabIndex={0}
-        onKeyDown={(e) => {
-          if (e.key === 'Enter' || e.key === ' ') {
-            e.preventDefault();
-            setExpanded((v) => !v);
-          }
-        }}
-      >
-        {expanded
-          ? <ChevronDown className='size-4 shrink-0' aria-hidden />
-          : <ChevronRight className='size-4 shrink-0' aria-hidden />}
-        <h2 className='text-sm font-semibold'>
-          {p.typeLabel}{' '}
-          <span className='text-muted-foreground font-normal'>
-            ({p.targets.length})
-          </span>
-        </h2>
-        {!expanded && summary !== null
-          ? (
-            <span className='text-muted-foreground ml-2 text-[11px] truncate'>
-              {summary}
+      {
+        /* Plain header + dedicated toggle button — the section toggle
+          used to be a role='button' div with the range-mode <button>
+          nested inside it, which is invalid (interactive inside
+          interactive) and confused assistive tech. */
+      }
+      <header className='flex min-w-0 items-center gap-2'>
+        <h2 className='min-w-0 flex-1 text-sm font-semibold'>
+          <button
+            type='button'
+            onClick={() => setExpanded((v) => !v)}
+            aria-expanded={expanded}
+            className='flex w-full min-w-0 cursor-pointer items-center gap-2 text-left select-none'
+          >
+            {expanded
+              ? <ChevronDown className='size-4 shrink-0' aria-hidden />
+              : <ChevronRight className='size-4 shrink-0' aria-hidden />}
+            <span className='shrink-0'>
+              {p.typeLabel}{' '}
+              <span className='text-muted-foreground font-normal'>
+                ({p.targets.length})
+              </span>
             </span>
-          )
-          : null}
+            {!expanded && summary !== null
+              ? (
+                <span className='text-muted-foreground min-w-0 truncate text-[11px] font-normal'>
+                  {summary}
+                </span>
+              )
+              : null}
+          </button>
+        </h2>
         {expanded && supportsRange
           ? (
             <button
               type='button'
-              onClick={(e) => {
-                // Header is itself a toggle target, so stop propagation
-                // — otherwise clicking the mode button also collapses
-                // the section.
-                e.stopPropagation();
+              onClick={() => {
                 setRangeMode((v) => !v);
                 setRangeDraft(null);
                 setRangeError(null);
               }}
-              className='text-muted-foreground hover:text-foreground border-input ml-auto inline-flex h-6 items-center gap-1 rounded-[3px] border px-2 text-[10px]'
+              className='text-muted-foreground hover:text-foreground border-input inline-flex h-6 shrink-0 cursor-pointer items-center gap-1 rounded-md border px-2 text-[11px]'
             >
               {rangeMode ? t('chipView') : t('rangeView')}
             </button>
@@ -682,7 +800,7 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
               }}
               placeholder='1, 5-10, 96, 432-450'
               rows={3}
-              className='border-input bg-background focus-visible:border-ring w-full rounded-[3px] border px-2 py-1.5 font-mono text-xs outline-none'
+              className='border-input bg-background focus-visible:border-ring w-full rounded-md border px-2 py-1.5 font-mono text-base outline-none sm:text-xs'
             />
             {rangeError !== null
               ? (
@@ -730,7 +848,7 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
         : expanded
         ? (
           <>
-            {p.targets.length === 0
+            {p.targets.length === 0 && p.removedTargets.length === 0
               ? (
                 <p className='text-muted-foreground rounded-md border px-3 py-3 text-xs'>
                   {t('castNoneOfType').replace('{type}', p.typeLabel.toLowerCase())}
@@ -840,18 +958,25 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
                     )}
                 </>
               )}
-            <MultiEntityRefInput
-              value={p.targets}
-              onChange={p.onPickerChange}
-              entityTypes={p.entityTypes}
-              restrictTo={[p.sourceType]}
-            />
+            {p.fallback === true
+              ? null
+              : (
+                <MultiEntityRefInput
+                  value={p.targets}
+                  onChange={p.onPickerChange}
+                  entityTypes={p.entityTypes}
+                  restrictTo={[p.sourceType]}
+                />
+              )}
           </>
         )
-        // Collapsed: just the bulk-add picker. Adding entries here
-        // doesn't auto-expand — the user explicitly chose to collapse
-        // this section and the chip/list state in the picker already
-        // gives feedback that something was added.
+        // Collapsed: just the bulk-add picker (none for the fallback
+        // "Other" group — its types aren't valid targets). Adding
+        // entries here doesn't auto-expand — the user explicitly chose
+        // to collapse this section and the chip/list state in the
+        // picker already gives feedback that something was added.
+        : p.fallback === true
+        ? null
         : (
           <MultiEntityRefInput
             value={p.targets}

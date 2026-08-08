@@ -1,10 +1,8 @@
 /// <reference types="vite/client" />
 import { Button } from '@/components/ui/button';
-import { MobileSheet, MobileSheetContent, MobileSheetTrigger } from '@/components/ui/mobile-sheet';
 import { Toaster } from '@/components/ui/sonner';
-import { createRootRoute, HeadContent, Link, Scripts, useLocation } from '@tanstack/react-router';
-import { Menu } from 'lucide-react';
-import { type JSX, type ReactNode, useEffect, useState } from 'react';
+import { createRootRoute, HeadContent, Link, Scripts } from '@tanstack/react-router';
+import { type JSX, type ReactNode } from 'react';
 import { AppSidebar } from '../AppSidebar';
 import { useCurrentUser, useSignOut } from '../auth';
 import { BottomNav } from '../BottomNav';
@@ -62,15 +60,6 @@ function RootDocument({ children }: { children: ReactNode; }): JSX.Element {
 function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
   const { user, loaded } = useCurrentUser();
   const { signOut, pending: signOutPending } = useSignOut();
-  const location = useLocation();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-
-  // Close the mobile nav sheet on route change — without this it
-  // stays open after the user taps a type link, hiding the
-  // navigated-to content.
-  useEffect(() => {
-    setMobileNavOpen(false);
-  }, [location.pathname]);
 
   // @login for GitHub, plain Pseudo for anonymous. Wrapping inline
   // makes the difference obvious to a reviewer glancing at a
@@ -85,30 +74,14 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
     <LocaleProvider>
       <EntityDrawerProvider>
         <div className='bg-background text-foreground grid min-h-screen grid-rows-[auto_1fr] antialiased'>
-          <header className='border-border bg-card sticky top-0 z-30 flex items-center gap-3 border-b px-3 py-2 sm:gap-6 sm:px-6 sm:py-3'>
-            {
-              /* Hamburger — only visible below the lg breakpoint where
-                the sidebar disappears. Opens the same AppSidebar
-                inside a bottom-sheet so the entity-type browser stays
-                reachable on mobile. */
-            }
-            <MobileSheet open={mobileNavOpen} onOpenChange={setMobileNavOpen}>
-              <MobileSheetTrigger
-                render={
-                  <Button
-                    variant='ghost'
-                    size='icon'
-                    aria-label='Open navigation'
-                    className='lg:hidden -ml-1'
-                  />
-                }
-              >
-                <Menu className='size-4' />
-              </MobileSheetTrigger>
-              <MobileSheetContent title='Navigate'>
-                <AppSidebar />
-              </MobileSheetContent>
-            </MobileSheet>
+          {
+            /* One nav system per breakpoint (W-F2 §navigation): below
+              lg the BottomNav is the ONLY navigation chrome — the old
+              header hamburger duplicated its Browse sheet and is gone.
+              Height is the --header-h token; every sticky offset
+              below derives from it. */
+          }
+          <header className='border-border bg-card sticky top-0 z-30 flex h-[var(--header-h)] items-center gap-3 border-b px-[var(--page-px)] sm:gap-6 sm:px-6'>
             <Link
               to='/'
               className='text-foreground text-sm font-semibold no-underline whitespace-nowrap'
@@ -124,24 +97,27 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
               <LocaleSwitcher />
               {!loaded ? null : user === null
                 ? (
-                  <Button render={<Link to='/login' />} size='sm' className='no-underline'>
+                  <Button
+                    render={<Link to='/login' />}
+                    size='sm'
+                    className='no-underline max-lg:hidden'
+                  >
                     Sign in
                   </Button>
                 )
                 : (
                   <>
                     {
-                      /* User label + Sign out are mobile-noisy — both
-                        are reachable from the BottomNav "Account" tab.
-                        We keep the Sign out affordance on screens that
-                        don't render BottomNav (the lg+ desktop too),
-                        but drop it below sm to free header width. */
+                      /* Identity + Sign out live in the BottomNav
+                        "Account" tab wherever it renders (< lg).
+                        Keeping them lg-only stops the tablet band
+                        (640-1024px) from showing both systems. */
                     }
-                    <span className='text-muted-foreground hidden sm:inline'>{userLabel}</span>
+                    <span className='text-muted-foreground hidden lg:inline'>{userLabel}</span>
                     <Button
                       size='sm'
                       variant='outline'
-                      className='hidden sm:inline-flex'
+                      className='hidden lg:inline-flex'
                       disabled={signOutPending}
                       onClick={signOut}
                     >
@@ -152,10 +128,10 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
             </div>
           </header>
           <div className='grid min-h-0 grid-cols-1 lg:grid-cols-[16rem_1fr]'>
-            <aside className='border-border bg-card/30 sticky top-[57px] hidden h-[calc(100vh-57px)] overflow-y-auto border-r lg:block'>
+            <aside className='border-border bg-card/30 sticky top-[var(--header-h)] hidden h-[calc(100vh-var(--header-h))] overflow-y-auto border-r lg:block'>
               <AppSidebar />
             </aside>
-            <main className='min-w-0 px-3 py-4 pb-20 sm:px-6 sm:py-6 lg:pb-6'>
+            <main className='min-w-0 px-[var(--page-px)] py-4 pb-20 sm:px-6 sm:py-6 lg:pb-6'>
               {
                 /* `children` is the matched route's output (Start's
                   shellComponent contract — replaces the explicit
@@ -163,7 +139,9 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
                   `pb-20` reserves space for the mobile BottomNav so
                   fixed footers (entity save bar, cast save bar) don't
                   stack underneath it. `lg:pb-6` drops the inset on
-                  desktop where the BottomNav is hidden. */
+                  desktop where the BottomNav is hidden.
+                  The horizontal gutter is the --page-px token so the
+                  `bleed` utility can cancel it exactly. */
               }
               {children}
             </main>

@@ -20,7 +20,7 @@ export function LocaleSwitcher(): JSX.Element {
   const setLocale = useSetLocale();
   return (
     <div
-      className='border-input inline-flex overflow-hidden rounded-[3px] border'
+      className='border-input inline-flex overflow-hidden rounded-md border'
       role='group'
       aria-label='Interface language'
     >

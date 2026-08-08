@@ -19,6 +19,30 @@ declares which properties it accepts and which relations it can participate in.
 
 Entity types live in `/data/schemas/entity-types/`.
 
+#### Field importance tiers (ADR-083)
+
+Every property declaration carries a three-level importance tier, in the
+spirit of Wikipedia's infobox guidance:
+
+- **`required: true`** — the entity is invalid without it. Enforced by the
+  generated Zod schemas at every boundary.
+- **`recommended: true`** — a _complete_ article of this type is expected to
+  carry it, but its absence is never a validation error. Example: a
+  `manga-chapter` without `released_at` is valid (the Chapter Box on the
+  source wiki has no date) but incomplete.
+- Neither flag — genuinely optional trivia (`blood_type`, `weight`).
+
+`required` implies recommended; the two flags are never set together.
+Entity types may also declare **`recommended_relations`** — the subset of
+`allowed_relations` a complete article is expected to carry (e.g. a
+`manga-chapter` should have `part-of-arc`, `part-of-volume` and at least one
+`features`). `schema:check` rejects a `recommended_relations` entry that is
+not in `allowed_relations`.
+
+Consumers: the dashboard's completeness meter, the "recommended, still
+empty" field state, and per-row completeness in entity lists. The tier is
+advisory metadata — the validation pipeline never blocks on it.
+
 ### 2. Entities
 
 Instances of entity types. An entity has:

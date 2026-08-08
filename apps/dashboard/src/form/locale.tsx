@@ -102,7 +102,20 @@ const UI_STRINGS = {
   queueWorking: { en: 'Working…', fr: 'En cours…' },
   queueApproved: { en: 'PR #{n} merged.', fr: 'PR #{n} fusionnée.' },
   queueRejected: { en: 'PR #{n} closed.', fr: 'PR #{n} fermée.' },
-  queueDetail: { en: 'Diff', fr: 'Diff' },
+  queueOpenOnGithub: { en: 'Open on GitHub', fr: 'Ouvrir sur GitHub' },
+  queueConfirmApproveTitle: {
+    en: 'Approve & merge PR #{n}?',
+    fr: 'Approuver et fusionner la PR #{n} ?',
+  },
+  queueConfirmApproveBody: {
+    en: '“{title}” will be merged into the data repository.',
+    fr: '« {title} » sera fusionnée dans le dépôt de données.',
+  },
+  queueConfirmRejectTitle: { en: 'Reject PR #{n}?', fr: 'Rejeter la PR #{n} ?' },
+  queueConfirmRejectBody: {
+    en: '“{title}” will be closed and its staged images deleted.',
+    fr: '« {title} » sera fermée et ses images en attente supprimées.',
+  },
   queueDetailEmpty: {
     en: 'No structured data change in this PR.',
     fr: 'Aucun changement de données structurées dans cette PR.',
@@ -130,10 +143,12 @@ const UI_STRINGS = {
   entitiesWord: { en: 'entities', fr: 'entités' },
   entityWord: { en: 'entity', fr: 'entité' },
   ofWord: { en: 'of', fr: 'sur' },
+  emptyTypesSection: { en: 'Empty types ({n})', fr: 'Types vides ({n})' },
   noEntitiesYet: {
     en: 'No entities of this type yet.',
     fr: 'Aucune entité de ce type pour l’instant.',
   },
+  createFirstEntity: { en: 'Create the first one', fr: 'Créer la première entrée' },
   noMatchSearch: {
     en: 'No match — try a different search.',
     fr: 'Aucun résultat — essayez une autre recherche.',
@@ -186,6 +201,8 @@ const UI_STRINGS = {
   propertiesHeader: { en: 'Properties', fr: 'Propriétés' },
   filledProgress: { en: 'filled', fr: 'remplies' },
   requiredMissing: { en: 'required missing', fr: 'requis manquants' },
+  completenessLabel: { en: 'of a complete article', fr: 'd’un article complet' },
+  recommendedTag: { en: 'Recommended', fr: 'Recommandé' },
   required: { en: 'required', fr: 'requis' },
   optional: { en: 'optional', fr: 'optionnel' },
   // Anonymous nickname (used on the /login page now that identity
@@ -340,6 +357,15 @@ const UI_STRINGS = {
   savedAt: { en: 'Saved', fr: 'Sauvegardé' },
   discard: { en: 'Discard', fr: 'Annuler' },
   restore: { en: 'Restore', fr: 'Restaurer' },
+  discardAllTitle: { en: 'Discard all drafts?', fr: 'Abandonner tous les brouillons ?' },
+  discardAllBody: {
+    en: 'This permanently deletes {n} local draft(s) from this browser. This cannot be undone.',
+    fr:
+      'Cela supprime définitivement {n} brouillon(s) de ce navigateur. Cette action est irréversible.',
+  },
+  discardAllConfirm: { en: 'Discard all', fr: 'Tout abandonner' },
+  draftDiscarded: { en: 'Draft discarded.', fr: 'Brouillon abandonné.' },
+  undo: { en: 'Undo', fr: 'Annuler' },
   // Drawer / linked entity
   fullPage: { en: 'Full page', fr: 'Page complète' },
   editingType: { en: 'Editing', fr: 'Édition de' },
@@ -378,11 +404,23 @@ const UI_STRINGS = {
   qIssuedBy: { en: 'Issued by', fr: 'Émis par' },
   qCoverage: { en: 'Coverage', fr: 'Couverture' },
   qPropertyName: { en: 'Property name', fr: 'Nom de la propriété' },
-  // Entity list page sort
+  // Entity list page (toolbar, rows, completeness meter)
   sortBy: { en: 'Sort by', fr: 'Trier par' },
   sortByName: { en: 'Name', fr: 'Nom' },
   sortBySlug: { en: 'Slug', fr: 'Slug' },
   sortById: { en: 'ID', fr: 'ID' },
+  sortAscending: { en: 'Sort ascending', fr: 'Tri croissant' },
+  sortDescending: { en: 'Sort descending', fr: 'Tri décroissant' },
+  newButton: { en: 'New', fr: 'Nouveau' },
+  searchEntitiesPlaceholder: {
+    en: 'Search by name, slug or id…',
+    fr: 'Rechercher par nom, slug ou id…',
+  },
+  completenessOf: {
+    en: '{filled} of {expected} recommended fields filled',
+    fr: '{filled} champs recommandés remplis sur {expected}',
+  },
+  completeWord: { en: 'complete', fr: 'complet' },
   // Bulk table view
   tableView: { en: 'Table view', fr: 'Vue tableau' },
   columns: { en: 'Columns', fr: 'Colonnes' },
@@ -447,6 +485,10 @@ const UI_STRINGS = {
   },
   removeFromCast: { en: 'Remove from cast', fr: 'Retirer de la distribution' },
   removeApparition: { en: 'Remove apparition', fr: 'Retirer cette apparition' },
+  apparitionsOtherGroup: { en: 'Other', fr: 'Autres' },
+  apparitionAdded: { en: 'added', fr: 'ajouté' },
+  apparitionRemoved: { en: 'removed', fr: 'retiré' },
+  openEntityPage: { en: 'Open the entity page', fr: 'Ouvrir la page de l’entité' },
   backToEntity: { en: 'Back to entity', fr: "Retour à l'entité" },
   appearsInMissing: {
     en: 'The `appears-in` relation schema is missing or has no `valid_from_types`.',

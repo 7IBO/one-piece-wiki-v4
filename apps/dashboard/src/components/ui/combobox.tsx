@@ -85,7 +85,7 @@ export function Combobox(
             variant='outline'
             disabled={disabled}
             className={cn(
-              'h-8 w-full justify-between rounded-[3px] px-2 text-xs font-normal',
+              'h-8 w-full justify-between rounded-md px-2 text-xs font-normal',
               triggerClassName,
             )}
             aria-expanded={open}

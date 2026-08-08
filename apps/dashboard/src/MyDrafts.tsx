@@ -17,10 +17,11 @@
  */
 import { Link } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
-import { type JSX, useCallback } from 'react';
+import type { JSX } from 'react';
+import { toast } from 'sonner';
 import { Button } from './components/ui/button';
 import { useLocale, useT } from './form/locale';
-import { clearDraft, useAllDrafts } from './form/use-draft';
+import { clearDraft, readDraft, useAllDrafts, writeDraft } from './form/use-draft';
 
 function relativeTime(savedAt: number, locale: 'en' | 'fr'): string {
   const diff = Date.now() - savedAt;
@@ -37,12 +38,29 @@ export function MyDrafts(): JSX.Element | null {
   const t = useT();
   const locale = useLocale();
 
-  const onDiscard = useCallback(
-    (id: string) => {
-      void clearDraft(id).then(refresh);
-    },
-    [refresh],
-  );
+  /**
+   * Discard with an undo path: snapshot the record before deleting,
+   * then offer to re-put it from the toast action. The snapshot lives
+   * in the toast action's closure for the toast lifetime — no store
+   * changes needed; restore is a plain `writeDraft` of the same
+   * data/translations.
+   */
+  function onDiscard(id: string): void {
+    void (async () => {
+      const snapshot = await readDraft(id);
+      await clearDraft(id);
+      refresh();
+      if (snapshot === null) return;
+      toast(t('draftDiscarded'), {
+        action: {
+          label: t('undo'),
+          onClick: () => {
+            void writeDraft(id, snapshot.data, snapshot.translations).then(refresh);
+          },
+        },
+      });
+    })();
+  }
 
   if (drafts.length === 0) return null;
   const sorted = [...drafts].sort((a, b) => b.savedAt - a.savedAt);
@@ -98,7 +116,7 @@ export function MyDrafts(): JSX.Element | null {
                 <Button
                   variant='ghost'
                   size='icon'
-                  className='size-7 hover:text-destructive'
+                  className='hover:text-destructive'
                   aria-label={t('discard')}
                   title={t('discard')}
                   onClick={() => onDiscard(d.entityId)}

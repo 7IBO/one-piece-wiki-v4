@@ -18,6 +18,7 @@ import { Combobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
 import { MobileSheet, MobileSheetContent, MobileSheetTrigger } from '@/components/ui/mobile-sheet';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { buildEntitySchema } from '@onepiece-wiki/schema-engine/entity-schema';
 import type {
   EntityTypeSchema,
   PropertyTypeSchema,
@@ -25,7 +26,17 @@ import type {
   RelationTypeSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
-import { AlertCircle, Globe, ListTreeIcon, MoreHorizontal, Plus, X } from 'lucide-react';
+import {
+  AlertCircle,
+  Check,
+  ChevronDown,
+  Circle,
+  Globe,
+  ListTreeIcon,
+  MoreHorizontal,
+  Plus,
+  X,
+} from 'lucide-react';
 import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { type SourceRef, type Translations, validationIssues } from '../api';
 import { useCurrentUser } from '../auth';
@@ -563,6 +574,51 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [currentDataString]);
 
+  // Live validation (W-F2 redesign): the same Zod the server applies
+  // on save, synthesised in the browser from the catalogue the form
+  // already holds — invalid values surface after a typing pause, not
+  // after a failed PR round-trip. Missing-required issues (path depth
+  // ≤ 2) are skipped: the amber required/recommended tiers already
+  // cover absence, and yelling "Required" while someone is still
+  // filling the form is noise.
+  const liveSchema = useMemo(
+    () =>
+      buildEntitySchema(props.entityType.id, {
+        entityTypes: new Map([[props.entityType.id, props.entityType]]),
+        propertyTypes: new Map(Object.entries(props.propertyTypes)),
+        vocabularies: new Map(Object.entries(props.vocabularies)),
+      }),
+    [props.entityType, props.propertyTypes, props.vocabularies],
+  );
+  useEffect(() => {
+    if (liveSchema === undefined || !dirty) return;
+    const timer = setTimeout(() => {
+      const res = liveSchema.safeParse(currentDataNormalized);
+      const byProperty: Record<string, string[]> = {};
+      if (!res.success) {
+        for (const issue of res.error.errors) {
+          if (issue.path[0] !== 'properties' || typeof issue.path[1] !== 'string') continue;
+          if (issue.path.length <= 2) continue; // absence — the tier UI owns it
+          const id = issue.path[1];
+          const subPath = issue.path.slice(2).join('.');
+          (byProperty[id] ??= []).push(`${subPath}: ${issue.message}`);
+        }
+      }
+      // Only touch state when the picture actually changed — the
+      // error-clearing effect above resets on every edit, so writing
+      // {} here every pause would be a render loop for nothing.
+      setFieldErrors((prev) => {
+        const prevKeys = Object.keys(prev);
+        const nextKeys = Object.keys(byProperty);
+        if (prevKeys.length === 0 && nextKeys.length === 0) return prev;
+        if (JSON.stringify(prev) === JSON.stringify(byProperty)) return prev;
+        return byProperty;
+      });
+    }, 600);
+    return () => clearTimeout(timer);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [currentDataString, dirty, liveSchema]);
+
   async function handleSave(): Promise<void> {
     setSaving(true);
     setError(null);
@@ -695,7 +751,11 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
       // render — see the `hidden.length > 0` guard below.
       continue;
     }
-    if (required || hasContent) visible.push(decl);
+    // Recommended-but-empty properties render on the page (amber tag +
+    // Add affordance) instead of hiding behind the "+ Add property"
+    // picker — completing an article must not require knowing what's
+    // missing (ADR-083).
+    if (required || (decl.recommended ?? false) || hasContent) visible.push(decl);
     else hidden.push(decl);
   }
 
@@ -717,6 +777,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
       id: decl.id,
       label,
       required: decl.required ?? false,
+      recommended: decl.recommended ?? false,
       filled,
       sectionId: section.id,
       sectionLabelKey: section.labelKey,
@@ -742,6 +803,8 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         id: typeId,
         label,
         required: false,
+        recommended: (props.entityType.recommended_relations ?? [])
+          .some((r) => String(r) === typeId),
         filled,
         sectionId: 'relations',
         sectionLabelKey: 'sectionRelations',
@@ -774,7 +837,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   // case we want a smarter suggestion later, but no fallback today.
   const fallbackName: string | undefined = undefined;
 
-  function renderRow(decl: Decl, idx: number): JSX.Element {
+  function renderRow(decl: Decl, _idx: number): JSX.Element {
     const propertyType = props.propertyTypes[decl.id];
     if (propertyType === undefined) {
       return (
@@ -805,7 +868,8 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         propertyId={decl.id}
         propertyLabel={propertyLabel}
         required={decl.required ?? false}
-        defaultOpen={idx === 0}
+        recommended={decl.recommended ?? false}
+        defaultOpen={false}
         propertyType={propertyType}
         valueType={valueType}
         valueField={valueField}
@@ -827,6 +891,9 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     );
   }
 
+  // Only genuinely-optional properties reach the picker — required and
+  // recommended ones always render on the page (ADR-083), so no
+  // ordering/tagging is needed here.
   const adderItems = hidden.map((decl) => {
     const pt = props.propertyTypes[decl.id];
     const label = pt?.labels[locale] ?? pt?.labels.en ?? decl.id;
@@ -843,7 +910,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         ? (
           <div
             role='alert'
-            className='border-destructive/40 bg-destructive/5 text-destructive mb-4 rounded-[3px] border px-3 py-2'
+            className='border-destructive/40 bg-destructive/5 text-destructive mb-4 rounded-md border px-3 py-2'
           >
             <p className='mb-1 text-[11px] font-semibold uppercase tracking-wide'>
               {t('validationFailed')}
@@ -866,7 +933,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
       }
       {draftIsRecoverable
         ? (
-          <div className='border-amber-500/40 bg-amber-500/5 mb-4 flex flex-wrap items-center justify-between gap-2 rounded-[3px] border px-3 py-1.5'>
+          <div className='border-amber-500/40 bg-amber-500/5 mb-4 flex flex-wrap items-center justify-between gap-2 rounded-md border px-3 py-1.5'>
             <span className='text-muted-foreground text-[11px]'>
               <span className='text-amber-500'>●</span> {t('unsavedDraft')}
               <span className='ml-2'>
@@ -1106,6 +1173,8 @@ type PropertyRowProps = {
   propertyId: string;
   propertyLabel: string;
   required: boolean;
+  /** ADR-083 completeness tier — expected on a complete article. */
+  recommended: boolean;
   defaultOpen: boolean;
   propertyType: PropertyTypeSchema;
   valueType: ValueType;
@@ -1134,22 +1203,67 @@ type PropertyRowProps = {
 };
 
 /**
- * Accordion-style property row. Header is always visible (label,
- * summary of current value, expand/collapse toggle). Body shows a
- * stack of compact entry cards plus a "+" tile at the end for
- * historical properties. Maintainer scans collapsed rows, expands
- * what they want to edit.
+ * Accordion property row (read-first, W-F2 redesign). Filled rows
+ * collapse to a single scannable line — state dot, label, formatted
+ * value, provenance (latest `since` source), entry count — and expand
+ * on click into the full entry editors. Empty rows stay a compact
+ * label + Add affordance (amber-tinted when required or recommended
+ * is missing). Server/Zod errors force the row open.
  */
 function PropertyRow(p: PropertyRowProps): JSX.Element {
   const t = useT();
   const isHistorical = p.propertyType.historical;
   const isLocalizable = p.propertyType.localizable;
-  // Reserved for an opt-in collapse if we re-introduce it later.
-  void p.defaultOpen;
-  void summariseProperty;
 
-  const isRequiredMissing = p.required && p.entries.length === 0;
+  // Content-based, not presence-based — mirrors the nav's
+  // `isEntryEmpty` semantics so the row highlight and the sidebar dot
+  // never disagree about the same property (review finding, 2026-08).
+  const hasContent = p.entries.some((e) => !isEntryEmpty(e, p.propertyType, p.translations));
+  const isRequiredMissing = p.required && !hasContent;
+  const isRecommendedMissing = !p.required && p.recommended && !hasContent;
   const hasError = (p.errors?.length ?? 0) > 0;
+
+  const [open, setOpen] = useState(p.defaultOpen);
+  // Render-time state adjustments (react.dev pattern, not effects):
+  // an incoming error must force the editors visible, and the first
+  // entry seeded from outside (sidebar reveal, importer draft) must
+  // not land inside a collapsed row.
+  const [prevHasError, setPrevHasError] = useState(hasError);
+  if (prevHasError !== hasError) {
+    setPrevHasError(hasError);
+    if (hasError) setOpen(true);
+  }
+  const entryCount = p.entries.length;
+  const [prevCount, setPrevCount] = useState(entryCount);
+  if (prevCount !== entryCount) {
+    setPrevCount(entryCount);
+    if (prevCount === 0 && entryCount > 0) setOpen(true);
+  }
+
+  const locale = p.locale;
+  const summary = summariseProperty({
+    propertyType: p.propertyType,
+    valueType: p.valueType,
+    valueField: p.valueField,
+    entries: p.entries,
+    translations: p.translations,
+    vocabularies: p.vocabularies,
+    sources: p.valueCtx.sources,
+    locale,
+  });
+  // Provenance chip: the latest entry's `since` source, resolved to a
+  // display name — the one historisation axis worth surfacing on the
+  // collapsed line (the rest stay in the expanded card).
+  const sinceLabel = useMemo(() => {
+    if (!isHistorical || p.entries.length === 0) return null;
+    const last = p.entries[p.entries.length - 1]!;
+    const raw = last['since'];
+    const id = Array.isArray(raw) ? String(raw[0] ?? '') : String(raw ?? '');
+    if (id === '') return null;
+    const src = p.valueCtx.sources.find((s) => s.id === id);
+    return src?.displayName[locale] ?? src?.displayName.en ?? id.split(':')[1] ?? id;
+  }, [isHistorical, p.entries, p.valueCtx.sources, locale]);
+
   // The error ring beats the required-missing ring — a server-rejected
   // value is a hard blocker the maintainer must look at first, before
   // worrying about missing optionals or required-empty hints.
@@ -1158,109 +1272,155 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
     : isRequiredMissing
     ? 'bg-amber-500/5 ring-1 ring-amber-500/30 ring-inset'
     : '';
+
+  const labelBlock = (
+    <Label
+      className={`text-xs font-semibold uppercase tracking-wide ${
+        isRequiredMissing ? 'text-amber-600' : 'text-muted-foreground'
+      }`}
+    >
+      {p.propertyLabel}
+      {p.required
+        ? (
+          <span
+            className={isRequiredMissing ? 'text-amber-600 ml-0.5' : 'text-destructive ml-0.5'}
+            title={t('required')}
+          >
+            *
+          </span>
+        )
+        : null}
+    </Label>
+  );
+
+  const schemaBadges = p.showSchemaDetails
+    ? (
+      <span className='ml-auto flex flex-wrap items-center gap-1'>
+        <span className='text-muted-foreground font-mono text-[11px]'>{p.propertyId}</span>
+        <Badge variant='secondary' className='font-normal'>{p.valueType}</Badge>
+        {isHistorical
+          ? <Badge variant='outline' className='font-normal'>historical</Badge>
+          : null}
+        {isLocalizable
+          ? <Badge variant='outline' className='font-normal'>localizable</Badge>
+          : null}
+      </span>
+    )
+    : null;
+
   return (
     <div
       id={p.anchorId}
-      className={`scroll-mt-20 rounded-[3px] py-2 transition-colors sm:py-2.5 ${ringClass}`}
+      className={`scroll-mt-20 rounded-md py-1.5 transition-colors sm:py-2 ${ringClass}`}
     >
-      <div className='mb-1.5 flex items-baseline gap-2'>
-        <Label
-          className={`text-[11px] font-semibold uppercase tracking-wide ${
-            isRequiredMissing ? 'text-amber-500' : 'text-muted-foreground'
-          }`}
-        >
-          {p.propertyLabel}
-          {p.required
-            ? (
-              <span
-                className={isRequiredMissing ? 'text-amber-500 ml-0.5' : 'text-destructive ml-0.5'}
-                title={t('required')}
-              >
-                *
-              </span>
-            )
-            : null}
-        </Label>
-        {p.required && !isRequiredMissing
-          ? null
-          : !p.required
-          ? <span className='text-muted-foreground/60 text-[9px] uppercase'>{t('optional')}</span>
-          : null}
-        {p.showSchemaDetails
-          ? <span className='text-muted-foreground font-mono text-[10px]'>{p.propertyId}</span>
-          : null}
-        {p.showSchemaDetails
-          ? (
-            <span className='ml-auto flex flex-wrap gap-1'>
-              <Badge variant='secondary' className='font-normal'>{p.valueType}</Badge>
-              {isHistorical
-                ? <Badge variant='outline' className='font-normal'>historical</Badge>
-                : null}
-              {isLocalizable
-                ? <Badge variant='outline' className='font-normal'>localizable</Badge>
-                : null}
-            </span>
-          )
-          : null}
-      </div>
-
       {p.entries.length === 0
         ? (
-          <Button
-            type='button'
-            variant={isRequiredMissing ? 'default' : 'outline'}
-            size='sm'
-            onClick={p.onAdd}
-          >
-            <Plus className='size-3.5' />
-            {isHistorical ? t('addEntry') : t('setValue')}
-            {isRequiredMissing
+          <div className='flex flex-wrap items-center gap-2'>
+            {labelBlock}
+            {isRecommendedMissing
               ? (
-                <span className='ml-1 text-[10px] opacity-75'>
-                  · {t('required')}
-                </span>
+                <Badge
+                  variant='outline'
+                  className='border-amber-500/40 font-normal text-amber-600'
+                >
+                  {t('recommendedTag')}
+                </Badge>
               )
               : null}
-          </Button>
+            {schemaBadges}
+            <Button
+              type='button'
+              variant={isRequiredMissing ? 'default' : 'outline'}
+              size='sm'
+              className='ml-auto'
+              onClick={p.onAdd}
+            >
+              <Plus className='size-3.5' />
+              {isHistorical ? t('addEntry') : t('setValue')}
+            </Button>
+          </div>
         )
         : (
-          <div className='space-y-2'>
-            {p.entries.map((entry, idx) => (
-              <EntryCard
-                key={idx}
-                entry={entry}
-                propertyType={p.propertyType}
-                valueType={p.valueType}
-                valueField={p.valueField}
-                translations={p.translations}
-                valueCtx={p.valueCtx}
-                vocabularies={p.vocabularies}
-                qualifierTypes={p.qualifierTypes}
-                fallbackName={p.fallbackName}
-                showRemove={isHistorical || p.entries.length > 0}
-                onUpdate={(next) => p.onUpdate(idx, next)}
-                onRemove={() => p.onRemove(idx)}
-                onTranslate={p.onTranslate}
-                setEmptyProperty={p.setEmptyProperty}
+          <>
+            <button
+              type='button'
+              onClick={() => setOpen((o) => !o)}
+              aria-expanded={open}
+              className='hover:bg-accent/40 -mx-1 flex w-full items-center gap-2 rounded-md px-1 py-1 text-left transition-colors'
+            >
+              {hasError
+                ? <AlertCircle className='text-destructive size-3.5 shrink-0' aria-hidden />
+                : hasContent
+                ? <Check className='size-3.5 shrink-0 text-emerald-500/80' aria-hidden />
+                : <Circle className='size-3 shrink-0 text-amber-500/70' aria-hidden />}
+              <span className='w-32 shrink-0 truncate sm:w-40'>{labelBlock}</span>
+              <span className='min-w-0 flex-1 truncate text-sm'>
+                {summary ?? <span className='text-muted-foreground'>—</span>}
+              </span>
+              {entryCount > 1
+                ? (
+                  <span className='text-muted-foreground shrink-0 text-xs tabular-nums'>
+                    ×{entryCount}
+                  </span>
+                )
+                : null}
+              {sinceLabel !== null
+                ? (
+                  <span className='text-muted-foreground hidden max-w-40 shrink-0 truncate text-xs sm:inline'>
+                    {sinceLabel}
+                  </span>
+                )
+                : null}
+              {schemaBadges}
+              <ChevronDown
+                className={`text-muted-foreground size-3.5 shrink-0 transition-transform ${
+                  open ? 'rotate-180' : ''
+                }`}
+                aria-hidden
               />
-            ))}
-            {isHistorical
+            </button>
+            {open
               ? (
-                <button
-                  type='button'
-                  onClick={p.onAdd}
-                  className='border-input/60 text-muted-foreground hover:border-input hover:text-foreground hover:bg-accent/40 flex w-full items-center justify-center gap-1 rounded-[3px] border border-dashed py-2 text-xs transition-colors'
-                >
-                  <Plus className='size-3.5' />
-                  {t('addEntry')}
-                </button>
+                <div className='mt-2 space-y-2'>
+                  {p.entries.map((entry, idx) => (
+                    <EntryCard
+                      key={idx}
+                      entry={entry}
+                      propertyType={p.propertyType}
+                      valueType={p.valueType}
+                      valueField={p.valueField}
+                      translations={p.translations}
+                      valueCtx={p.valueCtx}
+                      vocabularies={p.vocabularies}
+                      qualifierTypes={p.qualifierTypes}
+                      fallbackName={p.fallbackName}
+                      showRemove={isHistorical || !p.required || p.entries.length > 1}
+                      onUpdate={(next) => p.onUpdate(idx, next)}
+                      onRemove={() => p.onRemove(idx)}
+                      onTranslate={p.onTranslate}
+                      setEmptyProperty={p.setEmptyProperty}
+                    />
+                  ))}
+                  {isHistorical
+                    ? (
+                      <button
+                        type='button'
+                        onClick={p.onAdd}
+                        className='border-input/60 text-muted-foreground hover:border-input hover:text-foreground hover:bg-accent/40 flex w-full items-center justify-center gap-1 rounded-md border border-dashed py-2 text-xs transition-colors'
+                      >
+                        <Plus className='size-3.5' />
+                        {t('addEntry')}
+                      </button>
+                    )
+                    : null}
+                </div>
               )
               : null}
-          </div>
+          </>
         )}
       {hasError
         ? (
-          <ul className='text-destructive mt-1.5 space-y-0.5 text-[11px]'>
+          <ul className='text-destructive mt-1.5 space-y-0.5 text-xs'>
             {p.errors!.map((msg, i) => (
               <li key={i} className='flex items-start gap-1'>
                 <AlertCircle
@@ -1353,7 +1513,7 @@ function EntryCard(p: EntryCardProps): JSX.Element {
   const setQualifierCount = setIds.size;
 
   return (
-    <div className='border-input/70 bg-card/40 relative flex flex-col gap-1.5 rounded-[3px] border p-1.5 sm:p-2'>
+    <div className='border-input/70 bg-card/40 relative flex flex-col gap-1.5 rounded-md border p-1.5 sm:p-2'>
       {
         /* ✕ is absolute top-right INSIDE the card. To stop it from
           cutting into the qualifier rows below (DEPUIS / CHAPITRE
@@ -1523,9 +1683,8 @@ function summariseProperty(args: {
   } else {
     display = raw === undefined || raw === null || raw === '' ? '—' : String(raw);
   }
-  if (args.entries.length > 1) {
-    return `${display} · ${args.entries.length} entries`;
-  }
+  // Entry count renders as its own ×N chip in the collapsed header —
+  // the summary is the latest value alone.
   return display;
 }
 
@@ -1649,7 +1808,7 @@ function LocalizedValueField(p: {
           the SINCE pickers and broke visual alignment. Inlining the
           globe inside the same border keeps all rows flush-right. */
       }
-      <div className='border-input bg-background flex h-8 items-stretch overflow-hidden rounded-[3px] border focus-within:border-ring'>
+      <div className='border-input bg-background flex h-8 items-stretch overflow-hidden rounded-md border focus-within:border-ring'>
         <span className='bg-muted/60 text-muted-foreground border-input flex w-7 shrink-0 items-center justify-center border-r font-mono text-[10px] uppercase'>
           {locale}
         </span>
@@ -1659,7 +1818,7 @@ function LocalizedValueField(p: {
           onChange={(e) => p.onTranslate(locale, i18nKey, e.target.value)}
           placeholder={placeholder}
           disabled={i18nKey === ''}
-          className='flex-1 min-w-0 bg-transparent px-2 text-xs placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+          className='flex-1 min-w-0 bg-transparent px-2 text-base placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-xs'
         />
         {
           /* Translations popover trigger — pinned right inside the same
@@ -1703,7 +1862,7 @@ function LocalizedValueField(p: {
                 return (
                   <div
                     key={loc}
-                    className={`border-input bg-background flex h-8 items-stretch overflow-hidden rounded-[3px] border focus-within:border-ring ${
+                    className={`border-input bg-background flex h-8 items-stretch overflow-hidden rounded-md border focus-within:border-ring ${
                       loc === locale ? 'ring-1 ring-primary/40' : ''
                     }`}
                   >
@@ -1727,7 +1886,7 @@ function LocalizedValueField(p: {
                       onChange={(e) => p.onTranslate(loc, i18nKey, e.target.value)}
                       placeholder={fallbackValue !== null ? fallbackValue.text : ''}
                       disabled={i18nKey === ''}
-                      className='flex-1 min-w-0 bg-transparent px-2 text-xs placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50'
+                      className='flex-1 min-w-0 bg-transparent px-2 text-base placeholder:text-muted-foreground/70 placeholder:italic focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 sm:text-xs'
                     />
                   </div>
                 );

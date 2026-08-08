@@ -14,6 +14,15 @@
  * tab refreshes the badge in another instantly.
  */
 import { Button } from '@/components/ui/button';
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from '@/components/ui/dialog';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Link } from '@tanstack/react-router';
 import { Trash2, Upload } from 'lucide-react';
@@ -22,7 +31,7 @@ import { toast } from 'sonner';
 import { api } from './api';
 import { useCurrentUser } from './auth';
 import { useLocale, useT } from './form/locale';
-import { clearAllDrafts, clearDraft, readDraft, useAllDrafts } from './form/use-draft';
+import { clearAllDrafts, clearDraft, readDraft, useAllDrafts, writeDraft } from './form/use-draft';
 
 function relativeTime(savedAt: number, locale: 'en' | 'fr'): string {
   const diff = Date.now() - savedAt;
@@ -40,6 +49,10 @@ export function DraftsIndicator(): JSX.Element | null {
   const t = useT();
   const { user, loaded: userLoaded } = useCurrentUser();
   const [saving, setSaving] = useState<{ done: number; total: number; } | null>(null);
+  // "Discard all" nukes every local draft with no undo path, so it
+  // goes through a confirm dialog. Lives outside the Popover tree —
+  // dismissing the popover must not unmount an open dialog.
+  const [confirmDiscardAll, setConfirmDiscardAll] = useState(false);
 
   if (drafts.length === 0) return null;
 
@@ -137,108 +150,154 @@ export function DraftsIndicator(): JSX.Element | null {
   }
 
   return (
-    <Popover>
-      <PopoverTrigger
-        render={
-          <Button
-            variant='outline'
-            size='sm'
-            className='h-7 gap-1.5 border-amber-500/40 px-2 text-amber-500 hover:bg-amber-500/10 hover:text-amber-500'
-            aria-label={t('unsavedChanges')}
-          />
-        }
-      >
-        <span className='inline-block size-1.5 rounded-full bg-amber-500' />
-        <span className='font-mono tabular-nums text-[11px]'>
-          {drafts.length}
-        </span>
-        <span className='hidden text-[11px] sm:inline'>
-          {t('unsavedChanges')}
-        </span>
-      </PopoverTrigger>
-      <PopoverContent align='end' side='bottom' className='w-80 max-h-[60vh] overflow-y-auto p-0'>
-        <div className='border-b px-3 py-2'>
-          <p className='text-[11px] font-semibold uppercase tracking-wide'>
-            {t('unsavedChanges')} · {drafts.length}
-          </p>
-        </div>
-        <ul className='divide-border divide-y'>
-          {sorted.map((d) => {
-            const [type, slug] = d.entityId.split(':');
-            const canLink = type !== undefined && slug !== undefined && type !== '' && slug !== '';
-            return (
-              <li key={d.entityId} className='flex items-center gap-2 px-3 py-2'>
-                <div className='min-w-0 flex-1'>
-                  {canLink
-                    ? (
-                      <Link
-                        to='/types/$type/$slug'
-                        params={{ type, slug }}
-                        className='hover:underline block truncate text-xs font-medium'
-                      >
-                        {d.entityId}
-                      </Link>
-                    )
-                    : <span className='block truncate font-mono text-xs'>{d.entityId}</span>}
-                  <p className='text-muted-foreground text-[10px]'>
-                    {relativeTime(d.savedAt, locale)}
-                  </p>
-                </div>
-                <Button
-                  variant='ghost'
-                  size='icon'
-                  className='size-7 text-muted-foreground hover:text-destructive'
-                  aria-label={t('discard')}
-                  title={t('discard')}
-                  onClick={() => {
-                    void clearDraft(d.entityId).then(refresh);
-                  }}
-                >
-                  <Trash2 className='size-3.5' />
-                </Button>
-              </li>
-            );
-          })}
-        </ul>
-        <div className='border-t flex flex-col gap-1.5 px-3 py-2'>
-          {
-            /* Primary action: save every draft as a PR. One PR per
+    <>
+      <Popover>
+        <PopoverTrigger
+          render={
+            <Button
+              variant='outline'
+              size='sm'
+              className='h-7 gap-1.5 border-amber-500/40 px-2 text-amber-500 hover:bg-amber-500/10 hover:text-amber-500'
+              aria-label={t('unsavedChanges')}
+            />
+          }
+        >
+          <span className='inline-block size-1.5 rounded-full bg-amber-500' />
+          <span className='font-mono tabular-nums text-[11px]'>
+            {drafts.length}
+          </span>
+          <span className='hidden text-[11px] sm:inline'>
+            {t('unsavedChanges')}
+          </span>
+        </PopoverTrigger>
+        <PopoverContent align='end' side='bottom' className='w-80 max-h-[60vh] overflow-y-auto p-0'>
+          <div className='border-b px-3 py-2'>
+            <p className='text-[11px] font-semibold uppercase tracking-wide'>
+              {t('unsavedChanges')} · {drafts.length}
+            </p>
+          </div>
+          <ul className='divide-border divide-y'>
+            {sorted.map((d) => {
+              const [type, slug] = d.entityId.split(':');
+              const canLink = type !== undefined && slug !== undefined && type !== ''
+                && slug !== '';
+              return (
+                <li key={d.entityId} className='flex items-center gap-2 px-3 py-2'>
+                  <div className='min-w-0 flex-1'>
+                    {canLink
+                      ? (
+                        <Link
+                          to='/types/$type/$slug'
+                          params={{ type, slug }}
+                          className='hover:underline block truncate text-xs font-medium'
+                        >
+                          {d.entityId}
+                        </Link>
+                      )
+                      : <span className='block truncate font-mono text-xs'>{d.entityId}</span>}
+                    <p className='text-muted-foreground text-[10px]'>
+                      {relativeTime(d.savedAt, locale)}
+                    </p>
+                  </div>
+                  <Button
+                    variant='ghost'
+                    size='icon'
+                    className='size-8 text-muted-foreground hover:text-destructive'
+                    aria-label={t('discard')}
+                    title={t('discard')}
+                    onClick={() => {
+                      // Same snapshot+undo path as MyDrafts (review
+                      // finding, 2026-08): a mis-click next to every
+                      // row must not be irreversible.
+                      void (async () => {
+                        const snapshot = await readDraft(d.entityId);
+                        await clearDraft(d.entityId);
+                        refresh();
+                        if (snapshot === null) return;
+                        toast(t('draftDiscarded'), {
+                          action: {
+                            label: t('undo'),
+                            onClick: () => {
+                              void writeDraft(d.entityId, snapshot.data, snapshot.translations)
+                                .then(refresh);
+                            },
+                          },
+                        });
+                      })();
+                    }}
+                  >
+                    <Trash2 className='size-3.5' />
+                  </Button>
+                </li>
+              );
+            })}
+          </ul>
+          <div className='border-t flex flex-col gap-1.5 px-3 py-2'>
+            {
+              /* Primary action: save every draft as a PR. One PR per
               entity (the "batch into one PR" path is still a follow-up
               — see ADR-016 deferred section); this just removes the
               friction of having to visit each entity manually. */
-          }
-          <Button
-            size='sm'
-            className='h-7 w-full text-[11px]'
-            disabled={saving !== null || (userLoaded && user === null)}
-            onClick={() => {
-              void saveAll();
-            }}
-            title={userLoaded && user === null ? t('signInToSave') : t('bulkSaveAll')}
-          >
-            <Upload className='size-3.5' />
-            {saving !== null
-              ? `${t('bulkSavingProgress')} ${saving.done}/${saving.total}`
-              : `${t('bulkSaveAll')} (${drafts.length})`}
-          </Button>
-          {drafts.length > 1
-            ? (
-              <Button
-                variant='outline'
-                size='sm'
-                className='h-7 w-full text-[11px]'
-                disabled={saving !== null}
-                onClick={() => {
-                  void clearAllDrafts().then(refresh);
-                }}
-              >
-                <Trash2 className='size-3.5' />
-                {t('discard')} ({drafts.length})
-              </Button>
-            )
-            : null}
-        </div>
-      </PopoverContent>
-    </Popover>
+            }
+            <Button
+              size='sm'
+              className='h-7 w-full text-[11px]'
+              disabled={saving !== null || (userLoaded && user === null)}
+              onClick={() => {
+                void saveAll();
+              }}
+              title={userLoaded && user === null ? t('signInToSave') : t('bulkSaveAll')}
+            >
+              <Upload className='size-3.5' />
+              {saving !== null
+                ? `${t('bulkSavingProgress')} ${saving.done}/${saving.total}`
+                : `${t('bulkSaveAll')} (${drafts.length})`}
+            </Button>
+            {drafts.length > 1
+              ? (
+                <Button
+                  variant='outline'
+                  size='sm'
+                  className='text-destructive h-7 w-full text-[11px]'
+                  disabled={saving !== null}
+                  onClick={() => setConfirmDiscardAll(true)}
+                >
+                  <Trash2 className='size-3.5' />
+                  {t('discard')} ({drafts.length})
+                </Button>
+              )
+              : null}
+          </div>
+        </PopoverContent>
+      </Popover>
+      <Dialog open={confirmDiscardAll} onOpenChange={setConfirmDiscardAll}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>{t('discardAllTitle')}</DialogTitle>
+            <DialogDescription>
+              {t('discardAllBody').replace('{n}', String(drafts.length))}
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter>
+            <DialogClose render={<Button type='button' variant='outline' size='sm' />}>
+              {t('cancel')}
+            </DialogClose>
+            <Button
+              type='button'
+              variant='outline'
+              size='sm'
+              className='text-destructive gap-1.5'
+              onClick={() => {
+                setConfirmDiscardAll(false);
+                void clearAllDrafts().then(refresh);
+              }}
+            >
+              <Trash2 className='size-3.5' />
+              {t('discardAllConfirm')} ({drafts.length})
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

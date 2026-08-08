@@ -1,19 +1,61 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "anime-episode",
-  "schema_version": 5,
-  "labels": { "en": "Anime episode", "fr": "Épisode d'anime" },
+  "schema_version": 6,
+  "labels": {
+    "en": "Anime episode",
+    "fr": "Épisode d'anime"
+  },
   "url_segment": "episodes",
   "properties": [
-    { "id": "number", "required": true, "historical": false, "localizable": false },
-    { "id": "title_key", "required": false, "historical": false, "localizable": true },
-    { "id": "released_at", "required": false, "historical": false, "localizable": false },
-    { "id": "publications", "required": false, "historical": true, "localizable": false },
-    { "id": "runtime_minutes", "required": false, "historical": false, "localizable": false },
-    { "id": "canon_scope", "required": false, "historical": false, "localizable": false },
-    { "id": "anime_original", "required": false, "historical": false, "localizable": false }
+    {
+      "id": "number",
+      "required": true,
+      "historical": false,
+      "localizable": false
+    },
+    {
+      "id": "title_key",
+      "required": false,
+      "recommended": true,
+      "historical": false,
+      "localizable": true
+    },
+    {
+      "id": "released_at",
+      "required": false,
+      "recommended": true,
+      "historical": false,
+      "localizable": false
+    },
+    {
+      "id": "publications",
+      "required": false,
+      "historical": true,
+      "localizable": false
+    },
+    {
+      "id": "runtime_minutes",
+      "required": false,
+      "historical": false,
+      "localizable": false
+    },
+    {
+      "id": "canon_scope",
+      "required": false,
+      "historical": false,
+      "localizable": false
+    },
+    {
+      "id": "anime_original",
+      "required": false,
+      "historical": false,
+      "localizable": false
+    }
   ],
-  "display_name_properties": ["title_key"],
+  "display_name_properties": [
+    "title_key"
+  ],
   "allowed_relations": [
     "features",
     "part-of-arc",
@@ -22,5 +64,13 @@
     "available-on",
     "depicted-by"
   ],
-  "ui_hint": { "icon": "tv", "group": "sources" }
+  "recommended_relations": [
+    "features",
+    "part-of-arc",
+    "available-on"
+  ],
+  "ui_hint": {
+    "icon": "tv",
+    "group": "sources"
+  }
 }
