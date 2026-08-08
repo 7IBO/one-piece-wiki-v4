@@ -2,6 +2,8 @@
 import { Button } from '@/components/ui/button';
 import { Toaster } from '@/components/ui/sonner';
 import { createRootRoute, HeadContent, Link, Scripts } from '@tanstack/react-router';
+import { createServerFn } from '@tanstack/react-start';
+import { getCookie, getRequestHeader } from '@tanstack/react-start/server';
 import { type JSX, type ReactNode } from 'react';
 import { AppSidebar } from '../AppSidebar';
 import { useCurrentUser, useSignOut } from '../auth';
@@ -19,26 +21,35 @@ import appCss from '../styles.css?url';
 // the initial HTML response (no flash of unstyled content).
 
 /**
- * Resolve the UI locale for the very first paint. On the server the
- * cookie (set by the LocaleSwitcher) wins, then the request's
- * Accept-Language for cookie-less first visits; the client re-derives
- * the same value from document.cookie. Server HTML and hydration
- * agree, so the page renders in the right language immediately — no
- * EN→FR flash, no duplicate locale-dependent fetches.
- * `import.meta.env.SSR` guards the server-only import out of the
- * client bundle.
+ * Server side of the first-paint locale: the cookie (set by the
+ * LocaleSwitcher) wins, then the request's Accept-Language for
+ * cookie-less first visits. A `createServerFn` — NOT a raw
+ * `import('@tanstack/react-start/server')` in the loader: Rollup
+ * rewrote that dynamic import to a self-import of the SSR chunk in
+ * the production build, whose exports don't include the h3 helpers
+ * ("getCookie is not a function" on Vercel). The server-fn compiler
+ * extracts this handler (and the server-only import above) cleanly
+ * from both bundles.
  */
-async function resolveInitialLocale(): Promise<'en' | 'fr'> {
-  if (import.meta.env.SSR) {
-    const { getCookie, getRequestHeader } = await import('@tanstack/react-start/server');
+const readServerLocale = createServerFn({ method: 'GET' }).handler(
+  (): 'en' | 'fr' => {
     const cookie = getCookie('dashboard_locale');
     if (cookie === 'en' || cookie === 'fr') return cookie;
-    const acceptLanguage = getRequestHeader('accept-language') ?? '';
-    return acceptLanguage.toLowerCase().startsWith('fr')
-        || acceptLanguage.toLowerCase().includes(',fr')
-      ? 'fr'
-      : 'en';
-  }
+    const acceptLanguage = (getRequestHeader('accept-language') ?? '').toLowerCase();
+    return acceptLanguage.startsWith('fr') || acceptLanguage.includes(',fr') ? 'fr' : 'en';
+  },
+);
+
+/**
+ * Resolve the UI locale for the very first paint. During SSR the
+ * server fn executes in-process against the live request; on the
+ * client the same value re-derives locally from document.cookie (no
+ * network hop). Server HTML and hydration agree, so the page renders
+ * in the right language immediately — no EN→FR flash, no duplicate
+ * locale-dependent fetches.
+ */
+async function resolveInitialLocale(): Promise<'en' | 'fr'> {
+  if (import.meta.env.SSR) return await readServerLocale();
   const fromCookie = /(?:^|;\s*)dashboard_locale=(en|fr)(?:;|$)/.exec(document.cookie)?.[1];
   if (fromCookie === 'en' || fromCookie === 'fr') return fromCookie;
   return navigator.language.toLowerCase().startsWith('fr') ? 'fr' : 'en';
