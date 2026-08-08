@@ -311,6 +311,27 @@ workflow, not the reader.
 See `/docs/EPISTEMIC_MODEL.md` § "Epistemic status vs review status"
 for how the two axes differ.
 
+### Per-item provenance on epistemic lists (ADR-096)
+
+`believed_by` and `known_truth_by` list WHO holds a belief; sometimes
+each holder's belief has its own on-page evidence. Items of these two
+qualifiers therefore accept two forms:
+
+```json
+"believed_by": [
+  "character:ace",
+  { "target": "character:luffy", "source": "manga-chapter:585" }
+]
+```
+
+The plain string is canonical when the item carries no provenance
+(existing data unchanged); the object form cites the source depicting
+THAT holder's belief. This mirrors the `since` string-or-list
+authoring convenience. Consumers normalize through one shared helper
+(`entityRefItems`), and the coherence layer counts both the targets
+and the per-item sources. `attested_by` stays plain (its targets are
+references — per-item sourcing is meaningless there).
+
 ### External attestation references (ADR-093)
 
 Some facts don't come from a canonical source (chapter / episode /
