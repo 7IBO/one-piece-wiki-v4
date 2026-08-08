@@ -22,8 +22,24 @@ export type Locale = 'en' | 'fr';
 export const SUPPORTED_LOCALES: readonly Locale[] = ['en', 'fr'] as const;
 
 const STORAGE_KEY = 'dashboard.locale';
+/** Cookie mirror of the locale — the ONLY store the server can read
+ *  during SSR, so the first paint is already in the right language
+ *  (no EN→FR flash, no double data fetch on locale-dependent routes).
+ *  localStorage is kept as a legacy fallback for pre-cookie visitors. */
+export const LOCALE_COOKIE = 'dashboard_locale';
+
+function persistLocaleCookie(next: Locale): void {
+  // Single tiny first-party cookie; the async Cookie Store API is
+  // missing in Safari and a cookie library is overkill for one write.
+  // oxlint-disable-next-line unicorn/no-document-cookie
+  document.cookie = `${LOCALE_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
+}
 
 function detectInitialLocale(): Locale {
+  if (typeof document !== 'undefined') {
+    const fromCookie = /(?:^|;\s*)dashboard_locale=(en|fr)(?:;|$)/.exec(document.cookie)?.[1];
+    if (fromCookie === 'en' || fromCookie === 'fr') return fromCookie;
+  }
   if (typeof window !== 'undefined') {
     try {
       const stored = window.localStorage.getItem(STORAGE_KEY);
@@ -48,23 +64,36 @@ const LocaleContext = createContext<LocaleContextValue>({
   setLocale: () => {/* no-op default; replaced by Provider */},
 });
 
-export function LocaleProvider({ children }: { children: ReactNode; }): JSX.Element {
+export function LocaleProvider(
+  { children, initial }: { children: ReactNode; initial?: Locale | undefined; },
+): JSX.Element {
   // HYDRATION: the first client render MUST match the server-rendered
-  // HTML ('en' — the server can't see localStorage). Seeding useState
-  // from localStorage made the hydration render diverge ('fr'), and
+  // HTML. The root loader reads the locale COOKIE server-side (plus
+  // Accept-Language for cookie-less first visits) and passes it as
+  // `initial`, so server HTML and client hydration agree on the real
+  // locale from the first paint — no EN flash. Seeding useState from
+  // localStorage instead made the hydration render diverge ('fr') and
   // React does NOT patch attribute mismatches (aria-pressed,
   // className…) during hydration — the header switcher stayed frozen
   // on EN while the app state was 'fr', so clicking FR no-oped.
-  // Detect the stored/browser locale in a post-hydration effect
-  // instead; the setState re-renders everything through React and the
-  // DOM ends up consistent (at the cost of a one-frame 'en' flash).
-  const [locale, setLocaleState] = useState<Locale>('en');
+  const [locale, setLocaleState] = useState<Locale>(initial ?? 'en');
   useEffect(() => {
-    setLocaleState(detectInitialLocale());
+    // Legacy reconcile: pre-cookie visitors may carry the choice only
+    // in localStorage. One flash for them, then the cookie (written
+    // here) takes over for every later SSR.
+    const detected = detectInitialLocale();
+    setLocaleState((current) => (detected === current ? current : detected));
+    try {
+      persistLocaleCookie(detected);
+    } catch {
+      // ignore
+    }
   }, []);
   const setLocale = useCallback((next: Locale) => {
     setLocaleState(next);
     try {
+      // Cookie first (SSR reads it), localStorage kept as fallback.
+      persistLocaleCookie(next);
       window.localStorage.setItem(STORAGE_KEY, next);
     } catch {
       // ignore quota / privacy mode

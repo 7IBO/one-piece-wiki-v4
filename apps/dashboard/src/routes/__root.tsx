@@ -18,7 +18,34 @@ import appCss from '../styles.css?url';
 // The link is then referenced in `head.links` below so it's part of
 // the initial HTML response (no flash of unstyled content).
 
+/**
+ * Resolve the UI locale for the very first paint. On the server the
+ * cookie (set by the LocaleSwitcher) wins, then the request's
+ * Accept-Language for cookie-less first visits; the client re-derives
+ * the same value from document.cookie. Server HTML and hydration
+ * agree, so the page renders in the right language immediately — no
+ * EN→FR flash, no duplicate locale-dependent fetches.
+ * `import.meta.env.SSR` guards the server-only import out of the
+ * client bundle.
+ */
+async function resolveInitialLocale(): Promise<'en' | 'fr'> {
+  if (import.meta.env.SSR) {
+    const { getCookie, getRequestHeader } = await import('@tanstack/react-start/server');
+    const cookie = getCookie('dashboard_locale');
+    if (cookie === 'en' || cookie === 'fr') return cookie;
+    const acceptLanguage = getRequestHeader('accept-language') ?? '';
+    return acceptLanguage.toLowerCase().startsWith('fr')
+        || acceptLanguage.toLowerCase().includes(',fr')
+      ? 'fr'
+      : 'en';
+  }
+  const fromCookie = /(?:^|;\s*)dashboard_locale=(en|fr)(?:;|$)/.exec(document.cookie)?.[1];
+  if (fromCookie === 'en' || fromCookie === 'fr') return fromCookie;
+  return navigator.language.toLowerCase().startsWith('fr') ? 'fr' : 'en';
+}
+
 export const Route = createRootRoute({
+  loader: async () => ({ locale: await resolveInitialLocale() }),
   head: () => ({
     meta: [
       { charSet: 'utf-8' },
@@ -44,20 +71,27 @@ export const Route = createRootRoute({
  * hydration bootstrap + module preloads.
  */
 function RootDocument({ children }: { children: ReactNode; }): JSX.Element {
+  // Cookie/Accept-Language-derived locale from the root loader — the
+  // shell may render before the loader resolves on the client, so
+  // fall back to 'en' defensively.
+  const loaderData = Route.useLoaderData() as { locale?: 'en' | 'fr'; } | undefined;
+  const locale = loaderData?.locale ?? 'en';
   return (
-    <html lang='en'>
+    <html lang={locale}>
       <head>
         <HeadContent />
       </head>
       <body>
-        <AppChrome>{children}</AppChrome>
+        <AppChrome initialLocale={locale}>{children}</AppChrome>
         <Scripts />
       </body>
     </html>
   );
 }
 
-function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
+function AppChrome(
+  { children, initialLocale }: { children: ReactNode; initialLocale: 'en' | 'fr'; },
+): JSX.Element {
   const { user, loaded } = useCurrentUser();
   const { signOut, pending: signOutPending } = useSignOut();
 
@@ -71,7 +105,7 @@ function AppChrome({ children }: { children: ReactNode; }): JSX.Element {
     : user.nickname;
 
   return (
-    <LocaleProvider>
+    <LocaleProvider initial={initialLocale}>
       <EntityDrawerProvider>
         <div className='bg-background text-foreground grid min-h-screen grid-rows-[auto_1fr] antialiased'>
           {
