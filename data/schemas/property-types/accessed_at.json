@@ -1,17 +1,11 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
-  "id": "first_source",
+  "id": "accessed_at",
   "schema_version": 1,
-  "labels": {
-    "en": "First source",
-    "fr": "Première source"
-  },
-  "value_type": "source_ref",
+  "labels": { "en": "Accessed on", "fr": "Consulté le" },
+  "value_type": "date",
   "historical": false,
   "localizable": false,
   "spoiler_sensitive": false,
-  "applies_to_entity_types": [
-    "event",
-    "document"
-  ]
+  "applies_to_entity_types": ["reference"]
 }

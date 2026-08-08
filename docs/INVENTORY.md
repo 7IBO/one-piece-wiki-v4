@@ -181,7 +181,7 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 
 ---
 
-## 2. Entity types (36)
+## 2. Entity types (38)
 
 | ID                    | Category   | Description                                                      | URL segment            |
 | --------------------- | ---------- | ---------------------------------------------------------------- | ---------------------- |
@@ -221,6 +221,8 @@ Phase 1. This is the canonical inventory; all other docs reference it.
 | `merchandise`         | production | Official merch (figure, model kit, plush, apparel, card)         | `merchandise`          |
 | `volume`              | sources    | A collected manga volume (tankōbon)                              | `volumes`              |
 | `sbs-qa`              | sources    | An atomic SBS question/answer entry (semi-canon reveal locus)    | `sbs-qa`               |
+| `reference`           | meta       | An external attestation reference (interview, official site…)    | `references`           |
+| `document`            | things     | An in-universe document (wanted poster, vivre card, newspaper…)  | `documents`            |
 
 ### 2.1 Properties per entity type
 
@@ -581,7 +583,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (101)
+## 3. Property types (105)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -589,17 +591,20 @@ unit, and qualifier policy (section 6).
 
 ### 3.1 Identity & naming
 
-| Property          | Value type | Constraints                  | Vocabulary   |
-| ----------------- | ---------- | ---------------------------- | ------------ |
-| `name`            | `i18n_key` | name_type qualifier required | `name-types` |
-| `epithet`         | `i18n_key` | given_by qualifier optional  | —            |
-| `description_key` | `i18n_key` | —                            | —            |
-| `caption_key`     | `i18n_key` | —                            | —            |
-| `alt_text_key`    | `i18n_key` | required for `image`         | —            |
-| `narrative_key`   | `i18n_key` | —                            | —            |
-| `title_key`       | `i18n_key` | —                            | —            |
-| `question_key`    | `i18n_key` | sbs-qa                       | —            |
-| `answer_key`      | `i18n_key` | sbs-qa                       | —            |
+| Property          | Value type | Constraints                  | Vocabulary                |
+| ----------------- | ---------- | ---------------------------- | ------------------------- |
+| `name`            | `i18n_key` | name_type qualifier required | `name-types`              |
+| `epithet`         | `i18n_key` | given_by qualifier optional  | —                         |
+| `description_key` | `i18n_key` | —                            | —                         |
+| `caption_key`     | `i18n_key` | —                            | —                         |
+| `alt_text_key`    | `i18n_key` | required for `image`         | —                         |
+| `narrative_key`   | `i18n_key` | —                            | —                         |
+| `title_key`       | `i18n_key` | —                            | —                         |
+| `question_key`    | `i18n_key` | sbs-qa                       | —                         |
+| `answer_key`      | `i18n_key` | sbs-qa                       | —                         |
+| `reference_kind`  | `enum`     | required for `reference`     | reference-kinds (ADR-093) |
+| `accessed_at`     | `date`     | reference                    | — (ADR-093)               |
+| `document_kind`   | `enum`     | required for `document`      | document-kinds (ADR-094)  |
 
 ### 3.2 Numeric properties
 
@@ -699,7 +704,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (70)
+## 4. Relation types (71)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -820,6 +825,14 @@ generates inverses automatically when `inverse_inferred: true`.
 | `depicted-by`  | (most entity types) | `image`      | `depicts`       | role, period, context, since |
 | `sourced-from` | `image`             | source types | `sources-image` | —                            |
 
+### 4.14 Documents (ADR-094)
+
+| Type        | From       | To                                | Inverse  | Qualifiers   |
+| ----------- | ---------- | --------------------------------- | -------- | ------------ |
+| `issued-by` | `document` | `organization`/`crew`/`character` | `Issued` | since, until |
+
+`profiles`, `held-by` and `depicted-by` accept `document` as source since ADR-094.
+
 ### 4.14 Cast & staff (real-world)
 
 | Type           | From                                  | To        | Inverse     | Qualifiers                           |
@@ -856,7 +869,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (63)
+## 5. Vocabularies / Enums (65)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -1198,32 +1211,41 @@ provisional `[V]`, to verify against canon before freeze).
 
 ---
 
+### 5.64 `reference-kinds` (ADR-093)
+
+interview · social_post · official_site · article · video · scan · fan_database · other
+
+### 5.65 `document-kinds` (ADR-094, one-piece)
+
+wanted_poster · vivre_card · newspaper · letter · map · photograph · flag · manuscript · other
+
 ## 6. Universal qualifiers
 
 Available on every historisable property value. They are NOT declared
 per-property; they are implicit. Since ADR-078 every base and common
 qualifier is declared in the **qualifier-type registry**
-(`/data/schemas/qualifier-types/*.json`, 15 entries: 7 `base` + 8
+(`/data/schemas/qualifier-types/*.json`, 28 entries: 8 `base` + 20
 `common`) with localized labels/descriptions and picker metadata; the
 dashboard derives its qualifier UI from the registry via
 `/api/schemas` — nothing is hardcoded.
 
-| Qualifier          | Value type           | Default     | Meaning                                       |
-| ------------------ | -------------------- | ----------- | --------------------------------------------- |
-| `since`            | `source_ref`         | (required)  | When this value starts applying               |
-| `until`            | `source_ref`         | none        | When this value stops applying                |
-| `source`           | `source_ref`         | = since     | Source citing the value                       |
-| `epistemic_status` | enum                 | `true`      | What kind of truth (see 5.1)                  |
-| `actual_value`     | same as value        | none        | The real truth when value is a false belief   |
-| `event`            | `entity_ref` (event) | none        | The event that caused/revealed this value     |
-| `believed_by`      | `entity_ref[]`       | none        | Specific characters who hold this belief      |
-| `known_truth_by`   | `entity_ref[]`       | none        | Specific characters who know the actual truth |
-| `canon_scope`      | enum                 | from source | Override the source's canon scope             |
-| `in_universe_date` | `string`             | none        | In-universe date when known                   |
-| `assisted_by`      | `string`             | none        | AI agent that generated this value            |
-| `review_status`    | enum                 | `reviewed`  | Human review state                            |
-| `note_key`         | `i18n_key`           | none        | Localized explanatory note                    |
-| `superseded_by`    | same as value        | none        | Replacement for retconned values              |
+| Qualifier          | Value type                 | Default     | Meaning                                             |
+| ------------------ | -------------------------- | ----------- | --------------------------------------------------- |
+| `since`            | `source_ref`               | (required)  | When this value starts applying                     |
+| `attested_by`      | `entity_ref[]` (reference) | —           | External reference(s) attesting the value (ADR-093) |
+| `until`            | `source_ref`               | none        | When this value stops applying                      |
+| `source`           | `source_ref`               | = since     | Source citing the value                             |
+| `epistemic_status` | enum                       | `true`      | What kind of truth (see 5.1)                        |
+| `actual_value`     | same as value              | none        | The real truth when value is a false belief         |
+| `event`            | `entity_ref` (event)       | none        | The event that caused/revealed this value           |
+| `believed_by`      | `entity_ref[]`             | none        | Specific characters who hold this belief            |
+| `known_truth_by`   | `entity_ref[]`             | none        | Specific characters who know the actual truth       |
+| `canon_scope`      | enum                       | from source | Override the source's canon scope                   |
+| `in_universe_date` | `string`                   | none        | In-universe date when known                         |
+| `assisted_by`      | `string`                   | none        | AI agent that generated this value                  |
+| `review_status`    | enum                       | `reviewed`  | Human review state                                  |
+| `note_key`         | `i18n_key`                 | none        | Localized explanatory note                          |
+| `superseded_by`    | same as value              | none        | Replacement for retconned values                    |
 
 ### 6.1 Universal relation qualifiers (ADR-037)
 
@@ -1321,11 +1343,11 @@ depicted by another image).
 
 ## 10. Stats summary
 
-- **Entity types**: 36
-- **Property types**: 101 (some shared across multiple entity types)
-- **Relation types**: 70 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 63
-- **Qualifier types**: 15 (7 base + 8 common — the ADR-078 registry)
+- **Entity types**: 38
+- **Property types**: 105 (some shared across multiple entity types)
+- **Relation types**: 71 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 65
+- **Qualifier types**: 28 (8 base + 20 common — the ADR-078 registry)
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)
 - **Source-type entities**: 5 (chapter, episode, film, sbs, databook)

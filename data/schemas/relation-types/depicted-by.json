@@ -3,8 +3,14 @@
   "id": "depicted-by",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Depicted by", "inverse": "Depicts" },
-    "fr": { "active": "Représenté par", "inverse": "Représente" }
+    "en": {
+      "active": "Depicted by",
+      "inverse": "Depicts"
+    },
+    "fr": {
+      "active": "Représenté par",
+      "inverse": "Représente"
+    }
   },
   "valid_from_types": [
     "character",
@@ -37,19 +43,35 @@
     "anime-special",
     "live-performance",
     "merchandise",
-    "volume"
+    "volume",
+    "document"
   ],
-  "valid_to_types": ["image"],
+  "valid_to_types": [
+    "image"
+  ],
   "qualifiers": [
-    { "id": "role", "value_type": "enum", "enum_ref": "depiction-roles", "required": true },
+    {
+      "id": "role",
+      "value_type": "enum",
+      "enum_ref": "depiction-roles",
+      "required": true
+    },
     {
       "id": "period",
       "value_type": "enum",
       "enum_ref": "depiction-periods",
       "required": false
     },
-    { "id": "context", "value_type": "string", "required": false },
-    { "id": "since", "value_type": "source_ref", "required": false }
+    {
+      "id": "context",
+      "value_type": "string",
+      "required": false
+    },
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,

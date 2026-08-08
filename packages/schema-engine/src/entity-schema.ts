@@ -42,6 +42,8 @@ export const BaseQualifierBag = z
     in_universe_date: z.string().optional(),
     assisted_by: z.string().optional(),
     review_status: ReviewStatus.optional(),
+    // ADR-093 — external attestation (reference:* ids).
+    attested_by: z.array(EntityId).optional(),
   })
   .passthrough();
 

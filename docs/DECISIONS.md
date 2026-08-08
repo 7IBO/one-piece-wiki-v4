@@ -8,6 +8,164 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-094 — In-universe documents as first-class entities
+
+**Date**: 2026-08-08
+
+**Context**: Promoted from IDEAS.md under the beta directive (0 users,
+big model moves are cheap now). Wanted posters, vivre cards,
+newspapers, letters, maps, flags exist IN the world and readers ask
+questions about them ("all wanted posters issued by the Marines",
+"vivre cards Luffy holds"). Modeling them as mere images loses the
+in-universe identity; ADR-011 deferred the concept, IDEAS.md kept the
+migration path.
+
+**Decision**: new one-piece-scoped entity type **`document`** with
+`document_kind` (vocabulary `document-kinds`: wanted_poster,
+vivre_card, newspaper, letter, map, photograph, flag, manuscript,
+other), optional `first_source` / `narrative_key`. Relations: reuse
+`profiles` (extended from databook-card to document — a poster
+profiles its outlaw), `held-by` (extended from devil-fruit — a vivre
+card held by a character), `depicted-by` (extended — documents have
+images); new relation **`issued-by`** (document → organization /
+crew / character, since/until, inverse "Issued"). Existing images
+stay `image` entities; a document carries the identity, its images
+depict it — the IDEAS migration path is unchanged and
+non-destructive. Seed: `document:luffy-first-wanted-poster`
+(wanted_poster, first_source manga-chapter:96, profiles
+character:luffy).
+
+**Consequences**: 37 entity types; catalogue additive only (compat:
+1 type, 1 property, 1 vocabulary, 1 relation + 3 extended
+from-lists). Cover-story parallel narratives (IDEAS) later build on
+this type. Dashboards/web render it generically until a bespoke
+template is warranted.
+
+---
+
+## ADR-093 — External attestation references (`reference` + `attested_by`)
+
+**Date**: 2026-08-08
+
+**Context**: Promoted from IDEAS.md. Facts sourced OUTSIDE the
+canonical corpus (Oda interviews, official site, social posts, scans,
+fan databases) currently have nowhere honest to point: abusing
+`source` would fake an in-universe anchor, prose narratives lose the
+structure. Wikipedia-style attestation was parked; the beta directive
+makes the additive model move cheap now.
+
+**Decision**: new CORE entity type **`reference`** (`name`, required
+`url` — the `url` property's `applies_to` extended from image —,
+`reference_kind` via new core vocabulary `reference-kinds`, optional
+`accessed_at`), plus new BASE qualifier **`attested_by`**
+(entity_ref list filtered to `reference`, multi, order 8) available
+on every historisable entry via the ADR-078 registry — no per-property
+declarations needed. `BaseQualifierBag` types it; the coherence
+reference-scan counts `attested_by` targets so attesting references
+aren't flagged UNREFERENCED (and dangling ids are caught). `source`
+remains canonical-only; spoiler filtering ignores `attested_by`.
+Seed: `reference:onepiece-com-character-log` attesting Luffy's
+"Straw Hat" epithet entry.
+
+**Options considered**: (1) free-text URL qualifier — no dedup, no
+kind/accessed_at metadata, unqueryable; (2) overload `source` with
+URLs — poisons the spoiler/progression machinery which assumes
+`source` is an entity id; (3) chosen: reference entities + entity_ref
+qualifier, symmetrical with `believed_by`/`event`.
+
+**Consequences**: additive only. Future: an ADR-085 rule could warn
+when `attested_by` coexists with an identical `source` (redundant),
+and the public wiki can render footnote-style citations from it.
+
+---
+
+## ADR-092 — Fandom continuous sync: full-wiki analysis + update detection
+
+**Date**: 2026-08-08
+
+**Context**: Maintainer directive: "analyse fandom entier et prévoit de
+récupérer des updates dans données et structure". ADR-079/081 built
+one-shot importers + a sync registry (page↔entity map, redirects,
+update detection fields); what's missing is (a) a STRUCTURAL view of
+the whole Fandom wiki — which categories/infoboxes exist, what fields
+they carry, what we do/don't model — and (b) a repeatable delta
+pipeline that surfaces "these mapped pages changed since our last
+import" instead of re-importing blindly.
+
+**Decision**:
+
+1. **`fandom:analyze`** (new importers CLI): sweeps the MediaWiki API
+   (`allcategories`, `templates`, category members counts, N sample
+   pages per infobox template), parses infobox field inventories, and
+   emits a machine-readable report + Markdown summary mapping each
+   Fandom structure to our entity/property types with an explicit gap
+   list ("infobox field X unmapped", "category Y has no entity
+   type"). The report is a build artifact (not committed data);
+   structure changes on their side show up as report diffs.
+2. **`fandom:updates`** (new importers CLI): reads the ADR-081 sync
+   registry, queries page revision timestamps in batch, and emits an
+   update queue (changed / redirected / deleted pages) consumable by
+   the existing mappers. No auto-merge — ADR-079 §5 rules unchanged
+   (PRs only, no Fandom prose/images committed).
+3. Both CLIs go through the existing polite fandom client
+   (rate-limited, cached, UA-identified). Tests run on recorded
+   fixtures; live runs require an environment with
+   onepiece.fandom.com egress (the Claude Code cloud proxy blocks it
+   — CONNECT 403 — so live sweeps run locally/CI-with-egress).
+
+**Consequences**: "keeping up with Fandom" becomes a scheduled,
+reviewable loop (analyze → report diff → adjust schema/mappers;
+updates → queue → per-page import PRs) instead of ad-hoc one-shots.
+
+---
+
+## ADR-091 — Public wiki presentation layer: per-type templates may bind to well-known ids
+
+**Date**: 2026-08-08
+
+**Context**: The public app (`apps/web`, "One Piece Wiki") needs
+editorially-designed pages: a character page that shows the crew with
+member portraits, a devil fruit box, techniques and weapons; an
+episode page with prev/next, its arc's list and its cast. The repo's
+"no property/relation names hardcoded in application code" rule kept
+the DASHBOARD fully schema-driven — but a public wiki template that
+may not mention `member-of` or `bounty` cannot be designed at all.
+
+**Options considered**:
+
+1. Keep the public app 100% schema-driven too — gives generic
+   key/value pages ("a JSON viewer with fonts"), which is exactly what
+   ADR-027's quality-led strategy says loses to Fandom.
+2. Schema-level "layout hint" metadata consumed generically — moves
+   presentation decisions into data files; heavy, and still can't
+   express "show OTHER members of the same crew".
+3. **Presentation-layer binding with mandatory degradation**
+   (chosen): `apps/web` templates MAY reference well-known
+   type/property/relation ids under two hard rules: (a) bindings live
+   ONLY in the presentation layer (`apps/web/server/views.ts` +
+   templates), never in `/packages`; (b) every binding degrades to
+   the generic schema-driven template when the id is missing from the
+   catalogue or the data — so other universes render correctly, just
+   plainly. The dashboard rule is UNCHANGED (it stays 100%
+   schema-driven).
+
+Also decided (full spec in `/docs/WEB_APP.md`): app identity "One
+Piece Wiki", wiki-style layout; spoiler cursor v1 (`web_progress`
+cookie, per-axis numeric filtering, SSR-side so no spoiler flash,
+first-run banner, "not yet in your progression" screen instead of
+404); canon-scope context (`?scope=` search param — live-action
+context prefers `source_origin: live_action` images and
+`canon_scope`-matching values, with fallback); contribute strip on
+every entity page (dashboard edit + history links via
+`VITE_DASHBOARD_URL`); footer GitHub + Buy Me a Coffee links.
+
+**Consequences**: `/docs/WEB_APP.md` is the normative spec; CLAUDE.md
+"no hardcoded property names" now explicitly reads as scoped to the
+schema-driven surfaces (dashboard, packages, pipeline) with the public
+presentation layer exempted under the degradation contract.
+
+---
+
 ## ADR-090 — Relation-scope rules + per-region `link_template`
 
 **Date**: 2026-08-08

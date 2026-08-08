@@ -47,6 +47,11 @@ If any task touches a specialized area, also read the relevant deep-dive doc:
   disposable artifact. Never write code that mutates SQLite at runtime.
 - **No property name is hardcoded in application code.** All properties,
   relations, and entity types are discovered through schema files.
+  Single exception (ADR-091): the PUBLIC presentation layer
+  (`apps/web` templates + its `server/views.ts`) may bind to
+  well-known ids, provided every binding degrades to the generic
+  schema-driven rendering when the id is absent. Dashboard, packages
+  and pipeline remain 100% schema-driven.
 - **IDs follow the pattern `type:slug`**, e.g. `character:luffy`,
   `devil-fruit:gomu-gomu`, `manga-chapter:1044`. IDs are immutable. Slugs may
   change (with redirect history).

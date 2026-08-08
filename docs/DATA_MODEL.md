@@ -311,6 +311,41 @@ workflow, not the reader.
 See `/docs/EPISTEMIC_MODEL.md` § "Epistemic status vs review status"
 for how the two axes differ.
 
+### External attestation references (ADR-093)
+
+Some facts don't come from a canonical source (chapter / episode /
+SBS / databook) but from OUTSIDE the work: an Oda interview, the
+official site, a social-media post, a printed-material scan. These are
+modeled as **`reference` entities** (core type): `name`, `url`
+(required), `reference_kind` (vocabulary `reference-kinds`:
+interview, social_post, official_site, article, video, scan,
+fan_database, other), optional `accessed_at` date.
+
+Any historisable value can cite them through the **`attested_by`**
+base qualifier (entity_ref list constrained to `reference:*`,
+available on every entry like `believed_by`). `attested_by` is
+orthogonal to `source`: `source` stays reserved for canonical
+entities; a value attested only externally carries `attested_by`
+without pretending an in-universe source exists. Spoiler filtering
+ignores `attested_by` (external facts carry no in-universe
+progression).
+
+### In-universe documents (ADR-094)
+
+Objects that exist as documents INSIDE the world — wanted posters,
+vivre cards, newspapers, letters, maps, photographs, flags,
+manuscripts — are first-class **`document` entities** (one-piece
+scope): `name`, `document_kind` (vocabulary `document-kinds`),
+optional `first_source` and `narrative_key`. Relations: `profiles`
+(what/whom the document is about — a wanted poster profiles its
+outlaw), `issued-by` (organization/crew/character that produced it),
+`held-by` (current holder — a vivre card in someone's pocket), and
+`depicted-by` (its image entities). The pre-existing images of such
+objects stay `image` entities; the document entity carries the
+in-universe identity and the images depict it (migration path per
+IDEAS — non-destructive, rewire `depicted-by` when the depiction is
+of the document rather than the person).
+
 ### Knowledge graph (deferred to phase 2+)
 
 In addition to historisable property values, entities can carry an explicit

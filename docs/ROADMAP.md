@@ -532,6 +532,18 @@ shippable on its own.
      licence/attribution answer; until then the sanctioned path is
      metadata-only import + the native licence-first upload flow.
 
+6. **IDEAS promotions delivered 2026-08-08** (ADR-093 / ADR-094 —
+   model shipped, corpus + rendering to grow)
+   - `reference` entities + `attested_by` base qualifier are live;
+     next: footnote-style citation rendering in the public wiki, an
+     advisory rule flagging `attested_by` duplicating `source`, and
+     real references as SBS/interview facts get imported.
+   - `document` entities are live (document-kinds, `issued-by`,
+     extended `profiles`/`held-by`/`depicted-by`); next: author the
+     canonical wanted-poster corpus per bounty change, rewire poster
+     images per the IMAGES.md walkthrough when images arrive, then
+     the cover-story narrative thread (IDEAS) on top.
+
 ## Phase 5 — Referential and schema management
 
 **Scheduling**: deferred until the dashboard volume justifies it
@@ -599,6 +611,17 @@ opening); both deferred until the public app proves demand.
 
 Each sub-phase ships independently with its own preview deploy. The
 order is sequential — earlier sub-phases unblock later ones.
+
+> **Status (2026-08-08)** — "One Piece Wiki v1" (ADR-091,
+> `/docs/WEB_APP.md`) ships a first pragmatic slice of 6.0 + 6.1 +
+> 6.2 on the maintainer's directive: wiki identity + footer, per-type
+> templates (character / crew / source / arc / devil-fruit with
+> generic fallback), spoiler cursor v1 (`web_progress` cookie,
+> per-axis numeric filtering, SSR-side), canon-scope context
+> (`?scope=`, live-action image/value preference + fallback), and the
+> contribute strip (dashboard edit + history links). The fuller specs
+> below (bounty timeline SVG, onboarding modal, URL-hash cursor,
+> Pagefind, SSG/ISR, locale routes) remain the target.
 
 #### Phase 6.0 — Foundations
 

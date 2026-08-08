@@ -1,0 +1,16 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "document-kinds",
+  "schema_version": 1,
+  "values": {
+    "wanted_poster": { "labels": { "en": "Wanted poster", "fr": "Avis de recherche" } },
+    "vivre_card": { "labels": { "en": "Vivre card", "fr": "Vivre card" } },
+    "newspaper": { "labels": { "en": "Newspaper", "fr": "Journal" } },
+    "letter": { "labels": { "en": "Letter", "fr": "Lettre" } },
+    "map": { "labels": { "en": "Map", "fr": "Carte" } },
+    "photograph": { "labels": { "en": "Photograph", "fr": "Photographie" } },
+    "flag": { "labels": { "en": "Flag", "fr": "Drapeau" } },
+    "manuscript": { "labels": { "en": "Manuscript", "fr": "Manuscrit" } },
+    "other": { "labels": { "en": "Other", "fr": "Autre" } }
+  }
+}

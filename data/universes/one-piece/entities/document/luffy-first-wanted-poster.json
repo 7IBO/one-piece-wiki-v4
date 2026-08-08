@@ -1,0 +1,21 @@
+{
+  "id": "document:luffy-first-wanted-poster",
+  "type": "document",
+  "schema_version": 1,
+  "slug": "luffy-first-wanted-poster",
+  "canonical_name_key": "document.luffy-first-wanted-poster.name",
+  "properties": {
+    "name": [
+      { "value_key": "document.luffy-first-wanted-poster.name", "since": "manga-chapter:96" }
+    ],
+    "document_kind": { "value": "wanted_poster" },
+    "first_source": { "value": "manga-chapter:96" }
+  },
+  "relations": [
+    {
+      "type": "profiles",
+      "target": "character:luffy",
+      "qualifiers": { "since": "manga-chapter:96" }
+    }
+  ]
+}
