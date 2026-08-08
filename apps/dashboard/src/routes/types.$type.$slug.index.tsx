@@ -19,6 +19,7 @@ import { ChevronLeft, ExternalLink, Film, GitPullRequest, Users } from 'lucide-r
 import { type JSX, useMemo } from 'react';
 import { toast } from 'sonner';
 import { api, type SourceRef } from '../api';
+import { EntityLinksPanel } from '../components/EntityLinksPanel';
 import { LoadFailed } from '../components/LoadFailed';
 import { EntityForm } from '../form/EntityForm';
 import { useLocale, useT } from '../form/locale';
@@ -260,6 +261,7 @@ function EntityEditComponent(): JSX.Element {
         relationTypes={schemas.relationTypes}
         vocabularies={schemas.vocabularies}
         qualifierTypes={schemas.qualifierTypes}
+        rules={schemas.rules}
         sources={sources}
         i18nKeys={i18nKeys}
         initialData={entity.data}
@@ -295,6 +297,7 @@ function EntityEditComponent(): JSX.Element {
           });
         }}
       />
+      <EntityLinksPanel type={type} slug={slug} relationTypes={schemas.relationTypes} />
     </div>
   );
 }

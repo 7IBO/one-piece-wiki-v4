@@ -16,6 +16,7 @@ export const PROPERTY_TYPES_DIR: string = resolve(SCHEMA_DIR, 'property-types');
 export const RELATION_TYPES_DIR: string = resolve(SCHEMA_DIR, 'relation-types');
 export const VOCABULARY_DIR: string = resolve(SCHEMA_DIR, 'vocabulary');
 export const QUALIFIER_TYPES_DIR: string = resolve(SCHEMA_DIR, 'qualifier-types');
+export const RULES_DIR: string = resolve(SCHEMA_DIR, 'rules');
 
 export const UNIVERSES_DIR: string = resolve(REPO_ROOT, 'data', 'universes');
 

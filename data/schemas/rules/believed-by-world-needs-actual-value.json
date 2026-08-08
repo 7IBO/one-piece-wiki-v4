@@ -1,0 +1,31 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "believed-by-world-needs-actual-value",
+  "schema_version": 1,
+  "severity": "warning",
+  "labels": {
+    "en": "Public belief without the real value",
+    "fr": "Croyance publique sans valeur réelle"
+  },
+  "messages": {
+    "en": "An entry marked `believed_by_world` should carry `actual_value` — what is actually true behind the public belief (EPISTEMIC_MODEL anti-pattern).",
+    "fr": "Une entrée `believed_by_world` doit porter `actual_value` — la réalité derrière la croyance publique (anti-pattern EPISTEMIC_MODEL)."
+  },
+  "scope": "entry",
+  "entry_property": "*",
+  "entry_when": [
+    {
+      "qualifier_equals": {
+        "qualifier": "epistemic_status",
+        "value": "believed_by_world"
+      }
+    }
+  ],
+  "entry_expect": [
+    {
+      "qualifier_present": {
+        "qualifier": "actual_value"
+      }
+    }
+  ]
+}

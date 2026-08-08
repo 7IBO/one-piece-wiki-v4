@@ -1,0 +1,31 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "believed-by-characters-needs-list",
+  "schema_version": 1,
+  "severity": "warning",
+  "labels": {
+    "en": "Character belief without believers",
+    "fr": "Croyance de personnages sans liste"
+  },
+  "messages": {
+    "en": "An entry marked `believed_by_characters` should list WHO believes it via `believed_by` (EPISTEMIC_MODEL anti-pattern).",
+    "fr": "Une entrée `believed_by_characters` doit lister QUI y croit via `believed_by` (anti-pattern EPISTEMIC_MODEL)."
+  },
+  "scope": "entry",
+  "entry_property": "*",
+  "entry_when": [
+    {
+      "qualifier_equals": {
+        "qualifier": "epistemic_status",
+        "value": "believed_by_characters"
+      }
+    }
+  ],
+  "entry_expect": [
+    {
+      "qualifier_present": {
+        "qualifier": "believed_by"
+      }
+    }
+  ]
+}

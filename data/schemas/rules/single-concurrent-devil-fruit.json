@@ -1,0 +1,29 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "single-concurrent-devil-fruit",
+  "schema_version": 1,
+  "universes": [
+    "one-piece"
+  ],
+  "severity": "warning",
+  "labels": {
+    "en": "More than one concurrent Devil Fruit",
+    "fr": "Plusieurs Fruits du Démon simultanés"
+  },
+  "messages": {
+    "en": "This character has more than one ACTIVE `ate-fruit` relation. Canon allows one fruit per person (Blackbeard is the famous exception) — end the previous one with `until`, or keep both only if this is the documented exception.",
+    "fr": "Ce personnage a plus d’une relation `ate-fruit` ACTIVE. Le canon n’autorise qu’un fruit par personne (Barbe Noire est l’exception célèbre) — clôturez l’ancienne avec `until`, ou gardez les deux seulement si c’est l’exception documentée."
+  },
+  "applies_to_entity_types": [
+    "character"
+  ],
+  "scope": "entity",
+  "expect": [
+    {
+      "max_concurrent_relations": {
+        "type": "ate-fruit",
+        "max": 1
+      }
+    }
+  ]
+}

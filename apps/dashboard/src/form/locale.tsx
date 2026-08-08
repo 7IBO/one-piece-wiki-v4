@@ -219,6 +219,7 @@ const UI_STRINGS = {
   missingValue: { en: 'missing value', fr: 'valeur manquante' },
   invalidValue: { en: 'invalid value', fr: 'valeur invalide' },
   notSet: { en: 'not set', fr: 'non défini' },
+  coherenceAdvisories: { en: 'Coherence checks', fr: 'Vérifications de cohérence' },
   incompleteEntriesExcluded: {
     en: 'Incomplete entries are kept as a draft and left out of the PR until finished.',
     fr:
@@ -520,6 +521,62 @@ const UI_STRINGS = {
   // Entity header — link to the entity file's GitHub commit history
   history: { en: 'History', fr: 'Historique' },
   notOnGithubYet: { en: 'not on GitHub yet', fr: 'pas encore sur GitHub' },
+  // Entity links panel (all links of an entity + inverse coherence)
+  linksPanelTitle: { en: 'All links', fr: 'Tous les liens' },
+  linksPanelCounts: {
+    en: '{in} incoming · {out} outgoing',
+    fr: '{in} entrants · {out} sortants',
+  },
+  linksIncomingTitle: { en: 'Incoming links', fr: 'Liens entrants' },
+  linksOutgoingTitle: { en: 'Outgoing links', fr: 'Liens sortants' },
+  linksIncomingEmpty: { en: 'No incoming links.', fr: 'Aucun lien entrant.' },
+  linksOutgoingEmpty: { en: 'No outgoing links.', fr: 'Aucun lien sortant.' },
+  linksConflictsTitle: {
+    en: '{n} coherence issue(s) between relations and their inverses',
+    fr: '{n} incohérence(s) entre relations et leurs inverses',
+  },
+  linksConflictDuplicateSymmetric: {
+    en: 'Relation stored on both sides',
+    fr: 'Relation stockée des deux côtés',
+  },
+  linksConflictDuplicateEdge: {
+    en: 'Duplicate relation entry',
+    fr: 'Entrée de relation dupliquée',
+  },
+  linksConflictQualifierMismatch: {
+    en: 'The two sides disagree on “since”',
+    fr: 'Les deux côtés divergent sur « since »',
+  },
+  // Cross-type data explorer (/explore)
+  exploreTitle: { en: 'Explore', fr: 'Explorer' },
+  exploreSubtitle: {
+    en: 'Every entity across all types — values, gaps, audit issues.',
+    fr: 'Toutes les entités, tous types confondus — valeurs, manques, problèmes d’audit.',
+  },
+  exploreTypesFilter: { en: 'Types', fr: 'Types' },
+  exploreAllTypes: { en: 'All types', fr: 'Tous les types' },
+  exploreMissingTranslationsToggle: {
+    en: 'Missing translations',
+    fr: 'Traductions manquantes',
+  },
+  exploreMissingValuesToggle: { en: 'Missing values', fr: 'Valeurs manquantes' },
+  exploreHideCompleteToggle: { en: 'Hide complete', fr: 'Masquer les complets' },
+  exploreMissingTranslationsBadge: {
+    en: '{n} missing translation(s)',
+    fr: '{n} traduction(s) manquante(s)',
+  },
+  exploreMissingValuesBadge: {
+    en: '{n} missing value(s)',
+    fr: '{n} valeur(s) manquante(s)',
+  },
+  exploreValuesHeader: { en: 'Values', fr: 'Valeurs' },
+  exploreNoValues: { en: 'No values recorded.', fr: 'Aucune valeur enregistrée.' },
+  exploreEmptyFiltered: {
+    en: 'No entity matches the current filters.',
+    fr: 'Aucune entité ne correspond aux filtres.',
+  },
+  exploreClearFilters: { en: 'Clear filters', fr: 'Réinitialiser les filtres' },
+  exploreToggleDetails: { en: 'Toggle details', fr: 'Afficher/masquer le détail' },
 } as const;
 
 /**

@@ -12,6 +12,8 @@ import {
   type QualifierTypeSchema as QualifierType,
   RelationTypeSchema,
   type RelationTypeSchema as RelationType,
+  RuleSchema,
+  type RuleSchema as Rule,
   VocabularySchema,
   type VocabularySchema as Vocabulary,
 } from '@onepiece-wiki/schemas';
@@ -30,10 +32,11 @@ export type ValidatedCatalogue = {
   readonly relationTypes: ReadonlyMap<string, RelationType>;
   readonly vocabularies: ReadonlyMap<string, Vocabulary>;
   readonly qualifierTypes: ReadonlyMap<string, QualifierType>;
+  readonly rules: ReadonlyMap<string, Rule>;
   readonly errors: readonly MetaValidationError[];
 };
 
-export type { EntityType, PropertyType, QualifierType, RelationType, Vocabulary };
+export type { EntityType, PropertyType, QualifierType, RelationType, Rule, Vocabulary };
 
 function formatZodError(error: z.ZodError): string {
   return error.errors
@@ -78,6 +81,7 @@ export function validateCatalogue(catalogue: SchemaCatalogue): ValidatedCatalogu
   const relationTypes = validateGroup(catalogue.relationTypes, RelationTypeSchema, errors);
   const vocabularies = validateGroup(catalogue.vocabularies, VocabularySchema, errors);
   const qualifierTypes = validateGroup(catalogue.qualifierTypes, QualifierTypeSchema, errors);
+  const rules = validateGroup(catalogue.rules, RuleSchema, errors);
 
-  return { entityTypes, propertyTypes, relationTypes, vocabularies, qualifierTypes, errors };
+  return { entityTypes, propertyTypes, relationTypes, vocabularies, qualifierTypes, rules, errors };
 }

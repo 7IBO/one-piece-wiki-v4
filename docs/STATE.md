@@ -143,6 +143,32 @@ link → GitHub file history. **ADR-084**: availability by stable
 `external_id` + platform `link_template` (url now optional) — product
 ids (ASIN, episode ids) stored once, links generated later.
 
+**2026-08-08 (c) — ADR-085 rules + links panel + explorer + fix batch.**
+Sixth catalogue group `rules` (declarative, ADVISORY — never blocking):
+engine `schema-engine/src/rules.ts` (browser-safe, 6 tests) shared by
+`check:coherence` (`RULE_FINDING`) and the form's amber advisory panel;
+6 v1 rules (marine+bounty w/ Cross-Guild escape, single concurrent
+devil fruit, 2 epistemic anti-patterns, unanchored death, until<since);
+builtin `SYMMETRIC_RELATION_STORED_TWICE` — which found 3 REAL
+double-stored family-of edges in the corpus (ace↔luffy, ace↔sabo,
+luffy↔sabo), matching the dashboard's new conflicts detection.
+**Links panel** (`GET /api/entities/:type/:slug/links` + panel on the
+entity page): outgoing + reverse-scanned incoming edges with inverse
+labels, deep links, and conflict detection (duplicate-symmetric,
+duplicate-edge, qualifier-mismatch), 12 tests. **/explore** cross-type
+audit grid (`GET /api/audit`, 9 tests): every entity × values with
+resolved displays, per-row completeness, missing-recommended +
+missing-translation badges, type/search/toggle filters, inline edit via
+the drawer, virtualized. Plus the tester's 11-point fix batch: drawer
+z-index (pencil dead behind the sheet), nested-<li> hydration bug,
+multi-select scroll jump, locale-select compact popup, toolbar heights,
+source-type trigger label (Base UI Select.Value ignores plain
+children), picker slugs desktop-only, MultiEntityRef restyled (dashed
+add, popup consistent), mobile bottom-sheet picker retired (anchored
+autocomplete everywhere), empty-target relation entries render an
+inline target picker. Per-item provenance on believed_by parked in
+IDEAS.
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below

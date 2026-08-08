@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "death-needs-source-anchor",
+  "schema_version": 1,
+  "severity": "warning",
+  "labels": {
+    "en": "Death without a source anchor",
+    "fr": "Mort sans ancre de source"
+  },
+  "messages": {
+    "en": "A `status: dead` entry without `since` cannot be spoiler-gated — readers before the death chapter would see it. Anchor the death to its chapter/episode.",
+    "fr": "Une entrée `status: dead` sans `since` ne peut pas être protégée anti-spoiler — un lecteur d’avant le chapitre de la mort la verrait. Ancrez la mort à son chapitre/épisode."
+  },
+  "scope": "entry",
+  "entry_property": "status",
+  "entry_when": [
+    {
+      "value_equals": {
+        "value": "dead"
+      }
+    }
+  ],
+  "entry_expect": [
+    {
+      "qualifier_present": {
+        "qualifier": "since"
+      }
+    }
+  ]
+}

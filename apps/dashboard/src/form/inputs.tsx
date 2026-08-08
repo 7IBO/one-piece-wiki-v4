@@ -22,12 +22,6 @@ import {
   CommandList,
 } from '@/components/ui/command';
 import { Input } from '@/components/ui/input';
-import {
-  MobileSheet,
-  MobileSheetContent,
-  MobileSheetTrigger,
-  useShouldUseSheet,
-} from '@/components/ui/mobile-sheet';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import {
   Select,
@@ -227,7 +221,20 @@ export function MultiEnumInput(
 ): JSX.Element {
   const locale = useLocale();
   const t = useT();
-  const [open, setOpen] = useState(false);
+  const [open, setOpenState] = useState(false);
+  // Same defensive scroll-restore as Combobox — Base UI's focus of the
+  // popup on open scrolls the page to the anchor's bottom otherwise
+  // (2026-08 feedback: "opening the multi-select scrolls the page").
+  function setOpen(next: boolean): void {
+    if (next) {
+      const x = window.scrollX;
+      const y = window.scrollY;
+      setOpenState(true);
+      requestAnimationFrame(() => window.scrollTo(x, y));
+    } else {
+      setOpenState(false);
+    }
+  }
   const selected = new Set(value ?? []);
   function toggle(id: string): void {
     const next = new Set(selected);
@@ -543,13 +550,9 @@ export function MultiEntityRefInput(
   // styled div that looks like an input border; only the small "Add"
   // affordance to the right is the actual popover trigger.
   //
-  // Mobile branch: on coarse-pointer devices we render the picker
-  // inside a bottom-sheet (MobileSheet) instead of a Popover. The
-  // Popover's small fixed-width content is unusable on a 360px
-  // viewport — overflows the screen, hard to tap, can't see the
-  // chips you just selected. The sheet covers up to 85vh with a
-  // proper close affordance + safe-area inset.
-  const useSheet = useShouldUseSheet();
+  // 2026-08 feedback: the mobile bottom-sheet branch is gone — the
+  // popup layer is now full page-width on mobile (W-F2), so the same
+  // anchored autocomplete works everywhere, matching the selects.
 
   // Trigger affordance — two shapes:
   //  - **Empty**: full-width button styled like a Select trigger. The
@@ -560,43 +563,28 @@ export function MultiEntityRefInput(
   //    container — keeps the chips as the visual focal point.
   const triggerLabel = list.length === 0 ? t('pickOne') : t('addEntry');
   const triggerClassName = list.length === 0
-    ? 'border-input bg-background text-muted-foreground hover:bg-accent/40 hover:text-foreground flex h-8 w-full items-center justify-between gap-2 rounded-md border px-2 text-xs disabled:opacity-50'
-    : 'text-muted-foreground hover:bg-accent hover:text-foreground ml-auto inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px] disabled:opacity-50';
+    ? 'border-input bg-background text-muted-foreground hover:bg-accent/40 hover:text-foreground flex h-10 w-full items-center justify-between gap-2 rounded-md border px-2 text-base disabled:opacity-50 sm:h-8 sm:text-xs'
+    : 'border-input/60 text-muted-foreground hover:border-input hover:text-foreground hover:bg-accent/40 inline-flex items-center gap-1 rounded-md border border-dashed px-2 py-1 text-xs transition-colors disabled:opacity-50';
   const triggerContent = (
     <>
       <span>{triggerLabel}</span>
       <ChevronsUpDown className={list.length === 0 ? 'size-3.5 opacity-50' : 'size-3 opacity-50'} />
     </>
   );
-  const trigger = useSheet
-    ? (
-      <MobileSheetTrigger
-        render={
-          <button
-            type='button'
-            disabled={disabled === true}
-            aria-expanded={open}
-            className={triggerClassName}
-          />
-        }
-      >
-        {triggerContent}
-      </MobileSheetTrigger>
-    )
-    : (
-      <PopoverTrigger
-        render={
-          <button
-            type='button'
-            disabled={disabled === true}
-            aria-expanded={open}
-            className={triggerClassName}
-          />
-        }
-      >
-        {triggerContent}
-      </PopoverTrigger>
-    );
+  const trigger = (
+    <PopoverTrigger
+      render={
+        <button
+          type='button'
+          disabled={disabled === true}
+          aria-expanded={open}
+          className={triggerClassName}
+        />
+      }
+    >
+      {triggerContent}
+    </PopoverTrigger>
+  );
 
   const list_ui = list.length === 0
     // Empty: the trigger IS the row — no chip container around it.
@@ -652,34 +640,25 @@ export function MultiEntityRefInput(
       />
     </Command>
   );
-  return useSheet
-    ? (
-      <MobileSheet open={open} onOpenChange={setOpen}>
-        {list_ui}
-        <MobileSheetContent title={t('addEntry')}>
-          {picker}
-        </MobileSheetContent>
-      </MobileSheet>
-    )
-    : (
-      <Popover open={open} onOpenChange={setOpen}>
-        {list_ui}
-        <PopoverContent
-          // The trigger is a tiny inline "Add" button (~60px wide) when
-          // there are no chips yet, so anchoring the popover to the
-          // trigger via `w-(--anchor-width)` collapses it to a useless
-          // sliver — visible as a "bug" on qualifiers like
-          // `believed_by` / `known_truth_by` / `given_by` where the
-          // trigger never grows. Use a fixed width that's wide enough
-          // to show the searchable name list, clamped to the viewport
-          // for mobile.
-          className='w-[24rem] max-w-[calc(100vw-2rem)] p-0'
-          align='start'
-        >
-          {picker}
-        </PopoverContent>
-      </Popover>
-    );
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      {list_ui}
+      <PopoverContent
+        // The trigger is a tiny inline "Add" button (~60px wide) when
+        // there are no chips yet, so anchoring the popover to the
+        // trigger via `w-(--anchor-width)` collapses it to a useless
+        // sliver — visible as a "bug" on qualifiers like
+        // `believed_by` / `known_truth_by` / `given_by` where the
+        // trigger never grows. Use a fixed width that's wide enough
+        // to show the searchable name list, clamped to the viewport
+        // for mobile.
+        className='p-0 sm:w-96'
+        align='start'
+      >
+        {picker}
+      </PopoverContent>
+    </Popover>
+  );
 }
 
 const MULTI_ROW_HEIGHT = 28;
@@ -792,7 +771,7 @@ function MultiEntityList(p: {
                           )
                           : null}
                         <span className='flex-1 truncate'>{item.name}</span>
-                        <span className='text-muted-foreground ml-2 font-mono text-[10px]'>
+                        <span className='text-muted-foreground ml-2 hidden font-mono text-[11px] sm:inline'>
                           {item.entity.slug}
                         </span>
                         {isSelected

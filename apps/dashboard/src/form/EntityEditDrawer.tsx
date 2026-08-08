@@ -142,7 +142,7 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
       {p.open && isTop
         ? (
           <div
-            className='fixed inset-0 bg-black/20 backdrop-blur-[2px]'
+            className='fixed inset-0 z-[60] bg-black/20 backdrop-blur-[2px]'
             style={{ zIndex: 40 + depth * 10 }}
             onClick={() => {
               if (status.dirty && !globalThis.confirm(t('unsavedChanges'))) return;
@@ -154,7 +154,7 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
       <div
         role='dialog'
         aria-label={`${t('editingType')} ${typeLabel}`}
-        className={`bg-background text-foreground fixed inset-y-0 right-0 flex w-full max-w-[64rem] flex-col border-l shadow-xl outline-none transition-transform duration-150 ease-out ${
+        className={`bg-background text-foreground fixed inset-y-0 right-0 z-[70] flex w-full max-w-[64rem] flex-col border-l shadow-xl outline-none transition-transform duration-150 ease-out ${
           p.open ? 'translate-x-0' : 'pointer-events-none translate-x-full'
         }`}
         // GPU-promoted layer keeps the wide panel's shadow + slide
@@ -217,6 +217,7 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
                 relationTypes={schemas.relationTypes}
                 vocabularies={schemas.vocabularies}
                 qualifierTypes={schemas.qualifierTypes}
+                rules={schemas.rules}
                 sources={sources}
                 i18nKeys={i18nKeys}
                 initialData={entity.data}

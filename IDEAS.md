@@ -797,3 +797,14 @@ chapter / episode publication. Deferred to Phase 9+ at earliest.
   (audit 2026-06-14: 1 raw `<a>` left) but variant/size usage is scattered
   per surface; define per-context conventions (primary action per page,
   destructive style, icon sizing 3.5 vs 4) + a lint/checklist, then sweep.
+
+## Per-item provenance on list qualifiers (2026-08-08)
+
+Maintainer question: sub-values like `believed_by` ("cru par") list
+characters but carry no source for that specific claim. Today the
+relation/entry-level `source` base qualifier covers "where does this
+info come from" for the WHOLE entry (and the qualifier sheet now always
+surfaces it). True per-item provenance (each believer cites its own
+chapter) would need qualifier-on-qualifier structures — a data-model
+extension (e.g. `believed_by: [{ target, source }]`). Park until a real
+editorial need shows up; needs its own ADR + migration if promoted.

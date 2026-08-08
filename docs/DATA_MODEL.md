@@ -43,6 +43,31 @@ Consumers: the dashboard's completeness meter, the "recommended, still
 empty" field state, and per-row completeness in entity lists. The tier is
 advisory metadata — the validation pipeline never blocks on it.
 
+#### Declarative coherence rules (ADR-085)
+
+Beyond per-field validity, the schema layer carries **rules** —
+declarative "this combination is usually wrong" knowledge, stored in
+`/data/schemas/rules/` (core) and `/data/universes/<u>/schemas/rules/`
+(universe-scoped):
+
+- an ACTIVE Marine with a `bounty` (exception: Cross Guild bounties —
+  set `issued_by`; or end the membership with `until`);
+- two concurrent `ate-fruit` relations (exception: Blackbeard);
+- `believed_by_world` without `actual_value`, `believed_by_characters`
+  without `believed_by` (the EPISTEMIC_MODEL anti-patterns);
+- `status: dead` without a `since` anchor (unspoilerable death);
+- `until` preceding `since` on one entry.
+
+A rule declares conditions (`when`, all must hold) and expectations
+(`expect`, each violation is one finding) at entity scope, or
+qualifier-level checks at entry scope. Findings are **always
+advisory** (`info`/`warning`) — One Piece canon is built on
+exceptions, so a finding means "double-check or add the
+distinguishing qualifier", never "invalid". The same engine
+(`schema-engine/src/rules.ts`, browser-safe) runs in `check:coherence`
+(CI, `RULE_FINDING` warnings) and live in the dashboard form (amber
+advisory panel). Formal shape in `/docs/SCHEMA_SPEC.md` § Rules.
+
 ### 2. Entities
 
 Instances of entity types. An entity has:

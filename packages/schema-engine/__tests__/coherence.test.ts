@@ -26,6 +26,8 @@ function catalogue(
     relationTypes: new Map(Object.entries(relationTypes)) as ValidatedCatalogue['relationTypes'],
     propertyTypes: new Map(),
     vocabularies: new Map(),
+    qualifierTypes: new Map(),
+    rules: new Map(),
     errors: [],
   };
 }
@@ -303,6 +305,8 @@ function versionCatalogue(types: Record<string, number>): ValidatedCatalogue {
     relationTypes: new Map(),
     propertyTypes: new Map(),
     vocabularies: new Map(),
+    qualifierTypes: new Map(),
+    rules: new Map(),
     errors: [],
   };
 }

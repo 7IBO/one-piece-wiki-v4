@@ -223,6 +223,7 @@ function EntityCreateComponent(): JSX.Element {
             relationTypes={schemas.relationTypes}
             vocabularies={schemas.vocabularies}
             qualifierTypes={schemas.qualifierTypes}
+            rules={schemas.rules}
             sources={sources}
             i18nKeys={i18nKeys}
             initialData={initialData}
