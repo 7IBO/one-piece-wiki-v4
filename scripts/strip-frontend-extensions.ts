@@ -23,6 +23,11 @@ import { fileURLToPath } from 'node:url';
 const ROOT = dirname(dirname(fileURLToPath(import.meta.url)));
 const TARGET = join(ROOT, 'apps/dashboard/src');
 
+// TanStack Router's codegen re-adds `./router.tsx` on every dev-server
+// regeneration — rewriting it here just fights the generator. Kept in
+// sync with IGNORED_FILES in check-frontend-extensions.ts.
+const IGNORED = new Set([join(TARGET, 'routeTree.gen.ts')]);
+
 async function* walk(dir: string): AsyncGenerator<string> {
   for (const entry of await readdir(dir, { withFileTypes: true })) {
     const path = join(dir, entry.name);
@@ -53,6 +58,7 @@ let touched = 0;
 let edits = 0;
 
 for await (const path of walk(TARGET)) {
+  if (IGNORED.has(path)) continue;
   const before = await readFile(path, 'utf8');
   let after = before;
   for (const pat of PATTERNS) {
