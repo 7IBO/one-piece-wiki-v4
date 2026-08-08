@@ -1,0 +1,66 @@
+{
+  "batchcomplete": true,
+  "query": {
+    "redirects": [
+      {
+        "from": "Kozuki Toki",
+        "to": "Toki"
+      }
+    ],
+    "pages": [
+      {
+        "pageid": 1444,
+        "ns": 0,
+        "title": "Monkey D. Luffy",
+        "revisions": [
+          {
+            "revid": 150,
+            "parentid": 149,
+            "timestamp": "2026-08-01T10:00:00Z"
+          }
+        ]
+      },
+      {
+        "pageid": 333114,
+        "ns": 0,
+        "title": "Chapter 1044",
+        "revisions": [
+          {
+            "revid": 200,
+            "parentid": 199,
+            "timestamp": "2026-03-01T09:00:00Z"
+          }
+        ]
+      },
+      {
+        "pageid": 900,
+        "ns": 0,
+        "title": "Toki",
+        "revisions": [
+          {
+            "revid": 512,
+            "parentid": 500,
+            "timestamp": "2026-07-15T12:00:00Z"
+          }
+        ]
+      },
+      {
+        "ns": 0,
+        "title": "Gone Page",
+        "missing": true
+      },
+      {
+        "pageid": 341823,
+        "ns": 0,
+        "title": "Episode 1071",
+        "revisions": [
+          {
+            "revid": 77,
+            "parentid": 70,
+            "timestamp": "2026-05-05T05:00:00Z"
+          }
+        ]
+      }
+    ]
+  }
+}

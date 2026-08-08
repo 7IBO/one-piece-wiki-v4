@@ -40,13 +40,48 @@ export type VolumeMapResult = {
   readonly warnings: readonly string[];
 };
 
-const INFOBOX_NAMES = ['Volume Box', 'Volumebox', 'Infobox volume'];
+/** Infobox template names this mapper recognises (ADR-092 analyzer). */
+export const VOLUME_INFOBOX_NAMES: readonly string[] = [
+  'Volume Box',
+  'Volumebox',
+  'Infobox volume',
+];
+
+/**
+ * Infobox params the mapper reads — mapped to properties or
+ * deliberately surfaced as warnings (isbn/pages/chapters are read and
+ * routed to warnings because the volume schema has no home for them).
+ * Consumed by the `fandom:analyze` field-inventory report (ADR-092);
+ * keep in sync with the `get(...)` calls in {@link mapVolume}.
+ */
+export const VOLUME_HANDLED_PARAMS: readonly string[] = [
+  'volume',
+  'number',
+  'ename',
+  'etitle',
+  'title',
+  'rname',
+  'romanji',
+  'romaji',
+  'jrelease',
+  'release',
+  'reldate',
+  'date',
+  'erelease',
+  'engrelease',
+  'pages',
+  'jisbn',
+  'isbn',
+  'eisbn',
+  'chapters',
+  'chapter',
+];
 
 /** Current volume schema_version — keep in sync with the type. */
 export const VOLUME_SCHEMA_VERSION = 1;
 
 export function mapVolume(page: ParsedPage): VolumeMapResult | null {
-  const box = findTemplate(page.wikitext, ...INFOBOX_NAMES);
+  const box = findTemplate(page.wikitext, ...VOLUME_INFOBOX_NAMES);
   if (box === null) return null;
 
   const warnings: string[] = [];

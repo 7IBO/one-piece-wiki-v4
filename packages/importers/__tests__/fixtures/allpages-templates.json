@@ -1,0 +1,32 @@
+{
+  "batchcomplete": true,
+  "query": {
+    "allpages": [
+      {
+        "pageid": 9001,
+        "ns": 10,
+        "title": "Template:Char Box"
+      },
+      {
+        "pageid": 9002,
+        "ns": 10,
+        "title": "Template:Char Box/doc"
+      },
+      {
+        "pageid": 9003,
+        "ns": 10,
+        "title": "Template:Crew Box"
+      },
+      {
+        "pageid": 9004,
+        "ns": 10,
+        "title": "Template:Navibox"
+      },
+      {
+        "pageid": 9005,
+        "ns": 10,
+        "title": "Template:Qref"
+      }
+    ]
+  }
+}

@@ -35,13 +35,42 @@ export type ChapterMapResult = {
   readonly warnings: readonly string[];
 };
 
-const INFOBOX_NAMES = ['Chapter Box', 'Chapterbox', 'Infobox chapter'];
+/** Infobox template names this mapper recognises (ADR-092 analyzer). */
+export const CHAPTER_INFOBOX_NAMES: readonly string[] = [
+  'Chapter Box',
+  'Chapterbox',
+  'Infobox chapter',
+];
+
+/**
+ * Infobox params the mapper reads — mapped to properties/relations or
+ * deliberately surfaced as warnings. Consumed by the `fandom:analyze`
+ * field-inventory report (ADR-092); keep in sync with the `get(...)`
+ * calls in {@link mapChapter}.
+ */
+export const CHAPTER_HANDLED_PARAMS: readonly string[] = [
+  'chapter',
+  'number',
+  'ename',
+  'title',
+  'extitle',
+  'etitle',
+  'rname',
+  'romanji',
+  'romaji',
+  'date',
+  'reldate',
+  'release',
+  'pages',
+  'page',
+  'volume',
+];
 
 /** Current manga-chapter schema_version — keep in sync with the type. */
 export const MANGA_CHAPTER_SCHEMA_VERSION = 6;
 
 export function mapChapter(page: ParsedPage): ChapterMapResult | null {
-  const box = findTemplate(page.wikitext, ...INFOBOX_NAMES);
+  const box = findTemplate(page.wikitext, ...CHAPTER_INFOBOX_NAMES);
   if (box === null) return null;
 
   const warnings: string[] = [];

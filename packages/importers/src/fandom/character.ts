@@ -45,7 +45,43 @@ export type CharacterMapResult = {
   readonly warnings: readonly string[];
 };
 
-const INFOBOX_NAMES = ['Char Box', 'Charbox', 'Character Box', 'Infobox character'];
+/** Infobox template names this mapper recognises (ADR-092 analyzer). */
+export const CHARACTER_INFOBOX_NAMES: readonly string[] = [
+  'Char Box',
+  'Charbox',
+  'Character Box',
+  'Infobox character',
+];
+
+/**
+ * Infobox params the mapper reads — mapped to properties/relations or
+ * deliberately surfaced as warnings. Consumed by the `fandom:analyze`
+ * field-inventory report (ADR-092); keep in sync with the `get(...)`
+ * calls in {@link mapCharacter}.
+ */
+export const CHARACTER_HANDLED_PARAMS: readonly string[] = [
+  'ename',
+  'first',
+  'alias',
+  'epithet',
+  'status',
+  'bounty',
+  'age',
+  'height',
+  'birth',
+  'birthday',
+  'blood type',
+  'blood_type',
+  'bloodtype',
+  'affiliation',
+  'origin',
+  'residence',
+  'dfname',
+  'dfename',
+  'occupation',
+  'jva',
+  'Funi eva',
+];
 
 /** Current character schema_version — keep in sync with the type. */
 export const CHARACTER_SCHEMA_VERSION = 5;
@@ -168,7 +204,7 @@ export function mapCharacter(
   page: ParsedPage,
   ctx: CharacterMapContext = {},
 ): CharacterMapResult | null {
-  const box = findTemplate(page.wikitext, ...INFOBOX_NAMES);
+  const box = findTemplate(page.wikitext, ...CHARACTER_INFOBOX_NAMES);
   if (box === null) return null;
 
   const warnings: string[] = [];
