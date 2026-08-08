@@ -278,6 +278,29 @@ page renders label + red `−` / green `+` lines, groups kept whole
 under a 20-line per-commit budget with a truncation note. 6 new
 tests (230 total).
 
+## 2026-08-08 (h) — quiet-by-default sweep + relations redesigned
+
+Maintainer feedback batch: (1) /explore is READ-ONLY again — inline
+editing (both modes), the drafts store and the bulk save bar are
+deleted (−540 lines); the amber chip walls collapsed to ONE muted
+gap line per row, the completeness meter is the only visual signal.
+(2) The prod "phantom popups on reload" bug (draft auto-apply
+tripping every PropertyRow's open-on-count-grow adjust) is structurally
+fixed by the lifted single-editor state — verified by seeding an
+IndexedDB draft (3 grown properties → 0 editors open after reload).
+(3) "Par défaut, rien d'ouvert": the links panel no longer auto-opens
+at ≥sm. (4) RelationsEditor rewritten to the property pattern —
+full-width edge lines per relation type (target name + resolved
+qualifier summary + C96 since), click → SideSheet (mobile) / inline
+sticky panel (desktop), all qualifiers via QualifierRowList, remove in
+footer, add-opens-editor, close-without-target deletes. (5) Inverse
+relations VISIBLE without double storage: read-only `InferredRelations`
+section (incoming edges from the links API, grouped by inverse label,
+"auto" badge, pencil to the storing entity). (6) History lines carry
+every qualifier ("Mort · C574 · Statut épistémique : Confirmé") and a
+GLOBAL /history page lists recent data commits with per-entity change
+groups (sidebar link under Explorer).
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below

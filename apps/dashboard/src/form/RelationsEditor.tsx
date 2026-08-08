@@ -1,20 +1,40 @@
 /**
- * Relations editor — manages an entity's outgoing relations.
+ * Relations editor — manages an entity's outgoing relations with the
+ * same read-first layout as the property rows (2026-08 feedback:
+ * "même design pour les propriétés relation").
  *
  * Each entry of `entity.relations` is `{ type, target, qualifiers? }`
  * where `type` is the relation-type id, `target` is an entity id, and
  * `qualifiers` is an open-ended object (since/until/role/source/…).
  *
- * Each relation renders as a compact card with target + declared
- * inline qualifiers; an "Add relation" picker sits at the bottom.
- * Qualifier inputs come from two sources:
+ * Read view: edges grouped by relation type (localized `active`
+ * label), one full-width line per edge — target display name, compact
+ * qualifier summary (labels via the qualifier registry, enum values
+ * via vocabularies), `since` compacted "C96"-style — ending in a
+ * chevron. Clicking a line opens THE edge editor: a SideSheet on
+ * mobile, an inline bordered panel in a right-hand column of the
+ * relations block on desktop (same dual-mode as the property entry
+ * editor). The editor holds the target picker plus EVERY qualifier
+ * of the relation type via QualifierRowList, and a remove button.
+ *
+ * Closing the editor of an edge whose target is still empty DELETES
+ * the edge — mirroring the property entries' "backing out of a
+ * never-filled entry discards it" rule.
+ *
+ * Qualifier definitions come from two sources:
  *  1. The relation-type schema's `qualifiers[]` (declared per type).
  *  2. A small set of universal base qualifiers (source,
  *     epistemic_status, event, assisted_by, review_status) that apply
  *     to every relation just like they do to property entries.
- * The base set lives behind a "More options" Collapsible per card so
- * it doesn't crowd the common case.
+ *
+ * `InferredRelations` (exported separately, rendered by the entity
+ * route below the form) lists the INCOMING edges of the entity —
+ * relations stored on other entities whose inverse the pipeline
+ * generates — read-only with an "auto" badge, so a maintainer sees
+ * that storing one direction is enough (the inverse "exists" without
+ * duplicating the JSON).
  */
+import { formatQualifiers, type LabelCtx } from '@/components/EntityLinksPanel';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
@@ -25,9 +45,11 @@ import type {
   RelationTypeSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
-import { MoreHorizontal, X } from 'lucide-react';
+import { Link } from '@tanstack/react-router';
+import { ChevronRight, Pencil, X } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
-import { api, type EntityRef } from '../api';
+import { api, type EntityRef, type IncomingLinkRow, type SourceRef } from '../api';
+import { useApiResource } from '../hooks/use-api-resource';
 import {
   type EnumValue,
   MultiEntityRefInput,
@@ -38,7 +60,7 @@ import {
 } from './inputs';
 import { type Locale, useLocale, useQualifierLabel, useT } from './locale';
 import { relationAnchorId } from './PropertyNav';
-import { QualifierSheet } from './QualifierSheet';
+import { QualifierRowList, SideSheet } from './QualifierSheet';
 
 export type RelationEntry = {
   type: string;
@@ -74,7 +96,7 @@ type QualifierShape = {
  * base qualifiers on historisable property entries.
  */
 const BASE_RELATION_QUALIFIERS: readonly QualifierShape[] = [
-  { id: 'source', label: 'Source', valueType: 'source_ref' },
+  { id: 'source', label: 'Source', valueType: 'source_ref', multi: true },
   {
     id: 'epistemic_status',
     label: 'Epistemic status',
@@ -110,9 +132,162 @@ const BASE_RELATION_QUALIFIERS: readonly QualifierShape[] = [
   },
 ];
 
+/**
+ * Full qualifier list for a relation type: the schema-declared
+ * qualifiers (in declaration order, `since`/`until` included) followed
+ * by the universal base set minus anything the type already declares.
+ * Declared labels resolve through the qualifier registry (ADR-078)
+ * before falling back to a humanised id. Declared `source_ref`
+ * qualifiers (since/until/…) edit as stacked multi-source pickers,
+ * same as property entries.
+ */
+function qualifierShapesFor(
+  relationType: RelationTypeSchema | undefined,
+  qualifierTypes: Record<string, QualifierTypeSchema>,
+  locale: Locale,
+): readonly QualifierShape[] {
+  const declared = (relationType?.qualifiers ?? []).map((q): QualifierShape => {
+    const id = String(q.id);
+    const qt = qualifierTypes[id];
+    return {
+      id,
+      label: qt?.labels[locale] ?? qt?.labels.en ?? humanize(id),
+      valueType: q.value_type as ValueType,
+      ...(q.enum_ref !== undefined ? { enumRef: q.enum_ref } : {}),
+      ...(q.required === true ? { required: true } : {}),
+      ...(q.value_type === 'source_ref' ? { multi: true } : {}),
+    };
+  });
+  const declaredIds = new Set(declared.map((d) => d.id));
+  return [...declared, ...BASE_RELATION_QUALIFIERS.filter((q) => !declaredIds.has(q.id))];
+}
+
+/** Compact per-type source abbreviations for provenance summaries
+ *  ("C96 · E45") — same convention as the property rows' since
+ *  column. Unknown types fall back to the number/slug. */
+const SOURCE_ABBR: Record<string, string> = {
+  'manga-chapter': 'C',
+  'anime-episode': 'E',
+  film: 'F',
+  sbs: 'SBS ',
+  databook: 'DB ',
+  'databook-card': 'VC ',
+};
+
+/** "C96 · E45" for a source_ref value (string or array). Null when
+ *  nothing usable is set. */
+function shortSourceRefLabel(
+  raw: unknown,
+  sources: readonly SourceRef[],
+): string | null {
+  const ids = Array.isArray(raw)
+    ? (raw as unknown[]).map(String).filter((s) => s !== '')
+    : typeof raw === 'string' && raw !== ''
+    ? [raw]
+    : [];
+  if (ids.length === 0) return null;
+  return ids
+    .map((id) => {
+      const [type, slug] = id.split(':');
+      const src = sources.find((s) => s.id === id);
+      const short = src?.number ?? slug ?? id;
+      const abbr = SOURCE_ABBR[type ?? ''];
+      return abbr !== undefined ? `${abbr}${short}` : String(short);
+    })
+    .join(' · ');
+}
+
+function hasRealValue(v: unknown): boolean {
+  if (v === undefined || v === null) return false;
+  if (typeof v === 'string' && v === '') return false;
+  if (Array.isArray(v) && v.length === 0) return false;
+  return true;
+}
+
+/** One qualifier value → compact display string, driven by the
+ *  qualifier's shape: enum ids resolve through their vocabulary,
+ *  source refs compact to "C96", entity refs show their slug. */
+function formatShapedValue(
+  value: unknown,
+  shape: QualifierShape | undefined,
+  vocabularies: Record<string, VocabularySchema>,
+  sources: readonly SourceRef[],
+  locale: Locale,
+): string {
+  if (shape?.valueType === 'source_ref') {
+    return shortSourceRefLabel(value, sources) ?? '';
+  }
+  if (Array.isArray(value)) {
+    return (value as unknown[])
+      .map((v) => formatShapedValue(v, shape, vocabularies, sources, locale))
+      .filter((s) => s !== '')
+      .join(', ');
+  }
+  if (typeof value === 'string') {
+    if (shape?.enumRef !== undefined) {
+      const vv = vocabularies[shape.enumRef]?.values[value];
+      if (vv !== undefined) return vv.labels[locale] ?? vv.labels.en;
+    }
+    if (shape?.valueType === 'entity_ref' && value.includes(':')) {
+      return value.split(':')[1] ?? value;
+    }
+    return value;
+  }
+  if (typeof value === 'boolean') return value ? '✓' : '×';
+  if (typeof value === 'number') return String(value);
+  return JSON.stringify(value) ?? '';
+}
+
+type EdgeSummary = {
+  /** "Camp : Captif · Issue : Tué" — every populated qualifier except
+   *  `since`, labels via registry, enum values via vocabularies. */
+  readonly text: string;
+  /** Compact `since` provenance ("C96"), rendered as its own column. */
+  readonly since: string | null;
+};
+
+function summariseEdge(
+  entry: RelationEntry,
+  shapes: readonly QualifierShape[],
+  args: {
+    vocabularies: Record<string, VocabularySchema>;
+    sources: readonly SourceRef[];
+    locale: Locale;
+    qualifierLabel: (id: string, fallback: string) => string;
+  },
+): EdgeSummary {
+  const qualifiers = entry.qualifiers ?? {};
+  const since = shortSourceRefLabel(qualifiers['since'], args.sources);
+  const shapeById = new Map(shapes.map((s) => [s.id, s]));
+  // Shape order first (declared, then base), unknown keys last.
+  const orderedIds = [
+    ...shapes.map((s) => s.id).filter((id) => id in qualifiers),
+    ...Object.keys(qualifiers).filter((id) => !shapeById.has(id)),
+  ];
+  const parts: string[] = [];
+  for (const id of orderedIds) {
+    if (id === 'since') continue; // own column
+    const value = qualifiers[id];
+    if (!hasRealValue(value)) continue;
+    const shape = shapeById.get(id);
+    const label = args.qualifierLabel(id, shape?.label ?? humanize(id));
+    const formatted = formatShapedValue(
+      value,
+      shape,
+      args.vocabularies,
+      args.sources,
+      args.locale,
+    );
+    if (formatted === '') continue;
+    parts.push(`${label} : ${formatted}`);
+  }
+  return { text: parts.join(' · '), since };
+}
+
 export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
   const locale = useLocale();
   const t = useT();
+  const qualifierLabel = useQualifierLabel();
 
   const allowedTypeIds = useMemo(
     () => p.entityType.allowed_relations.filter((id) => p.relationTypes[id] !== undefined),
@@ -129,6 +304,22 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
     [allowedTypeIds, p.relationTypes, locale],
   );
 
+  // Which edge (index into `relations`) is open in the editor surface.
+  // ONE surface serves the whole block: a side sheet on mobile, an
+  // inline right-hand panel on desktop — same dual-mode as the
+  // property entry editor.
+  const [selected, setSelected] = useState<number | null>(null);
+  // lg breakpoint, decided post-hydration (SSR renders the sheet
+  // variant markup — it's portaled and closed, so nothing shows).
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1024px)');
+    setIsDesktop(mql.matches);
+    const onChange = (e: MediaQueryListEvent): void => setIsDesktop(e.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+
   function update(idx: number, next: Partial<RelationEntry>): void {
     const list = p.relations.slice() as RelationEntry[];
     const current = list[idx];
@@ -142,12 +333,7 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
     const current = list[idx];
     if (current === undefined) return;
     const qualifiers = { ...current.qualifiers };
-    if (
-      value === undefined
-      || value === null
-      || (typeof value === 'string' && value === '')
-      || (Array.isArray(value) && value.length === 0)
-    ) {
+    if (!hasRealValue(value)) {
       delete qualifiers[qualifierId];
     } else {
       qualifiers[qualifierId] = value;
@@ -163,38 +349,47 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
     const list = p.relations.slice();
     list.splice(idx, 1);
     p.onChange(list as RelationEntry[]);
+    // Keep the editor pointer coherent with the shifted list.
+    setSelected((prev) => {
+      if (prev === null) return null;
+      if (prev === idx) return null;
+      return prev > idx ? prev - 1 : prev;
+    });
   }
 
-  /** Append a new relation entry. `target` defaults to '' so the
-   *  single-target detailed-card path keeps its "blank card → fill
-   *  the target picker" UX. Multi-target groups pass the chosen
-   *  entity id directly so the new chip lands populated. */
-  function add(typeId: string, target = ''): void {
-    p.onChange([...p.relations, { type: typeId, target }]);
-  }
-
-  // Types revealed via the global "+ Add relation" picker that have no
-  // entry yet. For MULTI-concurrent types the old behaviour appended a
-  // blank `{target: ''}` entry, which rendered as an empty chip whose
-  // click opened the qualifier sheet — a dead end with no way to pick
-  // the target (2026-08 feedback, "Ami de"). Revealing the group
-  // instead shows its own target picker without fabricating an entry.
-  const [revealedTypes, setRevealedTypes] = useState<readonly string[]>([]);
-
-  function addFromGlobalPicker(typeId: string): void {
-    const rt = p.relationTypes[typeId];
-    if (rt?.allow_multiple_concurrent === true) {
-      setRevealedTypes((prev) => (prev.includes(typeId) ? prev : [...prev, typeId]));
-      return;
+  /** Move the editor to another edge (or close it via `null`). If the
+   *  edge being left never got a target, it is DISCARDED — mirror of
+   *  the property entries' "backing out of a never-filled entry"
+   *  rule, so phantom empty rows can't linger. */
+  function selectEdge(idx: number | null): void {
+    if (selected !== null && selected !== idx) {
+      const current = p.relations[selected];
+      if (current !== undefined && current.target === '') {
+        const list = p.relations.slice();
+        list.splice(selected, 1);
+        p.onChange(list as RelationEntry[]);
+        setSelected(idx !== null && idx > selected ? idx - 1 : idx);
+        return;
+      }
     }
-    add(typeId);
+    setSelected(idx);
   }
 
-  // Group entries by type so we can render multi-concurrent relations
-  // as ONE chip-multi card per type (family-of with 5 family members
-  // becomes one row instead of five). Preserve original index for
-  // single-target cards so `update` / `setQualifier` / `remove` keep
-  // pointing at the right slot.
+  /** "+ Add relation": append a blank edge of the picked type and open
+   *  its editor straight away (the target picker sits on top). */
+  function add(typeId: string): void {
+    const list = p.relations.slice() as RelationEntry[];
+    // Adding while an empty edge is open discards that edge first.
+    if (selected !== null && list[selected]?.target === '') {
+      list.splice(selected, 1);
+    }
+    list.push({ type: typeId, target: '' });
+    p.onChange(list);
+    setSelected(list.length - 1);
+  }
+
+  // Group entries by type so each relation type renders ONE group
+  // (label + stacked edge lines), in the order types first appear.
   type GroupedEntry = { entry: RelationEntry; index: number; };
   const groupedByType = useMemo(() => {
     const map = new Map<string, GroupedEntry[]>();
@@ -206,16 +401,86 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
     return map;
   }, [p.relations]);
 
-  // Render order: each type at most once, in the order it first
-  // appears in the relations array, followed by entry-less groups the
-  // global picker revealed (their picker is how the first entry lands).
-  const renderedTypes = useMemo(() => {
-    const out = [...groupedByType.keys()];
-    for (const typeId of revealedTypes) {
-      if (!out.includes(typeId)) out.push(typeId);
+  // Display names for every possible target of the types in use.
+  // Key-memoised so the array identity only changes when the SET of
+  // target types changes, not on every qualifier keystroke.
+  const targetTypesKey = useMemo(() => {
+    const s = new Set<string>();
+    for (const typeId of groupedByType.keys()) {
+      for (const target of p.relationTypes[typeId]?.valid_to_types ?? []) {
+        s.add(String(target));
+      }
     }
-    return out;
-  }, [groupedByType, revealedTypes]);
+    return [...s].sort().join('|');
+  }, [groupedByType, p.relationTypes]);
+  const targetTypeIds = useMemo(
+    () => (targetTypesKey === '' ? [] : targetTypesKey.split('|')),
+    [targetTypesKey],
+  );
+  const nameLookup = useEntityNameLookup(targetTypeIds, locale);
+
+  // Qualifier shapes per relation type in use — shared by the row
+  // summaries and the editor.
+  const shapesByType = useMemo(() => {
+    const map = new Map<string, readonly QualifierShape[]>();
+    for (const typeId of groupedByType.keys()) {
+      map.set(typeId, qualifierShapesFor(p.relationTypes[typeId], p.qualifierTypes, locale));
+    }
+    return map;
+  }, [groupedByType, p.relationTypes, p.qualifierTypes, locale]);
+
+  const activeEdge = selected !== null ? p.relations[selected] : undefined;
+  const activeRelationType = activeEdge !== undefined
+    ? p.relationTypes[activeEdge.type]
+    : undefined;
+  const activeIndex = selected;
+  const editorOpen = activeEdge !== undefined && activeIndex !== null;
+  const activeTargetName = activeEdge !== undefined
+    ? resolveTargetName(activeEdge.target, nameLookup)
+    : '';
+  const editorTitle = activeEdge === undefined
+    ? ''
+    : activeEdge.target !== '' && activeTargetName !== ''
+    ? `${activeTargetName} · ${
+      activeRelationType !== undefined
+        ? relationLabel(activeRelationType, locale)
+        : activeEdge.type
+    }`
+    : activeRelationType !== undefined
+    ? relationLabel(activeRelationType, locale)
+    : activeEdge.type;
+
+  const editorFields = editorOpen
+    ? (
+      <RelationEdgeFields
+        edge={activeEdge}
+        relationType={activeRelationType}
+        shapes={activeRelationType !== undefined
+          ? (shapesByType.get(activeEdge.type)
+            ?? qualifierShapesFor(activeRelationType, p.qualifierTypes, locale))
+          : qualifierShapesFor(undefined, p.qualifierTypes, locale)}
+        valueCtx={p.valueCtx}
+        vocabularies={p.vocabularies}
+        onTargetChange={(target) => update(activeIndex, { target })}
+        onSetQualifier={(qid, v) => setQualifier(activeIndex, qid, v)}
+      />
+    )
+    : null;
+
+  const removeButton = editorOpen
+    ? (
+      <Button
+        type='button'
+        variant='ghost'
+        size='sm'
+        className='text-muted-foreground hover:text-destructive hover:bg-destructive/10 w-full gap-1.5'
+        onClick={() => remove(activeIndex)}
+      >
+        <X className='size-3.5' />
+        {t('removeRelation')}
+      </Button>
+    )
+    : null;
 
   return (
     <section className='space-y-3'>
@@ -226,252 +491,203 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
         </span>
       </div>
 
-      {p.relations.length === 0
-        ? (
-          <div className='text-muted-foreground rounded-md border border-dashed p-4 text-center text-xs'>
-            {t('noRelations')}
-          </div>
-        )
-        : (
-          <ul className='space-y-2'>
-            {renderedTypes.map((typeId) => {
-              const rt = p.relationTypes[typeId];
-              const groupEntries = groupedByType.get(typeId) ?? [];
-              const multi = rt?.allow_multiple_concurrent === true;
-              // Anchor lives on the LI wrapper so PropertyNav's
-              // scroll-to (`rel-{typeId}`) lands at this group's
-              // top edge, with scroll-mt-20 to clear the sticky
-              // header chrome — same offset the property anchors
-              // use upstream.
-              if (multi && rt !== undefined) {
-                // Multi-concurrent: chips per target, each with its
-                // own qualifier sheet (since/until/source/event/…)
-                // so a relation that changes over chapters can carry
-                // its temporal scope per entry.
-                return (
-                  <li
-                    key={`group-${typeId}`}
-                    id={relationAnchorId(typeId)}
-                    className='scroll-mt-20'
-                  >
-                    <MultiTargetRelationGroup
-                      relationType={rt}
-                      groupEntries={groupEntries}
-                      valueCtx={p.valueCtx}
-                      vocabularies={p.vocabularies}
-                      qualifierTypes={p.qualifierTypes}
-                      onAddTarget={(target) => add(typeId, target)}
-                      onRemoveAt={(index) => remove(index)}
-                      onSetQualifierAt={(index, qid, v) => setQualifier(index, qid, v)}
-                      onSetTargetAt={(index, target) => update(index, { target })}
-                    />
-                  </li>
-                );
-              }
-              return (
-                <li
-                  key={`detailed-${typeId}`}
-                  id={relationAnchorId(typeId)}
-                  className='space-y-2 scroll-mt-20'
-                >
-                  {groupEntries.map(({ entry, index }) => (
-                    <RelationCard
-                      key={`${entry.type}-${index}`}
-                      relation={entry}
-                      relationType={p.relationTypes[entry.type]}
-                      vocabularies={p.vocabularies}
-                      qualifierTypes={p.qualifierTypes}
-                      valueCtx={p.valueCtx}
-                      onTargetChange={(target) => update(index, { target })}
-                      onSetQualifier={(qid, v) => setQualifier(index, qid, v)}
-                      onRemove={() => remove(index)}
-                    />
-                  ))}
-                </li>
-              );
-            })}
-          </ul>
-        )}
+      {
+        /* Desktop editing slot: when an edge is selected the group
+          list narrows and the editor renders INLINE to its right —
+          a local two-column grid, not a popover. On mobile the
+          editor stays a side sheet. */
+      }
+      <div
+        className={editorOpen && isDesktop
+          ? 'grid grid-cols-[minmax(0,1fr)_minmax(0,24rem)] items-start gap-5'
+          : 'min-w-0'}
+      >
+        <div className='min-w-0 space-y-3'>
+          {p.relations.length === 0
+            ? (
+              <div className='text-muted-foreground rounded-md border border-dashed p-4 text-center text-xs'>
+                {t('noRelations')}
+              </div>
+            )
+            : (
+              <ul className='space-y-3'>
+                {[...groupedByType.entries()].map(([typeId, groupEntries]) => {
+                  const rt = p.relationTypes[typeId];
+                  const shapes = shapesByType.get(typeId) ?? [];
+                  return (
+                    <li
+                      key={typeId}
+                      id={relationAnchorId(typeId)}
+                      className='scroll-mt-20'
+                    >
+                      <Label className='text-muted-foreground text-xs font-semibold uppercase tracking-wide'>
+                        {rt !== undefined ? relationLabel(rt, locale) : typeId}
+                      </Label>
+                      <div className='mt-0.5 space-y-0.5'>
+                        {groupEntries.map(({ entry, index }) => {
+                          const name = resolveTargetName(entry.target, nameLookup);
+                          const summary = summariseEdge(entry, shapes, {
+                            vocabularies: p.vocabularies,
+                            sources: p.valueCtx.sources,
+                            locale,
+                            qualifierLabel,
+                          });
+                          return (
+                            <button
+                              key={index}
+                              type='button'
+                              onClick={() => selectEdge(index)}
+                              aria-haspopup='dialog'
+                              className={`-mx-1 flex w-full items-center gap-2 rounded-md px-1 py-1 text-left transition-colors ${
+                                selected === index ? 'bg-accent/60' : 'hover:bg-accent/40'
+                              }`}
+                            >
+                              <span className='min-w-0 flex-1 break-words text-sm'>
+                                {name !== ''
+                                  ? name
+                                  : <span className='text-amber-600 italic'>{t('notSet')}</span>}
+                                {summary.text !== ''
+                                  ? (
+                                    <span className='text-muted-foreground ml-2 text-xs'>
+                                      {summary.text}
+                                    </span>
+                                  )
+                                  : null}
+                              </span>
+                              {summary.since !== null
+                                ? (
+                                  <span className='text-muted-foreground shrink-0 text-xs tabular-nums'>
+                                    {summary.since}
+                                  </span>
+                                )
+                                : null}
+                              <ChevronRight
+                                className='text-muted-foreground/60 size-3.5 shrink-0'
+                                aria-hidden
+                              />
+                            </button>
+                          );
+                        })}
+                      </div>
+                    </li>
+                  );
+                })}
+              </ul>
+            )}
 
-      {allowedTypeIds.length > 0
+          {allowedTypeIds.length > 0
+            ? (
+              <Combobox
+                value={undefined}
+                onChange={(typeId) => add(typeId)}
+                items={adderItems}
+                placeholder={`+ ${t('addRelation')} (${allowedTypeIds.length} ${
+                  t('typesAvailable')
+                })`}
+                emptyText={t('noMatch')}
+              />
+            )
+            : null}
+        </div>
+
+        {editorOpen && isDesktop
+          ? (
+            <div className='sticky top-4'>
+              <div className='border-border bg-card/40 rounded-lg border'>
+                <div className='border-border flex items-center gap-2 border-b px-3 py-2.5'>
+                  <h3 className='min-w-0 flex-1 truncate text-xs font-semibold uppercase tracking-wide'>
+                    {editorTitle}
+                  </h3>
+                  <Button
+                    type='button'
+                    variant='ghost'
+                    size='icon'
+                    className='size-6 shrink-0'
+                    onClick={() => selectEdge(null)}
+                    aria-label={t('close')}
+                  >
+                    <X className='size-3.5' />
+                  </Button>
+                </div>
+                <div className='space-y-3 px-3 py-3'>
+                  {editorFields}
+                </div>
+                <div className='border-border border-t px-3 py-2'>{removeButton}</div>
+              </div>
+            </div>
+          )
+          : null}
+      </div>
+
+      {editorOpen && !isDesktop
         ? (
-          <Combobox
-            value={undefined}
-            onChange={(typeId) => addFromGlobalPicker(typeId)}
-            items={adderItems}
-            placeholder={`+ ${t('addRelation')} (${allowedTypeIds.length} ${t('typesAvailable')})`}
-            emptyText={t('noMatch')}
-          />
+          <SideSheet
+            open
+            onClose={() => selectEdge(null)}
+            title={editorTitle}
+            {...(removeButton !== null ? { footer: removeButton } : {})}
+          >
+            {editorFields}
+          </SideSheet>
         )
         : null}
     </section>
   );
 }
 
-function relationLabel(rt: RelationTypeSchema, locale: Locale): string {
-  return rt.labels[locale]?.active ?? rt.labels.en.active;
-}
-
-type RelationCardProps = {
-  relation: RelationEntry;
+/** Shared body of the edge editor: target picker on top, then EVERY
+ *  qualifier of the relation type in the list-all pattern. */
+function RelationEdgeFields(p: {
+  edge: RelationEntry;
   relationType: RelationTypeSchema | undefined;
-  vocabularies: Record<string, VocabularySchema>;
-  qualifierTypes: Record<string, QualifierTypeSchema>;
+  shapes: readonly QualifierShape[];
   valueCtx: ValueInputContext;
+  vocabularies: Record<string, VocabularySchema>;
   onTargetChange: (target: string) => void;
   onSetQualifier: (qid: string, value: unknown) => void;
-  onRemove: () => void;
-};
-
-function RelationCard(p: RelationCardProps): JSX.Element {
-  const locale = useLocale();
-  const t = useT();
+}): JSX.Element {
   const qLabel = useQualifierLabel();
+  const qualifiers = p.edge.qualifiers ?? {};
 
-  const declaredExtra: readonly QualifierShape[] = useMemo(() => {
-    if (p.relationType === undefined) return [];
-    return p.relationType.qualifiers
-      .filter((q) => q.id !== 'since' && q.id !== 'until') // pinned inline
-      .map((q) => {
-        // Registry labels first (ADR-078) — relation-declared
-        // qualifiers like relation_kind stay localized instead of
-        // falling back to a humanised English id.
-        const qt = p.qualifierTypes[String(q.id)];
-        return {
-          id: q.id,
-          label: qt?.labels[locale] ?? qt?.labels.en ?? humanize(q.id),
-          valueType: q.value_type as ValueType,
-          ...(q.enum_ref !== undefined ? { enumRef: q.enum_ref } : {}),
-          ...(q.required === true ? { required: true } : {}),
-        };
-      });
-  }, [p.relationType, p.qualifierTypes, locale]);
-
-  // De-duplicate base qualifiers that the relation type already declares.
-  const baseQualifiers = useMemo(() => {
-    const declared = new Set<string>(
-      p.relationType?.qualifiers.map((q) => String(q.id)) ?? [],
-    );
-    return BASE_RELATION_QUALIFIERS.filter((q) => !declared.has(q.id));
-  }, [p.relationType]);
-
-  const moreQualifiers = [...declaredExtra, ...baseQualifiers];
-  const qualifierById = useMemo(
-    () => new Map(moreQualifiers.map((q) => [q.id, q])),
-    [moreQualifiers],
+  const shapeById = useMemo(
+    () => new Map(p.shapes.map((q) => [q.id, q])),
+    [p.shapes],
   );
-  const sinceDecl = p.relationType?.qualifiers.find((q) => q.id === 'since');
-  const untilDecl = p.relationType?.qualifiers.find((q) => q.id === 'until');
 
   const setIds = useMemo(() => {
     const s = new Set<string>();
-    for (const q of moreQualifiers) {
-      const v = p.relation.qualifiers?.[q.id];
-      if (v === undefined || v === null) continue;
-      if (typeof v === 'string' && v === '') continue;
-      if (Array.isArray(v) && v.length === 0) continue;
-      s.add(q.id);
+    for (const q of p.shapes) {
+      if (hasRealValue(qualifiers[q.id])) s.add(q.id);
     }
     return s;
-  }, [moreQualifiers, p.relation.qualifiers]);
-  const setQualifierCount = setIds.size;
+  }, [p.shapes, qualifiers]);
 
   return (
-    <div className='border-input/70 bg-card/40 relative flex flex-col gap-2 rounded-md border p-2'>
-      {
-        /* Isolated × in the top-right corner — separated from any other
-          control to avoid mis-clicks on a destructive action. */
-      }
-      <Button
-        type='button'
-        variant='ghost'
-        size='icon'
-        className='absolute right-0.5 top-0.5 size-6 text-muted-foreground hover:text-destructive hover:bg-destructive/10'
-        onClick={p.onRemove}
-        aria-label={t('removeRelation')}
-      >
-        <X className='size-3' />
-      </Button>
-
-      <div className='flex items-center gap-2 pr-12'>
-        <Badge variant='secondary' className='font-normal'>
-          {p.relationType !== undefined ? relationLabel(p.relationType, locale) : p.relation.type}
-        </Badge>
+    <>
+      <div className='border-border/40 border-b pb-3'>
+        <RelationQualifierField
+          id='target'
+          label={humanize('target')}
+          valueType='entity_ref'
+          restrictTo={p.relationType?.valid_to_types}
+          required
+          value={p.edge.target}
+          valueCtx={p.valueCtx}
+          vocabularies={p.vocabularies}
+          onChange={(v) => p.onTargetChange(typeof v === 'string' ? v : '')}
+        />
       </div>
 
-      <RelationQualifierField
-        id='target'
-        label={humanize('target')}
-        valueType='entity_ref'
-        restrictTo={p.relationType?.valid_to_types}
-        required
-        value={p.relation.target}
-        valueCtx={p.valueCtx}
-        vocabularies={p.vocabularies}
-        onChange={(v) => p.onTargetChange(typeof v === 'string' ? v : '')}
-      />
-
-      {sinceDecl !== undefined
+      {p.shapes.length > 0
         ? (
-          <RelationQualifierField
-            id='since'
-            label={humanize('since')}
-            valueType='source_ref'
-            required={sinceDecl.required}
-            multi
-            value={p.relation.qualifiers?.['since']}
-            valueCtx={p.valueCtx}
-            vocabularies={p.vocabularies}
-            onChange={(v) => p.onSetQualifier('since', v)}
-          />
-        )
-        : null}
-
-      {untilDecl !== undefined
-        ? (
-          <RelationQualifierField
-            id='until'
-            label={humanize('until')}
-            valueType='source_ref'
-            required={untilDecl.required}
-            multi
-            value={p.relation.qualifiers?.['until']}
-            valueCtx={p.valueCtx}
-            vocabularies={p.vocabularies}
-            onChange={(v) => p.onSetQualifier('until', v)}
-          />
-        )
-        : null}
-
-      {moreQualifiers.length > 0
-        ? (
-          <QualifierSheet
-            trigger={
-              <Button
-                type='button'
-                variant='ghost'
-                size='sm'
-                className='text-muted-foreground -ml-1 h-6 gap-1 px-1.5 text-[10px]'
-                aria-label={t('moreOptions')}
-              >
-                <MoreHorizontal className='size-3' />
-                {t('moreOptions')}
-                {setQualifierCount > 0
-                  ? (
-                    <span className='bg-primary text-primary-foreground inline-flex h-3 min-w-3 items-center justify-center rounded-full px-1 text-[8px] font-medium leading-none'>
-                      {setQualifierCount}
-                    </span>
-                  )
-                  : null}
-              </Button>
-            }
-            qualifiers={moreQualifiers.map((q) => ({
+          <QualifierRowList
+            qualifiers={p.shapes.map((q) => ({
               id: q.id,
               label: qLabel(q.id, q.label),
             }))}
             setIds={setIds}
             renderField={(id) => {
-              const q = qualifierById.get(id);
+              const q = shapeById.get(id);
               if (q === undefined) return null;
               return (
                 <RelationQualifierField
@@ -483,7 +699,7 @@ function RelationCard(p: RelationCardProps): JSX.Element {
                   required={q.required}
                   restrictTo={q.entityTypeFilter}
                   multi={q.multi}
-                  value={p.relation.qualifiers?.[id]}
+                  value={qualifiers[id]}
                   valueCtx={p.valueCtx}
                   vocabularies={p.vocabularies}
                   onChange={(v) => p.onSetQualifier(id, v)}
@@ -493,127 +709,12 @@ function RelationCard(p: RelationCardProps): JSX.Element {
           />
         )
         : null}
-    </div>
+    </>
   );
 }
 
-/**
- * Group card for `allow_multiple_concurrent` relation types.
- *
- * Each relation entry of the type renders as its own clickable chip
- * showing the target's translated name. Clicking the chip opens a
- * QualifierSheet on that one entry — so a relation like `ally-of`
- * (which legitimately changes across the story) can carry its own
- * `since` / `until` / `source` / `event` / `canon_scope` per target,
- * without forcing the whole group back into detailed-card mode.
- *
- * Chips with at least one populated qualifier wear a small dot so
- * the maintainer can see at a glance which entries have temporal
- * metadata vs which are bare "this relation exists somewhere".
- *
- * Adding a new target appends a fresh relation entry with empty
- * qualifiers. The add-picker filters out already-targeted entities
- * AND restricts to the relation's `valid_to_types`.
- */
-function MultiTargetRelationGroup(p: {
-  relationType: RelationTypeSchema;
-  groupEntries: readonly { entry: RelationEntry; index: number; }[];
-  valueCtx: ValueInputContext;
-  vocabularies: Record<string, VocabularySchema>;
-  qualifierTypes: Record<string, QualifierTypeSchema>;
-  onAddTarget: (target: string) => void;
-  onRemoveAt: (index: number) => void;
-  onSetQualifierAt: (index: number, qid: string, value: unknown) => void;
-  onSetTargetAt: (index: number, target: string) => void;
-}): JSX.Element {
-  const locale = useLocale();
-  const t = useT();
-  const nameLookup = useEntityNameLookup(p.relationType.valid_to_types, locale);
-
-  // The full qualifier list applies to every entry of this type:
-  // declared qualifiers (including the inline since/until) + the
-  // universal base set (epistemic_status, event, source, …).
-  const qualifierShapes: readonly QualifierShape[] = useMemo(() => {
-    const declared = p.relationType.qualifiers.map((q) => {
-      const qt = p.qualifierTypes[String(q.id)];
-      return {
-        id: q.id,
-        label: qt?.labels[locale] ?? qt?.labels.en ?? humanize(q.id),
-        valueType: q.value_type as ValueType,
-        ...(q.enum_ref !== undefined ? { enumRef: q.enum_ref } : {}),
-        ...(q.required === true ? { required: true } : {}),
-      };
-    });
-    const declaredIds = new Set<string>(declared.map((d) => String(d.id)));
-    const base = BASE_RELATION_QUALIFIERS.filter((q) => !declaredIds.has(q.id));
-    return [...declared, ...base];
-  }, [p.relationType, p.qualifierTypes, locale]);
-
-  const taken = useMemo(
-    () => new Set(p.groupEntries.map((g) => g.entry.target).filter((t) => t !== '')),
-    [p.groupEntries],
-  );
-
-  return (
-    <div className='border-input/70 bg-card/40 flex flex-col gap-2 rounded-md border p-2'>
-      <div className='flex items-center gap-2'>
-        <Badge variant='secondary' className='font-normal'>
-          {relationLabel(p.relationType, locale)}
-        </Badge>
-        <span className='text-muted-foreground text-[10px]'>
-          {p.groupEntries.length} {t('total')}
-        </span>
-      </div>
-
-      <div className='flex flex-wrap items-center gap-1.5'>
-        {p.groupEntries.map(({ entry, index }) =>
-          entry.target === ''
-            ? (
-              // Legacy blank entry (pre-fix drafts): render the target
-              // picker in place so it can be FILLED, plus a remove ✕ —
-              // never a dead "non défini" chip (2026-08 feedback).
-              <span key={`empty-${index}`} className='flex min-w-56 items-center gap-1'>
-                <span className='min-w-0 flex-1'>
-                  <AddTargetButton
-                    restrictTo={p.relationType.valid_to_types}
-                    entityTypes={p.valueCtx.entityTypes}
-                    excluded={taken}
-                    onAdd={(target) => p.onSetTargetAt(index, target)}
-                  />
-                </span>
-                <button
-                  type='button'
-                  className='text-muted-foreground hover:text-destructive shrink-0 rounded-sm p-0.5'
-                  onClick={() => p.onRemoveAt(index)}
-                  aria-label={t('removeRelation')}
-                >
-                  <X className='size-3' />
-                </button>
-              </span>
-            )
-            : (
-              <TargetChip
-                key={`${entry.target}-${index}`}
-                entry={entry}
-                displayName={resolveTargetName(entry.target, nameLookup)}
-                relationType={p.relationType}
-                qualifierShapes={qualifierShapes}
-                valueCtx={p.valueCtx}
-                vocabularies={p.vocabularies}
-                onRemove={() => p.onRemoveAt(index)}
-                onSetQualifier={(qid, v) => p.onSetQualifierAt(index, qid, v)}
-              />
-            )
-        )}
-        <AddTargetButton
-          restrictTo={p.relationType.valid_to_types}
-          entityTypes={p.valueCtx.entityTypes}
-          excluded={taken}
-          onAdd={p.onAddTarget}
-        />
-      </div>
-    </div>
-  );
+function relationLabel(rt: RelationTypeSchema, locale: Locale): string {
+  return rt.labels[locale]?.active ?? rt.labels.en.active;
 }
 
 /** Format `type:slug` for display, preferring the loaded translated
@@ -660,175 +761,6 @@ function useEntityNameLookup(
     }
     return m;
   }, [entries, locale]);
-}
-
-/** Single chip for one relation entry. Click body → open
- *  qualifier sheet. Click × → remove the entry. Qualifier count
- *  badge lights up when any qualifier carries a real value. */
-function TargetChip(p: {
-  entry: RelationEntry;
-  displayName: string;
-  relationType: RelationTypeSchema;
-  qualifierShapes: readonly QualifierShape[];
-  valueCtx: ValueInputContext;
-  vocabularies: Record<string, VocabularySchema>;
-  onRemove: () => void;
-  onSetQualifier: (qid: string, value: unknown) => void;
-}): JSX.Element {
-  const t = useT();
-  const locale = useLocale();
-  const qLabel = useQualifierLabel();
-  const qualifiers = p.entry.qualifiers ?? {};
-
-  const setIds = useMemo(() => {
-    const s = new Set<string>();
-    for (const q of p.qualifierShapes) {
-      const v = qualifiers[q.id];
-      if (v === undefined || v === null) continue;
-      if (typeof v === 'string' && v === '') continue;
-      if (Array.isArray(v) && v.length === 0) continue;
-      s.add(q.id);
-    }
-    return s;
-  }, [p.qualifierShapes, qualifiers]);
-
-  const qualifierById = useMemo(
-    () => new Map(p.qualifierShapes.map((q) => [q.id, q])),
-    [p.qualifierShapes],
-  );
-
-  return (
-    <div className='bg-muted text-foreground inline-flex items-center gap-0.5 rounded-md px-0.5 py-0.5 text-[11px]'>
-      <QualifierSheet
-        title={`${p.displayName} · ${relationLabel(p.relationType, locale)}`}
-        trigger={
-          <button
-            type='button'
-            className='hover:bg-muted-foreground/10 inline-flex items-center gap-1 rounded-[2px] px-1.5 py-0.5 transition-colors'
-          >
-            <span className='truncate max-w-[14rem]'>
-              {p.displayName !== ''
-                ? p.displayName
-                : <span className='text-amber-600 italic'>{t('notSet')}</span>}
-            </span>
-            {setIds.size > 0
-              ? (
-                <span
-                  className='bg-primary text-primary-foreground inline-flex h-3 min-w-3 items-center justify-center rounded-full px-1 text-[8px] font-medium leading-none'
-                  title={`${setIds.size} qualifier${setIds.size === 1 ? '' : 's'}`}
-                >
-                  {setIds.size}
-                </span>
-              )
-              : null}
-          </button>
-        }
-        qualifiers={p.qualifierShapes.map((q) => ({
-          id: q.id,
-          label: qLabel(q.id, q.label),
-        }))}
-        setIds={setIds}
-        renderField={(id) => {
-          const q = qualifierById.get(id);
-          if (q === undefined) return null;
-          return (
-            <RelationQualifierField
-              key={id}
-              id={id}
-              label={q.label}
-              valueType={q.valueType}
-              enumRef={q.enumRef}
-              required={q.required}
-              restrictTo={q.entityTypeFilter}
-              multi={q.multi}
-              value={qualifiers[id]}
-              valueCtx={p.valueCtx}
-              vocabularies={p.vocabularies}
-              onChange={(v) => p.onSetQualifier(id, v)}
-            />
-          );
-        }}
-      />
-      <button
-        type='button'
-        className='text-muted-foreground hover:text-destructive shrink-0 rounded-[2px] p-0.5'
-        onClick={p.onRemove}
-        aria-label={t('removeRelation')}
-        title={t('removeRelation')}
-      >
-        <X className='size-3' />
-      </button>
-    </div>
-  );
-}
-
-/** Single-pick combobox that adds one new chip per selection, then
- *  resets itself. Already-targeted entities are filtered out. */
-function AddTargetButton(p: {
-  restrictTo: readonly string[];
-  entityTypes: readonly { id: string; label: string; }[];
-  excluded: ReadonlySet<string>;
-  onAdd: (target: string) => void;
-}): JSX.Element {
-  const locale = useLocale();
-  const t = useT();
-  const allowedTypes = useMemo(() => {
-    const allowed = new Set(p.restrictTo);
-    return p.entityTypes.filter((et) => allowed.has(et.id));
-  }, [p.entityTypes, p.restrictTo]);
-
-  const [entriesByType, setEntriesByType] = useState<
-    ReadonlyMap<string, readonly EntityRef[]>
-  >(new Map());
-  useEffect(() => {
-    if (allowedTypes.length === 0) return;
-    let cancelled = false;
-    void Promise.all(
-      allowedTypes.map(async (et) => {
-        try {
-          return [et.id, await api.listEntities(et.id)] as const;
-        } catch {
-          return [et.id, [] as readonly EntityRef[]] as const;
-        }
-      }),
-    ).then((pairs) => {
-      if (!cancelled) setEntriesByType(new Map(pairs));
-    });
-    return () => {
-      cancelled = true;
-    };
-  }, [allowedTypes]);
-
-  const items = useMemo(() => {
-    const out: { value: string; label: string; searchText: string; hint: string; }[] = [];
-    for (const et of allowedTypes) {
-      const rows = entriesByType.get(et.id) ?? [];
-      for (const e of rows) {
-        if (p.excluded.has(e.id)) continue;
-        const name = e.displayName[locale] ?? e.displayName.en ?? String(e.slug);
-        out.push({
-          value: e.id,
-          label: allowedTypes.length > 1 ? `${et.label} · ${name}` : name,
-          searchText: `${name} ${e.slug} ${e.id} ${et.label}`,
-          hint: String(e.slug),
-        });
-      }
-    }
-    return out;
-  }, [allowedTypes, entriesByType, p.excluded, locale]);
-
-  return (
-    <div className='inline-flex w-44'>
-      <Combobox
-        value={undefined}
-        onChange={(id) => p.onAdd(id)}
-        items={items}
-        placeholder={`+ ${t('addRelation')}`}
-        emptyText={t('noMatch')}
-        triggerClassName='h-7 border-dashed text-[11px] font-normal'
-      />
-    </div>
-  );
 }
 
 function RelationQualifierField(
@@ -914,4 +846,139 @@ function humanize(id: string): string {
     .split(/[_-]/)
     .map((p) => p.length > 0 ? p[0]!.toUpperCase() + p.slice(1) : p)
     .join(' ');
+}
+
+export type InferredRelationsProps = {
+  /** Entity coordinates for `GET /api/entities/:type/:slug/links`. */
+  entityType: string;
+  entitySlug: string;
+  relationTypes: Record<string, RelationTypeSchema>;
+  qualifierTypes: Record<string, QualifierTypeSchema>;
+  vocabularies: Record<string, VocabularySchema>;
+};
+
+/**
+ * Read-only "inverse relations (automatic)" section — the INCOMING
+ * edges of the entity, i.e. relations stored on OTHER entities whose
+ * inverse the build pipeline generates. Nothing here is editable:
+ * the JSON stores one direction only (by design), so each row wears
+ * an "auto" badge and links to the entity that stores the edge.
+ *
+ * Rendered by the entity route between the form and the links panel
+ * (RelationsEditor itself is instantiated inside EntityForm without
+ * type/slug, so this lives in its own component). Renders nothing
+ * while loading, on error (the links panel below owns error
+ * reporting + retry), or when there is no incoming edge — no layout
+ * shift for the common case.
+ */
+export function InferredRelations(p: InferredRelationsProps): JSX.Element | null {
+  const t = useT();
+  const locale = useLocale();
+  const { data } = useApiResource(
+    () => api.entityLinks(p.entityType, p.entitySlug),
+    [p.entityType, p.entitySlug],
+  );
+
+  const incoming: readonly IncomingLinkRow[] = data?.incoming ?? [];
+  // Group by relation type, first-seen order — same as the outgoing
+  // groups above, but labelled with the type's INVERSE label since
+  // the rows read from this entity's point of view.
+  const groups = useMemo(() => {
+    const map = new Map<string, IncomingLinkRow[]>();
+    for (const row of incoming) {
+      const list = map.get(row.relationType) ?? [];
+      list.push(row);
+      map.set(row.relationType, list);
+    }
+    return [...map.entries()];
+  }, [incoming]);
+
+  if (incoming.length === 0) return null;
+
+  const ctx: LabelCtx = {
+    relationTypes: p.relationTypes,
+    qualifierTypes: p.qualifierTypes,
+    vocabularies: p.vocabularies,
+    locale,
+  };
+
+  return (
+    <section className='space-y-2' aria-label={t('inferredRelationsTitle')}>
+      <div className='flex items-baseline justify-between gap-2'>
+        <h2 className='text-base font-semibold'>{t('inferredRelationsTitle')}</h2>
+        <span className='text-muted-foreground text-xs'>
+          {incoming.length} {t('total')}
+        </span>
+      </div>
+      <p className='text-muted-foreground text-xs'>{t('inferredRelationsHint')}</p>
+      <div className='space-y-3'>
+        {groups.map(([relationType, rows]) => {
+          const rt = p.relationTypes[relationType];
+          const label = rt?.labels[locale]?.inverse ?? rt?.labels.en.inverse ?? relationType;
+          return (
+            <div key={relationType}>
+              <Label className='text-muted-foreground text-xs font-semibold uppercase tracking-wide'>
+                {label}
+              </Label>
+              <ul className='divide-foreground/5 mt-0.5 divide-y'>
+                {rows.map((row, i) => {
+                  const name = row.sourceDisplayName[locale]
+                    ?? row.sourceDisplayName.en
+                    ?? row.sourceEntityId;
+                  const qualifierText = formatQualifiers(relationType, row.qualifiers, ctx);
+                  return (
+                    <li
+                      key={`${row.sourceEntityId}-${i}`}
+                      className='flex items-center gap-2 py-1.5'
+                    >
+                      <span className='min-w-0 flex-1 break-words text-sm'>
+                        {row.sourceRoute !== null
+                          ? (
+                            <Link
+                              to='/types/$type/$slug'
+                              params={row.sourceRoute}
+                              className='font-medium hover:underline'
+                            >
+                              {name}
+                            </Link>
+                          )
+                          : <span className='font-mono text-xs'>{row.sourceEntityId}</span>}
+                        {qualifierText !== ''
+                          ? (
+                            <span className='text-muted-foreground ml-2 text-xs'>
+                              {qualifierText}
+                            </span>
+                          )
+                          : null}
+                      </span>
+                      <Badge
+                        variant='outline'
+                        className='text-muted-foreground shrink-0 font-normal'
+                        title={t('inferredRelationsHint')}
+                      >
+                        {t('autoBadge')}
+                      </Badge>
+                      {row.sourceRoute !== null
+                        ? (
+                          <Link
+                            to='/types/$type/$slug'
+                            params={row.sourceRoute}
+                            title={t('linksEditOnOther')}
+                            aria-label={t('linksEditOnOther')}
+                            className='text-muted-foreground hover:text-foreground shrink-0 p-1 transition-colors'
+                          >
+                            <Pencil className='size-3' aria-hidden />
+                          </Link>
+                        )
+                        : null}
+                    </li>
+                  );
+                })}
+              </ul>
+            </div>
+          );
+        })}
+      </div>
+    </section>
+  );
 }

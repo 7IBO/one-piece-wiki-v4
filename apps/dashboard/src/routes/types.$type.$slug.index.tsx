@@ -23,6 +23,7 @@ import { EntityLinksPanel } from '../components/EntityLinksPanel';
 import { LoadFailed } from '../components/LoadFailed';
 import { EntityForm } from '../form/EntityForm';
 import { useLocale, useT } from '../form/locale';
+import { InferredRelations } from '../form/RelationsEditor';
 import { useApiResource } from '../hooks/use-api-resource';
 
 export const Route = createFileRoute('/types/$type/$slug/')({
@@ -280,6 +281,13 @@ function EntityEditComponent(): JSX.Element {
             },
           });
         }}
+      />
+      <InferredRelations
+        entityType={type}
+        entitySlug={slug}
+        relationTypes={schemas.relationTypes}
+        qualifierTypes={schemas.qualifierTypes}
+        vocabularies={schemas.vocabularies}
       />
       <EntityLinksPanel
         type={type}
