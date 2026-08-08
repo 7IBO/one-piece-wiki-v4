@@ -88,6 +88,14 @@ export function forUniverse(
           ? v
           : { ...v, entity_type_filter: v.entity_type_filter.filter(here) },
     ),
+    rules: scopedMap(
+      catalogue.rules,
+      universeId,
+      (v) =>
+        v.applies_to_entity_types === undefined
+          ? v
+          : { ...v, applies_to_entity_types: v.applies_to_entity_types.filter(here) },
+    ),
     errors: catalogue.errors,
   };
 }

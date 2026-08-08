@@ -233,7 +233,10 @@ function TypeListComponent(): JSX.Element {
         <Button
           type='button'
           variant='outline'
-          size='icon-lg'
+          size='icon'
+          // Match the Select trigger heights (h-10 mobile / h-8 sm+) so
+          // the toolbar reads as one row (2026-08 feedback).
+          className='size-10 shrink-0 sm:size-8'
           onClick={() => setSortDir((d) => (d === 'asc' ? 'desc' : 'asc'))}
           aria-label={sortDir === 'asc' ? t('sortDescending') : t('sortAscending')}
         >

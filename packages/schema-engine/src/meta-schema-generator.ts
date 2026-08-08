@@ -15,6 +15,7 @@ import {
   PropertyTypeSchema,
   QualifierTypeSchema,
   RelationTypeSchema,
+  RuleSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
 import { mkdir, writeFile } from 'node:fs/promises';
@@ -30,6 +31,7 @@ const META_SCHEMAS: ReadonlyArray<readonly [string, ZodTypeAny]> = [
   ['relation-type', RelationTypeSchema],
   ['vocabulary', VocabularySchema],
   ['qualifier-type', QualifierTypeSchema],
+  ['rule', RuleSchema],
 ];
 
 /**

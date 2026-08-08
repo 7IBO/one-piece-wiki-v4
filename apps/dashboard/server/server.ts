@@ -5,8 +5,10 @@
  *   GET  /api/schemas
  *   GET  /api/sources
  *   GET  /api/i18n-keys
+ *   GET  /api/audit                        cross-type audit rows (/explore)
  *   GET  /api/entities/:type
  *   GET  /api/entities/:type/:slug         { data, sha }
+ *   GET  /api/entities/:type/:slug/links   { outgoing, incoming, conflicts }
  *
  * Auth (ADR-017 — stateless signed-cookie sessions):
  *   GET  /api/auth/login/github             302 to GitHub OAuth
@@ -56,10 +58,12 @@ import { randomBytes } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promoteAndMergePR, rejectAndCleanupPR } from './admin-promote.ts';
+import { buildAuditRow } from './audit.ts';
 import { type DashboardSession, readDashboardSession } from './auth.ts';
 import { completenessExpectation, computeCompleteness } from './completeness.ts';
 import { dashboardDataSource } from './data-source.ts';
 import { classifyDataPath, diffEntityFile, diffTranslationFile } from './diff.ts';
+import { computeEntityLinks } from './links.ts';
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
 import { buildCookie, clearCookie, newAnonymousSession, newGithubSession } from './session.ts';
 
@@ -292,6 +296,7 @@ async function handleSchemas(): Promise<Response> {
     relationTypes: Object.fromEntries(snap.validated.relationTypes),
     vocabularies: Object.fromEntries(snap.validated.vocabularies),
     qualifierTypes: Object.fromEntries(snap.validated.qualifierTypes),
+    rules: Object.fromEntries(snap.validated.rules),
   });
 }
 
@@ -361,6 +366,46 @@ async function handleI18nKeys(): Promise<Response> {
   }
   const keys = [...seen].sort();
   return json(keys);
+}
+
+/**
+ * Cross-type audit for the `/explore` data explorer: one row per
+ * entity in the snapshot with completeness, the LIST of expected
+ * fields still missing, i18n keys lacking EN/FR text, and every
+ * property value pre-rendered server-side (translated `value_key`,
+ * vocabulary labels, number+unit, boolean ✓/×, ref display names) so
+ * the client stays dumb. All per-entity computation is pure in
+ * `server/audit.ts` (unit-tested); this handler only gathers the
+ * snapshot + per-entity translations + display names. Response is a
+ * few hundred KB at catalogue scale — accepted (same O(entities)
+ * budget as /api/sources).
+ */
+async function handleAudit(): Promise<Response> {
+  const snap = await snapshot();
+  const names = await buildDisplayNames(snap);
+  const rows = await Promise.all(
+    [...snap.entities.values()].map(async (entity) => {
+      const fileBase = entity.id.split(':')[1] ?? '';
+      const translations = await readTranslationsFor(entity.type, fileBase);
+      return buildAuditRow(
+        { id: entity.id, type: entity.type, data: entity.data },
+        {
+          entityType: snap.validated.entityTypes.get(entity.type),
+          propertyTypes: snap.validated.propertyTypes,
+          vocabularies: snap.validated.vocabularies,
+          translations,
+          displayName: names.get(entity.id) ?? { en: null, fr: null },
+          displayNameFor: (id) => names.get(id),
+        },
+      );
+    }),
+  );
+  // Stable order: type buckets, then display name (EN) / slug within.
+  rows.sort((a, b) => {
+    if (a.type !== b.type) return a.type.localeCompare(b.type);
+    return (a.displayName.en ?? a.slug).localeCompare(b.displayName.en ?? b.slug);
+  });
+  return json({ rows });
 }
 
 async function handleListEntities(type: string): Promise<Response> {
@@ -665,6 +710,57 @@ async function handleGetCast(type: string, slug: string): Promise<Response> {
       slug: source.data['slug'] ?? slug,
     },
     cast: grouped,
+  });
+}
+
+/**
+ * "All links of an entity" + inverse-coherence detection.
+ * GET /api/entities/:type/:slug/links →
+ *   { entity, outgoing[], incoming[], conflicts[] }
+ *
+ * `outgoing` = the entity's own relations; `incoming` = a reverse
+ * scan over ALL entities for relations targeting it (same accepted
+ * O(entities × relations) budget as the cast endpoint, ADR-019);
+ * `conflicts` = duplicate-symmetric / duplicate-edge /
+ * qualifier-mismatch findings — see server/links.ts (pure, tested).
+ * Display names + route (type, slug) pairs are resolved here from
+ * the snapshot so the panel can render deep links without extra
+ * round-trips. Labels stay client-side (relation-type catalogue).
+ */
+async function handleEntityLinks(type: string, slug: string): Promise<Response> {
+  const snap = await snapshot();
+  const entity = await findEntity(snap, type, slug);
+  if (entity === undefined) return notFound(`No entity of type ${type} with slug ${slug}`);
+  const names = await buildDisplayNames(snap);
+  const links = computeEntityLinks(
+    entity.id,
+    snap.entities.values(),
+    snap.validated.relationTypes,
+  );
+
+  // id → (type, slug) so panel rows can deep-link. Entity ids are
+  // `type:fileBase` where fileBase may differ from the slug
+  // (character:ace ↔ portgas-d-ace), so resolve via the snapshot;
+  // null for dangling targets.
+  const routeOf = (id: string): { type: string; slug: string; } | null => {
+    const e = snap.entities.get(id);
+    if (e === undefined) return null;
+    return { type: e.type, slug: String(e.data['slug'] ?? '') };
+  };
+
+  return json({
+    entity: { id: entity.id, type: entity.type, slug },
+    outgoing: links.outgoing.map((o) => ({
+      ...o,
+      targetRoute: routeOf(o.target),
+      targetDisplayName: names.get(o.target) ?? { en: null, fr: null },
+    })),
+    incoming: links.incoming.map((i) => ({
+      ...i,
+      sourceRoute: routeOf(i.sourceEntityId),
+      sourceDisplayName: names.get(i.sourceEntityId) ?? { en: null, fr: null },
+    })),
+    conflicts: links.conflicts,
   });
 }
 
@@ -1754,6 +1850,9 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     if (req.method === 'GET' && path === '/api/schemas') return await handleSchemas();
     if (req.method === 'GET' && path === '/api/sources') return await handleSources();
     if (req.method === 'GET' && path === '/api/i18n-keys') return await handleI18nKeys();
+    // Cross-type audit for the /explore data explorer (public read,
+    // like the other catalogue endpoints).
+    if (req.method === 'GET' && path === '/api/audit') return await handleAudit();
 
     // Per-source cast (apparitions hub — ADR-021).
     const castMatch = /^\/api\/sources\/([^/]+)\/([^/]+)\/cast$/.exec(path);
@@ -1803,6 +1902,13 @@ export async function handleApiRequest(req: Request): Promise<Response> {
     const tableMatch = /^\/api\/entities\/([^/]+)\/table$/.exec(path);
     if (req.method === 'GET' && tableMatch !== null) {
       return await handleTableEntities(tableMatch[1]!);
+    }
+
+    // GET /api/entities/:type/:slug/links — all links of an entity
+    // (both directions) + inverse-coherence conflicts.
+    const linksMatch = /^\/api\/entities\/([^/]+)\/([^/]+)\/links$/.exec(path);
+    if (req.method === 'GET' && linksMatch !== null) {
+      return await handleEntityLinks(linksMatch[1]!, linksMatch[2]!);
     }
 
     const entityMatch = /^\/api\/entities\/([^/]+)\/([^/]+)$/.exec(path);

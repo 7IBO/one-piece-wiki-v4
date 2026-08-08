@@ -8,6 +8,54 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-085 — Declarative coherence rules (advisory, schema-driven)
+
+**Date**: 2026-08-08
+
+**Context**: Maintainer direction: encode cross-entity/property/value
+knowledge — "a Marine character can't have a bounty"-class checks —
+with the caveat that they weren't sure of the rules themselves.
+Research confirmed the caution: canon violates almost every such rule
+somewhere (Cross Guild issues bounties on active admirals; Blackbeard
+carries two Devil Fruits). Two of the wanted checks were already
+documented as EPISTEMIC_MODEL anti-patterns and parked in IDEAS.md
+("sanity-check edits", "generic field dependencies") — promoted here.
+
+**Options**:
+
+1. Hardcode checks in `check:coherence` — invisible to editors, not
+   schema-driven, dies on universe #2.
+2. Hard validation rules in the Zod layer — wrong: canon exceptions
+   would force data lies or constant overrides.
+3. **Declarative advisory rules as a sixth catalogue group**
+   (`/data/schemas/rules/`, universe-scopable), evaluated by a shared
+   browser-safe engine.
+
+**Choice**: option 3. `RuleSchema` (severity info|warning only — never
+blocking), entity scope (`when`/`expect`: property_latest_equals,
+has_active_relation, property_present → property_absent/present,
+max_concurrent_relations) and entry scope (`entry_when`/`entry_expect`:
+qualifier_equals, value_equals → qualifier_present,
+until_not_before_since). Engine `schema-engine/src/rules.ts` runs in
+`check:coherence` (`RULE_FINDING` warnings) AND live in the dashboard
+form (amber advisory panel, save never disabled), evaluated on the
+save payload so findings describe what would actually land. Messages
+name the known canonical exceptions and the qualifier that resolves
+them (`issued_by`, `until`). v1 ships 6 rules: active-marine-with-
+bounty, single-concurrent-devil-fruit, believed-by-world-needs-
+actual-value, believed-by-characters-needs-list, death-needs-source-
+anchor, until-not-before-since. A builtin (non-DSL) cross-entity check
+lands alongside: `SYMMETRIC_RELATION_STORED_TWICE` (a symmetric
+relation stored on both endpoints duplicates the pipeline-generated
+inverse).
+
+**Consequences**: coherence knowledge lives in reviewable data files —
+adding a rule is a data PR, no code. The DSL is deliberately minimal;
+unsupported shapes (cross-entity value comparisons, temporal windows)
+wait for real needs. Rules are excluded from the wire-compat contract.
+
+---
+
 ## ADR-084 — Availability by stable external id (`external_id` + platform `link_template`)
 
 **Date**: 2026-08-08

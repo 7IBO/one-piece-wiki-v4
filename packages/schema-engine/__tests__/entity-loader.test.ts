@@ -63,6 +63,8 @@ function catalogue(): ValidatedCatalogue {
         },
       },
     ]]),
+    qualifierTypes: new Map(),
+    rules: new Map(),
     errors: [],
   } as unknown as ValidatedCatalogue;
 }

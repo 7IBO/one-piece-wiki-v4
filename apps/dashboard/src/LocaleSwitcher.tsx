@@ -44,7 +44,11 @@ export function LocaleSwitcher(): JSX.Element {
       >
         <SelectValue>{(v: Locale) => LABELS[v]}</SelectValue>
       </SelectTrigger>
-      <SelectContent className='min-w-24' aria-label={t('interfaceLanguage')}>
+      <SelectContent
+        className='min-w-24'
+        fullWidthMobile={false}
+        aria-label={t('interfaceLanguage')}
+      >
         {SUPPORTED_LOCALES.map((loc) => (
           <SelectItem key={loc} value={loc} className='font-mono text-xs uppercase'>
             {LABELS[loc]}

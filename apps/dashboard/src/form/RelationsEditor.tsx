@@ -263,6 +263,7 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
                       onAddTarget={(target) => add(typeId, target)}
                       onRemoveAt={(index) => remove(index)}
                       onSetQualifierAt={(index, qid, v) => setQualifier(index, qid, v)}
+                      onSetTargetAt={(index, target) => update(index, { target })}
                     />
                   </li>
                 );
@@ -376,7 +377,7 @@ function RelationCard(p: RelationCardProps): JSX.Element {
   const setQualifierCount = setIds.size;
 
   return (
-    <li className='border-input/70 bg-card/40 relative flex flex-col gap-2 rounded-md border p-2'>
+    <div className='border-input/70 bg-card/40 relative flex flex-col gap-2 rounded-md border p-2'>
       {
         /* Isolated × in the top-right corner — separated from any other
           control to avoid mis-clicks on a destructive action. */
@@ -492,7 +493,7 @@ function RelationCard(p: RelationCardProps): JSX.Element {
           />
         )
         : null}
-    </li>
+    </div>
   );
 }
 
@@ -523,6 +524,7 @@ function MultiTargetRelationGroup(p: {
   onAddTarget: (target: string) => void;
   onRemoveAt: (index: number) => void;
   onSetQualifierAt: (index: number, qid: string, value: unknown) => void;
+  onSetTargetAt: (index: number, target: string) => void;
 }): JSX.Element {
   const locale = useLocale();
   const t = useT();
@@ -553,7 +555,7 @@ function MultiTargetRelationGroup(p: {
   );
 
   return (
-    <li className='border-input/70 bg-card/40 flex flex-col gap-2 rounded-md border p-2'>
+    <div className='border-input/70 bg-card/40 flex flex-col gap-2 rounded-md border p-2'>
       <div className='flex items-center gap-2'>
         <Badge variant='secondary' className='font-normal'>
           {relationLabel(p.relationType, locale)}
@@ -564,19 +566,45 @@ function MultiTargetRelationGroup(p: {
       </div>
 
       <div className='flex flex-wrap items-center gap-1.5'>
-        {p.groupEntries.map(({ entry, index }) => (
-          <TargetChip
-            key={`${entry.target}-${index}`}
-            entry={entry}
-            displayName={resolveTargetName(entry.target, nameLookup)}
-            relationType={p.relationType}
-            qualifierShapes={qualifierShapes}
-            valueCtx={p.valueCtx}
-            vocabularies={p.vocabularies}
-            onRemove={() => p.onRemoveAt(index)}
-            onSetQualifier={(qid, v) => p.onSetQualifierAt(index, qid, v)}
-          />
-        ))}
+        {p.groupEntries.map(({ entry, index }) =>
+          entry.target === ''
+            ? (
+              // Legacy blank entry (pre-fix drafts): render the target
+              // picker in place so it can be FILLED, plus a remove ✕ —
+              // never a dead "non défini" chip (2026-08 feedback).
+              <span key={`empty-${index}`} className='flex min-w-56 items-center gap-1'>
+                <span className='min-w-0 flex-1'>
+                  <AddTargetButton
+                    restrictTo={p.relationType.valid_to_types}
+                    entityTypes={p.valueCtx.entityTypes}
+                    excluded={taken}
+                    onAdd={(target) => p.onSetTargetAt(index, target)}
+                  />
+                </span>
+                <button
+                  type='button'
+                  className='text-muted-foreground hover:text-destructive shrink-0 rounded-sm p-0.5'
+                  onClick={() => p.onRemoveAt(index)}
+                  aria-label={t('removeRelation')}
+                >
+                  <X className='size-3' />
+                </button>
+              </span>
+            )
+            : (
+              <TargetChip
+                key={`${entry.target}-${index}`}
+                entry={entry}
+                displayName={resolveTargetName(entry.target, nameLookup)}
+                relationType={p.relationType}
+                qualifierShapes={qualifierShapes}
+                valueCtx={p.valueCtx}
+                vocabularies={p.vocabularies}
+                onRemove={() => p.onRemoveAt(index)}
+                onSetQualifier={(qid, v) => p.onSetQualifierAt(index, qid, v)}
+              />
+            )
+        )}
         <AddTargetButton
           restrictTo={p.relationType.valid_to_types}
           entityTypes={p.valueCtx.entityTypes}
@@ -584,7 +612,7 @@ function MultiTargetRelationGroup(p: {
           onAdd={p.onAddTarget}
         />
       </div>
-    </li>
+    </div>
   );
 }
 

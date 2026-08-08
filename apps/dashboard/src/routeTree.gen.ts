@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as ExploreRouteImport } from './routes/explore'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TypesTypeRouteImport } from './routes/types.$type'
 import { Route as ApiSplatRouteImport } from './routes/api/$'
@@ -25,6 +26,11 @@ import { Route as TypesTypeSlugApparitionsRouteImport } from './routes/types.$ty
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ExploreRoute = ExploreRouteImport.update({
+  id: '/explore',
+  path: '/explore',
   getParentRoute: () => rootRouteImport,
 } as any)
 const IndexRoute = IndexRouteImport.update({
@@ -86,6 +92,7 @@ const TypesTypeSlugApparitionsRoute =
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
   '/admin/queue': typeof AdminQueueRoute
   '/api/$': typeof ApiSplatRoute
@@ -100,6 +107,7 @@ export interface FileRoutesByFullPath {
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
   '/admin/queue': typeof AdminQueueRoute
   '/api/$': typeof ApiSplatRoute
@@ -113,6 +121,7 @@ export interface FileRoutesByTo {
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/explore': typeof ExploreRoute
   '/login': typeof LoginRoute
   '/admin/queue': typeof AdminQueueRoute
   '/api/$': typeof ApiSplatRoute
@@ -129,6 +138,7 @@ export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
   fullPaths:
     | '/'
+    | '/explore'
     | '/login'
     | '/admin/queue'
     | '/api/$'
@@ -143,6 +153,7 @@ export interface FileRouteTypes {
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
+    | '/explore'
     | '/login'
     | '/admin/queue'
     | '/api/$'
@@ -155,6 +166,7 @@ export interface FileRouteTypes {
   id:
     | '__root__'
     | '/'
+    | '/explore'
     | '/login'
     | '/admin/queue'
     | '/api/$'
@@ -170,6 +182,7 @@ export interface FileRouteTypes {
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  ExploreRoute: typeof ExploreRoute
   LoginRoute: typeof LoginRoute
   AdminQueueRoute: typeof AdminQueueRoute
   ApiSplatRoute: typeof ApiSplatRoute
@@ -184,6 +197,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/explore': {
+      id: '/explore'
+      path: '/explore'
+      fullPath: '/explore'
+      preLoaderRoute: typeof ExploreRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/': {
@@ -300,6 +320,7 @@ const TypesTypeRouteWithChildren = TypesTypeRoute._addFileChildren(
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  ExploreRoute: ExploreRoute,
   LoginRoute: LoginRoute,
   AdminQueueRoute: AdminQueueRoute,
   ApiSplatRoute: ApiSplatRoute,

@@ -10,4 +10,5 @@ export * from './migrate/transforms.ts';
 export * from './migrate/types.ts';
 export * from './paths.ts';
 export * from './reference-resolver.ts';
+export * from './rules.ts';
 export * from './universe.ts';

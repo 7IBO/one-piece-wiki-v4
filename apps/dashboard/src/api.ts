@@ -10,6 +10,7 @@ import type {
   PropertyTypeSchema,
   QualifierTypeSchema,
   RelationTypeSchema,
+  RuleSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
 
@@ -100,6 +101,7 @@ export type SchemaCatalogue = {
   readonly relationTypes: Record<string, RelationTypeSchema>;
   readonly vocabularies: Record<string, VocabularySchema>;
   readonly qualifierTypes: Record<string, QualifierTypeSchema>;
+  readonly rules: Record<string, RuleSchema>;
 };
 
 /** One row of the admin moderation queue (W-B). */
@@ -171,6 +173,80 @@ export type CastGroup = {
 export type CastResponse = {
   readonly source: { readonly id: string; readonly type: string; readonly slug: string; };
   readonly cast: readonly CastGroup[];
+};
+
+/** Deep-link coordinates of a linked entity; null when the target id
+ *  is dangling (not in the catalogue). */
+export type EntityRoute = {
+  readonly type: string;
+  readonly slug: string;
+} | null;
+
+export type OutgoingLinkRow = {
+  readonly relationType: string;
+  readonly target: string;
+  readonly qualifiers: Record<string, unknown>;
+  readonly targetRoute: EntityRoute;
+  readonly targetDisplayName: DisplayName;
+};
+
+export type IncomingLinkRow = {
+  readonly relationType: string;
+  readonly sourceEntityId: string;
+  readonly qualifiers: Record<string, unknown>;
+  readonly sourceRoute: EntityRoute;
+  readonly sourceDisplayName: DisplayName;
+};
+
+export type LinkConflictKind = 'duplicate-symmetric' | 'duplicate-edge' | 'qualifier-mismatch';
+
+export type LinkConflict = {
+  readonly kind: LinkConflictKind;
+  readonly relationType: string;
+  readonly otherEntityId: string;
+  readonly detail: string;
+};
+
+/** `GET /api/entities/:type/:slug/links` — all links of an entity
+ *  (both directions) + inverse-coherence conflicts. */
+export type EntityLinks = {
+  readonly entity: { readonly id: string; readonly type: string; readonly slug: string; };
+  readonly outgoing: readonly OutgoingLinkRow[];
+  readonly incoming: readonly IncomingLinkRow[];
+  readonly conflicts: readonly LinkConflict[];
+};
+
+/** One pre-rendered property value entry on an audit row. `display`
+ *  is resolved server-side (translated value_key, vocabulary labels,
+ *  number+unit, boolean ✓/×) so the explorer client stays dumb. */
+export type AuditValueEntry = {
+  readonly display: string;
+  readonly since?: string;
+};
+
+export type AuditPropertyValues = {
+  readonly property: string;
+  readonly entries: readonly AuditValueEntry[];
+};
+
+/** `GET /api/audit` — one row per entity across every type, powering
+ *  the /explore data explorer. */
+export type AuditRow = {
+  readonly id: string;
+  readonly type: string;
+  readonly slug: string;
+  readonly displayName: DisplayName;
+  readonly completeness: Completeness;
+  /** Required-or-recommended property ids with no content + recommended
+   *  relation types with no edge. */
+  readonly missingRecommended: readonly string[];
+  /** i18n keys lacking text in a locale, as `key (en)` / `key (fr)`. */
+  readonly missingTranslations: readonly string[];
+  readonly values: readonly AuditPropertyValues[];
+};
+
+export type AuditResponse = {
+  readonly rows: readonly AuditRow[];
 };
 
 export type PresignResult = {
@@ -360,6 +436,24 @@ export const api = {
     });
     entityDetailCache.set(key, promise);
     return promise;
+  },
+  /**
+   * All links of an entity (both directions) + inverse-coherence
+   * conflicts. Not cached: the panel fetches lazily on mount and
+   * freshness matters after a save touched either side of an edge.
+   */
+  async entityLinks(type: string, slug: string): Promise<EntityLinks> {
+    return getJson<EntityLinks>(
+      `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/links`,
+    );
+  },
+  /**
+   * Cross-type audit rows for the /explore data explorer. Not cached:
+   * the route is the only caller, the payload is cheap at catalogue
+   * scale, and the explorer refetches after each drawer edit.
+   */
+  async audit(): Promise<AuditResponse> {
+    return getJson<AuditResponse>('/api/audit');
   },
   /**
    * Reverse-scan apparitions for a source entity (ADR-021). Returns

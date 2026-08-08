@@ -54,8 +54,12 @@ export function completenessExpectation(
  * NOT enough: an importer or hand edit can persist `{ "value": "" }`,
  * and counting it would make this meter disagree with the form's
  * content-based `isEntryEmpty` semantics on the same entity.
+ *
+ * Exported (additively) for the audit endpoint (`server/audit.ts`),
+ * which lists WHICH expected fields are missing — same content
+ * semantics as the completeness counter, single source of truth.
  */
-function propertyHasContent(value: unknown): boolean {
+export function propertyHasContent(value: unknown): boolean {
   const entryList = Array.isArray(value) ? value : [value];
   for (const entry of entryList) {
     if (entry === null || entry === undefined || typeof entry !== 'object') continue;

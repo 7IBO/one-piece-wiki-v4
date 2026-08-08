@@ -30,6 +30,7 @@
 import { ENTITY_ID_PATTERN, RELATION_BASE_QUALIFIER_IDS } from '@onepiece-wiki/schemas';
 import type { LoadedEntity } from './entity-loader.ts';
 import type { ValidatedCatalogue } from './meta-validator.ts';
+import { evaluateRules } from './rules.ts';
 
 export type CoherenceFinding = {
   readonly code:
@@ -46,7 +47,10 @@ export type CoherenceFinding = {
     | 'RELATION_DECLARES_BASE_QUALIFIER'
     | 'DUPLICATE_RELATION'
     | 'DUPLICATE_PROPERTY_VALUE'
-    | 'ENTITY_SCHEMA_VERSION_AHEAD';
+    | 'ENTITY_SCHEMA_VERSION_AHEAD'
+    // Declarative rules (ADR-085) + inverse-edge coherence
+    | 'RULE_FINDING'
+    | 'SYMMETRIC_RELATION_STORED_TWICE';
   readonly severity: 'error' | 'warning';
   readonly source: string;
   readonly path: string;
@@ -289,6 +293,70 @@ export function checkCoherence(
               message: `Property entry duplicates properties.${propertyId}[${prior}] exactly.`,
             });
           }
+        }
+      }
+    }
+  }
+
+  // ADR-085 — declarative advisory rules, one pass per entity. Always
+  // warnings/infos: the CLI treats them as non-blocking output.
+  const ruleList = [...catalogue.rules.values()];
+  if (ruleList.length > 0) {
+    for (const entity of entities.values()) {
+      const data = entity.data as {
+        type?: string;
+        properties?: Record<string, unknown>;
+        relations?: { type: string; target: string; qualifiers?: Record<string, unknown>; }[];
+      };
+      const findingsForEntity = evaluateRules(
+        { type: entity.type, properties: data.properties, relations: data.relations },
+        ruleList,
+      );
+      for (const f of findingsForEntity) {
+        findings.push({
+          code: 'RULE_FINDING',
+          severity: 'warning',
+          source: entity.id,
+          path: f.property !== undefined
+            ? `properties.${f.property}${f.entryIndex !== undefined ? `[${f.entryIndex}]` : ''}`
+            : '<entity>',
+          message: `[${f.ruleId}] ${f.messages.en}`,
+        });
+      }
+    }
+  }
+
+  // Inverse-edge coherence: the build pipeline GENERATES inverse edges,
+  // so a symmetric relation type (same active/inverse label) stored on
+  // BOTH endpoints duplicates the edge. Advisory — the fix is deleting
+  // one side.
+  {
+    const seen = new Map<string, string>(); // "type|a|b" (sorted) -> first source id
+    for (const entity of entities.values()) {
+      const data = entity.data as { relations?: { type?: unknown; target?: unknown; }[]; };
+      if (!Array.isArray(data.relations)) continue;
+      for (const rel of data.relations) {
+        if (typeof rel?.type !== 'string' || typeof rel?.target !== 'string') continue;
+        const rt = catalogue.relationTypes.get(rel.type);
+        if (rt === undefined) continue;
+        // Same relation TYPE stored in both directions between the same
+        // two entities is always a double-stored edge — the pipeline
+        // generates the inverse (matches the dashboard links endpoint's
+        // duplicate-symmetric conflict semantics).
+        const pair = [entity.id, rel.target].sort().join('|');
+        const key = `${rel.type}|${pair}`;
+        const first = seen.get(key);
+        if (first !== undefined && first !== entity.id) {
+          findings.push({
+            code: 'SYMMETRIC_RELATION_STORED_TWICE',
+            severity: 'warning',
+            source: entity.id,
+            path: '<relations>',
+            message: `"${rel.type}" between ${first} and ${entity.id} is stored on both `
+              + `entities — the pipeline generates the inverse; keep one side only.`,
+          });
+        } else {
+          seen.set(key, entity.id);
         }
       }
     }

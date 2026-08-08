@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "until-not-before-since",
+  "schema_version": 1,
+  "severity": "warning",
+  "labels": {
+    "en": "until precedes since",
+    "fr": "until antérieur à since"
+  },
+  "messages": {
+    "en": "This entry ends (`until`) before it starts (`since`) — the two sources are in the wrong order.",
+    "fr": "Cette entrée se termine (`until`) avant de commencer (`since`) — les deux sources sont dans le mauvais ordre."
+  },
+  "scope": "entry",
+  "entry_property": "*",
+  "entry_expect": [
+    {
+      "until_not_before_since": {}
+    }
+  ]
+}

@@ -303,6 +303,100 @@ blocks on it. The type list route renders it as a subtle
 `filled/expected` meter per row (amber while incomplete, muted
 checkmark when full); the home page shows counts only.
 
+## Cross-type data explorer (`/explore`, `GET /api/audit`)
+
+One flat, filterable list of EVERY entity across all types — the
+maintainer's audit surface for "what's missing where".
+
+**Endpoint**: `GET /api/audit` (public read, like the other catalogue
+endpoints) returns `{ rows }`, one row per entity in the snapshot:
+
+- `id`, `type`, `slug`, `displayName {en,fr}` — same resolution as the
+  list endpoints (`buildDisplayNames`).
+- `completeness {filled, expected}` — reuses
+  `server/completeness.ts` (ADR-083), not duplicated.
+- `missingRecommended: string[]` — the LIST of expected fields the
+  entity lacks: required-or-recommended property ids with no content
+  (same `propertyHasContent` semantics as the meter, exported
+  additively from `completeness.ts`) plus `recommended_relations`
+  types with no edge.
+- `missingTranslations: string[]` — i18n keys the entity references
+  (`canonical_name_key` + every property entry's `value_key`) that
+  lack EN or FR text in the loaded translation files, reported per
+  missing locale as `key (en)` / `key (fr)`.
+- `values` — every present property with ALL its entries (not just
+  the latest), each pre-rendered server-side to a display string the
+  way lists render values: translated `value_key`, vocabulary labels
+  for enum/multi_enum (resolved through the catalogue, never
+  hardcoded), `number` + unit, boolean ✓/×, display names for
+  entity/source refs; plus the entry's `since` provenance. One string
+  per entry, EN-first with FR fallback.
+
+All per-entity computation is pure in `apps/dashboard/server/audit.ts`
+(unit-tested in `server/__tests__/audit.test.ts`); the handler in
+`server.ts` only gathers the snapshot + per-entity translations +
+display names. Payload is a few hundred KB at catalogue scale —
+accepted, same O(entities) budget as `/api/sources`.
+
+**Route**: `/explore` (`apps/dashboard/src/routes/explore.tsx`, sidebar
+entry under Overview). Sticky toolbar with an entity-type multi-select
+(stay-open checkbox popover fed by the schema catalogue), a
+name/slug/id search box, and three toggle filters: missing
+translations, missing values (`missingRecommended` non-empty), and
+hide-complete (nothing missing on either axis). Rows show the display
+name, a type chip, amber "N missing translations" / "N missing values"
+badges and the ADR-083 completeness meter; each row expands
+(Collapsible) to the full values list (property labels localized from
+the catalogue, every entry with its `since`) and the missing lists in
+full. Rows virtualize via `@tanstack/react-virtual` past 100 entries.
+The per-row edit button opens the existing `EntityEditDrawer` (normal
+schema-driven form + PR flow); closing the drawer refetches the audit
+(stale-while-refetch, list stays on screen).
+
+## Entity links panel + inverse-coherence detection
+
+`GET /api/entities/:type/:slug/links` returns every link of an entity
+in BOTH directions plus detected inconsistencies between a relation
+and its stored inverse:
+
+- `outgoing` — the entity's own relations: `{ relationType, target,
+  qualifiers, targetRoute, targetDisplayName }`. `targetRoute` is the
+  `{ type, slug }` pair for deep-linking (entity ids are
+  `type:fileBase`, and the file base may differ from the slug), null
+  for dangling targets.
+- `incoming` — a reverse scan over ALL entities for relations whose
+  target is this entity: `{ relationType, sourceEntityId, qualifiers,
+  sourceRoute, sourceDisplayName }`. The client renders these under
+  the relation type's **inverse** label from the schema catalogue.
+- `conflicts` — each `{ kind, relationType, otherEntityId, detail }`:
+  - `duplicate-symmetric` — the same relation type is stored on BOTH
+    sides between the same two entities (A stores rel→B and B stores
+    rel→A) with matching `since`. The build pipeline generates
+    inverses, so storing both sides double-stores the edge. Detection
+    is schema-driven, never a hardcoded type list: the trigger is the
+    same relation-type id in opposite directions; symmetric labels
+    (`active == inverse`) only enrich the message.
+  - `duplicate-edge` — the same `(type, target)` appears twice in one
+    entity's relations with no distinguishing `since`/`until`.
+  - `qualifier-mismatch` — both sides store the same symmetric edge
+    with DIFFERENT `since` values.
+
+Pure logic lives in `apps/dashboard/server/links.ts` (unit-tested);
+the reverse index is built in one pass — O(entities × relations) per
+request, the same accepted scan budget as the cast endpoint
+(ADR-019/ADR-021 risk note). Display names + routes are resolved in
+`server.ts` from the already-loaded snapshot.
+
+The client surface is `EntityLinksPanel`
+(`apps/dashboard/src/components/EntityLinksPanel.tsx`), rendered
+below the form on the entity page. It fetches lazily on mount
+(`api.entityLinks`), is collapsed by default on mobile and open from
+`sm:` up, and renders: an amber conflicts banner at the top (localized
+kind labels), then "Incoming links" / "Outgoing links" sections
+grouped by relation type (inverse resp. active labels from the
+catalogue), each row a deep link to the other entity plus its compact
+qualifiers. Localized EN/FR via the `UI_STRINGS` pattern.
+
 ## Authentication (phase 1 — admin-only)
 
 - A GitHub App is installed on the data repo

@@ -1,0 +1,36 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "active-marine-with-bounty",
+  "schema_version": 1,
+  "universes": [
+    "one-piece"
+  ],
+  "severity": "warning",
+  "labels": {
+    "en": "Active Marine with a bounty",
+    "fr": "Marine actif avec une prime"
+  },
+  "messages": {
+    "en": "This character has an ACTIVE Marine affiliation and a bounty. The World Government does not issue bounties on its own Marines — unless this is a Cross Guild bounty (set `issued_by`), or the membership has ended (set `until` on the relation).",
+    "fr": "Ce personnage a une affiliation Marine ACTIVE et une prime. Le Gouvernement Mondial n’émet pas de prime contre ses propres Marines — sauf prime Cross Guild (renseignez `issued_by`) ou affiliation terminée (renseignez `until` sur la relation)."
+  },
+  "applies_to_entity_types": [
+    "character"
+  ],
+  "scope": "entity",
+  "when": [
+    {
+      "has_active_relation": {
+        "type": "member-of",
+        "target": "organization:marines"
+      }
+    }
+  ],
+  "expect": [
+    {
+      "property_absent": {
+        "property": "bounty"
+      }
+    }
+  ]
+}

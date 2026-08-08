@@ -7,7 +7,8 @@
   "types": "./src/index.ts",
   "exports": {
     ".": "./src/index.ts",
-    "./entity-schema": "./src/entity-schema.ts"
+    "./entity-schema": "./src/entity-schema.ts",
+    "./rules": "./src/rules.ts"
   },
   "scripts": {
     "typecheck": "tsc --noEmit"

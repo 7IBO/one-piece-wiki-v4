@@ -710,3 +710,33 @@ Any failure aborts the PR.
 - Properties and relations are ordered by their declaration order in the
   schema (the validator does not enforce this, but `bun run format:data`
   reorders them automatically)
+
+## Rules (ADR-085)
+
+Files in `/data/schemas/rules/<id>.json` (core) or
+`/data/universes/<u>/schemas/rules/` (universe-scoped). Advisory only:
+`check:coherence` reports findings as `RULE_FINDING` warnings, the
+dashboard renders them amber — nothing blocks.
+
+| Field                         | Type     | Required    | Description                                                       |
+| ----------------------------- | -------- | ----------- | ----------------------------------------------------------------- |
+| `id` / `schema_version`       |          | yes         | Standard schema identity                                          |
+| `universes`                   | string[] | no          | Omitted = core                                                    |
+| `severity`                    | enum     | yes         | `info` \| `warning` (never blocking)                              |
+| `labels` / `messages`         | object   | yes         | Localized name + editor-facing finding text (mention exceptions!) |
+| `applies_to_entity_types`     | string[] | no          | Omitted/empty = all types                                         |
+| `scope`                       | enum     | no          | `entity` (default) or `entry`                                     |
+| `entry_property`              | string   | scope=entry | Property id, or `*` for every property                            |
+| `when` / `expect`             | array    | entity      | Conditions (all hold) / expectations (each violation = finding)   |
+| `entry_when` / `entry_expect` | array    | entry       | Entry-level conditions / expectations                             |
+
+Condition kinds: `property_latest_equals`, `has_active_relation`
+(active = no `until`; optional `target` / `target_type`),
+`property_present`. Expectation kinds: `property_absent`,
+`property_present`, `max_concurrent_relations`. Entry kinds:
+`qualifier_equals`, `value_equals` → `qualifier_present`,
+`until_not_before_since` (numeric same-type source comparison).
+
+The engine is `packages/schema-engine/src/rules.ts` — browser-safe,
+shared by CI and the dashboard so a finding on screen is exactly a
+finding in CI.

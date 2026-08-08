@@ -11,7 +11,7 @@ import { Link, useLocation } from '@tanstack/react-router';
 import { LogIn, LogOut } from 'lucide-react';
 import { type JSX, useMemo } from 'react';
 import { useCurrentUser, useSignOut } from './auth';
-import { useLocale } from './form/locale';
+import { useLocale, useT } from './form/locale';
 import { useSchemaCatalogue } from './hooks/use-schema-catalogue';
 import { groupTypesByUiHint, type TypeGroup } from './lib/type-groups';
 
@@ -19,6 +19,7 @@ type SidebarItem = { id: string; label: string; group: string | undefined; };
 
 export function AppSidebar(): JSX.Element {
   const locale = useLocale();
+  const t = useT();
   const location = useLocation();
   const { signOut, pending: signOutPending } = useSignOut();
   const { user, loaded: userLoaded } = useCurrentUser();
@@ -60,6 +61,17 @@ export function AppSidebar(): JSX.Element {
         }`}
       >
         Overview
+      </Link>
+      {/* Cross-type data explorer — audits every entity in one list. */}
+      <Link
+        to='/explore'
+        className={`-mt-2 block rounded-md px-2 py-1.5 text-xs uppercase tracking-wide transition-colors ${
+          location.pathname === '/explore'
+            ? 'bg-accent text-accent-foreground'
+            : 'text-muted-foreground hover:bg-accent/40 hover:text-foreground'
+        }`}
+      >
+        {t('exploreTitle')}
       </Link>
       {groups.map((g) => (
         <div key={g.groupId}>

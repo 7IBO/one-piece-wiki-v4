@@ -23,5 +23,6 @@ process.stdout.write(
     + `${validated.propertyTypes.size} property types, `
     + `${validated.relationTypes.size} relation types, `
     + `${validated.vocabularies.size} vocabularies, `
-    + `${validated.qualifierTypes.size} qualifier types.\n`,
+    + `${validated.qualifierTypes.size} qualifier types, `
+    + `${validated.rules.size} rules.\n`,
 );

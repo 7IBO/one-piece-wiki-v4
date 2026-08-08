@@ -19,11 +19,13 @@ import { Label } from '@/components/ui/label';
 import { MobileSheet, MobileSheetContent, MobileSheetTrigger } from '@/components/ui/mobile-sheet';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { buildEntitySchema, propertyEntrySchema } from '@onepiece-wiki/schema-engine/entity-schema';
+import { evaluateRules, type RuleFinding } from '@onepiece-wiki/schema-engine/rules';
 import type {
   EntityTypeSchema,
   PropertyTypeSchema,
   QualifierTypeSchema,
   RelationTypeSchema,
+  RuleSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
 import {
@@ -179,6 +181,8 @@ export type EntityFormProps = {
   relationTypes: Record<string, RelationTypeSchema>;
   vocabularies: Record<string, VocabularySchema>;
   qualifierTypes: Record<string, QualifierTypeSchema>;
+  /** Declarative coherence rules (ADR-085) — evaluated live, advisory. */
+  rules: Record<string, RuleSchema>;
   sources: readonly SourceRef[];
   i18nKeys: readonly string[];
   initialData: EntityData;
@@ -494,6 +498,42 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   const currentDataString = useMemo(
     () => JSON.stringify(currentDataNormalized),
     [currentDataNormalized],
+  );
+
+  // ADR-085 advisories — same engine as check:coherence, evaluated on
+  // the SAVE payload (held-back drafts excluded) so a finding always
+  // refers to what would actually land in the PR. Advisory, never
+  // blocking: rendered amber, save stays enabled.
+  const ruleFindings = useMemo<readonly RuleFinding[]>(() => {
+    const list = Object.values(props.rules);
+    if (list.length === 0) return [];
+    return evaluateRules(
+      {
+        type: props.entityType.id,
+        properties: currentDataNormalized.properties,
+        relations: (currentDataNormalized['relations'] ?? []) as {
+          type: string;
+          target: string;
+          qualifiers?: Record<string, unknown>;
+        }[],
+      },
+      list,
+    );
+  }, [props.rules, props.entityType.id, currentDataNormalized]);
+  const findingsByProperty = useMemo(() => {
+    const out: Record<string, string[]> = {};
+    for (const f of ruleFindings) {
+      if (f.property === undefined) continue;
+      (out[f.property] ??= []).push(f.messages[locale] ?? f.messages.en);
+    }
+    return out;
+  }, [ruleFindings, locale]);
+  const entityLevelFindings = useMemo(
+    () =>
+      ruleFindings
+        .filter((f) => f.property === undefined)
+        .map((f) => f.messages[locale] ?? f.messages.en),
+    [ruleFindings, locale],
   );
   const dirty = currentDataString !== initialDataString
     || JSON.stringify(translations) !== initialTranslationsString;
@@ -985,6 +1025,9 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         showSchemaDetails={showSchemaDetails}
         locale={locale}
         {...(fieldErrors[decl.id] !== undefined ? { errors: fieldErrors[decl.id]! } : {})}
+        {...(findingsByProperty[decl.id] !== undefined
+          ? { advisories: findingsByProperty[decl.id]! }
+          : {})}
         onUpdate={(eIdx, next) => updateEntry(decl.id, propertyType.historical, eIdx, next)}
         onAdd={() => addEntry(decl.id, propertyType)}
         onRemove={(eIdx) => removeEntry(decl.id, propertyType, eIdx)}
@@ -1022,6 +1065,26 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
               {topLevelErrors.map((msg, i) => (
                 <li key={i} className='flex items-start gap-1'>
                   <AlertCircle className='mt-[1px] size-3 shrink-0' aria-hidden='true' />
+                  <span>{msg}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+        : null}
+      {entityLevelFindings.length > 0
+        ? (
+          /* ADR-085 entity-level advisories — amber, non-blocking:
+            the save button stays enabled, the message explains the
+            legitimate exceptions and their qualifiers. */
+          <div className='mb-4 rounded-md border border-amber-500/40 bg-amber-500/5 px-3 py-2 text-amber-700 dark:text-amber-500'>
+            <p className='mb-1 text-[11px] font-semibold uppercase tracking-wide'>
+              {t('coherenceAdvisories')}
+            </p>
+            <ul className='space-y-0.5 text-xs'>
+              {entityLevelFindings.map((msg, i) => (
+                <li key={i} className='flex items-start gap-1'>
+                  <Circle className='mt-[3px] size-2.5 shrink-0' aria-hidden='true' />
                   <span>{msg}</span>
                 </li>
               ))}
@@ -1309,6 +1372,8 @@ type PropertyRowProps = {
   /** Draft tier (2026-08): the property has incomplete entries and is
    *  held out of the diff/PR until finished — amber ring + badge. */
   heldBack: boolean;
+  /** ADR-085 rule findings for this property — advisory, amber. */
+  advisories?: readonly string[];
   onUpdate: (idx: number, next: PropertyEntry) => void;
   onAdd: () => void;
   onRemove: (idx: number) => void;
@@ -1580,6 +1645,18 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
                   className='mt-[1px] size-3 shrink-0'
                   aria-hidden='true'
                 />
+                <span>{msg}</span>
+              </li>
+            ))}
+          </ul>
+        )
+        : null}
+      {(p.advisories?.length ?? 0) > 0
+        ? (
+          <ul className='mt-1.5 space-y-0.5 text-xs text-amber-600'>
+            {p.advisories!.map((msg, i) => (
+              <li key={i} className='flex items-start gap-1'>
+                <Circle className='mt-[3px] size-2.5 shrink-0' aria-hidden='true' />
                 <span>{msg}</span>
               </li>
             ))}
