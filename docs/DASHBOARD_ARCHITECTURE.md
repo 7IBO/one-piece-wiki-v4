@@ -431,6 +431,50 @@ grouped by relation type (inverse resp. active labels from the
 catalogue), each row a deep link to the other entity plus its compact
 qualifiers. Localized EN/FR via the `UI_STRINGS` pattern.
 
+## Narrative editor (per-entity prose Markdown)
+
+Narratives are the per-locale prose files of
+`/docs/DATA_MODEL.md` § Narratives, stored at
+`data/universes/<u>/narratives/<locale>/<entityType>/<fileBase>.md`
+(same `<fileBase>` as the entity JSON). The dashboard edits them
+without ever touching entity JSON — content ≠ structure.
+
+Endpoints (same splat route as everything else):
+
+- `GET /api/entities/:type/:slug/narrative` →
+  `{ en: string|null, fr: string|null }` — raw Markdown per locale,
+  `null` when the file doesn't exist. Public read; served from the
+  data source (fs in dev, in-memory Vite bundle in prod — the prod
+  glob in `server/data-source.ts` bundles `data/**/*.md` alongside the
+  JSON, so narrative reads lag until redeploy exactly like entity
+  reads, ADR-019).
+- `POST /api/entities/:type/:slug/narrative` with `{ en?, fr? }` —
+  session required, same anonymous rate limit and blocked-login guard
+  as the entity save. Each submitted locale is normalized
+  (`server/narrative.ts`, pure + unit-tested: trailing-newline
+  hygiene, 10k-char concision cap); non-empty text is committed,
+  empty text DELETES the locale's file (`content: null` →
+  `sha: null` tree entry in `commitMultipleFiles`). The PR mechanics
+  are `submitNarrativeEdit` in `packages/github-client` — one commit,
+  one PR titled `[DATA] Edit narrative of <entityId>`, labels
+  `edit`/`via-dashboard`/`area:data`/`narrative` (+`anonymous`), and
+  the same resume-PR routing as entity saves (an open PR by the same
+  contributor on the same entity receives the commit instead). No
+  optimistic locking in v1 — same trade-off as the cast flow
+  (ADR-021): tiny concurrent-edit surface, GitHub merge-time conflict
+  detection as the net.
+
+The client surface is `NarrativeEditor`
+(`apps/dashboard/src/components/NarrativeEditor.tsx`), rendered on the
+entity page below the form and above the links panels. Collapsed by
+default ("par défaut, rien d'ouvert"); EN/FR tabs over a plain
+Markdown textarea with a discreet word counter and a "keep it concise
+— much lighter than a Fandom article" hint; read-only with a sign-in
+link until a session exists (same gating as the form); the save button
+POSTs only the touched locales and reuses the standard PR toasts
+(opened / commit added / no-op). Strings live at the end of
+`UI_STRINGS` in `src/form/locale.tsx`.
+
 ## In-app entity history (`/types/$type/$slug/history`)
 
 `GET /api/entities/:type/:slug/history` lists the commits touching the

@@ -410,6 +410,132 @@ export async function submitSourceCastEdit(
   return { ...opened, noOp: false };
 }
 
+export type NarrativeFile = {
+  readonly path: string;
+  /** `null` deletes the file — a contributor cleared the narrative. */
+  readonly content: string | null;
+};
+
+export type NarrativeRequest = {
+  /** The entity whose narratives are edited (drives the PR title,
+   *  branch name and commit subject). */
+  readonly entityId: string;
+  /** One entry per touched locale file (`narratives/<locale>/…md`). */
+  readonly files: readonly NarrativeFile[];
+  /** Same contributor attribution as `SaveRequest`. */
+  readonly contributorLogin: string | null;
+  readonly contributorId: number | null;
+  readonly anonymousNickname?: string;
+  /** Resume-editing (same semantics as `SaveRequest.existingPR`):
+   *  append the commit to the contributor's open PR for this entity
+   *  instead of opening a parallel PR. */
+  readonly existingPR?: {
+    readonly number: number;
+    readonly htmlUrl: string;
+    readonly headBranch: string;
+  };
+};
+
+/**
+ * Narrative (per-locale prose Markdown) save flow. Same PR mechanics
+ * as `submitEntityEdit` — bot-authored commit, contributor credited
+ * once in the PR body, `via-dashboard` labels — but the payload is
+ * one or two `narratives/<locale>/<type>/<fileBase>.md` files instead
+ * of entity JSON. A `content: null` file is a deletion (the
+ * contributor emptied the narrative); `commitMultipleFiles` turns it
+ * into a `sha: null` tree entry and skips it when the file is already
+ * absent.
+ *
+ * No optimistic locking in v1: narratives are short prose with a tiny
+ * concurrent-edit surface, and GitHub's merge-time conflict detection
+ * is the safety net (same trade-off as the cast flow, ADR-021).
+ */
+export async function submitNarrativeEdit(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  request: NarrativeRequest,
+): Promise<OpenedPR & { reused: boolean; noOp: boolean; }> {
+  if (request.files.length === 0) {
+    return { number: 0, htmlUrl: '', headBranch: '', reused: false, noOp: true };
+  }
+
+  // Resume path — append one commit (or zero if no-op) to the open PR.
+  if (request.existingPR !== undefined) {
+    const branch = request.existingPR.headBranch;
+    const result = await commitMultipleFiles(octokit, config, {
+      branch,
+      message: commitMessage(`Edit narrative of ${request.entityId}`),
+      files: request.files,
+    });
+    return {
+      number: request.existingPR.number,
+      htmlUrl: request.existingPR.htmlUrl,
+      headBranch: branch,
+      reused: true,
+      noOp: !result.created,
+    };
+  }
+
+  const ts = new Date().toISOString().replace(/[:.TZ]/g, '').slice(0, 14);
+  const branch = `narrative/${safeBranchSegment(request.entityId)}/${ts}`;
+  await createBranch(octokit, config, branch);
+
+  const commit = await commitMultipleFiles(octokit, config, {
+    branch,
+    message: commitMessage(`Edit narrative of ${request.entityId}`),
+    files: request.files,
+  });
+
+  // Every file already matched the base (or deleted files were already
+  // absent)? No commit was created — skip opening a PR, same
+  // short-circuit as the cast flow.
+  if (!commit.created) {
+    return { number: 0, htmlUrl: '', headBranch: branch, reused: false, noOp: true };
+  }
+
+  const anonymous = request.contributorLogin === null;
+  const nickname = request.anonymousNickname?.trim() ?? '';
+  const diffBlock = renderDiffBlock(commit.changes);
+  const contributorBullet = anonymous
+    ? (nickname !== ''
+      ? `- **${nickname}** _(anonymous contributor)_`
+      : `- _Anonymous contributor_`)
+    : `- @${request.contributorLogin}`;
+
+  const fileLines = request.files.map((f) =>
+    f.content === null ? `- \`${f.path}\` _(deleted)_` : `- \`${f.path}\``
+  );
+
+  const opened = await openPullRequest(octokit, config, {
+    headBranch: branch,
+    title: `[DATA] Edit narrative of ${request.entityId}`,
+    body: [
+      `**Contributors**`,
+      contributorBullet,
+      ``,
+      `**Entity:** \`${request.entityId}\``,
+      ``,
+      `**Files changed:**`,
+      ...fileLines,
+      ``,
+      ...(diffBlock !== null ? [diffBlock, ``] : []),
+      `---`,
+      `_Narrative edit opened through the dashboard's per-entity_`,
+      `_narrative editor. Prose Markdown only — no entity JSON touched._`,
+    ].join('\n'),
+    labels: [
+      'edit',
+      'via-dashboard',
+      'area:data',
+      // Discriminator so review tooling can tell a prose edit from a
+      // structured-data edit.
+      'narrative',
+      ...(anonymous ? ['anonymous'] : []),
+    ],
+  });
+  return { ...opened, reused: false, noOp: false };
+}
+
 /**
  * Render a per-file unified diff block as Markdown, each file inside
  * its own GitHub-native `<details>` collapse. Goes into the PR body
@@ -453,6 +579,8 @@ function renderDiffBlock(changes: readonly FileChange[]): string | null {
     const isFirst = blocks.length === 2;
     const summary = change.status === 'added'
       ? `\`${change.path}\` _(new)_`
+      : change.status === 'removed'
+      ? `\`${change.path}\` _(deleted)_`
       : `\`${change.path}\``;
     blocks.push(
       `<details${isFirst ? ' open' : ''}>`,

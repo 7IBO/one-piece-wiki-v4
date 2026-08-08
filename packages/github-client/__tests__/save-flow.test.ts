@@ -59,9 +59,10 @@ mock.module('../src/repo-ops.ts', () => ({
   },
 }));
 
-const { submitEntityEdit, submitSourceCastEdit, MultiFileLockError } = await import(
-  '../src/save-flow.ts'
-);
+const { submitEntityEdit, submitNarrativeEdit, submitSourceCastEdit, MultiFileLockError } =
+  await import(
+    '../src/save-flow.ts'
+  );
 const { OptimisticLockError } = await import('../src/repo-ops.ts');
 
 // repo-ops is fully mocked, so octokit + config are never touched.
@@ -288,5 +289,70 @@ describe('submitSourceCastEdit', () => {
     const result = await submitSourceCastEdit(octokit, config, castRequest);
     expect(result.noOp).toBe(true);
     expect(state.calls.openPR).toHaveLength(0);
+  });
+});
+
+describe('submitNarrativeEdit', () => {
+  const narrativeRequest = {
+    entityId: 'character:luffy',
+    contributorLogin: '7IBO',
+    contributorId: 1,
+    files: [
+      {
+        path: 'data/universes/one-piece/narratives/en/character/luffy.md',
+        content: 'Luffy sets sail.\n',
+      },
+      {
+        path: 'data/universes/one-piece/narratives/fr/character/luffy.md',
+        content: null,
+      },
+    ],
+  };
+
+  it('returns noOp for an empty file set without touching GitHub', async () => {
+    const result = await submitNarrativeEdit(octokit, config, {
+      ...narrativeRequest,
+      files: [],
+    });
+    expect(result.noOp).toBe(true);
+    expect(state.calls.getFile).toHaveLength(0);
+    expect(state.calls.createBranch).toHaveLength(0);
+  });
+
+  it('opens one PR carrying the md files (incl. deletions) on the happy path', async () => {
+    const result = await submitNarrativeEdit(octokit, config, narrativeRequest);
+    expect(result.noOp).toBe(false);
+    expect(result.reused).toBe(false);
+    expect(result.number).toBe(7);
+    expect(state.calls.createBranch[0]).toMatch(/^narrative\/character-luffy\//);
+    expect(state.calls.commit[0]!.files.map((f) => f.path)).toEqual(
+      narrativeRequest.files.map((f) => f.path),
+    );
+    expect(state.calls.openPR[0]!.title).toBe('[DATA] Edit narrative of character:luffy');
+    expect(state.calls.openPR[0]!.labels).toContain('narrative');
+    expect(state.calls.openPR[0]!.body).toContain('_(deleted)_');
+  });
+
+  it('skips the PR when the commit changed nothing', async () => {
+    state.commitResult = { created: false, changes: [] };
+    const result = await submitNarrativeEdit(octokit, config, narrativeRequest);
+    expect(result.noOp).toBe(true);
+    expect(state.calls.openPR).toHaveLength(0);
+  });
+
+  it('appends to an existing PR on the resume path', async () => {
+    const result = await submitNarrativeEdit(octokit, config, {
+      ...narrativeRequest,
+      existingPR: {
+        number: 42,
+        htmlUrl: 'https://github.com/o/r/pull/42',
+        headBranch: 'edit/x',
+      },
+    });
+    expect(result.reused).toBe(true);
+    expect(result.number).toBe(42);
+    expect(state.calls.createBranch).toHaveLength(0);
+    expect(state.calls.openPR).toHaveLength(0);
+    expect(state.calls.commit[0]!.branch).toBe('edit/x');
   });
 });

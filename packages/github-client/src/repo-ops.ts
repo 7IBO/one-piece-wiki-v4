@@ -522,8 +522,10 @@ export async function findOpenPRForEntity(
  */
 export type FileChange = {
   readonly path: string;
-  readonly status: 'added' | 'modified';
+  readonly status: 'added' | 'modified' | 'removed';
   readonly before: string | null;
+  /** Empty string for a removed file — `createPatch` renders that as
+   *  an all-deletions diff, which is what the PR body wants. */
   readonly after: string;
 };
 
@@ -533,7 +535,10 @@ export async function commitMultipleFiles(
   options: {
     readonly branch: string;
     readonly message: string;
-    readonly files: readonly { readonly path: string; readonly content: string; }[];
+    /** `content: null` deletes the file (no-op when the file does not
+     *  exist on the branch). Used by the narrative save flow when a
+     *  contributor clears a narrative. */
+    readonly files: readonly { readonly path: string; readonly content: string | null; }[];
   },
 ): Promise<{
   readonly created: boolean;
@@ -558,12 +563,24 @@ export async function commitMultipleFiles(
   const baseTreeSha = parentCommit.tree.sha;
 
   // 2. Filter out unchanged files, capturing before/after for the
-  // ones that do change.
-  const changed: { path: string; content: string; }[] = [];
+  // ones that do change. A `content: null` file is a deletion — a
+  // no-op when the file is already absent on the branch.
+  const changed: { path: string; content: string | null; }[] = [];
   const changes: FileChange[] = [];
   for (const file of options.files) {
     // eslint-disable-next-line no-await-in-loop
     const existing = await getFile(octokit, config, file.path, options.branch);
+    if (file.content === null) {
+      if (existing === null) continue; // deleting a missing file — no-op
+      changed.push({ path: file.path, content: null });
+      changes.push({
+        path: file.path,
+        status: 'removed',
+        before: existing.content,
+        after: '',
+      });
+      continue;
+    }
     if (existing !== null && existing.content === file.content) continue;
     changed.push({ path: file.path, content: file.content });
     changes.push({
@@ -577,10 +594,16 @@ export async function commitMultipleFiles(
     return { created: false, changes: [] };
   }
 
-  // 3. Create one blob per changed file. Sequential so a transient
-  // 5xx fails fast instead of pummeling GitHub with parallel writes.
-  const blobs: { path: string; sha: string; }[] = [];
+  // 3. Create one blob per changed (non-deleted) file. Sequential so a
+  // transient 5xx fails fast instead of pummeling GitHub with parallel
+  // writes. Deletions need no blob — they become `sha: null` tree
+  // entries below.
+  const blobs: { path: string; sha: string | null; }[] = [];
   for (const file of changed) {
+    if (file.content === null) {
+      blobs.push({ path: file.path, sha: null });
+      continue;
+    }
     // eslint-disable-next-line no-await-in-loop
     const { data: blob } = await octokit.git.createBlob({
       owner: config.dataRepo.owner,
@@ -592,15 +615,16 @@ export async function commitMultipleFiles(
   }
 
   // 4. New tree on top of base_tree — only the changed blobs are
-  // overridden, everything else is inherited from baseTreeSha.
+  // overridden, everything else is inherited from baseTreeSha. A
+  // `sha: null` entry deletes the path (Git Data API convention).
   const { data: tree } = await octokit.git.createTree({
     owner: config.dataRepo.owner,
     repo: config.dataRepo.repo,
     base_tree: baseTreeSha,
     tree: blobs.map((b) => ({
       path: b.path,
-      mode: '100644',
-      type: 'blob',
+      mode: '100644' as const,
+      type: 'blob' as const,
       sha: b.sha,
     })),
   });

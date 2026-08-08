@@ -57,7 +57,10 @@ function buildBundleSource(): DataSource {
   // `data/...` suffix internally, so we can pass them through as-is —
   // no absolute-path reconstruction needed (and no risk of mismatch
   // with the loaders' own absolute paths after bundling).
-  const raw = (import.meta as {
+  // NOTE: both calls keep the literal `import.meta.glob(...)` form —
+  // Vite's static analysis only transforms literal call sites, so the
+  // pattern must not be extracted into a helper.
+  const rawJson = (import.meta as {
     glob: <T>(
       pattern: string,
       opts: { eager: true; query: '?raw'; import: 'default'; },
@@ -67,7 +70,20 @@ function buildBundleSource(): DataSource {
     query: '?raw',
     import: 'default',
   });
-  return inMemoryDataSource(raw);
+  // Narratives are per-locale Markdown under `data/**/narratives/`
+  // (read by the narrative endpoint via `readTextFile`, never by the
+  // schema/entity loaders — those only ever list *.json).
+  const rawMd = (import.meta as {
+    glob: <T>(
+      pattern: string,
+      opts: { eager: true; query: '?raw'; import: 'default'; },
+    ) => Record<string, T>;
+  }).glob<string>('../../../data/**/*.md', {
+    eager: true,
+    query: '?raw',
+    import: 'default',
+  });
+  return inMemoryDataSource({ ...rawJson, ...rawMd });
 }
 
 // Vite's `import.meta.env.PROD` is `true` exclusively in the

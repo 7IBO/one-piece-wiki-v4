@@ -21,6 +21,7 @@ import { toast } from 'sonner';
 import { api, type SourceRef } from '../api';
 import { EntityLinksPanel } from '../components/EntityLinksPanel';
 import { LoadFailed } from '../components/LoadFailed';
+import { NarrativeEditor } from '../components/NarrativeEditor';
 import { EntityForm } from '../form/EntityForm';
 import { useLocale, useT } from '../form/locale';
 import { InferredRelations } from '../form/RelationsEditor';
@@ -290,6 +291,11 @@ function EntityEditComponent(): JSX.Element {
           });
         }}
       />
+      {
+        /* Narrative (prose Markdown per locale) — below the form,
+        above the links panels. Collapsed by default. */
+      }
+      <NarrativeEditor type={type} slug={slug} />
       <InferredRelations
         entityType={type}
         entitySlug={slug}

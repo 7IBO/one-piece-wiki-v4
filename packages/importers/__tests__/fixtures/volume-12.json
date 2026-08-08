@@ -1,0 +1,8 @@
+{
+  "_SYNTHETIC": "HAND-WRITTEN fixture (2026-08-08) — NOT a captured API response. The sandbox network policy denies onepiece.fandom.com (ADR-079 §6), so this wikitext is modelled on the One Piece wiki's 'Volume Box' template docs (jname/rname/ename titles, pages, jrelease/erelease dates, jisbn/eisbn, chapters range). VALIDATE against a live action=parse response on the first CI run and replace, like the maintainer did for chapter-1044/episode-1071/hyougoro.",
+  "parse": {
+    "title": "Volume 12",
+    "pageid": 999912,
+    "wikitext": "{{Volume Box\n| name = Volume 12\n| jname = 伝説は始まった\n| rname = Densetsu wa Hajimatta\n| ename = The Legend Begins\n| pages = 208\n| jrelease = February 4, 2000\n| erelease = October 3, 2006\n| jisbn = 4-08-872822-9\n| eisbn = 978-1-4215-0664-6\n| chapters = [[Chapter 99]]-[[Chapter 107]]\n}}\n\n'''Volume 12''' is titled \"The Legend Begins\".\n\n==Short Summary==\n[[Monkey D. Luffy|Luffy]] and the crew reach [[Loguetown]], the town where [[Gol D. Roger]] was born and executed."
+  }
+}

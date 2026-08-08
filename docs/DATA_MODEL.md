@@ -336,6 +336,30 @@ Narratives use light Markdown and may include typed entity links via
 `[[character:zoro]]` syntax, which the build pipeline turns into hyperlinks
 and uses for cross-reference indexing and spoiler-on-prose filtering.
 
+**File layout (normative).** One file per entity per locale:
+
+```
+/data/universes/<u>/narratives/<locale>/<entityType>/<fileBase>.md
+```
+
+where `<fileBase>` is the entity id's slug part — i.e. exactly the
+basename of the entity's JSON file (`character:ace` → `entities/
+character/ace.json` → `narratives/en/character/ace.md`). Narrative and
+entity files therefore always pair up, including when the display slug
+differs from the file base. Events and arcs are entities like any
+other, so event narratives live at `narratives/<locale>/event/…` and
+arc narratives at `narratives/<locale>/arc/…`; entity-in-event
+narratives (level 3) have no file convention yet and will be specified
+when implemented. An absent file simply means "no narrative yet for
+this locale" — never commit empty `.md` files (the dashboard's
+narrative editor deletes the file when the text is cleared).
+
+Narratives are **content, not structure**: editing one never touches
+entity JSON, and prose never lives inside entity files (see the
+anti-patterns list in `/CLAUDE.md`). Keep them SHORT — one to three
+paragraphs, far lighter than a Fandom article (maintainer guideline;
+the dashboard enforces a hard 10k-character cap per locale).
+
 Detailed in `/docs/I18N_STRATEGY.md`.
 
 ### Images
