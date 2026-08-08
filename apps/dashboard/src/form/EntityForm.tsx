@@ -436,6 +436,23 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   const [saving, setSaving] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [showSchemaDetails, setShowSchemaDetails] = useState(false);
+  // Which property entry is open in the editor surface. Lifted here
+  // (not per-row) so ONE surface serves the whole form: a bottom-side
+  // sheet on mobile, an inline right-hand panel (slot, not popover)
+  // on desktop.
+  const [editingEntry, setEditingEntry] = useState<
+    { propertyId: string; index: number; } | null
+  >(null);
+  // lg breakpoint, decided post-hydration (SSR renders the sheet
+  // variant markup — it's portaled and closed, so nothing shows).
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1024px)');
+    setIsDesktop(mql.matches);
+    const onChange = (e: MediaQueryListEvent): void => setIsDesktop(e.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
   const { draft, clear: clearStoredDraft } = useStoredDraft(props.entityId);
   // Auth state is only consumed to disable the save button + show a
   // helpful hint when no session is present (the user must sign in
@@ -632,6 +649,9 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     if (propertyType.historical) entry['since'] = '';
     list.push(entry);
     setEntries(propertyId, propertyType.historical, list);
+    // A fresh entry goes straight into the editor surface (sheet on
+    // mobile, right-hand panel on desktop).
+    setEditingEntry({ propertyId, index: list.length - 1 });
   }
 
   function removeEntry(
@@ -643,6 +663,12 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     const removed = list[entryIndex];
     list.splice(entryIndex, 1);
     setEntries(propertyId, propertyType.historical, list);
+    // Keep the editor pointer coherent with the shifted list.
+    setEditingEntry((prev) => {
+      if (prev === null || prev.propertyId !== propertyId) return prev;
+      if (prev.index === entryIndex) return null;
+      return prev.index > entryIndex ? { ...prev, index: prev.index - 1 } : prev;
+    });
     // Clean up orphan translations for the removed key.
     if (propertyType.localizable && removed !== undefined) {
       const key = String(removed['value_key'] ?? '');
@@ -656,6 +682,21 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         });
       }
     }
+  }
+
+  /** Close the entry editor. Backing out of a never-filled entry
+   *  DISCARDS it (2026-08 feedback: "on ajoute une propriété mais
+   *  qu'on complète pas … on revient en arrière, on sauvegarde
+   *  pas") — the phantom empty row would otherwise linger. */
+  function closeEntryEditor(): void {
+    if (editingEntry === null) return;
+    const pt = props.propertyTypes[editingEntry.propertyId];
+    const entry = entries(data.properties?.[editingEntry.propertyId])[editingEntry.index];
+    if (pt !== undefined && entry !== undefined && isEntryEmpty(entry, pt, translations)) {
+      removeEntry(editingEntry.propertyId, pt, editingEntry.index);
+      return; // removeEntry clears the editing pointer.
+    }
+    setEditingEntry(null);
   }
 
   function updateTranslation(locale: 'en' | 'fr', key: string, value: string): void {
@@ -1031,6 +1072,10 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         {...(findingsByProperty[decl.id] !== undefined
           ? { advisories: findingsByProperty[decl.id]! }
           : {})}
+        editingIndex={editingEntry !== null && editingEntry.propertyId === decl.id
+          ? editingEntry.index
+          : null}
+        onEditEntry={(eIdx) => setEditingEntry({ propertyId: decl.id, index: eIdx })}
         onUpdate={(eIdx, next) => updateEntry(decl.id, propertyType.historical, eIdx, next)}
         onAdd={() => addEntry(decl.id, propertyType)}
         onRemove={(eIdx) => removeEntry(decl.id, propertyType, eIdx)}
@@ -1052,6 +1097,45 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
       searchText: `${label} ${decl.id}`,
     };
   });
+
+  // Props for the shared entry editor (sheet on mobile, right-hand
+  // slot panel on desktop), derived from the lifted editing pointer.
+  const activeEditor = (() => {
+    if (editingEntry === null) return null;
+    const pt = props.propertyTypes[editingEntry.propertyId];
+    if (pt === undefined) return null;
+    const list = entries(data.properties?.[editingEntry.propertyId]);
+    const entry = list[editingEntry.index];
+    if (entry === undefined) return null;
+    const label = pt.labels[locale] ?? pt.labels.en ?? editingEntry.propertyId;
+    const decl = props.entityType.properties.find((d) => d.id === editingEntry.propertyId);
+    const { propertyId, index } = editingEntry;
+    return {
+      editorKey: `${propertyId}:${index}`,
+      title: pt.historical && list.length > 1
+        ? `${label} · ${t('entryWord')} ${index + 1}`
+        : label,
+      entry,
+      propertyType: pt,
+      valueType: pt.value_type as ValueType,
+      valueField: getValueField(pt),
+      translations,
+      valueCtx: {
+        enumValues: enumValuesFor(pt, props.vocabularies),
+        sources: props.sources,
+        i18nKeys: props.i18nKeys,
+        entityTypes: entityTypeOpts,
+      },
+      vocabularies: props.vocabularies,
+      qualifierTypes: props.qualifierTypes,
+      fallbackName,
+      canRemove: pt.historical || !(decl?.required ?? false) || list.length > 1,
+      onUpdate: (next: PropertyEntry) => updateEntry(propertyId, pt.historical, index, next),
+      onRemove: () => removeEntry(propertyId, pt, index),
+      onTranslate: updateTranslation,
+      setEmptyProperty,
+    };
+  })();
 
   return (
     <div className='pb-24'>
@@ -1153,103 +1237,139 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
             </aside>
           )}
 
-        <div className='min-w-0 space-y-3'>
-          <div className='flex items-center justify-between gap-2 lg:justify-end'>
+        {
+          /* Desktop editing slot (2026-08 feedback): when an entry is
+            selected, the property list narrows and the editor renders
+            INLINE to its right — a slot component, not a popover. On
+            mobile the editor stays a side sheet. */
+        }
+        <div
+          className={activeEditor !== null && isDesktop
+            ? 'grid min-w-0 grid-cols-[minmax(0,1fr)_minmax(0,24rem)] items-start gap-5'
+            : 'min-w-0'}
+        >
+          <div className='min-w-0 space-y-3'>
+            <div className='flex items-center justify-between gap-2 lg:justify-end'>
+              {props.requiredOnly === true
+                ? null
+                : (
+                  <MobileSectionsTrigger
+                    entries={navEntries}
+                    onReveal={(id) => reveal(id)}
+                  />
+                )}
+              <Button
+                type='button'
+                variant='ghost'
+                size='sm'
+                className='text-muted-foreground h-7 px-2 text-xs'
+                onClick={() => setShowSchemaDetails((v) => !v)}
+              >
+                {showSchemaDetails ? t('hideSchemaDetails') : t('showSchemaDetails')}
+              </Button>
+            </div>
+
+            {visible.length > 0
+              ? (() => {
+                const sections = groupBySection(visible, props.propertyTypes);
+                let globalIdx = 0;
+                return (
+                  <div className='space-y-3 sm:space-y-5'>
+                    {sections.map((s) => (
+                      <section key={s.id}>
+                        <header className='border-border mb-2 flex items-baseline justify-between border-b pb-1'>
+                          <h2 className='text-foreground text-[11px] font-semibold uppercase tracking-wider'>
+                            {t(s.labelKey)}
+                          </h2>
+                          <span className='text-muted-foreground text-[10px]'>
+                            {s.items.length} {s.items.length === 1
+                              ? t('fieldsSingular')
+                              : t('fieldsPlural')}
+                          </span>
+                        </header>
+                        <div className='divide-border/60 divide-y'>
+                          {s.items.map((decl) => {
+                            const row = renderRow(decl as Decl, globalIdx);
+                            globalIdx++;
+                            return row;
+                          })}
+                        </div>
+                      </section>
+                    ))}
+                  </div>
+                );
+              })()
+              : (
+                <div className='text-muted-foreground rounded-md border border-dashed p-6 text-center text-sm'>
+                  {t('noProperties')}
+                </div>
+              )}
+
+            {hidden.length > 0
+              ? (
+                <Combobox
+                  value={undefined}
+                  onChange={(propertyId) => {
+                    const pt = props.propertyTypes[propertyId];
+                    if (pt !== undefined) addEntry(propertyId, pt);
+                    requestAnimationFrame(() => {
+                      const el = document.getElementById(propertyAnchorId(propertyId));
+                      if (el !== null) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    });
+                  }}
+                  items={adderItems}
+                  placeholder={`+ ${t('addProperty')} (${hidden.length} ${t('available')})`}
+                  emptyText={t('noMatch')}
+                />
+              )
+              : null}
+
             {props.requiredOnly === true
               ? null
               : (
-                <MobileSectionsTrigger
-                  entries={navEntries}
-                  onReveal={(id) => reveal(id)}
+                <RelationsEditor
+                  entityType={props.entityType}
+                  relationTypes={props.relationTypes}
+                  vocabularies={props.vocabularies}
+                  qualifierTypes={props.qualifierTypes}
+                  valueCtx={{
+                    enumValues: [],
+                    sources: props.sources,
+                    i18nKeys: props.i18nKeys,
+                    entityTypes: entityTypeOpts,
+                  }}
+                  relations={(data['relations'] as RelationEntry[] | undefined) ?? []}
+                  onChange={(next) => {
+                    setData((prev) => ({ ...prev, relations: next }));
+                  }}
                 />
               )}
-            <Button
-              type='button'
-              variant='ghost'
-              size='sm'
-              className='text-muted-foreground h-7 px-2 text-xs'
-              onClick={() => setShowSchemaDetails((v) => !v)}
-            >
-              {showSchemaDetails ? t('hideSchemaDetails') : t('showSchemaDetails')}
-            </Button>
           </div>
-
-          {visible.length > 0
-            ? (() => {
-              const sections = groupBySection(visible, props.propertyTypes);
-              let globalIdx = 0;
-              return (
-                <div className='space-y-3 sm:space-y-5'>
-                  {sections.map((s) => (
-                    <section key={s.id}>
-                      <header className='border-border mb-2 flex items-baseline justify-between border-b pb-1'>
-                        <h2 className='text-foreground text-[11px] font-semibold uppercase tracking-wider'>
-                          {t(s.labelKey)}
-                        </h2>
-                        <span className='text-muted-foreground text-[10px]'>
-                          {s.items.length} {s.items.length === 1
-                            ? t('fieldsSingular')
-                            : t('fieldsPlural')}
-                        </span>
-                      </header>
-                      <div className='divide-border/60 divide-y'>
-                        {s.items.map((decl) => {
-                          const row = renderRow(decl as Decl, globalIdx);
-                          globalIdx++;
-                          return row;
-                        })}
-                      </div>
-                    </section>
-                  ))}
-                </div>
-              );
-            })()
-            : (
-              <div className='text-muted-foreground rounded-md border border-dashed p-6 text-center text-sm'>
-                {t('noProperties')}
-              </div>
-            )}
-
-          {hidden.length > 0
+          {activeEditor !== null && isDesktop
             ? (
-              <Combobox
-                value={undefined}
-                onChange={(propertyId) => {
-                  const pt = props.propertyTypes[propertyId];
-                  if (pt !== undefined) addEntry(propertyId, pt);
-                  requestAnimationFrame(() => {
-                    const el = document.getElementById(propertyAnchorId(propertyId));
-                    if (el !== null) el.scrollIntoView({ behavior: 'smooth', block: 'start' });
-                  });
-                }}
-                items={adderItems}
-                placeholder={`+ ${t('addProperty')} (${hidden.length} ${t('available')})`}
-                emptyText={t('noMatch')}
-              />
+              <div className='sticky top-4'>
+                <EntryEditor
+                  key={activeEditor.editorKey}
+                  {...activeEditor}
+                  open
+                  asPanel
+                  onClose={closeEntryEditor}
+                />
+              </div>
             )
             : null}
-
-          {props.requiredOnly === true
-            ? null
-            : (
-              <RelationsEditor
-                entityType={props.entityType}
-                relationTypes={props.relationTypes}
-                vocabularies={props.vocabularies}
-                qualifierTypes={props.qualifierTypes}
-                valueCtx={{
-                  enumValues: [],
-                  sources: props.sources,
-                  i18nKeys: props.i18nKeys,
-                  entityTypes: entityTypeOpts,
-                }}
-                relations={(data['relations'] as RelationEntry[] | undefined) ?? []}
-                onChange={(next) => {
-                  setData((prev) => ({ ...prev, relations: next }));
-                }}
-              />
-            )}
         </div>
+        {activeEditor !== null && !isDesktop
+          ? (
+            <EntryEditor
+              key={activeEditor.editorKey}
+              {...activeEditor}
+              open
+              asPanel={false}
+              onClose={closeEntryEditor}
+            />
+          )
+          : null}
       </div>
 
       {props.hideSaveBar === true
@@ -1376,6 +1496,10 @@ type PropertyRowProps = {
   heldBack: boolean;
   /** ADR-085 rule findings for this property — advisory, amber. */
   advisories?: readonly string[];
+  /** Index of this property's entry currently open in the editor
+   *  surface (highlights the line), or null. */
+  editingIndex: number | null;
+  onEditEntry: (idx: number) => void;
   onUpdate: (idx: number, next: PropertyEntry) => void;
   onAdd: () => void;
   onRemove: (idx: number) => void;
@@ -1406,21 +1530,6 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   const isRequiredMissing = p.required && !hasContent;
   const isRecommendedMissing = !p.required && p.recommended && !hasContent;
   const hasError = (p.errors?.length ?? 0) > 0;
-
-  // Which entry's edit sheet is open (2026-08 feedback: values render
-  // as a full-width read list; tapping one opens a side sheet that
-  // groups value + every option, like "More options").
-  const [editingIndex, setEditingIndex] = useState<number | null>(null);
-  // Render-time state adjustments (react.dev pattern, not effects):
-  // a just-added entry (Add button, sidebar reveal, importer draft)
-  // opens its sheet immediately; removals clamp a stale index.
-  const entryCount = p.entries.length;
-  const [prevCount, setPrevCount] = useState(entryCount);
-  if (prevCount !== entryCount) {
-    setPrevCount(entryCount);
-    if (entryCount > prevCount) setEditingIndex(entryCount - 1);
-    else if (editingIndex !== null && editingIndex >= entryCount) setEditingIndex(null);
-  }
 
   const locale = p.locale;
   // One full-width line per entry: value + compact provenance
@@ -1586,9 +1695,11 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
                 <button
                   key={idx}
                   type='button'
-                  onClick={() => setEditingIndex(idx)}
+                  onClick={() => p.onEditEntry(idx)}
                   aria-haspopup='dialog'
-                  className='hover:bg-accent/40 -mx-1 flex w-full items-baseline gap-2 rounded-md px-1 py-1 text-left transition-colors'
+                  className={`-mx-1 flex w-full items-center gap-2 rounded-md px-1 py-1 text-left transition-colors ${
+                    p.editingIndex === idx ? 'bg-accent/60' : 'hover:bg-accent/40'
+                  }`}
                 >
                   <span className='min-w-0 flex-1 break-words text-sm'>
                     {line.value !== ''
@@ -1603,40 +1714,12 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
                     )
                     : null}
                   <ChevronRight
-                    className='text-muted-foreground/60 size-3.5 shrink-0 self-center'
+                    className='text-muted-foreground/60 size-3.5 shrink-0'
                     aria-hidden
                   />
                 </button>
               ))}
             </div>
-            {editingIndex !== null && p.entries[editingIndex] !== undefined
-              ? (
-                <EntryEditSheet
-                  open
-                  onClose={() => setEditingIndex(null)}
-                  title={isHistorical && p.entries.length > 1
-                    ? `${p.propertyLabel} · ${t('entryWord')} ${editingIndex + 1}`
-                    : p.propertyLabel}
-                  entry={p.entries[editingIndex]!}
-                  propertyType={p.propertyType}
-                  valueType={p.valueType}
-                  valueField={p.valueField}
-                  translations={p.translations}
-                  valueCtx={p.valueCtx}
-                  vocabularies={p.vocabularies}
-                  qualifierTypes={p.qualifierTypes}
-                  fallbackName={p.fallbackName}
-                  canRemove={isHistorical || !p.required || p.entries.length > 1}
-                  onUpdate={(next) => p.onUpdate(editingIndex, next)}
-                  onRemove={() => {
-                    p.onRemove(editingIndex);
-                    setEditingIndex(null);
-                  }}
-                  onTranslate={p.onTranslate}
-                  setEmptyProperty={p.setEmptyProperty}
-                />
-              )
-              : null}
           </>
         )}
       {hasError
@@ -1670,10 +1753,10 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   );
 }
 
-type EntryEditSheetProps = {
+type EntryEditorProps = {
   open: boolean;
   onClose: () => void;
-  /** Sheet header — the property label (+ entry ordinal). */
+  /** Header — the property label (+ entry ordinal). */
   title: string;
   entry: PropertyEntry;
   propertyType: PropertyTypeSchema;
@@ -1685,21 +1768,19 @@ type EntryEditSheetProps = {
   qualifierTypes: Record<string, QualifierTypeSchema>;
   fallbackName?: string | undefined;
   canRemove: boolean;
+  /** Inline right-hand panel (desktop slot) instead of the mobile
+   *  side sheet. */
+  asPanel: boolean;
   onUpdate: (next: PropertyEntry) => void;
   onRemove: () => void;
   onTranslate: (locale: 'en' | 'fr', key: string, value: string) => void;
   setEmptyProperty: (propertyId: string, value: unknown) => void;
 };
 
-/**
- * One entry's full editor in a right-side sheet (2026-08 feedback:
- * "regrouper les options ensemble"): the value input at the top, the
- * `since` anchor for historicals, then EVERY remaining qualifier in
- * the list-all pattern — no separate "More options" hop. The remove
- * action lives in the sheet footer.
- */
-function EntryEditSheet(p: EntryEditSheetProps): JSX.Element {
-  const t = useT();
+/** Shared body of the entry editor: value input on top, the `since`
+ *  anchor for historicals, then EVERY remaining qualifier in the
+ *  list-all pattern — no separate "More options" hop. */
+function EntryEditorFields(p: Omit<EntryEditorProps, 'open' | 'onClose' | 'asPanel'>): JSX.Element {
   const locale = useLocale();
   const qLabel = useQualifierLabel();
   const { primary, secondary } = useMemo(
@@ -1750,27 +1831,7 @@ function EntryEditSheet(p: EntryEditSheetProps): JSX.Element {
   }, [allQualifiers, p.entry]);
 
   return (
-    <SideSheet
-      open={p.open}
-      onClose={p.onClose}
-      title={p.title}
-      {...(p.canRemove
-        ? {
-          footer: (
-            <Button
-              type='button'
-              variant='ghost'
-              size='sm'
-              className='text-muted-foreground hover:text-destructive hover:bg-destructive/10 w-full gap-1.5'
-              onClick={p.onRemove}
-            >
-              <X className='size-3.5' />
-              {t('removeEntry')}
-            </Button>
-          ),
-        }
-        : {})}
-    >
+    <>
       <div className='border-border/40 border-b pb-3'>
         <EntryValue
           propertyType={p.propertyType}
@@ -1833,6 +1894,71 @@ function EntryEditSheet(p: EntryEditSheetProps): JSX.Element {
           />
         )
         : null}
+    </>
+  );
+}
+
+/**
+ * One entry's full editor (2026-08 feedback: "regrouper les options
+ * ensemble"). Two containers around the same fields:
+ *  - mobile: right-side sheet (SideSheet);
+ *  - desktop (`asPanel`): an inline bordered panel meant for the
+ *    slot to the RIGHT of the property list — a slot, not a popover,
+ *    so the page keeps scrolling naturally while editing.
+ */
+function EntryEditor(p: EntryEditorProps): JSX.Element {
+  const t = useT();
+  const removeButton = p.canRemove
+    ? (
+      <Button
+        type='button'
+        variant='ghost'
+        size='sm'
+        className='text-muted-foreground hover:text-destructive hover:bg-destructive/10 w-full gap-1.5'
+        onClick={p.onRemove}
+      >
+        <X className='size-3.5' />
+        {t('removeEntry')}
+      </Button>
+    )
+    : null;
+
+  if (p.asPanel) {
+    return (
+      <div className='border-border bg-card/40 rounded-lg border'>
+        <div className='border-border flex items-center gap-2 border-b px-3 py-2.5'>
+          <h3 className='min-w-0 flex-1 truncate text-xs font-semibold uppercase tracking-wide'>
+            {p.title}
+          </h3>
+          <Button
+            type='button'
+            variant='ghost'
+            size='icon'
+            className='size-6 shrink-0'
+            onClick={p.onClose}
+            aria-label={t('close')}
+          >
+            <X className='size-3.5' />
+          </Button>
+        </div>
+        <div className='space-y-3 px-3 py-3'>
+          <EntryEditorFields {...p} />
+        </div>
+        {removeButton !== null
+          ? <div className='border-border border-t px-3 py-2'>{removeButton}</div>
+          : null}
+      </div>
+    );
+  }
+
+  return (
+    <SideSheet
+      open={p.open}
+      onClose={p.onClose}
+      title={p.title}
+      {...(removeButton !== null ? { footer: removeButton } : {})}
+    >
+      <EntryEditorFields {...p} />
     </SideSheet>
   );
 }
