@@ -27,6 +27,13 @@ import { InferredRelations } from '../form/RelationsEditor';
 import { useApiResource } from '../hooks/use-api-resource';
 
 export const Route = createFileRoute('/types/$type/$slug/')({
+  // `?edit=<propertyId>.<entryIndex>` mirrors the open entry editor
+  // so the browser Back button CLOSES the editor instead of leaving
+  // the entity page (maintainer request 2026-08).
+  validateSearch: (search: Record<string, unknown>): { edit?: string; } => {
+    const edit = search['edit'];
+    return typeof edit === 'string' && edit !== '' ? { edit } : {};
+  },
   component: EntityEditComponent,
 });
 
@@ -251,6 +258,7 @@ function EntityEditComponent(): JSX.Element {
         i18nKeys={i18nKeys}
         initialData={entity.data}
         initialTranslations={entity.translations}
+        syncEditorToUrl
         onSave={async (next, translations) => {
           const result = await api.saveEntity(
             type,

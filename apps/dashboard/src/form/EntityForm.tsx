@@ -28,6 +28,7 @@ import type {
   RuleSchema,
   VocabularySchema,
 } from '@onepiece-wiki/schemas';
+import { useLocation, useNavigate } from '@tanstack/react-router';
 import {
   AlertCircle,
   Check,
@@ -200,6 +201,11 @@ export type EntityFormProps = {
    * drawer.
    */
   hideSaveBar?: boolean;
+  /** Mirror the open entry editor into `?edit=<propertyId>.<index>`
+   *  so the browser Back button closes the editor instead of leaving
+   *  the page. Only the entity route opts in — drawer/new-entity
+   *  instances keep purely local state. */
+  syncEditorToUrl?: boolean;
   /**
    * Parent-bumped counter that triggers an internal save when it
    * changes (skipping the initial value). Lets a drawer footer drive
@@ -286,8 +292,15 @@ function isEntryEmpty(
   } else {
     const v = entry['value'];
     if (v !== undefined && v !== null) {
-      if (typeof v !== 'string') return false; // numbers, booleans, arrays, objects
-      if (v !== '') return false;
+      if (Array.isArray(v)) {
+        // A multi_enum seed is `[]` — zero selections is NOT content
+        // (2026-08 feedback: an untouched occupation entry was saved).
+        if (v.length > 0) return false;
+      } else if (typeof v !== 'string') {
+        return false; // numbers, booleans, objects
+      } else if (v !== '') {
+        return false;
+      }
     }
   }
 
@@ -443,6 +456,59 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   const [editingEntry, setEditingEntry] = useState<
     { propertyId: string; index: number; } | null
   >(null);
+  // URL mirror (maintainer request 2026-08: Back closes the editor,
+  // never leaves the page). Opening PUSHES `?edit=pid.idx`; explicit
+  // close goes history.back() when we own the pushed entry, so the
+  // stack stays balanced; the URL→state effect below is the single
+  // writer for open/close (covers Back/Forward + deep links).
+  const navigate = useNavigate();
+  const location = useLocation();
+  const syncToUrl = props.syncEditorToUrl === true;
+  const urlEdit = syncToUrl
+    ? (location.search as Record<string, unknown>)['edit']
+    : undefined;
+  // How many `?edit` entries THIS component pushed — back() only then.
+  const pushedEditsRef = useRef(0);
+  // Untyped search updater: EntityForm is route-agnostic, so it can't
+  // use the entity route's typed search. The runtime shape is just
+  // "merge/remove one string key".
+  const setEditParam = (value: string | undefined, replace: boolean): void => {
+    void navigate({
+      to: '.',
+      search: (prev: Record<string, unknown>) => {
+        const next = { ...prev };
+        if (value === undefined) delete next['edit'];
+        else next['edit'] = value;
+        return next;
+      },
+      replace,
+      resetScroll: false,
+    } as never);
+  };
+  useEffect(() => {
+    if (!syncToUrl) return;
+    if (typeof urlEdit !== 'string' || urlEdit === '') {
+      // URL says closed — run the close path (discard-if-empty).
+      if (editingEntry !== null) closeEditingLocally();
+      return;
+    }
+    const dot = urlEdit.lastIndexOf('.');
+    const propertyId = urlEdit.slice(0, dot);
+    const index = Number(urlEdit.slice(dot + 1));
+    const valid = dot > 0
+      && Number.isInteger(index)
+      && props.propertyTypes[propertyId] !== undefined
+      && entries(data.properties?.[propertyId])[index] !== undefined;
+    if (!valid) {
+      setEditParam(undefined, true);
+      return;
+    }
+    if (editingEntry?.propertyId !== propertyId || editingEntry.index !== index) {
+      setEditingEntry({ propertyId, index });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps -- urlEdit is
+    // the single trigger; the rest are stable-enough lookups.
+  }, [urlEdit, syncToUrl]);
   // lg breakpoint, decided post-hydration (SSR renders the sheet
   // variant markup — it's portaled and closed, so nothing shows).
   const [isDesktop, setIsDesktop] = useState(false);
@@ -651,7 +717,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     setEntries(propertyId, propertyType.historical, list);
     // A fresh entry goes straight into the editor surface (sheet on
     // mobile, right-hand panel on desktop).
-    setEditingEntry({ propertyId, index: list.length - 1 });
+    openEntryEditor(propertyId, list.length - 1);
   }
 
   function removeEntry(
@@ -663,12 +729,19 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     const removed = list[entryIndex];
     list.splice(entryIndex, 1);
     setEntries(propertyId, propertyType.historical, list);
-    // Keep the editor pointer coherent with the shifted list.
+    // Keep the editor pointer coherent with the shifted list; under
+    // URL sync the param follows (removal always closes the editor).
     setEditingEntry((prev) => {
       if (prev === null || prev.propertyId !== propertyId) return prev;
       if (prev.index === entryIndex) return null;
       return prev.index > entryIndex ? { ...prev, index: prev.index - 1 } : prev;
     });
+    if (
+      syncToUrl && editingEntry !== null && editingEntry.propertyId === propertyId
+    ) {
+      setEditParam(undefined, true);
+      pushedEditsRef.current = 0;
+    }
     // Clean up orphan translations for the removed key.
     if (propertyType.localizable && removed !== undefined) {
       const key = String(removed['value_key'] ?? '');
@@ -684,11 +757,21 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
     }
   }
 
-  /** Close the entry editor. Backing out of a never-filled entry
+  /** Open an entry's editor — pushes `?edit` when URL-synced so the
+   *  browser Back button closes it (never leaves the page). */
+  function openEntryEditor(propertyId: string, index: number): void {
+    setEditingEntry({ propertyId, index });
+    if (syncToUrl) {
+      pushedEditsRef.current += 1;
+      setEditParam(`${propertyId}.${index}`, false);
+    }
+  }
+
+  /** The local close path: backing out of a never-filled entry
    *  DISCARDS it (2026-08 feedback: "on ajoute une propriété mais
    *  qu'on complète pas … on revient en arrière, on sauvegarde
    *  pas") — the phantom empty row would otherwise linger. */
-  function closeEntryEditor(): void {
+  function closeEditingLocally(): void {
     if (editingEntry === null) return;
     const pt = props.propertyTypes[editingEntry.propertyId];
     const entry = entries(data.properties?.[editingEntry.propertyId])[editingEntry.index];
@@ -697,6 +780,23 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
       return; // removeEntry clears the editing pointer.
     }
     setEditingEntry(null);
+  }
+
+  /** Explicit close (X, backdrop, ESC). URL-synced: pop our pushed
+   *  history entry so Back stays balanced — the URL→state effect then
+   *  runs the local close path. Deep-linked `?edit` (nothing pushed)
+   *  is stripped in place instead of navigating away. */
+  function closeEntryEditor(): void {
+    if (syncToUrl && typeof urlEdit === 'string' && urlEdit !== '') {
+      if (pushedEditsRef.current > 0) {
+        pushedEditsRef.current -= 1;
+        window.history.back();
+      } else {
+        setEditParam(undefined, true);
+      }
+      return;
+    }
+    closeEditingLocally();
   }
 
   function updateTranslation(locale: 'en' | 'fr', key: string, value: string): void {
@@ -1075,7 +1175,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         editingIndex={editingEntry !== null && editingEntry.propertyId === decl.id
           ? editingEntry.index
           : null}
-        onEditEntry={(eIdx) => setEditingEntry({ propertyId: decl.id, index: eIdx })}
+        onEditEntry={(eIdx) => openEntryEditor(decl.id, eIdx)}
         onUpdate={(eIdx, next) => updateEntry(decl.id, propertyType.historical, eIdx, next)}
         onAdd={() => addEntry(decl.id, propertyType)}
         onRemove={(eIdx) => removeEntry(decl.id, propertyType, eIdx)}
