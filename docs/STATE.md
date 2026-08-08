@@ -261,6 +261,23 @@ nitro server (curl: cookie→fr, Accept-Language→fr, default→en) plus a
 full Playwright pass against the prod build (form sheet, links panel,
 explore locale=fr single fetch, history banner).
 
+## 2026-08-08 (g) — history page: semantic property/value changes
+
+Maintainer feedback: "afficher sous forme de changements de propriétés
+et valeurs, pas en mode json". The per-commit raw `+`/`-` patch lines
+are gone. `server/history-diff.ts` diffs the entity JSON at each
+commit against its predecessor (file contents fetched per version —
+listCommits is path-filtered so consecutive rows are consecutive
+versions; the oldest commit of a complete history diffs against
+nothing = creation) and reports grouped changes per property /
+relation type. Values resolve through the audit display machinery
+(vocab labels, translated keys, number+unit, ref display names,
+compact `C96` provenance) in the requested `?locale=`. Multiset
+semantics: an in-place edit reads as one removal + one addition. The
+page renders label + red `−` / green `+` lines, groups kept whole
+under a 20-line per-commit budget with a truncation note. 6 new
+tests (230 total).
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below

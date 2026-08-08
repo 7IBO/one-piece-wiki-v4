@@ -75,14 +75,16 @@ function EntityHistoryComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
   const t = useT();
+  // Locale is a fetch dependency: change labels/values are resolved
+  // server-side in the requested locale.
   const { data, error, reload } = useApiResource(
     () =>
       Promise.all([
         api.getEntity(type, slug),
         api.schemas(),
-        api.entityHistory(type, slug),
+        api.entityHistory(type, slug, locale),
       ]),
-    [type, slug],
+    [type, slug, locale],
   );
   const entity = data?.[0] ?? null;
   const schemas = data?.[1] ?? null;
@@ -227,35 +229,48 @@ function EntityHistoryComponent(): JSX.Element {
                     </Button>
                   </div>
                   {
-                    /* Changed lines, visible without a click. `+` rows
-                    green, `-` rows red; long diffs end with a muted
-                    "+n more" count (the full diff is one commit-link
-                    away). Newest commits only — older rows have no
-                    diffLines (server per-commit API budget). */
+                    /* Semantic changes, visible without a click:
+                    property/relation label, then removed values in
+                    red (−) and added values in green (+) — resolved
+                    displays, never raw JSON. Newest commits only —
+                    older rows have no changes (server API budget). */
                   }
-                  {c.diffLines !== undefined && c.diffLines.length > 0
+                  {c.changes !== undefined && c.changes.length > 0
                     ? (
-                      <div className='bg-muted/20 mt-2 overflow-x-auto rounded-md border px-2.5 py-1.5 font-mono text-xs leading-relaxed'>
-                        {c.diffLines.map((line, i) => (
-                          <div
-                            key={i}
-                            className={`whitespace-pre ${
-                              line.startsWith('+')
-                                ? 'text-emerald-600 dark:text-emerald-400'
-                                : 'text-red-600 dark:text-red-400'
-                            }`}
-                          >
-                            {line}
+                      <div className='bg-muted/20 mt-2 space-y-2 rounded-md border px-2.5 py-2 text-xs'>
+                        {c.changes.map((group) => (
+                          <div key={group.label}>
+                            <p className='text-muted-foreground text-[11px] font-medium tracking-wide uppercase'>
+                              {group.label}
+                            </p>
+                            {group.removed.map((line, i) => (
+                              <p
+                                key={`r${i}`}
+                                className='flex items-baseline gap-1.5 text-red-600 dark:text-red-400'
+                              >
+                                <span aria-hidden className='shrink-0'>−</span>
+                                <span className='min-w-0 break-words'>{line}</span>
+                              </p>
+                            ))}
+                            {group.added.map((line, i) => (
+                              <p
+                                key={`a${i}`}
+                                className='flex items-baseline gap-1.5 text-emerald-600 dark:text-emerald-400'
+                              >
+                                <span aria-hidden className='shrink-0'>+</span>
+                                <span className='min-w-0 break-words'>{line}</span>
+                              </p>
+                            ))}
                           </div>
                         ))}
-                        {(c.diffTruncated ?? 0) > 0
+                        {(c.changesTruncated ?? 0) > 0
                           ? (
-                            <div className='text-muted-foreground mt-0.5'>
+                            <p className='text-muted-foreground'>
                               {t('historyDiffMore').replace(
                                 '{n}',
-                                String(c.diffTruncated),
+                                String(c.changesTruncated),
                               )}
-                            </div>
+                            </p>
                           )
                           : null}
                       </div>

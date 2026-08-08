@@ -60,11 +60,16 @@ import { randomBytes } from 'node:crypto';
 import { dirname, resolve } from 'node:path';
 import { fileURLToPath } from 'node:url';
 import { promoteAndMergePR, rejectAndCleanupPR } from './admin-promote.ts';
-import { buildAuditRow } from './audit.ts';
+import { buildAuditRow, sourceIdDisplay } from './audit.ts';
 import { type DashboardSession, readDashboardSession } from './auth.ts';
 import { completenessExpectation, computeCompleteness } from './completeness.ts';
 import { dashboardDataSource } from './data-source.ts';
 import { classifyDataPath, diffEntityFile, diffTranslationFile } from './diff.ts';
+import {
+  diffEntityData,
+  type HistoryChangeGroup,
+  type HistoryDiffContext,
+} from './history-diff.ts';
 import { computeEntityLinks } from './links.ts';
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
 import { buildCookie, clearCookie, newAnonymousSession, newGithubSession } from './session.ts';
@@ -772,37 +777,34 @@ async function handleEntityLinks(type: string, slug: string): Promise<Response> 
 // Cap on the number of commits returned by the entity-history
 // endpoint — one page of GitHub's listCommits, newest first.
 const HISTORY_COMMIT_CAP = 50;
-// Per-commit diff detail costs one extra API call each (getCommit) —
-// only the newest commits carry inline diff lines.
+// Per-commit change detail costs one file-content fetch per version —
+// only the newest commits carry inline change groups.
 const HISTORY_DIFF_CAP = 25;
-// Changed lines kept per commit; the rest is summarised as a count.
-const HISTORY_DIFF_LINE_CAP = 30;
+// Change lines kept per commit; the rest is summarised as a count.
+const HISTORY_DIFF_LINE_CAP = 20;
 
-/** The entity file's changed lines (`+`/`-`, no context) in one
- *  commit, or null when the diff is unavailable (binary, too large,
- *  API error — the row simply renders without the inline diff). */
-async function commitDiffFor(
+/** The entity file's parsed JSON at one ref, or null (file absent at
+ *  that ref, unparsable, or API error — the diff degrades quietly). */
+async function entityJsonAt(
   octokit: Awaited<ReturnType<typeof installationClient>>,
   cfg: GitHubAppConfig,
   ref: string,
   filePath: string,
-): Promise<{ lines: string[]; truncated: number; } | null> {
+): Promise<Record<string, unknown> | null> {
   try {
-    const { data } = await octokit.repos.getCommit({
+    const { data } = await octokit.repos.getContent({
       owner: cfg.dataRepo.owner,
       repo: cfg.dataRepo.repo,
+      path: filePath,
       ref,
     });
-    const file = data.files?.find((f) => f.filename === filePath);
-    if (file?.patch === undefined) return null;
-    const changed = file.patch.split('\n').filter((line) =>
-      (line.startsWith('+') && !line.startsWith('+++'))
-      || (line.startsWith('-') && !line.startsWith('---'))
-    );
-    return {
-      lines: changed.slice(0, HISTORY_DIFF_LINE_CAP),
-      truncated: Math.max(changed.length - HISTORY_DIFF_LINE_CAP, 0),
-    };
+    if (Array.isArray(data) || data.type !== 'file' || typeof data.content !== 'string') {
+      return null;
+    }
+    const parsed: unknown = JSON.parse(Buffer.from(data.content, 'base64').toString('utf8'));
+    return parsed !== null && typeof parsed === 'object' && !Array.isArray(parsed)
+      ? (parsed as Record<string, unknown>)
+      : null;
   } catch {
     return null;
   }
@@ -825,6 +827,7 @@ async function handleEntityHistory(
   cfg: GitHubAppConfig,
   type: string,
   slug: string,
+  locale: 'en' | 'fr',
 ): Promise<Response> {
   const snap = await snapshot();
   const entity = await findEntity(snap, type, slug);
@@ -848,16 +851,67 @@ async function handleEntityHistory(
       per_page: HISTORY_COMMIT_CAP,
     });
     const listed = data.slice(0, HISTORY_COMMIT_CAP);
-    // Inline diffs so the page shows WHAT changed without a click —
-    // one getCommit per commit, newest HISTORY_DIFF_CAP only.
-    const diffs = await Promise.all(
-      listed.map((c, i) =>
-        i < HISTORY_DIFF_CAP ? commitDiffFor(octokit, cfg, c.sha, filePath) : null
-      ),
+
+    // Semantic per-commit changes (2026-08 feedback: property/value
+    // form, not raw JSON): fetch the file's JSON at each of the
+    // newest HISTORY_DIFF_CAP+1 versions once, then diff neighbours —
+    // listCommits is path-filtered, so consecutive rows ARE
+    // consecutive versions of this file.
+    const versionCount = Math.min(listed.length, HISTORY_DIFF_CAP + 1);
+    const versions = await Promise.all(
+      listed.slice(0, versionCount).map((c) => entityJsonAt(octokit, cfg, c.sha, filePath)),
     );
+    const names = await buildDisplayNames(snap);
+    const translations = await readTranslationsFor(type, fileBase);
+    const diffCtx: HistoryDiffContext = {
+      propertyTypes: snap.validated.propertyTypes,
+      vocabularies: snap.validated.vocabularies,
+      translations,
+      displayNameFor: (id) => names.get(id),
+      locale,
+      propertyLabel: (id) => {
+        const pt = snap.validated.propertyTypes.get(id);
+        return pt?.labels[locale] ?? pt?.labels.en ?? id;
+      },
+      relationLabel: (id) => {
+        const rt = snap.validated.relationTypes.get(id);
+        return rt?.labels[locale]?.active ?? rt?.labels.en.active ?? id;
+      },
+      sourceDisplay: (id) => sourceIdDisplay(id, (eid) => names.get(eid), locale),
+    };
+
     const commits = listed.map((c, i) => {
       const login = c.author?.login ?? null;
-      const diff = diffs[i] ?? null;
+      let changes: readonly HistoryChangeGroup[] | null = null;
+      if (i < HISTORY_DIFF_CAP && versions[i] !== null && versions[i] !== undefined) {
+        // Previous version: the next listed commit's content; the
+        // oldest commit of a COMPLETE history diffs against nothing
+        // (creation). A truncated page can't know the predecessor —
+        // no changes shown there rather than a wrong "created".
+        const isOldestOfCompleteHistory = i === listed.length - 1
+          && listed.length < HISTORY_COMMIT_CAP;
+        const previous = i + 1 < versionCount ? versions[i + 1] ?? null : null;
+        if (previous !== null || isOldestOfCompleteHistory) {
+          changes = diffEntityData(previous, versions[i] ?? null, diffCtx);
+        }
+      }
+      // Per-commit line budget so an import touching 30 properties
+      // doesn't wall the page — groups kept whole until the cap.
+      let truncated = 0;
+      if (changes !== null) {
+        let kept: HistoryChangeGroup[] = [];
+        let lines = 0;
+        for (const group of changes) {
+          const size = group.added.length + group.removed.length;
+          if (lines + size > HISTORY_DIFF_LINE_CAP && kept.length > 0) {
+            truncated += size;
+            continue;
+          }
+          kept.push(group);
+          lines += size;
+        }
+        changes = kept;
+      }
       return {
         sha: c.sha,
         shortSha: c.sha.slice(0, 7),
@@ -866,7 +920,7 @@ async function handleEntityHistory(
         ...(login !== null ? { authorLogin: login } : {}),
         date: c.commit.author?.date ?? c.commit.committer?.date ?? '',
         htmlUrl: c.html_url,
-        ...(diff !== null ? { diffLines: diff.lines, diffTruncated: diff.truncated } : {}),
+        ...(changes !== null ? { changes, changesTruncated: truncated } : {}),
       };
     });
     return json(commits);
@@ -2040,7 +2094,12 @@ export async function handleApiRequest(req: Request): Promise<Response> {
       if (config === null) {
         return serviceUnavailable(`History requires the GitHub connection: ${configError}`);
       }
-      return await handleEntityHistory(config, historyMatch[1]!, historyMatch[2]!);
+      return await handleEntityHistory(
+        config,
+        historyMatch[1]!,
+        historyMatch[2]!,
+        url.searchParams.get('locale') === 'fr' ? 'fr' : 'en',
+      );
     }
 
     const entityMatch = /^\/api\/entities\/([^/]+)\/([^/]+)$/.exec(path);
