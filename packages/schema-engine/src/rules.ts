@@ -1,17 +1,24 @@
 /**
  * Declarative coherence-rule engine (ADR-085) — browser-safe (no
  * node:*), shared verbatim by `check:coherence` in CI and the
- * dashboard form's live advisory panel. Findings are ADVISORY:
- * nothing here ever blocks validation (One Piece canon is built on
- * exceptions — Cross Guild bounties on Marines, Blackbeard's two
- * fruits — so a finding means "double-check / add the distinguishing
- * qualifier", never "invalid").
+ * dashboard form's live advisory panel. Findings are ADVISORY by
+ * default: One Piece canon is built on exceptions — Cross Guild
+ * bounties on Marines, Blackbeard's two fruits — so a finding means
+ * "double-check / add the distinguishing qualifier", never "invalid".
+ *
+ * ADR-088: a rule may opt into `enforcement: 'blocking'` when it is
+ * structurally ALWAYS wrong (no canon exception possible). Blocking
+ * findings make `check:coherence` fail and the dashboard save
+ * endpoint refuse (422). The engine itself only REPORTS enforcement;
+ * callers decide what to do with it.
  */
 import type { Rule } from './meta-validator.ts';
 
 export type RuleFinding = {
   readonly ruleId: string;
   readonly severity: 'info' | 'warning';
+  /** ADR-088 — `blocking` findings fail CI and refuse the save. */
+  readonly enforcement: 'advisory' | 'blocking';
   /** Localized message straight from the rule file. */
   readonly messages: { readonly en: string; readonly fr: string; };
   /** Property the finding anchors to, when entry/property-scoped. */
@@ -154,6 +161,7 @@ export function evaluateRules(
               findings.push({
                 ruleId: rule.id,
                 severity: rule.severity,
+                enforcement: rule.enforcement,
                 messages: rule.messages,
                 property,
                 entryIndex,
@@ -187,6 +195,7 @@ export function evaluateRules(
         findings.push({
           ruleId: rule.id,
           severity: rule.severity,
+          enforcement: rule.enforcement,
           messages: rule.messages,
           ...(property !== undefined ? { property } : {}),
         });

@@ -1,0 +1,61 @@
+@import 'tailwindcss';
+@import '@fontsource-variable/inter';
+@import '@fontsource-variable/fraunces';
+
+/*
+ * Public reader theme — dark-first, editorial, deliberately distinct
+ * from the dashboard chrome (Tailwind v4 CSS-first config, tokens
+ * only here). Palette: deep indigo-ink canvas, warm parchment
+ * foreground, gold accent (wanted-poster / treasure register), teal
+ * secondary for interactive accents.
+ */
+@theme {
+  --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', ui-serif, Georgia, serif;
+
+  --color-canvas: oklch(0.152 0.018 262);
+  --color-panel: oklch(0.188 0.021 262);
+  --color-panel-2: oklch(0.222 0.024 262);
+  --color-line: oklch(0.285 0.024 262);
+  --color-line-strong: oklch(0.36 0.026 262);
+
+  --color-fg: oklch(0.93 0.012 84);
+  --color-muted: oklch(0.7 0.018 262);
+  --color-faint: oklch(0.54 0.02 262);
+
+  --color-gold: oklch(0.82 0.126 85);
+  --color-gold-deep: oklch(0.7 0.135 75);
+  --color-sea: oklch(0.78 0.09 200);
+
+  --color-veil: oklch(0.82 0.126 85 / 0.09);
+  --color-sea-veil: oklch(0.78 0.09 200 / 0.1);
+}
+
+html {
+  scrollbar-gutter: stable;
+  background-color: var(--color-canvas);
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-canvas);
+  color: var(--color-fg);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background-color: var(--color-gold-deep);
+  color: var(--color-canvas);
+}
+
+/* Comfortable touch targets on coarse pointers (same floor as the
+ * dashboard, see its styles.css rationale). */
+@media (pointer: coarse) {
+  button,
+  [role='button'] {
+    min-height: 36px;
+    min-width: 36px;
+  }
+}

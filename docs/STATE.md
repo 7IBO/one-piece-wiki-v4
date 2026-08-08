@@ -5,7 +5,69 @@ session can pick up mid-stream. Architectural _rationale_ lives in
 `/docs/DECISIONS.md` (ADRs); the build order in `/docs/ROADMAP.md`;
 this file is the current status + the open threads.
 
-**Last updated**: 2026-08-08 (providers generalised, ADR-087)
+> **DIRECTIVE MAINTENEUR (2026-08-08, valable jusqu'à révocation
+> explicite)** : le projet est en BÊTA avec 0 utilisateur. Aucune
+> dépendance externe à préserver — la priorité absolue est la base la
+> plus solide possible, même au prix de très grosses migrations,
+> refontes ou refactors complets. Ne pas ajouter de couches de
+> compatibilité/dépréciation pour protéger des usages inexistants ;
+> `check:compat` sert à DÉTECTER les breaking changes pour les faire
+> consciemment, pas à les interdire. Casser + migrer le corpus d'un
+> coup est le mode normal.
+
+**Last updated**: 2026-08-08 (public reader app skeleton, `apps/web`)
+
+**2026-08-08 — public reader app skeleton (`apps/web`, Phase 6.0
+foundation).** New workspace `@onepiece-wiki/web` (TanStack Start +
+Base UI + Tailwind v4, dev port 4200): the read-only public site over
+the SQLite artifact, first consumer of the ADR-086 additions
+(materialized inverse relations with per-direction `label`, plus the
+`translations` / `narratives` tables). Structure: `server/db.ts`
+(prepared `bun:sqlite` statements, lazy singleton, walk-up artifact
+discovery + `ONEPIECE_DB_PATH` override), `server/catalogue.ts`
+(schema-engine catalogue, fs in dev / glob bundle in prod — dashboard
+recipe), `server/views.ts` (display-ready view models: localized
+names, schema/vocab labels, epistemic badges + `actual_value`, both
+relation directions from `source_entity_id` alone), `src/api.ts`
+(server functions). Routes `/`, `/t/<type>`, `/e/<type>/<slug>`;
+`web_locale` cookie FR/EN with SSR-correct first paint; dark-first
+editorial theme (Fraunces/Inter display/body), tiny built-in markdown
+renderer (no new render dep). Turbo: `web#build` depends on
+`db-builder#build:db`; dev auto-builds the artifact when missing
+(`scripts/ensure-db.ts`). Verified: Playwright run over home /
+characters / Luffy (properties, both relation directions, FR toggle,
+404), `vite build` + `.output` smoke test under Bun, 9 new bun tests
+(markdown parser + real-artifact view models incl. Sabo epistemic
+history — suite skips when the artifact is absent). Gotcha logged in
+`server/views.ts`: a mixed `import { type X, fn }` from the
+bun:sqlite-backed module lost its value specifiers in the dev SSR
+transform — namespace import instead. Not yet (later 6.x): spoiler
+cursor, search, per-type templates, SEO/SSG, locale routes, images.
+Vercel deploy config for this app is intentionally untouched
+(dashboard-only `vercel.json`; deploy wiring is a flagged follow-up
+per CLAUDE.md §7).
+
+**2026-08-08 — rules gain opt-in `enforcement: 'blocking'`
+(ADR-088).** Maintainer's "custom rules between entities in the Zod
+verification": `RuleSchema` grew an optional
+`enforcement: 'advisory' | 'blocking'` (default advisory — the
+ADR-085 principle is untouched, all five canon-knowledge rules stay
+advisory). Blocking = the dashboard save/create endpoints re-run
+`evaluateRules` on the save payload and refuse with
+`422 { code: 'rule_blocked', findings }` (server gate in
+`apps/dashboard/server/rule-block.ts`, wired in handleSaveEntity +
+handleCreateEntity BEFORE any GitHub call); the form shows blocking
+findings red live (entity-level panel + per-property, error styling;
+save button stays enabled, the server refuses) and maps the 422 onto
+the same red field/top-level surfaces as Zod issues
+(`ruleBlockedFindings` guard in src/api.ts); `check:coherence`
+reports blocking RULE_FINDINGs as errors (non-zero exit). Exactly one
+rule shipped blocking as the structural example:
+`until-not-before-since` (incomparable refs already yield no finding,
+so no canon false-positive is possible). Tests: rules.test.ts
+(enforcement default/blocking), coherence.test.ts (severity mapping),
+server rule-block.test.ts (422 payload). Docs: DATA_MODEL /
+SCHEMA_SPEC § Rules + ADR-088.
 
 **2026-08-08 — providers generalised (ADR-087).** Maintainer's
 "structure providers" (Amazon/Crunchyroll/…): NO new entity type —

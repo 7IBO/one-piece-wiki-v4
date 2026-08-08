@@ -438,6 +438,35 @@ export class ApiError extends Error {
 
 export type ValidationIssue = { readonly path: readonly string[]; readonly message: string; };
 
+/** One blocking-rule finding from a 422 `rule_blocked` refusal (ADR-088). */
+export type RuleBlockedFinding = {
+  readonly ruleId: string;
+  readonly messages: { readonly en: string; readonly fr: string; };
+  readonly property?: string;
+  readonly entryIndex?: number;
+};
+
+/**
+ * Type-guard for the structured `rule_blocked` payload — a save the
+ * server refused because a BLOCKING coherence rule matched (ADR-088).
+ * The form maps these onto fields exactly like Zod validation issues.
+ */
+export function ruleBlockedFindings(err: unknown): readonly RuleBlockedFinding[] | null {
+  if (!(err instanceof ApiError) || err.payload === null) return null;
+  if (err.payload['code'] !== 'rule_blocked') return null;
+  const raw = err.payload['findings'];
+  if (!Array.isArray(raw)) return null;
+  return raw.filter(
+    (f): f is RuleBlockedFinding =>
+      f !== null
+      && typeof f === 'object'
+      && typeof (f as { ruleId?: unknown; }).ruleId === 'string'
+      && typeof (f as { messages?: unknown; }).messages === 'object'
+      && (f as { messages: { en?: unknown; }; }).messages !== null
+      && typeof (f as { messages: { en?: unknown; }; }).messages.en === 'string',
+  );
+}
+
 /** Type-guard for the structured `validation_failed` payload. */
 export function validationIssues(err: unknown): readonly ValidationIssue[] | null {
   if (!(err instanceof ApiError) || err.payload === null) return null;

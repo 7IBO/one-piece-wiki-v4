@@ -40,7 +40,7 @@ import {
   X,
 } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
-import { type SourceRef, type Translations, validationIssues } from '../api';
+import { ruleBlockedFindings, type SourceRef, type Translations, validationIssues } from '../api';
 import { useCurrentUser } from '../auth';
 import { DiffPopover } from './DiffPopover';
 import { ImageUpload } from './ImageUpload';
@@ -605,7 +605,18 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   const findingsByProperty = useMemo(() => {
     const out: Record<string, string[]> = {};
     for (const f of ruleFindings) {
-      if (f.property === undefined) continue;
+      if (f.property === undefined || f.enforcement === 'blocking') continue;
+      (out[f.property] ??= []).push(f.messages[locale] ?? f.messages.en);
+    }
+    return out;
+  }, [ruleFindings, locale]);
+  // ADR-088 — blocking findings render in the error style (red): the
+  // save button stays enabled, but the server will refuse (422) as
+  // long as they stand, so the visual weight matches the outcome.
+  const blockingByProperty = useMemo(() => {
+    const out: Record<string, string[]> = {};
+    for (const f of ruleFindings) {
+      if (f.property === undefined || f.enforcement !== 'blocking') continue;
       (out[f.property] ??= []).push(f.messages[locale] ?? f.messages.en);
     }
     return out;
@@ -613,7 +624,14 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   const entityLevelFindings = useMemo(
     () =>
       ruleFindings
-        .filter((f) => f.property === undefined)
+        .filter((f) => f.property === undefined && f.enforcement !== 'blocking')
+        .map((f) => f.messages[locale] ?? f.messages.en),
+    [ruleFindings, locale],
+  );
+  const entityLevelBlocking = useMemo(
+    () =>
+      ruleFindings
+        .filter((f) => f.property === undefined && f.enforcement === 'blocking')
         .map((f) => f.messages[locale] ?? f.messages.en),
     [ruleFindings, locale],
   );
@@ -944,6 +962,27 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         setFieldErrors(byProperty);
         setTopLevelErrors(topLevel);
         setError(null); // top-banner is already covered by topLevelErrors
+        return;
+      }
+      // ADR-088 — the server refused because a BLOCKING coherence
+      // rule matched (422 rule_blocked). Map the localized rule
+      // messages onto the same red field/top-level error surfaces
+      // the Zod issues use.
+      const blockedFindings = ruleBlockedFindings(err);
+      if (blockedFindings !== null && blockedFindings.length > 0) {
+        const byProperty: Record<string, string[]> = {};
+        const topLevel: string[] = [];
+        for (const f of blockedFindings) {
+          const msg = f.messages[locale] ?? f.messages.en;
+          const line = f.entryIndex !== undefined
+            ? `${t('entryWord')} ${f.entryIndex + 1} : ${msg}`
+            : msg;
+          if (f.property !== undefined) (byProperty[f.property] ??= []).push(line);
+          else topLevel.push(line);
+        }
+        setFieldErrors(byProperty);
+        setTopLevelErrors(topLevel);
+        setError(null);
       } else {
         setError(err instanceof Error ? err.message : String(err));
       }
@@ -1172,6 +1211,9 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
         {...(findingsByProperty[decl.id] !== undefined
           ? { advisories: findingsByProperty[decl.id]! }
           : {})}
+        {...(blockingByProperty[decl.id] !== undefined
+          ? { blocking: blockingByProperty[decl.id]! }
+          : {})}
         editingIndex={editingEntry !== null && editingEntry.propertyId === decl.id
           ? editingEntry.index
           : null}
@@ -1250,6 +1292,29 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
             </p>
             <ul className='space-y-0.5 text-[11px]'>
               {topLevelErrors.map((msg, i) => (
+                <li key={i} className='flex items-start gap-1'>
+                  <AlertCircle className='mt-[1px] size-3 shrink-0' aria-hidden='true' />
+                  <span>{msg}</span>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+        : null}
+      {entityLevelBlocking.length > 0
+        ? (
+          /* ADR-088 entity-level BLOCKING rule findings — red (error
+            style): the save button stays enabled but the server will
+            refuse the save (422) while these stand. */
+          <div
+            role='alert'
+            className='border-destructive/40 bg-destructive/5 text-destructive mb-4 rounded-md border px-3 py-2'
+          >
+            <p className='mb-1 text-[11px] font-semibold uppercase tracking-wide'>
+              {t('coherenceBlocking')}
+            </p>
+            <ul className='space-y-0.5 text-xs'>
+              {entityLevelBlocking.map((msg, i) => (
                 <li key={i} className='flex items-start gap-1'>
                   <AlertCircle className='mt-[1px] size-3 shrink-0' aria-hidden='true' />
                   <span>{msg}</span>
@@ -1596,6 +1661,9 @@ type PropertyRowProps = {
   heldBack: boolean;
   /** ADR-085 rule findings for this property — advisory, amber. */
   advisories?: readonly string[];
+  /** ADR-088 BLOCKING rule findings — red (error style); the server
+   *  refuses the save (422) while they stand. */
+  blocking?: readonly string[];
   /** Index of this property's entry currently open in the editor
    *  surface (highlights the line), or null. */
   editingIndex: number | null;
@@ -1630,6 +1698,9 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   const isRequiredMissing = p.required && !hasContent;
   const isRecommendedMissing = !p.required && p.recommended && !hasContent;
   const hasError = (p.errors?.length ?? 0) > 0;
+  // Blocking rule findings (ADR-088) share the error treatment — the
+  // save WILL be refused, so amber would undersell the situation.
+  const hasBlocking = (p.blocking?.length ?? 0) > 0;
 
   const locale = p.locale;
   // One full-width line per entry: value + compact provenance
@@ -1667,7 +1738,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
   // worrying about missing optionals or required-empty hints. Held-back
   // drafts (incomplete entries excluded from the PR) share the amber
   // treatment: attention, not failure.
-  const ringClass = hasError
+  const ringClass = hasError || hasBlocking
     ? 'bg-destructive/5 ring-1 ring-destructive/40 ring-inset'
     : isRequiredMissing || p.heldBack
     ? 'bg-amber-500/5 ring-1 ring-amber-500/30 ring-inset'
@@ -1747,7 +1818,7 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
           <>
             <div className='flex items-center gap-2'>
               <span className='flex h-5 items-center'>
-                {hasError
+                {hasError || hasBlocking
                   ? <AlertCircle className='text-destructive size-3.5 shrink-0' aria-hidden />
                   : p.heldBack
                   ? <Circle className='size-3 shrink-0 text-amber-500/70' aria-hidden />
@@ -1826,6 +1897,23 @@ function PropertyRow(p: PropertyRowProps): JSX.Element {
         ? (
           <ul className='text-destructive mt-1.5 space-y-0.5 text-xs'>
             {p.errors!.map((msg, i) => (
+              <li key={i} className='flex items-start gap-1'>
+                <AlertCircle
+                  className='mt-[1px] size-3 shrink-0'
+                  aria-hidden='true'
+                />
+                <span>{msg}</span>
+              </li>
+            ))}
+          </ul>
+        )
+        : null}
+      {hasBlocking
+        ? (
+          /* ADR-088 blocking rule findings — error style, matching the
+            server-side 422 refusal the maintainer will hit on save. */
+          <ul className='text-destructive mt-1.5 space-y-0.5 text-xs'>
+            {p.blocking!.map((msg, i) => (
               <li key={i} className='flex items-start gap-1'>
                 <AlertCircle
                   className='mt-[1px] size-3 shrink-0'

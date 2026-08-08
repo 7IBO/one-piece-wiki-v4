@@ -19,8 +19,14 @@
  *                                   type + target + qualifiers) on one entity
  *  - DUPLICATE_PROPERTY_VALUE       an exact-duplicate entry within one
  *                                   property's history
+ *  - RULE_FINDING (blocking only)   a declarative rule with
+ *                                   `enforcement: 'blocking'` (ADR-088)
+ *                                   matched — structurally-always-wrong
+ *                                   data
  *
  * Warnings (reported, do not fail CI):
+ *  - RULE_FINDING (advisory)        a declarative advisory rule matched
+ *                                   (ADR-085 — canon-exception knowledge)
  *  - UNREFERENCED_ENTITY            no other entity points at this one
  *                                   (relation target, entity/source ref,
  *                                   or a since/until/source/event axis) —
@@ -298,8 +304,10 @@ export function checkCoherence(
     }
   }
 
-  // ADR-085 — declarative advisory rules, one pass per entity. Always
-  // warnings/infos: the CLI treats them as non-blocking output.
+  // ADR-085 — declarative rules, one pass per entity. Advisory rules
+  // surface as warnings (non-blocking CLI output); rules that opted
+  // into `enforcement: 'blocking'` (ADR-088 — structurally-always-
+  // wrong shapes) surface as errors and fail the check.
   const ruleList = [...catalogue.rules.values()];
   if (ruleList.length > 0) {
     for (const entity of entities.values()) {
@@ -315,7 +323,7 @@ export function checkCoherence(
       for (const f of findingsForEntity) {
         findings.push({
           code: 'RULE_FINDING',
-          severity: 'warning',
+          severity: f.enforcement === 'blocking' ? 'error' : 'warning',
           source: entity.id,
           path: f.property !== undefined
             ? `properties.${f.property}${f.entryIndex !== undefined ? `[${f.entryIndex}]` : ''}`

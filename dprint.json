@@ -27,11 +27,12 @@
     "**/.tanstack",
     "packages/schemas/generated",
     "packages/schema-engine/meta-schemas",
-    "apps/dashboard/src/routeTree.gen.ts"
+    "apps/dashboard/src/routeTree.gen.ts",
+    "apps/web/src/routeTree.gen.ts"
   ],
   "plugins": [
-    "https://plugins.dprint.dev/typescript-0.93.4.wasm",
-    "https://plugins.dprint.dev/json-0.20.0.wasm",
-    "https://plugins.dprint.dev/markdown-0.18.0.wasm"
+    "node_modules/@dprint/typescript/plugin.wasm",
+    "node_modules/@dprint/json/plugin.wasm",
+    "node_modules/@dprint/markdown/plugin.wasm"
   ]
 }

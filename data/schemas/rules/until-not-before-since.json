@@ -3,6 +3,7 @@
   "id": "until-not-before-since",
   "schema_version": 1,
   "severity": "warning",
+  "enforcement": "blocking",
   "labels": {
     "en": "until precedes since",
     "fr": "until antérieur à since"

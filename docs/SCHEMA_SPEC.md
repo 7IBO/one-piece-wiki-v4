@@ -714,21 +714,28 @@ Any failure aborts the PR.
 ## Rules (ADR-085)
 
 Files in `/data/schemas/rules/<id>.json` (core) or
-`/data/universes/<u>/schemas/rules/` (universe-scoped). Advisory only:
-`check:coherence` reports findings as `RULE_FINDING` warnings, the
-dashboard renders them amber — nothing blocks.
+`/data/universes/<u>/schemas/rules/` (universe-scoped). Advisory by
+default: `check:coherence` reports findings as `RULE_FINDING`
+warnings, the dashboard renders them amber — nothing blocks. A rule
+with `enforcement: "blocking"` (ADR-088) inverts that: `RULE_FINDING`
+becomes an error (CI fails), the dashboard renders the finding red,
+and the save/create endpoints refuse the payload with
+`422 { code: "rule_blocked", findings }` carrying the rule's
+localized messages. Reserve `blocking` for structurally-always-wrong
+shapes — canon-knowledge rules stay advisory.
 
-| Field                         | Type     | Required    | Description                                                       |
-| ----------------------------- | -------- | ----------- | ----------------------------------------------------------------- |
-| `id` / `schema_version`       |          | yes         | Standard schema identity                                          |
-| `universes`                   | string[] | no          | Omitted = core                                                    |
-| `severity`                    | enum     | yes         | `info` \| `warning` (never blocking)                              |
-| `labels` / `messages`         | object   | yes         | Localized name + editor-facing finding text (mention exceptions!) |
-| `applies_to_entity_types`     | string[] | no          | Omitted/empty = all types                                         |
-| `scope`                       | enum     | no          | `entity` (default) or `entry`                                     |
-| `entry_property`              | string   | scope=entry | Property id, or `*` for every property                            |
-| `when` / `expect`             | array    | entity      | Conditions (all hold) / expectations (each violation = finding)   |
-| `entry_when` / `entry_expect` | array    | entry       | Entry-level conditions / expectations                             |
+| Field                         | Type     | Required    | Description                                                            |
+| ----------------------------- | -------- | ----------- | ---------------------------------------------------------------------- |
+| `id` / `schema_version`       |          | yes         | Standard schema identity                                               |
+| `universes`                   | string[] | no          | Omitted = core                                                         |
+| `severity`                    | enum     | yes         | `info` \| `warning` (display weight of the finding)                    |
+| `enforcement`                 | enum     | no          | `advisory` (default) \| `blocking` (ADR-088 — refuses saves, CI error) |
+| `labels` / `messages`         | object   | yes         | Localized name + editor-facing finding text (mention exceptions!)      |
+| `applies_to_entity_types`     | string[] | no          | Omitted/empty = all types                                              |
+| `scope`                       | enum     | no          | `entity` (default) or `entry`                                          |
+| `entry_property`              | string   | scope=entry | Property id, or `*` for every property                                 |
+| `when` / `expect`             | array    | entity      | Conditions (all hold) / expectations (each violation = finding)        |
+| `entry_when` / `entry_expect` | array    | entry       | Entry-level conditions / expectations                                  |
 
 Condition kinds: `property_latest_equals`, `has_active_relation`
 (active = no `until`; optional `target` / `target_type`),

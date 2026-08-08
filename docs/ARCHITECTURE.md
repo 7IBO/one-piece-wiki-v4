@@ -141,7 +141,8 @@ The architecture optimizes for three properties, in order:
 /
 ├── apps/
 │   ├── dashboard/                # contributor editing UI
-│   └── preview/                  # minimal reading app (phase 1)
+│   ├── preview/                  # minimal reading app (phase 1)
+│   └── web/                      # public reader app (phase 6.0 foundation)
 │
 ├── packages/
 │   ├── schemas/                  # Zod primitives + generated schemas
@@ -218,11 +219,52 @@ Detailed in `/docs/DASHBOARD_ARCHITECTURE.md`. Summary:
 - Drafts persist in IndexedDB (client) plus optimistic-lock SHA tracking.
 - No persistent server-side state in phase 1 (admin-only, low contention).
 
-## Public web app (deferred)
+## Public web app (`apps/web`, phase 6.0 foundation)
 
 A minimal **preview** app exists in phase 1 (raw entity display, basic
 spoiler filter) to validate the data model end-to-end. The full public app
-is built in a later phase, with proper SEO, design, and SSG.
+ships incrementally through Phase 6; its **foundation skeleton** lives in
+`apps/web`.
+
+`apps/web` is the read-only public site (working identity: "Grand Line
+Archives"), built on the same TanStack Start recipe as the dashboard
+(ADR-018/019) but with a distinct, dark-first editorial design (own
+Tailwind v4 `@theme` tokens in `src/styles.css`, Fraunces display serif +
+Inter body — no dashboard chrome reuse). Dev port: **4200**.
+
+Data path (all reads, zero writes):
+
+- **`server/db.ts`** — prepared `bun:sqlite` statements over
+  `/dist/onepiece.db` (types with counts, entities by type, entity +
+  properties + relations + translations + narratives). The app runs
+  under Bun in dev (`bun --bun vite dev`) and prod
+  (`bun .output/server/index.mjs`); `bun:sqlite` is declared
+  `ssr.external` for the SSR bundle. Relations are read in BOTH
+  directions from `source_entity_id` alone, thanks to the ADR-086
+  materialized inverse rows, with per-direction display labels taken
+  from the artifact's `label` column.
+- **`server/catalogue.ts`** — schema catalogue via schema-engine
+  (labels for entity types / properties / vocabularies / qualifier
+  registry; never hardcoded), using the dashboard's dual sourcing:
+  fs in dev, `import.meta.glob` in-memory bundle in prod.
+- **`server/views.ts`** — assembles display-ready view models
+  (localized names via the `translations` table, vocabulary labels,
+  epistemic badges, `actual_value` reveals, narrative markdown).
+  Components render only; no business logic client-side.
+- **`src/api.ts`** — TanStack Start server functions (`fetchHome`,
+  `fetchTypeList`, `fetchEntity`) called from route loaders.
+
+Routes: `/` (types grouped by `ui_hint.group` + counts), `/t/<type>`
+(localized entity list), `/e/<type>/<slug>` (reading page: facts,
+connections in both directions, narrative). Locale is cookie-driven
+(`web_locale`, FR/EN toggle in the header) and resolved in the root
+route's `beforeLoad`, so SSR first paint is already localized.
+
+Build: `turbo run build --filter=@onepiece-wiki/web` depends on
+`@onepiece-wiki/db-builder#build:db` so the artifact always exists; in
+dev, `scripts/ensure-db.ts` builds it once if missing. Later phases add
+SEO/SSG, the spoiler cursor, search, and per-type templates
+(see ROADMAP Phase 6.x).
 
 ## Deployment
 

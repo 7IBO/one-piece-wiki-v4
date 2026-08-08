@@ -60,13 +60,21 @@ declarative "this combination is usually wrong" knowledge, stored in
 
 A rule declares conditions (`when`, all must hold) and expectations
 (`expect`, each violation is one finding) at entity scope, or
-qualifier-level checks at entry scope. Findings are **always
-advisory** (`info`/`warning`) — One Piece canon is built on
+qualifier-level checks at entry scope. Findings are **advisory by
+default** (`info`/`warning`) — One Piece canon is built on
 exceptions, so a finding means "double-check or add the
 distinguishing qualifier", never "invalid". The same engine
 (`schema-engine/src/rules.ts`, browser-safe) runs in `check:coherence`
 (CI, `RULE_FINDING` warnings) and live in the dashboard form (amber
 advisory panel). Formal shape in `/docs/SCHEMA_SPEC.md` § Rules.
+
+A rule may opt into `enforcement: "blocking"` (ADR-088) — reserved
+for **structural impossibilities** where no canon exception can exist
+(shipped example: `until` preceding `since` on the same numeric
+source axis). Blocking findings render red in the dashboard, the
+save/create endpoints refuse them (422 with the rule's localized
+messages), and `check:coherence` reports them as errors. Canon
+knowledge ("a Marine has no bounty") must never be blocking.
 
 ### 2. Entities
 

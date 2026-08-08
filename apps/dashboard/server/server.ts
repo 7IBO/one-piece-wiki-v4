@@ -27,6 +27,8 @@
  *   POST /api/uploads/presign               mint R2 PUT URL
  *   POST /api/entities/:type                opens a PR creating a new entity
  *   POST /api/entities/:type/:slug          opens a PR with the edit
+ *     (both refuse with 422 `rule_blocked` when a BLOCKING coherence
+ *      rule matches the payload — ADR-088)
  *   POST /api/entities/:type/:slug/narrative  {en?, fr?} → PR with the
  *                                           narrative .md files (empty
  *                                           text deletes the file)
@@ -86,6 +88,7 @@ import {
   parseNarrativeSave,
 } from './narrative.ts';
 import { ALLOWED_IMAGE_TYPES, presignRead, presignUpload, r2Config } from './r2.ts';
+import { blockingRuleFindings, ruleBlockedResponse } from './rule-block.ts';
 import { buildCookie, clearCookie, newAnonymousSession, newGithubSession } from './session.ts';
 
 /**
@@ -1480,6 +1483,11 @@ async function handleCreateEntity(
     );
   }
 
+  // ADR-088 — same blocking-rule gate as handleSaveEntity: a brand-new
+  // entity must not be creatable in a shape an edit could not save.
+  const blocked = blockingRuleFindings(data, type, snap.validated.rules.values());
+  if (blocked.length > 0) return ruleBlockedResponse(blocked);
+
   const path = dataPath(type, slug);
   const newContent = `${JSON.stringify(data, null, 2)}\n`;
 
@@ -1615,6 +1623,17 @@ async function handleSaveEntity(
       400,
     );
   }
+
+  // ADR-088 — blocking declarative rules. Advisory findings never
+  // block (ADR-085); a rule with `enforcement: 'blocking'` encodes a
+  // structural impossibility, so refuse with a structured 422 the
+  // form maps onto fields — BEFORE any GitHub call.
+  const blocked = blockingRuleFindings(
+    payload.data,
+    type,
+    snap.validated.rules.values(),
+  );
+  if (blocked.length > 0) return ruleBlockedResponse(blocked);
 
   const fileBase = entity.id.split(':')[1] ?? slug;
   const path = dataPath(type, fileBase);

@@ -13,12 +13,18 @@
       }
     ],
     "status": [
-      { "value": "alive", "since": "manga-chapter:1" },
+      {
+        "value": "alive",
+        "since": "manga-chapter:1"
+      },
       {
         "value": "presumed_dead",
         "since": "manga-chapter:585",
         "epistemic_status": "believed_by_characters",
-        "believed_by": ["character:luffy", "character:ace"],
+        "believed_by": [
+          "character:luffy",
+          "character:ace"
+        ],
         "actual_value": "alive"
       },
       {
@@ -28,16 +34,5 @@
       }
     ]
   },
-  "relations": [
-    {
-      "type": "family-of",
-      "target": "character:luffy",
-      "qualifiers": { "relation_kind": "sworn_brother" }
-    },
-    {
-      "type": "family-of",
-      "target": "character:ace",
-      "qualifiers": { "relation_kind": "sworn_brother" }
-    }
-  ]
+  "relations": []
 }

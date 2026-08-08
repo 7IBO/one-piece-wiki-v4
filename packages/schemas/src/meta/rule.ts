@@ -20,6 +20,12 @@ import { LocalizedLabel, Slug } from '../primitives.ts';
  *
  * Evaluated by `check:coherence` in CI and live by the dashboard form
  * (browser-safe engine in schema-engine/src/rules.ts).
+ *
+ * ADR-088 adds an OPT-IN `enforcement: 'blocking'` notch for the rare
+ * rule that encodes a structural impossibility (not canon knowledge):
+ * the dashboard save endpoint refuses (422) and `check:coherence`
+ * reports the finding as an error. The default stays `advisory` —
+ * the ADR-085 principle (canon lives on exceptions) is unchanged.
  */
 
 /** Entity-scope condition — ALL listed must hold for the rule to fire. */
@@ -77,8 +83,15 @@ export const RuleSchema = z.object({
   schema_version: z.number().int().positive(),
   /** See PropertyTypeSchema.universes — omitted/empty = shared core. */
   universes: z.array(Slug).optional(),
-  /** Advisory severity — never blocking. */
+  /** Advisory severity of the finding text (display weight). */
   severity: z.enum(['info', 'warning']),
+  /** ADR-088 — how violations are enforced. `advisory` (default):
+   *  finding only, save always allowed. `blocking`: the dashboard
+   *  save/create endpoints refuse with 422 and `check:coherence`
+   *  treats the finding as an ERROR. Reserve `blocking` for rules
+   *  that are structurally ALWAYS wrong (no canon exception can
+   *  exist), e.g. `until` preceding `since`. */
+  enforcement: z.enum(['advisory', 'blocking']).default('advisory'),
   labels: LocalizedLabel,
   /** Finding text shown to editors (localized, may mention known
    *  canonical exceptions so the editor can self-serve). */
