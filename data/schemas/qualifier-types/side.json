@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "side",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 51,
+  "labels": {
+    "en": "Side",
+    "fr": "Camp"
+  },
+  "descriptions": {
+    "en": "The faction the participant fought for in the linked event.",
+    "fr": "Le camp pour lequel le participant s’est battu dans l’événement lié."
+  },
+  "value_type": "enum",
+  "enum_ref": "event-sides"
+}

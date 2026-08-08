@@ -169,6 +169,32 @@ autocomplete everywhere), empty-target relation entries render an
 inline target picker. Per-item provenance on believed_by parked in
 IDEAS.
 
+**2026-08-08 (d) — UX v3 batch (17-point mobile test).** **/explore v2**:
+type filter as the shared stay-open multi-select (no ids, harmonized
+heights), rows always expanded without entity ids or edit buttons,
+maintainer-chosen property columns with INLINE editing (no extra
+dialog; reuses the drawer save endpoint), completeness hidden when
+columns are chosen (amber missing-value warnings instead), audit
+`since` refs rendered compact (`C1`, not `manga-chapter:1`). **In-app
+history page** `/types/:type/:slug/history` (Octokit commit list per
+file path; the entity-header History link is now internal). **Form
+fixes**: schema-details badges moved to their own row (they overlapped
+the value summary on mobile), sections sheet reveal+scroll fixed (the
+Dialog scroll-lock was undoing the scroll — the retry now waits for
+lock release), remove-✕ on the last entry deletes the property key
+(phantom `{}` entry made it look dead), login autofocus removed
+(mobile keyboard hid the GitHub button). **Links panel v2**: qualifier
+keys resolve via the qualifier registry and enum values via
+vocabularies (`side: whitebeard_allies` → « Camp : Alliés de Barbe
+Blanche »), per-row edit affordance (outgoing → scrolls to the
+relation editor; incoming → jumps to the storing entity), and
+**double-stored symmetric edges reframed as an INFO note** (maintainer
+call: both-sides storage is informative, never an error — the pipeline
+generates inverses, so a missing opposite is by design). Registry
+gained `role`/`side`/`outcome` (20 qualifier types). Popovers/selects
+switched to `positionMethod='fixed'` (bottom-anchored popups grew the
+document — phantom gap + stray scroll). Combobox chrome i18n'd.
+
 **Current phase**: 4.3 (see ROADMAP). **Post-4.3 order re-sequenced by
 ADR-032** (tooling-before-ingest): W-F → W-A → W-B → W-C → W-E → W-D,
 then resume 3.5 → 6 → 7 → 8 → 9+. Workstream breakdown below

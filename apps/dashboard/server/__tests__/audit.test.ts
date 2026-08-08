@@ -6,10 +6,12 @@ import {
   type AuditContext,
   buildAuditRow,
   entryDisplay,
+  entryRaw,
   entrySince,
   missingRecommendedFor,
   missingTranslationsFor,
   referencedI18nKeys,
+  sourceIdDisplay,
 } from '../audit.ts';
 import { completenessExpectation } from '../completeness.ts';
 
@@ -202,14 +204,56 @@ describe('entryDisplay', () => {
   });
 });
 
+describe('sourceIdDisplay', () => {
+  const nameFor = (id: string) =>
+    id === 'film:strong-world' ? { en: 'Strong World', fr: null } : undefined;
+
+  it('abbreviates known source types with numeric slugs — never the raw id', () => {
+    expect(sourceIdDisplay('manga-chapter:96', nameFor)).toBe('C96');
+    expect(sourceIdDisplay('anime-episode:45', nameFor)).toBe('E45');
+    expect(sourceIdDisplay('film:12', nameFor)).toBe('F12');
+    expect(sourceIdDisplay('sbs:4', nameFor)).toBe('SBS 4');
+    expect(sourceIdDisplay('databook:2', nameFor)).toBe('DB 2');
+  });
+
+  it('falls back to the display name for non-numeric slugs', () => {
+    expect(sourceIdDisplay('film:strong-world', nameFor)).toBe('Strong World');
+  });
+
+  it('falls back to the (abbr-prefixed) slug for unknown ids, never type:slug', () => {
+    expect(sourceIdDisplay('film:unknown-film', nameFor)).toBe('Funknown-film');
+    expect(sourceIdDisplay('event:timeskip', nameFor)).toBe('timeskip');
+  });
+});
+
 describe('entrySince', () => {
-  it('passes through a string, joins arrays, drops empties', () => {
-    expect(entrySince({ since: 'manga-chapter:96' })).toBe('manga-chapter:96');
-    expect(entrySince({ since: ['manga-chapter:96', 'anime-episode:45'] }))
-      .toBe('manga-chapter:96 · anime-episode:45');
-    expect(entrySince({ since: '' })).toBeUndefined();
-    expect(entrySince({ value: 1 })).toBeUndefined();
-    expect(entrySince(null)).toBeUndefined();
+  const display = (id: string): string => sourceIdDisplay(id, () => undefined);
+
+  it('resolves a string, joins arrays with the compact display, drops empties', () => {
+    expect(entrySince({ since: 'manga-chapter:96' }, display)).toBe('C96');
+    expect(entrySince({ since: ['manga-chapter:96', 'anime-episode:45'] }, display))
+      .toBe('C96 · E45');
+    expect(entrySince({ since: '' }, display)).toBeUndefined();
+    expect(entrySince({ value: 1 }, display)).toBeUndefined();
+    expect(entrySince(null, display)).toBeUndefined();
+  });
+});
+
+describe('entryRaw', () => {
+  it('extracts value / value_key / raw since ids', () => {
+    expect(entryRaw({ value: 30, since: 'manga-chapter:96' }))
+      .toEqual({ value: 30, since: 'manga-chapter:96' });
+    expect(entryRaw({ value_key: 'a.key', since: ['manga-chapter:1', 'anime-episode:1'] }))
+      .toEqual({ value_key: 'a.key', since: ['manga-chapter:1', 'anime-episode:1'] });
+    // `value: null` / `value: false` still count as a stored value.
+    expect(entryRaw({ value: false })).toEqual({ value: false });
+  });
+
+  it('wraps primitive legacy entries and skips empty ones', () => {
+    expect(entryRaw('East Blue')).toEqual({ value: 'East Blue' });
+    expect(entryRaw({ since: 'manga-chapter:1' })).toBeUndefined();
+    expect(entryRaw(null)).toBeUndefined();
+    expect(entryRaw(undefined)).toBeUndefined();
   });
 });
 
@@ -248,13 +292,27 @@ describe('buildAuditRow', () => {
     expect(row.values).toEqual([
       {
         property: 'name',
-        entries: [{ display: 'Monkey D. Luffy', since: 'manga-chapter:1' }],
+        valueType: 'i18n_key',
+        entries: [{
+          display: 'Monkey D. Luffy',
+          since: 'C1',
+          raw: { value_key: 'character.luffy.name.common', since: 'manga-chapter:1' },
+        }],
       },
       {
         property: 'bounty',
+        valueType: 'number',
         entries: [
-          { display: '30,000,000 ฿', since: 'manga-chapter:96' },
-          { display: '3,000,000,000 ฿', since: 'manga-chapter:1053' },
+          {
+            display: '30,000,000 ฿',
+            since: 'C96',
+            raw: { value: 30_000_000, since: 'manga-chapter:96' },
+          },
+          {
+            display: '3,000,000,000 ฿',
+            since: 'C1053',
+            raw: { value: 3_000_000_000, since: 'manga-chapter:1053' },
+          },
         ],
       },
     ]);

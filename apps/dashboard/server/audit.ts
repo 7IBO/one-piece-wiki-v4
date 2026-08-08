@@ -29,13 +29,35 @@ export type AuditDisplayName = {
   readonly fr: string | null;
 };
 
+/**
+ * Machine-readable slice of one property entry, additively bundled
+ * next to the pre-rendered `display` string so the explorer can build
+ * inline editors (2026-08 explorer v2). Carries the entry's stored
+ * `value` OR `value_key` plus the raw `since` id(s) — nothing else,
+ * the display fields stay authoritative for read mode.
+ */
+export type AuditRawEntry = {
+  readonly value?: unknown;
+  readonly value_key?: string;
+  readonly since?: string | readonly string[];
+};
+
 export type AuditValueEntry = {
   readonly display: string;
+  /** Compact provenance display ("C96", "E45", a film's name…) —
+   *  never the raw `type:slug` id. */
   readonly since?: string;
+  readonly raw?: AuditRawEntry;
 };
 
 export type AuditPropertyValues = {
   readonly property: string;
+  /** The property type's `value_type` from the catalogue — lets the
+   *  client pick the right inline editor. Absent for properties not
+   *  in the catalogue. */
+  readonly valueType?: string;
+  /** The property type's `value_constraints.enum_ref`, when any. */
+  readonly enumRef?: string;
   readonly entries: readonly AuditValueEntry[];
 };
 
@@ -232,16 +254,72 @@ export function entryDisplay(
   return raw === undefined || raw === null || raw === '' ? '—' : String(raw);
 }
 
-/** The entry's provenance (`since`) as one string, or undefined. */
-export function entrySince(entry: unknown): string | undefined {
+/**
+ * Compact per-type source abbreviations for provenance displays —
+ * mirrors the dashboard form's `SOURCE_ABBR` ("C96 · E45"). Kept
+ * server-side so `/api/audit` never ships a raw `type:slug` id as a
+ * display string (2026-08 feedback: "ça affiche Alive
+ * manga-chapter:1").
+ */
+const SOURCE_ABBR: Record<string, string> = {
+  'manga-chapter': 'C',
+  'anime-episode': 'E',
+  film: 'F',
+  sbs: 'SBS ',
+  databook: 'DB ',
+  'databook-card': 'VC ',
+};
+
+/**
+ * Display string for one source id: `C{n}` / `E{n}` / … when the type
+ * is a known source kind with a numeric slug, else the source's
+ * display name, else the (abbr-prefixed) slug. NEVER the raw id.
+ */
+export function sourceIdDisplay(
+  id: string,
+  displayNameFor: (entityId: string) => AuditDisplayName | undefined,
+): string {
+  const sep = id.indexOf(':');
+  const type = sep === -1 ? '' : id.slice(0, sep);
+  const slug = sep === -1 ? id : id.slice(sep + 1);
+  const abbr = SOURCE_ABBR[type];
+  if (abbr !== undefined && /^\d+$/.test(slug)) return `${abbr}${slug}`;
+  const name = displayNameFor(id);
+  const display = name?.en ?? name?.fr;
+  if (display !== undefined && display !== null && display !== '') return display;
+  return abbr !== undefined ? `${abbr}${slug}` : slug;
+}
+
+/** The entry's provenance (`since`) as ONE compact display string
+ *  (each id resolved through `sourceDisplay`), or undefined. */
+export function entrySince(
+  entry: unknown,
+  sourceDisplay: (id: string) => string,
+): string | undefined {
   if (entry === null || typeof entry !== 'object') return undefined;
   const raw = (entry as Record<string, unknown>)['since'];
-  if (typeof raw === 'string' && raw !== '') return raw;
-  if (Array.isArray(raw)) {
-    const ids = raw.map(String).filter((s) => s !== '');
-    return ids.length > 0 ? ids.join(' · ') : undefined;
-  }
-  return undefined;
+  const ids = typeof raw === 'string' && raw !== ''
+    ? [raw]
+    : Array.isArray(raw)
+    ? raw.map(String).filter((s) => s !== '')
+    : [];
+  if (ids.length === 0) return undefined;
+  return ids.map(sourceDisplay).join(' · ');
+}
+
+/** Machine-readable slice of one entry (see `AuditRawEntry`). */
+export function entryRaw(entry: unknown): AuditRawEntry | undefined {
+  if (entry === undefined || entry === null) return undefined;
+  if (typeof entry !== 'object') return { value: entry };
+  const record = entry as Record<string, unknown>;
+  const out: { value?: unknown; value_key?: string; since?: string | readonly string[]; } = {};
+  if ('value' in record) out.value = record['value'];
+  const key = record['value_key'];
+  if (typeof key === 'string' && key !== '') out.value_key = key;
+  const since = record['since'];
+  if (typeof since === 'string' && since !== '') out.since = since;
+  else if (Array.isArray(since)) out.since = since.map(String);
+  return 'value' in out || out.value_key !== undefined ? out : undefined;
 }
 
 /** One audit row for one loaded entity. */
@@ -251,16 +329,25 @@ export function buildAuditRow(
 ): AuditRow {
   const expectation = completenessExpectation(ctx.entityType);
   const properties = plainObject(entity.data['properties']);
-  const values: AuditPropertyValues[] = Object.entries(properties).map(([property, raw]) => ({
-    property,
-    entries: asEntryList(raw).map((entry) => {
-      const since = entrySince(entry);
-      return {
-        display: entryDisplay(entry, ctx.propertyTypes.get(property), ctx),
-        ...(since !== undefined ? { since } : {}),
-      };
-    }),
-  }));
+  const sourceDisplay = (id: string): string => sourceIdDisplay(id, ctx.displayNameFor);
+  const values: AuditPropertyValues[] = Object.entries(properties).map(([property, rawList]) => {
+    const propertyType = ctx.propertyTypes.get(property);
+    const enumRef = propertyType?.value_constraints?.enum_ref;
+    return {
+      property,
+      ...(propertyType !== undefined ? { valueType: propertyType.value_type } : {}),
+      ...(enumRef !== undefined ? { enumRef } : {}),
+      entries: asEntryList(rawList).map((entry) => {
+        const since = entrySince(entry, sourceDisplay);
+        const raw = entryRaw(entry);
+        return {
+          display: entryDisplay(entry, propertyType, ctx),
+          ...(since !== undefined ? { since } : {}),
+          ...(raw !== undefined ? { raw } : {}),
+        };
+      }),
+    };
+  });
   return {
     id: entity.id,
     type: entity.type,

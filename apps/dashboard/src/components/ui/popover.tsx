@@ -47,6 +47,11 @@ function PopoverContent({
         // where these only matter at the extreme viewport edges.
         collisionPadding={POPUP_COLLISION_PADDING}
         collisionAvoidance={{ align: 'shift' }}
+        // 'fixed' keeps a bottom-anchored popup from extending the
+        // document: with the default 'absolute' method a popup opened
+        // near the page end grew the body, adding a phantom gap +
+        // scrollable space below the last section.
+        positionMethod='fixed'
         className='isolate z-50'
       >
         <PopoverPrimitive.Popup

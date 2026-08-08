@@ -114,17 +114,28 @@ export function PropertyNav(p: PropertyNavProps): JSX.Element {
     // A hidden property revealed by the click above mounts its row on a
     // LATER render — one rAF was too early and the scroll silently
     // no-oped (2026-08 feedback: "clicking an un-added property does
-    // nothing"). Retry across a few frames until the anchor exists;
-    // also survives the mobile Sections sheet closing via onPick.
+    // nothing"). Retry across frames until the anchor exists AND the
+    // page can actually scroll: inside the mobile Sections sheet the
+    // Dialog's scroll lock is still active while the close animation
+    // runs, and Base UI restores the pre-lock scroll offset on
+    // release — a scrollIntoView fired during that window gets undone.
     let attempts = 0;
+    const scrollLocked = (): boolean => {
+      const html = document.documentElement;
+      const body = document.body;
+      return getComputedStyle(html).overflow === 'hidden'
+        || getComputedStyle(body).overflow === 'hidden'
+        || body.style.position === 'fixed';
+    };
     const tryScroll = (): void => {
       const el = document.getElementById(anchor);
-      if (el !== null) {
+      if (el !== null && !scrollLocked()) {
         el.scrollIntoView({ behavior: 'smooth', block: 'start' });
         return;
       }
       attempts += 1;
-      if (attempts < 30) requestAnimationFrame(tryScroll);
+      // ~2s of frames — covers reveal re-render + sheet close animation.
+      if (attempts < 120) requestAnimationFrame(tryScroll);
     };
     requestAnimationFrame(tryScroll);
     p.onPick?.(entry.id);

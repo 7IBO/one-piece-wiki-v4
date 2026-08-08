@@ -1,8 +1,21 @@
 /**
  * "All links of an entity" panel — every linked value in BOTH
- * directions plus inverse-coherence conflicts, from
+ * directions plus inverse-coherence findings, from
  * `GET /api/entities/:type/:slug/links` (computed server-side in
  * server/links.ts; this component only composes the payload).
+ *
+ * Qualifier keys resolve through the qualifier-type registry and
+ * enum values through vocabularies, so rows read "Camp : Alliés de
+ * Barbe Blanche", never "side: whitebeard_allies". Each row carries
+ * an edit affordance: outgoing links scroll to the relation editor
+ * above (the stored side lives on THIS entity), incoming links jump
+ * to the entity that stores the edge.
+ *
+ * Double-stored symmetric edges are an INFORMATIVE note, not an
+ * error: the pipeline generates inverses, so one stored direction is
+ * canonical and a missing opposite is by design (maintainer decision
+ * 2026-08-08). Only duplicate edges and qualifier mismatches stay
+ * amber.
  *
  * Rendered below the entity form. Lazy: fetches on mount via
  * useApiResource, independent of the form's own resources.
@@ -15,9 +28,13 @@ import { Card } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import type { RelationTypeSchema } from '@onepiece-wiki/schemas';
+import type {
+  QualifierTypeSchema,
+  RelationTypeSchema,
+  VocabularySchema,
+} from '@onepiece-wiki/schemas';
 import { Link } from '@tanstack/react-router';
-import { ChevronDown, Link2, TriangleAlert } from 'lucide-react';
+import { ChevronDown, Info, Link2, Pencil, TriangleAlert } from 'lucide-react';
 import { type JSX, useEffect, useState } from 'react';
 import {
   api,
@@ -27,6 +44,7 @@ import {
   type LinkConflictKind,
 } from '../api';
 import { useLocale, useT } from '../form/locale';
+import { relationAnchorId } from '../form/PropertyNav';
 import { useApiResource } from '../hooks/use-api-resource';
 import { LoadFailed } from './LoadFailed';
 
@@ -34,6 +52,8 @@ type Props = {
   readonly type: string;
   readonly slug: string;
   readonly relationTypes: Record<string, RelationTypeSchema>;
+  readonly qualifierTypes: Record<string, QualifierTypeSchema>;
+  readonly vocabularies: Record<string, VocabularySchema>;
 };
 
 /** One direction-agnostic row: who is on the other end + qualifiers. */
@@ -45,18 +65,46 @@ type LinkRow = {
   readonly qualifiers: Record<string, unknown>;
 };
 
-function formatQualifierValue(value: unknown): string {
+/** Lookup context for resolving qualifier keys/values to labels. */
+type LabelCtx = {
+  readonly relationTypes: Record<string, RelationTypeSchema>;
+  readonly qualifierTypes: Record<string, QualifierTypeSchema>;
+  readonly vocabularies: Record<string, VocabularySchema>;
+  readonly locale: 'en' | 'fr';
+};
+
+function formatQualifierValue(value: unknown, enumRef: string | undefined, ctx: LabelCtx): string {
+  if (Array.isArray(value)) {
+    return value.map((v) => formatQualifierValue(v, enumRef, ctx)).join(', ');
+  }
+  if (typeof value === 'string' && enumRef !== undefined) {
+    const vocabValue = ctx.vocabularies[enumRef]?.values[value];
+    if (vocabValue !== undefined) {
+      return vocabValue.labels[ctx.locale] ?? vocabValue.labels.en;
+    }
+  }
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return String(value);
   }
-  if (Array.isArray(value)) return value.map(formatQualifierValue).join(', ');
   return JSON.stringify(value) ?? '';
 }
 
-/** `since: manga-chapter:1 · relation_kind: sworn_brother` */
-function formatQualifiers(qualifiers: Record<string, unknown>): string {
+/** `Depuis : Chapitre 1 · Camp : Alliés de Barbe Blanche` — keys via
+ *  the qualifier-type registry, enum values via vocabularies (the
+ *  relation type's qualifier declaration carries the `enum_ref`). */
+function formatQualifiers(
+  relationTypeId: string,
+  qualifiers: Record<string, unknown>,
+  ctx: LabelCtx,
+): string {
+  const declarations = ctx.relationTypes[relationTypeId]?.qualifiers ?? [];
   return Object.entries(qualifiers)
-    .map(([k, v]) => `${k}: ${formatQualifierValue(v)}`)
+    .map(([key, value]) => {
+      const registry = ctx.qualifierTypes[key];
+      const keyLabel = registry?.labels[ctx.locale] ?? registry?.labels.en ?? key;
+      const enumRef = declarations.find((d) => d.id === key)?.enum_ref;
+      return `${keyLabel} : ${formatQualifierValue(value, enumRef, ctx)}`;
+    })
     .join(' · ');
 }
 
@@ -78,18 +126,19 @@ const CONFLICT_KIND_LABEL_KEY = {
 } as const satisfies Record<LinkConflictKind, string>;
 
 function LinkRows(
-  { rows, direction, relationTypes }: {
+  { rows, direction, ctx }: {
     readonly rows: readonly LinkRow[];
     /** Which label of the relation type describes this direction. */
     readonly direction: 'active' | 'inverse';
-    readonly relationTypes: Record<string, RelationTypeSchema>;
+    readonly ctx: LabelCtx;
   },
 ): JSX.Element {
-  const locale = useLocale();
+  const t = useT();
+  const locale = ctx.locale;
   return (
     <div className='space-y-2'>
       {groupByRelationType(rows).map(([relationType, group]) => {
-        const rt = relationTypes[relationType];
+        const rt = ctx.relationTypes[relationType];
         const label = rt?.labels[locale]?.[direction] ?? rt?.labels.en[direction]
           ?? relationType;
         return (
@@ -100,7 +149,7 @@ function LinkRows(
                 const name = row.otherDisplayName[locale]
                   ?? row.otherDisplayName.en
                   ?? row.otherId;
-                const qualifierText = formatQualifiers(row.qualifiers);
+                const qualifierText = formatQualifiers(relationType, row.qualifiers, ctx);
                 return (
                   <li
                     key={`${row.otherId}-${i}`}
@@ -124,6 +173,39 @@ function LinkRows(
                         </span>
                       )
                       : null}
+                    {direction === 'active'
+                      ? (
+                        // The stored side of an outgoing link lives on
+                        // THIS entity — jump to its relation editor.
+                        <button
+                          type='button'
+                          title={t('linksEditHere')}
+                          aria-label={t('linksEditHere')}
+                          className='text-muted-foreground hover:text-foreground ml-auto shrink-0 p-1 transition-colors'
+                          onClick={() => {
+                            document
+                              .getElementById(relationAnchorId(relationType))
+                              ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                          }}
+                        >
+                          <Pencil className='size-3' aria-hidden />
+                        </button>
+                      )
+                      : row.otherRoute !== null
+                      ? (
+                        // Incoming edges are stored on the OTHER
+                        // entity — editing happens on its page.
+                        <Link
+                          to='/types/$type/$slug'
+                          params={row.otherRoute}
+                          title={t('linksEditOnOther')}
+                          aria-label={t('linksEditOnOther')}
+                          className='text-muted-foreground hover:text-foreground ml-auto shrink-0 p-1 transition-colors'
+                        >
+                          <Pencil className='size-3' aria-hidden />
+                        </Link>
+                      )
+                      : null}
                   </li>
                 );
               })}
@@ -135,41 +217,37 @@ function LinkRows(
   );
 }
 
-function ConflictsBanner(
-  { conflicts, relationTypes }: {
+function ConflictList(
+  { conflicts, ctx }: {
     readonly conflicts: readonly LinkConflict[];
-    readonly relationTypes: Record<string, RelationTypeSchema>;
+    readonly ctx: LabelCtx;
   },
 ): JSX.Element {
-  const locale = useLocale();
   const t = useT();
   return (
-    <Banner variant='warning' className='flex-col items-stretch gap-1'>
-      <span className='flex items-center gap-2 font-medium'>
-        <TriangleAlert className='size-4 shrink-0 text-amber-500' />
-        {t('linksConflictsTitle').replace('{n}', String(conflicts.length))}
-      </span>
-      <ul className='divide-y divide-amber-500/20'>
-        {conflicts.map((conflict, i) => {
-          const rt = relationTypes[conflict.relationType];
-          const relationLabel = rt?.labels[locale]?.active ?? rt?.labels.en.active
-            ?? conflict.relationType;
-          return (
-            <li key={i} className='flex flex-wrap items-baseline gap-x-2 gap-y-0.5 py-1.5'>
-              <span className='font-medium'>{t(CONFLICT_KIND_LABEL_KEY[conflict.kind])}</span>
-              <span>{relationLabel}</span>
-              <span className='font-mono'>{conflict.otherEntityId}</span>
-              <span className='text-muted-foreground basis-full'>{conflict.detail}</span>
-            </li>
-          );
-        })}
-      </ul>
-    </Banner>
+    <ul className='divide-y divide-foreground/10'>
+      {conflicts.map((conflict, i) => {
+        const rt = ctx.relationTypes[conflict.relationType];
+        const relationLabel = rt?.labels[ctx.locale]?.active ?? rt?.labels.en.active
+          ?? conflict.relationType;
+        return (
+          <li key={i} className='flex flex-wrap items-baseline gap-x-2 gap-y-0.5 py-1.5'>
+            <span className='font-medium'>{t(CONFLICT_KIND_LABEL_KEY[conflict.kind])}</span>
+            <span>{relationLabel}</span>
+            <span className='font-mono'>{conflict.otherEntityId}</span>
+            <span className='text-muted-foreground basis-full'>{conflict.detail}</span>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 
-export function EntityLinksPanel({ type, slug, relationTypes }: Props): JSX.Element {
+export function EntityLinksPanel(
+  { type, slug, relationTypes, qualifierTypes, vocabularies }: Props,
+): JSX.Element {
   const t = useT();
+  const locale = useLocale();
   // Collapsed by default on mobile, open ≥sm. Decided post-hydration
   // (same pattern as LocaleProvider) so SSR + first client render
   // agree; the one-frame collapsed flash on desktop is accepted.
@@ -182,6 +260,8 @@ export function EntityLinksPanel({ type, slug, relationTypes }: Props): JSX.Elem
     () => api.entityLinks(type, slug),
     [type, slug],
   );
+
+  const ctx: LabelCtx = { relationTypes, qualifierTypes, vocabularies, locale };
 
   const incomingRows: readonly LinkRow[] = (data?.incoming ?? []).map((i) => ({
     relationType: i.relationType,
@@ -198,6 +278,11 @@ export function EntityLinksPanel({ type, slug, relationTypes }: Props): JSX.Elem
     qualifiers: o.qualifiers,
   }));
 
+  // Both-directions storage is a design note (inverse links are
+  // pipeline-generated); real coherence problems stay warnings.
+  const symmetricNotes = (data?.conflicts ?? []).filter((c) => c.kind === 'duplicate-symmetric');
+  const warningConflicts = (data?.conflicts ?? []).filter((c) => c.kind !== 'duplicate-symmetric');
+
   return (
     <Card bleed size='sm' className='gap-0 py-0'>
       <Collapsible open={open} onOpenChange={setOpen}>
@@ -213,10 +298,10 @@ export function EntityLinksPanel({ type, slug, relationTypes }: Props): JSX.Elem
               </span>
             )
             : null}
-          {data !== null && data.conflicts.length > 0
+          {warningConflicts.length > 0
             ? (
               <Badge variant='outline' className='text-amber-500 shrink-0 text-xs'>
-                {data.conflicts.length}
+                {warningConflicts.length}
               </Badge>
             )
             : null}
@@ -244,12 +329,35 @@ export function EntityLinksPanel({ type, slug, relationTypes }: Props): JSX.Elem
             )
             : (
               <div className='space-y-4 p-3'>
-                {data.conflicts.length > 0
+                {warningConflicts.length > 0
                   ? (
-                    <ConflictsBanner
-                      conflicts={data.conflicts}
-                      relationTypes={relationTypes}
-                    />
+                    <Banner variant='warning' className='flex-col items-stretch gap-1'>
+                      <span className='flex items-center gap-2 font-medium'>
+                        <TriangleAlert className='size-4 shrink-0 text-amber-500' />
+                        {t('linksConflictsTitle').replace(
+                          '{n}',
+                          String(warningConflicts.length),
+                        )}
+                      </span>
+                      <ConflictList conflicts={warningConflicts} ctx={ctx} />
+                    </Banner>
+                  )
+                  : null}
+                {symmetricNotes.length > 0
+                  ? (
+                    <Banner variant='info' className='flex-col items-stretch gap-1'>
+                      <span className='flex items-center gap-2 font-medium'>
+                        <Info className='text-primary size-4 shrink-0' />
+                        {t('linksSymmetricInfoTitle').replace(
+                          '{n}',
+                          String(symmetricNotes.length),
+                        )}
+                      </span>
+                      <span className='text-muted-foreground'>
+                        {t('linksSymmetricInfoNote')}
+                      </span>
+                      <ConflictList conflicts={symmetricNotes} ctx={ctx} />
+                    </Banner>
                   )
                   : null}
                 <section aria-label={t('linksIncomingTitle')}>
@@ -259,13 +367,7 @@ export function EntityLinksPanel({ type, slug, relationTypes }: Props): JSX.Elem
                   <div className='mt-1.5'>
                     {incomingRows.length === 0
                       ? <p className='text-muted-foreground text-xs'>{t('linksIncomingEmpty')}</p>
-                      : (
-                        <LinkRows
-                          rows={incomingRows}
-                          direction='inverse'
-                          relationTypes={relationTypes}
-                        />
-                      )}
+                      : <LinkRows rows={incomingRows} direction='inverse' ctx={ctx} />}
                   </div>
                 </section>
                 <section aria-label={t('linksOutgoingTitle')}>
@@ -275,13 +377,7 @@ export function EntityLinksPanel({ type, slug, relationTypes }: Props): JSX.Elem
                   <div className='mt-1.5'>
                     {outgoingRows.length === 0
                       ? <p className='text-muted-foreground text-xs'>{t('linksOutgoingEmpty')}</p>
-                      : (
-                        <LinkRows
-                          rows={outgoingRows}
-                          direction='active'
-                          relationTypes={relationTypes}
-                        />
-                      )}
+                      : <LinkRows rows={outgoingRows} direction='active' ctx={ctx} />}
                   </div>
                 </section>
               </div>

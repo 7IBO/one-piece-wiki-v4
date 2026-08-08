@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "role",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 50,
+  "labels": {
+    "en": "Role",
+    "fr": "Rôle"
+  },
+  "descriptions": {
+    "en": "The part played in the linked event (combatant, instigator, rescuer…).",
+    "fr": "Le rôle joué dans l’événement lié (combattant, instigateur, sauveteur…)."
+  },
+  "value_type": "enum",
+  "enum_ref": "event-roles"
+}

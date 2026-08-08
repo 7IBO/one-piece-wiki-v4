@@ -547,6 +547,25 @@ const UI_STRINGS = {
     en: 'The two sides disagree on “since”',
     fr: 'Les deux côtés divergent sur « since »',
   },
+  // Both-directions storage is an informative note, not an error: the
+  // pipeline generates inverses, so a missing opposite is BY DESIGN.
+  linksSymmetricInfoTitle: {
+    en: '{n} link(s) stored in both directions',
+    fr: '{n} lien(s) stocké(s) dans les deux sens',
+  },
+  linksSymmetricInfoNote: {
+    en: 'Storing one direction is enough — the inverse link is generated automatically, '
+      + 'so a missing opposite is never an error. These links are saved on both entities; '
+      + 'the duplicate side can be removed.',
+    fr: 'Stocker une seule direction suffit — le lien inverse est généré automatiquement, '
+      + 'un opposé manquant n’est donc jamais une erreur. Ces liens sont enregistrés sur les '
+      + 'deux entités ; le doublon peut être supprimé.',
+  },
+  linksEditHere: { en: 'Edit this relation', fr: 'Modifier cette relation' },
+  linksEditOnOther: {
+    en: 'Stored on the linked entity — edit there',
+    fr: 'Stocké sur l’entité liée — modifier là-bas',
+  },
   // Cross-type data explorer (/explore)
   exploreTitle: { en: 'Explore', fr: 'Explorer' },
   exploreSubtitle: {
@@ -577,6 +596,36 @@ const UI_STRINGS = {
   },
   exploreClearFilters: { en: 'Clear filters', fr: 'Réinitialiser les filtres' },
   exploreToggleDetails: { en: 'Toggle details', fr: 'Afficher/masquer le détail' },
+  // In-app entity history page (/types/$type/$slug/history)
+  historyViewOnGithub: { en: 'View on GitHub', fr: 'Voir sur GitHub' },
+  historyCommitCount: { en: '{n} commit(s)', fr: '{n} commit(s)' },
+  historyEmpty: {
+    en: 'No commits touch this entity yet.',
+    fr: 'Aucun commit ne touche cette entité pour le moment.',
+  },
+  historyUnavailableDev: {
+    en: 'History requires the GitHub connection — unavailable in dev.',
+    fr: "L'historique nécessite la connexion GitHub — indisponible en dev.",
+  },
+  historyOpenCommit: {
+    en: 'Open this commit on GitHub',
+    fr: 'Ouvrir ce commit sur GitHub',
+  },
+  // /explore v2 — property-column picker + inline editing
+  explorePropsFilter: { en: 'Displayed properties', fr: 'Propriétés affichées' },
+  exploreEditValue: { en: 'Edit value', fr: 'Modifier la valeur' },
+  exploreNotApplicable: {
+    en: 'Not applicable to this entity type',
+    fr: 'Non applicable à ce type d’entité',
+  },
+  exploreSaveChanges: {
+    en: 'Save {n} change(s)',
+    fr: 'Enregistrer {n} modification(s)',
+  },
+  exploreEditsCount: {
+    en: '{n} entity(ies) edited — one PR each',
+    fr: '{n} entité(s) modifiée(s) — une PR chacune',
+  },
 } as const;
 
 /**

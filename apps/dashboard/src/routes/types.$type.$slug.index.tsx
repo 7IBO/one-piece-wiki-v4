@@ -15,7 +15,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { resolveDisplayName } from '@onepiece-wiki/schemas';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { ChevronLeft, ExternalLink, Film, GitPullRequest, Users } from 'lucide-react';
+import { ChevronLeft, ExternalLink, Film, GitPullRequest, History, Users } from 'lucide-react';
 import { type JSX, useMemo } from 'react';
 import { toast } from 'sonner';
 import { api, type SourceRef } from '../api';
@@ -33,21 +33,6 @@ export const Route = createFileRoute('/types/$type/$slug/')({
 // their identity doesn't churn re-renders.
 const emptySources: readonly SourceRef[] = [];
 const emptyKeys: readonly string[] = [];
-
-// TODO: read the data-repo origin from a client-exposed env var (the
-// server already knows it as config.dataRepo) instead of hardcoding.
-const DATA_REPO_URL = 'https://github.com/7IBO/one-piece-wiki-v4';
-const UNIVERSE_ID = 'one-piece';
-
-/**
- * GitHub commit-history URL for the entity's JSON file. The path is
- * derived from the route type + the entity id's slug part — no entity
- * type is hardcoded.
- */
-function entityHistoryUrl(type: string, entityId: string): string {
-  const idSlugPart = entityId.slice(entityId.indexOf(':') + 1);
-  return `${DATA_REPO_URL}/commits/main/data/universes/${UNIVERSE_ID}/entities/${type}/${idSlugPart}.json`;
-}
 
 function EntityEditComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
@@ -163,19 +148,18 @@ function EntityEditComponent(): JSX.Element {
               ? (
                 <Button
                   render={
-                    <a
-                      href={entityHistoryUrl(type, entity.id)}
-                      target='_blank'
-                      rel='noreferrer'
+                    <Link
+                      to='/types/$type/$slug/history'
+                      params={{ type, slug }}
                     />
                   }
                   variant='ghost'
                   size='xs'
                   className='text-muted-foreground hover:text-foreground ml-auto shrink-0 gap-1 text-xs no-underline'
                 >
+                  <History className='size-3' />
                   {t('history')}
                   <span className='font-mono'>· {entity.sha.slice(0, 7)}</span>
-                  <ExternalLink className='size-3' />
                 </Button>
               )
               : (
@@ -297,7 +281,13 @@ function EntityEditComponent(): JSX.Element {
           });
         }}
       />
-      <EntityLinksPanel type={type} slug={slug} relationTypes={schemas.relationTypes} />
+      <EntityLinksPanel
+        type={type}
+        slug={slug}
+        relationTypes={schemas.relationTypes}
+        qualifierTypes={schemas.qualifierTypes}
+        vocabularies={schemas.vocabularies}
+      />
     </div>
   );
 }

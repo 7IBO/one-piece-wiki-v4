@@ -216,16 +216,52 @@ export type EntityLinks = {
   readonly conflicts: readonly LinkConflict[];
 };
 
+/** One commit touching an entity's data file — a row of
+ *  `GET /api/entities/:type/:slug/history` (in-app history page). */
+export type HistoryCommit = {
+  readonly sha: string;
+  readonly shortSha: string;
+  readonly message: string;
+  readonly authorName: string;
+  readonly authorLogin?: string;
+  readonly date: string;
+  readonly htmlUrl: string;
+};
+
+/** Result of `api.entityHistory`. The endpoint's 503 (GitHub App
+ *  credentials not configured — the dev case) is folded into the
+ *  `unavailable` variant instead of throwing, so the history page can
+ *  render an informational banner rather than the error state. */
+export type EntityHistory =
+  | { readonly kind: 'ok'; readonly commits: readonly HistoryCommit[]; }
+  | { readonly kind: 'unavailable'; readonly message: string; };
+
+/** Machine-readable slice of one audit entry — the stored `value` OR
+ *  `value_key` plus the raw `since` id(s). Powers the explorer's
+ *  inline editors; `display` stays authoritative for read mode. */
+export type AuditRawEntry = {
+  readonly value?: unknown;
+  readonly value_key?: string;
+  readonly since?: string | readonly string[];
+};
+
 /** One pre-rendered property value entry on an audit row. `display`
  *  is resolved server-side (translated value_key, vocabulary labels,
- *  number+unit, boolean ✓/×) so the explorer client stays dumb. */
+ *  number+unit, boolean ✓/×) so the explorer client stays dumb.
+ *  `since` is a compact provenance display ("C96", "E45"…), never a
+ *  raw `type:slug` id. */
 export type AuditValueEntry = {
   readonly display: string;
   readonly since?: string;
+  readonly raw?: AuditRawEntry;
 };
 
 export type AuditPropertyValues = {
   readonly property: string;
+  /** Property type's `value_type` / `value_constraints.enum_ref` from
+   *  the catalogue — lets the client pick the right inline editor. */
+  readonly valueType?: string;
+  readonly enumRef?: string;
   readonly entries: readonly AuditValueEntry[];
 };
 
@@ -446,6 +482,30 @@ export const api = {
     return getJson<EntityLinks>(
       `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/links`,
     );
+  },
+  /**
+   * Commit history of the entity's data file on the data repo (newest
+   * first, capped server-side at 50). Not cached: a save changes it
+   * and the history page is the only caller. A 503 — GitHub App
+   * credentials not configured (dev) — resolves to the `unavailable`
+   * variant instead of throwing; any other failure throws like
+   * `getJson` so `useApiResource` surfaces `<LoadFailed>`.
+   */
+  async entityHistory(type: string, slug: string): Promise<EntityHistory> {
+    const path = `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/history`;
+    const response = await fetch(path);
+    if (response.status === 503) {
+      let message = '';
+      try {
+        const parsed = (await response.json()) as { error?: unknown; };
+        if (typeof parsed.error === 'string') message = parsed.error;
+      } catch {
+        // body wasn't JSON — keep the empty message.
+      }
+      return { kind: 'unavailable', message };
+    }
+    if (!response.ok) throw new Error(`${response.status} ${response.statusText}: ${path}`);
+    return { kind: 'ok', commits: (await response.json()) as HistoryCommit[] };
   },
   /**
    * Cross-type audit rows for the /explore data explorer. Not cached:

@@ -116,6 +116,10 @@ function SelectContent({
         // where these only matter at the extreme viewport edges.
         collisionPadding={POPUP_COLLISION_PADDING}
         collisionAvoidance={{ align: 'shift' }}
+        // 'fixed' keeps a bottom-anchored popup from growing the
+        // document (phantom gap + scroll below the last section) —
+        // same rationale as popover.tsx.
+        positionMethod='fixed'
         className='isolate z-50'
       >
         <SelectPrimitive.Popup
