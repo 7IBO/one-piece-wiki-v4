@@ -14,6 +14,8 @@ const emptyCatalogue: ValidatedCatalogue = {
   propertyTypes: new Map(),
   relationTypes: new Map(),
   vocabularies: new Map(),
+  qualifierTypes: new Map(),
+  rules: new Map(),
   errors: [],
 };
 
@@ -95,6 +97,8 @@ describe('extract — relation base qualifiers (ADR-037)', () => {
       inverse_inferred: true,
     }]]) as ValidatedCatalogue['relationTypes'],
     vocabularies: new Map(),
+    qualifierTypes: new Map(),
+    rules: new Map(),
     errors: [],
   };
 

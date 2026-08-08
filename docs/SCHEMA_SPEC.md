@@ -350,19 +350,19 @@ A file in `/data/schemas/relation-types/<id>.json`.
 
 ### Fields
 
-| Field                       | Type     | Required | Description                                                  |
-| --------------------------- | -------- | -------- | ------------------------------------------------------------ |
-| `$schema`                   | string   | yes      | Meta-schema reference                                        |
-| `id`                        | string   | yes      | Relation identifier, kebab-case                              |
-| `schema_version`            | integer  | yes      | Bumped on breaking changes                                   |
-| `labels`                    | object   | yes      | Locale → `{ active, inverse }` labels                        |
-| `valid_from_types`          | string[] | yes      | Allowed source entity types                                  |
-| `valid_to_types`            | string[] | yes      | Allowed target entity types                                  |
-| `qualifiers`                | object[] | no       | Qualifier declarations (id, value_type, required, enum_ref…) |
-| `allow_multiple_concurrent` | boolean  | no       | If true, multiple active relations of this type are allowed  |
-| `inverse_inferred`          | boolean  | yes      | If true, the build pipeline generates the inverse direction  |
-| `historical`                | boolean  | no       | If true, relations themselves carry `since`/`until`          |
-| `ui_hint`                   | object   | no       | Display hints                                                |
+| Field                       | Type     | Required | Description                                                                                                           |
+| --------------------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
+| `$schema`                   | string   | yes      | Meta-schema reference                                                                                                 |
+| `id`                        | string   | yes      | Relation identifier, kebab-case                                                                                       |
+| `schema_version`            | integer  | yes      | Bumped on breaking changes                                                                                            |
+| `labels`                    | object   | yes      | Locale → `{ active, inverse }` labels                                                                                 |
+| `valid_from_types`          | string[] | yes      | Allowed source entity types                                                                                           |
+| `valid_to_types`            | string[] | yes      | Allowed target entity types                                                                                           |
+| `qualifiers`                | object[] | no       | Qualifier declarations (id, value_type, required, enum_ref…)                                                          |
+| `allow_multiple_concurrent` | boolean  | no       | If true, multiple active relations of this type are allowed                                                           |
+| `inverse_inferred`          | boolean  | yes      | Editorial: editors store one direction only. The artifact materializes the inverse of EVERY edge regardless (ADR-086) |
+| `historical`                | boolean  | no       | If true, relations themselves carry `since`/`until`                                                                   |
+| `ui_hint`                   | object   | no       | Display hints                                                                                                         |
 
 ### Relation base qualifiers
 

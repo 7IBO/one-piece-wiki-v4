@@ -1,9 +1,10 @@
 /**
  * SQL DDL for the read-side SQLite database. The shape mirrors the
  * "Build pipeline" §10 schema documented in /docs/BUILD_PIPELINE.md.
- * Phase 2 ships entities / properties / relations / appearances; the
- * source_reachability and FTS5 tables land when cross-medium sources
- * (anime-episode, film) join the model.
+ * Ships entities / properties / relations (both directions — inverse
+ * edges are materialized with `is_inferred = 1`) / appearances /
+ * translations / narratives; the source_reachability and FTS5 tables
+ * land when cross-medium sources (anime-episode, film) join the model.
  */
 export const DDL: readonly string[] = [
   `CREATE TABLE entities (
@@ -42,6 +43,7 @@ export const DDL: readonly string[] = [
     believed_by      TEXT,
     known_truth_by   TEXT,
     revealed_since   TEXT,
+    label            TEXT,
     is_inferred      INTEGER NOT NULL DEFAULT 0
   )`,
   `CREATE TABLE appearances (
@@ -50,6 +52,20 @@ export const DDL: readonly string[] = [
     appearance_type  TEXT NOT NULL DEFAULT 'full',
     is_first         INTEGER NOT NULL DEFAULT 0,
     qualifiers       TEXT
+  )`,
+  `CREATE TABLE translations (
+    universe TEXT NOT NULL,
+    locale   TEXT NOT NULL,
+    key      TEXT NOT NULL,
+    value    TEXT NOT NULL,
+    PRIMARY KEY (universe, locale, key)
+  )`,
+  `CREATE TABLE narratives (
+    universe  TEXT NOT NULL,
+    entity_id TEXT NOT NULL,
+    locale    TEXT NOT NULL,
+    markdown  TEXT NOT NULL,
+    PRIMARY KEY (entity_id, locale)
   )`,
   `CREATE INDEX idx_entities_type      ON entities(type)`,
   `CREATE INDEX idx_entities_slug      ON entities(slug)`,
@@ -60,4 +76,5 @@ export const DDL: readonly string[] = [
   `CREATE INDEX idx_relations_type     ON relations(relation_type)`,
   `CREATE INDEX idx_appearances_entity ON appearances(entity_id)`,
   `CREATE INDEX idx_appearances_source ON appearances(source_id)`,
+  `CREATE INDEX idx_translations_key   ON translations(key)`,
 ];

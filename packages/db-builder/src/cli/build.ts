@@ -1,15 +1,19 @@
 /**
- * bun run build:data — build the SQLite artifact + manifest from /data/.
+ * bun run build:db — build the SQLite artifact + manifest from /data/.
+ * (`bun run build:data` is the historical alias; both run this file.)
  */
 import { build } from '../builder.ts';
 
 const result = await build();
+const { counts } = result.write;
 
 process.stdout.write(
   `Built ${result.dbPath}\n`
-    + `  entities=${result.write.counts.entities} `
-    + `properties=${result.write.counts.properties} `
-    + `relations=${result.write.counts.relations} `
-    + `appearances=${result.write.counts.appearances}\n`
+    + `  entities=${counts.entities} `
+    + `properties=${counts.properties} `
+    + `relations=${counts.relations} (inferred=${counts.relations_inferred}) `
+    + `appearances=${counts.appearances} `
+    + `translations=${counts.translations} `
+    + `narratives=${counts.narratives}\n`
     + `Manifest at ${result.manifestPath}\n`,
 );

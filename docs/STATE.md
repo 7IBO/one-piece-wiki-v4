@@ -5,7 +5,25 @@ session can pick up mid-stream. Architectural _rationale_ lives in
 `/docs/DECISIONS.md` (ADRs); the build order in `/docs/ROADMAP.md`;
 this file is the current status + the open threads.
 
-**Last updated**: 2026-08-08 (history quiet lines + explore detail links)
+**Last updated**: 2026-08-08 (build pipeline: materialized inverses + content tables)
+
+**2026-08-08 — build pipeline: materialized inverses + translations/
+narratives in the artifact (ADR-086).** `packages/db-builder` extended
+(NOT a new package — BUILD_PIPELINE/ARCHITECTURE already name it as the
+pipeline): every stored edge now gets its inverse row materialized
+(`is_inferred=1`, `<type>.inverse`, new `label` column carrying the
+direction's localized labels; ADR-037 axes mirrored), deduplicated
+against the 3 known double-stored `family-of` pairs; new `translations`
+
+- `narratives` tables loaded from the corpus trees (narratives error on
+  unknown entity ids; tree currently empty). CLI `bun run build:db` (root
+  script + uncached turbo task; `build:data` kept as alias). Real-corpus
+  build: 30 entities / 110 properties / 56 relations (25 inferred = 31
+  stored − 6 double-stored) / 86 translations / 0 narratives;
+  byte-identical sha256 across runs. 13 new tests (in-memory DB round
+  trip, dedup, labels, axes, content loaders). Docs: BUILD_PIPELINE §5 +
+  §10 rewritten, SCHEMA_SPEC `inverse_inferred` reinterpreted as
+  editorial-only.
 
 **2026-08-08 — history quiet lines + explore entry links + property
 info (maintainer feedback batch).** (1) History pages toned down: the

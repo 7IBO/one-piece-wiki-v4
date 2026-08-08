@@ -9,6 +9,7 @@
     ".": "./src/index.ts"
   },
   "scripts": {
+    "build:db": "bun src/cli/build.ts",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {

@@ -8,8 +8,13 @@ place derived facts are computed. The pipeline is deterministic: same input
 ## Entry point
 
 ```sh
-bun run build:data
+bun run build:db
 ```
+
+(`bun run build:data` is the historical alias and runs the same CLI;
+`build:db` goes through the Turborepo task of the same name, which is
+uncached — the artifact is disposable and written outside the package
+directory.)
 
 This runs `packages/db-builder` against `/data`. Output:
 
@@ -60,13 +65,31 @@ first error.
 
 ### 5. Inverse relation generation
 
-For every relation type with `inverse_inferred: true`:
+For **every stored edge A→B, of every relation type**, the pipeline
+materializes the inverse edge B→A into the `relations` table
+(ADR-086). The JSON source stores ONE direction only; the artifact
+carries both. Materialized inverse rows carry:
 
-- For each entity carrying the relation, generate the inverse on the
-  target entity in memory (not in the JSON file)
-- Example: `chapter:1044` features `character:luffy` → memory adds
-  `character:luffy.appears-in chapter:1044`
+- `is_inferred = 1`
+- `relation_type` = the base type id suffixed `.inverse`
+  (e.g. `features` → `features.inverse`)
+- `label` = the relation type's localized **`inverse`** labels
+  (stored rows carry the `active` labels), as a sorted
+  `locale → string` JSON object
+- every qualifier and axis mirrored from the stored edge — including
+  the epistemic base qualifiers (ADR-037: a hidden link is equally
+  hidden in both directions)
 
+**Dedup invariant**: when the opposite direction is itself stored in
+the JSON (known double-stored symmetric edges, e.g. the three
+`family-of` pairs ace↔luffy / ace↔sabo / luffy↔sabo), no inverse is
+materialized for either side — the two stored rows already cover both
+directions, and the artifact never contains two rows for the same
+(type, source, target) unless the source JSON does.
+
+`inverse_inferred` on the relation type remains the editorial signal
+that editors maintain one side only (`check:coherence` reports
+double-storage as info); it no longer gates artifact materialization.
 The dashboard never asks editors to maintain both sides.
 
 ### 6. Derived field computation
@@ -150,7 +173,7 @@ CREATE TABLE properties (
 CREATE TABLE relations (
   source_entity_id TEXT NOT NULL,
   target_entity_id TEXT NOT NULL,
-  relation_type TEXT NOT NULL,
+  relation_type TEXT NOT NULL,                   -- base id, or "<id>.inverse" on materialized rows
   qualifiers JSON,
   since_source TEXT,
   until_source TEXT,
@@ -158,7 +181,8 @@ CREATE TABLE relations (
   believed_by JSON,                              -- entity_ref[]
   known_truth_by JSON,                           -- entity_ref[]
   revealed_since TEXT,                           -- source_ref
-  is_inferred BOOLEAN NOT NULL DEFAULT 0
+  label JSON,                                    -- locale → display label for THIS direction
+  is_inferred BOOLEAN NOT NULL DEFAULT 0         -- 1 = materialized inverse (stage 5)
 );
 
 CREATE TABLE appearances (
@@ -168,6 +192,27 @@ CREATE TABLE appearances (
   is_first_appearance BOOLEAN,
   is_first_full BOOLEAN,
   qualifiers JSON
+);
+
+-- Per-locale resolved strings from /data/universes/<u>/translations/**
+-- (flat key → string maps, one row per key per locale).
+CREATE TABLE translations (
+  universe TEXT NOT NULL,
+  locale TEXT NOT NULL,
+  key TEXT NOT NULL,
+  value TEXT NOT NULL,
+  PRIMARY KEY (universe, locale, key)
+);
+
+-- Markdown prose from /data/universes/<u>/narratives/<locale>/<type>/<base>.md
+-- (entity_id derived as "<type>:<base>"; the builder errors on ids that
+-- do not exist in the entity catalogue).
+CREATE TABLE narratives (
+  universe TEXT NOT NULL,
+  entity_id TEXT NOT NULL,
+  locale TEXT NOT NULL,
+  markdown TEXT NOT NULL,
+  PRIMARY KEY (entity_id, locale)
 );
 
 CREATE TABLE source_reachability (
@@ -212,7 +257,10 @@ above is illustrative.
   "counts": {
     "entities": { "character": 234, "devil-fruit": 89, "manga-chapter": 1100 },
     "relations": 5612,
-    "appearances": 18342
+    "relations_inferred": 2740,
+    "appearances": 18342,
+    "translations": 40210,
+    "narratives": 1876
   },
   "schema_versions": {
     "character": 1,
@@ -223,7 +271,7 @@ above is illustrative.
 
 ## When the build runs
 
-- **Locally**, via `bun run build:data` during development
+- **Locally**, via `bun run build:db` during development
 - **On every PR**, in CI, to validate the change
 - **On `main`**, the build runs and the resulting `dist/` is uploaded as a
   Vercel build artifact, consumed by the deployed apps
