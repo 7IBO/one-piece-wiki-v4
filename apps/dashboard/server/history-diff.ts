@@ -14,6 +14,7 @@
  * an entry edited in place therefore reports as one removal + one
  * addition — exactly how a reviewer reads a value change.
  */
+import { entityRefItems, entityRefItemSources } from '@onepiece-wiki/schemas';
 import { type AuditContext, entryDisplay, entrySince } from './audit.ts';
 
 /**
@@ -128,6 +129,20 @@ function qualifierValueDisplay(
 ): string {
   if (Array.isArray(value)) {
     return value.map((v) => qualifierValueDisplay(v, valueType, enumRef, ctx)).join(', ');
+  }
+  // ADR-096 — `believed_by` / `known_truth_by` items may carry their
+  // own provenance as `{ target, source? }`. Render the target through
+  // the normal entity_ref path and append the compact source display
+  // in parentheses ("Luffy (C585)").
+  if (value !== null && typeof value === 'object') {
+    const [item] = entityRefItems([value]);
+    if (item !== undefined) {
+      const head = qualifierValueDisplay(item.target, valueType ?? 'entity_ref', enumRef, ctx);
+      const sources = entityRefItemSources(item);
+      return sources.length > 0
+        ? `${head} (${sources.map((s) => ctx.sourceDisplay(s)).join(', ')})`
+        : head;
+    }
   }
   const other: 'en' | 'fr' = ctx.locale === 'fr' ? 'en' : 'fr';
   if (typeof value === 'string') {

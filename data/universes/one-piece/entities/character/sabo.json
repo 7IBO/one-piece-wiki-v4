@@ -22,7 +22,10 @@
         "since": "manga-chapter:585",
         "epistemic_status": "believed_by_characters",
         "believed_by": [
-          "character:luffy",
+          {
+            "target": "character:luffy",
+            "source": "manga-chapter:585"
+          },
           "character:ace"
         ],
         "actual_value": "alive"

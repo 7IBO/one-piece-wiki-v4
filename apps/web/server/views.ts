@@ -16,7 +16,7 @@ import type {
   RelationType,
   ValidatedCatalogue,
 } from '@onepiece-wiki/schema-engine';
-import { nameKeyFor } from '@onepiece-wiki/schemas';
+import { entityRefItems, entityRefItemSources, nameKeyFor } from '@onepiece-wiki/schemas';
 import { getCatalogue } from './catalogue.ts';
 // Namespace import on purpose: a mixed `import { type X, fn }` from
 // this bun:sqlite-backed module had its VALUE specifiers dropped by
@@ -553,6 +553,19 @@ function displayQualifierValue(
     return { value: raw ? (locale === 'fr' ? 'Oui' : 'Yes') : locale === 'fr' ? 'Non' : 'No' };
   }
   if (typeof raw === 'number') return { value: String(raw) };
+  // ADR-096 — `believed_by` / `known_truth_by` items may carry per-item
+  // provenance as `{ target, source? }`. Resolve the target as usual
+  // and append the source name(s) in parentheses ("Luffy (Chapter 585)").
+  if (raw !== null && typeof raw === 'object') {
+    const [item] = entityRefItems([raw]);
+    if (item !== undefined) {
+      const head = displayQualifierValue(item.target, def, cat, locale);
+      const sources = entityRefItemSources(item);
+      if (sources.length === 0) return head;
+      const names = sources.map((s) => chipFor(s, cat, locale)?.name ?? s).join(', ');
+      return { ...head, value: `${head.value} (${names})` };
+    }
+  }
   if (typeof raw !== 'string') return { value: JSON.stringify(raw) };
   if (def.enumRef !== undefined) {
     return { value: vocabValueLabel(cat, def.enumRef, raw, locale) };

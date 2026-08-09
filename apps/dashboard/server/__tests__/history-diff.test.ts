@@ -37,6 +37,10 @@ const ctx: HistoryDiffContext = {
     }],
     ['event', { labels: { en: 'Event', fr: 'Évènement' }, value_type: 'entity_ref' }],
     ['until', { labels: { en: 'Until', fr: "Jusqu'à" }, value_type: 'source_ref' }],
+    ['believed_by', {
+      labels: { en: 'Believed by', fr: 'Cru par' },
+      value_type: 'entity_ref',
+    }],
     // Registry says plain string — the enum_ref for relation edges
     // comes from the relation type's own qualifier declaration.
     ['relation_kind', {
@@ -55,6 +59,10 @@ const ctx: HistoryDiffContext = {
       ? { en: 'Straw Hat Pirates', fr: null }
       : id === 'event:marineford'
       ? { en: 'Battle of Marineford', fr: 'Bataille de Marineford' }
+      : id === 'character:luffy'
+      ? { en: 'Monkey D. Luffy', fr: null }
+      : id === 'character:ace'
+      ? { en: 'Portgas D. Ace', fr: null }
       : undefined,
   locale: 'en',
   propertyLabel: (id) => ({ bounty: 'Bounty', status: 'Status', name: 'Name' }[id] ?? id),
@@ -184,6 +192,65 @@ describe('diffEntityData', () => {
         label: 'Bounty',
         added: [{ text: '550,000,000 ฿ · C550', details: 'Until : C574, C600' }],
         removed: [{ text: '550,000,000 ฿ · C550' }],
+      },
+    ]);
+  });
+
+  it('renders object believed_by items as "Target (C…)" and plain items as names (ADR-096)', () => {
+    const after = {
+      ...before,
+      properties: {
+        ...before.properties,
+        status: [
+          { value: 'alive', since: 'manga-chapter:1' },
+          {
+            value: 'dead',
+            since: 'manga-chapter:585',
+            believed_by: [
+              { target: 'character:luffy', source: 'manga-chapter:585' },
+              'character:ace',
+            ],
+          },
+        ],
+      },
+    };
+    const changes = diffEntityData(before, after, ctx);
+    expect(changes).toEqual([
+      {
+        label: 'Status',
+        added: [{
+          text: 'Dead · C585',
+          details: 'Believed by : Monkey D. Luffy (C585), Portgas D. Ace',
+        }],
+        removed: [],
+      },
+    ]);
+  });
+
+  it('renders multi-source object items with every compact source (ADR-096)', () => {
+    const after = {
+      ...before,
+      relations: [{
+        type: 'member-of',
+        target: 'crew:straw-hat-pirates',
+        qualifiers: {
+          since: 'manga-chapter:5',
+          believed_by: [{
+            target: 'character:luffy',
+            source: ['manga-chapter:585', 'manga-chapter:590'],
+          }],
+        },
+      }],
+    };
+    const changes = diffEntityData(before, after, ctx);
+    expect(changes).toEqual([
+      {
+        label: 'Member of',
+        added: [{
+          text: 'Straw Hat Pirates · C5',
+          details: 'Believed by : Monkey D. Luffy (C585, C590)',
+        }],
+        removed: [],
       },
     ]);
   });

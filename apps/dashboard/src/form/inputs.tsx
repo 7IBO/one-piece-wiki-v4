@@ -33,8 +33,14 @@ import {
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { Checkbox } from '@base-ui-components/react/checkbox';
+import {
+  type EntityRefItem,
+  entityRefItems,
+  type SerializedEntityRefItem,
+  serializeEntityRefItems,
+} from '@onepiece-wiki/schemas';
 import { useVirtualizer } from '@tanstack/react-virtual';
-import { Check, ChevronsUpDown, Pencil, X } from 'lucide-react';
+import { Anchor, Check, ChevronsUpDown, Pencil, X } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
 import { api, type EntityRef, type SourceRef } from '../api';
 import { useEntityDrawer } from './EntityDrawerProvider';
@@ -455,13 +461,29 @@ export function EntityRefInput(
  * from other types stay in the value, just out of view).
  */
 export function MultiEntityRefInput(
-  { value, onChange, entityTypes, restrictTo, disabled }: InputProps<readonly string[]> & {
-    entityTypes: readonly { id: string; label: string; }[];
-    restrictTo?: readonly string[] | undefined;
-  },
+  { value, onChange, entityTypes, restrictTo, disabled, itemSources, onItemSourceChange, sources }:
+    & InputProps<readonly string[]>
+    & {
+      entityTypes: readonly { id: string; label: string; }[];
+      restrictTo?: readonly string[] | undefined;
+      /**
+       * ADR-096 — per-item provenance affordance. When
+       * `onItemSourceChange` is provided, every chip gains a small
+       * anchor icon that reveals a source picker for THAT item.
+       * `itemSources` maps a selected id to its current source(s);
+       * `sources` feeds the picker. All three are optional — plain
+       * callers (apparitions, source pages) are unaffected.
+       */
+      itemSources?: ReadonlyMap<string, string | readonly string[]> | undefined;
+      onItemSourceChange?: ((target: string, source: string | undefined) => void) | undefined;
+      sources?: readonly SourceRef[] | undefined;
+    },
 ): JSX.Element {
   const locale = useLocale();
   const t = useT();
+  // Per-session "show this item's source picker" reveal state — items
+  // whose source is already set always show their row.
+  const [sourceOpen, setSourceOpen] = useState<readonly string[]>([]);
   const allowedTypes = useMemo(() => {
     if (restrictTo === undefined) return entityTypes;
     const allowed = new Set(restrictTo);
@@ -586,43 +608,123 @@ export function MultiEntityRefInput(
     </PopoverTrigger>
   );
 
+  // ADR-096 — items whose source row is visible: sources already set
+  // in the data, plus items the maintainer revealed via the anchor
+  // icon this session (filtered to the current selection).
+  const withItemSources = onItemSourceChange !== undefined;
+  const sourceRowIds = withItemSources
+    ? list.filter((id) => itemSources?.has(id) === true || sourceOpen.includes(id))
+    : [];
+
+  const chips = (
+    <div
+      className={cn(
+        'border-input bg-background flex min-h-8 flex-wrap items-center gap-1 rounded-md border px-1.5 py-1',
+        disabled === true && 'opacity-50',
+      )}
+    >
+      {list.map((fullId) => {
+        const [, slug] = fullId.split(':');
+        const meta = lookup.get(fullId);
+        const label = meta?.name ?? slug ?? fullId;
+        const hasSource = itemSources?.has(fullId) === true;
+        return (
+          <span
+            key={fullId}
+            className='bg-muted text-foreground inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px]'
+          >
+            <span className='truncate max-w-[12rem]'>{label}</span>
+            {withItemSources
+              ? (
+                <button
+                  type='button'
+                  className={cn(
+                    'shrink-0',
+                    hasSource
+                      ? 'text-primary'
+                      : 'text-muted-foreground/60 hover:text-foreground',
+                  )}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    e.stopPropagation();
+                    setSourceOpen((prev) =>
+                      prev.includes(fullId)
+                        ? prev.filter((id) => id !== fullId)
+                        : [...prev, fullId]
+                    );
+                  }}
+                  aria-label={t('itemSource')}
+                  title={t('itemSource')}
+                  disabled={disabled === true}
+                >
+                  <Anchor className='size-3' />
+                </button>
+              )
+              : null}
+            <button
+              type='button'
+              className='hover:text-destructive shrink-0'
+              onClick={(e) => {
+                e.preventDefault();
+                e.stopPropagation();
+                removeOne(fullId);
+              }}
+              aria-label={t('removeEntry')}
+              disabled={disabled === true}
+            >
+              <X className='size-3' />
+            </button>
+          </span>
+        );
+      })}
+      {trigger}
+    </div>
+  );
+
   const list_ui = list.length === 0
     // Empty: the trigger IS the row — no chip container around it.
     ? trigger
+    : sourceRowIds.length === 0
+    ? chips
     : (
-      <div
-        className={cn(
-          'border-input bg-background flex min-h-8 flex-wrap items-center gap-1 rounded-md border px-1.5 py-1',
-          disabled === true && 'opacity-50',
-        )}
-      >
-        {list.map((fullId) => {
+      <div className='space-y-1.5'>
+        {chips}
+        {sourceRowIds.map((fullId) => {
           const [, slug] = fullId.split(':');
-          const meta = lookup.get(fullId);
-          const label = meta?.name ?? slug ?? fullId;
+          const label = lookup.get(fullId)?.name ?? slug ?? fullId;
+          const raw = itemSources?.get(fullId);
+          // The picker edits a single ref; a hand-authored multi-source
+          // item shows (and, once edited, stores) its first ref.
+          const current = typeof raw === 'string' ? raw : raw?.[0];
           return (
-            <span
-              key={fullId}
-              className='bg-muted text-foreground inline-flex items-center gap-1 rounded-md px-1.5 py-0.5 text-[11px]'
-            >
-              <span className='truncate max-w-[12rem]'>{label}</span>
+            <div key={fullId} className='flex items-center gap-1.5'>
+              <span className='text-muted-foreground max-w-[8rem] shrink-0 truncate text-[10px] font-medium uppercase tracking-wider'>
+                {label}
+              </span>
+              <div className='min-w-0 flex-1'>
+                <SourceRefInput
+                  value={current}
+                  onChange={(next) => onItemSourceChange?.(fullId, next === '' ? undefined : next)}
+                  sources={sources ?? []}
+                  disabled={disabled === true}
+                />
+              </div>
               <button
                 type='button'
-                className='hover:text-destructive shrink-0'
-                onClick={(e) => {
-                  e.preventDefault();
-                  e.stopPropagation();
-                  removeOne(fullId);
+                className='text-muted-foreground hover:text-destructive shrink-0'
+                onClick={() => {
+                  onItemSourceChange?.(fullId, undefined);
+                  setSourceOpen((prev) => prev.filter((id) => id !== fullId));
                 }}
-                aria-label={t('removeEntry')}
+                aria-label={t('itemSourceClear')}
+                title={t('itemSourceClear')}
                 disabled={disabled === true}
               >
-                <X className='size-3' />
+                <X className='size-3.5' />
               </button>
-            </span>
+            </div>
           );
         })}
-        {trigger}
       </div>
     );
   const picker = (
@@ -658,6 +760,65 @@ export function MultiEntityRefInput(
         {picker}
       </PopoverContent>
     </Popover>
+  );
+}
+
+/**
+ * ADR-096 — editor for the epistemic entity-ref-item lists
+ * (`believed_by` / `known_truth_by`). Reads the raw mixed value
+ * (plain ids and `{ target, source? }` objects) through the shared
+ * `entityRefItems` normalizer, delegates to MultiEntityRefInput with
+ * the per-item source affordance, and re-serializes MINIMALLY on
+ * every change: an item without a source stays (or becomes again) a
+ * plain string — the JSON never grows objects for provenance-free
+ * items.
+ */
+export function EntityRefItemsInput(
+  { value, onChange, entityTypes, restrictTo, disabled, sources }: {
+    value: unknown;
+    onChange: (next: readonly SerializedEntityRefItem[] | undefined) => void;
+    entityTypes: readonly { id: string; label: string; }[];
+    restrictTo?: readonly string[] | undefined;
+    disabled?: boolean | undefined;
+    sources: readonly SourceRef[];
+  },
+): JSX.Element {
+  const items = useMemo(() => entityRefItems(value), [value]);
+  const itemSources = useMemo(() => {
+    const m = new Map<string, string | readonly string[]>();
+    for (const item of items) {
+      if (item.source !== undefined) m.set(item.target, item.source);
+    }
+    return m;
+  }, [items]);
+
+  function commit(next: readonly EntityRefItem[]): void {
+    const serialized = serializeEntityRefItems(next);
+    onChange(serialized.length === 0 ? undefined : serialized);
+  }
+
+  return (
+    <MultiEntityRefInput
+      value={items.map((i) => i.target)}
+      onChange={(targets) => {
+        // Keep each retained item's provenance when the target list
+        // changes (add / remove / reorder).
+        const byTarget = new Map(items.map((i) => [i.target, i] as const));
+        commit(targets.map((t) => byTarget.get(t) ?? { target: t }));
+      }}
+      entityTypes={entityTypes}
+      restrictTo={restrictTo}
+      disabled={disabled}
+      sources={sources}
+      itemSources={itemSources}
+      onItemSourceChange={(target, source) => {
+        commit(items.map((i) =>
+          i.target === target
+            ? (source === undefined ? { target: i.target } : { target: i.target, source })
+            : i
+        ));
+      }}
+    />
   );
 }
 

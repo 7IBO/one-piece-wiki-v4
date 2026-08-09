@@ -29,10 +29,12 @@ import { Card } from '@/components/ui/card';
 import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/components/ui/collapsible';
 import { Skeleton } from '@/components/ui/skeleton';
 import { cn } from '@/lib/utils';
-import type {
-  QualifierTypeSchema,
-  RelationTypeSchema,
-  VocabularySchema,
+import {
+  entityRefItems,
+  entityRefItemSources,
+  type QualifierTypeSchema,
+  type RelationTypeSchema,
+  type VocabularySchema,
 } from '@onepiece-wiki/schemas';
 import { Link } from '@tanstack/react-router';
 import { ChevronDown, Info, Link2, Pencil, TriangleAlert } from 'lucide-react';
@@ -89,6 +91,15 @@ function formatQualifierValue(value: unknown, enumRef: string | undefined, ctx: 
   }
   if (typeof value === 'string' || typeof value === 'number' || typeof value === 'boolean') {
     return String(value);
+  }
+  // ADR-096 — believed_by / known_truth_by items may carry per-item
+  // provenance as `{ target, source? }`: "character:luffy (manga-chapter:585)".
+  if (value !== null && typeof value === 'object') {
+    const [item] = entityRefItems([value]);
+    if (item !== undefined) {
+      const sources = entityRefItemSources(item);
+      return sources.length > 0 ? `${item.target} (${sources.join(', ')})` : item.target;
+    }
   }
   return JSON.stringify(value) ?? '';
 }

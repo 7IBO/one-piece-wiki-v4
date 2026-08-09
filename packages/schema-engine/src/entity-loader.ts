@@ -11,6 +11,9 @@ import {
   type AssistedBy,
   type CanonScope,
   ENTITY_ID_PATTERN,
+  ENTITY_REF_ITEM_QUALIFIER_IDS,
+  entityRefItems,
+  entityRefItemSources,
   type Locale,
 } from '@onepiece-wiki/schemas';
 import { basename, join } from 'node:path';
@@ -173,6 +176,17 @@ export function resolveEntityReferences(
     if (Array.isArray(value)) return value.filter(isEntityRef);
     return [];
   };
+  // `believed_by` / `known_truth_by` items (ADR-096): every item
+  // contributes its target AND its per-item `source` refs, read
+  // through the shared normalizer — a dangling believer or a dangling
+  // per-item source both fail resolution.
+  const itemRefs = (value: unknown): readonly string[] => {
+    const refs: string[] = [];
+    for (const item of entityRefItems(value)) {
+      refs.push(item.target, ...entityRefItemSources(item));
+    }
+    return refs;
+  };
 
   for (const entity of entities.values()) {
     const data = entity.data as { properties?: Record<string, unknown>; relations?: unknown[]; };
@@ -188,6 +202,18 @@ export function resolveEntityReferences(
           const refTargets = ['since', 'until', 'source', 'event'] as const;
           for (const field of refTargets) {
             for (const ref of refOrRefList(record[field])) {
+              if (!entities.has(ref)) {
+                errors.push({
+                  code: 'ENTITY_REFERENCE_NOT_FOUND',
+                  source: entity.id,
+                  path: `properties.${propertyId}[${index}].${field}`,
+                  target: ref,
+                });
+              }
+            }
+          }
+          for (const field of ENTITY_REF_ITEM_QUALIFIER_IDS) {
+            for (const ref of itemRefs(record[field])) {
               if (!entities.has(ref)) {
                 errors.push({
                   code: 'ENTITY_REFERENCE_NOT_FOUND',
@@ -233,14 +259,18 @@ export function resolveEntityReferences(
             // Source/entity-ref-bearing qualifiers: the temporal/citation
             // axes plus the relation epistemic base qualifiers (ADR-037)
             // `revealed_since` (source_ref) and `believed_by` /
-            // `known_truth_by` (entity_ref[]).
+            // `known_truth_by` (entity-ref-item lists, ADR-096 — items
+            // resolve their target AND their per-item source).
             if (
               key !== 'since' && key !== 'until' && key !== 'source' && key !== 'event'
               && key !== 'revealed_since' && key !== 'believed_by' && key !== 'known_truth_by'
             ) {
               continue;
             }
-            for (const ref of refOrRefList(qValue)) {
+            const refs = key === 'believed_by' || key === 'known_truth_by'
+              ? itemRefs(qValue)
+              : refOrRefList(qValue);
+            for (const ref of refs) {
               if (!entities.has(ref)) {
                 errors.push({
                   code: 'ENTITY_REFERENCE_NOT_FOUND',

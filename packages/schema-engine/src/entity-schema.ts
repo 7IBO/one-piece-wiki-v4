@@ -28,6 +28,16 @@ export const I18nKeyString = z.string().regex(I18N_KEY_PATTERN);
 // here is purely an authoring convenience.
 const SourceRefOrList = z.union([EntityId, z.array(EntityId).min(1)]);
 
+// ADR-096 — items of `believed_by` / `known_truth_by` accept a plain
+// `EntityId` (no provenance; all pre-ADR-096 data) or `{ target,
+// source? }` when the specific item cites its own source. Consumers
+// read the union through `entityRefItems` (@onepiece-wiki/schemas);
+// nothing re-parses these two shapes ad hoc.
+const EntityRefItem = z.union([
+  EntityId,
+  z.object({ target: EntityId, source: SourceRefOrList.optional() }).passthrough(),
+]);
+
 export const BaseQualifierBag = z
   .object({
     since: SourceRefOrList.optional(),
@@ -36,8 +46,8 @@ export const BaseQualifierBag = z
     epistemic_status: EpistemicStatus.optional(),
     actual_value: z.unknown().optional(),
     event: EntityId.optional(),
-    believed_by: z.array(EntityId).optional(),
-    known_truth_by: z.array(EntityId).optional(),
+    believed_by: z.array(EntityRefItem).optional(),
+    known_truth_by: z.array(EntityRefItem).optional(),
     canon_scope: z.string().optional(),
     in_universe_date: z.string().optional(),
     assisted_by: z.string().optional(),
@@ -54,8 +64,8 @@ export const BaseQualifierBag = z
 export const RelationQualifierBag = z
   .object({
     epistemic_status: EpistemicStatus.optional(),
-    believed_by: z.array(EntityId).optional(),
-    known_truth_by: z.array(EntityId).optional(),
+    believed_by: z.array(EntityRefItem).optional(),
+    known_truth_by: z.array(EntityRefItem).optional(),
     revealed_since: SourceRefOrList.optional(),
   })
   .passthrough();
