@@ -57,16 +57,17 @@ export function ProgressControl(
   };
 
   const inputClass =
-    'w-full rounded-lg border border-line bg-canvas px-3 py-1.5 text-sm text-fg outline-none transition-colors focus:border-gold/60';
+    'w-full rounded-md border border-line bg-canvas px-3 py-1.5 text-sm tabular-nums text-fg outline-none transition-colors duration-150 focus:border-accent';
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
       <Popover.Trigger
-        className='flex items-center gap-1.5 rounded-full border border-line bg-panel px-3 py-1.5 font-mono text-xs text-muted transition-colors hover:border-gold/50 hover:text-fg'
+        className={`rounded-md bg-surface px-2.5 py-1.5 text-xs font-medium transition-colors duration-150 hover:bg-surface-2 hover:text-fg sm:px-3 ${
+          active ? 'font-mono text-fg' : 'text-muted'
+        }`}
         aria-label={t(locale, 'progressTitle')}
       >
-        <span aria-hidden className={active ? 'text-gold' : 'text-faint'}>◉</span>
-        <span className='max-w-40 truncate'>{summary}</span>
+        <span className='block max-w-28 truncate sm:max-w-44'>{summary}</span>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner
@@ -76,8 +77,8 @@ export function ProgressControl(
           collisionPadding={12}
           className='isolate z-50'
         >
-          <Popover.Popup className='w-72 rounded-xl border border-line bg-panel p-4 shadow-2xl outline-none'>
-            <p className='font-display text-base font-semibold text-fg'>
+          <Popover.Popup className='w-72 rounded-lg border border-line bg-surface p-4 shadow-2xl outline-none'>
+            <p className='font-display text-base font-semibold tracking-[-0.01em] text-fg'>
               {t(locale, 'progressTitle')}
             </p>
             <p className='mt-1 text-xs leading-relaxed text-faint'>
@@ -120,13 +121,13 @@ export function ProgressControl(
                     setAnime('');
                     apply({ manga: null, anime: null });
                   }}
-                  className='rounded-full px-3 py-1.5 text-xs text-faint transition-colors hover:text-fg'
+                  className='py-1.5 text-xs font-medium text-faint transition-colors duration-150 hover:text-fg'
                 >
                   {t(locale, 'progressReset')}
                 </button>
                 <button
                   type='submit'
-                  className='rounded-full bg-gold px-4 py-1.5 text-xs font-semibold text-canvas transition-colors hover:bg-gold-deep'
+                  className='rounded-md bg-accent px-4 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
                 >
                   {t(locale, 'progressSave')}
                 </button>

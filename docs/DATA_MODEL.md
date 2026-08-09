@@ -803,15 +803,13 @@ fruit's `classification`, true `name` and `zoan_model` together — see
         "value": "event.battle-of-marineford.summary",
         "since": "manga-chapter:550"
       }
-    ]
-  },
-  "spans": {
-    "first_source": "manga-chapter:550",
-    "last_source": "manga-chapter:580",
-    "primary_location": "location:marineford"
+    ],
+    "first_source": { "value": "manga-chapter:550" },
+    "last_source": { "value": "manga-chapter:580" }
   },
   "relations": [
     { "type": "occurs-during-arc", "target": "arc:marineford" },
+    { "type": "set-in", "target": "location:marineford" },
     {
       "type": "participant",
       "target": "character:luffy",
@@ -843,9 +841,7 @@ fruit's `classification`, true `name` and `zoan_model` together — see
         "role": "admiral",
         "notable_action": "killed-ace"
       }
-    },
-    { "type": "caused-death-of", "target": "character:ace" },
-    { "type": "caused-death-of", "target": "character:whitebeard" }
+    }
   ]
 }
 ```

@@ -19,7 +19,6 @@ import { ChevronLeft, ExternalLink, Film, GitPullRequest, History, Users } from 
 import { type JSX, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type SourceRef } from '../api';
-import { EntityLinksPanel } from '../components/EntityLinksPanel';
 import { IncomingEdgesManager } from '../components/IncomingEdgesManager';
 import { LoadFailed } from '../components/LoadFailed';
 import { NarrativeEditor } from '../components/NarrativeEditor';
@@ -50,8 +49,8 @@ function EntityEditComponent(): JSX.Element {
   const t = useT();
   const navigate = useNavigate();
   // ADR-097 — which incoming-edge relation group is being managed
-  // (null = read-only). Owned here so both the inferred-relations
-  // section and the links panel can open the same manager.
+  // (null = read-only). Owned here so the URL-navigating cast case
+  // and the inline manager share one entry point.
   const [managingIncoming, setManagingIncoming] = useState<string | null>(null);
   const { data, error, reload } = useApiResource(
     () =>
@@ -320,15 +319,21 @@ function EntityEditComponent(): JSX.Element {
       />
       {
         /* Narrative (prose Markdown per locale) — below the form,
-        above the links panels. Collapsed by default. */
+        above the inverse-relations section. Collapsed by default. */
       }
       <NarrativeEditor type={type} slug={slug} />
+      {
+        /* Incoming edges (inverse relations) — the ONLY link surface
+        besides the relations editor inside the form: same row design,
+        read-only detail, coherence banners, ADR-097 manage entry. */
+      }
       <InferredRelations
         entityType={type}
         entitySlug={slug}
         relationTypes={schemas.relationTypes}
         qualifierTypes={schemas.qualifierTypes}
         vocabularies={schemas.vocabularies}
+        sources={sources}
         manage={{
           managing: managingIncoming,
           onManage: (relationTypeId) => {
@@ -351,14 +356,6 @@ function EntityEditComponent(): JSX.Element {
             />
           ),
         }}
-      />
-      <EntityLinksPanel
-        type={type}
-        slug={slug}
-        relationTypes={schemas.relationTypes}
-        qualifierTypes={schemas.qualifierTypes}
-        vocabularies={schemas.vocabularies}
-        onManageIncoming={openIncomingManager}
       />
     </div>
   );

@@ -164,7 +164,6 @@
         "friend-of",
         "member-of",
         "mentor-of",
-        "pilots",
         "portrayed-by",
         "resides-in",
         "rival-of",
@@ -228,7 +227,6 @@
       "allowed_relations": [
         "ally-of",
         "based-in",
-        "captained-by",
         "controls-territory",
         "depicted-by",
         "enemy-of",
@@ -355,7 +353,6 @@
       },
       "allowed_relations": [
         "caused-by-event",
-        "caused-death-of",
         "depicted-by",
         "occurs-during-arc",
         "part-of-event",
@@ -1800,27 +1797,6 @@
       "inverse_inferred": true,
       "qualifiers": {}
     },
-    "captained-by": {
-      "valid_from_types": [
-        "crew"
-      ],
-      "valid_to_types": [
-        "character"
-      ],
-      "inverse_inferred": false,
-      "qualifiers": {
-        "since": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        },
-        "until": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        }
-      }
-    },
     "captains": {
       "valid_from_types": [
         "character"
@@ -1858,16 +1834,6 @@
       ],
       "valid_to_types": [
         "event"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {}
-    },
-    "caused-death-of": {
-      "valid_from_types": [
-        "event"
-      ],
-      "valid_to_types": [
-        "character"
       ],
       "inverse_inferred": true,
       "qualifiers": {}
@@ -2185,7 +2151,7 @@
         "role": {
           "value_type": "enum",
           "enum_ref": "arc-roles",
-          "required": false
+          "required": true
         }
       }
     },
@@ -2519,7 +2485,6 @@
     "part-of-arc": {
       "valid_from_types": [
         "anime-episode",
-        "event",
         "manga-chapter"
       ],
       "valid_to_types": [
@@ -2620,27 +2585,6 @@
         "side": {
           "value_type": "enum",
           "enum_ref": "event-sides",
-          "required": false
-        }
-      }
-    },
-    "pilots": {
-      "valid_from_types": [
-        "character"
-      ],
-      "valid_to_types": [
-        "ship"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {
-        "since": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        },
-        "until": {
-          "value_type": "source_ref",
-          "enum_ref": null,
           "required": false
         }
       }
@@ -3520,7 +3464,6 @@
       "village"
     ],
     "loyalty-statuses": [
-      "allied",
       "former_member",
       "founder",
       "honorary",
@@ -3579,7 +3522,6 @@
       "alias",
       "codename",
       "common",
-      "epithet",
       "full_name",
       "honorific",
       "insult",
@@ -3588,7 +3530,6 @@
       "native_script",
       "nickname",
       "romanized",
-      "title",
       "true_name"
     ],
     "occupations": [

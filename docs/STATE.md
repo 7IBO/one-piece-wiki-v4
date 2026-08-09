@@ -15,7 +15,33 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (ADR-097 : gestion des arêtes entrantes + URLs/images web)
+**Last updated**: 2026-08-09 (design v3 clair, surface liens unifiée, audit catalogue ADR-098)
+
+**2026-08-09 — lot PR #119 : design wiki v3, unification dashboard,
+audit de redondance.** (a) Le wiki public a été redessiné DEUX fois
+sur verdicts mainteneur : v2 sombre (Bricolage/ambre) jugée « trop
+IA » → **v3 registre ouvrage de référence** : blanc papier, encre,
+filets pleine largeur au lieu de boîtes, infobox liste de
+définitions à la Wikipedia, un seul bleu éditorial (liens), zéro
+pastille/ornement, Bricolage 700 + Inter, chiffres tabulaires —
+look unique clair assumé (spec WEB_APP.md §Identity/Style). (b) Les
+relations inverses du dashboard rendent au design des propriétés
+(lignes cliquables, détail lecture seule, Gérer ADR-097 au niveau
+groupe) et `EntityLinksPanel` est SUPPRIMÉ (bannières de cohérence
+et retry migrés dans la section unifiée). (c) **Audit complet des
+redondances du catalogue** archivé à
+`docs/audits/2026-08-09-catalogue-redundancy.md` (22 constats) ;
+**ADR-098** implémente le lot net (suppression `captained-by`,
+`caused-death-of`, `pilots` ; `part-of-arc` sans `event` ;
+name-types sans epithet/title ; loyalty-statuses sans allied ;
+`qualifier_absent` dans le DSL + 2 règles advisory ; fix du registre
+`role` ; `features-characters.role` requis). **Questions de goût en
+attente mainteneur** (documentées dans l'audit §prioritized) :
+devenir de `led-by` et `captains`, dérivation
+`introduces-character` et `total_bounty`, `awakening-of`
+(renverserait ADR-058), fusion loyalty/membership-statuses,
+extension DSL `has_active_incoming_relation` pour les règles
+inter-entités (held-vs-eaten…).
 
 **2026-08-09 — ADR-096 livré sur main (PR #117) ; chantier ADR-097 +
 web v2.1 en cours.** Provenance par item sur

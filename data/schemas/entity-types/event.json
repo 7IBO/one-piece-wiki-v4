@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "event",
-  "schema_version": 4,
+  "schema_version": 5,
   "labels": {
     "en": "Event",
     "fr": "Évènement"
@@ -47,7 +47,6 @@
   ],
   "allowed_relations": [
     "participant",
-    "caused-death-of",
     "occurs-during-arc",
     "caused-by-event",
     "part-of-event",

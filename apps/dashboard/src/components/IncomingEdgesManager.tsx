@@ -40,9 +40,8 @@ import {
 import { MultiEntityRefInput } from '../form/inputs';
 import { useLocale, useQualifierLabel, useT } from '../form/locale';
 import { QualifierRowList } from '../form/QualifierSheet';
-import { qualifierShapesFor, RelationQualifierField } from '../form/RelationsEditor';
+import { qualifierShapesFor, RelationQualifierField, summariseEdge } from '../form/RelationsEditor';
 import { useApiResource } from '../hooks/use-api-resource';
-import { formatQualifiers, type LabelCtx } from './EntityLinksPanel';
 import { LoadFailed } from './LoadFailed';
 
 export type IncomingEdgesManagerProps = {
@@ -129,13 +128,6 @@ export function IncomingEdgesManager(p: IncomingEdgesManagerProps): JSX.Element 
     () => qualifierShapesFor(relationType, p.qualifierTypes, locale),
     [relationType, p.qualifierTypes, locale],
   );
-
-  const ctx: LabelCtx = {
-    relationTypes: p.relationTypes,
-    qualifierTypes: p.qualifierTypes,
-    vocabularies: p.vocabularies,
-    locale,
-  };
 
   const entityTypeItems = useMemo(
     () =>
@@ -372,11 +364,17 @@ export function IncomingEdgesManager(p: IncomingEdgesManagerProps): JSX.Element 
                   const edited = !added && !removed
                     && initialQualifiers.get(row.entityId) !== JSON.stringify(row.qualifiers);
                   const name = row.displayName[locale] ?? row.displayName.en ?? row.slug;
-                  const qualifierText = formatQualifiers(
-                    p.relationTypeId,
-                    row.qualifiers,
-                    ctx,
+                  // Same compact summary as every other link row
+                  // (labels via the qualifier registry, enum values
+                  // via vocabularies, `since` compacted "C96"-style).
+                  const summary = summariseEdge(
+                    { type: p.relationTypeId, target: row.entityId, qualifiers: row.qualifiers },
+                    shapes,
+                    { vocabularies: p.vocabularies, sources: p.sources, locale, qualifierLabel },
                   );
+                  const qualifierText = [summary.text, summary.since]
+                    .filter((s): s is string => s !== null && s !== '')
+                    .join(' · ');
                   const expanded = expandedId === row.entityId;
                   const setIds = new Set(
                     shapes.filter((s) => hasRealValue(row.qualifiers[s.id])).map((s) => s.id),

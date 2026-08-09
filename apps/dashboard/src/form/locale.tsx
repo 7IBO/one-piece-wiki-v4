@@ -554,16 +554,8 @@ const UI_STRINGS = {
   // Entity header — link to the entity file's GitHub commit history
   history: { en: 'History', fr: 'Historique' },
   notOnGithubYet: { en: 'not on GitHub yet', fr: 'pas encore sur GitHub' },
-  // Entity links panel (all links of an entity + inverse coherence)
-  linksPanelTitle: { en: 'All links', fr: 'Tous les liens' },
-  linksPanelCounts: {
-    en: '{in} incoming · {out} outgoing',
-    fr: '{in} entrants · {out} sortants',
-  },
-  linksIncomingTitle: { en: 'Incoming links', fr: 'Liens entrants' },
-  linksOutgoingTitle: { en: 'Outgoing links', fr: 'Liens sortants' },
-  linksIncomingEmpty: { en: 'No incoming links.', fr: 'Aucun lien entrant.' },
-  linksOutgoingEmpty: { en: 'No outgoing links.', fr: 'Aucun lien sortant.' },
+  // Inverse-coherence findings — banners in the inverse-relations
+  // section (folded in from the removed links panel).
   linksConflictsTitle: {
     en: '{n} coherence issue(s) between relations and their inverses',
     fr: '{n} incohérence(s) entre relations et leurs inverses',
@@ -594,7 +586,6 @@ const UI_STRINGS = {
       + 'un opposé manquant n’est donc jamais une erreur. Ces liens sont enregistrés sur les '
       + 'deux entités ; le doublon peut être supprimé.',
   },
-  linksEditHere: { en: 'Edit this relation', fr: 'Modifier cette relation' },
   linksEditOnOther: {
     en: 'Stored on the linked entity — edit there',
     fr: 'Stocké sur l’entité liée — modifier là-bas',
@@ -763,6 +754,11 @@ const UI_STRINGS = {
   incomingRemovedBadge: { en: 'removed', fr: 'retiré' },
   incomingAddedBadge: { en: 'new', fr: 'nouveau' },
   incomingEditedBadge: { en: 'edited', fr: 'modifié' },
+  // Read-only detail of an inverse-relation row (unified link surface).
+  incomingNoQualifiers: {
+    en: 'No qualifiers on this relation.',
+    fr: 'Aucun qualificatif sur cette relation.',
+  },
 } as const;
 
 /**

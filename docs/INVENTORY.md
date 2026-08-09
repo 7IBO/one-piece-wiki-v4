@@ -255,7 +255,7 @@ property-type definitions are in section 3. Universal qualifiers
 Allowed relations: `member-of`, `ate-fruit`, `uses-technique`,
 `wields-weapon`, `family-of`, `ally-of`, `enemy-of`, `mentor-of`,
 `mentored-by`, `bears-title`, `belongs-to-race`, `born-in`, `resides-in`,
-`captains`, `pilots`, `participated-in`, `depicted-by`.
+`captains`, `participated-in`, `depicted-by`.
 
 ---
 
@@ -287,7 +287,7 @@ Allowed relations: `eaten-by`, `held-by`, `interacts-with-fruit`,
 | `description_key` | no       | no         | yes         |                        |
 
 Allowed relations: `has-member`, `ally-of`, `enemy-of`, `based-in`,
-`captained-by`, `flies-flag`, `depicted-by`.
+`flies-flag`, `depicted-by`.
 
 ---
 
@@ -363,7 +363,7 @@ Allowed relations: `wielded-by`, `forged-by`, `depicted-by`.
 | `destroyed_at`    | no       | no         | no          | source_ref              |
 | `description_key` | no       | no         | yes         |                         |
 
-Allowed relations: `captained-by`, `crewed-by`, `flies-flag`,
+Allowed relations: `crewed-by`, `flies-flag`,
 `replaced-by`, `replaces`, `depicted-by`.
 
 ---
@@ -506,7 +506,8 @@ Allowed relations: `features`, `clarifies-fact`.
 | `chapter_range` | no       | no         | no          | { first, last } source_refs  |
 
 Allowed relations: `part-of-saga`, `features-characters`, `set-in`,
-`depicted-by`. (Arc→chapter/episode/event is `part-of-arc`'s inferred inverse.)
+`depicted-by`. (Arc→chapter/episode is `part-of-arc`'s inferred inverse; arc→event is
+`occurs-during-arc`'s.)
 
 ---
 
@@ -532,7 +533,7 @@ Allowed relations: `contains-arc`.
 | `last_source`   | no       | no         | no          | source_ref                    |
 | `is_public`     | no       | no         | no          | Boolean — affects propagation |
 
-Allowed relations: `participant`, `caused-death-of`,
+Allowed relations: `participant`,
 `occurs-during-arc`, `caused-by-event`, `causes-event`, `part-of-event`,
 `set-in`, `depicted-by`.
 
@@ -704,7 +705,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (71)
+## 4. Relation types (68)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -771,7 +772,6 @@ generates inverses automatically when `inverse_inferred: true`.
 | Type         | From           | To      | Inverse       | Qualifiers   |
 | ------------ | -------------- | ------- | ------------- | ------------ |
 | `captains`   | `character`    | `ship`  | `(inferred)`  | since, until |
-| `pilots`     | `character`    | `ship`  | `piloted-by`  | since, until |
 | `crewed-by`  | `ship`         | `crew`  | `sails`       | since, until |
 | `flies-flag` | `ship`, `crew` | `image` | `flag-of`     | since        |
 | `replaces`   | `ship`         | `ship`  | `replaced-by` | since        |
@@ -792,23 +792,22 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ### 4.10 Narrative structure
 
-| Type                  | From                                      | To                   | Inverse           | Qualifiers         |
-| --------------------- | ----------------------------------------- | -------------------- | ----------------- | ------------------ |
-| `part-of-arc`         | `manga-chapter`, `event`, `anime-episode` | `arc`                | `(inferred)`      | —                  |
-| `part-of-volume`      | `manga-chapter`, `sbs`                    | `volume`             | `collects`        | since              |
-| `qa-of`               | `sbs-qa`                                  | `sbs`                | `has-qa`          | —                  |
-| `has-cover-story`     | `manga-chapter`                           | `arc`                | `cover-story-in`  | installment_number |
-| `part-of-series`      | `live-action-episode`                     | `live-action-series` | `(inferred)`      | since              |
-| `part-of-saga`        | `arc`                                     | `saga`               | `contains-arc`    | —                  |
-| `occurs-during-arc`   | `event`                                   | `arc`                | `contains-event`  | —                  |
-| `features-characters` | `arc`                                     | `character`          | `featured-in-arc` | role               |
+| Type                  | From                             | To                   | Inverse           | Qualifiers         |
+| --------------------- | -------------------------------- | -------------------- | ----------------- | ------------------ |
+| `part-of-arc`         | `manga-chapter`, `anime-episode` | `arc`                | `(inferred)`      | —                  |
+| `part-of-volume`      | `manga-chapter`, `sbs`           | `volume`             | `collects`        | since              |
+| `qa-of`               | `sbs-qa`                         | `sbs`                | `has-qa`          | —                  |
+| `has-cover-story`     | `manga-chapter`                  | `arc`                | `cover-story-in`  | installment_number |
+| `part-of-series`      | `live-action-episode`            | `live-action-series` | `(inferred)`      | since              |
+| `part-of-saga`        | `arc`                            | `saga`               | `contains-arc`    | —                  |
+| `occurs-during-arc`   | `event`                          | `arc`                | `contains-event`  | —                  |
+| `features-characters` | `arc`                            | `character`          | `featured-in-arc` | role (required)    |
 
 ### 4.11 Events
 
 | Type              | From    | To                                  | Inverse           | Qualifiers                          |
 | ----------------- | ------- | ----------------------------------- | ----------------- | ----------------------------------- |
 | `participant`     | `event` | `character`, `crew`, `organization` | `participated-in` | side, role, outcome, notable_action |
-| `caused-death-of` | `event` | `character`                         | `died-in-event`   | cause                               |
 | `caused-by-event` | `event` | `event`                             | `causes-event`    | —                                   |
 | `part-of-event`   | `event` | `event`                             | `has-phase`       | phase_order                         |
 
@@ -891,9 +890,11 @@ values have localized labels (EN, FR at minimum).
 
 ### 5.4 `name-types`
 
-`common`, `full_name`, `true_name`, `epithet`, `nickname`, `alias`,
-`codename`, `title`, `insult`, `honorific`, `mistranslation`,
+`common`, `full_name`, `true_name`, `nickname`, `alias`,
+`codename`, `insult`, `honorific`, `mistranslation`,
 `native_script`, `romanized`, `literal_meaning`
+(`epithet` and `title` were removed by ADR-098 — the dedicated
+`epithet` property and the `bears-title` relation are the homes)
 
 ### 5.5 `appearance-types`
 
@@ -930,7 +931,8 @@ values have localized labels (EN, FR at minimum).
 ### 5.11 `loyalty-statuses`
 
 `founder`, `member`, `former_member`, `traitor`, `undercover`,
-`allied`, `presumed_dead_member`, `honorary`
+`presumed_dead_member`, `honorary`
+(`allied` was removed by ADR-098 — an ally is an `ally-of` edge)
 
 ### 5.12 `org-types`
 
@@ -1345,7 +1347,7 @@ depicted by another image).
 
 - **Entity types**: 38
 - **Property types**: 105 (some shared across multiple entity types)
-- **Relation types**: 71 (canonical declared; inverses are build-generated)
+- **Relation types**: 68 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 65
 - **Qualifier types**: 28 (8 base + 20 common — the ADR-078 registry)
 - **Primitive value types**: 10

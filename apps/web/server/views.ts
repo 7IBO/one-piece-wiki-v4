@@ -294,8 +294,8 @@ const ROLE_PRIORITY: Readonly<Record<string, number>> = {
 /** Relation ids surfaced as infobox rows, per entity type. */
 const INFOBOX_RELATIONS: Readonly<Record<string, readonly string[]>> = {
   character: ['ate-fruit'],
-  crew: ['captained-by', 'led-by'],
-  organization: ['captained-by', 'led-by'],
+  crew: ['led-by'],
+  organization: ['led-by'],
 };
 
 // ---------------------------------------------------------------------------

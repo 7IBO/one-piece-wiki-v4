@@ -8,6 +8,60 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-098 — Catalogue dedup pass: one home per fact
+
+**Date**: 2026-08-09
+
+**Context**: Maintainer noticed `captained-by` on a crew duplicates
+the members' `member-of{role: captain}` edges and asked for a full
+relations/properties audit per entity type. The audit
+(`/docs/audits/2026-08-09-catalogue-redundancy.md`, 22 findings)
+split results into clear-cut removals (zero-or-one-edge migrations,
+all read/edit ergonomics since covered by ADR-086 materialized
+inverses + ADR-097 incoming-edge manager) and taste calls left to
+the maintainer.
+
+**Decision — the clear-cut list lands now** (beta directive):
+
+1. REMOVE `captained-by` (0 edges; crew captains = incoming
+   `member-of{role: captain}`; closes the ADR-033/034 pending call).
+2. REMOVE `caused-death-of` (its 1 edge folds into the already
+   present `participant{outcome: killed}` on Marineford; the
+   character-side `status: dead` stays — it is the epistemic
+   surface, not a duplicate).
+3. NARROW `part-of-arc.valid_from_types` (drop `event`) —
+   `occurs-during-arc` is the single event→arc relation.
+4. REMOVE `pilots` (≡ `member-of{role: helmsman}` + `crewed-by`).
+5. TRIM vocabularies: `name-types` loses `epithet`/`title` (the
+   dedicated `epithet` property and `bears-title` are the homes);
+   `loyalty-statuses` loses `allied` (an ally is an `ally-of` edge).
+6. NEW advisory rules: `former-member-needs-until` (relation scope,
+   expressible today) and `org-membership-uses-rank-not-crew-role`
+   (requires the new `qualifier_absent` relation expectation — tiny
+   ADR-090 DSL addition).
+7. FIX the ADR-078 `role` qualifier registry entry: it hardcoded
+   `enum_ref: event-roles` while six relations bind `role` to six
+   different vocabularies — the registry entry becomes
+   enum-agnostic; per-relation declarations are authoritative.
+8. `features-characters.role` becomes required (the bare edge is
+   derivable; only the arc-role payload is not). DATA_MODEL's stale
+   `spans`/`primary_location` example fixed.
+
+**Left to maintainer taste** (documented in the audit, not
+implemented): `led-by` endgame (unify leadership into a widened
+roles vocabulary vs keep + rule), `captains` removal,
+`introduces-character` derivation, `total_bounty` derivation,
+`awakening-of` (would overturn ADR-058), `loyalty`/`membership`
+vocab merge, and the `has_active_incoming_relation` DSL extension
+for cross-entity rules (held-vs-eaten etc.).
+
+**Consequences**: relations 71→68, migrations `0007`+ in the ADR-070
+runner, compat snapshot regenerated (breaking accepted, 0 users),
+INVENTORY/DATA_MODEL updated. Every remaining near-pair is either
+rule-guarded or documented as deliberate in the audit.
+
+---
+
 ## ADR-097 — Incoming-edge manager: edit inverse relations from the target page
 
 **Date**: 2026-08-09

@@ -1,13 +1,24 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
   "id": "part-of-arc",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": {
-    "en": { "active": "Part of arc", "inverse": "Chapters" },
-    "fr": { "active": "Partie de l'arc", "inverse": "Chapitres" }
+    "en": {
+      "active": "Part of arc",
+      "inverse": "Chapters"
+    },
+    "fr": {
+      "active": "Partie de l'arc",
+      "inverse": "Chapitres"
+    }
   },
-  "valid_from_types": ["manga-chapter", "event", "anime-episode"],
-  "valid_to_types": ["arc"],
+  "valid_from_types": [
+    "manga-chapter",
+    "anime-episode"
+  ],
+  "valid_to_types": [
+    "arc"
+  ],
   "qualifiers": [],
   "allow_multiple_concurrent": false,
   "inverse_inferred": true

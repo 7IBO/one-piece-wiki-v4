@@ -9,9 +9,21 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
 ## Identity
 
 - **Name**: One Piece Wiki (header wordmark; `<title>` suffix).
-- **Style**: wiki-first — content-dense, link-dense, Wikipedia-inspired:
-  right-hand infobox on entity pages (stacks on mobile), prose sections,
-  muted chrome, generous internal linking. Dark + light themes.
+- **Style** (third pass 2026-08-09, maintainer direction "ultra
+  moderne, sombre, dense, données avec label/image"): **dark
+  database register** (AniList energy). Deep blue-charcoal canvas
+  (oklch ≈0.17), two surface steps for the card system, hairlines
+  at white 8/16 %, ONE electric-blue accent (links, chips, primary
+  buttons); no ornaments, no veils, no glass. Data renders as
+  LABELED UNITS: stat tiles (tracked-uppercase label over semibold
+  value — the first infobox properties form a hero stat row, the
+  rest a 320 px sticky sidebar mosaic), entity cards (3:4
+  portrait/monogram tile + name + role/since) in auto-fill grids
+  for members/cast/users/listings, number-led cards for chapters,
+  labeled-row cards for history. Dense: 1280 px shell, sections
+  32-40 px apart, no empty bands (small remainders fold inline).
+  Bricolage Grotesque display + Inter body, tabular numerals.
+  Single deliberate dark look.
 - **Footer (every page)**: GitHub repository link
   (`https://github.com/7IBO/one-piece-wiki-v4`) and a support link
   (`https://buymeacoffee.com/7ibo`), plus locale switcher.
@@ -100,7 +112,8 @@ Templates (v1):
   (`uses-technique`) · weapons (`wields-weapon`) · relations
   (family/allies/rivals) · apparitions summary · narrative prose.
 - **crew** (and `organization`): infobox (flag image, name, ship,
-  captain via `captained-by`/`led-by`) · **member list with portrait
+  leader via `led-by`; the crew captain surfaces through the incoming
+  `member-of{role: captain}` edge since ADR-098) · **member list with portrait
   thumbnails, roles and ranks** (inverse of `member-of`, grouped
   current/former via `until`) · territory/ship sections when present.
 - **manga-chapter / anime-episode** (source types): header with number

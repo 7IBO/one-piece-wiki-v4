@@ -1,0 +1,30 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "org-membership-uses-rank-not-crew-role",
+  "schema_version": 1,
+  "severity": "warning",
+  "labels": {
+    "en": "Organization membership using the crew role vocabulary",
+    "fr": "Adhésion à une organisation utilisant le vocabulaire des rôles d'équipage"
+  },
+  "messages": {
+    "en": "`role` holds pirate-crew functions (cook, sniper…). For an organization membership, the position belongs in `held_rank`. Use `role` on organizations only when no rank applies.",
+    "fr": "`role` porte les fonctions d'équipage pirate (cuisinier, tireur…). Pour une adhésion à une organisation, le poste se stocke dans `held_rank`. N'utilisez `role` sur une organisation que si aucun grade ne s'applique."
+  },
+  "scope": "relation",
+  "relation_type": "member-of",
+  "relation_when": [
+    {
+      "target_type_is": {
+        "type": "organization"
+      }
+    }
+  ],
+  "relation_expect": [
+    {
+      "qualifier_absent": {
+        "qualifier": "role"
+      }
+    }
+  ]
+}

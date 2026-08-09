@@ -421,15 +421,21 @@ request, the same accepted scan budget as the cast endpoint
 (ADR-019/ADR-021 risk note). Display names + routes are resolved in
 `server.ts` from the already-loaded snapshot.
 
-The client surface is `EntityLinksPanel`
-(`apps/dashboard/src/components/EntityLinksPanel.tsx`), rendered
-below the form on the entity page. It fetches lazily on mount
-(`api.entityLinks`), is collapsed by default on mobile and open from
-`sm:` up, and renders: an amber conflicts banner at the top (localized
-kind labels), then "Incoming links" / "Outgoing links" sections
-grouped by relation type (inverse resp. active labels from the
-catalogue), each row a deep link to the other entity plus its compact
-qualifiers. Localized EN/FR via the `UI_STRINGS` pattern.
+The client surface is the unified **`InferredRelations`** section
+(`apps/dashboard/src/form/RelationsEditor.tsx`) — since 2026-08-09
+the separate `EntityLinksPanel` is DELETED (it duplicated both the
+outgoing relations editor and the incoming section; maintainer
+directive: one design, one surface, data shown once). Incoming edges
+render in the exact property/relation row pattern (full-width
+clickable value lines, `summariseEdge` compact qualifiers through the
+registry, chevron), click opens a READ-ONLY detail in the same
+dual-mode surface as the edge editor (SideSheet mobile / inline
+sticky panel desktop) with a jump link to the storing entity; the
+group header carries the "auto" badge and the ADR-097 `Gérer` entry
+point (or the `/sources` cast-manager link for cast relations). The
+panel's unique content — coherence banners (duplicate-edge /
+qualifier-mismatch warnings, both-directions info) and fetch-error
+retry — moved into this section. Localized EN/FR via `UI_STRINGS`.
 
 ## Narrative editor (per-entity prose Markdown)
 

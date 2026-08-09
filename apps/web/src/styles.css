@@ -1,34 +1,39 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/inter';
-@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/bricolage-grotesque';
 
 /*
- * Public reader theme — dark-first, editorial, deliberately distinct
- * from the dashboard chrome (Tailwind v4 CSS-first config, tokens
- * only here). Palette: deep indigo-ink canvas, warm parchment
- * foreground, gold accent (wanted-poster / treasure register), teal
- * secondary for interactive accents.
+ * Public reader theme — dark database register (2026 redesign v3, see
+ * WEB_APP.md § Identity). Tailwind v4 CSS-first config: tokens ONLY
+ * here, every component reads them (zero raw hex/oklch in TSX).
+ *
+ * System:
+ * - Deep blue-charcoal canvas with TWO surface elevation steps for
+ *   the card grids; hairline borders at white 8–16%.
+ * - Data-forward: everything renders as labeled units — stat tiles
+ *   (tracked-uppercase label over semibold value) and entity cards
+ *   (portrait/monogram + name + secondary label) in dense auto-fill
+ *   grids. No decorative ornament.
+ * - ONE vivid accent: electric blue, links/interactive only.
+ * - Display face: Bricolage Grotesque Variable (headings, wordmark).
+ *   Body/UI: Inter Variable. Mono: ui-monospace stack.
  */
 @theme {
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Fraunces Variable', ui-serif, Georgia, serif;
+  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: oklch(0.152 0.018 262);
-  --color-panel: oklch(0.188 0.021 262);
-  --color-panel-2: oklch(0.222 0.024 262);
-  --color-line: oklch(0.285 0.024 262);
-  --color-line-strong: oklch(0.36 0.026 262);
+  --color-canvas: oklch(0.17 0.02 255);
+  --color-surface: oklch(0.212 0.022 255);
+  --color-surface-2: oklch(0.255 0.024 255);
+  --color-line: oklch(1 0 0 / 0.08);
+  --color-line-strong: oklch(1 0 0 / 0.16);
 
-  --color-fg: oklch(0.93 0.012 84);
-  --color-muted: oklch(0.7 0.018 262);
-  --color-faint: oklch(0.54 0.02 262);
+  --color-fg: oklch(0.95 0.006 255);
+  --color-muted: oklch(0.73 0.012 255);
+  --color-faint: oklch(0.56 0.018 255);
 
-  --color-gold: oklch(0.82 0.126 85);
-  --color-gold-deep: oklch(0.7 0.135 75);
-  --color-sea: oklch(0.78 0.09 200);
-
-  --color-veil: oklch(0.82 0.126 85 / 0.09);
-  --color-sea-veil: oklch(0.78 0.09 200 / 0.1);
+  --color-accent: oklch(0.73 0.13 235);
+  --color-accent-hover: oklch(0.8 0.12 233);
 }
 
 html {
@@ -41,13 +46,22 @@ body {
   background-color: var(--color-canvas);
   color: var(--color-fg);
   font-family: var(--font-sans);
+  font-size: 15px;
+  line-height: 1.6;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
 ::selection {
-  background-color: var(--color-gold-deep);
+  background-color: var(--color-accent);
   color: var(--color-canvas);
+}
+
+/* One focus language everywhere: accent ring, 2px offset. */
+:focus-visible {
+  outline: 2px solid var(--color-accent);
+  outline-offset: 2px;
+  border-radius: 2px;
 }
 
 /* Comfortable touch targets on coarse pointers (same floor as the
@@ -57,5 +71,15 @@ body {
   [role='button'] {
     min-height: 36px;
     min-width: 36px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition-duration: 0.01ms !important;
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
   }
 }

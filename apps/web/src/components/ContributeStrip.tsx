@@ -19,13 +19,13 @@ export function ContributeStrip(
   const locale = useLocale();
   const base = `${DASHBOARD_URL}/types/${type}/${slug}`;
   return (
-    <div className='mt-12 flex flex-wrap items-center gap-x-4 gap-y-2 rounded-xl border border-line/60 bg-panel/60 px-4 py-3 text-sm text-faint'>
+    <div className='mt-10 flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-lg bg-surface px-5 py-4 text-sm text-muted'>
       <span>{t(locale, 'contributeLead')}</span>
       <a
         href={base}
         target='_blank'
         rel='noreferrer'
-        className='rounded-full border border-gold/40 px-3.5 py-1 text-gold transition-colors hover:bg-veil'
+        className='rounded-md bg-accent px-3.5 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
       >
         {t(locale, 'contributeEdit')}
       </a>
@@ -33,7 +33,7 @@ export function ContributeStrip(
         href={`${base}/history`}
         target='_blank'
         rel='noreferrer'
-        className='rounded-full border border-line px-3.5 py-1 text-muted transition-colors hover:border-line-strong hover:text-fg'
+        className='rounded-md bg-surface-2 px-3.5 py-1.5 text-xs font-medium text-muted transition-colors duration-150 hover:text-fg'
       >
         {t(locale, 'contributeHistory')}
       </a>

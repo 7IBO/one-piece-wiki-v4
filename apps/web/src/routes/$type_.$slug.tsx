@@ -1,14 +1,15 @@
 /**
  * `/<type>/<slug>` — the canonical wiki page for one entity (the
  * entity TYPE ID is the first URL segment: `/character/monkey-d-luffy`).
- * Right-hand infobox (portrait + latest spoiler-visible values),
- * per-type sections (crew members, chapter prev/next + arc +
- * availability, fruit users…), value history, relations in BOTH
- * directions (materialized inverse rows, per-direction labels from the
- * artifact — ADR-086), narrative markdown, and the contribute strip.
- * All spoiler/scope logic ran server-side; this file only renders the
- * view-model. An optional `?scope=` search param carries the canon
- * scope context and is propagated through every entity link.
+ * Compact hero band (portrait tile + title + key-stat tiles), sticky
+ * stat-list sidebar, per-type sections (crew member cards, chapter
+ * prev/next + arc + availability, fruit users…), value history,
+ * relations in BOTH directions (materialized inverse rows,
+ * per-direction labels from the artifact — ADR-086), narrative
+ * markdown, and the contribute strip. All spoiler/scope logic ran
+ * server-side; this file only renders the view-model. An optional
+ * `?scope=` search param carries the canon scope context and is
+ * propagated through every entity link.
  *
  * File name: the `$type_` prefix un-nests this route from the
  * `/$type` listing leaf (TanStack trailing-underscore convention) —
@@ -27,7 +28,6 @@ import {
   type InfoboxRowView,
   type LabelledValue,
   type MemberRowView,
-  type MemberThumbView,
   type PropertyEntryView,
   type PropertyView,
   type RelationGroupView,
@@ -79,18 +79,20 @@ function EntityPage(): JSX.Element {
 function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element {
   const locale = useLocale();
   return (
-    <div className='py-24 text-center'>
-      <p className='font-mono text-[0.7rem] uppercase tracking-[0.2em] text-faint'>
+    <div className='py-20 text-center'>
+      <p className='text-[11px] font-semibold uppercase tracking-[0.14em] text-faint'>
         {view.typeLabel}
       </p>
-      <h1 className='mt-2 font-display text-4xl font-semibold tracking-tight text-fg'>
+      <h1 className='mt-2 font-display text-[clamp(2rem,4.5vw,3rem)] font-bold leading-[1.05] tracking-[-0.02em] text-fg'>
         {view.name}
       </h1>
-      <p className='mt-6 font-display text-xl text-gold'>{t(locale, 'gatedTitle')}</p>
-      <p className='mx-auto mt-3 max-w-md text-muted'>{t(locale, 'gatedBody')}</p>
+      <div className='mx-auto mt-8 max-w-md rounded-lg bg-surface px-6 py-5 ring-1 ring-inset ring-line'>
+        <p className='font-semibold text-fg'>{t(locale, 'gatedTitle')}</p>
+        <p className='mt-2 text-sm text-muted'>{t(locale, 'gatedBody')}</p>
+      </div>
       <Link
         to='/'
-        className='mt-8 inline-block rounded-full border border-gold/40 px-5 py-2 text-sm text-gold transition-colors hover:bg-veil'
+        className='mt-6 inline-block rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
       >
         {t(locale, 'backHome')}
       </Link>
@@ -107,76 +109,126 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
   const incoming = view.relations.filter((group) => group.inverse);
   const history = view.properties.filter((property) => property.entries.length > 1);
   const source = view.template.kind === 'source' ? view.template : null;
+  // Key stats surface in the hero tile row; the remainder (plus the
+  // relation rows) go to the sticky sidebar — no duplication. A tiny
+  // remainder (≤2 units) folds into the hero row instead, so a lone
+  // stat never claims a whole empty column (density rule).
+  const keyStats = view.infobox.slice(0, 4);
+  const restStats = view.infobox.slice(4);
+  const sidebarUnits = restStats.length + view.infoboxRelations.length;
+  const foldSidebar = sidebarUnits > 0 && sidebarUnits <= 2;
+  const hasSidebar = sidebarUnits > 0 && !foldSidebar;
   return (
     <article>
+      {/* Hero band: portrait tile + identity + key-stat tile row */}
       <header className='mb-8'>
-        <div className='flex flex-wrap items-center justify-between gap-3'>
-          <Link
-            to='/$type'
-            params={{ type: view.type }}
-            className='font-mono text-[0.7rem] uppercase tracking-[0.2em] text-faint transition-colors hover:text-gold'
-          >
-            {view.typeLabel}
-            {source !== null && source.number !== null ? ` · ${source.number}` : ''}
-          </Link>
-          {source !== null ? <PrevNext template={source} /> : null}
+        <div className='flex items-start gap-4 sm:gap-6'>
+          <EntityImage
+            image={view.image}
+            name={view.name}
+            ratio='portrait'
+            className='w-24 rounded-lg sm:w-32'
+            monogramClassName='text-4xl'
+          />
+          <div className='min-w-0 flex-1'>
+            <div className='flex flex-wrap items-center justify-between gap-3'>
+              <Link
+                to='/$type'
+                params={{ type: view.type }}
+                className='text-[11px] font-semibold uppercase tracking-[0.14em] text-faint transition-colors duration-150 hover:text-accent'
+              >
+                {view.typeLabel}
+                {source !== null && source.number !== null ? ` · ${source.number}` : ''}
+              </Link>
+              {source !== null ? <PrevNext template={source} /> : null}
+            </div>
+            <h1 className='mt-1 font-display text-[clamp(1.75rem,4vw,2.75rem)] font-bold leading-[1.08] tracking-[-0.02em] text-fg'>
+              {view.name}
+            </h1>
+            {view.firstAppearance !== null
+              ? (
+                <p className='mt-1.5 text-sm text-muted'>
+                  {t(locale, 'firstAppearance')} · <EntityChipLink chip={view.firstAppearance} />
+                </p>
+              )
+              : null}
+            {view.image !== null && view.image.attribution !== null
+              ? (
+                <p className='mt-1.5 font-mono text-[0.6rem] uppercase tracking-[0.12em] text-faint'>
+                  {view.image.attribution}
+                </p>
+              )
+              : null}
+          </div>
         </div>
-        <h1 className='mt-2 font-display text-4xl font-semibold tracking-tight text-fg'>
-          {view.name}
-        </h1>
-        {view.firstAppearance !== null
+        {keyStats.length > 0 || foldSidebar
           ? (
-            <p className='mt-3 text-sm text-muted'>
-              {t(locale, 'firstAppearance')} · <EntityChipLink chip={view.firstAppearance} />
-            </p>
+            <dl className='mt-5 flex flex-wrap gap-3'>
+              {keyStats.map((row) => <StatTile key={row.id} row={row} />)}
+              {foldSidebar
+                ? (
+                  <>
+                    {restStats.map((row) => <StatTile key={row.id} row={row} />)}
+                    {view.infoboxRelations.map((row) => (
+                      <StatRelationTile
+                        key={row.key}
+                        row={row}
+                      />
+                    ))}
+                  </>
+                )
+                : null}
+            </dl>
           )
           : null}
       </header>
 
-      <div className='flex flex-col gap-8 min-[900px]:flex-row min-[900px]:items-start'>
+      <div className='flex flex-col gap-8 min-[960px]:flex-row min-[960px]:items-start min-[960px]:gap-8'>
         <div className='min-w-0 flex-1'>
           {source !== null ? <SourceSections template={source} /> : null}
           {view.template.kind === 'character' ? <CrewSections crews={view.template.crews} /> : null}
           {view.template.kind === 'crew'
             ? (
               <>
-                <MemberGrid titleKey='connections' members={view.template.members} hideTitle />
-                <MemberGrid titleKey='formerMembers' members={view.template.former} />
+                <MemberCards titleKey='connections' members={view.template.members} hideTitle />
+                <MemberCards titleKey='formerMembers' members={view.template.former} />
               </>
             )
             : null}
           {view.template.kind === 'devil-fruit'
             ? (
               <>
-                <MemberGrid titleKey='currentUsers' members={view.template.users} />
-                <MemberGrid titleKey='formerUsers' members={view.template.former} />
+                <MemberCards titleKey='currentUsers' members={view.template.users} />
+                <MemberCards titleKey='formerUsers' members={view.template.former} />
               </>
             )
             : null}
           {view.template.kind === 'arc'
             ? (
               <>
-                <SourceList titleKey='chapters' items={view.template.chapters} />
-                <SourceList titleKey='episodes' items={view.template.episodes} />
-                <SourceList titleKey='arcs' items={view.template.arcs} />
+                <SourceCards titleKey='chapters' items={view.template.chapters} />
+                <SourceCards titleKey='episodes' items={view.template.episodes} />
+                <SourceCards titleKey='arcs' items={view.template.arcs} />
               </>
             )
             : null}
 
           {view.narrative !== null
             ? (
-              <section className='mb-10'>
+              <section className='mb-8 sm:mb-10'>
                 <SectionTitle>{t(locale, 'about')}</SectionTitle>
-                <Markdown markdown={view.narrative} />
+                <div className='rounded-lg bg-surface px-5 py-4 ring-1 ring-inset ring-line'>
+                  <Markdown markdown={view.narrative} />
+                </div>
               </section>
             )
             : null}
 
           {history.length > 0
             ? (
-              <section className='mb-10'>
-                <SectionTitle>{t(locale, 'history')}</SectionTitle>
-                <dl className='overflow-hidden rounded-xl border border-line bg-panel'>
+              <section className='mb-8 sm:mb-10'>
+                <SectionTitle count={history.length}>{t(locale, 'history')}</SectionTitle>
+                <dl className='divide-y divide-line rounded-lg bg-surface ring-1 ring-inset ring-line'>
                   {history.map((property) => (
                     <PropertyBlock
                       key={property.id}
@@ -190,9 +242,9 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
 
           {outgoing.length > 0
             ? (
-              <section className='mb-10'>
-                <SectionTitle>{t(locale, 'connections')}</SectionTitle>
-                <div className='space-y-4'>
+              <section className='mb-8 sm:mb-10'>
+                <SectionTitle count={outgoing.length}>{t(locale, 'connections')}</SectionTitle>
+                <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                   {outgoing.map((group) => <RelationGroup key={group.key} group={group} />)}
                 </div>
               </section>
@@ -201,9 +253,9 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
 
           {incoming.length > 0
             ? (
-              <section className='mb-10'>
-                <SectionTitle>{t(locale, 'referencedBy')}</SectionTitle>
-                <div className='space-y-4'>
+              <section className='mb-8 sm:mb-10'>
+                <SectionTitle count={incoming.length}>{t(locale, 'referencedBy')}</SectionTitle>
+                <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
                   {incoming.map((group) => <RelationGroup key={group.key} group={group} />)}
                 </div>
               </section>
@@ -211,7 +263,9 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
             : null}
         </div>
 
-        <Infobox view={view} />
+        {hasSidebar
+          ? <StatSidebar rows={restStats} relationRows={view.infoboxRelations} />
+          : null}
       </div>
 
       <ContributeStrip type={view.type} slug={view.slug} />
@@ -219,63 +273,31 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
   );
 }
 
-// ---------------------------------------------------------------------------
-// Infobox (right rail, stacks first on mobile). The portrait block
-// only exists when a spoiler-visible image entity exists at all —
-// otherwise the infobox starts straight at the facts (no empty frame).
+const STAT_TILE_CLASS =
+  'min-w-[calc(50%-0.375rem)] flex-1 rounded-lg bg-surface px-3.5 py-2.5 ring-1 ring-inset ring-line sm:min-w-36 sm:flex-none';
 
-function Infobox({ view }: { readonly view: EntityView; }): JSX.Element | null {
-  if (view.image === null && view.infobox.length === 0 && view.infoboxRelations.length === 0) {
-    return null;
-  }
+/** One labeled value as a hero-row tile. */
+function StatTile({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
   return (
-    <aside className='order-first w-full shrink-0 min-[900px]:order-none min-[900px]:w-72'>
-      <div className='overflow-hidden rounded-xl border border-line bg-panel'>
-        {view.image !== null
-          ? (
-            <figure className='m-0'>
-              <EntityImage
-                image={view.image}
-                name={view.name}
-                ratio='portrait'
-                className='w-full'
-                monogramClassName='text-7xl'
-              />
-              {view.image.attribution !== null
-                ? (
-                  <figcaption className='px-4 pt-2.5 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-faint'>
-                    {view.image.attribution}
-                  </figcaption>
-                )
-                : null}
-            </figure>
-          )
-          : null}
-        <dl>
-          {view.infobox.map((row) => <InfoboxLine key={row.id} row={row} />)}
-          {view.infoboxRelations.map((row) => <InfoboxRelationLine key={row.key} row={row} />)}
-        </dl>
-      </div>
-    </aside>
-  );
-}
-
-function InfoboxLine({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
-  return (
-    <div className='border-t border-line/60 px-4 py-2.5 first:border-t-0'>
-      <dt className='text-[0.7rem] font-medium uppercase tracking-wide text-faint'>{row.label}</dt>
-      <dd className='m-0 mt-0.5 text-sm'>
+    <div className={STAT_TILE_CLASS}>
+      <dt className='text-[10px] font-semibold uppercase tracking-[0.1em] text-faint'>
+        {row.label}
+      </dt>
+      <dd className='m-0 mt-0.5 text-sm font-semibold text-fg'>
         <PropertyEntry entry={row.entry} compact />
       </dd>
     </div>
   );
 }
 
-function InfoboxRelationLine({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
+/** One labeled relation (chips) as a hero-row tile. */
+function StatRelationTile({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
   return (
-    <div className='border-t border-line/60 px-4 py-2.5'>
-      <dt className='text-[0.7rem] font-medium uppercase tracking-wide text-faint'>{row.label}</dt>
-      <dd className='m-0 mt-0.5 space-y-0.5 text-sm'>
+    <div className={STAT_TILE_CLASS}>
+      <dt className='text-[10px] font-semibold uppercase tracking-[0.1em] text-faint'>
+        {row.label}
+      </dt>
+      <dd className='m-0 mt-0.5 space-y-0.5 text-sm font-semibold'>
         {row.chips.map((chip) => (
           <div key={chip.id}>
             <EntityChipLink chip={chip} />
@@ -283,6 +305,101 @@ function InfoboxRelationLine({ row }: { readonly row: InfoboxRelationRowView; })
         ))}
       </dd>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Sidebar — the remaining stats (beyond the hero key-stat row) plus
+// every infobox relation, as labeled units. Sticky on wide screens.
+// The portrait lives in the hero band, so this is data only.
+
+function StatSidebar({ rows, relationRows }: {
+  readonly rows: readonly InfoboxRowView[];
+  readonly relationRows: readonly InfoboxRelationRowView[];
+}): JSX.Element {
+  return (
+    <aside className='order-first w-full shrink-0 min-[960px]:sticky min-[960px]:top-20 min-[960px]:order-none min-[960px]:w-[320px]'>
+      <dl className='grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-line ring-1 ring-line min-[960px]:grid-cols-1 [&>:last-child:nth-child(odd)]:col-span-2 min-[960px]:[&>:last-child:nth-child(odd)]:col-span-1'>
+        {rows.map((row) => <StatRow key={row.id} row={row} />)}
+        {relationRows.map((row) => <StatRelationRow key={row.key} row={row} />)}
+      </dl>
+    </aside>
+  );
+}
+
+function StatRow({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
+  return (
+    <div className='bg-surface px-4 py-2.5'>
+      <dt className='text-[10px] font-semibold uppercase tracking-[0.1em] text-faint'>
+        {row.label}
+      </dt>
+      <dd className='m-0 mt-0.5 text-sm font-medium text-fg'>
+        <PropertyEntry entry={row.entry} compact />
+      </dd>
+    </div>
+  );
+}
+
+function StatRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
+  return (
+    <div className='bg-surface px-4 py-2.5'>
+      <dt className='text-[10px] font-semibold uppercase tracking-[0.1em] text-faint'>
+        {row.label}
+      </dt>
+      <dd className='m-0 mt-0.5 space-y-0.5 text-sm font-medium'>
+        {row.chips.map((chip) => (
+          <div key={chip.id}>
+            <EntityChipLink chip={chip} />
+          </div>
+        ))}
+      </dd>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Entity card — the ONE unit for people/things in grids: portrait or
+// monogram tile, name, secondary label.
+
+function CardGrid({ children }: { readonly children: ReactNode; }): JSX.Element {
+  return (
+    <ul className='grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))]'>
+      {children}
+    </ul>
+  );
+}
+
+function EntityCard({ type, slug, image, name, sub }: {
+  readonly type: string;
+  readonly slug: string;
+  readonly image: Parameters<typeof EntityImage>[0]['image'];
+  readonly name: string;
+  readonly sub: string | null;
+}): JSX.Element {
+  const search = useScopeSearch();
+  return (
+    <li>
+      <Link
+        to='/$type/$slug'
+        params={{ type, slug }}
+        search={search}
+        className='group block h-full rounded-lg bg-surface p-2 ring-1 ring-inset ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface-2 hover:ring-line-strong'
+      >
+        <EntityImage
+          image={image}
+          name={name}
+          ratio='portrait'
+          className='w-full rounded-md'
+          monogramClassName='text-4xl'
+        />
+        <span className='mt-2 block truncate px-1 text-sm font-semibold text-fg transition-colors duration-150 group-hover:text-accent'>
+          {name}
+        </span>
+        <span className='mb-1 block truncate px-1 text-xs text-faint'>
+          {sub ?? ' '}
+        </span>
+      </Link>
+    </li>
   );
 }
 
@@ -295,45 +412,45 @@ function CrewSections(
   const locale = useLocale();
   if (crews.length === 0) return null;
   return (
-    <section className='mb-10'>
-      <SectionTitle>{t(locale, 'affiliations')}</SectionTitle>
+    <section className='mb-8 sm:mb-10'>
+      <SectionTitle count={crews.length}>{t(locale, 'affiliations')}</SectionTitle>
       <div className='space-y-4'>
         {crews.map((crew) => (
-          <div key={crew.crew.id} className='rounded-xl border border-line bg-panel px-4 py-3.5'>
+          <div key={crew.crew.id} className='rounded-lg bg-surface p-4 ring-1 ring-inset ring-line'>
             <div className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
               <span className='text-xs text-faint'>{crew.label}</span>
-              <span className='font-display text-lg font-semibold'>
+              <span className='font-display text-lg font-semibold tracking-[-0.01em]'>
                 <EntityChipLink chip={crew.crew} />
               </span>
-              {crew.role !== null
-                ? (
-                  <span className='rounded-full bg-veil px-2 py-0.5 text-[0.7rem] text-gold'>
-                    {crew.role}
-                  </span>
-                )
-                : null}
-              {crew.rank !== null
-                ? (
-                  <span className='rounded-full bg-sea-veil px-2 py-0.5 text-[0.7rem] text-sea'>
-                    {crew.rank}
-                  </span>
-                )
-                : null}
+              {[crew.role, crew.rank].filter((part) =>
+                part !== null
+              ).map((part) => (
+                <span
+                  key={part}
+                  className='rounded bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted'
+                >
+                  {part}
+                </span>
+              ))}
             </div>
             {crew.members.length > 0
               ? (
                 <>
-                  <p className='mt-3 text-[0.7rem] font-medium uppercase tracking-wide text-faint'>
+                  <p className='mb-2 mt-3 text-[10px] font-semibold uppercase tracking-[0.1em] text-faint'>
                     {t(locale, 'otherMembers')}
                   </p>
-                  <ul className='mt-2 flex flex-wrap gap-2'>
+                  <CardGrid>
                     {crew.members.map((member) => (
-                      <ThumbCard
+                      <EntityCard
                         key={member.chip.id}
-                        thumb={member}
+                        type={member.chip.type}
+                        slug={member.chip.slug}
+                        image={member.image}
+                        name={member.chip.name}
+                        sub={member.note}
                       />
                     ))}
-                  </ul>
+                  </CardGrid>
                 </>
               )
               : null}
@@ -344,39 +461,10 @@ function CrewSections(
   );
 }
 
-function ThumbCard({ thumb }: { readonly thumb: MemberThumbView; }): JSX.Element {
-  const search = useScopeSearch();
-  return (
-    <li>
-      <Link
-        to='/$type/$slug'
-        params={{ type: thumb.chip.type, slug: thumb.chip.slug }}
-        search={search}
-        className='group flex items-center gap-2.5 rounded-lg border border-line/70 bg-canvas/50 py-1.5 pl-1.5 pr-3 transition-colors hover:border-gold/50'
-      >
-        <EntityImage
-          image={thumb.image}
-          name={thumb.chip.name}
-          className='size-9 rounded-md'
-          monogramClassName='text-base'
-        />
-        <span className='leading-tight'>
-          <span className='block text-sm text-fg transition-colors group-hover:text-gold'>
-            {thumb.chip.name}
-          </span>
-          {thumb.note !== null
-            ? <span className='block text-[0.7rem] text-faint'>{thumb.note}</span>
-            : null}
-        </span>
-      </Link>
-    </li>
-  );
-}
-
 // ---------------------------------------------------------------------------
-// Crew / devil-fruit: member rows with portraits, roles, ranks
+// Crew / devil-fruit: member cards with portraits, roles, ranks
 
-function MemberGrid({ titleKey, members, hideTitle = false }: {
+function MemberCards({ titleKey, members, hideTitle = false }: {
   readonly titleKey: ChromeKey;
   readonly members: readonly MemberRowView[];
   readonly hideTitle?: boolean;
@@ -384,60 +472,42 @@ function MemberGrid({ titleKey, members, hideTitle = false }: {
   const locale = useLocale();
   if (members.length === 0) return null;
   return (
-    <section className='mb-10'>
-      {hideTitle ? null : <SectionTitle>{t(locale, titleKey)}</SectionTitle>}
-      <ul className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
-        {members.map((member) => <MemberCard key={member.chip.id} member={member} />)}
-      </ul>
+    <section className='mb-8 sm:mb-10'>
+      {hideTitle ? null : <SectionTitle count={members.length}>{t(locale, titleKey)}</SectionTitle>}
+      <CardGrid>
+        {members.map((member) => <MemberCardItem key={member.chip.id} member={member} />)}
+      </CardGrid>
     </section>
   );
 }
 
-function MemberCard({ member }: { readonly member: MemberRowView; }): JSX.Element {
+function MemberCardItem({ member }: { readonly member: MemberRowView; }): JSX.Element {
   const locale = useLocale();
-  const search = useScopeSearch();
+  const sub = [
+    [member.role, member.rank].filter((part) => part !== null).join(' · '),
+    member.since !== null ? `${t(locale, 'since')} ${member.since.name}` : '',
+    member.until !== null ? `${t(locale, 'until')} ${member.until.name}` : '',
+  ].filter((part) => part !== '').join(' · ');
   return (
-    <li>
-      <Link
-        to='/$type/$slug'
-        params={{ type: member.chip.type, slug: member.chip.slug }}
-        search={search}
-        className='group flex items-center gap-3 rounded-xl border border-line bg-panel px-3 py-2.5 transition-colors hover:border-gold/50 hover:bg-panel-2'
-      >
-        <EntityImage
-          image={member.image}
-          name={member.chip.name}
-          className='size-12 rounded-lg'
-          monogramClassName='text-xl'
-        />
-        <span className='min-w-0 leading-tight'>
-          <span className='block truncate font-medium text-fg transition-colors group-hover:text-gold'>
-            {member.chip.name}
-          </span>
-          <span className='block truncate text-xs text-faint'>
-            {[member.role, member.rank].filter((part) => part !== null).join(' · ')}
-            {member.since !== null
-              ? ` · ${t(locale, 'since')} ${member.since.name}`
-              : ''}
-            {member.until !== null
-              ? ` · ${t(locale, 'until')} ${member.until.name}`
-              : ''}
-          </span>
-        </span>
-      </Link>
-    </li>
+    <EntityCard
+      type={member.chip.type}
+      slug={member.chip.slug}
+      image={member.image}
+      name={member.chip.name}
+      sub={sub === '' ? null : sub}
+    />
   );
 }
 
 // ---------------------------------------------------------------------------
-// Sources (chapter / episode): prev-next, arc banner, cast, availability
+// Sources (chapter / episode): prev-next, arc strip, cast, availability
 
 function PrevNext({ template }: { readonly template: SourceTemplateView; }): JSX.Element | null {
   const locale = useLocale();
   const search = useScopeSearch();
   if (template.prev === null && template.next === null) return null;
   const linkClass =
-    'rounded-full border border-line bg-panel px-3.5 py-1.5 text-xs text-muted transition-colors hover:border-gold/50 hover:text-fg';
+    'rounded-md bg-surface px-3 py-1.5 text-xs font-medium text-muted ring-1 ring-inset ring-line transition-colors duration-150 hover:bg-surface-2 hover:text-fg';
   return (
     <nav className='flex items-center gap-2'>
       {template.prev !== null
@@ -474,10 +544,10 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
     <>
       {template.arc !== null
         ? (
-          <section className='mb-10 rounded-xl border border-line bg-panel px-4 py-3.5'>
+          <section className='mb-8 rounded-lg bg-surface p-4 ring-1 ring-inset ring-line sm:mb-10'>
             <div className='flex flex-wrap items-baseline gap-x-2.5'>
               <span className='text-xs text-faint'>{template.arc.label}</span>
-              <span className='font-display text-lg font-semibold'>
+              <span className='font-display text-lg font-semibold tracking-[-0.01em]'>
                 <EntityChipLink chip={template.arc.chip} />
               </span>
             </div>
@@ -485,7 +555,7 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
               ? (
                 <ul className='mt-3 flex flex-wrap gap-1.5'>
                   {template.arc.items.map((item) => (
-                    <SourceNumberPill key={item.chip.id} item={item} />
+                    <SourceNumberTile key={item.chip.id} item={item} />
                   ))}
                 </ul>
               )
@@ -495,9 +565,9 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
         : null}
       {template.cast.length > 0
         ? (
-          <section className='mb-10'>
+          <section className='mb-8 sm:mb-10'>
             <SectionTitle>{t(locale, 'cast')}</SectionTitle>
-            <div className='space-y-4'>
+            <div className='space-y-5'>
               {template.cast.map((group) => <CastGroup key={group.type} group={group} />)}
             </div>
           </section>
@@ -505,11 +575,11 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
         : null}
       {template.availability.length > 0
         ? (
-          <section className='mb-10'>
+          <section className='mb-8 sm:mb-10'>
             <SectionTitle>{t(locale, 'availability')}</SectionTitle>
-            <ul className='flex flex-wrap gap-2'>
+            <ul className='flex flex-wrap gap-3'>
               {template.availability.map((item) => (
-                <AvailabilityPill key={item.platform.id} item={item} />
+                <AvailabilityCard key={item.platform.id} item={item} />
               ))}
             </ul>
           </section>
@@ -519,14 +589,14 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
   );
 }
 
-function SourceNumberPill({ item }: { readonly item: SourceItemView; }): JSX.Element {
+function SourceNumberTile({ item }: { readonly item: SourceItemView; }): JSX.Element {
   const search = useScopeSearch();
   const label = item.number === null ? item.chip.name : String(item.number);
   if (item.current) {
     return (
       <li
         aria-current='page'
-        className='rounded-lg bg-gold px-2.5 py-1 font-mono text-xs font-semibold text-canvas'
+        className='grid min-w-9 place-items-center rounded-md bg-accent px-2 py-1.5 text-xs font-semibold tabular-nums text-canvas'
       >
         {label}
       </li>
@@ -539,7 +609,7 @@ function SourceNumberPill({ item }: { readonly item: SourceItemView; }): JSX.Ele
         params={{ type: item.chip.type, slug: item.chip.slug }}
         search={search}
         title={item.chip.name}
-        className='block rounded-lg border border-line bg-canvas/50 px-2.5 py-1 font-mono text-xs text-muted transition-colors hover:border-gold/50 hover:text-fg'
+        className='grid min-w-9 place-items-center rounded-md bg-surface-2 px-2 py-1.5 text-xs font-medium tabular-nums text-muted ring-1 ring-inset ring-line transition-colors duration-150 hover:text-fg hover:ring-line-strong'
       >
         {label}
       </Link>
@@ -549,19 +619,30 @@ function SourceNumberPill({ item }: { readonly item: SourceItemView; }): JSX.Ele
 
 function CastGroup({ group }: { readonly group: CastGroupView; }): JSX.Element {
   return (
-    <div className='rounded-xl border border-line bg-panel px-4 py-3.5'>
-      <h3 className='mb-2 text-sm font-medium text-muted'>{group.typeLabel}</h3>
-      <ul className='flex flex-wrap gap-2'>
-        {group.items.map((item) => <ThumbCard key={item.chip.id} thumb={item} />)}
-      </ul>
+    <div>
+      <h3 className='mb-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-faint'>
+        {group.typeLabel}
+      </h3>
+      <CardGrid>
+        {group.items.map((item) => (
+          <EntityCard
+            key={item.chip.id}
+            type={item.chip.type}
+            slug={item.chip.slug}
+            image={item.image}
+            name={item.chip.name}
+            sub={item.note}
+          />
+        ))}
+      </CardGrid>
     </div>
   );
 }
 
-function AvailabilityPill({ item }: { readonly item: AvailabilityItemView; }): JSX.Element {
+function AvailabilityCard({ item }: { readonly item: AvailabilityItemView; }): JSX.Element {
   if (item.url === null) {
     return (
-      <li className='rounded-full border border-line bg-panel px-3.5 py-1.5 text-sm text-muted'>
+      <li className='rounded-lg bg-surface px-4 py-2.5 text-sm font-medium text-muted ring-1 ring-inset ring-line'>
         {item.platform.name}
       </li>
     );
@@ -572,7 +653,7 @@ function AvailabilityPill({ item }: { readonly item: AvailabilityItemView; }): J
         href={item.url}
         target='_blank'
         rel='noreferrer'
-        className='block rounded-full border border-line bg-panel px-3.5 py-1.5 text-sm text-sea transition-colors hover:border-sea/50'
+        className='block rounded-lg bg-surface px-4 py-2.5 text-sm font-medium text-accent ring-1 ring-inset ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface-2 hover:ring-line-strong'
       >
         {item.platform.name} ↗
       </a>
@@ -581,9 +662,9 @@ function AvailabilityPill({ item }: { readonly item: AvailabilityItemView; }): J
 }
 
 // ---------------------------------------------------------------------------
-// Arc: ordered chapter / episode lists
+// Arc: ordered chapter / episode cards — the number IS the visual.
 
-function SourceList({ titleKey, items }: {
+function SourceCards({ titleKey, items }: {
   readonly titleKey: ChromeKey;
   readonly items: readonly SourceItemView[];
 }): JSX.Element | null {
@@ -591,21 +672,21 @@ function SourceList({ titleKey, items }: {
   const search = useScopeSearch();
   if (items.length === 0) return null;
   return (
-    <section className='mb-10'>
-      <SectionTitle>{t(locale, titleKey)}</SectionTitle>
-      <ul className='divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-panel'>
+    <section className='mb-8 sm:mb-10'>
+      <SectionTitle count={items.length}>{t(locale, titleKey)}</SectionTitle>
+      <ul className='grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))]'>
         {items.map((item) => (
           <li key={item.chip.id}>
             <Link
               to='/$type/$slug'
               params={{ type: item.chip.type, slug: item.chip.slug }}
               search={search}
-              className='group flex items-baseline gap-3 px-4 py-2.5 transition-colors hover:bg-panel-2'
+              className='group block h-full rounded-lg bg-surface p-2 ring-1 ring-inset ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface-2 hover:ring-line-strong'
             >
-              <span className='w-12 shrink-0 font-mono text-xs text-faint'>
-                {item.number ?? '—'}
+              <span className='grid h-14 place-items-center rounded-md bg-surface-2 font-display text-xl font-semibold tabular-nums text-accent/70 ring-1 ring-inset ring-line'>
+                {item.number ?? '·'}
               </span>
-              <span className='truncate font-medium text-fg transition-colors group-hover:text-gold'>
+              <span className='mb-1 mt-2 block truncate px-1 text-sm font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
                 {item.chip.name}
               </span>
             </Link>
@@ -619,10 +700,15 @@ function SourceList({ titleKey, items }: {
 // ---------------------------------------------------------------------------
 // Shared building blocks (facts history + relation groups)
 
-function SectionTitle({ children }: { readonly children: string; }): JSX.Element {
+function SectionTitle(
+  { children, count }: { readonly children: string; readonly count?: number; },
+): JSX.Element {
   return (
-    <h2 className='mb-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-faint'>
+    <h2 className='mb-3 flex items-baseline gap-2 font-display text-lg font-semibold tracking-[-0.01em] text-fg'>
       {children}
+      {count !== undefined
+        ? <span className='text-sm font-normal tabular-nums text-faint'>{count}</span>
+        : null}
     </h2>
   );
 }
@@ -652,18 +738,30 @@ function EpistemicBadge(
 ): JSX.Element | null {
   if (epistemic === null) return null;
   return (
-    <span className='rounded-full bg-veil px-2 py-0.5 text-[0.7rem] text-gold'>
+    <span className='rounded bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted'>
       {epistemic.label}
     </span>
   );
 }
 
+/**
+ * One historised property inside the history card: slim label column,
+ * then compact [value · provenance] rows split by hairlines.
+ */
 function PropertyBlock({ property }: { readonly property: PropertyView; }): JSX.Element {
   return (
-    <div className='grid grid-cols-1 gap-1 border-b border-line/60 px-4 py-3.5 last:border-b-0 sm:grid-cols-[10rem_1fr] sm:gap-4'>
-      <dt className='pt-0.5 text-sm font-medium text-muted'>{property.label}</dt>
-      <dd className='m-0 space-y-2.5'>
-        {property.entries.map((entry, i) => <PropertyEntry key={i} entry={entry} />)}
+    <div className='grid grid-cols-1 gap-1 px-4 py-3 sm:grid-cols-[9rem_1fr] sm:gap-4'>
+      <dt className='pt-1 text-[11px] font-semibold uppercase tracking-[0.1em] text-faint'>
+        {property.label}
+      </dt>
+      <dd className='m-0'>
+        <ol className='m-0 list-none divide-y divide-line p-0'>
+          {property.entries.map((entry, i) => (
+            <li key={i} className='py-1.5 first:pt-0 last:pb-0'>
+              <PropertyEntry entry={entry} />
+            </li>
+          ))}
+        </ol>
       </dd>
     </div>
   );
@@ -697,35 +795,33 @@ function PropertyEntry(
   }
   if (entry.actualDisplay !== null) {
     details.push(
-      <span key='actual' className='text-gold/90'>
+      <span key='actual' className='text-muted'>
         {t(locale, 'actually')} : {entry.actualDisplay}
       </span>,
     );
   }
   return (
-    <div className='space-y-1'>
-      <div className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
-        {entry.valueChip !== null
-          ? <EntityChipLink chip={entry.valueChip} />
-          : <span className='text-fg'>{entry.display}</span>}
-        <EpistemicBadge epistemic={entry.epistemic} />
-        {entry.autoImported
-          ? (
-            <span
-              title={t(locale, 'autoImported')}
-              className='rounded-full bg-sea-veil px-2 py-0.5 text-[0.7rem] text-sea'
-            >
-              ⚠ {t(locale, 'autoImported')}
-            </span>
-          )
-          : null}
-      </div>
+    <div className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
+      {entry.valueChip !== null
+        ? <EntityChipLink chip={entry.valueChip} />
+        : <span className='font-medium tabular-nums text-fg'>{entry.display}</span>}
+      <EpistemicBadge epistemic={entry.epistemic} />
+      {entry.autoImported
+        ? (
+          <span
+            title={t(locale, 'autoImported')}
+            className='rounded bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted'
+          >
+            {t(locale, 'autoImported')}
+          </span>
+        )
+        : null}
       {details.length > 0 || (!compact && entry.qualifiers.length > 0)
         ? (
-          <div className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-xs text-faint'>
+          <span className='inline-flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-xs text-faint'>
             {details}
             {compact ? null : <QualifierList qualifiers={entry.qualifiers} />}
-          </div>
+          </span>
         )
         : null}
     </div>
@@ -735,14 +831,19 @@ function PropertyEntry(
 function RelationGroup({ group }: { readonly group: RelationGroupView; }): JSX.Element {
   const locale = useLocale();
   return (
-    <div className='rounded-xl border border-line bg-panel px-4 py-3.5'>
-      <h3 className='mb-2 flex items-center gap-2 text-sm font-medium text-muted'>
-        <span aria-hidden className='text-faint'>{group.inverse ? '←' : '→'}</span>
+    <div className='rounded-lg bg-surface p-4 ring-1 ring-inset ring-line'>
+      <h3 className='mb-2 flex items-baseline gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-faint'>
+        <span aria-hidden className='font-mono normal-case tracking-normal'>
+          {group.inverse ? '←' : '→'}
+        </span>
         {group.label}
       </h3>
-      <ul className='space-y-1.5'>
+      <ul className='divide-y divide-line'>
         {group.items.map((item, i) => (
-          <li key={i} className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
+          <li
+            key={i}
+            className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1 py-1.5 first:pt-0 last:pb-0'
+          >
             <EntityChipLink chip={item.target} showType />
             <EpistemicBadge epistemic={item.epistemic} />
             {item.since !== null
