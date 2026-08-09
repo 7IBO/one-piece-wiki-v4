@@ -113,6 +113,13 @@ const STRINGS = {
   formerTag: { en: 'Former', fr: 'Ancien' },
   showNMore: { en: 'Show # more', fr: 'Voir les # autres' },
   showLess: { en: 'Show less', fr: 'Réduire' },
+
+  // v9 per-type layouts (append-only).
+  dataSheet: { en: 'Data', fr: 'Fiche' },
+  appearances: { en: 'Appearances', fr: 'Apparitions' },
+  gallery: { en: 'Gallery', fr: 'Galerie' },
+  outOf: { en: 'of', fr: 'sur' },
+  contents: { en: 'Contents', fr: 'Contenu' },
 } as const;
 
 export type ChromeKey = keyof typeof STRINGS;

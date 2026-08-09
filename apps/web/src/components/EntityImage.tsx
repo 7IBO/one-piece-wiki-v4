@@ -37,7 +37,13 @@ export function initialOf(name: string): string {
   return (first ?? '·').toUpperCase();
 }
 
-export type ImageRatio = 'portrait' | 'square';
+export type ImageRatio = 'portrait' | 'square' | 'wide';
+
+const ASPECT: Readonly<Record<ImageRatio, string>> = {
+  portrait: 'aspect-3/4',
+  square: 'aspect-square',
+  wide: 'aspect-video',
+};
 
 export function EntityImage(
   { image, type, slug, name, ratio = 'square', className = '' }: {
@@ -47,7 +53,8 @@ export function EntityImage(
     /** Entity slug — with the type, the `type:slug` art seed. */
     readonly slug: string;
     readonly name: string;
-    /** Reserved aspect: `portrait` = 3:4 (posters), `square` = 1:1 (thumbs). */
+    /** Reserved aspect: `portrait` 3:4 (posters), `square` 1:1 (thumbs),
+     *  `wide` 16:9 (plates, stills). */
     readonly ratio?: ImageRatio;
     readonly className?: string;
   },
@@ -56,9 +63,7 @@ export function EntityImage(
   return (
     <div
       style={entityTint(entityId).vars as CSSProperties}
-      className={`relative isolate shrink-0 overflow-hidden ${
-        ratio === 'portrait' ? 'aspect-3/4' : 'aspect-square'
-      } ${className}`}
+      className={`relative isolate shrink-0 overflow-hidden ${ASPECT[ratio]} ${className}`}
     >
       <EntityArt
         entityId={entityId}

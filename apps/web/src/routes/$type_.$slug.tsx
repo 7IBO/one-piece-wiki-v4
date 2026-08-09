@@ -1,19 +1,31 @@
 /**
  * `/<type>/<slug>` — the canonical wiki page for one entity (the
- * entity TYPE ID is the first URL segment: `/character/monkey-d-luffy`),
- * built as a HUB OF CONNECTIONS (v7 "Vignette", WEB_APP.md
- * § Identity): identity header (portrait, display-face name, key
- * facts strip, gold bounty stat), then every link to another entity
- * as an image-led module — poster grids for people (members, cast,
- * users — former ones VISIBLE with a clear ended state), connection
- * rows for everything else — grouped by relation type, ordered by
- * importance, and folded behind "Show N more" beyond a per-group
- * budget so pages scale to many relations. Narrative and value
- * history close the page. All spoiler/scope logic ran server-side
- * (including the former-member rule: a departure beyond the cursor
- * renders as current); this file only renders the view-model. An
- * optional `?scope=` search param carries the canon scope context
- * and is propagated through every entity link.
+ * entity TYPE ID is the first URL segment: `/character/monkey-d-luffy`).
+ *
+ * v9 (ADR-105): the page is no longer ONE stack of sections for every
+ * type. It is a set of MODULES — data sheet, narrative, roster,
+ * contents ledger, cast, gallery, appearances, leftover connections —
+ * arranged by a per-type layout (`lib/entity-layout.ts`) into bands:
+ * a lead module at full width, a wide main column beside a narrow
+ * aside (on either edge), and a balanced masonry for everything small.
+ * That masonry is the answer to the maintainer's complaint: a column
+ * of one-item sections used to leave half the screen empty, and now
+ * small modules pack side by side while big ones span.
+ *
+ * Two rules hold whatever the type:
+ * - **No data can be dropped** (ADR-091/105): `bandsFor()` appends a
+ *   trailing band with every slot the layout forgot, and the
+ *   `connections` module renders every relation group no other module
+ *   consumed. An unknown entity type gets the generic layout and
+ *   still shows all of its properties and relations.
+ * - **Every historised property carries its own history INLINE**, in
+ *   the data sheet, where the property lives — not exiled to a global
+ *   "History" block at the foot of the page.
+ *
+ * All spoiler/scope logic ran server-side (`server/views.ts`); this
+ * file renders the view model and holds no business logic. An
+ * optional `?scope=` search param carries the canon scope context and
+ * is propagated through every entity link.
  *
  * File name: the `$type_` prefix un-nests this route from the
  * `/$type` listing leaf (TanStack trailing-underscore convention) —
@@ -22,22 +34,24 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { type CSSProperties, Fragment, type JSX, type ReactNode } from 'react';
 import {
+  type AppearanceGroupView,
   type AvailabilityItemView,
   type CastGroupView,
+  type ContainerGroupView,
   type CrewSectionView,
   type EntityView,
   fetchEntity,
   type GatedEntityView,
+  type ImageView,
   type InfoboxRelationRowView,
-  type InfoboxRowView,
   type LabelledValue,
   type MemberRowView,
   type PropertyEntryView,
   type PropertyView,
   type RelationGroupView,
   type RelationItemView,
+  type SequenceView,
   type SourceItemView,
-  type SourceTemplateView,
 } from '../api';
 import { ContributeStrip } from '../components/ContributeStrip';
 import { CARD_GRID_CLASS, EntityCard } from '../components/EntityCard';
@@ -46,6 +60,7 @@ import { EntityHero } from '../components/EntityHero';
 import { EntityImage } from '../components/EntityImage';
 import { ShowMoreList } from '../components/ShowMoreList';
 import { type ChromeKey, t } from '../lib/chrome';
+import { bandsFor, type LayoutBand, layoutFor, type SlotKey } from '../lib/entity-layout';
 import { entityTint } from '../lib/entity-tint';
 import { Markdown } from '../lib/markdown';
 import { validateScopeSearch } from '../lib/scope';
@@ -107,11 +122,23 @@ function relationRank(key: string): number {
 }
 
 /** Collapsed budget of a connection-row group. */
-const ROW_LIMIT = 8;
+const ROW_LIMIT = 6;
 /** Collapsed budget of a poster grid (members, cast…). */
 const CARD_LIMIT = 12;
 /** Collapsed budget of a compact number grid (chapters, episodes…). */
-const NUMBER_LIMIT = 28;
+const NUMBER_LIMIT = 36;
+
+/**
+ * Column count of a full-width row list, derived from how many rows
+ * there are: two rows make two columns, one row spans. A fixed
+ * three-column grid holding a single item is precisely the hole this
+ * page had to lose.
+ */
+function rowColumns(count: number): string {
+  if (count <= 1) return 'grid-cols-1';
+  if (count === 2) return 'grid-cols-1 sm:grid-cols-2';
+  return 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
+}
 
 function EntityPage(): JSX.Element {
   const view = Route.useLoaderData();
@@ -149,179 +176,356 @@ function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element
 }
 
 // ---------------------------------------------------------------------------
-// Full article
+// The article: hero, then the type's bands.
 
 function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
-  const locale = useLocale();
-  const history = view.properties.filter((property) => property.entries.length > 1);
-  const source = view.template.kind === 'source' ? view.template : null;
-  // The bounty (or a crew's derived total) is the ONE gold figure of
-  // the header (ADR-091 binding, degrades to a plain fact when
-  // absent). Every other infobox unit renders in the facts strip.
-  const bountyRow =
-    view.infobox.find((row) => row.id === 'bounty' || row.id === 'derived:total_bounty') ?? null;
-  const statRows = view.infobox.filter((row) => row !== bountyRow);
-  const groups = [...view.relations].sort((a, b) =>
-    relationRank(a.key) - relationRank(b.key)
-    || Number(a.inverse) - Number(b.inverse)
-    || b.items.length - a.items.length
-    || a.label.localeCompare(b.label)
-  );
   const tint = entityTint(view.id);
+  const layout = layoutFor(view.type);
   return (
     <article className='tinted' style={tint.vars as CSSProperties}>
-      {
-        /* The page opens ON the entity's artwork: full-bleed hero,
-          layered for depth, tinted by this entity's own chord. */
-      }
-      <EntityHero entityId={view.id} entityType={view.type} name={view.name}>
-        <div className='flex flex-wrap items-end justify-between gap-x-8 gap-y-4'>
-          <div className='min-w-0'>
-            <div className='flex flex-wrap items-center gap-x-3 gap-y-1'>
-              <Link
-                to='/$type'
-                params={{ type: view.type }}
-                className='label-xs text-fg/70 transition-colors duration-150 hover:text-accent'
-              >
-                {view.typeLabel}
-                {source !== null && source.number !== null ? ` · ${source.number}` : ''}
-              </Link>
-              {source !== null ? <PrevNext template={source} /> : null}
-            </div>
-            <h1 className='display mt-1.5 text-[clamp(2.2rem,6.4vw,4.5rem)] font-extrabold uppercase leading-[0.94] text-fg'>
-              {view.name}
-            </h1>
-            {view.firstAppearance !== null
-              ? (
-                <p className='mt-2.5 text-[13px] text-muted'>
-                  {t(locale, 'firstAppearance')} · <EntityChipLink chip={view.firstAppearance} />
-                </p>
-              )
-              : null}
-          </div>
-          {bountyRow !== null
-            ? (
-              <div className='shrink-0'>
-                <p className='label-xs text-gold/80'>{bountyRow.label}</p>
-                <p className='display text-[clamp(1.6rem,3.4vw,2.4rem)] font-extrabold leading-none tabular-nums text-gold'>
-                  {bountyRow.entry.display}
-                </p>
-              </div>
-            )
-            : null}
-        </div>
+      <EntityHero
+        entityId={view.id}
+        entityType={view.type}
+        name={view.name}
+        image={view.image}
+        figure={layout.figure}
+        nav={view.sequence === null ? null : <SequenceNav sequence={view.sequence} />}
+      >
+        <Identity view={view} />
       </EntityHero>
 
-      {
-        /* The facts strip sits BELOW the stage, on the canvas: data
-          wants a quiet ground, and a ruled row over artwork reads as a
-          seam rather than as structure. */
-      }
-      {statRows.length > 0 || view.infoboxRelations.length > 0
-        ? (
-          <dl className='page-column mb-10 flex flex-wrap gap-x-8 gap-y-4 border-b border-line pb-5 pt-6'>
-            {statRows.map((row) => <FactItem key={row.id} row={row} />)}
-            {view.infoboxRelations.map((row) => <FactRelationItem key={row.key} row={row} />)}
-          </dl>
-        )
-        : <div className='pt-8' />}
-
-      {/* The hub: connection sections, ordered by importance. */}
-      <div className='page-column space-y-10'>
-        {view.narrative !== null
-          ? (
-            <section>
-              <SectionHead>{t(locale, 'about')}</SectionHead>
-              <Markdown markdown={view.narrative} />
-            </section>
-          )
-          : null}
-
-        {source !== null ? <SourceSections template={source} /> : null}
-        {view.template.kind === 'character'
-          ? <CrewSections crews={view.template.crews} />
-          : null}
-        {view.template.kind === 'crew'
-          ? (
-            <>
-              <MemberGrid titleKey='members' members={view.template.members} />
-              <MemberGrid titleKey='formerMembers' members={view.template.former} former />
-            </>
-          )
-          : null}
-        {view.template.kind === 'devil-fruit'
-          ? (
-            <>
-              <MemberGrid titleKey='currentUsers' members={view.template.users} />
-              <MemberGrid titleKey='formerUsers' members={view.template.former} former />
-            </>
-          )
-          : null}
-        {view.template.kind === 'arc'
-          ? (
-            <>
-              <NumberGrid titleKey='chapters' items={view.template.chapters} />
-              <NumberGrid titleKey='episodes' items={view.template.episodes} />
-              <NumberGrid titleKey='arcs' items={view.template.arcs} />
-            </>
-          )
-          : null}
-
-        {groups.map((group) => <ConnectionGroup key={group.key} group={group} />)}
-
-        {history.length > 0
-          ? (
-            <section>
-              <SectionHead count={history.length}>{t(locale, 'history')}</SectionHead>
-              <dl className='divide-y divide-line'>
-                {history.map((property) => <PropertyBlock key={property.id} property={property} />)}
-              </dl>
-            </section>
-          )
-          : null}
-      </div>
-
-      <div className='page-column'>
+      <div className='page-column space-y-12 pt-9'>
+        {bandsFor(view.type).map((band, index) => <Band key={index} band={band} view={view} />)}
         <ContributeStrip type={view.type} slug={view.slug} />
       </div>
     </article>
   );
 }
 
+/** Overline, name, identity line and the ONE headline figure. */
+function Identity({ view }: { readonly view: EntityView; }): JSX.Element {
+  const locale = useLocale();
+  // The bounty (or a crew's derived total) is the ONE gold figure of
+  // the header (ADR-091 binding, degrades to nothing when absent).
+  const headline =
+    view.infobox.find((row) => row.id === 'bounty' || row.id === 'derived:total_bounty') ?? null;
+  return (
+    <div className='flex flex-wrap items-end justify-between gap-x-8 gap-y-4'>
+      <div className='min-w-0'>
+        <p className='label-xs'>
+          <Link
+            to='/$type'
+            params={{ type: view.type }}
+            className='text-fg/70 transition-colors duration-150 hover:text-accent'
+          >
+            {view.typeLabel}
+          </Link>
+          {view.sequence !== null
+            ? <span className='ml-2 tabular-nums text-gold/85'>№ {view.sequence.number}</span>
+            : null}
+        </p>
+        <h1 className='display mt-1.5 text-[clamp(2rem,5.6vw,4rem)] font-extrabold uppercase leading-[0.95] text-fg'>
+          {view.name}
+        </h1>
+        {view.firstAppearance !== null
+          ? (
+            <p className='mt-2.5 text-[13px] text-muted'>
+              {t(locale, 'firstAppearance')} · <EntityChipLink chip={view.firstAppearance} />
+            </p>
+          )
+          : null}
+      </div>
+      {headline !== null
+        ? (
+          <div className='shrink-0'>
+            <p className='label-xs text-gold/80'>{headline.label}</p>
+            <p className='display text-[clamp(1.5rem,3.2vw,2.3rem)] font-extrabold leading-none tabular-nums text-gold'>
+              {headline.entry.display}
+            </p>
+          </div>
+        )
+        : null}
+    </div>
+  );
+}
+
+/**
+ * Ordinal navigation: previous at the left edge of the stage, next at
+ * the right edge. The view model already withheld any neighbour
+ * beyond the reader's cursor, so nothing here can leak a title.
+ */
+function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): JSX.Element | null {
+  const locale = useLocale();
+  const search = useScopeSearch();
+  if (sequence.prev === null && sequence.next === null) return null;
+  const shell =
+    'group flex max-w-[45%] items-center gap-2 rounded-md px-2.5 py-1.5 text-xs ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:ring-line-strong';
+  return (
+    <nav className='flex items-center justify-between gap-3'>
+      {sequence.prev !== null
+        ? (
+          <Link
+            to='/$type/$slug'
+            params={{ type: sequence.prev.chip.type, slug: sequence.prev.chip.slug }}
+            search={search}
+            className={shell}
+          >
+            <span aria-hidden className='text-accent'>←</span>
+            <span className='min-w-0'>
+              <span className='label-xs block'>{t(locale, 'previous')}</span>
+              <span className='block truncate font-semibold tabular-nums text-fg'>
+                {sequence.prev.number}
+                <span className='ml-1.5 hidden font-normal text-muted sm:inline'>
+                  {sequence.prev.chip.name}
+                </span>
+              </span>
+            </span>
+          </Link>
+        )
+        : <span />}
+      {sequence.next !== null
+        ? (
+          <Link
+            to='/$type/$slug'
+            params={{ type: sequence.next.chip.type, slug: sequence.next.chip.slug }}
+            search={search}
+            className={`${shell} text-right`}
+          >
+            <span className='min-w-0'>
+              <span className='label-xs block'>{t(locale, 'next')}</span>
+              <span className='block truncate font-semibold tabular-nums text-fg'>
+                <span className='mr-1.5 hidden font-normal text-muted sm:inline'>
+                  {sequence.next.chip.name}
+                </span>
+                {sequence.next.number}
+              </span>
+            </span>
+            <span aria-hidden className='text-accent'>→</span>
+          </Link>
+        )
+        : <span />}
+    </nav>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Bands: how a layout arranges its modules.
+
+/** Masonry that packs small modules instead of leaving a half-empty row. */
+const PACK_CLASS = 'columns-1 gap-x-9 sm:columns-2 xl:columns-3 [&>*]:break-inside-avoid';
+const MAIN_PACK_CLASS = 'columns-1 gap-x-9 lg:columns-2 [&>*]:break-inside-avoid';
+
+/**
+ * Render a set of slots as one block, choosing the packing from how
+ * much actually rendered: several modules flow into a balanced
+ * masonry, a single one takes the whole width and uses its OWN
+ * columns. That is what stops a lone section from sitting in a narrow
+ * left column with the right half of the screen empty.
+ */
+function packed(
+  slots: readonly SlotKey[],
+  view: EntityView,
+  packClass: string,
+): JSX.Element | null {
+  const count = renderSlots(slots, view, false).length;
+  if (count === 0) return null;
+  const nodes = renderSlots(slots, view, count === 1);
+  return <div className={count === 1 ? '' : packClass}>{nodes}</div>;
+}
+
+function Band(
+  { band, view }: { readonly band: LayoutBand; readonly view: EntityView; },
+): JSX.Element | null {
+  if (band.kind === 'full') {
+    const nodes = renderSlots(band.slots, view, true);
+    return nodes.length === 0 ? null : <div className='space-y-12'>{nodes}</div>;
+  }
+  if (band.kind === 'pack') return packed(band.slots, view, PACK_CLASS);
+  const main = renderSlots(band.main, view, true);
+  const aside = renderSlots(band.aside, view, false);
+  if (main.length === 0 && aside.length === 0) return null;
+  // A band with only one side has no split to make: whatever is there
+  // takes the whole width — never a column of content beside an empty
+  // half.
+  if (main.length === 0) return packed(band.aside, view, PACK_CLASS);
+  if (aside.length === 0) return packed(band.main, view, MAIN_PACK_CLASS);
+  const asideFirst = band.side === 'start';
+  return (
+    <div
+      className={`grid items-start gap-x-10 gap-y-12 ${
+        asideFirst
+          ? 'lg:grid-cols-[19rem_minmax(0,1fr)]'
+          : 'lg:grid-cols-[minmax(0,1fr)_19rem]'
+      }`}
+    >
+      <div className={`min-w-0 space-y-12 ${asideFirst ? 'lg:order-2' : ''}`}>{main}</div>
+      <div className={`min-w-0 space-y-10 ${asideFirst ? 'lg:order-1' : ''}`}>{aside}</div>
+    </div>
+  );
+}
+
+function renderSlots(
+  slots: readonly SlotKey[],
+  view: EntityView,
+  wide: boolean,
+): readonly JSX.Element[] {
+  const nodes: JSX.Element[] = [];
+  for (const slot of slots) {
+    const node = renderSlot(slot, view, wide);
+    if (node !== null) nodes.push(<Fragment key={slot}>{node}</Fragment>);
+  }
+  return nodes;
+}
+
+/**
+ * One module. Returns null when the entity has nothing for it, which
+ * is what lets a layout name every slot without producing holes.
+ * `wide` says the module got a full column and may use several of its
+ * own.
+ */
+function renderSlot(slot: SlotKey, view: EntityView, wide: boolean): ReactNode {
+  switch (slot) {
+    case 'sheet':
+      return view.properties.length === 0 && view.infoboxRelations.length === 0
+        ? null
+        : <DataSheet view={view} wide={wide} />;
+    case 'narrative':
+      return view.narrative === null ? null : <NarrativeSection markdown={view.narrative} />;
+    case 'affiliations':
+      return view.template.kind === 'character' && view.template.crews.length > 0
+        ? <CrewSections crews={view.template.crews} />
+        : null;
+    case 'members':
+      if (view.template.kind === 'crew' && view.template.members.length > 0) {
+        return <MemberGrid titleKey='members' members={view.template.members} />;
+      }
+      if (view.template.kind === 'devil-fruit' && view.template.users.length > 0) {
+        return <MemberGrid titleKey='currentUsers' members={view.template.users} />;
+      }
+      return null;
+    case 'former':
+      if (view.template.kind === 'crew' && view.template.former.length > 0) {
+        return <MemberGrid titleKey='formerMembers' members={view.template.former} former />;
+      }
+      if (view.template.kind === 'devil-fruit' && view.template.former.length > 0) {
+        return <MemberGrid titleKey='formerUsers' members={view.template.former} former />;
+      }
+      return null;
+    case 'contents':
+      return view.template.kind === 'container' && view.template.groups.length > 0
+        ? <ContentsSections groups={view.template.groups} wide={wide} />
+        : null;
+    case 'position':
+      return view.template.kind === 'source' && view.template.arc !== null
+        ? <PositionSection arc={view.template.arc} />
+        : null;
+    case 'cast':
+      return view.cast.length === 0 ? null : <CastSection groups={view.cast} />;
+    case 'availability':
+      return view.availability.length === 0
+        ? null
+        : <AvailabilitySection items={view.availability} />;
+    case 'gallery':
+      return view.gallery.length === 0
+        ? null
+        : <GallerySection images={view.gallery} slug={view.slug} type={view.type} />;
+    case 'appearances':
+      return view.appearances.length === 0
+        ? null
+        : <AppearancesSection groups={view.appearances} />;
+    case 'connections':
+      return view.relations.length === 0 ? null : <Connections view={view} wide={wide} />;
+  }
+}
+
 // ---------------------------------------------------------------------------
 // Shared building blocks
 
-/** Section head: display title + count. */
+/** Section head: display title + count, over a hairline. */
 function SectionHead(
   { children, count }: { readonly children: string; readonly count?: number; },
 ): JSX.Element {
   return (
-    <h2 className='display mb-3.5 flex items-baseline gap-2 text-[17px] font-bold text-fg'>
+    <h2 className='display mb-3.5 flex items-baseline gap-2 border-b border-line pb-2 text-[15px] font-bold uppercase tracking-[0.04em] text-fg'>
       {children}
       {count !== undefined
-        ? <span className='font-sans text-sm font-medium tabular-nums text-faint'>{count}</span>
+        ? <span className='font-sans text-xs font-medium tabular-nums text-faint'>{count}</span>
         : null}
     </h2>
   );
 }
 
-/** One key fact of the header strip (label over value). */
-function FactItem({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
+function NarrativeSection({ markdown }: { readonly markdown: string; }): JSX.Element {
+  const locale = useLocale();
   return (
-    <div className='min-w-0'>
-      <dt className='label-xs'>{row.label}</dt>
-      <dd className='m-0 mt-0.5 text-[13.5px] font-semibold text-fg'>
-        <PropertyEntry entry={row.entry} compact />
+    <section>
+      <SectionHead>{t(locale, 'about')}</SectionHead>
+      <div className='max-w-[64ch]'>
+        <Markdown markdown={markdown} />
+      </div>
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// The data sheet — EVERY property, each with its own history inline.
+
+function DataSheet(
+  { view, wide }: { readonly view: EntityView; readonly wide: boolean; },
+): JSX.Element {
+  const locale = useLocale();
+  return (
+    <section>
+      <SectionHead count={view.properties.length + view.infoboxRelations.length}>
+        {t(locale, 'dataSheet')}
+      </SectionHead>
+      <dl
+        className={`m-0 ${
+          wide ? 'columns-1 gap-x-9 md:columns-2 xl:columns-3 [&>div]:break-inside-avoid' : ''
+        }`}
+      >
+        {view.infoboxRelations.map((row) => <SheetRelationRow key={row.key} row={row} />)}
+        {view.properties.map((property) => <SheetRow key={property.id} property={property} />)}
+      </dl>
+    </section>
+  );
+}
+
+/**
+ * One property: its label, its current value, and — when the value
+ * changed over the story — the earlier states listed under it. The
+ * history lives HERE, next to the property it belongs to.
+ */
+function SheetRow({ property }: { readonly property: PropertyView; }): JSX.Element {
+  const entries = property.entries;
+  const latest = entries[entries.length - 1];
+  const earlier = entries.slice(0, -1);
+  return (
+    <div className='border-t border-line py-2.5'>
+      <dt className='label-xs'>{property.label}</dt>
+      <dd className='m-0 mt-1 text-[13.5px] text-fg'>
+        {latest === undefined ? null : <PropertyEntry entry={latest} />}
+        {earlier.length > 0
+          ? (
+            <ol className='m-0 mt-2 list-none space-y-1 border-l border-line py-0.5 pl-3'>
+              {earlier.map((entry, index) => (
+                <li key={index} className='text-[12.5px] text-muted'>
+                  <PropertyEntry entry={entry} past />
+                </li>
+              ))}
+            </ol>
+          )
+          : null}
       </dd>
     </div>
   );
 }
 
-function FactRelationItem({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
+function SheetRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
   return (
-    <div className='min-w-0'>
+    <div className='border-t border-line py-2.5'>
       <dt className='label-xs'>{row.label}</dt>
-      <dd className='m-0 mt-0.5 space-y-0.5 text-[13.5px] font-semibold'>
+      <dd className='m-0 mt-1 space-y-0.5 text-[13.5px] font-semibold'>
         {row.chips.map((chip) => (
           <div key={chip.id}>
             <EntityChipLink chip={chip} />
@@ -333,18 +537,43 @@ function FactRelationItem({ row }: { readonly row: InfoboxRelationRowView; }): J
 }
 
 // ---------------------------------------------------------------------------
-// Connection groups — image-led link modules, folded beyond ROW_LIMIT.
+// Connections — image-led link modules, packed, folded beyond ROW_LIMIT.
 
-function ConnectionGroup({ group }: { readonly group: RelationGroupView; }): JSX.Element {
+function Connections(
+  { view, wide }: { readonly view: EntityView; readonly wide: boolean; },
+): JSX.Element {
+  const groups = [...view.relations].sort((a, b) =>
+    relationRank(a.key) - relationRank(b.key)
+    || Number(a.inverse) - Number(b.inverse)
+    || b.items.length - a.items.length
+    || a.label.localeCompare(b.label)
+  );
+  // One group has no masonry to make: it spans, and ITS rows column
+  // instead — the section fills the band either way.
+  const masonry = wide && groups.length > 1;
   return (
-    <section>
+    <div className={masonry ? 'columns-1 gap-x-9 md:columns-2 [&>section]:break-inside-avoid' : ''}>
+      {groups.map((group) => (
+        <section key={group.key} className={masonry ? 'mb-9' : 'mb-8 last:mb-0'}>
+          <ConnectionGroup group={group} columns={wide && groups.length === 1} />
+        </section>
+      ))}
+    </div>
+  );
+}
+
+function ConnectionGroup(
+  { group, columns }: { readonly group: RelationGroupView; readonly columns: boolean; },
+): JSX.Element {
+  return (
+    <>
       <SectionHead count={group.items.length}>{group.label}</SectionHead>
       <ShowMoreList
-        limit={ROW_LIMIT}
-        listClassName='grid grid-cols-1 gap-x-8 md:grid-cols-2 xl:grid-cols-3'
+        limit={columns ? ROW_LIMIT * 3 : ROW_LIMIT}
+        listClassName={`grid gap-x-8 ${columns ? rowColumns(group.items.length) : 'grid-cols-1'}`}
         items={group.items.map((item, i) => <ConnectionRow key={i} item={item} />)}
       />
-    </section>
+    </>
   );
 }
 
@@ -398,9 +627,8 @@ function ConnectionRow({ item }: { readonly item: RelationItemView; }): JSX.Elem
 
 function CrewSections(
   { crews }: { readonly crews: readonly CrewSectionView[]; },
-): JSX.Element | null {
+): JSX.Element {
   const locale = useLocale();
-  if (crews.length === 0) return null;
   return (
     <section>
       <SectionHead count={crews.length}>{t(locale, 'affiliations')}</SectionHead>
@@ -459,9 +687,8 @@ function MemberGrid({ titleKey, members, former = false }: {
   readonly titleKey: ChromeKey;
   readonly members: readonly MemberRowView[];
   readonly former?: boolean;
-}): JSX.Element | null {
+}): JSX.Element {
   const locale = useLocale();
-  if (members.length === 0) return null;
   return (
     <section>
       <SectionHead count={members.length}>{t(locale, titleKey)}</SectionHead>
@@ -502,94 +729,101 @@ function MemberCard(
 }
 
 // ---------------------------------------------------------------------------
-// Sources (chapter / episode): prev-next, arc strip, cast, availability
+// Containers (arc, saga, volume…) and a source's place inside one.
 
-function PrevNext({ template }: { readonly template: SourceTemplateView; }): JSX.Element | null {
-  const locale = useLocale();
-  const search = useScopeSearch();
-  if (template.prev === null && template.next === null) return null;
-  const linkClass =
-    'rounded-md px-2.5 py-1 text-xs font-medium text-muted ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-fg hover:ring-line-strong';
+function ContentsSections(
+  { groups, wide }: {
+    readonly groups: readonly ContainerGroupView[];
+    readonly wide: boolean;
+  },
+): JSX.Element {
   return (
-    <nav className='flex items-center gap-1.5'>
-      {template.prev !== null
-        ? (
-          <Link
-            to='/$type/$slug'
-            params={{ type: template.prev.type, slug: template.prev.slug }}
-            search={search}
-            className={linkClass}
-          >
-            ← {t(locale, 'previous')}
-          </Link>
-        )
-        : null}
-      {template.next !== null
-        ? (
-          <Link
-            to='/$type/$slug'
-            params={{ type: template.next.type, slug: template.next.slug }}
-            search={search}
-            className={linkClass}
-          >
-            {t(locale, 'next')} →
-          </Link>
-        )
-        : null}
-    </nav>
+    <div className={wide && groups.length > 1 ? 'grid gap-9 xl:grid-cols-2' : 'space-y-9'}>
+      {groups.map((group) => (
+        <section key={`${group.relationKey}:${group.type}`}>
+          <SectionHead count={group.items.length}>{group.typeLabel}</SectionHead>
+          <ContentsList items={group.items} columns={wide && groups.length === 1} />
+        </section>
+      ))}
+    </div>
   );
 }
 
-function SourceSections({ template }: { readonly template: SourceTemplateView; }): JSX.Element {
-  const locale = useLocale();
+/** A long run of instalments is a numbered ledger; a short one is a
+ *  list of titled entries, columned so it fills its band. */
+const LEDGER_THRESHOLD = 20;
+
+function ContentsList(
+  { items, columns }: {
+    readonly items: readonly SourceItemView[];
+    readonly columns: boolean;
+  },
+): JSX.Element {
+  const search = useScopeSearch();
+  if (items.length > LEDGER_THRESHOLD) return <NumberGrid items={items} />;
   return (
-    <>
-      {template.arc !== null
+    <ShowMoreList
+      limit={NUMBER_LIMIT}
+      listClassName={`grid gap-x-8 ${columns ? rowColumns(items.length) : 'grid-cols-1'}`}
+      items={items.map((item) => (
+        <li key={item.chip.id} className='border-b border-line'>
+          <Link
+            to='/$type/$slug'
+            params={{ type: item.chip.type, slug: item.chip.slug }}
+            search={search}
+            aria-current={item.current ? 'page' : undefined}
+            className='group flex items-baseline gap-3 py-2.5'
+          >
+            <span
+              className={`display w-12 shrink-0 text-[15px] font-extrabold tabular-nums ${
+                item.current ? 'text-accent' : 'text-gold/80'
+              }`}
+            >
+              {item.number ?? '·'}
+            </span>
+            <span className='min-w-0 flex-1 truncate text-[13.5px] font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
+              {item.chip.name}
+            </span>
+          </Link>
+        </li>
+      ))}
+    />
+  );
+}
+
+function PositionSection(
+  { arc }: {
+    readonly arc: {
+      readonly chip: { readonly type: string; readonly slug: string; readonly name: string; };
+      readonly label: string;
+      readonly items: readonly SourceItemView[];
+    };
+  },
+): JSX.Element {
+  return (
+    <section>
+      <div className='mb-3 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 border-b border-line pb-2'>
+        <span className='label-xs'>{arc.label}</span>
+        <span className='display text-[15px] font-bold uppercase tracking-[0.04em]'>
+          <Link
+            to='/$type/$slug'
+            params={{ type: arc.chip.type, slug: arc.chip.slug }}
+            className='text-accent transition-colors duration-150 hover:text-accent-hover'
+          >
+            {arc.chip.name}
+          </Link>
+        </span>
+      </div>
+      {arc.items.length > 0
         ? (
-          <section>
-            <div className='mb-3.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
-              <span className='text-xs text-faint'>{template.arc.label}</span>
-              <span className='display text-[17px] font-bold'>
-                <EntityChipLink chip={template.arc.chip} />
-              </span>
-            </div>
-            {template.arc.items.length > 0
-              ? (
-                <ShowMoreList
-                  limit={NUMBER_LIMIT}
-                  listClassName='flex flex-wrap gap-1.5'
-                  items={template.arc.items.map((item) => (
-                    <SourceNumberCell key={item.chip.id} item={item} />
-                  ))}
-                />
-              )
-              : null}
-          </section>
+          <ShowMoreList
+            limit={NUMBER_LIMIT}
+            listClassName='flex flex-wrap gap-1.5'
+            items={arc.items.map((item) => <SourceNumberCell key={item.chip.id} item={item} />)}
+          />
         )
         : null}
-      {template.cast.length > 0
-        ? (
-          <section>
-            <SectionHead>{t(locale, 'cast')}</SectionHead>
-            <div className='space-y-5'>
-              {template.cast.map((group) => <CastGroup key={group.type} group={group} />)}
-            </div>
-          </section>
-        )
-        : null}
-      {template.availability.length > 0
-        ? (
-          <section>
-            <SectionHead>{t(locale, 'availability')}</SectionHead>
-            <ul className='flex flex-wrap gap-2'>
-              {template.availability.map((item) => (
-                <AvailabilityItem key={item.platform.id} item={item} />
-              ))}
-            </ul>
-          </section>
-        )
-        : null}
-    </>
+    </section>
   );
 }
 
@@ -600,7 +834,7 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Ele
     return (
       <li
         aria-current='page'
-        className='grid min-w-9 place-items-center rounded-md bg-accent px-2 py-1.5 text-xs font-semibold tabular-nums text-canvas'
+        className='grid min-w-10 place-items-center rounded-md bg-accent px-2 py-1.5 text-xs font-semibold tabular-nums text-canvas'
       >
         {label}
       </li>
@@ -613,7 +847,7 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Ele
         params={{ type: item.chip.type, slug: item.chip.slug }}
         search={search}
         title={item.chip.name}
-        className='grid min-w-9 place-items-center rounded-md px-2 py-1.5 text-xs font-medium tabular-nums text-muted ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-fg hover:ring-line-strong'
+        className='grid min-w-10 place-items-center rounded-md px-2 py-1.5 text-xs font-medium tabular-nums text-muted ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-fg hover:ring-line-strong'
       >
         {label}
       </Link>
@@ -621,26 +855,84 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Ele
   );
 }
 
-function CastGroup({ group }: { readonly group: CastGroupView; }): JSX.Element {
+/** Ordered instalments as a dense plate grid — number over title. */
+function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): JSX.Element {
+  const search = useScopeSearch();
   return (
-    <div>
-      <h3 className='label-xs mb-2'>{group.typeLabel}</h3>
-      <ShowMoreList
-        limit={CARD_LIMIT}
-        listClassName={CARD_GRID_CLASS}
-        items={group.items.map((item) => (
-          <EntityCard
-            key={item.chip.id}
-            type={item.chip.type}
-            slug={item.chip.slug}
-            image={item.image}
-            name={item.chip.name}
-            secondary={item.secondary}
-            meta={item.note}
-          />
+    <ShowMoreList
+      limit={NUMBER_LIMIT}
+      listClassName='grid grid-cols-[repeat(auto-fill,minmax(6.5rem,1fr))] gap-2'
+      items={items.map((item) => (
+        <li key={item.chip.id}>
+          <Link
+            to='/$type/$slug'
+            params={{ type: item.chip.type, slug: item.chip.slug }}
+            search={search}
+            title={item.chip.name}
+            className={`group block rounded-md p-2 ring-1 transition-[background-color,box-shadow] duration-150 hover:bg-surface ${
+              item.current ? 'bg-surface ring-accent' : 'ring-line hover:ring-line-strong'
+            }`}
+          >
+            <span className='display block text-base font-bold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-accent'>
+              {item.number ?? '·'}
+            </span>
+            <span className='block truncate text-[10.5px] text-faint'>
+              {item.chip.name}
+            </span>
+          </Link>
+        </li>
+      ))}
+    />
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Cast, availability, gallery, appearances
+
+function CastSection({ groups }: { readonly groups: readonly CastGroupView[]; }): JSX.Element {
+  const locale = useLocale();
+  return (
+    <section>
+      <SectionHead count={groups.reduce((sum, group) => sum + group.items.length, 0)}>
+        {t(locale, 'cast')}
+      </SectionHead>
+      <div className='space-y-5'>
+        {groups.map((group) => (
+          <div key={group.type}>
+            <h3 className='label-xs mb-2'>{group.typeLabel}</h3>
+            <ShowMoreList
+              limit={CARD_LIMIT}
+              listClassName={CARD_GRID_CLASS}
+              items={group.items.map((item) => (
+                <EntityCard
+                  key={item.chip.id}
+                  type={item.chip.type}
+                  slug={item.chip.slug}
+                  image={item.image}
+                  name={item.chip.name}
+                  secondary={item.secondary}
+                  meta={item.note}
+                />
+              ))}
+            />
+          </div>
         ))}
-      />
-    </div>
+      </div>
+    </section>
+  );
+}
+
+function AvailabilitySection(
+  { items }: { readonly items: readonly AvailabilityItemView[]; },
+): JSX.Element {
+  const locale = useLocale();
+  return (
+    <section>
+      <SectionHead>{t(locale, 'availability')}</SectionHead>
+      <ul className='flex flex-wrap gap-2'>
+        {items.map((item) => <AvailabilityItem key={item.platform.id} item={item} />)}
+      </ul>
+    </section>
   );
 }
 
@@ -666,47 +958,89 @@ function AvailabilityItem({ item }: { readonly item: AvailabilityItemView; }): J
   );
 }
 
-// ---------------------------------------------------------------------------
-// Arc: ordered chapter / episode grids — compact, folded beyond budget.
-
-function NumberGrid({ titleKey, items }: {
-  readonly titleKey: ChromeKey;
-  readonly items: readonly SourceItemView[];
-}): JSX.Element | null {
+/**
+ * Every other visible depiction of the entity — episode stills, extra
+ * covers, plates. Renders only when such image entities are attached;
+ * nothing is fabricated when they are not.
+ */
+function GallerySection(
+  { images, type, slug }: {
+    readonly images: readonly ImageView[];
+    readonly type: string;
+    readonly slug: string;
+  },
+): JSX.Element {
   const locale = useLocale();
-  const search = useScopeSearch();
-  if (items.length === 0) return null;
   return (
     <section>
-      <SectionHead count={items.length}>{t(locale, titleKey)}</SectionHead>
-      <ShowMoreList
-        limit={NUMBER_LIMIT}
-        listClassName='flex flex-wrap gap-2'
-        items={items.map((item) => (
-          <li key={item.chip.id}>
-            <Link
-              to='/$type/$slug'
-              params={{ type: item.chip.type, slug: item.chip.slug }}
-              search={search}
-              title={item.chip.name}
-              className='group block w-24 rounded-md p-2 ring-1 ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface hover:ring-line-strong'
-            >
-              <span className='display block text-base font-bold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-accent'>
-                {item.number ?? '·'}
-              </span>
-              <span className='block truncate text-[10.5px] text-faint'>
-                {item.chip.name}
-              </span>
-            </Link>
+      <SectionHead count={images.length}>{t(locale, 'gallery')}</SectionHead>
+      <ul className='grid grid-cols-2 gap-2.5 min-[520px]:grid-cols-[repeat(auto-fill,minmax(11rem,1fr))]'>
+        {images.map((image, index) => (
+          <li key={image.url}>
+            <EntityImage
+              image={image}
+              type={type}
+              slug={`${slug}-still-${index}`}
+              name={image.alt}
+              ratio='wide'
+              className='w-full rounded-lg ring-1 ring-line'
+            />
+            {image.attribution !== null
+              ? <p className='mt-1 truncate text-[10.5px] text-faint'>{image.attribution}</p>
+              : null}
           </li>
         ))}
-      />
+      </ul>
+    </section>
+  );
+}
+
+/**
+ * "Où apparaît-il" — how many of an ordered source type mention this
+ * entity, out of how many the reader can currently see, plus the
+ * browsable list. Renders only once such appearance edges exist in
+ * the corpus.
+ */
+function AppearancesSection(
+  { groups }: { readonly groups: readonly AppearanceGroupView[]; },
+): JSX.Element {
+  const locale = useLocale();
+  return (
+    <section>
+      <SectionHead>{t(locale, 'appearances')}</SectionHead>
+      <div className='space-y-6'>
+        {groups.map((group) => (
+          <div key={group.key}>
+            <p className='flex items-baseline gap-2'>
+              <span className='display text-[19px] font-extrabold tabular-nums text-gold'>
+                {group.count}
+              </span>
+              <span className='text-xs text-faint'>
+                {t(locale, 'outOf')} <span className='tabular-nums'>{group.total}</span>{' '}
+                {group.typeLabel.toLowerCase()}
+              </span>
+            </p>
+            <div className='mt-2'>
+              <ShowMoreList
+                limit={NUMBER_LIMIT}
+                listClassName='flex flex-wrap gap-1.5'
+                items={group.items.map((item) => (
+                  <SourceNumberCell
+                    key={item.chip.id}
+                    item={item}
+                  />
+                ))}
+              />
+            </div>
+          </div>
+        ))}
+      </div>
     </section>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Facts history + shared value rendering
+// Shared value rendering
 
 function QualifierList(
   { qualifiers }: { readonly qualifiers: readonly LabelledValue[]; },
@@ -740,32 +1074,15 @@ function EpistemicBadge(
 }
 
 /**
- * One historised property inside the history section: slim label
- * column, then compact [value · provenance] rows split by hairlines.
+ * One value of one property. `past` marks a superseded state inside a
+ * property's own timeline: same information, quieter voice.
  */
-function PropertyBlock({ property }: { readonly property: PropertyView; }): JSX.Element {
-  return (
-    <div className='grid grid-cols-1 gap-1 py-3 sm:grid-cols-[10rem_1fr] sm:gap-4'>
-      <dt className='label-xs pt-1'>{property.label}</dt>
-      <dd className='m-0'>
-        <ol className='m-0 list-none divide-y divide-line p-0'>
-          {property.entries.map((entry, i) => (
-            <li key={i} className='py-1.5 first:pt-0 last:pb-0'>
-              <PropertyEntry entry={entry} />
-            </li>
-          ))}
-        </ol>
-      </dd>
-    </div>
-  );
-}
-
 function PropertyEntry(
-  { entry, compact = false }: { readonly entry: PropertyEntryView; readonly compact?: boolean; },
+  { entry, past = false }: { readonly entry: PropertyEntryView; readonly past?: boolean; },
 ): JSX.Element {
   const locale = useLocale();
   const details: ReactNode[] = [];
-  if (!compact && entry.since !== null) {
+  if (entry.since !== null) {
     details.push(
       <span key='since'>
         {t(locale, 'since')} <EntityChipLink chip={entry.since} />
@@ -779,7 +1096,7 @@ function PropertyEntry(
       </span>,
     );
   }
-  if (!compact && entry.event !== null) {
+  if (entry.event !== null) {
     details.push(
       <span key='event'>
         {t(locale, 'during')} <EntityChipLink chip={entry.event} />
@@ -797,7 +1114,13 @@ function PropertyEntry(
     <div className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
       {entry.valueChip !== null
         ? <EntityChipLink chip={entry.valueChip} />
-        : <span className='font-medium tabular-nums text-fg'>{entry.display}</span>}
+        : (
+          <span
+            className={`tabular-nums ${past ? 'text-muted' : 'font-semibold text-fg'}`}
+          >
+            {entry.display}
+          </span>
+        )}
       <EpistemicBadge epistemic={entry.epistemic} />
       {entry.autoImported
         ? (
@@ -809,11 +1132,11 @@ function PropertyEntry(
           </span>
         )
         : null}
-      {details.length > 0 || (!compact && entry.qualifiers.length > 0)
+      {details.length > 0 || entry.qualifiers.length > 0
         ? (
-          <span className='inline-flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-xs text-faint'>
+          <span className='inline-flex flex-wrap items-baseline gap-x-2.5 gap-y-1 text-[11.5px] text-faint'>
             {details}
-            {compact ? null : <QualifierList qualifiers={entry.qualifiers} />}
+            <QualifierList qualifiers={entry.qualifiers} />
           </span>
         )
         : null}

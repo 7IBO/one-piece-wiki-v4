@@ -245,11 +245,9 @@ export type CrewTemplateView = {
   readonly former: readonly MemberRowView[];
 };
 
+/** A source's position inside its arc/saga (the sibling ribbon). */
 export type SourceTemplateView = {
   readonly kind: 'source';
-  readonly number: number | null;
-  readonly prev: EntityChip | null;
-  readonly next: EntityChip | null;
   readonly arc:
     | {
       readonly chip: EntityChip;
@@ -257,15 +255,23 @@ export type SourceTemplateView = {
       readonly items: readonly SourceItemView[];
     }
     | null;
-  readonly cast: readonly CastGroupView[];
-  readonly availability: readonly AvailabilityItemView[];
 };
 
-export type ArcTemplateView = {
-  readonly kind: 'arc';
-  readonly chapters: readonly SourceItemView[];
-  readonly episodes: readonly SourceItemView[];
-  readonly arcs: readonly SourceItemView[];
+/** One ordered set a container entity holds (an arc's chapters, a
+ *  volume's chapters, a saga's arcs…). */
+export type ContainerGroupView = {
+  /** The inverse relation key this group came from — so the page can
+   *  exclude it from the generic connection sections. */
+  readonly relationKey: string;
+  readonly label: string;
+  readonly type: string;
+  readonly typeLabel: string;
+  readonly items: readonly SourceItemView[];
+};
+
+export type ContainerTemplateView = {
+  readonly kind: 'container';
+  readonly groups: readonly ContainerGroupView[];
 };
 
 export type FruitTemplateView = {
@@ -280,9 +286,50 @@ export type TemplateView =
   | CharacterTemplateView
   | CrewTemplateView
   | SourceTemplateView
-  | ArcTemplateView
+  | ContainerTemplateView
   | FruitTemplateView
   | GenericTemplateView;
+
+// ---------------------------------------------------------------------------
+// Ordinal sequence + appearances (type-agnostic derivations)
+
+/** A sibling of the same type one step away on the ordinal axis. */
+export type SequenceNeighbourView = {
+  readonly chip: EntityChip;
+  readonly number: number;
+};
+
+/**
+ * The entity's place on its type's ordinal axis, when the type
+ * declares one (`number`, `arc_number`, `film_number`…). Discovered
+ * from the SCHEMA — there is no per-type list of ordinal properties.
+ */
+export type SequenceView = {
+  readonly propertyId: string;
+  readonly label: string;
+  readonly number: number;
+  readonly total: number;
+  readonly prev: SequenceNeighbourView | null;
+  readonly next: SequenceNeighbourView | null;
+};
+
+/**
+ * Incoming appearance edges from an ORDERED source type (chapters,
+ * episodes, arcs…): how many of them mention this entity, out of how
+ * many the reader can see. Empty until such a relation exists in the
+ * schema AND the corpus carries edges — the section then simply does
+ * not render (ADR-091 degradation).
+ */
+export type AppearanceGroupView = {
+  readonly key: string;
+  readonly label: string;
+  readonly type: string;
+  readonly typeLabel: string;
+  readonly count: number;
+  /** Population of that source type within the reader's cursor. */
+  readonly total: number;
+  readonly items: readonly SourceItemView[];
+};
 
 export type EntityView = {
   readonly kind: 'entity';
@@ -293,6 +340,16 @@ export type EntityView = {
   readonly name: string;
   readonly firstAppearance: EntityChip | null;
   readonly image: ImageView | null;
+  /** Every OTHER visible depiction — episode stills, covers, plates. */
+  readonly gallery: readonly ImageView[];
+  /** Place on the type's ordinal axis (prev/next), when it has one. */
+  readonly sequence: SequenceView | null;
+  /** Entities this one features (`features`), grouped by their type. */
+  readonly cast: readonly CastGroupView[];
+  /** Where to read / watch it (`available-on`). */
+  readonly availability: readonly AvailabilityItemView[];
+  /** Ordered sources this entity appears in, with a ratio. */
+  readonly appearances: readonly AppearanceGroupView[];
   readonly infobox: readonly InfoboxRowView[];
   readonly infoboxRelations: readonly InfoboxRelationRowView[];
   readonly properties: readonly PropertyView[];
@@ -480,9 +537,101 @@ function latestRawValue(
   return last === undefined ? null : last['value'] ?? null;
 }
 
-function readNumber(row: EntityRow, cursor: ProgressCursor): number | null {
-  const value = latestRawValue(row, 'number', cursor);
+/**
+ * The property that ORDERS an entity type, discovered from the schema:
+ * the first declared property whose id is `number` or ends in
+ * `_number` AND whose declared `value_type` is numeric.
+ * `manga-chapter` → `number`, `arc` → `arc_number`, `film` →
+ * `film_number`, `saga` → `saga_number`… A type that declares none
+ * simply has no ordinal, hence no prev/next and no ratio — the
+ * ADR-091 degradation rule, applied without a per-type list.
+ */
+function ordinalPropertyOf(cat: ValidatedCatalogue, type: string): string | null {
+  const schema = cat.entityTypes.get(type);
+  if (schema === undefined) return null;
+  for (const declaration of schema.properties) {
+    const id = declaration.id;
+    if (id !== 'number' && !id.endsWith('_number')) continue;
+    if (cat.propertyTypes.get(id)?.value_type !== 'number') continue;
+    return id;
+  }
+  return null;
+}
+
+/**
+ * An entity's ordinal, read WITHOUT the progression cursor: an ordinal
+ * identifies the entity (chapter 1044 IS 1044 for every reader), so
+ * the index must not shift under a cursor. Spoiler gating happens on
+ * the entity itself, not on its number.
+ */
+function ordinalValue(row: EntityRow, propertyId: string): number | null {
+  const value = latestRawValue(row, propertyId, EMPTY_CURSOR);
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+/** An entity's ordinal on whichever axis its own type declares. */
+function ordinalOf(row: EntityRow, cat: ValidatedCatalogue): number | null {
+  const propertyId = ordinalPropertyOf(cat, row.type);
+  return propertyId === null ? null : ordinalValue(row, propertyId);
+}
+
+/**
+ * `ordinal → row` for one type, built once per process. The SQLite
+ * artifact is immutable at runtime (CLAUDE.md: it is a derived, never
+ * mutated, build product), so the index can never go stale.
+ */
+const ordinalIndexes = new Map<string, ReadonlyMap<number, EntityRow>>();
+
+function ordinalIndexFor(type: string, propertyId: string): ReadonlyMap<number, EntityRow> {
+  const key = `${type}/${propertyId}`;
+  const cached = ordinalIndexes.get(key);
+  if (cached !== undefined) return cached;
+  const index = new Map<number, EntityRow>();
+  for (const row of db.listEntitiesByType(type)) {
+    const n = ordinalValue(row, propertyId);
+    if (n !== null && !index.has(n)) index.set(n, row);
+  }
+  ordinalIndexes.set(key, index);
+  return index;
+}
+
+/**
+ * Prev/next on the type's own ordinal axis. A neighbour beyond the
+ * reader's cursor is NOT announced at all — its title alone would be
+ * a spoiler — so the button simply disappears.
+ */
+function buildSequence(
+  row: EntityRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): SequenceView | null {
+  const propertyId = ordinalPropertyOf(cat, row.type);
+  if (propertyId === null) return null;
+  const number = ordinalValue(row, propertyId);
+  if (number === null) return null;
+  const index = ordinalIndexFor(row.type, propertyId);
+  const neighbour = (delta: number): SequenceNeighbourView | null => {
+    const sibling = index.get(number + delta);
+    if (sibling === undefined || !isSourceVisible(sibling.id, cursor)) return null;
+    return {
+      chip: chipForRow(sibling, cat, locale),
+      number: ordinalValue(sibling, propertyId) ?? number + delta,
+    };
+  };
+  let total = 0;
+  for (const sibling of index.values()) {
+    if (isSourceVisible(sibling.id, cursor)) total += 1;
+  }
+  const schema = cat.propertyTypes.get(propertyId);
+  return {
+    propertyId,
+    label: schema === undefined ? humanize(propertyId) : pickLabel(schema.labels, locale),
+    number,
+    total,
+    prev: neighbour(-1),
+    next: neighbour(1),
+  };
 }
 
 /**
@@ -865,21 +1014,23 @@ function buildImageView(
 }
 
 /**
- * Pick the entity's display image among its `depicted-by` targets:
+ * Rank the entity's visible `depicted-by` depictions, best first:
  * spoiler-hidden images (`spoiler_since` beyond cursor) are excluded,
  * the active canon scope steers `source_origin` preference
  * (live_action scope prefers live_action origins; default prefers
  * everything else), then the depiction `role` ranks candidates.
- * Null = no visible image (the UI renders a typographic placeholder).
+ * The head is the display image; the tail is the page gallery
+ * (episode stills, covers, plates). Empty = no visible depiction, and
+ * the UI renders generated artwork instead of an empty frame.
  */
-function resolveEntityImage(
+function resolveEntityImages(
   row: EntityRow,
   edges: readonly RelationRow[],
   cursor: ProgressCursor,
   scope: string | null,
   locale: Locale,
   name: string,
-): ImageView | null {
+): readonly ImageView[] {
   type Candidate = { view: ImageView; originScore: number; roleScore: number; };
   const candidates: Candidate[] = [];
   for (const edge of edges) {
@@ -900,7 +1051,19 @@ function resolveEntityImage(
     candidates.push({ view, originScore, roleScore });
   }
   candidates.sort((a, b) => a.originScore - b.originScore || a.roleScore - b.roleScore);
-  return candidates[0]?.view ?? null;
+  return candidates.map((candidate) => candidate.view);
+}
+
+/** The single display image (the best-ranked depiction), or null. */
+function resolveEntityImage(
+  row: EntityRow,
+  edges: readonly RelationRow[],
+  cursor: ProgressCursor,
+  scope: string | null,
+  locale: Locale,
+  name: string,
+): ImageView | null {
+  return resolveEntityImages(row, edges, cursor, scope, locale, name)[0] ?? null;
 }
 
 // ---------------------------------------------------------------------------
@@ -1349,11 +1512,10 @@ function sourceItem(
   currentId: string,
   cat: ValidatedCatalogue,
   locale: Locale,
-  cursor: ProgressCursor,
 ): SourceItemView {
   return {
     chip: chipForRow(target, cat, locale),
-    number: readNumber(target, cursor),
+    number: ordinalOf(target, cat),
     current: target.id === currentId,
   };
 }
@@ -1379,28 +1541,9 @@ function containedSources(
     const target = db.getEntityById(edge.target_entity_id);
     if (target === null) continue;
     if (targetType !== null && target.type !== targetType) continue;
-    items.push(sourceItem(target, currentId, cat, locale, cursor));
+    items.push(sourceItem(target, currentId, cat, locale));
   }
   return items.sort(byNumber);
-}
-
-/** Prev/next same-type source by numeric slug suffix (WEB_APP.md). */
-function adjacentSource(
-  row: EntityRow,
-  delta: number,
-  cat: ValidatedCatalogue,
-  locale: Locale,
-  cursor: ProgressCursor,
-): EntityChip | null {
-  const match = /^(.*?)(\d+)$/.exec(row.slug);
-  if (match === null) return null;
-  const [, prefix = '', digits = ''] = match;
-  const n = Number(digits) + delta;
-  if (n < 0) return null;
-  const sibling = db.getEntityBySlug(row.type, `${prefix}${n}`);
-  if (sibling === null) return null;
-  if (!isSourceVisible(sibling.id, cursor)) return null;
-  return chipForRow(sibling, cat, locale);
 }
 
 function buildAvailability(
@@ -1473,7 +1616,6 @@ function buildSourceTemplate(
   cat: ValidatedCatalogue,
   locale: Locale,
   cursor: ProgressCursor,
-  scope: string | null,
 ): SourceTemplateView {
   let arc: SourceTemplateView['arc'] = null;
   const arcEdge = edges.find((edge) =>
@@ -1497,52 +1639,122 @@ function buildSourceTemplate(
       };
     }
   }
+  return { kind: 'source', arc };
+}
+
+/**
+ * What a CONTAINER entity holds. Fully derived: every incoming
+ * `part-of-*` edge (the schema's containment naming) is bucketed by
+ * the type of the thing contained and ordered by that type's own
+ * ordinal — so an arc yields its chapters AND its episodes, a saga
+ * its arcs, a volume its chapters, and a containment relation added
+ * later needs no code change. No containment edges → no groups, and
+ * the page falls back to the generic connection sections (ADR-091).
+ */
+function buildContainerTemplate(
+  row: EntityRow,
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+): ContainerTemplateView {
+  const groups = new Map<string, {
+    relationKey: string;
+    label: string;
+    type: string;
+    typeLabel: string;
+    items: SourceItemView[];
+  }>();
+  for (const edge of edges) {
+    if (!edge.is_inferred || !edge.relation_type.startsWith('part-of-')) continue;
+    const target = db.getEntityById(edge.target_entity_id);
+    if (target === null) continue;
+    const key = `${edge.relation_type}:${target.type}`;
+    const item = sourceItem(target, row.id, cat, locale);
+    const bucket = groups.get(key);
+    if (bucket === undefined) {
+      groups.set(key, {
+        relationKey: edge.relation_type,
+        label: resolveEdgeLabel(edge, cat, locale),
+        type: target.type,
+        typeLabel: entityTypeLabel(cat, target.type, locale),
+        items: [item],
+      });
+    } else bucket.items.push(item);
+  }
   return {
-    kind: 'source',
-    number: readNumber(row, cursor),
-    prev: adjacentSource(row, -1, cat, locale, cursor),
-    next: adjacentSource(row, 1, cat, locale, cursor),
-    arc,
-    cast: buildCast(edges, cat, locale, cursor, scope),
-    availability: buildAvailability(edges, cat, locale, cursor),
+    kind: 'container',
+    groups: [...groups.values()]
+      .map((group) => ({ ...group, items: group.items.sort(byNumber) }))
+      .sort((a, b) => b.items.length - a.items.length || a.typeLabel.localeCompare(b.typeLabel)),
   };
 }
 
-function buildArcTemplate(
-  row: EntityRow,
+/**
+ * Appearances: incoming edges whose SOURCE is an entity of an ordered
+ * type (one declaring an ordinal property). That is what makes
+ * "36 chapters out of 1044" meaningful, and it is derived rather than
+ * listed — the day an `appears-in-chapter` relation exists, this
+ * lights up with no code change; until then there are no such edges
+ * and the section renders nothing.
+ */
+function buildAppearances(
+  edges: readonly RelationRow[],
+  consumed: ReadonlySet<string>,
   cat: ValidatedCatalogue,
   locale: Locale,
   cursor: ProgressCursor,
-): ArcTemplateView {
-  return {
-    kind: 'arc',
-    chapters: containedSources(
-      row.id,
-      'part-of-arc.inverse',
-      'manga-chapter',
-      row.id,
-      cat,
-      locale,
-      cursor,
-    ),
-    episodes: containedSources(
-      row.id,
-      'part-of-arc.inverse',
-      'anime-episode',
-      row.id,
-      cat,
-      locale,
-      cursor,
-    ),
-    arcs: containedSources(row.id, 'part-of-saga.inverse', 'arc', row.id, cat, locale, cursor),
-  };
+): readonly AppearanceGroupView[] {
+  const groups = new Map<string, {
+    key: string;
+    label: string;
+    type: string;
+    typeLabel: string;
+    items: SourceItemView[];
+  }>();
+  for (const edge of edges) {
+    if (!edge.is_inferred || consumed.has(edge.relation_type)) continue;
+    const target = db.getEntityById(edge.target_entity_id);
+    if (target === null || ordinalPropertyOf(cat, target.type) === null) continue;
+    const key = `${edge.relation_type}:${target.type}`;
+    const item = sourceItem(target, '', cat, locale);
+    const bucket = groups.get(key);
+    if (bucket === undefined) {
+      groups.set(key, {
+        key,
+        label: resolveEdgeLabel(edge, cat, locale),
+        type: target.type,
+        typeLabel: entityTypeLabel(cat, target.type, locale),
+        items: [item],
+      });
+    } else bucket.items.push(item);
+  }
+  return [...groups.values()]
+    .map((group) => ({
+      ...group,
+      count: group.items.length,
+      total: visiblePopulation(group.type, cursor),
+      items: group.items.sort(byNumber),
+    }))
+    .sort((a, b) => b.count - a.count || a.typeLabel.localeCompare(b.typeLabel));
+}
+
+/** How many entities of a type the reader's cursor lets them see. */
+function visiblePopulation(type: string, cursor: ProgressCursor): number {
+  let total = 0;
+  for (const row of db.listEntitiesByType(type)) {
+    if (isSourceVisible(row.id, cursor)) total += 1;
+  }
+  return total;
 }
 
 /** Relation type keys a template consumed — excluded from the generic
  *  connection groups so sections do not repeat. `depicted-by` always
  *  feeds the infobox portrait slot. */
 function consumedRelationKeys(row: EntityRow, template: TemplateView): ReadonlySet<string> {
-  const consumed = new Set<string>(['depicted-by']);
+  // `depicted-by` always feeds the portrait + gallery; `features` and
+  // `available-on` always feed the cast and availability modules,
+  // whatever the type — those three are type-agnostic now.
+  const consumed = new Set<string>(['depicted-by', 'features', 'available-on']);
   for (const key of INFOBOX_RELATIONS[row.type] ?? []) consumed.add(key);
   switch (template.kind) {
     case 'character':
@@ -1554,12 +1766,9 @@ function consumedRelationKeys(row: EntityRow, template: TemplateView): ReadonlyS
     case 'source':
       consumed.add('part-of-arc');
       consumed.add('occurs-during-arc');
-      consumed.add('features');
-      consumed.add('available-on');
       break;
-    case 'arc':
-      consumed.add('part-of-arc.inverse');
-      consumed.add('part-of-saga.inverse');
+    case 'container':
+      for (const group of template.groups) consumed.add(group.relationKey);
       break;
     case 'devil-fruit':
       consumed.add('ate-fruit.inverse');
@@ -1586,10 +1795,13 @@ function buildTemplate(
       return buildCrewTemplate(edges, cat, locale, cursor, scope);
     case 'manga-chapter':
     case 'anime-episode':
-      return buildSourceTemplate(row, edges, cat, locale, cursor, scope);
+    case 'live-action-episode':
+      return buildSourceTemplate(row, edges, cat, locale, cursor);
     case 'arc':
     case 'saga':
-      return buildArcTemplate(row, cat, locale, cursor);
+    case 'volume':
+    case 'live-action-series':
+      return buildContainerTemplate(row, edges, cat, locale);
     case 'devil-fruit':
       return buildFruitTemplate(edges, cat, locale, cursor, scope);
     default:
@@ -1723,7 +1935,13 @@ export async function buildEntityView(
 
   const edges = db.listRelationsFrom(row.id).filter((edge) => isEdgeVisible(edge, cursor));
   const template = buildTemplate(row, edges, cat, locale, cursor, scope);
-  const consumed = consumedRelationKeys(row, template);
+  const templateKeys = consumedRelationKeys(row, template);
+  // Appearances take what the template left; whatever they take is in
+  // turn withheld from the generic connection sections, so a fact is
+  // never rendered twice — and never dropped either.
+  const appearances = buildAppearances(edges, templateKeys, cat, locale, cursor);
+  const consumed = new Set(templateKeys);
+  for (const group of appearances) consumed.add(group.key.split(':')[0] ?? group.key);
   const { properties, infobox: declaredInfobox } = buildPropertyViews(
     row,
     cat,
@@ -1741,6 +1959,7 @@ export async function buildEntityView(
   const firstAppearance = row.first_appearance_source === null
     ? null
     : chipFor(row.first_appearance_source, cat, locale);
+  const images = resolveEntityImages(row, edges, cursor, scope, locale, name);
   return {
     kind: 'entity',
     id: row.id,
@@ -1749,7 +1968,12 @@ export async function buildEntityView(
     slug: row.slug,
     name,
     firstAppearance,
-    image: resolveEntityImage(row, edges, cursor, scope, locale, name),
+    image: images[0] ?? null,
+    gallery: images.slice(1),
+    sequence: buildSequence(row, cat, locale, cursor),
+    cast: buildCast(edges, cat, locale, cursor, scope),
+    availability: buildAvailability(edges, cat, locale, cursor),
+    appearances,
     infobox,
     infoboxRelations: buildInfoboxRelations(row, edges, cat, locale, cursor),
     properties,

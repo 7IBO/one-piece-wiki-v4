@@ -19,8 +19,10 @@ import type { Locale } from './lib/chrome';
 import { SCOPE_PATTERN } from './lib/scope';
 
 export type {
+  AppearanceGroupView,
   AvailabilityItemView,
   CastGroupView,
+  ContainerGroupView,
   CrewSectionView,
   EntityChip,
   EntityListItem,
@@ -39,6 +41,8 @@ export type {
   PropertyView,
   RelationGroupView,
   RelationItemView,
+  SequenceNeighbourView,
+  SequenceView,
   SourceItemView,
   SourceTemplateView,
   TemplateView,

@@ -212,6 +212,12 @@ body {
     transform: scale(1.02);
   }
 
+  /* The hero figure sits ON the backdrop: a soft cast shadow is what
+   * separates the crisp plane from the defocused one behind it. */
+  .hero-figure {
+    box-shadow: 0 18px 44px -14px color-mix(in oklab, var(--color-canvas) 92%, transparent);
+  }
+
   /* Hover lift — the shared motion of every art tile. Marked with a
    * class so `prefers-reduced-motion` can cancel the transform wholesale
    * (a shortened transition would still jump the layout). */

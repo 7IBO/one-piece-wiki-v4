@@ -15,7 +15,30 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (design v8.1 — palette ancrée sur l'or, header sans rail)
+**Last updated**: 2026-08-09 (v9 — layouts par type d'entité, ADR-105/106)
+
+**2026-08-09 — v9 : layouts par type + apparitions au grain unité.**
+Demande mainteneur : trous à droite sur la page personnage, layouts
+distincts par type, toutes les données avec leur historique,
+apparitions sur total de chapitres/épisodes, hero « version large
+faible opacité en pleine largeur + rectangle arrondi format affiche
+par-dessus », prev/next dans le hero pour les entités numérotées.
+(a) **ADR-105** : `features-characters` fusionnée dans `features` —
+le grain (arc / chapitre / épisode) est porté par le type de la
+source, pas par le nom de la relation ; `arc-roles` →
+`narrative-roles` ; `role` et `appearance_type` deviennent
+optionnels ; 63 relations, 10 règles ; 3 changements cassants
+assumés, aucune migration (0 arête concernée). (b) **ADR-106** :
+registre de layouts par type — 12 modules, bandes `full`/`split`/
+`pack`, 16 types écrits, dégradation imposée par le _renderer_
+(`bandsFor` ajoute une bande finale contenant tout slot omis, type
+inconnu → `GENERIC_LAYOUT`), testée sur les 16 types + 3 inconnus.
+Historique affiché en ligne sous chaque propriété. prev/next dérivé
+de la propriété ordinale déclarée par le type (aucune liste en dur),
+voisin au-delà du curseur supprimé (le titre fuiterait). Module
+apparitions livré mais invisible : 0 arête `features` unité→personnage
+dans le corpus, il s'allumera sans changement de code. 520 tests.
+**Ne pas merger avant validation du rendu par le mainteneur.**
 
 **2026-08-09 — v8.1, révision ciblée du v8.** Retour mainteneur :
 « j'aime pas le header au niveau de la progress bar et les couleurs

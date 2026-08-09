@@ -234,39 +234,88 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(fruit.template.former).toHaveLength(0);
   });
 
-  test('chapter template: number, prev/next, arc siblings, availability', async () => {
+  test('chapter page: arc siblings + availability', async () => {
     const ch1044 = await entity('manga-chapter', 'chapter-1044');
     expect(ch1044.template.kind).toBe('source');
     if (ch1044.template.kind !== 'source') return;
-    expect(ch1044.template.number).toBe(1044);
-    expect(ch1044.template.prev?.slug).toBe('chapter-1043');
-    expect(ch1044.template.next).toBeNull(); // no chapter-1045 in corpus
     expect(ch1044.template.arc?.chip.slug).toBe('wano');
     const siblings = ch1044.template.arc?.items ?? [];
     expect(siblings.map((s) => s.number)).toEqual([1043, 1044, 1053]);
     expect(siblings.find((s) => s.number === 1044)?.current).toBe(true);
     // Chapter 1 resolves its Manga Plus link template + external_id.
+    // Availability is a page-level module now, not a source-only one.
     const ch1 = await entity('manga-chapter', 'chapter-1');
-    if (ch1.template.kind !== 'source') return;
-    expect(ch1.template.prev).toBeNull();
-    const mangaPlus = ch1.template.availability.find((a) => a.platform.slug === 'manga-plus');
+    const mangaPlus = ch1.availability.find((a) => a.platform.slug === 'manga-plus');
     expect(mangaPlus?.url).toBe('https://mangaplus.shueisha.co.jp/viewer/1000486');
   });
 
-  test('prev/next hide siblings beyond the cursor', async () => {
+  // -------------------------------------------------------------------------
+  // Ordinal sequence (prev/next), discovered from the schema
+
+  test('sequence derives the ordinal property and both neighbours', async () => {
+    const ch1044 = await entity('manga-chapter', 'chapter-1044');
+    expect(ch1044.sequence?.propertyId).toBe('number');
+    expect(ch1044.sequence?.number).toBe(1044);
+    expect(ch1044.sequence?.prev?.chip.slug).toBe('chapter-1043');
+    expect(ch1044.sequence?.prev?.number).toBe(1043);
+    expect(ch1044.sequence?.next).toBeNull(); // no chapter-1045 in corpus
+    // `total` counts the population the reader may see.
+    expect(ch1044.sequence?.total).toBe(10);
+    const ch1 = await entity('manga-chapter', 'chapter-1');
+    expect(ch1.sequence?.prev).toBeNull();
+  });
+
+  test('sequence hides a neighbour beyond the progression cursor', async () => {
     const ch1043 = await entity('manga-chapter', 'chapter-1043', 'en', cursor(1043));
-    if (ch1043.template.kind !== 'source') return;
-    expect(ch1043.template.next).toBeNull(); // 1044 exists but is beyond
-    const siblings = ch1043.template.arc?.items ?? [];
+    // 1044 exists, but announcing even its title would be a spoiler.
+    expect(ch1043.sequence?.next).toBeNull();
+    expect(ch1043.sequence?.prev).toBeNull(); // 1042 is not in the corpus
+    expect(ch1043.sequence?.number).toBe(1043);
+    expect(ch1043.sequence?.total).toBe(8); // 1044 and 1053 are beyond
+    const siblings = ch1043.template.kind === 'source' ? ch1043.template.arc?.items ?? [] : [];
     expect(siblings.map((s) => s.number)).toEqual([1043]);
   });
 
-  test('arc template lists its chapters in order', async () => {
+  test('a type with no ordinal property gets no sequence', async () => {
+    // `character` declares no `number` / `*_number` property.
+    const luffy = await entity('character', 'monkey-d-luffy');
+    expect(luffy.sequence).toBeNull();
+    // `arc` DOES declare `arc_number`, but Wano carries no value for
+    // it — the axis exists, this entity is not on it.
     const wano = await entity('arc', 'wano');
-    expect(wano.template.kind).toBe('arc');
-    if (wano.template.kind !== 'arc') return;
-    expect(wano.template.chapters.map((c) => c.number)).toEqual([1043, 1044, 1053]);
-    expect(wano.template.episodes).toHaveLength(0);
+    expect(wano.sequence).toBeNull();
+    // A single-instance ordered type: on the axis, but with no siblings.
+    const volume = await entity('volume', 'volume-1');
+    expect(volume.sequence?.propertyId).toBe('number');
+    expect(volume.sequence?.number).toBe(1);
+    expect(volume.sequence?.prev).toBeNull();
+    expect(volume.sequence?.next).toBeNull();
+  });
+
+  test('container template groups everything an entity contains', async () => {
+    const wano = await entity('arc', 'wano');
+    expect(wano.template.kind).toBe('container');
+    if (wano.template.kind !== 'container') return;
+    const chapters = wano.template.groups.find((g) => g.type === 'manga-chapter');
+    expect(chapters?.relationKey).toBe('part-of-arc.inverse');
+    expect(chapters?.items.map((c) => c.number)).toEqual([1043, 1044, 1053]);
+    expect(wano.template.groups.some((g) => g.type === 'anime-episode')).toBe(false);
+    // A volume is a container too — same derivation, no arc-specific code.
+    const volume = await entity('volume', 'volume-1');
+    if (volume.template.kind !== 'container') return;
+    const held = volume.template.groups.find((g) => g.type === 'manga-chapter');
+    expect(held?.relationKey).toBe('part-of-volume.inverse');
+    expect(held?.items.map((c) => c.chip.slug)).toEqual(['chapter-1']);
+  });
+
+  test('appearances stay empty until appearance edges exist', async () => {
+    // The corpus has no chapter/episode → character `features` edges
+    // yet (a known data gap): the module must simply not render.
+    const luffy = await entity('character', 'monkey-d-luffy');
+    expect(luffy.appearances).toEqual([]);
+    // …and a container's contents are NOT mistaken for appearances.
+    const volume = await entity('volume', 'volume-1');
+    expect(volume.appearances).toEqual([]);
   });
 
   // -------------------------------------------------------------------------

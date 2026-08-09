@@ -8,6 +8,84 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-106 — Per-entity-type page layouts, with mandatory generic degradation
+
+**Date**: 2026-08-09
+
+**Context**: Since v7 every entity page of `apps/web` has rendered the
+same stack of sections — a single column of modules down the left of a
+1200 px column — with only the per-type template (character / crew /
+source / arc / devil-fruit) changing which sections existed. The
+maintainer's verdict on the Luffy page: « sur page personnage, on a
+quand même bcp de trou sur layout à droite. C'est pas mieux de prévoir
+un layout différent pour les types d'entité ? ça serait mieux pour que
+chaque page soit unique ». Three one-item sections stacked down the
+left ("Family of 1", "Relatives 1", "Profiled by 1") left roughly 60 %
+of each row empty, and a chapter page and a crew page differed only by
+the words in their headings.
+
+The tension is with ADR-091: `apps/web` may bind to well-known ids, but
+**every binding must degrade to the generic schema-driven rendering**.
+A hardcoded per-type list of sections is exactly the failure mode that
+rule exists to prevent — an entity type nobody thought about would
+silently lose properties and relations.
+
+**Options considered**:
+
+1. **One template, smarter CSS.** Keep the single stack and let a
+   masonry pack the small sections. Fixes the holes, does nothing for
+   "chaque page doit être unique" — a crew still reads like a chapter.
+2. **A layout per type, authored as JSX per type.** Maximum control,
+   but every new entity type needs code before it renders at all, and
+   nothing structurally prevents an authored template from dropping a
+   property. Violates ADR-091.
+3. **A layout REGISTRY over a fixed module vocabulary, with the
+   renderer guaranteeing completeness.** Chosen.
+
+**Decision**:
+
+- An entity page is a fixed set of MODULES ("slots"): `sheet`,
+  `narrative`, `affiliations`, `members`, `former`, `contents`,
+  `position`, `cast`, `availability`, `gallery`, `appearances`,
+  `connections`. `connections` is the catch-all: it renders every
+  relation group no other module consumed, so an unknown relation type
+  always has a home.
+- `apps/web/src/lib/entity-layout.ts` maps a **well-known entity type
+  id** to an ordered list of BANDS — `full` (a lead module at the full
+  width), `split` (a wide main column beside a 19 rem aside, on either
+  edge) and `pack` (a balanced masonry). This is what makes a crew open
+  on its roster, an arc on its chapter ledger, a chapter on its
+  position in the arc and a devil fruit on its classification history.
+- **Degradation is enforced by the renderer, not by discipline.**
+  `bandsFor(type)` returns the authored bands PLUS a trailing masonry
+  band containing every slot the layout did not mention, and a type
+  with no authored layout gets `GENERIC_LAYOUT`, which names all
+  twelve. A layout can therefore reorder and re-weight a page; it can
+  never hide data. A unit test asserts the invariant for every
+  registered type and for unknown ones.
+- **Packing is content-derived, not fixed.** A band that renders a
+  single module gives it the full width and lets it use its own
+  columns; a row list derives its column count from its item count
+  (one row spans, two rows make two columns). No fixed N-column grid
+  may hold a single item — that is the hole being removed.
+- The **data sheet carries each property's history inline**, under the
+  property it belongs to, instead of a global "History" section at the
+  foot of the page.
+
+**Consequences**:
+
+- Adding a type-specific layout is a data edit in one file, reviewable
+  at a glance, with no risk of data loss.
+- The generic path stays the reference implementation: it is what every
+  unauthored type gets, so it cannot rot.
+- Per-type layouts are a PRESENTATION binding only. `server/views.ts`
+  stays type-agnostic apart from the template builders already covered
+  by ADR-091, and the ordinal/appearance derivations added alongside
+  this ADR are discovered from the schema (see WEB_APP.md § sequential
+  entities), not from a per-type list.
+
+---
+
 ## ADR-105 — One appearance relation: `features-characters` folds into `features`, granularity comes from the source type
 
 **Date**: 2026-08-09
