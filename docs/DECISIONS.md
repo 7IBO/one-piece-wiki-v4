@@ -8,9 +8,102 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-104 — The per-entity tint is a curated gold-anchored palette, not a hue wheel
+
+**Date**: 2026-08-09
+
+**Context**: ADR-103 derived each entity's colour as `hash % 360` — the
+whole hue wheel. Mechanically it worked (deterministic, provably
+readable, zero runtime cost) but the maintainer's verdict on the result
+was precise and damning: _"les couleurs un peu aléatoires vertes et
+bleu. j'aime bien le gold par contre"_. A wheel gives every hue equal
+weight, so neighbouring entities landed on a green, a cyan and an
+arbitrary blue. That does not read as a colour system; it reads as
+noise. The same wheel had been copied into the neutral art tokens of
+`styles.css` (`--art-4` teal, `--art-5` blue, `--art-6` magenta), so
+even the untinted chrome carried the problem.
+
+Note what was NOT rejected: the _mechanic_ — an entity's id colouring
+its own page — survived four rounds of feedback intact. Only the
+sampling was wrong.
+
+**Options considered**:
+
+1. Keep the wheel, restrict it to an arc (e.g. `20 + hash % 80`). One
+   line, but an arithmetic arc is still a machine sweeping a range: the
+   dull middle of the band gets as many entities as the good edges, and
+   there is no place to say "this chord is dark and quiet, that one is
+   bright and loud".
+2. Keep the wheel, drop the chroma. Warm-neutral everything. This is
+   exactly the v5/v7 failure mode ("muddy", "trop terne") — the
+   maintainer wants _belles couleurs dark_, not brown.
+3. **Hand-author a small ordered set of chords in the warm band and
+   index it with the hash.** (chosen)
+
+**Choice**: `TINT_CHORDS` in `apps/web/src/lib/entity-tint.ts` is a
+hand-authored list of ten chords — `or` (the anchor, the site's gold),
+`laiton`, `ocre`, `cuivre`, `safran`, `orange-brule`, `vermillon`,
+`sang-de-boeuf`, `terre`, `ambre`. `entityTint()` hashes the id to an
+INDEX into that list instead of to a hue. Each chord authors its own
+accent, hero wash, surface, and the full nine-token art palette
+(ground, dark mass, highlight, six paints). The neutral `--art-*`
+defaults in `styles.css` were re-authored from the same family.
+
+**Rationale**:
+
+- **A palette is a design decision, so a human makes it.** Ten
+  named chords are a swatch book someone can look at, argue with and
+  extend. `hash % 360` is a machine choosing 360 colours nobody
+  approved — and it is the single most reliable "AI-generated" tell in
+  a UI.
+- **Gold anchors the family, and stays the brand.** The chord modulates
+  a page's atmosphere and its interactive accent; the wordmark, the
+  bounty figures and the focus ring stay `--color-gold` on every page.
+  The reader always knows which site they are on.
+- **Variety migrates from hue to VALUE.** A narrow band cannot
+  differentiate ten entities by hue, so each chord authors its own
+  light/dark structure instead: `ocre` is a near-black ground under a
+  bone highlight, `ambre` is a light ground with dark forms cut into
+  it, `sang-de-boeuf` is the darkest, `terre` the quietest. Grounds
+  span 0.17 → 0.31 in lightness and each chord's six paints span at
+  least 0.4, so whichever triad a composition draws it still has light
+  and dark. This is the honest risk of the decision — a narrow warm
+  band CAN collapse into monochrome brown, which is precisely what was
+  called "muddy" before — and value contrast plus real chroma inside
+  the family is the mitigation. The 40 px thumb wall of
+  `art:preview` is the check.
+- **The band is enforced, not merely intended.** `WARM_BAND` is
+  12°–100° and the unit tests reject any authored colour outside it —
+  including the tokens _parsed out of `styles.css`_, so nobody can
+  reintroduce a teal in the stylesheet either. The upper bound is
+  deliberately tight: past ~100° a large flat mid-chroma field reads
+  olive at hero scale.
+- **Every ADR-103 guarantee is kept.** Same hash family, same
+  determinism, same lightness-raising loop against the same measured
+  canvas, same "custom properties only" output. The 360-hue sweep in
+  the tests became a sweep over the authored list plus 400 probes that
+  must reach every chord.
+- **The salt is not arbitrary.** `tint|gold|<id>` was chosen among
+  candidates for the flattest spread over ten chords and verified
+  against the real corpus: all ten chords are in use across the 37
+  entities. With a list this short, collisions are expected and fine —
+  two entities sharing a chord still get different compositions,
+  because the composition is seeded separately.
+
+**Consequence**: `art:preview` now paints each tile with its own chord
+and names it in the caption, because with a narrow palette the contact
+sheet is the only honest way to answer "is this still varied?".
+
+---
+
 ## ADR-103 — The entity colours its own page
 
 **Date**: 2026-08-09
+
+**Amended by ADR-104 (2026-08-09)**: the mechanic below stands, but the
+hue is no longer sampled from the full 360° wheel — the hash indexes a
+hand-authored set of warm chords anchored on gold. Read every mention
+of "hue" below as "chord".
 
 **Context**: Five design iterations were rejected. The taste signal we
 finally have is concrete: the maintainer likes `starwars.com/databank`

@@ -13,12 +13,16 @@
  *   full bleed and listings are walls of it. Nothing is a thumbnail
  *   beside text.
  * - **Colour comes from the entity, not from the chrome** (ADR-103).
- *   `lib/entity-tint.ts` hashes an id into a chord and emits it as
- *   custom properties; the `.tinted` scope below re-points the UI
- *   tokens to it, so every Tailwind utility inside an entity page is
- *   already that entity's colour. The tokens declared here are the
- *   NEUTRAL chrome default — top bar, footer and listings keep them
- *   so navigation never wobbles.
+ *   `lib/entity-tint.ts` hashes an id into one of ten HAND-AUTHORED
+ *   warm chords (ADR-104) and emits it as custom properties; the
+ *   `.tinted` scope below re-points the UI tokens to it, so every
+ *   Tailwind utility inside an entity page is already that entity's
+ *   colour. The tokens declared here are the NEUTRAL chrome default —
+ *   top bar, footer and listings keep them so navigation never wobbles.
+ * - **Gold is the constant identity.** Whatever chord a page is on,
+ *   the wordmark, the headline figures (bounty) and the focus ring
+ *   stay `--color-gold`. The chord modulates atmosphere and the
+ *   interactive accent; it never replaces the brand colour.
  * - Motion is part of the finish: tiles lift and reveal on hover,
  *   always under `prefers-reduced-motion`.
  * - Type: Archivo Variable, expanded and heavy, is the branded
@@ -51,22 +55,30 @@
  *
  * Roles, not hues: `--art-bg` is the ground, `--art-ink` the dark mass
  * (silhouettes, panel gutters, shading), `--art-glow` the light one
- * (paper, highlights, hairlines). `--art-1..6` are an interchangeable
- * hue wheel — compositions pick a chord from it by hash, so keep them
- * at comparable lightness/chroma or the wall of tiles loses its rhythm.
+ * (paper, highlights, hairlines). `--art-1..6` are six interchangeable
+ * paints — compositions pick a triad from them by hash.
  * Kept out of `@theme` on purpose: they are art paints, not UI colours,
  * and must never become Tailwind utilities.
+ *
+ * ADR-104: all six live in the SAME warm band as `lib/entity-tint.ts`
+ * (roughly 12°–104° in oklch) — gold, brass, copper, burnt orange,
+ * vermillion, oxblood. No green, no cyan, no blue, no violet: a single
+ * family anchored on the site's gold. Because they cannot separate by
+ * hue, they separate by VALUE — the spread below runs 0.43 → 0.885, so
+ * whichever triad a composition draws it still has light and dark.
+ * These are the NEUTRAL chrome defaults; every entity overrides all
+ * nine with its own chord.
  */
 :root {
-  --art-bg: oklch(0.238 0.019 68);
-  --art-ink: oklch(0.152 0.014 62);
-  --art-glow: oklch(0.945 0.018 88);
-  --art-1: oklch(0.615 0.163 30);
-  --art-2: oklch(0.72 0.132 58);
-  --art-3: oklch(0.8 0.108 88);
-  --art-4: oklch(0.6 0.088 174);
-  --art-5: oklch(0.53 0.106 249);
-  --art-6: oklch(0.595 0.128 348);
+  --art-bg: oklch(0.232 0.026 62);
+  --art-ink: oklch(0.142 0.02 48);
+  --art-glow: oklch(0.955 0.03 92);
+  --art-1: oklch(0.66 0.175 40);
+  --art-2: oklch(0.79 0.128 86);
+  --art-3: oklch(0.54 0.155 28);
+  --art-4: oklch(0.885 0.075 95);
+  --art-5: oklch(0.43 0.105 34);
+  --art-6: oklch(0.715 0.128 62);
 }
 
 html {

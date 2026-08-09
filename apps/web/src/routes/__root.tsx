@@ -8,26 +8,21 @@
  * same first-paint recipe as the dashboard's `__root.tsx`, distinct
  * chrome (this is the public site, not the editing tool).
  *
- * Chrome register (v7 "Vignette", WEB_APP.md § Identity): a slim
- * sticky top bar (display wordmark, progress control, locale) over
- * the Log scrubber — the reader's manga-axis progression drawn as a
- * modern gold progress track with this page's knowledge anchors.
+ * Chrome register (v8.1, WEB_APP.md § Identity): ONE slim sticky top
+ * bar — wordmark, the compact progression control, the locale
+ * switcher. Nothing else. The graduated progression rail that used to
+ * span the header was removed in v8.1: a permanent full-width chart
+ * of the whole manga above every page was chrome shouting over
+ * content. The reader's position is still always on screen and one
+ * click away from being changed — it is the label of the control.
  */
-import {
-  createRootRoute,
-  HeadContent,
-  Link,
-  Outlet,
-  Scripts,
-  useMatches,
-} from '@tanstack/react-router';
+import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getCookie, getRequestHeader } from '@tanstack/react-start/server';
 import { type JSX, type ReactNode } from 'react';
-import { type LogAnchorView, type ProgressCursor } from '../api';
+import { type ProgressCursor } from '../api';
 import { BANNER_COOKIE, FirstRunBanner } from '../components/FirstRunBanner';
 import { LocaleSwitcher } from '../components/LocaleSwitcher';
-import { LogRail } from '../components/LogRail';
 import { ProgressControl } from '../components/ProgressControl';
 import { type Locale, t } from '../lib/chrome';
 // Plain (non bun:sqlite) server module — safe for a mixed import; the
@@ -129,32 +124,14 @@ function RootDocument({ children }: { readonly children: ReactNode; }): JSX.Elem
   );
 }
 
-/**
- * Deepest matched route's contribution to the shell: the Log scrubber
- * anchors of an entity page. Duck-typed guard — loader data shapes
- * are owned by the leaf routes.
- */
-function useRouteAnchors(): readonly LogAnchorView[] {
-  const matches = useMatches();
-  let anchors: readonly LogAnchorView[] = [];
-  for (const match of matches) {
-    const data: unknown = match.loaderData;
-    if (data === null || typeof data !== 'object') continue;
-    const record = data as Record<string, unknown>;
-    if (record['kind'] === 'entity' && Array.isArray(record['logAnchors'])) {
-      anchors = record['logAnchors'] as readonly LogAnchorView[];
-    }
-  }
-  return anchors;
-}
-
 function RootLayout(): JSX.Element {
   const locale = useLocale();
   const chrome = Route.useLoaderData()?.chrome;
   const progress: ProgressCursor = chrome?.progress ?? { manga: null, anime: null };
   const showBanner = chrome !== undefined && chrome.progressUnset && !chrome.bannerDismissed;
-  const anchors = useRouteAnchors();
-  const railKey = `${progress.manga ?? ''}:${progress.anime ?? ''}`;
+  // Remount the control when the cursor changes so its form fields
+  // restart from the persisted value rather than from stale state.
+  const cursorKey = `${progress.manga ?? ''}:${progress.anime ?? ''}`;
   return (
     <div className='flex min-h-dvh flex-col'>
       <header className='sticky top-0 z-20 border-b border-line bg-canvas'>
@@ -166,11 +143,10 @@ function RootLayout(): JSX.Element {
             One Piece <span className='text-gold'>Wiki</span>
           </Link>
           <div className='flex items-center gap-2.5'>
-            <ProgressControl key={railKey} progress={progress} />
+            <ProgressControl key={cursorKey} progress={progress} />
             <LocaleSwitcher />
           </div>
         </div>
-        <LogRail key={`rail:${railKey}`} progress={progress} anchors={anchors} />
         {showBanner ? <FirstRunBanner /> : null}
       </header>
       {

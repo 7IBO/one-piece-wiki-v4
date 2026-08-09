@@ -15,7 +15,26 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (design v8 « Grand Line » — base d'univers immersive)
+**Last updated**: 2026-08-09 (design v8.1 — palette ancrée sur l'or, header sans rail)
+
+**2026-08-09 — v8.1, révision ciblée du v8.** Retour mainteneur :
+« j'aime pas le header au niveau de la progress bar et les couleurs
+un peu aléatoires vertes et bleu. j'aime bien le gold par contre. »
+Direction v8 conservée, deux corrections. (a) **ADR-104** : la teinte
+par entité ne parcourt plus les 360° — elle indexe une liste de dix
+accords écrits à la main dans la bande chaude 12–100° (or, laiton,
+ocre, cuivre, safran, orange brûlé, vermillon, sang-de-bœuf, terre,
+ambre). Plus aucun vert/cyan/bleu/violet, y compris dans les tokens
+`--art-*`. L'or reste l'identité constante (wordmark, primes, focus).
+La variété passe par la structure de valeurs (fonds 0.17→0.31, ≥0.4
+d'amplitude par accord), pas par la teinte ; vérifié sur le mur de
+vignettes 40 px. Tests : bande chaude imposée sur les couleurs
+écrites ET sur les `--art-*` extraits de `styles.css`. (b) **LogRail
+supprimé** du header avec sa queue morte serveur (`logAnchors`,
+`collectLogAnchors`) ; la progression tient dans le `ProgressControl`
+compact. Sémantique du cookie `web_progress`, filtrage anti-spoil et
+`isDepartureVisible` inchangés. 511 tests verts. **Ne pas merger
+avant validation explicite du rendu.**
 
 **2026-08-09 — design v8 « Grand Line ».** v7 rejeté (« hyper IA,
 même les couleurs vont pas »). Premier retour de goût exploitable du

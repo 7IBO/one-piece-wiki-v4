@@ -1,8 +1,10 @@
 /**
- * The per-entity tint (ADR-103). The point of these tests is the
- * PROMISE, not the palette: whatever hue an id lands on, the page it
- * produces must be readable, deterministic, and paint only through
- * custom properties.
+ * The per-entity tint (ADR-103, curated by ADR-104). The point of
+ * these tests is the PROMISE, not the individual swatches: whichever
+ * chord an id lands on, the page it produces must be readable,
+ * deterministic, and painted only through custom properties — and the
+ * palette must never leave the warm band, so nobody can slip a green
+ * back into the design.
  */
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
@@ -15,6 +17,8 @@ import {
   type Oklch,
   PAGE_CANVAS,
   relativeLuminance,
+  TINT_CHORDS,
+  WARM_BAND,
 } from '../entity-tint.ts';
 
 const IDS: readonly string[] = [
@@ -33,8 +37,12 @@ const IDS: readonly string[] = [
   '',
 ];
 
-/** Every hue on the wheel, so no test depends on the lucky ids above. */
-const ALL_HUES: readonly string[] = Array.from({ length: 360 }, (_, i) => `hue-probe:${i}`);
+/**
+ * Enough probes to land on every authored chord many times over, so
+ * no test depends on the lucky ids above. (Replaces the old 360-hue
+ * sweep: the palette is a curated list now, not a wheel.)
+ */
+const PROBES: readonly string[] = Array.from({ length: 400 }, (_, i) => `chord-probe:${i}`);
 
 function parseOklch(value: string): Oklch {
   const match = /oklch\(\s*([\d.]+)\s+([\d.]+)\s+([\d.]+)/.exec(value);
@@ -70,6 +78,74 @@ describe('the canvas constant tracks styles.css', () => {
   });
 });
 
+// ---------------------------------------------------------------------------
+// ADR-104 — the palette is one family, anchored on gold. These are the
+// tests that stop a green from ever coming back.
+
+describe('the authored palette stays in the warm band', () => {
+  const every = (chord: (typeof TINT_CHORDS)[number]): readonly Oklch[] => [
+    chord.accent,
+    chord.wash,
+    chord.surface,
+    chord.bg,
+    chord.ink,
+    chord.glow,
+    ...chord.stops,
+  ];
+
+  test('no chord declares a hue outside 12°–104° (no green, cyan, blue, violet)', () => {
+    for (const chord of TINT_CHORDS) {
+      for (const color of every(chord)) {
+        expect(color.h).toBeGreaterThanOrEqual(WARM_BAND.min);
+        expect(color.h).toBeLessThanOrEqual(WARM_BAND.max);
+      }
+      expect(chord.hue).toBeGreaterThanOrEqual(WARM_BAND.min);
+      expect(chord.hue).toBeLessThanOrEqual(WARM_BAND.max);
+    }
+  });
+
+  test('the same band holds for the neutral chrome art tokens in styles.css', () => {
+    const css = readFileSync(resolve(import.meta.dirname, '..', '..', 'styles.css'), 'utf8');
+    const tokens = [...css.matchAll(/--art-[a-z0-9-]+:\s*(oklch\([^)]+\))/g)];
+    expect(tokens.length).toBeGreaterThanOrEqual(9);
+    for (const token of tokens) {
+      const { h } = parseOklch(token[1] ?? '');
+      expect(h).toBeGreaterThanOrEqual(WARM_BAND.min);
+      expect(h).toBeLessThanOrEqual(WARM_BAND.max);
+    }
+  });
+
+  test('gold anchors the list: the first chord is the site gold', () => {
+    const anchor = TINT_CHORDS[0];
+    expect(anchor.name).toBe('or');
+    expect(anchor.hue).toBeGreaterThanOrEqual(80);
+    expect(anchor.hue).toBeLessThanOrEqual(95);
+  });
+
+  test('names are unique and the list is big enough to differentiate entities', () => {
+    expect(TINT_CHORDS.length).toBeGreaterThanOrEqual(8);
+    expect(new Set(TINT_CHORDS.map((chord) => chord.name)).size).toBe(TINT_CHORDS.length);
+  });
+
+  test('every chord carries real value structure — a narrow band is not a flat one', () => {
+    for (const chord of TINT_CHORDS) {
+      // Ground below the highlight, mass below the ground.
+      expect(chord.ink.l).toBeLessThan(chord.bg.l);
+      expect(chord.bg.l).toBeLessThan(0.32);
+      expect(chord.glow.l).toBeGreaterThan(0.9);
+      // The six paints must span light AND dark, whichever triad the
+      // generator draws from them.
+      const lights = chord.stops.map((stop) => stop.l);
+      expect(Math.max(...lights) - Math.min(...lights)).toBeGreaterThanOrEqual(0.4);
+    }
+  });
+
+  test('the chords differ from each other in value, not only in hue', () => {
+    const grounds = TINT_CHORDS.map((chord) => chord.bg.l);
+    expect(Math.max(...grounds) - Math.min(...grounds)).toBeGreaterThanOrEqual(0.1);
+  });
+});
+
 describe('entityTint — determinism', () => {
   test('same id → identical chord, twice in a row', () => {
     for (const id of IDS) {
@@ -77,12 +153,17 @@ describe('entityTint — determinism', () => {
     }
   });
 
-  test('different entities of the same type get different hues', () => {
+  test('different entities of the same type get different chords', () => {
     const luffy = entityTint('character:monkey-d-luffy');
     const zoro = entityTint('character:roronoa-zoro');
-    expect(luffy.hue).not.toBe(zoro.hue);
+    expect(luffy.chord).not.toBe(zoro.chord);
     expect(luffy.vars['--tint-accent']).not.toBe(zoro.vars['--tint-accent']);
     expect(luffy.vars['--art-1']).not.toBe(zoro.vars['--art-1']);
+  });
+
+  test('the hash reaches every authored chord', () => {
+    const seen = new Set(PROBES.map((id) => entityTint(id).chord));
+    expect(seen.size).toBe(TINT_CHORDS.length);
   });
 
   test('no shared state: call order never changes a result', () => {
@@ -94,8 +175,8 @@ describe('entityTint — determinism', () => {
 });
 
 describe('entityTint — readability is guaranteed, not hoped for', () => {
-  test('the accent clears WCAG AA body text against the canvas, on EVERY hue', () => {
-    for (const id of [...IDS, ...ALL_HUES]) {
+  test('the accent clears WCAG AA body text against the canvas, on EVERY chord', () => {
+    for (const id of [...IDS, ...PROBES]) {
       const tint = entityTint(id);
       const ratio = contrastRatio(tint.accent, PAGE_CANVAS);
       expect(ratio).toBeGreaterThanOrEqual(MIN_ACCENT_CONTRAST);
@@ -103,7 +184,7 @@ describe('entityTint — readability is guaranteed, not hoped for', () => {
   });
 
   test('the hover accent stays at or above the plain accent contrast', () => {
-    for (const id of ALL_HUES) {
+    for (const id of PROBES) {
       const tint = entityTint(id);
       const plain = contrastRatio(parseOklch(tint.vars['--tint-accent'] ?? ''), PAGE_CANVAS);
       const hover = contrastRatio(parseOklch(tint.vars['--tint-accent-hover'] ?? ''), PAGE_CANVAS);
@@ -113,7 +194,7 @@ describe('entityTint — readability is guaranteed, not hoped for', () => {
 
   test('the hero wash stays dark enough for display type to sit on it', () => {
     const bone: Oklch = { l: 0.938, c: 0.012, h: 85 };
-    for (const id of ALL_HUES) {
+    for (const id of PROBES) {
       const wash = parseOklch(entityTint(id).vars['--tint-wash'] ?? '');
       expect(contrastRatio(bone, wash)).toBeGreaterThanOrEqual(MIN_ACCENT_CONTRAST);
       // …and the accent still reads against that wash at display sizes.
@@ -123,7 +204,7 @@ describe('entityTint — readability is guaranteed, not hoped for', () => {
   });
 
   test('the art ground never drifts light enough to grey out the artwork', () => {
-    for (const id of ALL_HUES) {
+    for (const id of PROBES) {
       const bg = parseOklch(entityTint(id).vars['--art-bg'] ?? '');
       expect(bg.l).toBeLessThan(0.32);
       const ink = parseOklch(entityTint(id).vars['--art-ink'] ?? '');
@@ -141,22 +222,23 @@ describe('entityTint — output shape', () => {
         expect(value).not.toMatch(/#[0-9a-fA-F]{3,8}\b/);
         expect(value).not.toMatch(/\b(?:rgba?|hsla?)\(/);
       }
-      // The six art hues plus the ground pair are always present, so a
-      // tinted subtree never inherits half of the global wheel.
+      // The six art paints plus the ground trio are always present, so
+      // a tinted subtree never inherits half of the neutral palette.
       for (const token of ['--art-1', '--art-2', '--art-3', '--art-4', '--art-5', '--art-6']) {
         expect(vars[token]).toMatch(/^oklch\(/);
       }
       expect(vars['--art-bg']).toMatch(/^oklch\(/);
       expect(vars['--art-ink']).toMatch(/^oklch\(/);
+      expect(vars['--art-glow']).toMatch(/^oklch\(/);
     }
   });
 
-  test('hue is a plain integer degree', () => {
-    for (const id of ALL_HUES) {
+  test('hue is a plain integer degree inside the band', () => {
+    for (const id of PROBES) {
       const { hue } = entityTint(id);
       expect(Number.isInteger(hue)).toBe(true);
-      expect(hue).toBeGreaterThanOrEqual(0);
-      expect(hue).toBeLessThan(360);
+      expect(hue).toBeGreaterThanOrEqual(WARM_BAND.min);
+      expect(hue).toBeLessThanOrEqual(WARM_BAND.max);
     }
   });
 });

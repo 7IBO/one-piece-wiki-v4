@@ -3,9 +3,13 @@
  * (two numeric inputs + "show everything" reset) that persists to the
  * `web_progress` cookie — the only store the server functions can
  * read for SSR-filtered first paint — then invalidates the router so
- * every loader refetches filtered views. It is mounted by TWO
- * triggers: the compact header control below, and the Log scrubber
- * (`LogRail.tsx`), the signature surface of the app.
+ * every loader refetches filtered views.
+ *
+ * Since v8.1 there is exactly ONE trigger: the compact header control
+ * below. It is therefore also the display of the cursor — its label
+ * IS the reader's position ("Ch. 600 · Ép. 1071"), in gold, so the
+ * state stays permanently on screen without a full-width graduated
+ * rail across the top of every page.
  */
 import { Popover } from '@base-ui/react/popover';
 import { useRouter } from '@tanstack/react-router';
@@ -117,7 +121,11 @@ export function ProgressPanel(
   );
 }
 
-/** Compact header trigger ("Ch. 1044 · Ép. 1071" or the invitation). */
+/**
+ * The header trigger — and, since v8.1, the ONLY place the spoiler
+ * cursor is shown. Set: the position in gold behind a gold hairline.
+ * Unset: the invitation to set one.
+ */
 export function ProgressControl(
   { progress }: { readonly progress: ProgressCursor; },
 ): JSX.Element {
@@ -136,11 +144,15 @@ export function ProgressControl(
     <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
       <Popover.Trigger
         aria-label={t(locale, 'progressTitle')}
-        className={`cursor-pointer rounded-md px-2.5 py-1.5 text-xs font-medium ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:ring-line-strong ${
-          active ? 'tabular-nums text-gold' : 'text-muted hover:text-fg'
+        className={`cursor-pointer rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors duration-150 hover:bg-surface ${
+          active
+            ? 'text-gold ring-1 ring-gold/35 hover:ring-gold/60'
+            : 'text-fg/85 ring-1 ring-line-strong hover:text-fg hover:ring-gold/45'
         }`}
       >
-        <span className='block max-w-56 truncate sm:max-w-64'>{summary}</span>
+        <span className={`block max-w-56 truncate sm:max-w-64 ${active ? 'tabular-nums' : ''}`}>
+          {summary}
+        </span>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner

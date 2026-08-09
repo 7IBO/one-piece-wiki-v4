@@ -301,8 +301,6 @@ export type EntityView = {
   readonly template: TemplateView;
   /** The canon scope to attach to outgoing entity links (`?scope=`). */
   readonly propagateScope: string | null;
-  /** Manga-axis markers for the Log Rail (already spoiler-filtered). */
-  readonly logAnchors: readonly LogAnchorView[];
 };
 
 /**
@@ -318,60 +316,6 @@ export type GatedEntityView = {
 };
 
 export type EntityPageView = EntityView | GatedEntityView;
-
-// ---------------------------------------------------------------------------
-// Log Rail anchors (WEB_APP.md § Le Log) — where THIS page's knowledge
-// sits on the manga axis: the first-appearance chapter plus every
-// spoiler-visible historised value's `since` chapter. Computed from
-// the ALREADY-FILTERED view pieces, so anchors can never leak data
-// beyond the reader's cursor.
-
-/** One marker on the Log Rail: a manga chapter + what anchors there. */
-export type LogAnchorView = {
-  readonly chapter: number;
-  readonly label: string;
-};
-
-const MANGA_CHAPTER_TYPE = 'manga-chapter';
-
-/** `manga-chapter:96` → 96; anything else → null. */
-function mangaChapterNumber(chip: EntityChip): number | null {
-  if (chip.type !== MANGA_CHAPTER_TYPE) return null;
-  const rest = chip.id.slice(chip.id.indexOf(':') + 1);
-  return /^\d+$/.test(rest) ? Number(rest) : null;
-}
-
-/**
- * Collect the rail anchors of an entity page. Pure over the built
- * (spoiler-filtered) view pieces — exported for unit tests. Anchors
- * on the same chapter merge; labels join with a middle dot; output is
- * sorted by chapter.
- */
-export function collectLogAnchors(input: {
-  readonly firstAppearance: EntityChip | null;
-  readonly properties: readonly PropertyView[];
-}, firstAppearanceLabel: string): readonly LogAnchorView[] {
-  const byChapter = new Map<number, string[]>();
-  const push = (chapter: number, label: string): void => {
-    const labels = byChapter.get(chapter);
-    if (labels === undefined) byChapter.set(chapter, [label]);
-    else if (!labels.includes(label)) labels.push(label);
-  };
-  if (input.firstAppearance !== null) {
-    const n = mangaChapterNumber(input.firstAppearance);
-    if (n !== null) push(n, firstAppearanceLabel);
-  }
-  for (const property of input.properties) {
-    for (const entry of property.entries) {
-      if (entry.since === null) continue;
-      const n = mangaChapterNumber(entry.since);
-      if (n !== null) push(n, `${property.label} — ${entry.display}`);
-    }
-  }
-  return [...byChapter.entries()]
-    .map(([chapter, labels]) => ({ chapter, label: labels.join(' · ') }))
-    .sort((a, b) => a.chapter - b.chapter);
-}
 
 // ---------------------------------------------------------------------------
 // Presentation bindings (ADR-091) — every binding degrades to the
@@ -1813,10 +1757,5 @@ export async function buildEntityView(
     narrative: db.getNarrative(row.id, locale),
     template,
     propagateScope: scopeToPropagate(row, cursor, scope),
-    logAnchors: collectLogAnchors(
-      { firstAppearance, properties },
-      // Presentation-only literal, localized like the derived rows.
-      locale === 'fr' ? 'Première apparition' : 'First appearance',
-    ),
   };
 }

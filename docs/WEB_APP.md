@@ -9,7 +9,7 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
 ## Identity
 
 - **Name**: One Piece Wiki (header wordmark; `<title>` suffix).
-- **Style** (v8 "Grand Line", 2026-08-09 — an official franchise
+- **Style** (v8.1 "Grand Line", 2026-08-09 — an official franchise
   universe database: immersive, cinematic, branded. The reference
   register is `starwars.com/databank` and the LoL champions page, NOT
   a neutral reference work, an editorial layout or an arty minimal
@@ -24,15 +24,26 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
     canvas; horizontal, weighting only the type side). EVERY entity
     gets a hero, picture or not. Listings are walls of full-tile art
     with the name over the composition.
-  - **Colour comes from the entity, not the chrome** (ADR-103).
-    `lib/entity-tint.ts` hashes the id into a chord and emits CSS
-    custom properties; `.tinted` re-points the theme tokens so every
-    Tailwind utility inside an entity page is already that entity's
-    colour, and the `--art-*` tokens are re-pointed on every tile so a
-    grid is individually coloured. The accent's lightness is raised
-    until its measured WCAG contrast against the canvas clears 4.5 —
-    swept over all 360 hues in tests. Chrome, footer and listings keep
-    the neutral tokens so navigation never wobbles.
+  - **Colour comes from the entity, not the chrome** (ADR-103), out of
+    a **curated gold-anchored palette** (ADR-104).
+    `lib/entity-tint.ts` hashes the id into one of TEN hand-authored
+    chords — `or` (the anchor), `laiton`, `ocre`, `cuivre`, `safran`,
+    `orange-brule`, `vermillon`, `sang-de-boeuf`, `terre`, `ambre` —
+    and emits them as CSS custom properties; `.tinted` re-points the
+    theme tokens so every Tailwind utility inside an entity page is
+    already that entity's colour, and the `--art-*` tokens are
+    re-pointed on every tile so a grid is individually coloured.
+    **The whole palette lives in one warm band (12°–100° oklch)**:
+    no green, no cyan, no blue, no violet, anywhere — a free hue wheel
+    was tried first and read as random noise. Because the chords
+    cannot separate by hue they separate by **value structure**: each
+    authors its own ground / dark mass / highlight (grounds run
+    0.17 → 0.31 in lightness, paints span ≥ 0.4 within a chord), which
+    is what keeps a wall of thumbs varied. The accent's lightness is
+    raised until its measured WCAG contrast against the canvas clears
+    4.5. Chrome, footer and listings keep the neutral tokens so
+    navigation never wobbles — and **gold is the constant identity**
+    (wordmark, bounty figures, focus ring) whatever chord a page is on.
   - **Facet-filtered collections.** Type listings derive their filters
     from the SCHEMA (`buildFacets`, `server/views.ts`): any declared
     enum property that actually splits the population becomes a facet,
@@ -59,10 +70,16 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
     heavy, is the branded display voice — wordmark, entity names set
     uppercase at hero scale, section titles, figures; Inter carries
     data/UI; tabular numerals throughout.
-  - Chrome: slim sticky top bar over the **Log scrubber** — the
-    manga-axis progression as a gold progress track (fill to the
-    cursor, labelled marker, diamonds at the page's knowledge anchors,
-    computed from already spoiler-filtered entries so it cannot leak).
+  - Chrome: ONE slim sticky top bar — wordmark, the compact
+    progression control, the locale switcher. Nothing else. The
+    graduated manga-axis rail that used to span the header (the "Log
+    scrubber", v5–v8) was **removed in v8.1**: a permanent full-width
+    chart of the whole series above every page was chrome shouting
+    over content, and it was never liked. The reader's position stays
+    permanently visible — it is the label of the progression control,
+    in gold ("Ch. 600 · Ép. 1071") behind a gold hairline — and one
+    click opens the same form. Spoiler semantics are untouched
+    (`web_progress` cookie, SSR-filtered first paint).
     `main` is full-bleed; every page opts into `.page-column` for its
     reading column, so a hero spans the viewport without a `100vw`
     breakout (which would overflow by the scrollbar width).
@@ -255,13 +272,18 @@ renders it as inline SVG.
   (they read through the translucent ground as depth) and
   `atmosphereFront` lays dust, rays and a glint OVER it. Tiles are
   unaffected: detail is 1 for every other frame.
-- **Per-entity colour** (ADR-103): `lib/entity-tint.ts` re-points the
-  `--art-*` tokens per tile from the entity's own chord, so the wheel
-  below is the neutral default and no two entities share a palette.
+- **Per-entity colour** (ADR-103/104): `lib/entity-tint.ts` re-points
+  all nine `--art-*` tokens per tile from the entity's own chord, so
+  the values in `styles.css` are only the neutral chrome default. Those
+  defaults sit in the same warm band as the chords, and a unit test
+  parses `styles.css` to prove it — the art tokens can never drift out
+  of the palette.
 - **Review**: `bun run -F @onepiece-wiki/web art:preview [out.html]`
   writes a contact sheet of the whole corpus at every frame, plus an
-  unknown-type degradation strip. It reads the tokens out of
-  `styles.css`, so it always shows the current skin.
+  unknown-type degradation strip and a 40 px thumb wall. Every tile
+  carries its own chord (and names it in the caption), so the sheet
+  answers the question a narrow palette raises: is the wall still
+  varied? Judge value structure and composition there, not hue.
 
 ## i18n
 

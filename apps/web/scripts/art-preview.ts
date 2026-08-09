@@ -10,9 +10,11 @@
  *
  *   bun run -F @onepiece-wiki/web art:preview [out.html]
  *
- * The palette is read straight out of `src/styles.css`, so the sheet
- * always shows the CURRENT skin — there is no second copy of the
- * tokens to keep in sync.
+ * Every tile carries its OWN chord (`lib/entity-tint.ts`, ADR-104) —
+ * exactly as the app paints it — so the sheet answers the question
+ * the narrow gold-anchored palette raises: does a wall of warm tiles
+ * still read as varied? The `:root` fallback is read straight out of
+ * `src/styles.css`, so there is no second copy of the tokens.
  */
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -20,6 +22,7 @@ import { createElement } from 'react';
 import { renderToStaticMarkup } from 'react-dom/server';
 import { EntityArt } from '../src/components/EntityArt.tsx';
 import { type ArtRatio, grammarForType } from '../src/lib/entity-art.ts';
+import { entityTint } from '../src/lib/entity-tint.ts';
 
 const webRoot = resolve(import.meta.dirname, '..');
 const repoRoot = resolve(webRoot, '..', '..');
@@ -63,16 +66,22 @@ function readArtTokens(): string {
 }
 
 function tile(subject: Subject, ratio: ArtRatio, width: number): string {
+  const id = `${subject.type}:${subject.slug}`;
   const svg = renderToStaticMarkup(
     createElement(EntityArt, {
-      entityId: `${subject.type}:${subject.slug}`,
+      entityId: id,
       entityType: subject.type,
       ratio,
       initial: subject.label.slice(0, 1),
       className: 'art',
     }),
   );
-  return `<figure class="tile" style="width:${width}px">${svg}<figcaption>${subject.label}</figcaption></figure>`;
+  // The entity's own chord, spread on the tile exactly as the app does.
+  const tint = entityTint(id);
+  const style = Object.entries(tint.vars)
+    .map(([name, value]) => `${name}:${value}`)
+    .join(';');
+  return `<figure class="tile" style="width:${width}px;${style}" title="${tint.chord}">${svg}<figcaption>${subject.label} <b>${tint.chord}</b></figcaption></figure>`;
 }
 
 function section(
@@ -145,6 +154,7 @@ ${readArtTokens()}
   .row { display: flex; flex-wrap: wrap; gap: 14px; }
   .tile { margin: 0; }
   .art { display: block; width: 100%; height: auto; border-radius: 5px; }
+  figcaption b { font-weight: 500; opacity: 0.8; }
   figcaption {
     margin-top: 5px; color: var(--faint); font-size: 10.5px;
     overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
@@ -155,9 +165,11 @@ ${readArtTokens()}
 </head>
 <body>
 <h1>Entity art — deterministic contact sheet</h1>
-<p class="lede">Every entity of the corpus, composed from its <code>type:slug</code> id.
-Judge composition, variety and per-type legibility; the palette lives in
-<code>src/styles.css</code> and is about to change.</p>
+<p class="lede">Every entity of the corpus, composed AND coloured from its
+<code>type:slug</code> id. Each caption names the chord the id landed on
+(<code>lib/entity-tint.ts</code>, ADR-104): ten hand-authored warm chords anchored on
+gold, differentiated by value structure rather than by hue. Judge composition,
+variety and per-type legibility — and check the thumb wall at the bottom.</p>
 ${sections.join('\n')}
 </body>
 </html>
