@@ -49,10 +49,10 @@ export function EntityImage(
     >
       <div
         aria-hidden
-        className='absolute inset-0 grid select-none place-items-center rounded-[inherit] bg-linear-to-b from-surface-2 to-surface ring-1 ring-inset ring-line'
+        className='absolute inset-0 grid select-none place-items-center rounded-[inherit] bg-surface ring-1 ring-inset ring-line'
       >
         <span
-          className={`font-display font-semibold leading-none tracking-[-0.02em] text-accent/35 ${monogramClassName}`}
+          className={`font-display font-semibold leading-none tracking-[-0.02em] text-fg/25 ${monogramClassName}`}
         >
           {initialOf(name)}
         </span>

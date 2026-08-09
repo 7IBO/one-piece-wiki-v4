@@ -3,16 +3,16 @@
 @import '@fontsource-variable/bricolage-grotesque';
 
 /*
- * Public reader theme — product-grade dark (2026 redesign, see
+ * Public reader theme — modern reference work (2026 redesign, see
  * WEB_APP.md § Identity). Tailwind v4 CSS-first config: tokens ONLY
  * here, every component reads them (zero raw hex/oklch in TSX).
  *
  * System:
- * - Canvas: near-black NEUTRAL (chroma ≈ 0.005 — no indigo tint).
- * - Two elevation steps (`surface`, `surface-2`) + hairline borders
- *   at white 8–14%.
- * - ONE vivid accent: modern amber, usable as a solid button ground
- *   with dark text. Teal stays as the LINK color only.
+ * - Paper-white warm-neutral canvas, near-black ink, grays for meta.
+ *   Light-first and light-only: this is an encyclopedia, structure
+ *   comes from typography, hairline RULES and whitespace — not boxes.
+ * - ONE functional color: deep editorial blue (`accent`), used for
+ *   links and the primary button only. Everything else is ink/gray.
  * - Display face: Bricolage Grotesque Variable (headings, wordmark).
  *   Body/UI: Inter Variable. Mono: ui-monospace stack.
  */
@@ -20,22 +20,17 @@
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: oklch(0.13 0.005 260);
-  --color-surface: oklch(0.168 0.005 260);
-  --color-surface-2: oklch(0.205 0.006 260);
-  --color-line: oklch(1 0 0 / 0.08);
-  --color-line-strong: oklch(1 0 0 / 0.16);
+  --color-canvas: oklch(0.985 0.003 90);
+  --color-surface: oklch(0.955 0.004 90);
+  --color-line: oklch(0.2 0.01 90 / 0.12);
+  --color-line-strong: oklch(0.2 0.01 90 / 0.55);
 
-  --color-fg: oklch(0.945 0.003 260);
-  --color-muted: oklch(0.72 0.006 260);
-  --color-faint: oklch(0.56 0.007 260);
+  --color-fg: oklch(0.22 0.012 80);
+  --color-muted: oklch(0.45 0.01 85);
+  --color-faint: oklch(0.58 0.008 85);
 
-  --color-accent: oklch(0.8 0.145 78);
-  --color-accent-hover: oklch(0.85 0.15 82);
-  --color-link: oklch(0.79 0.085 200);
-
-  --color-veil: oklch(0.8 0.145 78 / 0.1);
-  --color-link-veil: oklch(0.79 0.085 200 / 0.1);
+  --color-accent: oklch(0.44 0.13 255);
+  --color-accent-hover: oklch(0.36 0.12 255);
 }
 
 html {

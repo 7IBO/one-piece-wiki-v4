@@ -9,17 +9,21 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
 ## Identity
 
 - **Name**: One Piece Wiki (header wordmark; `<title>` suffix).
-- **Style** (redesigned 2026-08-09 on maintainer verdict): product-grade
-  modern — Linear/Vercel school. Near-black NEUTRAL canvas, layered
-  surfaces with hairline borders, ONE amber accent + restrained teal
-  links, generous whitespace, 150 ms micro-interactions,
-  focus-visible rings. Typography: **Bricolage Grotesque Variable**
-  for display (tight tracking at size), **Inter Variable** for
-  body/UI — the serif (Fraunces) is gone. Entity pages: eyebrow +
-  large display hero, two-column grid with a sticky rounded-2xl
-  infobox card; sections as tracked-uppercase eyebrows; card grids
-  with hover elevation; timeline rows on a quiet rail. Still
-  wiki-first in density and internal linking; dark-first.
+- **Style** (second pass 2026-08-09 — maintainer flagged the dark
+  iteration's AI tells): **modern reference work**, light-first.
+  Paper-white warm canvas, ink text, structure from full-width
+  hairline RULES and whitespace — not boxes; ONE functional color
+  (deep editorial blue, links only); ZERO decorative ornaments (no
+  dots/circles before labels, no veils, no glass/blur, no pills
+  beyond tiny uppercase tags). Typography: **Bricolage Grotesque
+  Variable** display (700, tight tracking) + **Inter Variable**
+  body, tabular numerals for counts/ids. Entity pages: bare
+  uppercase type label → display hero → ruled sections with real
+  20 px headings; infobox = Wikipedia-style definition list capped
+  by a 2 px ink rule (no card); members/cast as ruled rows with
+  square thumbs; history as an indented list ("since Chapter N"
+  inline gray meta); primary button = ink background, secondary =
+  underlined text. Single deliberate light look (no dark variant).
 - **Footer (every page)**: GitHub repository link
   (`https://github.com/7IBO/one-piece-wiki-v4`) and a support link
   (`https://buymeacoffee.com/7ibo`), plus locale switcher.

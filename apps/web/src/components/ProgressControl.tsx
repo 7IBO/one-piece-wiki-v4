@@ -57,19 +57,17 @@ export function ProgressControl(
   };
 
   const inputClass =
-    'w-full rounded-lg border border-line bg-canvas px-3 py-1.5 text-sm text-fg outline-none transition-colors duration-150 focus:border-accent/60';
+    'w-full rounded-md border border-line bg-canvas px-3 py-1.5 text-sm text-fg outline-none transition-colors duration-150 focus:border-accent';
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
       <Popover.Trigger
-        className='flex items-center gap-2 rounded-lg border border-line bg-surface px-2.5 py-1.5 font-mono text-xs text-muted transition-colors duration-150 hover:border-line-strong hover:text-fg sm:px-3'
+        className={`py-1 text-xs font-medium transition-colors duration-150 hover:text-fg ${
+          active ? 'font-mono text-fg' : 'text-muted'
+        }`}
         aria-label={t(locale, 'progressTitle')}
       >
-        <span
-          aria-hidden
-          className={`size-1.5 rounded-full ${active ? 'bg-accent' : 'bg-faint'}`}
-        />
-        <span className='max-w-28 truncate sm:max-w-40'>{summary}</span>
+        <span className='block max-w-28 truncate sm:max-w-44'>{summary}</span>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner
@@ -79,8 +77,8 @@ export function ProgressControl(
           collisionPadding={12}
           className='isolate z-50'
         >
-          <Popover.Popup className='w-72 rounded-xl border border-line bg-surface p-4 shadow-2xl outline-none'>
-            <p className='font-display text-base font-bold tracking-[-0.01em] text-fg'>
+          <Popover.Popup className='w-72 rounded-md border border-line bg-canvas p-4 shadow-lg outline-none'>
+            <p className='font-display text-base font-semibold tracking-[-0.01em] text-fg'>
               {t(locale, 'progressTitle')}
             </p>
             <p className='mt-1 text-xs leading-relaxed text-faint'>
@@ -123,13 +121,13 @@ export function ProgressControl(
                     setAnime('');
                     apply({ manga: null, anime: null });
                   }}
-                  className='rounded-lg px-3 py-1.5 text-xs font-medium text-faint transition-colors duration-150 hover:text-fg'
+                  className='py-1.5 text-xs font-medium text-muted underline decoration-line-strong underline-offset-2 transition-colors duration-150 hover:text-fg'
                 >
                   {t(locale, 'progressReset')}
                 </button>
                 <button
                   type='submit'
-                  className='rounded-lg bg-accent px-4 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+                  className='rounded-md bg-fg px-4 py-1.5 text-xs font-semibold text-canvas transition-opacity duration-150 hover:opacity-85'
                 >
                   {t(locale, 'progressSave')}
                 </button>
