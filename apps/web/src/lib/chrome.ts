@@ -108,6 +108,11 @@ const STRINGS = {
 
   // v6 "La Gazette" additions (append-only)
   members: { en: 'Members', fr: 'Membres' },
+
+  // v7 "Vignette" additions (append-only). `#` is replaced by a count.
+  formerTag: { en: 'Former', fr: 'Ancien' },
+  showNMore: { en: 'Show # more', fr: 'Voir les # autres' },
+  showLess: { en: 'Show less', fr: 'Réduire' },
 } as const;
 
 export type ChromeKey = keyof typeof STRINGS;

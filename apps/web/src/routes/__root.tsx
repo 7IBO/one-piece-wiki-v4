@@ -8,10 +8,10 @@
  * same first-paint recipe as the dashboard's `__root.tsx`, distinct
  * chrome (this is the public site, not the editing tool).
  *
- * Chrome register (v6 "La Gazette", WEB_APP.md § Identity): a printed
- * masthead — ear row (tagline / locale), nameplate row (serif
- * wordmark + progress stamp) closed by a double rule, then the Log
- * ruler. Non-sticky: a printed object does not chase the reader.
+ * Chrome register (v7 "Vignette", WEB_APP.md § Identity): a slim
+ * sticky top bar (display wordmark, progress control, locale) over
+ * the Log scrubber — the reader's manga-axis progression drawn as a
+ * modern gold progress track with this page's knowledge anchors.
  */
 import {
   createRootRoute,
@@ -130,7 +130,7 @@ function RootDocument({ children }: { readonly children: ReactNode; }): JSX.Elem
 }
 
 /**
- * Deepest matched route's contribution to the shell: the Log ruler
+ * Deepest matched route's contribution to the shell: the Log scrubber
  * anchors of an entity page. Duck-typed guard — loader data shapes
  * are owned by the leaf routes.
  */
@@ -157,38 +157,32 @@ function RootLayout(): JSX.Element {
   const railKey = `${progress.manga ?? ''}:${progress.anime ?? ''}`;
   return (
     <div className='flex min-h-dvh flex-col'>
-      <header className='w-full'>
-        {/* Ear row — tagline left, locale right, hairline underneath. */}
-        <div className='mx-auto flex w-full max-w-[1200px] items-center justify-between gap-4 border-b border-line px-4 py-1.5 sm:px-6'>
-          <span className='overline-label hidden sm:block'>{t(locale, 'tagline')}</span>
-          <span className='overline-label sm:hidden'>{t(locale, 'siteName')}</span>
-          <LocaleSwitcher />
-        </div>
-        {/* Nameplate row — serif wordmark, progress stamp on the right. */}
-        <div className='mx-auto flex w-full max-w-[1200px] flex-wrap items-baseline justify-between gap-x-6 gap-y-2 px-4 pb-2.5 pt-3 sm:px-6'>
+      <header className='sticky top-0 z-20 border-b border-line bg-canvas'>
+        <div className='mx-auto flex h-13 w-full max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6'>
           <Link
             to='/'
-            className='font-display text-[clamp(1.45rem,3.2vw,1.9rem)] font-semibold leading-none tracking-[0.015em] text-fg transition-colors duration-150 hover:text-accent'
+            className='display whitespace-nowrap text-[17px] font-extrabold tracking-tight text-fg transition-colors duration-150 hover:text-gold'
           >
-            {t(locale, 'siteName')}
+            One Piece <span className='text-gold'>Wiki</span>
           </Link>
-          <ProgressControl key={railKey} progress={progress} />
+          <div className='flex items-center gap-2.5'>
+            <ProgressControl key={railKey} progress={progress} />
+            <LocaleSwitcher />
+          </div>
         </div>
-        <div className='rule-double mx-auto w-full max-w-[1200px] px-4 sm:px-6' />
         <LogRail key={`rail:${railKey}`} progress={progress} anchors={anchors} />
         {showBanner ? <FirstRunBanner /> : null}
       </header>
-      <main className='mx-auto w-full max-w-[1200px] flex-1 px-4 pb-12 pt-6 sm:px-6 sm:pt-7'>
+      <main className='mx-auto w-full max-w-[1200px] flex-1 px-4 pb-16 pt-7 sm:px-6 sm:pt-8'>
         <Outlet />
       </main>
-      <footer className='mt-4'>
-        <div className='rule-double mx-auto w-full max-w-[1200px] px-4 sm:px-6' />
-        <div className='mx-auto flex w-full max-w-[1200px] flex-wrap items-baseline gap-x-6 gap-y-1.5 px-4 py-4 sm:px-6'>
+      <footer className='border-t border-line'>
+        <div className='mx-auto flex w-full max-w-[1200px] flex-wrap items-baseline gap-x-6 gap-y-2 px-4 py-5 text-xs sm:px-6'>
           <a
             href={GITHUB_URL}
             target='_blank'
             rel='noreferrer'
-            className='overline-label text-muted underline decoration-line-strong underline-offset-4 transition-colors duration-150 hover:text-accent'
+            className='font-medium text-muted transition-colors duration-150 hover:text-fg'
           >
             GitHub — {t(locale, 'footerContribute')}
           </a>
@@ -196,11 +190,11 @@ function RootLayout(): JSX.Element {
             href={SUPPORT_URL}
             target='_blank'
             rel='noreferrer'
-            className='overline-label text-muted underline decoration-line-strong underline-offset-4 transition-colors duration-150 hover:text-accent'
+            className='font-medium text-muted transition-colors duration-150 hover:text-fg'
           >
             {t(locale, 'footerSupport')}
           </a>
-          <span className='min-w-56 flex-1 font-serif text-[13px] italic text-faint sm:text-right'>
+          <span className='min-w-56 flex-1 text-faint sm:text-right'>
             {t(locale, 'footerNote')}
           </span>
         </div>
@@ -213,14 +207,14 @@ function NotFound(): JSX.Element {
   const locale = useLocale();
   return (
     <div className='mx-auto max-w-md py-24 text-center'>
-      <p className='overline-label'>404</p>
-      <p className='mt-3 font-display text-4xl font-semibold tracking-[0.01em] text-fg'>
+      <p className='display text-5xl font-extrabold text-gold/50'>404</p>
+      <p className='display mt-3 text-3xl font-bold text-fg'>
         {t(locale, 'notFoundTitle')}
       </p>
-      <p className='mt-4 font-serif text-[15px] italic text-muted'>{t(locale, 'notFoundBody')}</p>
+      <p className='mt-3 text-[15px] text-muted'>{t(locale, 'notFoundBody')}</p>
       <Link
         to='/'
-        className='overline-label mt-10 inline-block border border-accent px-4 py-2 text-accent transition-colors duration-150 hover:bg-accent hover:text-canvas'
+        className='mt-8 inline-block rounded-md bg-accent px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
       >
         {t(locale, 'backHome')}
       </Link>

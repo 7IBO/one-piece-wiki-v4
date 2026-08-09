@@ -1,8 +1,7 @@
 /**
- * Home — the archive's table of contents, set like the index page of
- * an almanac: entity types grouped by their schema `ui_hint.group`,
- * each group a ruled column section, each type a dot-leader row
- * (label … count) linking to the per-type listing.
+ * Home — the collection at a glance: entity types grouped by their
+ * schema `ui_hint.group`, each type a compact link module (initial
+ * tile + label + count) linking to the per-type listing.
  */
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { type JSX } from 'react';
@@ -20,52 +19,58 @@ function HomePage(): JSX.Element {
   const locale = useLocale();
   return (
     <div>
-      <header className='flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1 border-b border-line-strong pb-2.5'>
-        <h1 className='font-display text-[clamp(1.6rem,3.4vw,2.3rem)] font-semibold leading-tight tracking-[0.005em] text-fg'>
+      <header className='mb-7'>
+        <h1 className='display text-[clamp(1.6rem,3.6vw,2.4rem)] font-extrabold leading-[1.05] text-fg'>
           {t(locale, 'browseByType')}
         </h1>
-        <p className='overline-label'>
-          <span className='tabular-nums text-fg'>{view.totalEntities}</span>{' '}
+        <p className='mt-1.5 text-sm text-muted'>
+          {t(locale, 'tagline')} ·{' '}
+          <span className='font-semibold tabular-nums text-gold'>
+            {view.totalEntities}
+          </span>{' '}
           {t(locale, 'entitiesIndexed')}
         </p>
       </header>
-      {/* The index: ruled columns, dot-leader rows. */}
-      <section
-        aria-label={t(locale, 'browseByType')}
-        className='gap-10 pt-5 min-[560px]:columns-2 min-[900px]:columns-3 [column-rule:1px_solid_var(--color-line)]'
-      >
-        {view.groups.map((group) => <GroupIndex key={group.id} group={group} />)}
-      </section>
+      {
+        /* Masonry columns: small groups pack side by side, no sparse
+          single-column stack. */
+      }
+      <div className='gap-6 min-[560px]:columns-2 lg:columns-3'>
+        {view.groups.map((group) => <GroupSection key={group.id} group={group} />)}
+      </div>
     </div>
   );
 }
 
-function GroupIndex({ group }: { readonly group: TypeGroup; }): JSX.Element {
+function GroupSection({ group }: { readonly group: TypeGroup; }): JSX.Element {
   return (
-    <section className='mb-7 break-inside-avoid'>
-      <h2 className='overline-label border-b border-line-strong pb-1.5'>
-        {group.id.replace(/-/g, ' ')}
-      </h2>
-      <ul>
-        {group.types.map((type) => <TypeRow key={type.id} type={type} />)}
+    <section className='mb-6 break-inside-avoid'>
+      <h2 className='label-xs mb-2.5'>{group.id.replace(/-/g, ' ')}</h2>
+      <ul className='grid grid-cols-1 gap-2'>
+        {group.types.map((type) => <TypeModule key={type.id} type={type} />)}
       </ul>
     </section>
   );
 }
 
-function TypeRow({ type }: { readonly type: TypeGroup['types'][number]; }): JSX.Element {
+function TypeModule({ type }: { readonly type: TypeGroup['types'][number]; }): JSX.Element {
   return (
-    <li className='border-b border-line'>
+    <li>
       <Link
         to='/$type'
         params={{ type: type.id }}
-        className='group flex items-baseline py-[7px]'
+        className='group flex items-center gap-3 rounded-md p-1.5 pr-3 ring-1 ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface hover:ring-line-strong'
       >
-        <span className='min-w-0 truncate font-display text-[15px] font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
+        <span
+          aria-hidden
+          className='display grid size-10 shrink-0 select-none place-items-center rounded-[5px] bg-surface text-lg font-bold text-gold/60 ring-1 ring-line ring-inset'
+        >
+          {type.label.slice(0, 1).toUpperCase()}
+        </span>
+        <span className='min-w-0 flex-1 truncate text-sm font-semibold text-fg transition-colors duration-150 group-hover:text-accent'>
           {type.label}
         </span>
-        <span aria-hidden className='leaders' />
-        <span className='shrink-0 text-xs tabular-nums text-faint transition-colors duration-150 group-hover:text-muted'>
+        <span className='shrink-0 text-xs font-medium tabular-nums text-faint'>
           {type.count}
         </span>
       </Link>

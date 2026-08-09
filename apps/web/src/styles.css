@@ -1,51 +1,47 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/inter';
-@import '@fontsource-variable/fraunces';
-@import '@fontsource-variable/newsreader';
-@import '@fontsource-variable/newsreader/wght-italic.css';
+@import '@fontsource-variable/archivo/wdth.css';
 
 /*
- * Public reader theme — v6 "La Gazette" (see WEB_APP.md § Identity):
- * the site is set like a PRINTED reference object — a dark almanac /
- * ship's log — not a web app. Tailwind v4 CSS-first config: tokens
- * ONLY here, every component reads them (zero raw hex/oklch in TSX).
+ * Public reader theme — v7 "Vignette" (see WEB_APP.md § Identity):
+ * a modern, image-forward reference product. Dark, crisp,
+ * contemporary — the register of a high-end film/streaming catalogue,
+ * with its own One Piece palette. Tailwind v4 CSS-first config:
+ * tokens ONLY here, every component reads them (zero raw hex/oklch
+ * in TSX).
  *
- * Principles (the hard rules of the register):
- * - Typography IS the design. Fraunces (serif display) carries every
- *   headline and entity name; Newsreader (serif text) carries prose;
- *   Inter is demoted to a compact data face for tables, captions and
- *   letterspaced small-cap labels. Big scale contrast, tight leading.
- * - Structure comes from RULES, not boxes: 1px hairlines, double
- *   rules under section heads, ruled data tables, column rules.
- *   No cards, no rounded corners, no shadows, no gradients, no pills.
- * - Ink and paper, dark: warm near-black ink ground, bone "paper"
- *   text. ONE accent — a hanko/seal vermillion — reserved for
- *   interactive marks and stamps. A restrained gold exists for the
- *   bounty plaque only.
+ * Principles:
+ * - The CONNECTION is the core unit: every reference to another
+ *   entity renders as an image-led link module (thumb + name +
+ *   precise sub-label). Pages are hubs of connections, ordered by
+ *   importance, built to scale (rich top, collapsed tail).
+ * - Modern polish, restrained: small radii (2/4/6px), hairline
+ *   rings, subtle surface steps, deliberate hover states. No pill
+ *   soup, no dots, no gradients, no glassmorphism, no empty heroes.
+ * - Type: Archivo Variable (semi-expanded, heavy) is the display
+ *   voice — wordmark, entity names, section titles. Inter carries
+ *   data and UI. Tabular numerals for every figure.
+ * - Color: warm charcoal canvas, bone foreground; GOLD = identity
+ *   and stats (progress fill, bounty, monograms); VERMILLION =
+ *   interactive accents. Nothing else carries hue.
  */
 @theme {
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
-  --font-serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
+  --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
 
-  /* Warm ink — near-black with a candle-light cast, never blue. */
-  --color-canvas: oklch(0.168 0.009 65);
-  --color-surface: oklch(0.195 0.01 66);
-  --color-surface-2: oklch(0.228 0.011 68);
-  /* Hairlines are paper-tinted ink rules. */
-  --color-line: oklch(0.9 0.02 82 / 0.14);
-  --color-line-strong: oklch(0.9 0.02 82 / 0.34);
+  --color-canvas: oklch(0.179 0.01 68);
+  --color-surface: oklch(0.212 0.011 70);
+  --color-surface-2: oklch(0.252 0.012 72);
+  --color-line: oklch(0.93 0.015 85 / 0.09);
+  --color-line-strong: oklch(0.93 0.015 85 / 0.19);
 
-  /* Bone / paper foreground steps. */
-  --color-fg: oklch(0.908 0.021 84);
-  --color-muted: oklch(0.72 0.018 80);
-  --color-faint: oklch(0.565 0.014 76);
+  --color-fg: oklch(0.938 0.012 85);
+  --color-muted: oklch(0.74 0.014 80);
+  --color-faint: oklch(0.575 0.012 78);
 
-  /* The seal — hanko / wanted-poster vermillion. Interactive only. */
-  --color-accent: oklch(0.615 0.163 29);
-  --color-accent-hover: oklch(0.695 0.152 31);
-  /* Bounty plaque gold. Nothing else may use it. */
-  --color-gold: oklch(0.795 0.100 90);
+  --color-accent: oklch(0.645 0.165 30);
+  --color-accent-hover: oklch(0.715 0.15 32);
+  --color-gold: oklch(0.8 0.108 88);
 }
 
 html {
@@ -64,55 +60,35 @@ body {
   text-rendering: optimizeLegibility;
 }
 
-/* Print inversion: selected text reads as ink on paper. */
 ::selection {
-  background-color: var(--color-fg);
+  background-color: var(--color-gold);
   color: var(--color-canvas);
 }
 
-/* One focus language everywhere: seal-red rule, square. */
+/* One focus language everywhere: gold ring, 2px offset. */
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-gold);
   outline-offset: 2px;
-  border-radius: 0;
+  border-radius: 2px;
 }
 
-/* --- Print artifacts (shared classes, tokens-only). In the
- * `components` layer so plain utilities can still override them. --- */
+/* --- Shared voices (components layer so utilities can override) ---- */
 @layer components {
-  /* Letterspaced small-cap label — the metadata voice of the gazette. */
-  .overline-label {
+  /* The display voice: Archivo semi-expanded. Weight/size via utilities. */
+  .display {
+    font-family: var(--font-display);
+    font-stretch: 115%;
+    letter-spacing: -0.01em;
+  }
+
+  /* Small uppercase label — the metadata voice. Used sparingly. */
+  .label-xs {
     font-family: var(--font-sans);
     font-size: 10px;
     font-weight: 600;
-    letter-spacing: 0.18em;
+    letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--color-faint);
-  }
-
-  /* Double rule — closes a masthead or a section head, almanac style. */
-  .rule-double {
-    border-bottom: 3px double var(--color-line-strong);
-  }
-
-  /* Dot leaders between a label and its figure (index / TOC rows). */
-  .leaders {
-    flex: 1 1 1rem;
-    min-width: 1rem;
-    margin: 0 0.45rem;
-    border-bottom: 1px dotted var(--color-line-strong);
-    transform: translateY(-0.28em);
-  }
-
-  /* Drop cap on the opening paragraph of a narrative. */
-  .dropcap > p:first-child::first-letter {
-    float: left;
-    font-family: var(--font-display);
-    font-size: 3.05em;
-    font-weight: 500;
-    line-height: 0.82;
-    padding-right: 0.09em;
-    padding-top: 0.06em;
   }
 }
 

@@ -1,16 +1,19 @@
 /**
  * `/<type>/<slug>` — the canonical wiki page for one entity (the
  * entity TYPE ID is the first URL segment: `/character/monkey-d-luffy`),
- * set as a BROADSHEET ARTICLE (v6 "La Gazette", WEB_APP.md
- * § Identity): headword band (small-cap overline, huge serif name,
- * double rule), then a ruled two-column body — the FICHE column
- * (photo block, WANTED-style bounty plate, almanac data table) beside
- * the main column (per-type sections, narrative prose with drop cap,
- * value history, relations in BOTH directions with per-direction
- * labels from the artifact — ADR-086) — and the contribute colophon.
- * All spoiler/scope logic ran server-side; this file only renders the
- * view-model. An optional `?scope=` search param carries the canon
- * scope context and is propagated through every entity link.
+ * built as a HUB OF CONNECTIONS (v7 "Vignette", WEB_APP.md
+ * § Identity): identity header (portrait, display-face name, key
+ * facts strip, gold bounty stat), then every link to another entity
+ * as an image-led module — poster grids for people (members, cast,
+ * users — former ones VISIBLE with a clear ended state), connection
+ * rows for everything else — grouped by relation type, ordered by
+ * importance, and folded behind "Show N more" beyond a per-group
+ * budget so pages scale to many relations. Narrative and value
+ * history close the page. All spoiler/scope logic ran server-side
+ * (including the former-member rule: a departure beyond the cursor
+ * renders as current); this file only renders the view-model. An
+ * optional `?scope=` search param carries the canon scope context
+ * and is propagated through every entity link.
  *
  * File name: the `$type_` prefix un-nests this route from the
  * `/$type` listing leaf (TanStack trailing-underscore convention) —
@@ -32,13 +35,15 @@ import {
   type PropertyEntryView,
   type PropertyView,
   type RelationGroupView,
+  type RelationItemView,
   type SourceItemView,
   type SourceTemplateView,
 } from '../api';
 import { ContributeStrip } from '../components/ContributeStrip';
-import { CardGrid, EntityCard } from '../components/EntityCard';
+import { CARD_GRID_CLASS, EntityCard } from '../components/EntityCard';
 import { EntityChipLink, ScopeContext, useScopeSearch } from '../components/EntityChip';
 import { EntityImage } from '../components/EntityImage';
+import { ShowMoreList } from '../components/ShowMoreList';
 import { type ChromeKey, t } from '../lib/chrome';
 import { Markdown } from '../lib/markdown';
 import { validateScopeSearch } from '../lib/scope';
@@ -65,6 +70,47 @@ export const Route = createFileRoute('/$type_/$slug')({
   component: EntityPage,
 });
 
+// ---------------------------------------------------------------------------
+// Importance ordering of connection groups (ADR-091 presentation
+// binding: well-known relation ids rank first; unknown ids fall to
+// the end sorted by volume — the page still renders every group).
+
+const RELATION_PRIORITY: readonly string[] = [
+  'member-of',
+  'ate-fruit',
+  'uses-technique',
+  'wields-weapon',
+  'family-of',
+  'mentor-of',
+  'ally-of',
+  'rival-of',
+  'enemy-of',
+  'crewed-by',
+  'controls-territory',
+  'resides-in',
+  'participant',
+  'features',
+  'part-of-arc',
+  'occurs-during-arc',
+  'part-of-saga',
+  'adapted-by',
+  'available-on',
+  'issued-by',
+  'described-by',
+];
+
+function relationRank(key: string): number {
+  const index = RELATION_PRIORITY.indexOf(key.replace(/\.inverse$/, ''));
+  return index === -1 ? RELATION_PRIORITY.length : index;
+}
+
+/** Collapsed budget of a connection-row group. */
+const ROW_LIMIT = 8;
+/** Collapsed budget of a poster grid (members, cast…). */
+const CARD_LIMIT = 12;
+/** Collapsed budget of a compact number grid (chapters, episodes…). */
+const NUMBER_LIMIT = 28;
+
 function EntityPage(): JSX.Element {
   const view = Route.useLoaderData();
   if (view.kind === 'gated') return <GatedScreen view={view} />;
@@ -82,17 +128,17 @@ function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element
   const locale = useLocale();
   return (
     <div className='mx-auto max-w-md py-20 text-center'>
-      <p className='overline-label'>{view.typeLabel}</p>
-      <h1 className='mt-2 font-display text-[clamp(2rem,4.5vw,3rem)] font-semibold leading-[1.06] text-fg'>
+      <p className='label-xs'>{view.typeLabel}</p>
+      <h1 className='display mt-2 text-[clamp(1.9rem,4.5vw,2.8rem)] font-extrabold leading-[1.05] text-fg'>
         {view.name}
       </h1>
-      <div className='mt-8 border-y-[3px] border-double border-line-strong px-6 py-5'>
-        <p className='overline-label text-accent'>{t(locale, 'gatedTitle')}</p>
-        <p className='mt-2 font-serif text-[15px] italic text-muted'>{t(locale, 'gatedBody')}</p>
+      <div className='mx-auto mt-8 rounded-lg px-6 py-5 ring-1 ring-line'>
+        <p className='font-semibold text-gold'>{t(locale, 'gatedTitle')}</p>
+        <p className='mt-2 text-sm text-muted'>{t(locale, 'gatedBody')}</p>
       </div>
       <Link
         to='/'
-        className='overline-label mt-8 inline-block border border-accent px-4 py-2 text-accent transition-colors duration-150 hover:bg-accent hover:text-canvas'
+        className='mt-8 inline-block rounded-md bg-accent px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
       >
         {t(locale, 'backHome')}
       </Link>
@@ -105,169 +151,142 @@ function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element
 
 function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
   const locale = useLocale();
-  const outgoing = view.relations.filter((group) => !group.inverse);
-  const incoming = view.relations.filter((group) => group.inverse);
   const history = view.properties.filter((property) => property.entries.length > 1);
   const source = view.template.kind === 'source' ? view.template : null;
-  // The bounty (or a crew's derived total) is the ONE gold plate of
-  // the fiche — a WANTED-poster figure (ADR-091 binding, degrades to
-  // a plain data row when absent). Every other infobox unit renders
-  // as a ruled row of the almanac data table.
+  // The bounty (or a crew's derived total) is the ONE gold figure of
+  // the header (ADR-091 binding, degrades to a plain fact when
+  // absent). Every other infobox unit renders in the facts strip.
   const bountyRow =
     view.infobox.find((row) => row.id === 'bounty' || row.id === 'derived:total_bounty') ?? null;
   const statRows = view.infobox.filter((row) => row !== bountyRow);
-  const hasFiche = view.image !== null || bountyRow !== null || statRows.length > 0
-    || view.infoboxRelations.length > 0;
+  const groups = [...view.relations].sort((a, b) =>
+    relationRank(a.key) - relationRank(b.key)
+    || Number(a.inverse) - Number(b.inverse)
+    || b.items.length - a.items.length
+    || a.label.localeCompare(b.label)
+  );
   return (
     <article>
-      {/* Headword band */}
-      <header className='rule-double pb-3'>
-        <div className='flex flex-wrap items-baseline justify-between gap-x-6 gap-y-1'>
-          <Link
-            to='/$type'
-            params={{ type: view.type }}
-            className='overline-label transition-colors duration-150 hover:text-accent'
-          >
-            {view.typeLabel}
-            {source !== null && source.number !== null ? ` · N° ${source.number}` : ''}
-          </Link>
-          {source !== null ? <PrevNext template={source} /> : null}
-        </div>
-        <h1 className='mt-1 font-display text-[clamp(2.1rem,5.2vw,3.6rem)] font-semibold leading-[1.04] text-fg'>
-          {view.name}
-        </h1>
-        {view.firstAppearance !== null
+      {/* Identity header */}
+      <header className='flex flex-col gap-5 min-[560px]:flex-row min-[560px]:gap-7'>
+        {view.image !== null
           ? (
-            <p className='overline-label mt-2.5'>
-              {t(locale, 'firstAppearance')} — <EntityChipLink chip={view.firstAppearance} />
-            </p>
+            <div className='w-36 shrink-0 sm:w-44'>
+              <EntityImage
+                image={view.image}
+                name={view.name}
+                ratio='portrait'
+                className='w-full rounded-lg ring-1 ring-line'
+                monogramClassName='text-5xl'
+              />
+              {view.image.attribution !== null
+                ? (
+                  <p className='mt-1.5 truncate font-mono text-[0.58rem] uppercase tracking-[0.1em] text-faint'>
+                    {view.image.attribution}
+                  </p>
+                )
+                : null}
+            </div>
           )
           : null}
+        <div className='min-w-0 flex-1'>
+          <div className='flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1'>
+            <Link
+              to='/$type'
+              params={{ type: view.type }}
+              className='label-xs transition-colors duration-150 hover:text-accent'
+            >
+              {view.typeLabel}
+              {source !== null && source.number !== null ? ` · ${source.number}` : ''}
+            </Link>
+            {source !== null ? <PrevNext template={source} /> : null}
+          </div>
+          <div className='mt-1 flex flex-wrap items-start justify-between gap-x-6 gap-y-3'>
+            <h1 className='display min-w-0 text-[clamp(1.9rem,4.6vw,3rem)] font-extrabold leading-[1.04] text-fg'>
+              {view.name}
+            </h1>
+            {bountyRow !== null
+              ? (
+                <div className='shrink-0 min-[560px]:text-right'>
+                  <p className='label-xs text-gold/75'>{bountyRow.label}</p>
+                  <p className='display mt-0.5 text-[1.7rem] font-extrabold leading-none tabular-nums text-gold'>
+                    {bountyRow.entry.display}
+                  </p>
+                </div>
+              )
+              : null}
+          </div>
+          {view.firstAppearance !== null
+            ? (
+              <p className='mt-2 text-[13px] text-muted'>
+                {t(locale, 'firstAppearance')} · <EntityChipLink chip={view.firstAppearance} />
+              </p>
+            )
+            : null}
+          {statRows.length > 0 || view.infoboxRelations.length > 0
+            ? (
+              <dl className='mt-5 flex flex-wrap gap-x-7 gap-y-3.5 border-t border-line pt-4'>
+                {statRows.map((row) => <FactItem key={row.id} row={row} />)}
+                {view.infoboxRelations.map((row) => <FactRelationItem key={row.key} row={row} />)}
+              </dl>
+            )
+            : null}
+        </div>
       </header>
 
-      {/* Ruled two-column body: fiche | main matter. */}
-      <div
-        className={`pt-5 ${
-          hasFiche
-            ? 'grid grid-cols-1 gap-x-0 gap-y-7 min-[900px]:grid-cols-[280px_1fr]'
-            : ''
-        }`}
-      >
-        {hasFiche
+      {/* The hub: connection sections, ordered by importance. */}
+      <div className='mt-10 space-y-10'>
+        {source !== null ? <SourceSections template={source} /> : null}
+        {view.template.kind === 'character'
+          ? <CrewSections crews={view.template.crews} />
+          : null}
+        {view.template.kind === 'crew'
           ? (
-            <aside className='min-[900px]:border-r min-[900px]:border-line min-[900px]:pr-6'>
-              <div className='mx-auto max-w-[280px] min-[900px]:mx-0'>
-                {view.image !== null
-                  ? (
-                    <figure className='mb-5'>
-                      <EntityImage
-                        image={view.image}
-                        name={view.name}
-                        ratio='portrait'
-                        className='w-full border border-line'
-                        monogramClassName='text-6xl'
-                      />
-                      {view.image.attribution !== null
-                        ? (
-                          <figcaption className='mt-1.5 font-mono text-[0.58rem] uppercase tracking-[0.12em] text-faint'>
-                            {view.image.attribution}
-                          </figcaption>
-                        )
-                        : null}
-                    </figure>
-                  )
-                  : null}
-                {bountyRow !== null ? <BountyPlate row={bountyRow} /> : null}
-                {statRows.length > 0 || view.infoboxRelations.length > 0
-                  ? (
-                    <dl className='border-t border-line'>
-                      {statRows.map((row) => <FicheRow key={row.id} row={row} />)}
-                      {view.infoboxRelations.map((row) => (
-                        <FicheRelationRow key={row.key} row={row} />
-                      ))}
-                    </dl>
-                  )
-                  : null}
-              </div>
-            </aside>
+            <>
+              <MemberGrid titleKey='members' members={view.template.members} />
+              <MemberGrid titleKey='formerMembers' members={view.template.former} former />
+            </>
+          )
+          : null}
+        {view.template.kind === 'devil-fruit'
+          ? (
+            <>
+              <MemberGrid titleKey='currentUsers' members={view.template.users} />
+              <MemberGrid titleKey='formerUsers' members={view.template.former} former />
+            </>
+          )
+          : null}
+        {view.template.kind === 'arc'
+          ? (
+            <>
+              <NumberGrid titleKey='chapters' items={view.template.chapters} />
+              <NumberGrid titleKey='episodes' items={view.template.episodes} />
+              <NumberGrid titleKey='arcs' items={view.template.arcs} />
+            </>
           )
           : null}
 
-        <div className={`min-w-0 ${hasFiche ? 'min-[900px]:pl-7' : ''}`}>
-          {source !== null ? <SourceSections template={source} /> : null}
-          {view.template.kind === 'character'
-            ? <CrewSections crews={view.template.crews} />
-            : null}
-          {view.template.kind === 'crew'
-            ? (
-              <>
-                <MemberBlocks titleKey='members' members={view.template.members} />
-                <MemberBlocks titleKey='formerMembers' members={view.template.former} />
-              </>
-            )
-            : null}
-          {view.template.kind === 'devil-fruit'
-            ? (
-              <>
-                <MemberBlocks titleKey='currentUsers' members={view.template.users} />
-                <MemberBlocks titleKey='formerUsers' members={view.template.former} />
-              </>
-            )
-            : null}
-          {view.template.kind === 'arc'
-            ? (
-              <>
-                <SourceTable titleKey='chapters' items={view.template.chapters} />
-                <SourceTable titleKey='episodes' items={view.template.episodes} />
-                <SourceTable titleKey='arcs' items={view.template.arcs} />
-              </>
-            )
-            : null}
+        {groups.map((group) => <ConnectionGroup key={group.key} group={group} />)}
 
-          {view.narrative !== null
-            ? (
-              <section className='mb-8'>
-                <SectionHead>{t(locale, 'about')}</SectionHead>
-                <div className='max-w-[62ch]'>
-                  <Markdown markdown={view.narrative} />
-                </div>
-              </section>
-            )
-            : null}
+        {view.narrative !== null
+          ? (
+            <section>
+              <SectionHead>{t(locale, 'about')}</SectionHead>
+              <Markdown markdown={view.narrative} />
+            </section>
+          )
+          : null}
 
-          {history.length > 0
-            ? (
-              <section className='mb-8'>
-                <SectionHead count={history.length}>{t(locale, 'history')}</SectionHead>
-                <dl>
-                  {history.map((property) => (
-                    <PropertyBlock
-                      key={property.id}
-                      property={property}
-                    />
-                  ))}
-                </dl>
-              </section>
-            )
-            : null}
-
-          {outgoing.length > 0
-            ? (
-              <section className='mb-8'>
-                <SectionHead count={outgoing.length}>{t(locale, 'connections')}</SectionHead>
-                <RelationColumns groups={outgoing} />
-              </section>
-            )
-            : null}
-          {incoming.length > 0
-            ? (
-              <section className='mb-8'>
-                <SectionHead count={incoming.length}>{t(locale, 'referencedBy')}</SectionHead>
-                <RelationColumns groups={incoming} />
-              </section>
-            )
-            : null}
-        </div>
+        {history.length > 0
+          ? (
+            <section>
+              <SectionHead count={history.length}>{t(locale, 'history')}</SectionHead>
+              <dl className='divide-y divide-line'>
+                {history.map((property) => <PropertyBlock key={property.id} property={property} />)}
+              </dl>
+            </section>
+          )
+          : null}
       </div>
 
       <ContributeStrip type={view.type} slug={view.slug} />
@@ -276,55 +295,39 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
 }
 
 // ---------------------------------------------------------------------------
-// Print building blocks
+// Shared building blocks
 
-/** Section head: serif title + count, closed by a double rule. */
+/** Section head: display title + count. */
 function SectionHead(
   { children, count }: { readonly children: string; readonly count?: number; },
 ): JSX.Element {
   return (
-    <h2 className='rule-double mb-3.5 flex items-baseline gap-2.5 pb-1.5 font-display text-[1.2rem] font-semibold text-fg'>
+    <h2 className='display mb-3.5 flex items-baseline gap-2 text-[17px] font-bold text-fg'>
       {children}
       {count !== undefined
-        ? <span className='text-sm font-normal tabular-nums text-faint'>{count}</span>
+        ? <span className='font-sans text-sm font-medium tabular-nums text-faint'>{count}</span>
         : null}
     </h2>
   );
 }
 
-/**
- * The bounty plate — a WANTED-poster figure: double rules top and
- * bottom, small-cap caption, oversized tabular numerals in the only
- * gold of the page. Typographic stamp, no skeuomorphism.
- */
-function BountyPlate({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
+/** One key fact of the header strip (label over value). */
+function FactItem({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
   return (
-    <div className='mb-5 border-y-[3px] border-double border-gold/60 py-3 text-center'>
-      <p className='overline-label text-gold/85'>{row.label}</p>
-      <p className='mt-1 font-display text-[1.9rem] font-bold leading-none tabular-nums text-gold'>
-        {row.entry.display}
-      </p>
-    </div>
-  );
-}
-
-/** One ruled row of the almanac data table (label / value). */
-function FicheRow({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
-  return (
-    <div className='flex items-baseline justify-between gap-3 border-b border-line py-[7px]'>
-      <dt className='overline-label shrink-0'>{row.label}</dt>
-      <dd className='m-0 min-w-0 text-right text-[13px] font-medium tabular-nums text-fg'>
+    <div className='min-w-0'>
+      <dt className='label-xs'>{row.label}</dt>
+      <dd className='m-0 mt-0.5 text-[13.5px] font-semibold text-fg'>
         <PropertyEntry entry={row.entry} compact />
       </dd>
     </div>
   );
 }
 
-function FicheRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
+function FactRelationItem({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
   return (
-    <div className='flex items-baseline justify-between gap-3 border-b border-line py-[7px]'>
-      <dt className='overline-label shrink-0'>{row.label}</dt>
-      <dd className='m-0 min-w-0 text-right text-[13px] font-medium'>
+    <div className='min-w-0'>
+      <dt className='label-xs'>{row.label}</dt>
+      <dd className='m-0 mt-0.5 space-y-0.5 text-[13.5px] font-semibold'>
         {row.chips.map((chip) => (
           <div key={chip.id}>
             <EntityChipLink chip={chip} />
@@ -332,6 +335,66 @@ function FicheRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): J
         ))}
       </dd>
     </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Connection groups — image-led link modules, folded beyond ROW_LIMIT.
+
+function ConnectionGroup({ group }: { readonly group: RelationGroupView; }): JSX.Element {
+  return (
+    <section>
+      <SectionHead count={group.items.length}>{group.label}</SectionHead>
+      <ShowMoreList
+        limit={ROW_LIMIT}
+        listClassName='grid grid-cols-1 gap-x-8 md:grid-cols-2 xl:grid-cols-3'
+        items={group.items.map((item, i) => <ConnectionRow key={i} item={item} />)}
+      />
+    </section>
+  );
+}
+
+/**
+ * One connection module: thumb + name + precise sub-label (identity
+ * line or type, qualifiers, period). The whole row is the link.
+ */
+function ConnectionRow({ item }: { readonly item: RelationItemView; }): JSX.Element {
+  const locale = useLocale();
+  const search = useScopeSearch();
+  const subParts: string[] = [item.secondary ?? item.target.typeLabel];
+  if (item.epistemic !== null) subParts.push(item.epistemic.label);
+  for (const qualifier of item.qualifiers) subParts.push(qualifier.value);
+  if (item.since !== null) subParts.push(`${t(locale, 'since')} ${item.since.name}`);
+  if (item.until !== null) subParts.push(`${t(locale, 'until')} ${item.until.name}`);
+  const sub = subParts.join(' · ');
+  return (
+    <li className='border-b border-line'>
+      <Link
+        to='/$type/$slug'
+        params={{ type: item.target.type, slug: item.target.slug }}
+        search={search}
+        className='group flex items-center gap-3 py-2'
+      >
+        <EntityImage
+          image={item.image}
+          name={item.target.name}
+          ratio='square'
+          className='size-10 rounded-[5px] ring-1 ring-line transition-shadow duration-150 group-hover:ring-accent/70'
+          monogramClassName='text-base'
+        />
+        <span className='min-w-0 flex-1'>
+          <span
+            title={item.target.name}
+            className='block truncate text-[13.5px] font-semibold text-fg transition-colors duration-150 group-hover:text-accent'
+          >
+            {item.target.name}
+          </span>
+          <span title={sub} className='block truncate text-[11px] text-faint'>
+            {sub}
+          </span>
+        </span>
+      </Link>
+    </li>
   );
 }
 
@@ -344,20 +407,20 @@ function CrewSections(
   const locale = useLocale();
   if (crews.length === 0) return null;
   return (
-    <section className='mb-8'>
+    <section>
       <SectionHead count={crews.length}>{t(locale, 'affiliations')}</SectionHead>
       <div className='space-y-6'>
         {crews.map((crew) => (
           <div key={crew.crew.id}>
             <div className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
-              <span className='overline-label'>{crew.label}</span>
-              <span className='font-display text-[1.05rem] font-semibold'>
+              <span className='text-xs text-faint'>{crew.label}</span>
+              <span className='display text-[15px] font-bold'>
                 <EntityChipLink chip={crew.crew} />
               </span>
               {[crew.role, crew.rank].filter((part) => part !== null).map((part) => (
                 <span
                   key={part}
-                  className='text-[9px] font-semibold uppercase tracking-[0.14em] text-muted'
+                  className='rounded-sm bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted'
                 >
                   {part}
                 </span>
@@ -365,10 +428,12 @@ function CrewSections(
             </div>
             {crew.members.length > 0
               ? (
-                <>
-                  <p className='overline-label mb-2 mt-3'>{t(locale, 'otherMembers')}</p>
-                  <CardGrid>
-                    {crew.members.map((member) => (
+                <div className='mt-3'>
+                  <p className='label-xs mb-2'>{t(locale, 'otherMembers')}</p>
+                  <ShowMoreList
+                    limit={CARD_LIMIT}
+                    listClassName={CARD_GRID_CLASS}
+                    items={crew.members.map((member) => (
                       <EntityCard
                         key={member.chip.id}
                         type={member.chip.type}
@@ -379,8 +444,8 @@ function CrewSections(
                         meta={member.note}
                       />
                     ))}
-                  </CardGrid>
-                </>
+                  />
+                </div>
               )
               : null}
           </div>
@@ -391,31 +456,41 @@ function CrewSections(
 }
 
 // ---------------------------------------------------------------------------
-// Crew / devil-fruit: member photo blocks with roles, ranks
+// Crew / devil-fruit: poster grids — former members VISIBLE with a
+// clear ended state (spoiler-safe: the server only classifies a
+// membership as ended once its departure anchor is within the cursor).
 
-function MemberBlocks({ titleKey, members }: {
+function MemberGrid({ titleKey, members, former = false }: {
   readonly titleKey: ChromeKey;
   readonly members: readonly MemberRowView[];
+  readonly former?: boolean;
 }): JSX.Element | null {
   const locale = useLocale();
   if (members.length === 0) return null;
   return (
-    <section className='mb-8'>
+    <section>
       <SectionHead count={members.length}>{t(locale, titleKey)}</SectionHead>
-      <CardGrid>
-        {members.map((member) => <MemberBlockItem key={member.chip.id} member={member} />)}
-      </CardGrid>
+      <ShowMoreList
+        limit={CARD_LIMIT}
+        listClassName={CARD_GRID_CLASS}
+        items={members.map((member) => (
+          <MemberCard key={member.chip.id} member={member} former={former} />
+        ))}
+      />
     </section>
   );
 }
 
-function MemberBlockItem({ member }: { readonly member: MemberRowView; }): JSX.Element {
+function MemberCard(
+  { member, former }: { readonly member: MemberRowView; readonly former: boolean; },
+): JSX.Element {
   const locale = useLocale();
-  const meta = [
+  const metaParts = [
     [member.role, member.rank].filter((part) => part !== null).join(' · '),
     member.since !== null ? `${t(locale, 'since')} ${member.since.name}` : '',
     member.until !== null ? `${t(locale, 'until')} ${member.until.name}` : '',
-  ].filter((part) => part !== '').join(' · ');
+  ].filter((part) => part !== '');
+  const meta = metaParts.join(' · ');
   return (
     <EntityCard
       type={member.chip.type}
@@ -424,7 +499,9 @@ function MemberBlockItem({ member }: { readonly member: MemberRowView; }): JSX.E
       name={member.chip.name}
       secondary={member.secondary}
       meta={meta === '' ? null : meta}
+      tag={former ? t(locale, 'formerTag') : null}
       stat={member.stat}
+      dimmed={former}
     />
   );
 }
@@ -436,16 +513,17 @@ function PrevNext({ template }: { readonly template: SourceTemplateView; }): JSX
   const locale = useLocale();
   const search = useScopeSearch();
   if (template.prev === null && template.next === null) return null;
-  const linkClass = 'overline-label transition-colors duration-150 hover:text-accent';
+  const linkClass =
+    'rounded-md px-2.5 py-1 text-xs font-medium text-muted ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-fg hover:ring-line-strong';
   return (
-    <nav className='flex items-baseline divide-x divide-line-strong'>
+    <nav className='flex items-center gap-1.5'>
       {template.prev !== null
         ? (
           <Link
             to='/$type/$slug'
             params={{ type: template.prev.type, slug: template.prev.slug }}
             search={search}
-            className={`${linkClass} pr-3`}
+            className={linkClass}
           >
             ← {t(locale, 'previous')}
           </Link>
@@ -457,7 +535,7 @@ function PrevNext({ template }: { readonly template: SourceTemplateView; }): JSX
             to='/$type/$slug'
             params={{ type: template.next.type, slug: template.next.slug }}
             search={search}
-            className={`${linkClass} pl-3`}
+            className={linkClass}
           >
             {t(locale, 'next')} →
           </Link>
@@ -473,20 +551,22 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
     <>
       {template.arc !== null
         ? (
-          <section className='mb-8'>
-            <div className='rule-double mb-3.5 flex flex-wrap items-baseline gap-x-2.5 pb-1.5'>
-              <span className='overline-label'>{template.arc.label}</span>
-              <span className='font-display text-[1.2rem] font-semibold'>
+          <section>
+            <div className='mb-3.5 flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
+              <span className='text-xs text-faint'>{template.arc.label}</span>
+              <span className='display text-[17px] font-bold'>
                 <EntityChipLink chip={template.arc.chip} />
               </span>
             </div>
             {template.arc.items.length > 0
               ? (
-                <ul className='flex flex-wrap pl-px pt-px'>
-                  {template.arc.items.map((item) => (
+                <ShowMoreList
+                  limit={NUMBER_LIMIT}
+                  listClassName='flex flex-wrap gap-1.5'
+                  items={template.arc.items.map((item) => (
                     <SourceNumberCell key={item.chip.id} item={item} />
                   ))}
-                </ul>
+                />
               )
               : null}
           </section>
@@ -494,7 +574,7 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
         : null}
       {template.cast.length > 0
         ? (
-          <section className='mb-8'>
+          <section>
             <SectionHead>{t(locale, 'cast')}</SectionHead>
             <div className='space-y-5'>
               {template.cast.map((group) => <CastGroup key={group.type} group={group} />)}
@@ -504,11 +584,11 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
         : null}
       {template.availability.length > 0
         ? (
-          <section className='mb-8'>
+          <section>
             <SectionHead>{t(locale, 'availability')}</SectionHead>
-            <ul className='max-w-sm'>
+            <ul className='flex flex-wrap gap-2'>
               {template.availability.map((item) => (
-                <AvailabilityRow key={item.platform.id} item={item} />
+                <AvailabilityItem key={item.platform.id} item={item} />
               ))}
             </ul>
           </section>
@@ -518,7 +598,6 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
   );
 }
 
-/** One cell of the arc's chapter strip — a ruled table of figures. */
 function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Element {
   const search = useScopeSearch();
   const label = item.number === null ? item.chip.name : String(item.number);
@@ -526,20 +605,20 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Ele
     return (
       <li
         aria-current='page'
-        className='-ml-px -mt-px grid min-w-10 place-items-center border border-accent bg-accent px-2 py-1.5 text-xs font-semibold tabular-nums text-canvas'
+        className='grid min-w-9 place-items-center rounded-md bg-accent px-2 py-1.5 text-xs font-semibold tabular-nums text-canvas'
       >
         {label}
       </li>
     );
   }
   return (
-    <li className='-ml-px -mt-px border border-line'>
+    <li>
       <Link
         to='/$type/$slug'
         params={{ type: item.chip.type, slug: item.chip.slug }}
         search={search}
         title={item.chip.name}
-        className='grid min-w-10 place-items-center px-2 py-1.5 text-xs font-medium tabular-nums text-muted transition-colors duration-150 hover:bg-surface hover:text-accent'
+        className='grid min-w-9 place-items-center rounded-md px-2 py-1.5 text-xs font-medium tabular-nums text-muted ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-fg hover:ring-line-strong'
       >
         {label}
       </Link>
@@ -550,9 +629,11 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Ele
 function CastGroup({ group }: { readonly group: CastGroupView; }): JSX.Element {
   return (
     <div>
-      <h3 className='overline-label mb-2'>{group.typeLabel}</h3>
-      <CardGrid>
-        {group.items.map((item) => (
+      <h3 className='label-xs mb-2'>{group.typeLabel}</h3>
+      <ShowMoreList
+        limit={CARD_LIMIT}
+        listClassName={CARD_GRID_CLASS}
+        items={group.items.map((item) => (
           <EntityCard
             key={item.chip.id}
             type={item.chip.type}
@@ -563,40 +644,37 @@ function CastGroup({ group }: { readonly group: CastGroupView; }): JSX.Element {
             meta={item.note}
           />
         ))}
-      </CardGrid>
+      />
     </div>
   );
 }
 
-function AvailabilityRow({ item }: { readonly item: AvailabilityItemView; }): JSX.Element {
+function AvailabilityItem({ item }: { readonly item: AvailabilityItemView; }): JSX.Element {
   if (item.url === null) {
     return (
-      <li className='border-b border-line py-2 text-[13px] font-medium text-muted'>
+      <li className='rounded-md px-3 py-1.5 text-[13px] font-medium text-muted ring-1 ring-line'>
         {item.platform.name}
       </li>
     );
   }
   return (
-    <li className='border-b border-line'>
+    <li>
       <a
         href={item.url}
         target='_blank'
         rel='noreferrer'
-        className='group flex items-baseline justify-between gap-3 py-2 text-[13px] font-medium text-fg transition-colors duration-150 hover:text-accent'
+        className='block rounded-md px-3 py-1.5 text-[13px] font-medium text-accent ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-accent-hover hover:ring-line-strong'
       >
-        <span className='underline decoration-accent/50 underline-offset-3 group-hover:decoration-accent'>
-          {item.platform.name}
-        </span>
-        <span aria-hidden className='text-faint group-hover:text-accent'>↗</span>
+        {item.platform.name} ↗
       </a>
     </li>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Arc: ordered chapter / episode tables — the figure IS the visual.
+// Arc: ordered chapter / episode grids — compact, folded beyond budget.
 
-function SourceTable({ titleKey, items }: {
+function NumberGrid({ titleKey, items }: {
   readonly titleKey: ChromeKey;
   readonly items: readonly SourceItemView[];
 }): JSX.Element | null {
@@ -604,37 +682,36 @@ function SourceTable({ titleKey, items }: {
   const search = useScopeSearch();
   if (items.length === 0) return null;
   return (
-    <section className='mb-8'>
+    <section>
       <SectionHead count={items.length}>{t(locale, titleKey)}</SectionHead>
-      <ul className='flex flex-wrap pl-px pt-px'>
-        {items.map((item) => (
-          <li
-            key={item.chip.id}
-            className='-ml-px -mt-px w-[calc(33.333%+1px)] border border-line min-[480px]:w-[108px]'
-          >
+      <ShowMoreList
+        limit={NUMBER_LIMIT}
+        listClassName='flex flex-wrap gap-2'
+        items={items.map((item) => (
+          <li key={item.chip.id}>
             <Link
               to='/$type/$slug'
               params={{ type: item.chip.type, slug: item.chip.slug }}
               search={search}
               title={item.chip.name}
-              className='group block h-full px-2 py-1.5 transition-colors duration-150 hover:bg-surface'
+              className='group block w-24 rounded-md p-2 ring-1 ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface hover:ring-line-strong'
             >
-              <span className='block font-display text-lg font-semibold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-accent'>
+              <span className='display block text-base font-bold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-accent'>
                 {item.number ?? '·'}
               </span>
-              <span className='block truncate text-[10px] font-medium tracking-[0.02em] text-faint'>
+              <span className='block truncate text-[10.5px] text-faint'>
                 {item.chip.name}
               </span>
             </Link>
           </li>
         ))}
-      </ul>
+      />
     </section>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Shared building blocks (facts history + relation groups)
+// Facts history + shared value rendering
 
 function QualifierList(
   { qualifiers }: { readonly qualifiers: readonly LabelledValue[]; },
@@ -656,27 +733,25 @@ function QualifierList(
   );
 }
 
-/** Epistemic marks print as bracketed small caps: [believed dead]. */
-function EpistemicMark(
+function EpistemicBadge(
   { epistemic }: { readonly epistemic: { readonly label: string; } | null; },
 ): JSX.Element | null {
   if (epistemic === null) return null;
   return (
-    <span className='whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.14em] text-muted'>
-      [{epistemic.label}]
+    <span className='rounded-sm bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted'>
+      {epistemic.label}
     </span>
   );
 }
 
 /**
- * One historised property inside the history section: slim small-cap
- * label column, then compact [value · provenance] rows split by
- * hairlines — a chronological table, oldest to latest.
+ * One historised property inside the history section: slim label
+ * column, then compact [value · provenance] rows split by hairlines.
  */
 function PropertyBlock({ property }: { readonly property: PropertyView; }): JSX.Element {
   return (
-    <div className='grid grid-cols-1 gap-1 border-b border-line py-2.5 sm:grid-cols-[9.5rem_1fr] sm:gap-4'>
-      <dt className='overline-label pt-1'>{property.label}</dt>
+    <div className='grid grid-cols-1 gap-1 py-3 sm:grid-cols-[10rem_1fr] sm:gap-4'>
+      <dt className='label-xs pt-1'>{property.label}</dt>
       <dd className='m-0'>
         <ol className='m-0 list-none divide-y divide-line p-0'>
           {property.entries.map((entry, i) => (
@@ -724,20 +799,18 @@ function PropertyEntry(
     );
   }
   return (
-    <div
-      className={`flex flex-wrap items-baseline gap-x-2.5 gap-y-1 ${compact ? 'justify-end' : ''}`}
-    >
+    <div className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
       {entry.valueChip !== null
         ? <EntityChipLink chip={entry.valueChip} />
         : <span className='font-medium tabular-nums text-fg'>{entry.display}</span>}
-      <EpistemicMark epistemic={entry.epistemic} />
+      <EpistemicBadge epistemic={entry.epistemic} />
       {entry.autoImported
         ? (
           <span
             title={t(locale, 'autoImported')}
-            className='whitespace-nowrap text-[9px] font-semibold uppercase tracking-[0.14em] text-faint'
+            className='rounded-sm bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-faint'
           >
-            [{t(locale, 'autoImported')}]
+            {t(locale, 'autoImported')}
           </span>
         )
         : null}
@@ -749,58 +822,6 @@ function PropertyEntry(
           </span>
         )
         : null}
-    </div>
-  );
-}
-
-/** Relation groups flow as ruled columns, almanac style. */
-function RelationColumns(
-  { groups }: { readonly groups: readonly RelationGroupView[]; },
-): JSX.Element {
-  return (
-    <div
-      className={`gap-8 [column-rule:1px_solid_var(--color-line)] ${
-        groups.length > 1 ? 'min-[640px]:columns-2 min-[1100px]:columns-3' : ''
-      }`}
-    >
-      {groups.map((group) => <RelationGroup key={group.key} group={group} />)}
-    </div>
-  );
-}
-
-function RelationGroup({ group }: { readonly group: RelationGroupView; }): JSX.Element {
-  const locale = useLocale();
-  return (
-    <div className='mb-5 min-w-0 break-inside-avoid'>
-      <h3 className='overline-label mb-1 border-b border-line-strong pb-1'>
-        {group.label}
-      </h3>
-      <ul className='divide-y divide-line'>
-        {group.items.map((item, i) => (
-          <li
-            key={i}
-            className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1 py-[7px]'
-          >
-            <EntityChipLink chip={item.target} showType />
-            <EpistemicMark epistemic={item.epistemic} />
-            {item.since !== null
-              ? (
-                <span className='text-xs text-faint'>
-                  {t(locale, 'since')} <EntityChipLink chip={item.since} />
-                </span>
-              )
-              : null}
-            {item.until !== null
-              ? (
-                <span className='text-xs text-faint'>
-                  {t(locale, 'until')} <EntityChipLink chip={item.until} />
-                </span>
-              )
-              : null}
-            <QualifierList qualifiers={item.qualifiers} />
-          </li>
-        ))}
-      </ul>
     </div>
   );
 }

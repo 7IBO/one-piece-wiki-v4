@@ -15,7 +15,25 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (design v6 « La Gazette » — en attente du verdict mainteneur)
+**Last updated**: 2026-08-09 (design v7 « Vignette » — en attente du verdict mainteneur)
+
+**2026-08-09 — design v7 « Vignette » (7e itération, remplace v6).**
+v6 rejeté (« unique mais dégueulasse, ça fait pas moderne du
+tout »). Lecture du pendule : v2–v5 modernes-mais-génériques, v6
+unique-mais-daté → la cible est les deux (finition Letterboxd/A24,
+identité propre). v7 : Archivo Variable semi-étendue en display +
+Inter data, charbon chaud/os, or = identité/chiffres, vermillon =
+interactif, petits rayons 2–6px, connexions en modules-liens
+image + nom + sous-label groupés par type avec compteurs et
+repli « Voir les N autres » (`ShowMoreList`), ordre d'importance
+ADR-091 avec dégradation. Nouveautés fonctionnelles demandées :
+**anciens membres visibles** (grille « Anciens membres » atténuée,
+période affichée) avec règle anti-spoil testée — un départ au-delà
+du curseur rend le membre ACTUEL (`isDepartureVisible` dans
+`server/progress.ts`, 5 tests) ; **design prévu pour beaucoup de
+relations** (budgets de repli 8/12/28 par type de groupe). 472
+tests verts. NB : le corpus n'a aucune arête `until` → pas
+d'ancien membre visible en captures ; chemin testé unitairement.
 
 **2026-08-09 — design v6 « La Gazette » (après merge PR #120).** Le
 v5 « Le Log » a été rejeté par le mainteneur (« trop IA », 6e rejet).

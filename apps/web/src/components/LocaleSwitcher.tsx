@@ -2,8 +2,7 @@
  * FR/EN switcher (Base UI ToggleGroup). Persists to the `web_locale`
  * cookie — the only store the server can read for SSR first paint —
  * then invalidates the router so every loader refetches localized
- * view models. Set like the edition line of a gazette: two small-cap
- * text marks split by a hairline, the current edition underlined.
+ * view models.
  */
 import { Toggle } from '@base-ui/react/toggle';
 import { ToggleGroup } from '@base-ui/react/toggle-group';
@@ -33,14 +32,14 @@ export function LocaleSwitcher(): JSX.Element {
         if (next === 'en' || next === 'fr') apply(next);
       }}
       aria-label={t(locale, 'languageLabel')}
-      className='flex items-center divide-x divide-line-strong'
+      className='flex items-center gap-0.5 rounded-md p-0.5 text-xs font-semibold uppercase ring-1 ring-line'
     >
       {SUPPORTED_LOCALES.map((value) => (
         <Toggle
           key={value}
           value={value}
           aria-label={value === 'en' ? 'English' : 'Français'}
-          className='overline-label cursor-pointer px-2 py-1 transition-colors duration-150 hover:text-fg data-[pressed]:text-fg data-[pressed]:underline data-[pressed]:decoration-accent data-[pressed]:decoration-2 data-[pressed]:underline-offset-4'
+          className='cursor-pointer rounded-[5px] px-1.5 py-1 text-faint transition-colors duration-150 hover:text-fg data-[pressed]:bg-surface-2 data-[pressed]:text-fg'
         >
           {value}
         </Toggle>

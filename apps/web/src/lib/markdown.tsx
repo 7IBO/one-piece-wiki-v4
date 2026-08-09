@@ -21,7 +21,7 @@ function renderInline(text: string): ReactNode {
     }
     if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
       return (
-        <code key={i} className='bg-surface px-1 py-0.5 font-mono text-[0.85em]'>
+        <code key={i} className='rounded-sm bg-surface-2 px-1 py-0.5 font-mono text-[0.85em]'>
           {part.slice(1, -1)}
         </code>
       );
@@ -118,15 +118,22 @@ export function parseBlocks(markdown: string): Block[] {
 export function Markdown({ markdown }: { readonly markdown: string; }): JSX.Element {
   const blocks = parseBlocks(markdown);
   return (
-    <div className='dropcap space-y-4 font-serif text-[15.5px] leading-[1.65] text-fg/92'>
+    <div className='max-w-[68ch] space-y-4 text-[14.5px] leading-[1.7] text-fg/90'>
       {blocks.map((block, i) => {
         switch (block.kind) {
           case 'heading': {
-            const sizes = ['text-2xl', 'text-xl', 'text-lg', 'text-base', 'text-base', 'text-base'];
+            const sizes = [
+              'text-xl',
+              'text-lg',
+              'text-base',
+              'text-base',
+              'text-base',
+              'text-base',
+            ];
             return (
               <h3
                 key={i}
-                className={`mt-8 border-b border-line pb-1 font-display font-semibold text-fg ${
+                className={`display mt-7 font-bold text-fg ${
                   sizes[block.level - 1] ?? 'text-base'
                 }`}
               >
@@ -144,7 +151,7 @@ export function Markdown({ markdown }: { readonly markdown: string; }): JSX.Elem
             return (
               <pre
                 key={i}
-                className='overflow-x-auto border border-line bg-surface p-4 font-mono text-sm'
+                className='overflow-x-auto rounded-md bg-surface-2 p-4 font-mono text-sm'
               >
                 {block.text}
               </pre>

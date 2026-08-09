@@ -65,6 +65,21 @@ export function parseProgressCookie(raw: string | null | undefined): ProgressCur
 }
 
 /**
+ * Is a relation's END (`until` anchor) knowledge the reader has?
+ * Spoiler rule for memberships (WEB_APP.md): a departure anchored
+ * beyond the cursor must render as if it never happened — the member
+ * shows as CURRENT until the reader reaches the departure source.
+ * `null` until = the relation never ended. No cursor = wiki default,
+ * everything (including departures) is visible.
+ */
+export function isDepartureVisible(
+  untilSource: string | null,
+  cursor: ProgressCursor,
+): boolean {
+  return untilSource !== null && isSourceVisible(untilSource, cursor);
+}
+
+/**
  * Is a source anchor (`manga-chapter:1044`, `anime-episode:12`, …)
  * within the reader's progression? `null`/`undefined` anchors are
  * always visible (no `since` = timeless value).

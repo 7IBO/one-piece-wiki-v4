@@ -9,36 +9,37 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
 ## Identity
 
 - **Name**: One Piece Wiki (header wordmark; `<title>` suffix).
-- **Style** (v6 "La Gazette", 2026-08-09 — the site is set like a
-  PRINTED reference object: a dark almanac / ship's log, not a web
-  app). Typography IS the design: Fraunces (serif display) for every
-  headline and entity name, Newsreader (serif text) for prose, Inter
-  demoted to a compact data face for tables and letterspaced
-  small-cap labels. Structure comes from RULES, not boxes — 1px
-  hairlines, double rules under mastheads and section heads, ruled
-  data tables, dot-leader index rows, CSS column rules; NO cards, NO
-  rounded corners, NO shadows/gradients/pills/chips/dots. Chrome: a
-  printed MASTHEAD (ear row with tagline + locale, nameplate row with
-  serif wordmark + progress stamp, double rule) over the **Log
-  ruler** — the manga-axis progression measure drawn as a printed
-  ruler (graduations rising from the bottom rule, figures over
-  majors, paper-tinted shading from origin to the reader's cursor,
-  seal-red cursor rule; entity pages add paper diamonds at that
-  page's knowledge anchors, computed from already spoiler-filtered
-  entries so the ruler can never leak). Entity pages are BROADSHEET
-  articles: headword band (small-cap overline, huge serif name,
-  double rule), then a ruled two-column body — fiche column
-  (hairline-framed photo block, WANTED-style double-ruled gold
-  bounty plate, almanac data table) beside the main matter (ruled
-  sections, drop-cap narrative, chronology tables, columnar
-  relations). Member/cast grids are newspaper PHOTO BLOCKS: 3:4
-  photo, hairline frame collapsing into a shared lattice, caption
-  stack (serif name, italic epithet, small-cap role), ~150 px,
-  left-packed. Palette: warm INK canvas (near-black, candle cast,
-  oklch ≈0.17 hue 65), BONE/paper foreground; ONE accent — hanko /
-  wanted-poster seal VERMILLION for everything interactive — plus a
-  restrained gold reserved for the bounty plate alone. Tabular
-  numerals throughout.
+- **Style** (v7 "Vignette", 2026-08-09 — a modern, image-forward
+  reference product; the register of a high-end film/streaming
+  catalogue, with its own identity). **The connection is the core
+  unit**: every reference to another entity renders as an image-led
+  link module — thumbnail (shared EntityImage, monogram fallback) +
+  name + precise sub-label (role, period, type) — and entity pages
+  are HUBS of connections grouped by relation type, **ordered by
+  importance** (well-known-id priority list, ADR-091: crew → fruit →
+  techniques/weapons → family → … ; unknown ids fall to the end but
+  always render). **Designed for scale**: each group shows a
+  collapsed budget (8 rows / 12 posters / 28 numbers) and folds the
+  tail behind a "Show N more" toggle; chapters/episodes use compact
+  number grids, never page-long dumps. **Former members are
+  VISIBLE**: poster grids show active AND former members; former
+  ones are subdued (dimmed image) with a "Former" tag and their
+  period — and the spoiler rule holds: a departure anchored beyond
+  the reader's cursor renders as CURRENT (`isDepartureVisible`,
+  `server/progress.ts`). Typography: Archivo Variable semi-expanded
+  (font-stretch 115%) is the display voice — wordmark, entity names,
+  section titles, figures; Inter carries data/UI; tabular numerals.
+  Chrome: slim sticky top bar over the **Log scrubber** — the
+  manga-axis progression as a modern gold progress track (gold fill
+  to the cursor, labeled marker, gold diamonds at the page's
+  knowledge anchors, computed from already spoiler-filtered entries
+  so it can never leak). Modern polish, restrained: small radii
+  (2–6 px), hairline rings, subtle surface steps, deliberate hover
+  states (ring inks accent, names ink accent); no pill soup, no
+  gradients, no glassmorphism, no empty heroes. Palette: warm
+  charcoal canvas (oklch ≈0.18 hue 68), bone foreground, GOLD for
+  identity + stats (progress, bounty, monograms), VERMILLION for
+  interactive accents.
 - **Footer (every page)**: GitHub repository link
   (`https://github.com/7IBO/one-piece-wiki-v4`) and a support link
   (`https://buymeacoffee.com/7ibo`), plus locale switcher.
@@ -176,10 +177,10 @@ One shared image component renders EVERY image in the app. Rules:
   tracked and the designed fallback renders until a real image
   confirms; when an entity has no image at all, the infobox has no
   image block (no empty frame pretending to be a photo).
-- The fallback is a monogram plate — entity initial in the display
-  serif on a quiet raised-ink ground with a hairline frame (a
-  printer's ornament, not a placeholder). Square corners, no AI-ish
-  stock gradients, no glassmorphism, no emoji.
+- The fallback is a monogram tile — entity initial in the display
+  face, gold on a quiet surface step with a hairline ring. Radius
+  follows the caller (2–6 px scale). No AI-ish stock gradients, no
+  glassmorphism, no emoji.
 - Aspect ratios are reserved (3:4 portraits, 1:1 thumbs), covers use
   `object-fit: cover`, `loading="lazy"`, and a subtle (~200 ms)
   fade-in when a real image lands.

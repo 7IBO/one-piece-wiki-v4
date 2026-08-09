@@ -4,9 +4,8 @@
  * `web_progress` cookie — the only store the server functions can
  * read for SSR-filtered first paint — then invalidates the router so
  * every loader refetches filtered views. It is mounted by TWO
- * triggers: the masthead stamp below, and the Log ruler strip
- * (`LogRail.tsx`). Styled as a printed form: ruled inputs, small-cap
- * labels, a seal-red stamp for the save action.
+ * triggers: the compact header control below, and the Log scrubber
+ * (`LogRail.tsx`), the signature surface of the app.
  */
 import { Popover } from '@base-ui/react/popover';
 import { useRouter } from '@tanstack/react-router';
@@ -54,24 +53,25 @@ export function ProgressPanel(
     void router.invalidate();
   };
 
-  // Printed form field: bottom rule only, no box.
   const inputClass =
-    'w-full border-0 border-b border-line-strong bg-transparent px-0 py-1 font-display text-lg tabular-nums text-fg outline-none transition-colors duration-150 focus:border-accent';
+    'w-full rounded-md border border-line-strong bg-canvas px-3 py-1.5 text-sm tabular-nums text-fg outline-none transition-colors duration-150 focus:border-gold';
 
   return (
     <>
-      <p className='overline-label text-fg'>{t(locale, 'progressTitle')}</p>
-      <p className='mt-1.5 font-serif text-[13px] italic leading-snug text-muted'>
+      <p className='display text-[15px] font-bold text-fg'>
+        {t(locale, 'progressTitle')}
+      </p>
+      <p className='mt-1 text-xs leading-relaxed text-muted'>
         {t(locale, 'progressHint')}
       </p>
       <form
-        className='mt-3 space-y-3'
+        className='mt-3 space-y-2.5'
         onSubmit={(event) => {
           event.preventDefault();
           apply({ manga: parseInput(manga), anime: parseInput(anime) });
         }}
       >
-        <label className='overline-label block'>
+        <label className='block text-xs font-medium text-muted'>
           {t(locale, 'progressManga')}
           <input
             type='number'
@@ -79,10 +79,10 @@ export function ProgressPanel(
             inputMode='numeric'
             value={manga}
             onChange={(event) => setManga(event.target.value)}
-            className={`mt-0.5 ${inputClass}`}
+            className={`mt-1 ${inputClass}`}
           />
         </label>
-        <label className='overline-label block'>
+        <label className='block text-xs font-medium text-muted'>
           {t(locale, 'progressAnime')}
           <input
             type='number'
@@ -90,10 +90,10 @@ export function ProgressPanel(
             inputMode='numeric'
             value={anime}
             onChange={(event) => setAnime(event.target.value)}
-            className={`mt-0.5 ${inputClass}`}
+            className={`mt-1 ${inputClass}`}
           />
         </label>
-        <div className='flex items-baseline justify-between gap-2 pt-1'>
+        <div className='flex items-center justify-between gap-2 pt-1'>
           <button
             type='button'
             onClick={() => {
@@ -101,13 +101,13 @@ export function ProgressPanel(
               setAnime('');
               apply({ manga: null, anime: null });
             }}
-            className='cursor-pointer py-1 text-[11px] font-medium text-faint underline decoration-line-strong underline-offset-4 transition-colors duration-150 hover:text-fg'
+            className='cursor-pointer py-1.5 text-xs font-medium text-faint transition-colors duration-150 hover:text-fg'
           >
             {t(locale, 'progressReset')}
           </button>
           <button
             type='submit'
-            className='overline-label cursor-pointer border border-accent px-3.5 py-1.5 text-accent transition-colors duration-150 hover:bg-accent hover:text-canvas'
+            className='cursor-pointer rounded-md bg-accent px-4 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
           >
             {t(locale, 'progressSave')}
           </button>
@@ -117,7 +117,7 @@ export function ProgressPanel(
   );
 }
 
-/** Masthead trigger — the reader's position set like a printed folio. */
+/** Compact header trigger ("Ch. 1044 · Ép. 1071" or the invitation). */
 export function ProgressControl(
   { progress }: { readonly progress: ProgressCursor; },
 ): JSX.Element {
@@ -136,10 +136,8 @@ export function ProgressControl(
     <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
       <Popover.Trigger
         aria-label={t(locale, 'progressTitle')}
-        className={`overline-label cursor-pointer border px-2.5 py-1.5 tabular-nums transition-colors duration-150 ${
-          active
-            ? 'border-line-strong text-fg hover:border-accent hover:text-accent'
-            : 'border-accent text-accent hover:bg-accent hover:text-canvas'
+        className={`cursor-pointer rounded-md px-2.5 py-1.5 text-xs font-medium ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:ring-line-strong ${
+          active ? 'tabular-nums text-gold' : 'text-muted hover:text-fg'
         }`}
       >
         <span className='block max-w-56 truncate sm:max-w-64'>{summary}</span>
@@ -152,7 +150,7 @@ export function ProgressControl(
           collisionPadding={12}
           className='isolate z-50'
         >
-          <Popover.Popup className='w-72 border border-line-strong bg-surface p-4 outline-none'>
+          <Popover.Popup className='w-72 rounded-lg border border-line-strong bg-surface p-4 shadow-lg shadow-black/20 outline-none'>
             <ProgressPanel progress={progress} onDone={() => setOpen(false)} />
           </Popover.Popup>
         </Popover.Positioner>

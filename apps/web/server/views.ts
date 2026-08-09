@@ -25,7 +25,13 @@ import { getCatalogue } from './catalogue.ts';
 import * as db from './db.ts';
 import type { EntityRow, PropertyRow, RelationRow } from './db.ts';
 import { type LinkTemplateEntry, resolveAvailabilityUrl } from './links.ts';
-import { cursorActive, EMPTY_CURSOR, isSourceVisible, type ProgressCursor } from './progress.ts';
+import {
+  cursorActive,
+  EMPTY_CURSOR,
+  isDepartureVisible,
+  isSourceVisible,
+  type ProgressCursor,
+} from './progress.ts';
 
 export type Locale = 'en' | 'fr';
 export type { ProgressCursor };
@@ -82,6 +88,8 @@ export type HomeView = {
 export type EntityListItem = {
   readonly slug: string;
   readonly name: string;
+  /** Display image (spoiler-checked) — listings are image-led. */
+  readonly image: ImageView | null;
   /** Type-appropriate identity line (epithet, release date…), spoiler-checked. */
   readonly secondary: string | null;
   readonly subtitle: string | null;
@@ -120,6 +128,10 @@ export type PropertyView = {
 
 export type RelationItemView = {
   readonly target: EntityChip;
+  /** Target thumbnail (spoiler/scope-checked) — connection modules are image-led. */
+  readonly image: ImageView | null;
+  /** Target identity line (epithet, release date…), spoiler-checked. */
+  readonly secondary: string | null;
   readonly since: EntityChip | null;
   readonly until: EntityChip | null;
   readonly epistemic: { readonly status: string; readonly label: string; } | null;
@@ -844,9 +856,14 @@ function isEdgeVisible(edge: RelationRow, cursor: ProgressCursor): boolean {
     && isSourceVisible(edge.target_entity_id, cursor);
 }
 
-/** `until` anchor reached: the relation visibly ended for this reader. */
+/**
+ * `until` anchor reached: the relation visibly ended for this reader.
+ * The pure rule lives in `progress.ts` (`isDepartureVisible`) — a
+ * departure beyond the cursor renders as CURRENT (revealing it would
+ * be a spoiler).
+ */
 function edgeEnded(edge: RelationRow, cursor: ProgressCursor): boolean {
-  return edge.until_source !== null && isSourceVisible(edge.until_source, cursor);
+  return isDepartureVisible(edge.until_source, cursor);
 }
 
 // ---------------------------------------------------------------------------
@@ -960,18 +977,22 @@ export async function buildTypeListView(
   const cat = await getCatalogue();
   const rows = db.listEntitiesByType(type);
   if (rows.length === 0 && !cat.entityTypes.has(type)) return null;
-  // Card enrichment reads the already-loaded row blobs — no per-entity
-  // SQL beyond the prepared translations lookup i18n values need.
+  // Card enrichment reads the already-loaded row blobs; the image adds
+  // one prepared relation lookup per row (v7 image-led listings).
   const items = rows
-    .map((row) => ({
-      slug: row.slug,
-      name: resolveEntityName(row, cat, locale),
-      secondary: cardSecondary(row, cat, locale, cursor),
-      subtitle: row.first_appearance_source === null
-        ? null
-        : chipFor(row.first_appearance_source, cat, locale)?.name ?? null,
-      tag: cardStatusTag(row, cat, locale, cursor),
-    }))
+    .map((row) => {
+      const name = resolveEntityName(row, cat, locale);
+      return {
+        slug: row.slug,
+        name,
+        image: resolveEntityImage(row, db.listRelationsFrom(row.id), cursor, null, locale, name),
+        secondary: cardSecondary(row, cat, locale, cursor),
+        subtitle: row.first_appearance_source === null
+          ? null
+          : chipFor(row.first_appearance_source, cat, locale)?.name ?? null,
+        tag: cardStatusTag(row, cat, locale, cursor),
+      };
+    })
     .sort((a, b) => a.name.localeCompare(b.name));
   return { type, label: entityTypeLabel(cat, type, locale), items };
 }
@@ -1059,6 +1080,8 @@ function buildRelationViews(
   cat: ValidatedCatalogue,
   locale: Locale,
   consumed: ReadonlySet<string>,
+  cursor: ProgressCursor,
+  scope: string | null,
 ): readonly RelationGroupView[] {
   const groups = new Map<string, {
     label: string;
@@ -1078,8 +1101,23 @@ function buildRelationViews(
       ? (schema.labels[locale] ?? schema.labels.en).inverse
       : (schema.labels[locale] ?? schema.labels.en).active;
     const label = rel.label === null ? fallback : rel.label[locale] ?? rel.label['en'] ?? fallback;
+    // Image-led modules (v7): resolve the target row once for its
+    // thumbnail + identity line; dangling targets degrade to the chip.
+    const targetRow = db.getEntityById(rel.target_entity_id);
+    const target = targetRow === null
+      ? chipOrPlaceholder(rel.target_entity_id, cat, locale)
+      : chipForRow(targetRow, cat, locale);
     const item: RelationItemView = {
-      target: chipOrPlaceholder(rel.target_entity_id, cat, locale),
+      target,
+      image: targetRow === null ? null : resolveEntityImage(
+        targetRow,
+        db.listRelationsFrom(targetRow.id),
+        cursor,
+        scope,
+        locale,
+        target.name,
+      ),
+      secondary: targetRow === null ? null : cardSecondary(targetRow, cat, locale, cursor),
       since: rel.since_source === null ? null : chipFor(rel.since_source, cat, locale),
       until: rel.until_source === null ? null : chipFor(rel.until_source, cat, locale),
       epistemic: epistemicView(cat, rel.epistemic_status, locale),
@@ -1686,7 +1724,7 @@ export async function buildEntityView(
     infobox,
     infoboxRelations: buildInfoboxRelations(row, edges, cat, locale, cursor),
     properties,
-    relations: buildRelationViews(edges, cat, locale, consumed),
+    relations: buildRelationViews(edges, cat, locale, consumed, cursor, scope),
     narrative: db.getNarrative(row.id, locale),
     template,
     propagateScope: scopeToPropagate(row, cursor, scope),
