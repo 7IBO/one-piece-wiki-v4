@@ -132,6 +132,52 @@ describe('extract — inverse materialization', () => {
   });
 });
 
+describe('extract — object believed_by items ride unchanged (ADR-096)', () => {
+  // A mixed believed_by list: one item with per-item provenance
+  // (`{ target, source }`), one plain ref. Both the stored edge and
+  // the materialized inverse must carry the list byte-identical, in
+  // the promoted column AND in the qualifiers JSON blob.
+  const believedBy = [
+    { target: 'character:luffy', source: 'manga-chapter:585' },
+    'character:ace',
+  ];
+  const sabo = loaded('character:sabo', 'character', {
+    slug: 'sabo',
+    schema_version: 1,
+    properties: {},
+    relations: [
+      {
+        type: 'member-of',
+        target: 'crew:revolutionary-army',
+        qualifiers: {
+          since: 'manga-chapter:585',
+          epistemic_status: 'believed_by_characters',
+          believed_by: believedBy,
+        },
+      },
+    ],
+  });
+
+  const rows = extract(toMap([sabo]), catalogue([memberOf])).relations;
+  const stored = rows.find((r) => r.relation_type === 'member-of');
+  const inverse = rows.find((r) => r.relation_type === 'member-of.inverse');
+
+  it('round-trips the mixed list on the stored direction', () => {
+    expect(stored?.believed_by).toBe(JSON.stringify(believedBy));
+    expect(JSON.parse(stored?.believed_by ?? 'null')).toEqual(believedBy);
+    expect(JSON.parse(stored?.qualifiers ?? '{}')['believed_by']).toEqual(believedBy);
+  });
+
+  it('round-trips the mixed list on the materialized inverse direction', () => {
+    expect(inverse?.is_inferred).toBe(1);
+    expect(inverse?.source_entity_id).toBe('crew:revolutionary-army');
+    expect(inverse?.target_entity_id).toBe('character:sabo');
+    expect(JSON.parse(inverse?.believed_by ?? 'null')).toEqual(believedBy);
+    expect(JSON.parse(inverse?.qualifiers ?? '{}')['believed_by']).toEqual(believedBy);
+    expect(inverse?.epistemic_status).toBe('believed_by_characters');
+  });
+});
+
 describe('extract — dedup of double-stored symmetric edges', () => {
   const ace = loaded('character:ace', 'character', {
     slug: 'ace',

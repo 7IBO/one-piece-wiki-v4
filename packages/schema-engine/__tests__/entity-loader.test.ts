@@ -1,5 +1,9 @@
 import { describe, expect, test } from 'bun:test';
-import { buildEntitySchema } from '../src/entity-loader.ts';
+import {
+  buildEntitySchema,
+  type LoadedEntity,
+  resolveEntityReferences,
+} from '../src/entity-loader.ts';
 import type { ValidatedCatalogue } from '../src/meta-validator.ts';
 
 // Minimal hand-built catalogue (cast for brevity, like coherence.test.ts).
@@ -93,5 +97,134 @@ describe('buildEntitySchema strictness', () => {
 
   test('returns undefined for an unknown entity type', () => {
     expect(buildEntitySchema('nope', catalogue())).toBeUndefined();
+  });
+});
+
+// ADR-096 — believed_by / known_truth_by items accept a plain EntityId
+// or `{ target, source? }`, on property entries AND relation bags.
+describe('entity-ref-item lists (ADR-096)', () => {
+  const schema = buildEntitySchema('widget', catalogue())!;
+
+  test('accepts plain, object and mixed items on a property entry', () => {
+    const parsed = schema.safeParse({
+      ...base,
+      properties: {
+        color: {
+          value: 'red',
+          believed_by: [
+            'character:ace',
+            { target: 'character:luffy', source: 'manga-chapter:585' },
+            { target: 'character:nami', source: ['manga-chapter:585', 'anime-episode:504'] },
+          ],
+          known_truth_by: [{ target: 'character:sabo' }],
+        },
+      },
+    });
+    expect(parsed.success).toBe(true);
+  });
+
+  test('accepts both forms inside a relation qualifier bag', () => {
+    const parsed = schema.safeParse({
+      ...base,
+      properties: {},
+      relations: [{
+        type: 'knows',
+        target: 'widget:y',
+        qualifiers: {
+          believed_by: [
+            { target: 'character:luffy', source: 'manga-chapter:585' },
+            'character:ace',
+          ],
+        },
+      }],
+    });
+    expect(parsed.success).toBe(true);
+  });
+
+  test('rejects malformed items', () => {
+    const entry = (believed_by: unknown): unknown => ({
+      ...base,
+      properties: { color: { value: 'red', believed_by } },
+    });
+    // Object without a target.
+    expect(schema.safeParse(entry([{ source: 'manga-chapter:585' }])).success).toBe(false);
+    // Target that is not an EntityId.
+    expect(schema.safeParse(entry([{ target: 'nope' }])).success).toBe(false);
+    // Number item.
+    expect(schema.safeParse(entry([42])).success).toBe(false);
+    // Empty source list (SourceRefOrList requires min 1).
+    expect(schema.safeParse(entry([{ target: 'character:luffy', source: [] }])).success)
+      .toBe(false);
+  });
+});
+
+// ADR-096 — dangling-ref resolution walks believed_by / known_truth_by
+// items: a missing believer target AND a missing per-item source both
+// fail `check:references`.
+function loaded(id: string, data: Record<string, unknown>): LoadedEntity {
+  const [type] = id.split(':');
+  return { id, type: type ?? '', path: `${id}.json`, data: { id, type, ...data } };
+}
+
+describe('resolveEntityReferences — entity-ref-item lists (ADR-096)', () => {
+  const map = (...entities: LoadedEntity[]): Map<string, LoadedEntity> =>
+    new Map(entities.map((e) => [e.id, e]));
+
+  test('resolves object-item targets and sources on property entries', () => {
+    const widget = loaded('widget:x', {
+      properties: {
+        color: [{
+          value: 'red',
+          believed_by: [
+            { target: 'character:ghost', source: 'manga-chapter:404' },
+            'character:real',
+          ],
+        }],
+      },
+    });
+    const errors = resolveEntityReferences(
+      map(widget, loaded('character:real', {})),
+      catalogue(),
+    );
+    const targets = errors.map((e) => e.target);
+    expect(targets).toContain('character:ghost');
+    expect(targets).toContain('manga-chapter:404');
+    expect(targets).not.toContain('character:real');
+    expect(errors.every((e) => e.path === 'properties.color[0].believed_by')).toBe(true);
+  });
+
+  test('resolves object-item targets and sources on relation qualifier bags', () => {
+    const widget = loaded('widget:x', {
+      relations: [{
+        type: 'knows',
+        target: 'widget:y',
+        qualifiers: {
+          known_truth_by: [{ target: 'character:ghost', source: ['manga-chapter:404'] }],
+        },
+      }],
+    });
+    const errors = resolveEntityReferences(
+      map(widget, loaded('widget:y', {})),
+      catalogue(),
+    );
+    const targets = errors.map((e) => e.target);
+    expect(targets).toContain('character:ghost');
+    expect(targets).toContain('manga-chapter:404');
+  });
+
+  test('passes when every item target and per-item source exists', () => {
+    const widget = loaded('widget:x', {
+      properties: {
+        color: [{
+          value: 'red',
+          believed_by: [{ target: 'character:real', source: 'manga-chapter:1' }],
+        }],
+      },
+    });
+    const errors = resolveEntityReferences(
+      map(widget, loaded('character:real', {}), loaded('manga-chapter:1', {})),
+      catalogue(),
+    );
+    expect(errors).toEqual([]);
   });
 });

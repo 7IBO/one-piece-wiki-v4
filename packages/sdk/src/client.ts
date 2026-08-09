@@ -41,6 +41,16 @@ export type PropertyRecord = {
   readonly entry_index: number;
 };
 
+/**
+ * Item of a `believed_by` / `known_truth_by` list — a plain entity id,
+ * or `{ target, source? }` when the item cites its own provenance
+ * (ADR-096). Mirrors `@onepiece-wiki/schemas`' `entityRefItems` union
+ * (duplicated locally: the SDK is dependency-free by design).
+ */
+export type EntityRefListItem =
+  | string
+  | { readonly target: string; readonly source?: string | readonly string[]; };
+
 export type RelationRecord = {
   readonly source_entity_id: string;
   readonly target_entity_id: string;
@@ -49,10 +59,11 @@ export type RelationRecord = {
   readonly since_source: string | null;
   readonly until_source: string | null;
   // Relation base qualifiers (ADR-037). `epistemic_status` defaults to
-  // 'true'; `believed_by` / `known_truth_by` are entity-ref lists.
+  // 'true'; `believed_by` / `known_truth_by` are entity-ref-item lists
+  // (ADR-096 — items may carry per-item provenance).
   readonly epistemic_status: string;
-  readonly believed_by: readonly string[] | null;
-  readonly known_truth_by: readonly string[] | null;
+  readonly believed_by: readonly EntityRefListItem[] | null;
+  readonly known_truth_by: readonly EntityRefListItem[] | null;
   readonly revealed_since: string | null;
   readonly is_inferred: boolean;
 };
@@ -141,10 +152,10 @@ export function createClient(db: SqliteLike) {
     epistemic_status: (row['epistemic_status'] as string | null) ?? 'true',
     believed_by: row['believed_by'] === null || row['believed_by'] === undefined
       ? null
-      : parseJsonField<string[]>(row['believed_by']),
+      : parseJsonField<EntityRefListItem[]>(row['believed_by']),
     known_truth_by: row['known_truth_by'] === null || row['known_truth_by'] === undefined
       ? null
-      : parseJsonField<string[]>(row['known_truth_by']),
+      : parseJsonField<EntityRefListItem[]>(row['known_truth_by']),
     revealed_since: (row['revealed_since'] as string | null) ?? null,
     is_inferred: Number(row['is_inferred']) === 1,
   });

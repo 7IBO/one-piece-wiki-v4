@@ -88,6 +88,42 @@ describe('evaluateRules — entry scope', () => {
     expect(findings[0]!.entryIndex).toBe(0);
   });
 
+  it('accepts believed_by in BOTH item forms for believed-by-characters-needs-list (ADR-096)', async () => {
+    const rule = await loadRule('believed-by-characters-needs-list');
+    const entry = (
+      believed_by?: unknown,
+    ): { type: string; properties: Record<string, unknown>; } => ({
+      type: 'character',
+      properties: {
+        status: [{
+          value: 'presumed_dead',
+          epistemic_status: 'believed_by_characters',
+          ...(believed_by !== undefined ? { believed_by } : {}),
+        }],
+      },
+    });
+    // Missing list → finding.
+    expect(evaluateRules(entry(), [rule])).toHaveLength(1);
+    // Plain-string list satisfies the rule.
+    expect(evaluateRules(entry(['character:luffy']), [rule])).toHaveLength(0);
+    // Object-item list satisfies it too.
+    expect(
+      evaluateRules(
+        entry([{ target: 'character:luffy', source: 'manga-chapter:585' }]),
+        [rule],
+      ),
+    ).toHaveLength(0);
+    // Mixed list as well.
+    expect(
+      evaluateRules(
+        entry([{ target: 'character:luffy', source: 'manga-chapter:585' }, 'character:ace']),
+        [rule],
+      ),
+    ).toHaveLength(0);
+    // Empty array is still "not set".
+    expect(evaluateRules(entry([]), [rule])).toHaveLength(1);
+  });
+
   it('flags a dead status entry without since', async () => {
     const rule = await loadRule('death-needs-source-anchor');
     const entity = {

@@ -39,11 +39,14 @@ import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
-import type {
-  EntityTypeSchema,
-  QualifierTypeSchema,
-  RelationTypeSchema,
-  VocabularySchema,
+import {
+  ENTITY_REF_ITEM_QUALIFIER_IDS,
+  entityRefItems,
+  entityRefItemSources,
+  type EntityTypeSchema,
+  type QualifierTypeSchema,
+  type RelationTypeSchema,
+  type VocabularySchema,
 } from '@onepiece-wiki/schemas';
 import { Link } from '@tanstack/react-router';
 import { ChevronRight, Pencil, X } from 'lucide-react';
@@ -51,6 +54,7 @@ import { type JSX, useEffect, useMemo, useState } from 'react';
 import { api, type EntityRef, type IncomingLinkRow, type SourceRef } from '../api';
 import { useApiResource } from '../hooks/use-api-resource';
 import {
+  EntityRefItemsInput,
   type EnumValue,
   MultiEntityRefInput,
   MultiSourceRefInput,
@@ -235,6 +239,16 @@ function formatShapedValue(
   }
   if (typeof value === 'boolean') return value ? '✓' : '×';
   if (typeof value === 'number') return String(value);
+  // ADR-096 — believed_by / known_truth_by items may carry per-item
+  // provenance as `{ target, source? }`: render "luffy (C585)".
+  if (value !== null && typeof value === 'object') {
+    const [item] = entityRefItems([value]);
+    if (item !== undefined) {
+      const head = formatShapedValue(item.target, shape, vocabularies, sources, locale);
+      const compact = shortSourceRefLabel(entityRefItemSources(item), sources);
+      return compact !== null ? `${head} (${compact})` : head;
+    }
+  }
   return JSON.stringify(value) ?? '';
 }
 
@@ -799,7 +813,11 @@ function RelationQualifierField(
 
   const isMultiEntityRef = p.multi === true && p.valueType === 'entity_ref';
   const isMultiSourceRef = p.multi === true && p.valueType === 'source_ref';
-  const multiList = isMultiEntityRef
+  // ADR-096 — believed_by / known_truth_by carry per-item provenance;
+  // they get the item-aware editor instead of the plain multi picker.
+  const isEntityRefItemList = isMultiEntityRef
+    && (ENTITY_REF_ITEM_QUALIFIER_IDS as readonly string[]).includes(p.id);
+  const multiList = isMultiEntityRef && !isEntityRefItemList
     ? (Array.isArray(p.value)
       ? (p.value as unknown[]).map((v) => String(v ?? ''))
       : (typeof p.value === 'string' && p.value !== '' ? [p.value] : []))
@@ -811,7 +829,17 @@ function RelationQualifierField(
         {qLabel(p.id, p.label)}
         {p.required === true ? <span className='text-destructive'>*</span> : null}
       </Label>
-      {multiList !== null
+      {isEntityRefItemList
+        ? (
+          <EntityRefItemsInput
+            value={p.value}
+            onChange={(next) => p.onChange(next)}
+            entityTypes={p.valueCtx.entityTypes}
+            restrictTo={p.restrictTo}
+            sources={p.valueCtx.sources}
+          />
+        )
+        : multiList !== null
         ? (
           <MultiEntityRefInput
             value={multiList}

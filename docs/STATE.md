@@ -15,7 +15,23 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-08 (ADR-095 : locales de données ja / ja-latn)
+**Last updated**: 2026-08-08 (ADR-096 : provenance par item sur believed_by)
+
+**2026-08-08 — ADR-095 livré sur main (PR #116) ; ADR-096 en
+cours.** Les locales de données `ja`/`ja-latn` sont éditables au
+dashboard (popover de traductions : 日本語 partout, Rōmaji gated par
+`romanizable` sur name/epithet/title_key ; `translationLocalesFor`
+est l'unique siège de la règle), seed Luffy en kana/rōmaji, 353
+tests. **ADR-096** (dernier item noté→code) : items de
+`believed_by`/`known_truth_by` en `EntityId | { target, source? }`
+(pas de migration — la chaîne nue reste canonique sans provenance),
+normaliseur unique `entityRefItems`, coherence compte cibles + sources
+par item, diff d'historique rend « Cible (since …) », affordance
+source par item dans le formulaire ; démo sur l'entrée
+`presumed_dead` de Sabo. Après ça, l'inventaire « noté mais pas dans
+le code » est SOLDÉ : tout est livré, fixé par ADR (affiliation
+089), ou explicitement gated (knowledge graph → filtre spoiler ;
+runs Fandom live → egress mainteneur).
 
 **2026-08-08 — One Piece Wiki v1 + sync Fandom livrés sur main (PR
 #115, ADR-091/092/093/094).** `apps/web` est devenu le wiki public

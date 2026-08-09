@@ -165,6 +165,56 @@ describe('checkCoherence — unreferenced warning', () => {
     expect(unreferenced).not.toContain('manga-chapter:1');
     expect(unreferenced).not.toContain('character:dragon');
   });
+
+  it('counts object believed_by items — target AND per-item source (ADR-096)', () => {
+    const entities = entityMap(
+      entity('character:luffy', [
+        {
+          type: 'depicted-by',
+          target: 'image:luffy',
+          qualifiers: {
+            role: 'x',
+            believed_by: [
+              { target: 'character:zoro', source: 'manga-chapter:585' },
+              'character:nami',
+            ],
+          },
+        },
+      ]),
+      entity('image:luffy'),
+      entity('character:zoro'),
+      entity('character:nami'),
+      entity('manga-chapter:585'),
+    );
+    const unreferenced = checkCoherence(entities, baseCatalogue)
+      .filter((f) => f.severity === 'warning')
+      .map((w) => w.source);
+    expect(unreferenced).not.toContain('character:zoro');
+    expect(unreferenced).not.toContain('character:nami');
+    expect(unreferenced).not.toContain('manga-chapter:585');
+  });
+
+  it('counts property-entry believed_by items — target AND per-item source (ADR-096)', () => {
+    const entities = entityMap(
+      entity('character:luffy', [
+        { type: 'depicted-by', target: 'image:luffy', qualifiers: { role: 'x' } },
+      ]),
+      entity('image:luffy'),
+      entity('character:ace'),
+      entity('manga-chapter:585'),
+    );
+    (entities.get('character:luffy') as LoadedEntity).data['properties'] = {
+      status: [{
+        value: 'presumed_dead',
+        believed_by: [{ target: 'character:ace', source: ['manga-chapter:585'] }],
+      }],
+    };
+    const unreferenced = checkCoherence(entities, baseCatalogue)
+      .filter((f) => f.severity === 'warning')
+      .map((w) => w.source);
+    expect(unreferenced).not.toContain('character:ace');
+    expect(unreferenced).not.toContain('manga-chapter:585');
+  });
 });
 
 describe('checkSchemaCoherence', () => {

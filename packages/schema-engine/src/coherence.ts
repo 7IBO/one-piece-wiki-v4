@@ -33,7 +33,13 @@
  *                                   a coherence smell, e.g. an uploaded
  *                                   image no entity depicts.
  */
-import { ENTITY_ID_PATTERN, RELATION_BASE_QUALIFIER_IDS } from '@onepiece-wiki/schemas';
+import {
+  ENTITY_ID_PATTERN,
+  ENTITY_REF_ITEM_QUALIFIER_IDS,
+  entityRefItems,
+  entityRefItemSources,
+  RELATION_BASE_QUALIFIER_IDS,
+} from '@onepiece-wiki/schemas';
 import type { LoadedEntity } from './entity-loader.ts';
 import type { ValidatedCatalogue } from './meta-validator.ts';
 import { evaluateRules } from './rules.ts';
@@ -86,16 +92,22 @@ function collectReferencedIds(entities: ReadonlyMap<string, LoadedEntity>): Read
   // at `reference:*` — counted so an attesting reference isn't flagged
   // UNREFERENCED.
   const axisFields = ['since', 'until', 'source', 'event', 'attested_by'] as const;
-  // Relations additionally carry the epistemic base qualifiers (ADR-037):
-  // `revealed_since` (source_ref) and `believed_by` / `known_truth_by`
-  // (entity_ref[]). Count them so a secret-keeper or reveal source is not
-  // falsely flagged UNREFERENCED.
-  const relationAxisFields = [
-    ...axisFields,
-    'revealed_since',
-    'believed_by',
-    'known_truth_by',
-  ] as const;
+  // Relations additionally carry the epistemic base qualifier
+  // `revealed_since` (source_ref, ADR-037). Count it so a reveal source
+  // is not falsely flagged UNREFERENCED.
+  const relationAxisFields = [...axisFields, 'revealed_since'] as const;
+  // `believed_by` / `known_truth_by` (property entries AND relation
+  // bags) are entity-ref-item lists (ADR-096): each item contributes
+  // its target AND its per-item `source` refs, so neither a believer
+  // nor the source depicting that belief is flagged UNREFERENCED.
+  const addItemRefs = (record: Record<string, unknown>): void => {
+    for (const field of ENTITY_REF_ITEM_QUALIFIER_IDS) {
+      for (const item of entityRefItems(record[field])) {
+        referenced.add(item.target);
+        for (const ref of entityRefItemSources(item)) referenced.add(ref);
+      }
+    }
+  };
 
   for (const entity of entities.values()) {
     const data = entity.data as {
@@ -109,11 +121,13 @@ function collectReferencedIds(entities: ReadonlyMap<string, LoadedEntity>): Read
         const record = rel as RelationRecord;
         if (isEntityRef(record.target)) referenced.add(record.target);
         if (record.qualifiers !== null && typeof record.qualifiers === 'object') {
+          const qualifiers = record.qualifiers as Record<string, unknown>;
           for (const field of relationAxisFields) {
-            for (const ref of refList((record.qualifiers as Record<string, unknown>)[field])) {
+            for (const ref of refList(qualifiers[field])) {
               referenced.add(ref);
             }
           }
+          addItemRefs(qualifiers);
         }
       }
     }
@@ -128,6 +142,7 @@ function collectReferencedIds(entities: ReadonlyMap<string, LoadedEntity>): Read
           for (const field of axisFields) {
             for (const ref of refList(record[field])) referenced.add(ref);
           }
+          addItemRefs(record);
         }
       }
     }

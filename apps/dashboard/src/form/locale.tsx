@@ -729,6 +729,9 @@ const UI_STRINGS = {
   // inputs in the translations popover.
   localeJa: { en: '日本語', fr: 'Japonais' },
   localeJaLatn: { en: 'Rōmaji', fr: 'Rōmaji' },
+  // ADR-096 — per-item source affordance on believed_by / known_truth_by.
+  itemSource: { en: 'Source for this item', fr: 'Source de cet élément' },
+  itemSourceClear: { en: 'Remove this item’s source', fr: 'Retirer la source de cet élément' },
 } as const;
 
 /**

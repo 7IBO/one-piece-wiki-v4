@@ -89,6 +89,14 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(presumedDead?.epistemic).not.toBeNull();
     // No cursor = wiki default, everything (incl. the truth) visible.
     expect(presumedDead?.actualDisplay).toBe('Alive');
+    // ADR-096 — the mixed believed_by list (Luffy carries per-item
+    // provenance, Ace is a plain ref) renders resolved names, never
+    // raw JSON: "Monkey D. Luffy (Chapter 585), Portgas D. Ace".
+    const believedBy = presumedDead?.qualifiers.find((q) => q.label === 'Believed by');
+    expect(believedBy).toBeDefined();
+    expect(believedBy?.value).toContain('Monkey D. Luffy (');
+    expect(believedBy?.value).toContain('Portgas D. Ace');
+    expect(believedBy?.value).not.toContain('{');
   });
 
   // -------------------------------------------------------------------------

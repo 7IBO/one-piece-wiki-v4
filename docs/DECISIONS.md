@@ -8,6 +8,45 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-096 — Per-item provenance on `believed_by` / `known_truth_by`
+
+**Date**: 2026-08-08
+
+**Context**: Maintainer question (2026-08-08, parked then promoted
+under "occupe-toi de tout ce que tu as noté"): sub-values like
+`believed_by` list characters but carry no source for that SPECIFIC
+claim — the entry-level `source` covers the whole entry only. True
+per-item provenance needs qualifier-on-qualifier structure.
+
+**Options considered**:
+
+1. Parallel `believed_by_sources` array — index-coupled arrays are
+   fragile (reorder one, silently corrupt the other).
+2. Force every item to an object — bloats all existing data and every
+   author's default case for a rarely-needed field.
+3. **Union item form** (chosen): items are `EntityId | { target,
+   source? }`. Plain string stays canonical when no provenance;
+   the object cites the source depicting THAT holder's belief.
+   Mirrors the `SourceRefOrList` authoring-convenience precedent; no
+   data migration; one shared normalizer (`entityRefItems`) is the
+   only place that understands the union.
+
+**Scope**: `believed_by` + `known_truth_by`, on property entries AND
+relation qualifier bags. `attested_by` excluded (targets are
+references). Coherence counts item targets and their sources
+(UNREFERENCED + dangling checks); history diff renders "Target
+(since …)"; the dashboard's multi entity-ref rows gain an optional
+per-item source affordance that never rewrites plain items into
+objects when no source is set. Demo: Sabo's `presumed_dead` entry —
+Luffy's belief item cites `manga-chapter:585`, Ace stays plain.
+
+**Consequences**: additive (compat clean). Closes the last parked
+note from the 2026-08-08 sweep; every IDEAS/deferred item is now
+either delivered, design-fixed by ADR, or explicitly gated
+(knowledge graph → spoiler filter; Fandom live runs → egress).
+
+---
+
 ## ADR-095 — Japanese data locales: `ja` + `ja-latn`, dashboard-only, romanization restricted to name-like values
 
 **Date**: 2026-08-08

@@ -23,6 +23,7 @@ import { evaluateRules, type RuleFinding } from '@onepiece-wiki/schema-engine/ru
 import {
   DATA_LOCALES,
   type DataLocale,
+  ENTITY_REF_ITEM_QUALIFIER_IDS,
   type EntityTypeSchema,
   type PropertyTypeSchema,
   type QualifierTypeSchema,
@@ -48,6 +49,7 @@ import { useCurrentUser } from '../auth';
 import { DiffPopover } from './DiffPopover';
 import { ImageUpload } from './ImageUpload';
 import {
+  EntityRefItemsInput,
   MultiEntityRefInput,
   MultiSourceRefInput,
   ValueInput,
@@ -2513,9 +2515,14 @@ function QualifierField(p: QualifierFieldProps): JSX.Element {
     entityTypes: p.valueCtx.entityTypes,
   };
 
-  // Multi-target entity_ref qualifiers (`believed_by`, `known_truth_by`).
+  // Multi-target entity_ref qualifiers (`believed_by`, `known_truth_by`,
+  // `attested_by`, …). The epistemic item lists (ADR-096) route through
+  // EntityRefItemsInput, which understands the per-item-provenance
+  // union; the rest keep the plain multi picker.
   const isMultiEntityRef = p.qualifier.multi === true && valueType === 'entity_ref';
-  const multiEntityList = isMultiEntityRef
+  const isEntityRefItemList = isMultiEntityRef
+    && (ENTITY_REF_ITEM_QUALIFIER_IDS as readonly string[]).includes(p.qualifier.id);
+  const multiEntityList = isMultiEntityRef && !isEntityRefItemList
     ? (Array.isArray(p.value)
       ? (p.value as unknown[]).map((v) => String(v ?? ''))
       : (typeof p.value === 'string' && p.value !== '' ? [p.value] : []))
@@ -2532,7 +2539,17 @@ function QualifierField(p: QualifierFieldProps): JSX.Element {
           {qLabel(p.qualifier.id, p.qualifier.label)}
           {p.qualifier.required === true ? <span className='text-destructive'>*</span> : null}
         </Label>
-        {multiEntityList !== null
+        {isEntityRefItemList
+          ? (
+            <EntityRefItemsInput
+              value={p.value}
+              onChange={(next) => p.onChange(next)}
+              entityTypes={p.valueCtx.entityTypes}
+              restrictTo={p.qualifier.entityTypeFilter}
+              sources={p.valueCtx.sources}
+            />
+          )
+          : multiEntityList !== null
           ? (
             <MultiEntityRefInput
               value={multiEntityList}
