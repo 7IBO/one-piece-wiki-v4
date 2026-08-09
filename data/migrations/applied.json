@@ -7,6 +7,8 @@
     "0005-drop-legacy-volume-property",
     "0006-link-template-per-region",
     "0007-catalogue-dedup-relations",
-    "0008-trim-name-and-loyalty-vocabularies"
+    "0008-trim-name-and-loyalty-vocabularies",
+    "0009-single-home-removals",
+    "0010-merge-membership-status-vocabularies"
   ]
 }

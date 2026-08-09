@@ -42,7 +42,7 @@ import {
 } from '@onepiece-wiki/schemas';
 import type { LoadedEntity } from './entity-loader.ts';
 import type { ValidatedCatalogue } from './meta-validator.ts';
-import { evaluateRules } from './rules.ts';
+import { type CorpusContext, evaluateRules, relationIsActive } from './rules.ts';
 
 export type CoherenceFinding = {
   readonly code:
@@ -326,8 +326,40 @@ export function checkCoherence(
   // surface as warnings (non-blocking CLI output); rules that opted
   // into `enforcement: 'blocking'` (ADR-088 — structurally-always-
   // wrong shapes) surface as errors and fail the check.
+  //
+  // ADR-099 — this caller has the FULL entity map, so it builds the
+  // incoming-active-edge index and hands rules the `CorpusContext`
+  // that unlocks `has_active_incoming_relation` /
+  // `no_active_incoming_relation` (single-entity callers skip those).
   const ruleList = [...catalogue.rules.values()];
   if (ruleList.length > 0) {
+    // "targetId|relationType" -> set of SOURCE entity types with ≥1
+    // ACTIVE (no `until`) stored edge of that type toward the target.
+    const incomingActive = new Map<string, Set<string>>();
+    for (const entity of entities.values()) {
+      const data = entity.data as { relations?: unknown[]; };
+      if (!Array.isArray(data.relations)) continue;
+      for (const rel of data.relations) {
+        if (rel === null || typeof rel !== 'object') continue;
+        const record = rel as RelationRecord;
+        if (typeof record.type !== 'string' || !isEntityRef(record.target)) continue;
+        const qualifiers = record.qualifiers !== null && typeof record.qualifiers === 'object'
+          ? record.qualifiers as Record<string, unknown>
+          : undefined;
+        if (!relationIsActive(qualifiers)) continue;
+        const key = `${record.target}|${record.type}`;
+        const sources = incomingActive.get(key);
+        if (sources === undefined) incomingActive.set(key, new Set([entity.type]));
+        else sources.add(entity.type);
+      }
+    }
+    const corpusContext: CorpusContext = {
+      hasActiveIncomingRelation: (entityId, relationType, sourceType) => {
+        const sources = incomingActive.get(`${entityId}|${relationType}`);
+        if (sources === undefined) return false;
+        return sourceType === undefined || sources.has(sourceType);
+      },
+    };
     for (const entity of entities.values()) {
       const data = entity.data as {
         type?: string;
@@ -335,8 +367,14 @@ export function checkCoherence(
         relations?: { type: string; target: string; qualifiers?: Record<string, unknown>; }[];
       };
       const findingsForEntity = evaluateRules(
-        { type: entity.type, properties: data.properties, relations: data.relations },
+        {
+          id: entity.id,
+          type: entity.type,
+          properties: data.properties,
+          relations: data.relations,
+        },
         ruleList,
+        corpusContext,
       );
       for (const f of findingsForEntity) {
         findings.push({

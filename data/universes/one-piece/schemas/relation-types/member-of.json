@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
   "id": "member-of",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": {
     "en": { "active": "Member of", "inverse": "Members" },
     "fr": { "active": "Membre de", "inverse": "Membres" }
@@ -15,7 +15,7 @@
     {
       "id": "loyalty_status",
       "value_type": "enum",
-      "enum_ref": "loyalty-statuses",
+      "enum_ref": "membership-statuses",
       "required": false
     },
     {

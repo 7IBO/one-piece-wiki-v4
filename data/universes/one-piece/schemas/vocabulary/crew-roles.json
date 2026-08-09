@@ -1,9 +1,10 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
   "id": "crew-roles",
-  "schema_version": 1,
+  "schema_version": 2,
   "values": {
     "captain": { "labels": { "en": "Captain", "fr": "Capitaine" } },
+    "leader": { "labels": { "en": "Leader", "fr": "Chef" } },
     "vice_captain": { "labels": { "en": "Vice Captain", "fr": "Second Capitaine" } },
     "first_mate": { "labels": { "en": "First Mate", "fr": "Second" } },
     "navigator": { "labels": { "en": "Navigator", "fr": "Navigateur" } },

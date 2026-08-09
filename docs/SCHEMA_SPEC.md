@@ -438,14 +438,14 @@ once the user has read the source that _reveals_ the fact (carried via
     {
       "id": "loyalty_status",
       "value_type": "enum",
-      "enum_ref": "loyalty-statuses",
+      "enum_ref": "membership-statuses",
       "required": false,
       "default": "member"
     },
     {
       "id": "appears_to_world_as",
       "value_type": "enum",
-      "enum_ref": "loyalty-statuses",
+      "enum_ref": "membership-statuses",
       "required": false
     }
   ],

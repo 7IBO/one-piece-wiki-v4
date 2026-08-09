@@ -269,6 +269,87 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(wano.template.episodes).toHaveLength(0);
   });
 
+  // -------------------------------------------------------------------------
+  // Rich entity cards (epithet second line, micro-stats, status tags)
+
+  test('crew member cards carry epithet, role and the bounty micro-stat', async () => {
+    const crew = await entity('crew', 'straw-hat-pirates');
+    expect(crew.template.kind).toBe('crew');
+    if (crew.template.kind !== 'crew') return;
+    const luffy = crew.template.members.find((m) => m.chip.slug === 'monkey-d-luffy');
+    expect(luffy?.secondary).toBe('Straw Hat');
+    expect(luffy?.role).toBe('Captain');
+    expect(luffy?.stat).toBe('3B Berry'); // currency_short, like the infobox
+    const zoro = crew.template.members.find((m) => m.chip.slug === 'roronoa-zoro');
+    expect(zoro?.secondary).toBe('Pirate Hunter');
+    expect(zoro?.stat).toBe('1.1B Berry');
+  });
+
+  test('card epithet and bounty respect the spoiler cursor', async () => {
+    // Luffy: epithet @96, bounty 30M @96 (then 100M/1.5B/3B later).
+    const at100 = await entity('crew', 'straw-hat-pirates', 'en', cursor(100));
+    if (at100.template.kind !== 'crew') return;
+    const luffy100 = at100.template.members.find((m) => m.chip.slug === 'monkey-d-luffy');
+    expect(luffy100?.secondary).toBe('Straw Hat'); // boundary inclusive
+    expect(luffy100?.stat).toBe('30M Berry'); // NOT the later 3B
+    const at95 = await entity('crew', 'straw-hat-pirates', 'en', cursor(95));
+    if (at95.template.kind !== 'crew') return;
+    const luffy95 = at95.template.members.find((m) => m.chip.slug === 'monkey-d-luffy');
+    expect(luffy95?.secondary).toBeNull(); // epithet not yet earned
+    expect(luffy95?.stat).toBeNull(); // no bounty yet → no empty line
+  });
+
+  test('devil-fruit user cards carry the epithet but no bounty stat', async () => {
+    const fruit = await entity('devil-fruit', 'gomu-gomu-no-mi');
+    if (fruit.template.kind !== 'devil-fruit') return;
+    const luffy = fruit.template.users.find((u) => u.chip.slug === 'monkey-d-luffy');
+    expect(luffy?.secondary).toBe('Straw Hat');
+    expect(luffy?.stat).toBeNull();
+    expect(luffy?.since?.id).toBe('manga-chapter:1');
+  });
+
+  test('character-page other-member thumbs carry epithet + role', async () => {
+    const luffy = await entity('character', 'monkey-d-luffy');
+    if (luffy.template.kind !== 'character') return;
+    const zoro = luffy.template.crews[0]?.members.find((m) => m.chip.slug === 'roronoa-zoro');
+    expect(zoro?.secondary).toBe('Pirate Hunter');
+    expect(zoro?.note).toBe('First Mate');
+  });
+
+  test('type listing carries type-appropriate second lines and status tags', async () => {
+    const { buildTypeListView } = await import('../views.ts');
+    const characters = await buildTypeListView('character', 'en');
+    const luffy = characters?.items.find((i) => i.slug === 'monkey-d-luffy');
+    expect(luffy?.secondary).toBe('Straw Hat');
+    expect(luffy?.tag).toBeNull(); // alive = unremarkable, no tag
+    const ace = characters?.items.find((i) => i.slug === 'portgas-d-ace');
+    expect(ace?.tag).toBe('Dead');
+    // Chapters: release date; platforms: kind (both via their schemas).
+    const chapters = await buildTypeListView('manga-chapter', 'en');
+    expect(chapters?.items.find((i) => i.slug === 'chapter-1')?.secondary)
+      .toBe('July 22, 1997');
+    const platforms = await buildTypeListView('streaming-platform', 'en');
+    expect(platforms?.items.find((i) => i.slug === 'netflix')?.secondary)
+      .toBe('Streaming (video)');
+  });
+
+  test('listing tags/epithets respect the cursor and never leak the truth', async () => {
+    const { buildTypeListView } = await import('../views.ts');
+    // Ace dies @574 — before that, no tag.
+    const early = await buildTypeListView('character', 'en', cursor(100));
+    expect(early?.items.find((i) => i.slug === 'portgas-d-ace')?.tag).toBeNull();
+    // Sabo @600 is BELIEVED dead: the tag shows the believed value,
+    // never the concealed actual_value ("alive").
+    const mid = await buildTypeListView('character', 'en', cursor(600));
+    expect(mid?.items.find((i) => i.slug === 'sabo')?.tag).toBe('Presumed dead');
+    // After the reveal (@731) the latest visible status is alive → no tag.
+    const late = await buildTypeListView('character', 'en', cursor(731));
+    expect(late?.items.find((i) => i.slug === 'sabo')?.tag).toBeNull();
+    // Epithets beyond the cursor stay hidden on listing cards too.
+    const at95 = await buildTypeListView('character', 'en', cursor(95));
+    expect(at95?.items.find((i) => i.slug === 'monkey-d-luffy')?.secondary).toBeNull();
+  });
+
   test('unknown scope degrades silently (no live-action corpus)', async () => {
     const luffy = await entity('character', 'monkey-d-luffy', 'en', cursor(), 'live_action');
     expect(luffy.propagateScope).toBe('live_action');

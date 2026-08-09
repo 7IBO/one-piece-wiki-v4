@@ -214,3 +214,90 @@ describe('detectLosses', () => {
     expect(detectLosses(report)).toEqual([]);
   });
 });
+
+describe('ADR-099 migrations (0009 removals assert, 0010 vocabulary merge)', () => {
+  it('0009 no-ops on a clean entity, throws on any removed shape', async () => {
+    const { default: removals } = await import(
+      '../../../data/migrations/0009-single-home-removals.ts'
+    );
+
+    const clean = character();
+    expect(removals.up(clean)).toBe(clean);
+
+    for (const type of ['led-by', 'captains', 'introduces-character', 'awakening-of']) {
+      const dirty = character();
+      (dirty['relations'] as { type: string; }[]).push({ type });
+      expect(() => removals.up(dirty)).toThrow('ADR-099');
+    }
+
+    const withTotal = character();
+    (withTotal['properties'] as Record<string, unknown>)['total_bounty'] = [
+      { value: 3_161_000_100, since: 'manga-chapter:1058' },
+    ];
+    expect(() => removals.up(withTotal)).toThrow('total_bounty');
+  });
+
+  it('0010 unifies founding_member -> founder on both status qualifiers', async () => {
+    const { default: merge } = await import(
+      '../../../data/migrations/0010-merge-membership-status-vocabularies.ts'
+    );
+
+    const founder: EntityData = {
+      id: 'character:rayleigh',
+      type: 'character',
+      schema_version: 1,
+      relations: [
+        {
+          type: 'member-of',
+          target: 'crew:roger-pirates',
+          qualifiers: { loyalty_status: 'founding_member', since: 'manga-chapter:1' },
+        },
+      ],
+    };
+    const out = merge.up(founder) as {
+      relations: { qualifiers: Record<string, unknown>; }[];
+    };
+    expect(out).not.toBe(founder); // rewritten copy
+    expect(out.relations[0]!.qualifiers['loyalty_status']).toBe('founder');
+    // The untouched qualifiers survive.
+    expect(out.relations[0]!.qualifiers['since']).toBe('manga-chapter:1');
+
+    const memberState: EntityData = {
+      id: 'location:alabasta',
+      type: 'location',
+      schema_version: 1,
+      relations: [
+        {
+          type: 'member-state-of',
+          target: 'organization:world-government',
+          qualifiers: { membership_status: 'founding_member' },
+        },
+      ],
+    };
+    const stateOut = merge.up(memberState) as {
+      relations: { qualifiers: Record<string, unknown>; }[];
+    };
+    expect(stateOut.relations[0]!.qualifiers['membership_status']).toBe('founder');
+  });
+
+  it('0010 no-ops without status qualifiers, throws on dropped values', async () => {
+    const { default: merge } = await import(
+      '../../../data/migrations/0010-merge-membership-status-vocabularies.ts'
+    );
+
+    const clean = character();
+    expect(merge.up(clean)).toBe(clean);
+
+    for (const value of ['presumed_dead_member', 'allied']) {
+      const dirty: EntityData = {
+        id: 'character:x',
+        type: 'character',
+        schema_version: 1,
+        relations: [
+          { type: 'member-of', target: 'crew:y', qualifiers: { loyalty_status: value } },
+        ],
+      };
+      expect(() => merge.up(dirty)).toThrow('ADR-099');
+    }
+  });
+});

@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "manga-chapter",
-  "schema_version": 8,
+  "schema_version": 9,
   "labels": {
     "en": "Manga chapter",
     "fr": "Chapitre du manga"
@@ -62,7 +62,6 @@
     "part-of-volume",
     "has-cover-story",
     "adapted-by",
-    "introduces-character",
     "available-on",
     "depicted-by"
   ],

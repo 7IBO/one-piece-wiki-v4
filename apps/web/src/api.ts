@@ -77,7 +77,9 @@ export const fetchTypeList = createServerFn({ method: 'GET' })
     locale: asLocale(input.locale),
     type: asSlug(input.type),
   }))
-  .handler(({ data }) => buildTypeListView(data.type, data.locale));
+  // The cursor matters here too: listing cards now carry epithets /
+  // status tags, which are spoiler-gated like everything else.
+  .handler(({ data }) => buildTypeListView(data.type, data.locale, readProgress()));
 
 export const fetchEntity = createServerFn({ method: 'GET' })
   .inputValidator((input: { locale: Locale; type: string; slug: string; scope?: string; }) => ({

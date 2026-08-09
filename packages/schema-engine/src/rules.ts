@@ -17,6 +17,17 @@
  * edge-level conditions/expectations on qualifiers (ADR-098 adds the
  * `qualifier_absent` expectation — the mirror of `property_absent`).
  *
+ * ADR-099: entity-scope rules gain INCOMING-edge awareness — the
+ * `has_active_incoming_relation` condition and the
+ * `no_active_incoming_relation` expectation. Both need corpus-wide
+ * knowledge a single entity cannot supply, so `evaluateRules` accepts
+ * an optional `CorpusContext` (an incoming-active-edge oracle).
+ * `check:coherence` builds it from its full entity map; callers
+ * without one — the dashboard live form and save endpoint, which see
+ * one entity at a time — pass nothing, and any rule using these
+ * fields is SKIPPED silently (no finding either way). The same skip
+ * applies when the entity carries no `id` (the index is keyed by id).
+ *
  * The expectation/condition vocabulary evaluated here must stay in
  * sync with the Zod shapes in packages/schemas/src/meta/rule.ts.
  */
@@ -34,7 +45,9 @@ export type RuleFinding = {
   /** Entry index (0-based) for entry-scoped findings. */
   readonly entryIndex?: number;
   /** Relation type + edge index (0-based within the entity's stored
-   *  `relations` array) for relation-scoped findings (ADR-090). */
+   *  `relations` array) for relation-scoped findings (ADR-090). An
+   *  ADR-099 `no_active_incoming_relation` finding sets only
+   *  `relationType` (the offending edge lives on ANOTHER entity). */
   readonly relationType?: string;
   readonly relationIndex?: number;
 };
@@ -42,6 +55,9 @@ export type RuleFinding = {
 type EntryRecord = Record<string, unknown>;
 
 type EntityLike = {
+  /** Entity id (`type:slug`) — needed only by the ADR-099 incoming-edge
+   *  fields (the corpus index is keyed by id); optional otherwise. */
+  readonly id?: string | undefined;
   readonly type: string;
   readonly properties?: Record<string, unknown> | undefined;
   readonly relations?:
@@ -68,8 +84,33 @@ function qualifierIsSet(v: unknown): boolean {
   return true;
 }
 
-function relationIsActive(qualifiers: Record<string, unknown> | undefined): boolean {
+/** ACTIVE = the edge's `until` qualifier is not set. Exported so
+ *  `check:coherence` builds its ADR-099 incoming index with the exact
+ *  same active semantics the rules use. */
+export function relationIsActive(qualifiers: Record<string, unknown> | undefined): boolean {
   return !qualifierIsSet(qualifiers?.['until']);
+}
+
+/**
+ * Corpus-wide knowledge for the ADR-099 incoming-edge rule fields.
+ * Built by `check:coherence` from its full entity map; absent in
+ * single-entity callers (dashboard), which therefore skip such rules.
+ */
+export type CorpusContext = {
+  /** true when ≥1 ACTIVE (no `until`) stored edge of `relationType`
+   *  points AT `entityId`; `sourceType` narrows to edges whose SOURCE
+   *  entity has that type. */
+  readonly hasActiveIncomingRelation: (
+    entityId: string,
+    relationType: string,
+    sourceType?: string,
+  ) => boolean;
+};
+
+/** Does the rule use any field that needs a `CorpusContext`? */
+function ruleNeedsCorpusContext(rule: Rule): boolean {
+  return rule.when.some((c) => c.has_active_incoming_relation !== undefined)
+    || rule.expect.some((e) => e.no_active_incoming_relation !== undefined);
 }
 
 /** First source ref of a possibly-array `since`/`until` qualifier. */
@@ -99,7 +140,11 @@ function latestEntry(value: unknown): EntryRecord | null {
   return list.length > 0 ? list[list.length - 1]! : null;
 }
 
-function conditionHolds(entity: EntityLike, c: Rule['when'][number]): boolean {
+function conditionHolds(
+  entity: EntityLike,
+  c: Rule['when'][number],
+  context: CorpusContext | undefined,
+): boolean {
   if (c.property_latest_equals !== undefined) {
     const { property, value } = c.property_latest_equals;
     const last = latestEntry(entity.properties?.[property]);
@@ -119,6 +164,19 @@ function conditionHolds(entity: EntityLike, c: Rule['when'][number]): boolean {
   }
   if (c.property_present !== undefined) {
     if (entriesOf(entity.properties?.[c.property_present.property]).length === 0) return false;
+  }
+  if (c.has_active_incoming_relation !== undefined) {
+    // Guarded by the caller: rules with this field are skipped when no
+    // CorpusContext (or no entity id) is available.
+    if (context === undefined || entity.id === undefined) return false;
+    const { type, source_type } = c.has_active_incoming_relation;
+    if (
+      !context.hasActiveIncomingRelation(
+        entity.id,
+        String(type),
+        source_type === undefined ? undefined : String(source_type),
+      )
+    ) return false;
   }
   return true;
 }
@@ -151,10 +209,15 @@ function entryConditionHolds(entry: EntryRecord, c: Rule['entry_when'][number]):
   return true;
 }
 
-/** Evaluate every applicable rule against one entity. */
+/**
+ * Evaluate every applicable rule against one entity. `context` is the
+ * optional ADR-099 corpus oracle; without it (or without `entity.id`)
+ * any rule using the incoming-edge fields is skipped silently.
+ */
 export function evaluateRules(
   entity: EntityLike,
   rules: Iterable<Rule>,
+  context?: CorpusContext,
 ): readonly RuleFinding[] {
   const findings: RuleFinding[] = [];
 
@@ -163,6 +226,10 @@ export function evaluateRules(
       || rule.applies_to_entity_types.length === 0
       || rule.applies_to_entity_types.some((t) => String(t) === entity.type);
     if (!applies) continue;
+    if (
+      ruleNeedsCorpusContext(rule)
+      && (context === undefined || entity.id === undefined)
+    ) continue;
 
     if (rule.scope === 'entry') {
       const targetProps = rule.entry_property === '*' || rule.entry_property === undefined
@@ -238,10 +305,11 @@ export function evaluateRules(
     }
 
     // Entity scope.
-    if (!rule.when.every((c) => conditionHolds(entity, c))) continue;
+    if (!rule.when.every((c) => conditionHolds(entity, c, context))) continue;
     for (const exp of rule.expect) {
       let ok = true;
       let property: string | undefined;
+      let relationType: string | undefined;
       if (exp.property_absent !== undefined) {
         property = exp.property_absent.property;
         ok = entriesOf(entity.properties?.[property]).length === 0;
@@ -254,6 +322,13 @@ export function evaluateRules(
           (r) => r.type === type && relationIsActive(r.qualifiers),
         );
         ok = active.length <= max;
+      } else if (exp.no_active_incoming_relation !== undefined) {
+        // Reached only with a CorpusContext + entity id (see the
+        // ruleNeedsCorpusContext skip above).
+        relationType = String(exp.no_active_incoming_relation.type);
+        if (context !== undefined && entity.id !== undefined) {
+          ok = !context.hasActiveIncomingRelation(entity.id, relationType);
+        }
       }
       if (!ok) {
         findings.push({
@@ -262,6 +337,7 @@ export function evaluateRules(
           enforcement: rule.enforcement,
           messages: rule.messages,
           ...(property !== undefined ? { property } : {}),
+          ...(relationType !== undefined ? { relationType } : {}),
         });
       }
     }

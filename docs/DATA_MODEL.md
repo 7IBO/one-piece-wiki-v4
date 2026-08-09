@@ -565,10 +565,12 @@ interval is still open**. Hidden successions (a secret heir) use the relation
 epistemic axis (ADR-037). See ADR-039 and `/docs/DATA_EXPANSION_PLAN.md` § 1.3.
 
 Devil fruits additionally carry a `zoan_model` (the open-ended model name, e.g.
-"Nika", revealed independently of `classification`), an `awakening-of` relation
-linking the awakened-form technique back to the fruit, and a `canonicity`
+"Nika", revealed independently of `classification`) and a `canonicity`
 property (canon / anime-only / film-only / game-only / SBS / non-canon — a canon
-tier orthogonal to spoiler progression). The Nika reveal (ch.1044) flips a
+tier orthogonal to spoiler progression). Awakened forms live in the
+transformation model (a `transformation` entity with
+`transformation_kind: awakening`, linked `form-of` → the fruit); the
+former `awakening-of` relation was removed by ADR-099. The Nika reveal (ch.1044) flips a
 fruit's `classification`, true `name` and `zoan_model` together — see
 `/docs/EPISTEMIC_MODEL.md` § "Reclassification by reveal — the Nika case".
 

@@ -45,6 +45,14 @@ export const RuleCondition = z.object({
     .optional(),
   /** Property present with ≥1 entry. */
   property_present: z.object({ property: Slug }).optional(),
+  /** ≥1 ACTIVE (no `until`) stored edge of this type on ANOTHER entity
+   *  points AT this entity; optional source entity-type narrowing.
+   *  Corpus-wide knowledge (ADR-099): only evaluable when the caller
+   *  provides a corpus context (check:coherence does; the
+   *  single-entity dashboard evaluation SKIPS rules using it). */
+  has_active_incoming_relation: z
+    .object({ type: Slug, source_type: Slug.optional() })
+    .optional(),
 });
 
 /** Expectation — each one that does NOT hold yields a finding. */
@@ -57,6 +65,10 @@ export const RuleExpectation = z.object({
   max_concurrent_relations: z
     .object({ type: Slug, max: z.number().int().nonnegative() })
     .optional(),
+  /** NO active (no `until`) stored edge of this type on ANOTHER entity
+   *  should point at this entity. Corpus-wide (ADR-099) — same context
+   *  requirement as `has_active_incoming_relation`. */
+  no_active_incoming_relation: z.object({ type: Slug }).optional(),
 });
 
 /** Entry-scope condition/expectation (rule.scope === 'entry'). */

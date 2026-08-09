@@ -109,6 +109,77 @@ describe('checkCoherence — relation rules', () => {
   });
 });
 
+describe('checkCoherence — ADR-099 corpus context (incoming-edge rules)', () => {
+  async function fruitCatalogue(): Promise<ValidatedCatalogue> {
+    const raw = await Bun.file(
+      'data/universes/one-piece/schemas/rules/eaten-fruit-not-concurrently-held.json',
+    ).json();
+    const rule = RuleSchema.parse(raw);
+    const base = catalogue(
+      {
+        'devil-fruit': { allowed_relations: ['held-by'] },
+        character: { allowed_relations: ['ate-fruit'] },
+        organization: { allowed_relations: [] },
+      },
+      {
+        'held-by': {
+          valid_from_types: ['devil-fruit'],
+          valid_to_types: ['organization', 'character'],
+          qualifiers: [],
+        },
+        'ate-fruit': {
+          valid_from_types: ['character'],
+          valid_to_types: ['devil-fruit'],
+          qualifiers: [],
+        },
+      },
+    );
+    return { ...base, rules: new Map([[rule.id, rule]]) };
+  }
+
+  it('flags a held fruit someone actively ate (edge lives on ANOTHER entity)', async () => {
+    const cat = await fruitCatalogue();
+    const entities = entityMap(
+      entity('devil-fruit:mera-mera', [
+        { type: 'held-by', target: 'organization:donquixote-pirates' },
+      ]),
+      entity('character:sabo', [{ type: 'ate-fruit', target: 'devil-fruit:mera-mera' }]),
+      entity('organization:donquixote-pirates'),
+    );
+    const ruleFindings = checkCoherence(entities, cat).filter((f) => f.code === 'RULE_FINDING');
+    expect(ruleFindings).toHaveLength(1);
+    expect(ruleFindings[0]!.source).toBe('devil-fruit:mera-mera');
+    expect(ruleFindings[0]!.severity).toBe('warning');
+    expect(ruleFindings[0]!.message).toContain('eaten-fruit-not-concurrently-held');
+  });
+
+  it('stays silent when the eating ended (until) or nothing is held', async () => {
+    const cat = await fruitCatalogue();
+    const eatingEnded = entityMap(
+      entity('devil-fruit:mera-mera', [
+        { type: 'held-by', target: 'organization:donquixote-pirates' },
+      ]),
+      entity('character:ace', [
+        {
+          type: 'ate-fruit',
+          target: 'devil-fruit:mera-mera',
+          qualifiers: { until: 'manga-chapter:574' },
+        },
+      ]),
+      entity('organization:donquixote-pirates'),
+    );
+    expect(checkCoherence(eatingEnded, cat).filter((f) => f.code === 'RULE_FINDING'))
+      .toHaveLength(0);
+
+    const nothingHeld = entityMap(
+      entity('devil-fruit:mera-mera'),
+      entity('character:sabo', [{ type: 'ate-fruit', target: 'devil-fruit:mera-mera' }]),
+    );
+    expect(checkCoherence(nothingHeld, cat).filter((f) => f.code === 'RULE_FINDING'))
+      .toHaveLength(0);
+  });
+});
+
 describe('checkCoherence — unreferenced warning', () => {
   it('warns about an entity nothing points at', () => {
     const entities = entityMap(

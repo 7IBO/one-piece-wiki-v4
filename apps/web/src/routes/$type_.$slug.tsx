@@ -35,6 +35,7 @@ import {
   type SourceTemplateView,
 } from '../api';
 import { ContributeStrip } from '../components/ContributeStrip';
+import { CardGrid, EntityCard } from '../components/EntityCard';
 import { EntityChipLink, ScopeContext, useScopeSearch } from '../components/EntityChip';
 import { EntityImage } from '../components/EntityImage';
 import { type ChromeKey, t } from '../lib/chrome';
@@ -358,52 +359,6 @@ function StatRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): JS
 }
 
 // ---------------------------------------------------------------------------
-// Entity card — the ONE unit for people/things in grids: portrait or
-// monogram tile, name, secondary label.
-
-function CardGrid({ children }: { readonly children: ReactNode; }): JSX.Element {
-  return (
-    <ul className='grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))]'>
-      {children}
-    </ul>
-  );
-}
-
-function EntityCard({ type, slug, image, name, sub }: {
-  readonly type: string;
-  readonly slug: string;
-  readonly image: Parameters<typeof EntityImage>[0]['image'];
-  readonly name: string;
-  readonly sub: string | null;
-}): JSX.Element {
-  const search = useScopeSearch();
-  return (
-    <li>
-      <Link
-        to='/$type/$slug'
-        params={{ type, slug }}
-        search={search}
-        className='group block h-full rounded-lg bg-surface p-2 ring-1 ring-inset ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface-2 hover:ring-line-strong'
-      >
-        <EntityImage
-          image={image}
-          name={name}
-          ratio='portrait'
-          className='w-full rounded-md'
-          monogramClassName='text-4xl'
-        />
-        <span className='mt-2 block truncate px-1 text-sm font-semibold text-fg transition-colors duration-150 group-hover:text-accent'>
-          {name}
-        </span>
-        <span className='mb-1 block truncate px-1 text-xs text-faint'>
-          {sub ?? ' '}
-        </span>
-      </Link>
-    </li>
-  );
-}
-
-// ---------------------------------------------------------------------------
 // Character: affiliations with the other members of each crew
 
 function CrewSections(
@@ -447,7 +402,8 @@ function CrewSections(
                         slug={member.chip.slug}
                         image={member.image}
                         name={member.chip.name}
-                        sub={member.note}
+                        secondary={member.secondary}
+                        meta={member.note}
                       />
                     ))}
                   </CardGrid>
@@ -483,7 +439,7 @@ function MemberCards({ titleKey, members, hideTitle = false }: {
 
 function MemberCardItem({ member }: { readonly member: MemberRowView; }): JSX.Element {
   const locale = useLocale();
-  const sub = [
+  const meta = [
     [member.role, member.rank].filter((part) => part !== null).join(' · '),
     member.since !== null ? `${t(locale, 'since')} ${member.since.name}` : '',
     member.until !== null ? `${t(locale, 'until')} ${member.until.name}` : '',
@@ -494,7 +450,9 @@ function MemberCardItem({ member }: { readonly member: MemberRowView; }): JSX.El
       slug={member.chip.slug}
       image={member.image}
       name={member.chip.name}
-      sub={sub === '' ? null : sub}
+      secondary={member.secondary}
+      meta={meta === '' ? null : meta}
+      stat={member.stat}
     />
   );
 }
@@ -631,7 +589,8 @@ function CastGroup({ group }: { readonly group: CastGroupView; }): JSX.Element {
             slug={item.chip.slug}
             image={item.image}
             name={item.chip.name}
-            sub={item.note}
+            secondary={item.secondary}
+            meta={item.note}
           />
         ))}
       </CardGrid>
