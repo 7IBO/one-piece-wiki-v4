@@ -14,7 +14,11 @@
  *
  * ADR-090: `scope: 'relation'` visits stored relation EDGES (filtered
  * by `relation_type`) the way `entry` visits property entries, with
- * edge-level conditions/expectations on qualifiers.
+ * edge-level conditions/expectations on qualifiers (ADR-098 adds the
+ * `qualifier_absent` expectation — the mirror of `property_absent`).
+ *
+ * The expectation/condition vocabulary evaluated here must stay in
+ * sync with the Zod shapes in packages/schemas/src/meta/rule.ts.
  */
 import type { Rule } from './meta-validator.ts';
 
@@ -213,6 +217,10 @@ export function evaluateRules(
             ok = exp.qualifier_present_one_of.qualifiers.some((q) =>
               qualifierIsSet(edge.qualifiers?.[String(q)])
             );
+          } else if (exp.qualifier_absent !== undefined) {
+            // ADR-098 — the relation-scope mirror of `property_absent`:
+            // holds when the qualifier is NOT set on the edge.
+            ok = !qualifierIsSet(edge.qualifiers?.[exp.qualifier_absent.qualifier]);
           }
           if (!ok) {
             findings.push({

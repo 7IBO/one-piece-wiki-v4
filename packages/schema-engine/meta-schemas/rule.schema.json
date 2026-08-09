@@ -367,6 +367,21 @@
               "qualifiers"
             ],
             "additionalProperties": false
+          },
+          "qualifier_absent": {
+            "type": "object",
+            "properties": {
+              "qualifier": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+              }
+            },
+            "required": [
+              "qualifier"
+            ],
+            "additionalProperties": false
           }
         },
         "additionalProperties": false

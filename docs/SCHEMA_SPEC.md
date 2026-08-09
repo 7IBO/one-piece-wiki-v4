@@ -749,7 +749,9 @@ Condition kinds: `property_latest_equals`, `has_active_relation`
 Relation kinds (ADR-090): `qualifier_equals`, `target_type_is` →
 `qualifier_present`, `qualifier_present_one_of` (at least one of the
 listed qualifiers set — e.g. `available-on` needs `external_id` or
-`url`). Relation-scope findings anchor via `relationType` /
+`url`), `qualifier_absent` (ADR-098 — the qualifier must NOT be set
+on the edge; the relation-scope mirror of `property_absent`).
+Relation-scope findings anchor via `relationType` /
 `relationIndex` instead of `property` / `entryIndex`.
 
 The engine is `packages/schema-engine/src/rules.ts` — browser-safe,

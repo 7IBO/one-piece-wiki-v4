@@ -1,0 +1,31 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "former-member-needs-until",
+  "schema_version": 1,
+  "severity": "warning",
+  "labels": {
+    "en": "Former member without an end anchor",
+    "fr": "Ancien membre sans borne de fin"
+  },
+  "messages": {
+    "en": "`loyalty_status: former_member` says the membership ended, but `until` is missing — the edge still reads as ACTIVE to every consumer. Set `until` (the status value alone changes nothing).",
+    "fr": "`loyalty_status: former_member` indique une adhésion terminée, mais `until` est absent — l'arête reste ACTIVE pour tous les consommateurs. Renseignez `until` (la valeur de statut seule ne change rien)."
+  },
+  "scope": "relation",
+  "relation_type": "member-of",
+  "relation_when": [
+    {
+      "qualifier_equals": {
+        "qualifier": "loyalty_status",
+        "value": "former_member"
+      }
+    }
+  ],
+  "relation_expect": [
+    {
+      "qualifier_present": {
+        "qualifier": "until"
+      }
+    }
+  ]
+}

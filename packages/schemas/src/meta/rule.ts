@@ -98,6 +98,10 @@ export const RuleRelationExpectation = z.object({
   qualifier_present_one_of: z
     .object({ qualifiers: z.array(Slug).min(1) })
     .optional(),
+  /** Edge should NOT carry this qualifier (unset or empty). E.g. an
+   *  organization membership stores its position in `held_rank`, not
+   *  the pirate-crew `role` (ADR-098). */
+  qualifier_absent: z.object({ qualifier: Slug }).optional(),
 });
 
 export const RuleSchema = z.object({

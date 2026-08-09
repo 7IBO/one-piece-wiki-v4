@@ -112,7 +112,8 @@ Templates (v1):
   (`uses-technique`) · weapons (`wields-weapon`) · relations
   (family/allies/rivals) · apparitions summary · narrative prose.
 - **crew** (and `organization`): infobox (flag image, name, ship,
-  captain via `captained-by`/`led-by`) · **member list with portrait
+  leader via `led-by`; the crew captain surfaces through the incoming
+  `member-of{role: captain}` edge since ADR-098) · **member list with portrait
   thumbnails, roles and ranks** (inverse of `member-of`, grouped
   current/former via `until`) · territory/ship sections when present.
 - **manga-chapter / anime-episode** (source types): header with number

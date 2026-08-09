@@ -289,3 +289,130 @@ describe('evaluateRules — relation scope (ADR-090)', () => {
     expect(findings[0]!.relationIndex).toBe(1);
   });
 });
+
+describe('evaluateRules — qualifier_absent + the ADR-098 rules', () => {
+  async function loadUniverseRule(id: string): Promise<RuleSchema> {
+    const raw = await Bun.file(`data/universes/one-piece/schemas/rules/${id}.json`).json();
+    return RuleSchema.parse(raw);
+  }
+
+  it('qualifier_absent holds when the qualifier is unset or empty, fails when set', () => {
+    const rule = RuleSchema.parse({
+      id: 'no-role-on-x',
+      schema_version: 1,
+      severity: 'warning',
+      labels: { en: 'x', fr: 'x' },
+      messages: { en: 'x', fr: 'x' },
+      scope: 'relation',
+      relation_type: 'member-of',
+      relation_expect: [{ qualifier_absent: { qualifier: 'role' } }],
+    });
+
+    const bare = {
+      type: 'character',
+      relations: [{ type: 'member-of', target: 'organization:marines' }],
+    };
+    expect(evaluateRules(bare, [rule])).toHaveLength(0);
+
+    // Empty string counts as NOT set — the expectation still holds.
+    const empty = {
+      type: 'character',
+      relations: [
+        { type: 'member-of', target: 'organization:marines', qualifiers: { role: '' } },
+      ],
+    };
+    expect(evaluateRules(empty, [rule])).toHaveLength(0);
+
+    const withRole = {
+      type: 'character',
+      relations: [
+        { type: 'member-of', target: 'organization:marines', qualifiers: { role: 'cook' } },
+      ],
+    };
+    const findings = evaluateRules(withRole, [rule]);
+    expect(findings).toHaveLength(1);
+    expect(findings[0]!.relationType).toBe('member-of');
+    expect(findings[0]!.relationIndex).toBe(0);
+  });
+
+  it('former-member-needs-until flags former_member without until, passes with it', async () => {
+    const rule = await loadUniverseRule('former-member-needs-until');
+    expect(rule.scope).toBe('relation');
+
+    const drifting = {
+      type: 'character',
+      relations: [{
+        type: 'member-of',
+        target: 'crew:straw-hat-pirates',
+        qualifiers: { loyalty_status: 'former_member' },
+      }],
+    };
+    const findings = evaluateRules(drifting, [rule]);
+    expect(findings).toHaveLength(1);
+    expect(findings[0]!.relationType).toBe('member-of');
+    expect(findings[0]!.enforcement).toBe('advisory');
+
+    const anchored = {
+      type: 'character',
+      relations: [{
+        type: 'member-of',
+        target: 'crew:straw-hat-pirates',
+        qualifiers: { loyalty_status: 'former_member', until: 'manga-chapter:1000' },
+      }],
+    };
+    expect(evaluateRules(anchored, [rule])).toHaveLength(0);
+
+    // Other loyalty statuses never trip the condition.
+    const activeMember = {
+      type: 'character',
+      relations: [{
+        type: 'member-of',
+        target: 'crew:straw-hat-pirates',
+        qualifiers: { loyalty_status: 'member' },
+      }],
+    };
+    expect(evaluateRules(activeMember, [rule])).toHaveLength(0);
+  });
+
+  it('org-membership-uses-rank-not-crew-role flags role on org edges only', async () => {
+    const rule = await loadUniverseRule('org-membership-uses-rank-not-crew-role');
+    expect(rule.scope).toBe('relation');
+
+    // Crew membership with a role is the NORMAL case — target type
+    // does not match the condition, no finding.
+    const crewCook = {
+      type: 'character',
+      relations: [{
+        type: 'member-of',
+        target: 'crew:straw-hat-pirates',
+        qualifiers: { role: 'cook' },
+      }],
+    };
+    expect(evaluateRules(crewCook, [rule])).toHaveLength(0);
+
+    // Organization membership carrying the crew-role vocabulary — finding.
+    const marineWithRole = {
+      type: 'character',
+      relations: [{
+        type: 'member-of',
+        target: 'organization:marines',
+        qualifiers: { role: 'captain' },
+      }],
+    };
+    const findings = evaluateRules(marineWithRole, [rule]);
+    expect(findings).toHaveLength(1);
+    expect(findings[0]!.relationType).toBe('member-of');
+    expect(findings[0]!.relationIndex).toBe(0);
+
+    // The ADR-044 encoding — held_rank, no role — is clean.
+    const marineWithRank = {
+      type: 'character',
+      relations: [{
+        type: 'member-of',
+        target: 'organization:marines',
+        qualifiers: { held_rank: 'captain' },
+      }],
+    };
+    expect(evaluateRules(marineWithRank, [rule])).toHaveLength(0);
+  });
+});
