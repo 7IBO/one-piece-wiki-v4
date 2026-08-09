@@ -9,21 +9,23 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
 ## Identity
 
 - **Name**: One Piece Wiki (header wordmark; `<title>` suffix).
-- **Style** (third pass 2026-08-09, maintainer direction "ultra
-  moderne, sombre, dense, données avec label/image"): **dark
-  database register** (AniList energy). Deep blue-charcoal canvas
-  (oklch ≈0.17), two surface steps for the card system, hairlines
-  at white 8/16 %, ONE electric-blue accent (links, chips, primary
-  buttons); no ornaments, no veils, no glass. Data renders as
-  LABELED UNITS: stat tiles (tracked-uppercase label over semibold
-  value — the first infobox properties form a hero stat row, the
-  rest a 320 px sticky sidebar mosaic), entity cards (3:4
-  portrait/monogram tile + name + role/since) in auto-fill grids
-  for members/cast/users/listings, number-led cards for chapters,
-  labeled-row cards for history. Dense: 1280 px shell, sections
-  32-40 px apart, no empty bands (small remainders fold inline).
-  Bricolage Grotesque display + Inter body, tabular numerals.
-  Single deliberate dark look.
+- **Style** (v5 "Le Log", 2026-08-09 — signature identity built on
+  the product's unique asset, the progression cursor): **the Log
+  Rail** — a persistent stylized manga-axis timeline under the
+  header (graduated ticks, gold fill from origin to the reader's
+  cursor, chipped marker; entity pages add gold diamond markers at
+  that page's knowledge anchors, computed from already
+  spoiler-filtered entries so the rail can never leak). Layout:
+  fixed 68 px LEFT SPINE (vertical wordmark, current-type glyph,
+  locale at bottom; collapses to a top bar on mobile), content
+  left-aligned in a 1280 px canvas; entity body = 12-col dense-flow
+  BENTO mosaic with spans derived from content volume, bounty as a
+  gold-framed typographic plaque. Palette "abysse": deep ocean
+  canvas (oklch ≈0.16 hue 220), bone foreground, strict duo — straw
+  GOLD for identity (rail, plaques, stats, monograms, focus) +
+  VERMILLION for all interactive. Cards content-sized
+  (minmax 124-164 px, left-packed), zero empty bands, no ornaments.
+  Bricolage Grotesque + Inter, tabular numerals.
 - **Footer (every page)**: GitHub repository link
   (`https://github.com/7IBO/one-piece-wiki-v4`) and a support link
   (`https://buymeacoffee.com/7ibo`), plus locale switcher.

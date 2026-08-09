@@ -30,6 +30,7 @@ export type {
   InfoboxRelationRowView,
   InfoboxRowView,
   LabelledValue,
+  LogAnchorView,
   MemberRowView,
   MemberThumbView,
   PropertyEntryView,

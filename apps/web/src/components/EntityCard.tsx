@@ -15,9 +15,14 @@ import type { ImageView } from '../api';
 import { useScopeSearch } from './EntityChip';
 import { EntityImage } from './EntityImage';
 
+/**
+ * Cards are sized to their CONTENT, never to the container: tracks
+ * cap at 164px and left-pack, so a 4-member crew never stretches its
+ * cards across a wide tile.
+ */
 export function CardGrid({ children }: { readonly children: ReactNode; }): JSX.Element {
   return (
-    <ul className='grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(150px,1fr))]'>
+    <ul className='grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(124px,164px))]'>
       {children}
     </ul>
   );
@@ -91,7 +96,7 @@ export function EntityCard(
                   ? (
                     <span
                       title={stat}
-                      className='ml-auto truncate text-xs font-semibold tabular-nums text-fg'
+                      className='ml-auto truncate text-xs font-semibold tabular-nums text-gold'
                     >
                       {stat}
                     </span>

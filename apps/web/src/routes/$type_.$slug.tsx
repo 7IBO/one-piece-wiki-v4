@@ -110,20 +110,33 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
   const incoming = view.relations.filter((group) => group.inverse);
   const history = view.properties.filter((property) => property.entries.length > 1);
   const source = view.template.kind === 'source' ? view.template : null;
-  // Key stats surface in the hero tile row; the remainder (plus the
-  // relation rows) go to the sticky sidebar — no duplication. A tiny
-  // remainder (≤2 units) folds into the hero row instead, so a lone
-  // stat never claims a whole empty column (density rule).
-  const keyStats = view.infobox.slice(0, 4);
-  const restStats = view.infobox.slice(4);
-  const sidebarUnits = restStats.length + view.infoboxRelations.length;
-  const foldSidebar = sidebarUnits > 0 && sidebarUnits <= 2;
-  const hasSidebar = sidebarUnits > 0 && !foldSidebar;
+  // The bounty (or a crew's derived total) is the ONE gold plaque of
+  // the hero — a typographic stamp (ADR-091 binding, degrades to a
+  // plain stat row when absent). Every other infobox unit renders as
+  // labeled stat tiles: the first few in the hero row, the remainder
+  // (plus relation rows) in the mosaic's identity tile. A tiny
+  // remainder folds into the hero row (density rule: no lone tiles).
+  const bountyRow =
+    view.infobox.find((row) => row.id === 'bounty' || row.id === 'derived:total_bounty') ?? null;
+  const statRows = view.infobox.filter((row) => row !== bountyRow);
+  const keyStats = statRows.slice(0, 4);
+  const restStats = statRows.slice(4);
+  const identityUnits = restStats.length + view.infoboxRelations.length;
+  const foldIdentity = identityUnits > 0 && identityUnits <= 2;
+  const hasIdentityTile = identityUnits > 0 && !foldIdentity;
+  // Relations pack into ONE tile (both directions side by side) sized
+  // by their actual volume — a lone group never claims a wide band.
+  const relationGroups = outgoing.length + incoming.length;
+  const relationsSpan = relationGroups >= 4
+    ? 'min-[980px]:col-span-12'
+    : relationGroups >= 2
+    ? 'min-[980px]:col-span-6'
+    : 'min-[980px]:col-span-4';
   return (
     <article>
-      {/* Hero band: portrait tile + identity + key-stat tile row */}
-      <header className='mb-8'>
-        <div className='flex items-start gap-4 sm:gap-6'>
+      {/* Hero band: portrait tile + identity + bounty plaque + stat row */}
+      <header className='mb-6 sm:mb-8'>
+        <div className='flex flex-wrap items-start gap-4 sm:gap-6'>
           <EntityImage
             image={view.image}
             name={view.name}
@@ -161,12 +174,13 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
               )
               : null}
           </div>
+          {bountyRow !== null ? <BountyPlaque row={bountyRow} /> : null}
         </div>
-        {keyStats.length > 0 || foldSidebar
+        {keyStats.length > 0 || foldIdentity
           ? (
             <dl className='mt-5 flex flex-wrap gap-3'>
               {keyStats.map((row) => <StatTile key={row.id} row={row} />)}
-              {foldSidebar
+              {foldIdentity
                 ? (
                   <>
                     {restStats.map((row) => <StatTile key={row.id} row={row} />)}
@@ -184,93 +198,194 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
           : null}
       </header>
 
-      <div className='flex flex-col gap-8 min-[960px]:flex-row min-[960px]:items-start min-[960px]:gap-8'>
-        <div className='min-w-0 flex-1'>
-          {source !== null ? <SourceSections template={source} /> : null}
-          {view.template.kind === 'character' ? <CrewSections crews={view.template.crews} /> : null}
-          {view.template.kind === 'crew'
-            ? (
-              <>
-                <MemberCards titleKey='connections' members={view.template.members} hideTitle />
-                <MemberCards titleKey='formerMembers' members={view.template.former} />
-              </>
-            )
-            : null}
-          {view.template.kind === 'devil-fruit'
-            ? (
-              <>
-                <MemberCards titleKey='currentUsers' members={view.template.users} />
-                <MemberCards titleKey='formerUsers' members={view.template.former} />
-              </>
-            )
-            : null}
-          {view.template.kind === 'arc'
-            ? (
-              <>
-                <SourceCards titleKey='chapters' items={view.template.chapters} />
-                <SourceCards titleKey='episodes' items={view.template.episodes} />
-                <SourceCards titleKey='arcs' items={view.template.arcs} />
-              </>
-            )
-            : null}
+      {
+        /* Dossier mosaic: sections as variable-size tiles on a 12-col
+          grid (single column on mobile), packed dense. */
+      }
+      <div className='grid grid-cols-1 gap-4 min-[980px]:grid-flow-dense min-[980px]:grid-cols-12 min-[980px]:items-start'>
+        {source !== null ? <SourceSections template={source} /> : null}
+        {view.template.kind === 'character'
+          ? <CrewSections crews={view.template.crews} />
+          : null}
+        {view.template.kind === 'crew'
+          ? (
+            <>
+              <MemberCards
+                titleKey='connections'
+                members={view.template.members}
+                hideTitle
+                span={spanForCards(view.template.members.length)}
+              />
+              <MemberCards
+                titleKey='formerMembers'
+                members={view.template.former}
+                span={spanForCards(view.template.former.length)}
+              />
+            </>
+          )
+          : null}
+        {view.template.kind === 'devil-fruit'
+          ? (
+            <>
+              <MemberCards
+                titleKey='currentUsers'
+                members={view.template.users}
+                span={spanForCards(view.template.users.length)}
+              />
+              <MemberCards
+                titleKey='formerUsers'
+                members={view.template.former}
+                span={spanForCards(view.template.former.length)}
+              />
+            </>
+          )
+          : null}
+        {view.template.kind === 'arc'
+          ? (
+            <>
+              <SourceCards
+                titleKey='chapters'
+                items={view.template.chapters}
+                span={spanForSources(view.template.chapters.length)}
+              />
+              <SourceCards
+                titleKey='episodes'
+                items={view.template.episodes}
+                span={spanForSources(view.template.episodes.length)}
+              />
+              <SourceCards
+                titleKey='arcs'
+                items={view.template.arcs}
+                span={spanForSources(view.template.arcs.length)}
+              />
+            </>
+          )
+          : null}
 
-          {view.narrative !== null
-            ? (
-              <section className='mb-8 sm:mb-10'>
-                <SectionTitle>{t(locale, 'about')}</SectionTitle>
-                <div className='rounded-lg bg-surface px-5 py-4 ring-1 ring-inset ring-line'>
-                  <Markdown markdown={view.narrative} />
-                </div>
-              </section>
-            )
-            : null}
+        {view.narrative !== null
+          ? (
+            <Tile span='min-[980px]:col-span-8'>
+              <SectionTitle>{t(locale, 'about')}</SectionTitle>
+              <Markdown markdown={view.narrative} />
+            </Tile>
+          )
+          : null}
 
-          {history.length > 0
-            ? (
-              <section className='mb-8 sm:mb-10'>
-                <SectionTitle count={history.length}>{t(locale, 'history')}</SectionTitle>
-                <dl className='divide-y divide-line rounded-lg bg-surface ring-1 ring-inset ring-line'>
-                  {history.map((property) => (
-                    <PropertyBlock
-                      key={property.id}
-                      property={property}
-                    />
-                  ))}
-                </dl>
-              </section>
-            )
-            : null}
+        {history.length > 0
+          ? (
+            <Tile span='min-[980px]:col-span-4'>
+              <SectionTitle count={history.length}>{t(locale, 'history')}</SectionTitle>
+              <dl className='divide-y divide-line'>
+                {history.map((property) => (
+                  <PropertyBlock
+                    key={property.id}
+                    property={property}
+                  />
+                ))}
+              </dl>
+            </Tile>
+          )
+          : null}
 
-          {outgoing.length > 0
-            ? (
-              <section className='mb-8 sm:mb-10'>
-                <SectionTitle count={outgoing.length}>{t(locale, 'connections')}</SectionTitle>
-                <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
-                  {outgoing.map((group) => <RelationGroup key={group.key} group={group} />)}
-                </div>
-              </section>
-            )
-            : null}
+        {hasIdentityTile
+          ? (
+            <Tile span='min-[980px]:col-span-4'>
+              <SectionTitle>{t(locale, 'properties')}</SectionTitle>
+              <dl className='divide-y divide-line'>
+                {restStats.map((row) => <IdentityRow key={row.id} row={row} />)}
+                {view.infoboxRelations.map((row) => (
+                  <IdentityRelationRow
+                    key={row.key}
+                    row={row}
+                  />
+                ))}
+              </dl>
+            </Tile>
+          )
+          : null}
 
-          {incoming.length > 0
-            ? (
-              <section className='mb-8 sm:mb-10'>
-                <SectionTitle count={incoming.length}>{t(locale, 'referencedBy')}</SectionTitle>
-                <div className='grid grid-cols-1 gap-3 md:grid-cols-2'>
-                  {incoming.map((group) => <RelationGroup key={group.key} group={group} />)}
-                </div>
-              </section>
-            )
-            : null}
-        </div>
-
-        {hasSidebar
-          ? <StatSidebar rows={restStats} relationRows={view.infoboxRelations} />
+        {relationGroups > 0
+          ? (
+            <Tile span={relationsSpan}>
+              <div className='flex flex-col gap-5 sm:flex-row sm:gap-8'>
+                {outgoing.length > 0
+                  ? (
+                    <div className='min-w-0 flex-1'>
+                      <SectionTitle count={outgoing.length}>
+                        {t(locale, 'connections')}
+                      </SectionTitle>
+                      <div className='space-y-4'>
+                        {outgoing.map((group) => <RelationGroup key={group.key} group={group} />)}
+                      </div>
+                    </div>
+                  )
+                  : null}
+                {incoming.length > 0
+                  ? (
+                    <div className='min-w-0 flex-[2]'>
+                      <SectionTitle count={incoming.length}>
+                        {t(locale, 'referencedBy')}
+                      </SectionTitle>
+                      <div className='grid grid-cols-1 gap-x-6 gap-y-4 md:grid-cols-2 min-[1200px]:grid-cols-3'>
+                        {incoming.map((group) => <RelationGroup key={group.key} group={group} />)}
+                      </div>
+                    </div>
+                  )
+                  : null}
+              </div>
+            </Tile>
+          )
           : null}
       </div>
 
       <ContributeStrip type={view.type} slug={view.slug} />
     </article>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Mosaic building blocks
+
+/** Tile spans derived from actual content volume — no fixed bands. */
+function spanForCards(count: number): string {
+  if (count >= 5) return 'min-[980px]:col-span-12';
+  if (count >= 4) return 'min-[980px]:col-span-8';
+  if (count >= 2) return 'min-[980px]:col-span-6';
+  return 'min-[980px]:col-span-4';
+}
+
+/** Number-led source cards are narrower — higher thresholds. */
+function spanForSources(count: number): string {
+  if (count >= 12) return 'min-[980px]:col-span-8';
+  if (count >= 6) return 'min-[980px]:col-span-6';
+  return 'min-[980px]:col-span-4';
+}
+
+/** One tile of the dossier mosaic (single radius scale: lg / md). */
+function Tile(
+  { span, children }: { readonly span: string; readonly children: ReactNode; },
+): JSX.Element {
+  return (
+    <section className={`rounded-lg bg-surface/50 p-4 ring-1 ring-inset ring-line ${span}`}>
+      {children}
+    </section>
+  );
+}
+
+/**
+ * The gold plaque — oversized tabular numerals, hairline gold frame,
+ * tiny uppercase caption. Typographic stamp, no skeuomorphism.
+ */
+function BountyPlaque({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
+  return (
+    <div className='shrink-0 self-start rounded-lg border border-gold/40 px-3.5 py-2'>
+      <p className='text-[9px] font-semibold uppercase tracking-[0.2em] text-gold/80'>
+        {row.label}
+      </p>
+      <p className='mt-0.5 font-display text-xl font-bold leading-none tabular-nums text-gold sm:text-2xl'>
+        {row.entry.display}
+      </p>
+    </div>
   );
 }
 
@@ -309,28 +424,10 @@ function StatRelationTile({ row }: { readonly row: InfoboxRelationRowView; }): J
   );
 }
 
-// ---------------------------------------------------------------------------
-// Sidebar — the remaining stats (beyond the hero key-stat row) plus
-// every infobox relation, as labeled units. Sticky on wide screens.
-// The portrait lives in the hero band, so this is data only.
-
-function StatSidebar({ rows, relationRows }: {
-  readonly rows: readonly InfoboxRowView[];
-  readonly relationRows: readonly InfoboxRelationRowView[];
-}): JSX.Element {
+/** Identity tile rows — remaining labeled units beyond the hero row. */
+function IdentityRow({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
   return (
-    <aside className='order-first w-full shrink-0 min-[960px]:sticky min-[960px]:top-20 min-[960px]:order-none min-[960px]:w-[320px]'>
-      <dl className='grid grid-cols-2 gap-px overflow-hidden rounded-lg bg-line ring-1 ring-line min-[960px]:grid-cols-1 [&>:last-child:nth-child(odd)]:col-span-2 min-[960px]:[&>:last-child:nth-child(odd)]:col-span-1'>
-        {rows.map((row) => <StatRow key={row.id} row={row} />)}
-        {relationRows.map((row) => <StatRelationRow key={row.key} row={row} />)}
-      </dl>
-    </aside>
-  );
-}
-
-function StatRow({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
-  return (
-    <div className='bg-surface px-4 py-2.5'>
+    <div className='py-2 first:pt-0 last:pb-0'>
       <dt className='text-[10px] font-semibold uppercase tracking-[0.1em] text-faint'>
         {row.label}
       </dt>
@@ -341,9 +438,9 @@ function StatRow({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
   );
 }
 
-function StatRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
+function IdentityRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
   return (
-    <div className='bg-surface px-4 py-2.5'>
+    <div className='py-2 first:pt-0 last:pb-0'>
       <dt className='text-[10px] font-semibold uppercase tracking-[0.1em] text-faint'>
         {row.label}
       </dt>
@@ -366,20 +463,19 @@ function CrewSections(
 ): JSX.Element | null {
   const locale = useLocale();
   if (crews.length === 0) return null;
+  const totalMembers = crews.reduce((sum, crew) => sum + crew.members.length, 0);
   return (
-    <section className='mb-8 sm:mb-10'>
+    <Tile span={spanForCards(Math.max(totalMembers, 2))}>
       <SectionTitle count={crews.length}>{t(locale, 'affiliations')}</SectionTitle>
-      <div className='space-y-4'>
+      <div className='space-y-5'>
         {crews.map((crew) => (
-          <div key={crew.crew.id} className='rounded-lg bg-surface p-4 ring-1 ring-inset ring-line'>
+          <div key={crew.crew.id}>
             <div className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
               <span className='text-xs text-faint'>{crew.label}</span>
               <span className='font-display text-lg font-semibold tracking-[-0.01em]'>
                 <EntityChipLink chip={crew.crew} />
               </span>
-              {[crew.role, crew.rank].filter((part) =>
-                part !== null
-              ).map((part) => (
+              {[crew.role, crew.rank].filter((part) => part !== null).map((part) => (
                 <span
                   key={part}
                   className='rounded bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted'
@@ -413,27 +509,28 @@ function CrewSections(
           </div>
         ))}
       </div>
-    </section>
+    </Tile>
   );
 }
 
 // ---------------------------------------------------------------------------
 // Crew / devil-fruit: member cards with portraits, roles, ranks
 
-function MemberCards({ titleKey, members, hideTitle = false }: {
+function MemberCards({ titleKey, members, hideTitle = false, span }: {
   readonly titleKey: ChromeKey;
   readonly members: readonly MemberRowView[];
   readonly hideTitle?: boolean;
+  readonly span: string;
 }): JSX.Element | null {
   const locale = useLocale();
   if (members.length === 0) return null;
   return (
-    <section className='mb-8 sm:mb-10'>
+    <Tile span={span}>
       {hideTitle ? null : <SectionTitle count={members.length}>{t(locale, titleKey)}</SectionTitle>}
       <CardGrid>
         {members.map((member) => <MemberCardItem key={member.chip.id} member={member} />)}
       </CardGrid>
-    </section>
+    </Tile>
   );
 }
 
@@ -502,7 +599,7 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
     <>
       {template.arc !== null
         ? (
-          <section className='mb-8 rounded-lg bg-surface p-4 ring-1 ring-inset ring-line sm:mb-10'>
+          <Tile span='min-[980px]:col-span-12'>
             <div className='flex flex-wrap items-baseline gap-x-2.5'>
               <span className='text-xs text-faint'>{template.arc.label}</span>
               <span className='font-display text-lg font-semibold tracking-[-0.01em]'>
@@ -518,29 +615,29 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
                 </ul>
               )
               : null}
-          </section>
+          </Tile>
         )
         : null}
       {template.cast.length > 0
         ? (
-          <section className='mb-8 sm:mb-10'>
+          <Tile span='min-[980px]:col-span-8'>
             <SectionTitle>{t(locale, 'cast')}</SectionTitle>
             <div className='space-y-5'>
               {template.cast.map((group) => <CastGroup key={group.type} group={group} />)}
             </div>
-          </section>
+          </Tile>
         )
         : null}
       {template.availability.length > 0
         ? (
-          <section className='mb-8 sm:mb-10'>
+          <Tile span='min-[980px]:col-span-4'>
             <SectionTitle>{t(locale, 'availability')}</SectionTitle>
             <ul className='flex flex-wrap gap-3'>
               {template.availability.map((item) => (
                 <AvailabilityCard key={item.platform.id} item={item} />
               ))}
             </ul>
-          </section>
+          </Tile>
         )
         : null}
     </>
@@ -623,36 +720,38 @@ function AvailabilityCard({ item }: { readonly item: AvailabilityItemView; }): J
 // ---------------------------------------------------------------------------
 // Arc: ordered chapter / episode cards — the number IS the visual.
 
-function SourceCards({ titleKey, items }: {
+function SourceCards({ titleKey, items, span }: {
   readonly titleKey: ChromeKey;
   readonly items: readonly SourceItemView[];
+  readonly span: string;
 }): JSX.Element | null {
   const locale = useLocale();
   const search = useScopeSearch();
   if (items.length === 0) return null;
   return (
-    <section className='mb-8 sm:mb-10'>
+    <Tile span={span}>
       <SectionTitle count={items.length}>{t(locale, titleKey)}</SectionTitle>
-      <ul className='grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(140px,1fr))]'>
+      <ul className='grid grid-cols-3 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(96px,118px))]'>
         {items.map((item) => (
           <li key={item.chip.id}>
             <Link
               to='/$type/$slug'
               params={{ type: item.chip.type, slug: item.chip.slug }}
               search={search}
-              className='group block h-full rounded-lg bg-surface p-2 ring-1 ring-inset ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface-2 hover:ring-line-strong'
+              title={item.chip.name}
+              className='group block h-full rounded-lg bg-surface p-1.5 ring-1 ring-inset ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface-2 hover:ring-line-strong'
             >
-              <span className='grid h-14 place-items-center rounded-md bg-surface-2 font-display text-xl font-semibold tabular-nums text-accent/70 ring-1 ring-inset ring-line'>
+              <span className='grid h-10 place-items-center rounded-md bg-surface-2 font-display text-lg font-semibold tabular-nums text-gold/70 ring-1 ring-inset ring-line'>
                 {item.number ?? '·'}
               </span>
-              <span className='mb-1 mt-2 block truncate px-1 text-sm font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
+              <span className='mb-0.5 mt-1.5 block truncate px-1 text-xs font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
                 {item.chip.name}
               </span>
             </Link>
           </li>
         ))}
       </ul>
-    </section>
+    </Tile>
   );
 }
 
@@ -790,8 +889,8 @@ function PropertyEntry(
 function RelationGroup({ group }: { readonly group: RelationGroupView; }): JSX.Element {
   const locale = useLocale();
   return (
-    <div className='rounded-lg bg-surface p-4 ring-1 ring-inset ring-line'>
-      <h3 className='mb-2 flex items-baseline gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-faint'>
+    <div className='min-w-0'>
+      <h3 className='mb-1.5 flex items-baseline gap-2 text-[11px] font-semibold uppercase tracking-[0.1em] text-faint'>
         <span aria-hidden className='font-mono normal-case tracking-normal'>
           {group.inverse ? '←' : '→'}
         </span>
