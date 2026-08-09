@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "crew",
-  "schema_version": 4,
+  "schema_version": 5,
   "labels": {
     "en": "Crew",
     "fr": "Équipage"
@@ -13,12 +13,6 @@
       "required": true,
       "historical": true,
       "localizable": true
-    },
-    {
-      "id": "total_bounty",
-      "required": false,
-      "historical": true,
-      "localizable": false
     },
     {
       "id": "founded_at",

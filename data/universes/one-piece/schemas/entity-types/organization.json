@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "organization",
-  "schema_version": 3,
+  "schema_version": 4,
   "labels": { "en": "Organization", "fr": "Organisation" },
   "url_segment": "organizations",
   "properties": [
@@ -14,7 +14,6 @@
     "ally-of",
     "enemy-of",
     "based-in",
-    "led-by",
     "controls-territory",
     "subordinate-to",
     "depicted-by"

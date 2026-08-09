@@ -1,15 +1,19 @@
 /**
  * `/<type>` — canonical type listing (the entity TYPE ID is the URL
- * segment: `/character`, `/crew`, …). Every entity of the type, with
- * localized names, linking to the canonical entity pages. The type is
- * validated server-side against the schema catalogue inside
+ * segment: `/character`, `/crew`, …). Every entity of the type as a
+ * rich entity card: localized name, a type-appropriate second line
+ * (character epithet, chapter release date, platform kind…), the
+ * first-appearance meta line and a status micro-tag when notable —
+ * all spoiler-checked server-side against the reader's cursor. The
+ * type is validated server-side against the schema catalogue inside
  * `fetchTypeList` (unknown type → null → notFound). An optional
  * `?scope=` canon-scope param is kept and propagated to entity links.
  */
-import { createFileRoute, Link, notFound } from '@tanstack/react-router';
+import { createFileRoute, notFound } from '@tanstack/react-router';
 import { type JSX } from 'react';
 import { fetchTypeList } from '../api';
-import { EntityImage } from '../components/EntityImage';
+import { CardGrid, EntityCard } from '../components/EntityCard';
+import { ScopeContext } from '../components/EntityChip';
 import { t } from '../lib/chrome';
 import { validateScopeSearch } from '../lib/scope';
 import { useLocale } from './__root';
@@ -33,7 +37,6 @@ function TypeListPage(): JSX.Element {
   const view = Route.useLoaderData();
   const { scope } = Route.useSearch();
   const locale = useLocale();
-  const search = scope === undefined ? {} : { scope };
   return (
     <div>
       <header className='mb-6 flex flex-wrap items-baseline gap-x-3 gap-y-1'>
@@ -52,32 +55,22 @@ function TypeListPage(): JSX.Element {
           </p>
         )
         : (
-          <ul className='grid grid-cols-2 gap-3 sm:grid-cols-[repeat(auto-fill,minmax(160px,1fr))]'>
-            {view.items.map((item) => (
-              <li key={item.slug}>
-                <Link
-                  to='/$type/$slug'
-                  params={{ type: view.type, slug: item.slug }}
-                  search={search}
-                  className='group block h-full rounded-lg bg-surface p-2 ring-1 ring-inset ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface-2 hover:ring-line-strong'
-                >
-                  <EntityImage
-                    image={null}
-                    name={item.name}
-                    ratio='portrait'
-                    className='w-full rounded-md'
-                    monogramClassName='text-4xl'
-                  />
-                  <span className='mt-2 block truncate px-1 text-sm font-semibold text-fg transition-colors duration-150 group-hover:text-accent'>
-                    {item.name}
-                  </span>
-                  <span className='mb-1 block truncate px-1 text-xs tabular-nums text-faint'>
-                    {item.subtitle !== null ? `${t(locale, 'since')} ${item.subtitle}` : ' '}
-                  </span>
-                </Link>
-              </li>
-            ))}
-          </ul>
+          <ScopeContext.Provider value={scope ?? null}>
+            <CardGrid>
+              {view.items.map((item) => (
+                <EntityCard
+                  key={item.slug}
+                  type={view.type}
+                  slug={item.slug}
+                  image={null}
+                  name={item.name}
+                  secondary={item.secondary}
+                  meta={item.subtitle !== null ? `${t(locale, 'since')} ${item.subtitle}` : null}
+                  tag={item.tag}
+                />
+              ))}
+            </CardGrid>
+          </ScopeContext.Provider>
         )}
     </div>
   );

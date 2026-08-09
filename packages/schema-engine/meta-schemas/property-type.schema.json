@@ -91,6 +91,9 @@
     "romanizable": {
       "type": "boolean"
     },
+    "factual": {
+      "type": "boolean"
+    },
     "spoiler_sensitive": {
       "type": "boolean",
       "default": false

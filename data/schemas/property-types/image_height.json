@@ -8,6 +8,7 @@
   "unit": "px",
   "historical": false,
   "localizable": false,
+  "factual": true,
   "spoiler_sensitive": false,
   "applies_to_entity_types": ["image"]
 }

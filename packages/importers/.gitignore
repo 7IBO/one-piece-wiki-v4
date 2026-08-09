@@ -1,3 +1,8 @@
 # fandom:analyze / fandom:updates output (ADR-092) — build artifacts,
 # reviewed as run-to-run diffs locally, never committed.
 reports/
+
+# onepiece-api:import candidate output (ADR-101) — reviewed locally,
+# then moved into /data through the normal PR flow, never committed
+# from here.
+candidates/

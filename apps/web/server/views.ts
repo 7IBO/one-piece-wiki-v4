@@ -82,7 +82,11 @@ export type HomeView = {
 export type EntityListItem = {
   readonly slug: string;
   readonly name: string;
+  /** Type-appropriate identity line (epithet, release date…), spoiler-checked. */
+  readonly secondary: string | null;
   readonly subtitle: string | null;
+  /** Status micro-tag when it is not the unremarkable default (spoiler-checked). */
+  readonly tag: string | null;
 };
 
 export type TypeListView = {
@@ -152,16 +156,22 @@ export type InfoboxRelationRowView = {
 export type MemberThumbView = {
   readonly chip: EntityChip;
   readonly image: ImageView | null;
+  /** Type-appropriate identity line (character epithet…), spoiler-checked. */
+  readonly secondary: string | null;
   readonly note: string | null;
 };
 
 export type MemberRowView = {
   readonly chip: EntityChip;
   readonly image: ImageView | null;
+  /** Type-appropriate identity line (character epithet…), spoiler-checked. */
+  readonly secondary: string | null;
   readonly role: string | null;
   readonly rank: string | null;
   readonly since: EntityChip | null;
   readonly until: EntityChip | null;
+  /** Context micro-stat (crew-member bounty…), spoiler-checked. */
+  readonly stat: string | null;
 };
 
 export type CrewSectionView = {
@@ -257,6 +267,8 @@ export type EntityView = {
   readonly template: TemplateView;
   /** The canon scope to attach to outgoing entity links (`?scope=`). */
   readonly propagateScope: string | null;
+  /** Manga-axis markers for the Log Rail (already spoiler-filtered). */
+  readonly logAnchors: readonly LogAnchorView[];
 };
 
 /**
@@ -272,6 +284,60 @@ export type GatedEntityView = {
 };
 
 export type EntityPageView = EntityView | GatedEntityView;
+
+// ---------------------------------------------------------------------------
+// Log Rail anchors (WEB_APP.md § Le Log) — where THIS page's knowledge
+// sits on the manga axis: the first-appearance chapter plus every
+// spoiler-visible historised value's `since` chapter. Computed from
+// the ALREADY-FILTERED view pieces, so anchors can never leak data
+// beyond the reader's cursor.
+
+/** One marker on the Log Rail: a manga chapter + what anchors there. */
+export type LogAnchorView = {
+  readonly chapter: number;
+  readonly label: string;
+};
+
+const MANGA_CHAPTER_TYPE = 'manga-chapter';
+
+/** `manga-chapter:96` → 96; anything else → null. */
+function mangaChapterNumber(chip: EntityChip): number | null {
+  if (chip.type !== MANGA_CHAPTER_TYPE) return null;
+  const rest = chip.id.slice(chip.id.indexOf(':') + 1);
+  return /^\d+$/.test(rest) ? Number(rest) : null;
+}
+
+/**
+ * Collect the rail anchors of an entity page. Pure over the built
+ * (spoiler-filtered) view pieces — exported for unit tests. Anchors
+ * on the same chapter merge; labels join with a middle dot; output is
+ * sorted by chapter.
+ */
+export function collectLogAnchors(input: {
+  readonly firstAppearance: EntityChip | null;
+  readonly properties: readonly PropertyView[];
+}, firstAppearanceLabel: string): readonly LogAnchorView[] {
+  const byChapter = new Map<number, string[]>();
+  const push = (chapter: number, label: string): void => {
+    const labels = byChapter.get(chapter);
+    if (labels === undefined) byChapter.set(chapter, [label]);
+    else if (!labels.includes(label)) labels.push(label);
+  };
+  if (input.firstAppearance !== null) {
+    const n = mangaChapterNumber(input.firstAppearance);
+    if (n !== null) push(n, firstAppearanceLabel);
+  }
+  for (const property of input.properties) {
+    for (const entry of property.entries) {
+      if (entry.since === null) continue;
+      const n = mangaChapterNumber(entry.since);
+      if (n !== null) push(n, `${property.label} — ${entry.display}`);
+    }
+  }
+  return [...byChapter.entries()]
+    .map(([chapter, labels]) => ({ chapter, label: labels.join(' · ') }))
+    .sort((a, b) => a.chapter - b.chapter);
+}
 
 // ---------------------------------------------------------------------------
 // Presentation bindings (ADR-091) — every binding degrades to the
@@ -294,9 +360,36 @@ const ROLE_PRIORITY: Readonly<Record<string, number>> = {
 /** Relation ids surfaced as infobox rows, per entity type. */
 const INFOBOX_RELATIONS: Readonly<Record<string, readonly string[]>> = {
   character: ['ate-fruit'],
-  crew: ['led-by'],
-  organization: ['led-by'],
 };
+/**
+ * ADR-099: `led-by` is gone — leadership is a membership function. The
+ * crew/organization infobox leader row is DERIVED from the active
+ * incoming `member-of` edges whose `role` is one of these values
+ * (degrades to no row when the relation/roles are absent, ADR-091).
+ */
+const LEADERSHIP_MEMBER_ROLES: ReadonlySet<string> = new Set(['leader', 'captain']);
+const MEMBER_OF_INVERSE = 'member-of.inverse';
+/** The property whose declaration formats the derived crew total (ADR-099). */
+const BOUNTY_PROPERTY = 'bounty';
+/**
+ * Entity-card second line: the ONE property whose latest visible value
+ * identifies an entity of this type at a glance (ADR-091 binding —
+ * cards degrade to name-only when the property or its data is absent).
+ */
+const CARD_SECONDARY_PROPERTIES: Readonly<Record<string, string>> = {
+  character: 'epithet',
+  'manga-chapter': 'released_at',
+  'anime-episode': 'released_at',
+  volume: 'released_at',
+  'streaming-platform': 'platform_kind',
+};
+/** Entity-card micro-stat property (shown only where context warrants). */
+const CARD_STAT_PROPERTIES: Readonly<Record<string, string>> = {
+  character: 'bounty',
+};
+/** Card status tag: property id + the unremarkable value that gets NO tag. */
+const CARD_STATUS_PROPERTY = 'status';
+const CARD_STATUS_DEFAULT = 'alive';
 
 // ---------------------------------------------------------------------------
 // Label helpers
@@ -412,6 +505,76 @@ function latestRawValue(
 function readNumber(row: EntityRow, cursor: ProgressCursor): number | null {
   const value = latestRawValue(row, 'number', cursor);
   return typeof value === 'number' && Number.isFinite(value) ? value : null;
+}
+
+/**
+ * Latest spoiler-visible display string of one property, read from an
+ * ALREADY-LOADED entity row (no extra SQL beyond the translations
+ * lookup an i18n value needs): raw entries are filtered on their
+ * `since` anchor exactly like everywhere else, and only the believed
+ * value (`value` / `value_key`) is resolved through the property
+ * schema (enum labels, dates, currency_short numbers, i18n keys) —
+ * `actual_value` never surfaces on cards.
+ */
+function latestVisibleDisplay(
+  row: EntityRow,
+  propertyId: string,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): string | null {
+  const entries = rawPropertyEntries(row, propertyId).filter((entry) => {
+    const since = entry['since'];
+    return typeof since === 'string' ? isSourceVisible(since, cursor) : true;
+  });
+  const last = entries[entries.length - 1];
+  if (last === undefined) return null;
+  const resolved = displayValue(last, 'value', cat.propertyTypes.get(propertyId), cat, locale);
+  if (resolved === null) return null;
+  return resolved.display === '' || resolved.display === '—' ? null : resolved.display;
+}
+
+// ---------------------------------------------------------------------------
+// Entity-card enrichment (secondary line, micro-stat, status tag)
+
+/** Type-appropriate card second line (epithet, release date, kind…). */
+function cardSecondary(
+  row: EntityRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): string | null {
+  const propertyId = CARD_SECONDARY_PROPERTIES[row.type];
+  if (propertyId === undefined) return null;
+  return latestVisibleDisplay(row, propertyId, cat, locale, cursor);
+}
+
+/** Card micro-stat (character bounty…) where the context warrants it. */
+function cardStat(
+  row: EntityRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): string | null {
+  const propertyId = CARD_STAT_PROPERTIES[row.type];
+  if (propertyId === undefined) return null;
+  return latestVisibleDisplay(row, propertyId, cat, locale, cursor);
+}
+
+/**
+ * Status micro-tag: the latest visible (believed) status, only when it
+ * is NOT the unremarkable default — an "Alive" tag on every card would
+ * be noise, a "Dead" / "Presumed dead" one is identity.
+ */
+function cardStatusTag(
+  row: EntityRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): string | null {
+  const raw = latestRawValue(row, CARD_STATUS_PROPERTY, cursor);
+  if (typeof raw !== 'string' || raw === CARD_STATUS_DEFAULT) return null;
+  return latestVisibleDisplay(row, CARD_STATUS_PROPERTY, cat, locale, cursor);
 }
 
 // ---------------------------------------------------------------------------
@@ -792,17 +955,22 @@ export async function buildHomeView(locale: Locale): Promise<HomeView> {
 export async function buildTypeListView(
   type: string,
   locale: Locale,
+  cursor: ProgressCursor = EMPTY_CURSOR,
 ): Promise<TypeListView | null> {
   const cat = await getCatalogue();
   const rows = db.listEntitiesByType(type);
   if (rows.length === 0 && !cat.entityTypes.has(type)) return null;
+  // Card enrichment reads the already-loaded row blobs — no per-entity
+  // SQL beyond the prepared translations lookup i18n values need.
   const items = rows
     .map((row) => ({
       slug: row.slug,
       name: resolveEntityName(row, cat, locale),
+      secondary: cardSecondary(row, cat, locale, cursor),
       subtitle: row.first_appearance_source === null
         ? null
         : chipFor(row.first_appearance_source, cat, locale)?.name ?? null,
+      tag: cardStatusTag(row, cat, locale, cursor),
     }))
     .sort((a, b) => a.name.localeCompare(b.name));
   return { type, label: entityTypeLabel(cat, type, locale), items };
@@ -968,6 +1136,7 @@ function memberThumb(
       locale,
       chip.name,
     ),
+    secondary: cardSecondary(target, cat, locale, cursor),
     note,
   };
 }
@@ -978,6 +1147,7 @@ function memberRow(
   locale: Locale,
   cursor: ProgressCursor,
   scope: string | null,
+  withStat: boolean,
 ): MemberRowView | null {
   const target = db.getEntityById(edge.target_entity_id);
   if (target === null) return null;
@@ -993,12 +1163,14 @@ function memberRow(
       locale,
       chip.name,
     ),
+    secondary: cardSecondary(target, cat, locale, cursor),
     role: edgeQualifierLabel(edge, 'role', schema, cat, locale),
     rank: edgeQualifierLabel(edge, 'held_rank', schema, cat, locale),
     since: edge.since_source === null ? null : chipFor(edge.since_source, cat, locale),
     until: edge.until_source === null || !isSourceVisible(edge.until_source, cursor)
       ? null
       : chipFor(edge.until_source, cat, locale),
+    stat: withStat ? cardStat(target, cat, locale, cursor) : null,
   };
 }
 
@@ -1050,12 +1222,13 @@ function splitCurrentFormer(
   locale: Locale,
   cursor: ProgressCursor,
   scope: string | null,
+  withStat: boolean,
 ): { current: MemberRowView[]; former: MemberRowView[]; } {
   const current: MemberRowView[] = [];
   const former: MemberRowView[] = [];
   for (const edge of edges) {
     if (edge.relation_type !== relationType) continue;
-    const view = memberRow(edge, cat, locale, cursor, scope);
+    const view = memberRow(edge, cat, locale, cursor, scope, withStat);
     if (view === null) continue;
     (edgeEnded(edge, cursor) ? former : current).push(view);
   }
@@ -1071,6 +1244,7 @@ function buildCrewTemplate(
   cursor: ProgressCursor,
   scope: string | null,
 ): CrewTemplateView {
+  // Crew-member cards carry the bounty micro-stat (WEB_APP.md cards).
   const { current, former } = splitCurrentFormer(
     edges,
     'member-of.inverse',
@@ -1078,6 +1252,7 @@ function buildCrewTemplate(
     locale,
     cursor,
     scope,
+    true,
   );
   return { kind: 'crew', members: current, former };
 }
@@ -1089,6 +1264,7 @@ function buildFruitTemplate(
   cursor: ProgressCursor,
   scope: string | null,
 ): FruitTemplateView {
+  // Fruit-user cards: identity + since/until — no bounty stat (noise here).
   const { current, former } = splitCurrentFormer(
     edges,
     'ate-fruit.inverse',
@@ -1096,6 +1272,7 @@ function buildFruitTemplate(
     locale,
     cursor,
     scope,
+    false,
   );
   return { kind: 'devil-fruit', users: current, former };
 }
@@ -1358,6 +1535,7 @@ function buildInfoboxRelations(
   edges: readonly RelationRow[],
   cat: ValidatedCatalogue,
   locale: Locale,
+  cursor: ProgressCursor,
 ): readonly InfoboxRelationRowView[] {
   const rows: InfoboxRelationRowView[] = [];
   for (const key of INFOBOX_RELATIONS[row.type] ?? []) {
@@ -1370,7 +1548,73 @@ function buildInfoboxRelations(
       chips: matching.map((edge) => chipOrPlaceholder(edge.target_entity_id, cat, locale)),
     });
   }
+  // Derived leadership row (ADR-099): active incoming `member-of`
+  // edges whose `role` is a leadership function, one row per role,
+  // labelled with the role's own vocabulary label ("Captain"/"Leader").
+  const memberOfSchema = cat.relationTypes.get('member-of');
+  const byRole = new Map<string, { label: string; chips: EntityChip[]; }>();
+  for (const edge of edges) {
+    if (edge.relation_type !== MEMBER_OF_INVERSE || edgeEnded(edge, cursor)) continue;
+    const role = edge.qualifiers?.['role'];
+    if (typeof role !== 'string' || !LEADERSHIP_MEMBER_ROLES.has(role)) continue;
+    const label = edgeQualifierLabel(edge, 'role', memberOfSchema, cat, locale) ?? humanize(role);
+    const chip = chipOrPlaceholder(edge.target_entity_id, cat, locale);
+    const bucket = byRole.get(role);
+    if (bucket === undefined) byRole.set(role, { label, chips: [chip] });
+    else bucket.chips.push(chip);
+  }
+  for (const [role, group] of byRole) {
+    rows.push({ key: `${MEMBER_OF_INVERSE}:${role}`, label: group.label, chips: group.chips });
+  }
   return rows;
+}
+
+/**
+ * Derived crew "Total bounty" (ADR-099, audit P1): the sum of the
+ * latest cursor-visible `bounty` of the crew's ACTIVE incoming
+ * `member-of` characters — computed per progression point, never
+ * stored. Formatted through the bounty property's own declaration so
+ * it reads like every other bounty value; degrades to no row when the
+ * property type, the members or their bounties are absent (ADR-091).
+ */
+function deriveTotalBountyRow(
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): InfoboxRowView | null {
+  const bountySchema = cat.propertyTypes.get(BOUNTY_PROPERTY);
+  if (bountySchema === undefined) return null;
+  let total = 0;
+  let found = false;
+  for (const edge of edges) {
+    if (edge.relation_type !== MEMBER_OF_INVERSE || edgeEnded(edge, cursor)) continue;
+    const member = db.getEntityById(edge.target_entity_id);
+    if (member === null) continue;
+    const bounty = latestRawValue(member, BOUNTY_PROPERTY, cursor);
+    if (typeof bounty !== 'number' || !Number.isFinite(bounty)) continue;
+    total += bounty;
+    found = true;
+  }
+  if (!found) return null;
+  return {
+    id: 'derived:total_bounty',
+    // Presentation-only label for a computed stat (no schema id backs
+    // it since ADR-099 removed the stored property) — same pattern as
+    // the localized Yes/No literals above.
+    label: locale === 'fr' ? 'Prime totale' : 'Total bounty',
+    entry: {
+      display: formatNumber(total, bountySchema, locale),
+      valueChip: null,
+      since: null,
+      until: null,
+      epistemic: null,
+      actualDisplay: null,
+      event: null,
+      qualifiers: [],
+      autoImported: false,
+    },
+  };
 }
 
 /** The canon scope outgoing links should carry (WEB_APP.md § scope). */
@@ -1413,7 +1657,23 @@ export async function buildEntityView(
   const edges = db.listRelationsFrom(row.id).filter((edge) => isEdgeVisible(edge, cursor));
   const template = buildTemplate(row, edges, cat, locale, cursor, scope);
   const consumed = consumedRelationKeys(row, template);
-  const { properties, infobox } = buildPropertyViews(row, cat, locale, cursor, scope);
+  const { properties, infobox: declaredInfobox } = buildPropertyViews(
+    row,
+    cat,
+    locale,
+    cursor,
+    scope,
+  );
+  // ADR-099: crews get the DERIVED total-bounty stat appended to their
+  // declared infobox rows ("Introduced in" needs no equivalent — the
+  // hero already surfaces `firstAppearance` below).
+  const totalBounty = row.type === 'crew'
+    ? deriveTotalBountyRow(edges, cat, locale, cursor)
+    : null;
+  const infobox = totalBounty === null ? declaredInfobox : [...declaredInfobox, totalBounty];
+  const firstAppearance = row.first_appearance_source === null
+    ? null
+    : chipFor(row.first_appearance_source, cat, locale);
   return {
     kind: 'entity',
     id: row.id,
@@ -1421,16 +1681,19 @@ export async function buildEntityView(
     typeLabel,
     slug: row.slug,
     name,
-    firstAppearance: row.first_appearance_source === null
-      ? null
-      : chipFor(row.first_appearance_source, cat, locale),
+    firstAppearance,
     image: resolveEntityImage(row, edges, cursor, scope, locale, name),
     infobox,
-    infoboxRelations: buildInfoboxRelations(row, edges, cat, locale),
+    infoboxRelations: buildInfoboxRelations(row, edges, cat, locale, cursor),
     properties,
     relations: buildRelationViews(edges, cat, locale, consumed),
     narrative: db.getNarrative(row.id, locale),
     template,
     propagateScope: scopeToPropagate(row, cursor, scope),
+    logAnchors: collectLogAnchors(
+      { firstAppearance, properties },
+      // Presentation-only literal, localized like the derived rows.
+      locale === 'fr' ? 'Première apparition' : 'First appearance',
+    ),
   };
 }

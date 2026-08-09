@@ -373,46 +373,98 @@ describe('evaluateRules — qualifier_absent + the ADR-098 rules', () => {
     };
     expect(evaluateRules(activeMember, [rule])).toHaveLength(0);
   });
+});
 
-  it('org-membership-uses-rank-not-crew-role flags role on org edges only', async () => {
-    const rule = await loadUniverseRule('org-membership-uses-rank-not-crew-role');
-    expect(rule.scope).toBe('relation');
+/** Oracle over a fixed set of "targetId|relationType|sourceType" edges (ADR-099). */
+function contextOf(...edges: readonly string[]): {
+  hasActiveIncomingRelation: (id: string, type: string, sourceType?: string) => boolean;
+} {
+  return {
+    hasActiveIncomingRelation: (id, type, sourceType) =>
+      edges.some((edge) => {
+        const [target, relationType, source] = edge.split('|');
+        return target === id && relationType === type
+          && (sourceType === undefined || source === sourceType);
+      }),
+  };
+}
 
-    // Crew membership with a role is the NORMAL case — target type
-    // does not match the condition, no finding.
-    const crewCook = {
-      type: 'character',
-      relations: [{
-        type: 'member-of',
-        target: 'crew:straw-hat-pirates',
-        qualifiers: { role: 'cook' },
-      }],
+describe('evaluateRules — incoming-edge awareness (ADR-099)', () => {
+  async function loadUniverseRule(id: string): Promise<RuleSchema> {
+    const raw = await Bun.file(`data/universes/one-piece/schemas/rules/${id}.json`).json();
+    return RuleSchema.parse(raw);
+  }
+
+  const incomingCondition = RuleSchema.parse({
+    id: 'flag-eaten-fruits-with-classification',
+    schema_version: 1,
+    severity: 'info',
+    labels: { en: 'x', fr: 'x' },
+    messages: { en: 'x', fr: 'x' },
+    scope: 'entity',
+    when: [{ has_active_incoming_relation: { type: 'ate-fruit', source_type: 'character' } }],
+    expect: [{ property_present: { property: 'classification' } }],
+  });
+
+  it('has_active_incoming_relation fires only through the corpus context', () => {
+    const fruit = { id: 'devil-fruit:gomu-gomu', type: 'devil-fruit', properties: {} };
+
+    // Context says a character actively ate the fruit -> condition
+    // holds -> the (unmet) expectation yields a finding.
+    const eaten = contextOf('devil-fruit:gomu-gomu|ate-fruit|character');
+    expect(evaluateRules(fruit, [incomingCondition], eaten)).toHaveLength(1);
+
+    // No incoming edge -> condition fails -> silent.
+    expect(evaluateRules(fruit, [incomingCondition], contextOf())).toHaveLength(0);
+
+    // source_type narrowing: an organization eater does not match.
+    const wrongSource = contextOf('devil-fruit:gomu-gomu|ate-fruit|organization');
+    expect(evaluateRules(fruit, [incomingCondition], wrongSource)).toHaveLength(0);
+  });
+
+  it('rules using incoming fields are SKIPPED without a context or entity id', () => {
+    const fruit = { id: 'devil-fruit:gomu-gomu', type: 'devil-fruit', properties: {} };
+    // No context (the dashboard single-entity call shape): skipped, no
+    // finding even though the expectation could never hold.
+    expect(evaluateRules(fruit, [incomingCondition])).toHaveLength(0);
+    // Context but no id: the index is keyed by id — also skipped.
+    const anonymous = { type: 'devil-fruit', properties: {} };
+    const eaten = contextOf('devil-fruit:gomu-gomu|ate-fruit|character');
+    expect(evaluateRules(anonymous, [incomingCondition], eaten)).toHaveLength(0);
+  });
+
+  it('eaten-fruit-not-concurrently-held flags held+eaten, passes either alone', async () => {
+    const rule = await loadUniverseRule('eaten-fruit-not-concurrently-held');
+    const heldFruit = {
+      id: 'devil-fruit:mera-mera',
+      type: 'devil-fruit',
+      relations: [{ type: 'held-by', target: 'organization:donquixote-pirates' }],
     };
-    expect(evaluateRules(crewCook, [rule])).toHaveLength(0);
 
-    // Organization membership carrying the crew-role vocabulary — finding.
-    const marineWithRole = {
-      type: 'character',
-      relations: [{
-        type: 'member-of',
-        target: 'organization:marines',
-        qualifiers: { role: 'captain' },
-      }],
-    };
-    const findings = evaluateRules(marineWithRole, [rule]);
+    // Held AND actively eaten — contradiction, one finding carrying
+    // the offending incoming relation type.
+    const eaten = contextOf('devil-fruit:mera-mera|ate-fruit|character');
+    const findings = evaluateRules(heldFruit, [rule], eaten);
     expect(findings).toHaveLength(1);
-    expect(findings[0]!.relationType).toBe('member-of');
-    expect(findings[0]!.relationIndex).toBe(0);
+    expect(findings[0]!.ruleId).toBe('eaten-fruit-not-concurrently-held');
+    expect(findings[0]!.relationType).toBe('ate-fruit');
+    expect(findings[0]!.enforcement).toBe('advisory');
 
-    // The ADR-044 encoding — held_rank, no role — is clean.
-    const marineWithRank = {
-      type: 'character',
+    // Held but NOT eaten (the Dressrosa-prize shape) — clean.
+    expect(evaluateRules(heldFruit, [rule], contextOf())).toHaveLength(0);
+
+    // Eaten but no longer held (until closed) — condition off, clean.
+    const releasedFruit = {
+      ...heldFruit,
       relations: [{
-        type: 'member-of',
-        target: 'organization:marines',
-        qualifiers: { held_rank: 'captain' },
+        type: 'held-by',
+        target: 'organization:donquixote-pirates',
+        qualifiers: { until: 'manga-chapter:744' },
       }],
     };
-    expect(evaluateRules(marineWithRank, [rule])).toHaveLength(0);
+    expect(evaluateRules(releasedFruit, [rule], eaten)).toHaveLength(0);
+
+    // Without a corpus context (dashboard) the rule is skipped.
+    expect(evaluateRules(heldFruit, [rule])).toHaveLength(0);
   });
 });

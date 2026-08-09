@@ -1,0 +1,10 @@
+[
+  {
+    "id": 1,
+    "number": 1,
+    "title": "I'm Luffy! The Man Who Will Become the Pirate King!",
+    "release_date": "1999-10-20",
+    "arc": { "id": 1, "title": "Romance Dawn" },
+    "saga": { "id": 1, "title": "East Blue" }
+  }
+]

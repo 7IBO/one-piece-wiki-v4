@@ -8,13 +8,21 @@
  * same first-paint recipe as the dashboard's `__root.tsx`, distinct
  * chrome (this is the public site, not the editing tool).
  */
-import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
+import {
+  createRootRoute,
+  HeadContent,
+  Link,
+  Outlet,
+  Scripts,
+  useMatches,
+} from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getCookie, getRequestHeader } from '@tanstack/react-start/server';
 import { type JSX, type ReactNode } from 'react';
-import { type ProgressCursor } from '../api';
+import { type LogAnchorView, type ProgressCursor } from '../api';
 import { BANNER_COOKIE, FirstRunBanner } from '../components/FirstRunBanner';
 import { LocaleSwitcher } from '../components/LocaleSwitcher';
+import { LogRail } from '../components/LogRail';
 import { ProgressControl } from '../components/ProgressControl';
 import { type Locale, t } from '../lib/chrome';
 // Plain (non bun:sqlite) server module — safe for a mixed import; the
@@ -116,36 +124,91 @@ function RootDocument({ children }: { readonly children: ReactNode; }): JSX.Elem
   );
 }
 
+/**
+ * Deepest matched route's contribution to the shell: the Log Rail
+ * anchors of an entity page, and the current type label for the spine
+ * glyph. Duck-typed guards — loader data shapes are owned by the leaf
+ * routes.
+ */
+function useRouteShellContext(): {
+  readonly anchors: readonly LogAnchorView[];
+  readonly typeGlyph: string | null;
+} {
+  const matches = useMatches();
+  let anchors: readonly LogAnchorView[] = [];
+  let typeGlyph: string | null = null;
+  for (const match of matches) {
+    const data: unknown = match.loaderData;
+    if (data === null || typeof data !== 'object') continue;
+    const record = data as Record<string, unknown>;
+    if (record['kind'] === 'entity' && Array.isArray(record['logAnchors'])) {
+      anchors = record['logAnchors'] as readonly LogAnchorView[];
+    }
+    const label = record['typeLabel'] ?? record['label'];
+    if (typeof label === 'string' && label !== '') {
+      typeGlyph = ([...label][0] ?? '').toUpperCase();
+    }
+  }
+  return { anchors, typeGlyph };
+}
+
 function RootLayout(): JSX.Element {
   const locale = useLocale();
   const chrome = Route.useLoaderData()?.chrome;
   const progress: ProgressCursor = chrome?.progress ?? { manga: null, anime: null };
   const showBanner = chrome !== undefined && chrome.progressUnset && !chrome.bannerDismissed;
+  const { anchors, typeGlyph } = useRouteShellContext();
+  const railKey = `${progress.manga ?? ''}:${progress.anime ?? ''}`;
   return (
-    <div className='flex min-h-dvh flex-col'>
+    <div className='flex min-h-dvh flex-col min-[900px]:pl-[68px]'>
+      {
+        /* The spine — fixed narrow left rail, the signature frame of the
+          site. Vertical wordmark (gold-accented), current-type glyph,
+          locale at the bottom. Becomes a normal top bar on mobile. */
+      }
+      <aside className='fixed inset-y-0 left-0 z-20 hidden w-[68px] flex-col items-center justify-between border-r border-line bg-canvas py-5 min-[900px]:flex'>
+        <Link
+          to='/'
+          className='flex rotate-180 items-center gap-1.5 font-display text-[13px] font-bold uppercase tracking-[0.22em] text-fg transition-colors duration-150 [writing-mode:vertical-rl] hover:text-gold'
+        >
+          <span aria-hidden className='h-5 w-px bg-gold' />
+          {t(locale, 'siteName')}
+        </Link>
+        <span
+          aria-hidden
+          className='select-none font-display text-2xl font-bold leading-none text-gold/35'
+        >
+          {typeGlyph ?? ''}
+        </span>
+        <LocaleSwitcher vertical />
+      </aside>
+
       <header className='sticky top-0 z-10 border-b border-line bg-canvas'>
-        <div className='mx-auto flex h-14 w-full max-w-[1280px] items-center justify-between gap-3 px-4 sm:px-6'>
+        <div className='flex h-12 w-full max-w-[1280px] items-center justify-between gap-3 px-4 sm:px-8'>
           <Link
             to='/'
-            className='whitespace-nowrap font-display text-[1.05rem] font-bold tracking-[-0.02em] text-fg transition-colors duration-150 hover:text-accent'
+            className='whitespace-nowrap font-display text-[1.05rem] font-bold tracking-[-0.02em] text-fg transition-colors duration-150 hover:text-gold min-[900px]:hidden'
           >
             {t(locale, 'siteName')}
           </Link>
-          <div className='flex items-center gap-4'>
-            <ProgressControl
-              key={`${progress.manga ?? ''}:${progress.anime ?? ''}`}
-              progress={progress}
-            />
-            <LocaleSwitcher />
+          <span className='hidden text-[11px] font-semibold uppercase tracking-[0.18em] text-faint min-[900px]:block'>
+            {t(locale, 'tagline')}
+          </span>
+          <div className='flex items-center gap-3'>
+            <ProgressControl key={railKey} progress={progress} />
+            <span className='min-[900px]:hidden'>
+              <LocaleSwitcher />
+            </span>
           </div>
         </div>
+        <LogRail key={`rail:${railKey}`} progress={progress} anchors={anchors} />
         {showBanner ? <FirstRunBanner /> : null}
       </header>
-      <main className='mx-auto w-full max-w-[1280px] flex-1 px-4 py-8 sm:px-6 sm:py-10'>
+      <main className='w-full max-w-[1280px] flex-1 px-4 py-8 sm:px-8 sm:py-9'>
         <Outlet />
       </main>
       <footer className='border-t border-line'>
-        <div className='mx-auto flex w-full max-w-[1280px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-6 text-xs text-faint sm:px-6'>
+        <div className='flex w-full max-w-[1280px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-6 text-xs text-faint sm:px-8'>
           <a
             href={GITHUB_URL}
             target='_blank'

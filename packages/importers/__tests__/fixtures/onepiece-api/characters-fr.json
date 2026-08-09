@@ -1,0 +1,25 @@
+[
+  {
+    "id": 1,
+    "name": "Monkey D. Luffy",
+    "size": "174 cm",
+    "age": "19",
+    "bounty": "3.000.000.000",
+    "job": "Pirate",
+    "status": "Vivant",
+    "crew": { "id": 1, "name": "L'Équipage du Chapeau de Paille", "status": "actif" },
+    "fruit": { "id": 1, "name": "Gomu Gomu no Mi" }
+  },
+  {
+    "id": 2,
+    "name": "Jewelry Bonney",
+    "size": "174cm",
+    "age": 24,
+    "bounty": "320.000.000",
+    "job": "Pirate",
+    "status": "Vivant",
+    "crew": { "id": 2, "name": "Heart Pirates" },
+    "fruit": { "id": 99, "name": "Toshi Toshi no Mi" },
+    "doriki": "500"
+  }
+]

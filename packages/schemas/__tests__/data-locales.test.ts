@@ -62,4 +62,30 @@ describe('translationLocalesFor', () => {
     expect(nameLike.romanizable).toBe(true);
     expect(translationLocalesFor(nameLike)).toEqual(['en', 'fr', 'ja', 'ja-latn']);
   });
+
+  test('PropertyTypeSchema accepts the optional factual flag (ADR-100)', () => {
+    // Production/real-world data: the form offers only declared
+    // qualifiers — the base epistemic bag is not appended.
+    const productionLike = PropertyTypeSchema.parse({
+      id: 'released_at',
+      schema_version: 1,
+      labels: { en: 'Released', fr: 'Sortie' },
+      value_type: 'date',
+      historical: false,
+      localizable: false,
+      factual: true,
+    });
+    expect(productionLike.factual).toBe(true);
+    // Omitted stays undefined — the flag is optional, default profile
+    // (full epistemic bag) is unchanged.
+    const inUniverse = PropertyTypeSchema.parse({
+      id: 'bounty',
+      schema_version: 1,
+      labels: { en: 'Bounty', fr: 'Prime' },
+      value_type: 'number',
+      historical: true,
+      localizable: false,
+    });
+    expect(inUniverse.factual).toBeUndefined();
+  });
 });

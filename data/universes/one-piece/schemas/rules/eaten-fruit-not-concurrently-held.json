@@ -1,0 +1,19 @@
+{
+  "$schema": "../../../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "eaten-fruit-not-concurrently-held",
+  "schema_version": 1,
+  "universes": ["one-piece"],
+  "severity": "warning",
+  "labels": {
+    "en": "Fruit held and eaten at the same time",
+    "fr": "Fruit détenu et mangé en même temps"
+  },
+  "messages": {
+    "en": "This fruit is HELD (active `held-by`) while someone actively ATE it — an eaten fruit no longer exists as an object. Close the `held-by` with `until` at the eating, or fix whichever edge is wrong.",
+    "fr": "Ce fruit est DÉTENU (`held-by` actif) alors que quelqu'un l'a activement MANGÉ — un fruit mangé n'existe plus en tant qu'objet. Fermez le `held-by` avec `until` au moment de l'ingestion, ou corrigez l'arête erronée."
+  },
+  "applies_to_entity_types": ["devil-fruit"],
+  "scope": "entity",
+  "when": [{ "has_active_relation": { "type": "held-by" } }],
+  "expect": [{ "no_active_incoming_relation": { "type": "ate-fruit" } }]
+}

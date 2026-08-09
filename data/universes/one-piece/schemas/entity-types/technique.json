@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "technique",
-  "schema_version": 5,
+  "schema_version": 6,
   "labels": {
     "en": "Technique",
     "fr": "Technique"
@@ -44,7 +44,6 @@
     "enabled-by-transformation",
     "derived-from",
     "variant-of",
-    "awakening-of",
     "depicted-by"
   ],
   "ui_hint": {

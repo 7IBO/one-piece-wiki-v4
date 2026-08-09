@@ -11,7 +11,8 @@
   "scripts": {
     "typecheck": "tsc --noEmit",
     "fandom:analyze": "bun src/cli/analyze-fandom.ts",
-    "fandom:updates": "bun src/cli/updates-fandom.ts"
+    "fandom:updates": "bun src/cli/updates-fandom.ts",
+    "onepiece-api:import": "bun src/cli/import-onepiece-api.ts"
   },
   "dependencies": {
     "zod": "^3.23.8",

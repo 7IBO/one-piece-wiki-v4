@@ -255,7 +255,7 @@ property-type definitions are in section 3. Universal qualifiers
 Allowed relations: `member-of`, `ate-fruit`, `uses-technique`,
 `wields-weapon`, `family-of`, `ally-of`, `enemy-of`, `mentor-of`,
 `mentored-by`, `bears-title`, `belongs-to-race`, `born-in`, `resides-in`,
-`captains`, `participated-in`, `depicted-by`.
+`participated-in`, `depicted-by`.
 
 ---
 
@@ -277,14 +277,13 @@ Allowed relations: `eaten-by`, `held-by`, `interacts-with-fruit`,
 
 #### `crew`
 
-| Property          | Required | Historical | Localizable | Notes                  |
-| ----------------- | -------- | ---------- | ----------- | ---------------------- |
-| `name`            | yes      | yes        | yes         |                        |
-| `total_bounty`    | no       | yes        | no          | Computed at build time |
-| `founded_at`      | no       | no         | no          | source_ref             |
-| `disbanded_at`    | no       | no         | no          | source_ref             |
-| `jolly_roger`     | no       | yes        | no          | entity_ref to `image`  |
-| `description_key` | no       | no         | yes         |                        |
+| Property          | Required | Historical | Localizable | Notes                 |
+| ----------------- | -------- | ---------- | ----------- | --------------------- |
+| `name`            | yes      | yes        | yes         |                       |
+| `founded_at`      | no       | no         | no          | source_ref            |
+| `disbanded_at`    | no       | no         | no          | source_ref            |
+| `jolly_roger`     | no       | yes        | no          | entity_ref to `image` |
+| `description_key` | no       | no         | yes         |                       |
 
 Allowed relations: `has-member`, `ally-of`, `enemy-of`, `based-in`,
 `flies-flag`, `depicted-by`.
@@ -301,7 +300,7 @@ Allowed relations: `has-member`, `ally-of`, `enemy-of`, `based-in`,
 | `description_key`   | no       | no         | yes         |                        |
 
 Allowed relations: `has-member`, `ally-of`, `enemy-of`, `based-in`,
-`led-by`, `controls-territory`, `depicted-by`.
+`controls-territory`, `depicted-by`.
 
 ---
 
@@ -422,8 +421,7 @@ appearances are `features`' generated inverse.)
 | `cover_image`     | no       | no         | no          | entity_ref to `image`         |
 
 Allowed relations: `features`, `part-of-arc`, `part-of-volume`,
-`has-cover-story`, `adapted-by`, `introduces-character`, `available-on`,
-`depicted-by`.
+`has-cover-story`, `adapted-by`, `available-on`, `depicted-by`.
 
 ---
 
@@ -584,7 +582,7 @@ Allowed relations: `depicted-by`. Inbound: `material-of` (from `ship` /
 
 ---
 
-## 3. Property types (105)
+## 3. Property types (104)
 
 Property types are reusable across entity types. The list below groups
 them by domain. Each has a value_type (section 7), constraints, optional
@@ -629,7 +627,6 @@ unit, and qualifier policy (section 6).
 | `width`           | `number`   | px    | min:0                 |
 | `height` (image)  | `number`   | px    | min:0                 |
 | `crew_capacity`   | `number`   | —     | min:0                 |
-| `total_bounty`    | `number`   | berry | computed at build     |
 | `lifespan`        | `number`   | year  | (race average)        |
 | `average_height`  | `number`   | cm    | (race average)        |
 
@@ -705,7 +702,7 @@ unit, and qualifier policy (section 6).
 
 ---
 
-## 4. Relation types (68)
+## 4. Relation types (64)
 
 Relations are typed, directed links between entities. The build pipeline
 generates inverses automatically when `inverse_inferred: true`.
@@ -715,11 +712,15 @@ generates inverses automatically when `inverse_inferred: true`.
 | Type              | From                                | To                     | Inverse           | Qualifiers                                                      |
 | ----------------- | ----------------------------------- | ---------------------- | ----------------- | --------------------------------------------------------------- |
 | `member-of`       | `character`                         | `crew`, `organization` | `(inferred)`      | role, since, until, loyalty_status, departure_reason, held_rank |
-| `led-by`          | `crew`, `organization`              | `character`            | `leads`           | since, until                                                    |
 | `ally-of`         | `character`, `crew`, `organization` | (same)                 | (symmetric)       | since, until                                                    |
 | `enemy-of`        | `character`, `crew`, `organization` | (same)                 | (symmetric)       | since, until, intensity                                         |
 | `subordinate-to`  | `crew`, `organization`              | `crew`, `organization` | `has-subordinate` | since, until                                                    |
 | `member-state-of` | `location`                          | `organization`         | `member-states`   | since, until, membership_status                                 |
+
+(ADR-099 removed `led-by`: leadership is a membership function —
+`member-of{role: leader|captain}`; both `loyalty_status` and
+`membership_status` now share the merged `membership-statuses`
+vocabulary, § 5.53.)
 
 ### 4.2 Powers & abilities
 
@@ -771,18 +772,22 @@ generates inverses automatically when `inverse_inferred: true`.
 
 | Type         | From           | To      | Inverse       | Qualifiers   |
 | ------------ | -------------- | ------- | ------------- | ------------ |
-| `captains`   | `character`    | `ship`  | `(inferred)`  | since, until |
 | `crewed-by`  | `ship`         | `crew`  | `sails`       | since, until |
 | `flies-flag` | `ship`, `crew` | `image` | `flag-of`     | since        |
 | `replaces`   | `ship`         | `ship`  | `replaced-by` | since        |
 
+(ADR-099 removed `captains`: ship↔people routes through the crew —
+`crewed-by` + incoming `member-of` roles.)
+
 ### 4.8 Source ↔ entity
 
-| Type                   | From                        | To          | Inverse                | Qualifiers                                                                  |
-| ---------------------- | --------------------------- | ----------- | ---------------------- | --------------------------------------------------------------------------- |
-| `features`             | source types                | any entity  | `featured-in` _(gen.)_ | appearance_type (shown _or_ evoked; absorbs former `references`/`mentions`) |
-| `introduces-character` | source types                | `character` | `introduced-in`        | —                                                                           |
-| `clarifies-fact`       | `sbs`, `sbs-qa`, `databook` | any entity  | `clarified-in`         | property_name                                                               |
+| Type             | From                        | To         | Inverse                | Qualifiers                                                                  |
+| ---------------- | --------------------------- | ---------- | ---------------------- | --------------------------------------------------------------------------- |
+| `features`       | source types                | any entity | `featured-in` _(gen.)_ | appearance_type (shown _or_ evoked; absorbs former `references`/`mentions`) |
+| `clarifies-fact` | `sbs`, `sbs-qa`, `databook` | any entity | `clarified-in`         | property_name                                                               |
+
+(ADR-099 removed `introduces-character`: first appearance is DERIVED
+from the earliest `features` edge per character.)
 
 ### 4.9 Source ↔ source (adaptation)
 
@@ -868,7 +873,7 @@ generates inverses automatically when `inverse_inferred: true`.
 
 ---
 
-## 5. Vocabularies / Enums (65)
+## 5. Vocabularies / Enums (64)
 
 Each vocabulary lives in `/data/schemas/vocabulary/<id>.json`. All
 values have localized labels (EN, FR at minimum).
@@ -924,15 +929,18 @@ values have localized labels (EN, FR at minimum).
 
 ### 5.10 `crew-roles`
 
-`captain`, `first_mate`, `vice_captain`, `navigator`, `cook`, `doctor`,
-`archaeologist`, `shipwright`, `musician`, `sniper`, `helmsman`,
-`apprentice`, `cabin_boy`, `combatant`, `tactician`
+`captain`, `leader`, `first_mate`, `vice_captain`, `navigator`, `cook`,
+`doctor`, `archaeologist`, `shipwright`, `musician`, `sniper`,
+`helmsman`, `apprentice`, `cabin_boy`, `combatant`, `tactician`
+(`leader` added by ADR-099 — `member-of{role: leader}` is the single
+home for who leads any group, replacing the removed `led-by`)
 
-### 5.11 `loyalty-statuses`
+### 5.11 `loyalty-statuses` — REMOVED (ADR-099)
 
-`founder`, `member`, `former_member`, `traitor`, `undercover`,
-`presumed_dead_member`, `honorary`
-(`allied` was removed by ADR-098 — an ally is an `ally-of` edge)
+Merged into `membership-statuses` (§ 5.53), now shared by
+`member-of.loyalty_status` and `member-state-of.membership_status`.
+(Section number kept to avoid renumbering; the vocabulary count above
+excludes it.)
 
 ### 5.12 `org-types`
 
@@ -1157,8 +1165,13 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 
 ### 5.53 `membership-statuses`
 
-`member`, `founding_member`, `former_member`, `defected`, `erased`,
-`observer`
+`founder`, `member`, `honorary`, `observer`, `undercover`,
+`former_member`, `defected`, `traitor`, `erased`
+(ADR-099 merged `loyalty-statuses` in: one vocabulary for the state of
+a membership, shared by `member-of.loyalty_status` and
+`member-state-of.membership_status`; `founding_member` unified to
+`founder`, `presumed_dead_member` dropped — that is the epistemic
+model's job)
 
 ### 5.54 `occupations`
 
@@ -1346,9 +1359,9 @@ depicted by another image).
 ## 10. Stats summary
 
 - **Entity types**: 38
-- **Property types**: 105 (some shared across multiple entity types)
-- **Relation types**: 68 (canonical declared; inverses are build-generated)
-- **Vocabularies**: 65
+- **Property types**: 104 (some shared across multiple entity types)
+- **Relation types**: 64 (canonical declared; inverses are build-generated)
+- **Vocabularies**: 64
 - **Qualifier types**: 28 (8 base + 20 common — the ADR-078 registry)
 - **Primitive value types**: 10
 - **Universal qualifiers**: 14 (on property values) + 4 (on relations, ADR-037)

@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "L'Équipage du Chapeau de Paille",
+    "roman_name": "Mugiwara no Ichimi",
+    "status": "actif",
+    "number": "10",
+    "total_prime": "8.816.001.000",
+    "is_yonko": true
+  },
+  {
+    "id": 2,
+    "name": "L'Équipage du Heart",
+    "roman_name": "Hāto no Kaizokudan",
+    "status": "actif",
+    "number": "21",
+    "total_prime": "3.000.000.000",
+    "is_yonko": false
+  }
+]

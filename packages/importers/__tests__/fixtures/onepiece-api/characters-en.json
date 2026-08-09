@@ -1,0 +1,31 @@
+[
+  {
+    "id": 1,
+    "name": "Monkey D. Luffy",
+    "size": "174 cm",
+    "age": "19",
+    "bounty": "3.000.000.000",
+    "job": "Pirate",
+    "status": "Alive",
+    "crew": { "id": 1, "name": "Straw Hat Pirates", "status": "active" },
+    "fruit": { "id": 1, "name": "Gomu Gomu no Mi", "type": "Paramecia" }
+  },
+  {
+    "id": 2,
+    "name": "Jewelry Bonney",
+    "size": "174cm",
+    "age": 24,
+    "bounty": "320,000,000",
+    "job": "Pirate",
+    "status": "Alive",
+    "crew": { "id": 2, "name": "Heart Pirates" },
+    "fruit": { "id": 99, "name": "Toshi Toshi no Mi" },
+    "doriki": "500",
+    "first_apparition": "Chapter 498"
+  },
+  {
+    "id": 3,
+    "name": "   ",
+    "bounty": "unknown"
+  }
+]

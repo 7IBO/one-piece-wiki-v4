@@ -157,7 +157,6 @@
         "bears-title",
         "belongs-to-race",
         "born-in",
-        "captains",
         "depicted-by",
         "enemy-of",
         "family-of",
@@ -219,9 +218,6 @@
         },
         "name": {
           "required": true
-        },
-        "total_bounty": {
-          "required": false
         }
       },
       "allowed_relations": [
@@ -563,7 +559,6 @@
         "depicted-by",
         "features",
         "has-cover-story",
-        "introduces-character",
         "part-of-arc",
         "part-of-volume"
       ]
@@ -625,7 +620,6 @@
         "controls-territory",
         "depicted-by",
         "enemy-of",
-        "led-by",
         "subordinate-to"
       ]
     },
@@ -810,7 +804,6 @@
         }
       },
       "allowed_relations": [
-        "awakening-of",
         "depicted-by",
         "derived-from",
         "enabled-by-fruit",
@@ -1520,12 +1513,6 @@
       "historical": false,
       "localizable": true
     },
-    "total_bounty": {
-      "value_type": "number",
-      "enum_ref": null,
-      "historical": true,
-      "localizable": false
-    },
     "track_length": {
       "value_type": "string",
       "enum_ref": null,
@@ -1713,22 +1700,6 @@
         }
       }
     },
-    "awakening-of": {
-      "valid_from_types": [
-        "technique"
-      ],
-      "valid_to_types": [
-        "devil-fruit"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {
-        "since": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        }
-      }
-    },
     "based-in": {
       "valid_from_types": [
         "crew",
@@ -1796,27 +1767,6 @@
       ],
       "inverse_inferred": true,
       "qualifiers": {}
-    },
-    "captains": {
-      "valid_from_types": [
-        "character"
-      ],
-      "valid_to_types": [
-        "ship"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {
-        "since": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        },
-        "until": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        }
-      }
     },
     "card-of": {
       "valid_from_types": [
@@ -2292,20 +2242,6 @@
         }
       }
     },
-    "introduces-character": {
-      "valid_from_types": [
-        "anime-episode",
-        "databook",
-        "film",
-        "manga-chapter",
-        "sbs"
-      ],
-      "valid_to_types": [
-        "character"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {}
-    },
     "issued-by": {
       "valid_from_types": [
         "document"
@@ -2314,28 +2250,6 @@
         "character",
         "crew",
         "organization"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {
-        "since": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        },
-        "until": {
-          "value_type": "source_ref",
-          "enum_ref": null,
-          "required": false
-        }
-      }
-    },
-    "led-by": {
-      "valid_from_types": [
-        "crew",
-        "organization"
-      ],
-      "valid_to_types": [
-        "character"
       ],
       "inverse_inferred": true,
       "qualifiers": {
@@ -2395,7 +2309,7 @@
         },
         "loyalty_status": {
           "value_type": "enum",
-          "enum_ref": "loyalty-statuses",
+          "enum_ref": "membership-statuses",
           "required": false
         },
         "role": {
@@ -3115,6 +3029,7 @@
       "doctor",
       "first_mate",
       "helmsman",
+      "leader",
       "musician",
       "navigator",
       "shipwright",
@@ -3419,7 +3334,8 @@
       "official-shueisha",
       "public-domain",
       "screenshot-anime",
-      "screenshot-manga"
+      "screenshot-manga",
+      "unverified-external"
     ],
     "location-regions": [
       "calm_belt",
@@ -3463,15 +3379,6 @@
       "undersea",
       "village"
     ],
-    "loyalty-statuses": [
-      "former_member",
-      "founder",
-      "honorary",
-      "member",
-      "presumed_dead_member",
-      "traitor",
-      "undercover"
-    ],
     "marine-ranks": [
       "admiral",
       "captain",
@@ -3501,9 +3408,12 @@
       "defected",
       "erased",
       "former_member",
-      "founding_member",
+      "founder",
+      "honorary",
       "member",
-      "observer"
+      "observer",
+      "traitor",
+      "undercover"
     ],
     "merch-types": [
       "accessory",

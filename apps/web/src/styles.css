@@ -3,37 +3,42 @@
 @import '@fontsource-variable/bricolage-grotesque';
 
 /*
- * Public reader theme — dark database register (2026 redesign v3, see
- * WEB_APP.md § Identity). Tailwind v4 CSS-first config: tokens ONLY
- * here, every component reads them (zero raw hex/oklch in TSX).
+ * Public reader theme — "Le Log", the signature register (2026
+ * redesign v5, see WEB_APP.md § Identity). Tailwind v4 CSS-first
+ * config: tokens ONLY here, every component reads them (zero raw
+ * hex/oklch in TSX).
  *
- * System:
- * - Deep blue-charcoal canvas with TWO surface elevation steps for
- *   the card grids; hairline borders at white 8–16%.
- * - Data-forward: everything renders as labeled units — stat tiles
- *   (tracked-uppercase label over semibold value) and entity cards
- *   (portrait/monogram + name + secondary label) in dense auto-fill
- *   grids. No decorative ornament.
- * - ONE vivid accent: electric blue, links/interactive only.
- * - Display face: Bricolage Grotesque Variable (headings, wordmark).
- *   Body/UI: Inter Variable. Mono: ui-monospace stack.
+ * Palette "abysse" — One Piece à notre sauce, no clipart:
+ * - Canvas: deep ocean (very dark desaturated blue-green) with two
+ *   surface steps carrying the same cast.
+ * - Foreground: BONE/parchment (warm off-white), never pure white;
+ *   muted grays keep the blue-green cast; hairlines are bone-tinted.
+ * - Accent DUO, strictly split:
+ *   · GOLD (straw hat) = identity moments — wordmark accent, the Log
+ *     Rail fill/marker, bounty plaques and stats, monogram initials,
+ *     focus rings, selection.
+ *   · VERMILLION (`accent`) = interactive — links, buttons, current
+ *     states. Nothing else carries hue.
+ * - Display face: Bricolage Grotesque Variable. Body/UI: Inter
+ *   Variable. Mono: ui-monospace stack.
  */
 @theme {
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: oklch(0.17 0.02 255);
-  --color-surface: oklch(0.212 0.022 255);
-  --color-surface-2: oklch(0.255 0.024 255);
-  --color-line: oklch(1 0 0 / 0.08);
-  --color-line-strong: oklch(1 0 0 / 0.16);
+  --color-canvas: oklch(0.16 0.022 220);
+  --color-surface: oklch(0.195 0.024 218);
+  --color-surface-2: oklch(0.235 0.026 216);
+  --color-line: oklch(0.92 0.02 85 / 0.09);
+  --color-line-strong: oklch(0.92 0.02 85 / 0.2);
 
-  --color-fg: oklch(0.95 0.006 255);
-  --color-muted: oklch(0.73 0.012 255);
-  --color-faint: oklch(0.56 0.018 255);
+  --color-fg: oklch(0.92 0.02 85);
+  --color-muted: oklch(0.71 0.018 200);
+  --color-faint: oklch(0.55 0.016 205);
 
-  --color-accent: oklch(0.73 0.13 235);
-  --color-accent-hover: oklch(0.8 0.12 233);
+  --color-accent: oklch(0.62 0.19 25);
+  --color-accent-hover: oklch(0.7 0.18 28);
+  --color-gold: oklch(0.8 0.12 90);
 }
 
 html {
@@ -53,13 +58,13 @@ body {
 }
 
 ::selection {
-  background-color: var(--color-accent);
+  background-color: var(--color-gold);
   color: var(--color-canvas);
 }
 
-/* One focus language everywhere: accent ring, 2px offset. */
+/* One focus language everywhere: gold ring, 2px offset. */
 :focus-visible {
-  outline: 2px solid var(--color-accent);
+  outline: 2px solid var(--color-gold);
   outline-offset: 2px;
   border-radius: 2px;
 }

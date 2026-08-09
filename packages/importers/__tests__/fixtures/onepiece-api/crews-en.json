@@ -1,0 +1,20 @@
+[
+  {
+    "id": 1,
+    "name": "Straw Hat Pirates",
+    "roman_name": "Mugiwara no Ichimi",
+    "status": "active",
+    "number": "10",
+    "total_prime": "8.816.001.000",
+    "is_yonko": true
+  },
+  {
+    "id": 2,
+    "name": "Heart Pirates",
+    "roman_name": "Hāto no Kaizokudan",
+    "status": "active",
+    "number": "21",
+    "total_prime": "3.000.000.000",
+    "is_yonko": false
+  }
+]

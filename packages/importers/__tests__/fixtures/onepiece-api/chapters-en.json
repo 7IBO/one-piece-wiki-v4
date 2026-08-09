@@ -1,0 +1,15 @@
+[
+  {
+    "id": 1044,
+    "number": "1044",
+    "title": "Warrior of Liberation",
+    "tome": { "id": 102, "number": 102 },
+    "release_date": "2022-03-07",
+    "pages": 15
+  },
+  {
+    "id": 9001,
+    "number": "not-a-number",
+    "title": "Corrupt row"
+  }
+]

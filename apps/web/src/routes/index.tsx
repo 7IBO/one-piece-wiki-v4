@@ -52,7 +52,7 @@ function TypeCard(
       >
         <span
           aria-hidden
-          className='grid size-12 shrink-0 select-none place-items-center rounded-md bg-surface-2 font-display text-xl font-semibold text-accent/40 ring-1 ring-inset ring-line'
+          className='grid size-12 shrink-0 select-none place-items-center rounded-md bg-surface-2 font-display text-xl font-semibold text-gold/40 ring-1 ring-inset ring-line'
         >
           {type.label.slice(0, 1).toUpperCase()}
         </span>

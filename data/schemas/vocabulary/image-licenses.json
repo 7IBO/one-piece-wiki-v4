@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
   "id": "image-licenses",
-  "schema_version": 1,
+  "schema_version": 2,
   "values": {
     "official-shueisha": {
       "labels": { "en": "Official Shueisha/Toei", "fr": "Officiel Shueisha/Toei" },
@@ -57,6 +57,13 @@
       "description": {
         "en": "Creative Commons Attribution-ShareAlike. Attribution required; derivatives must share the same licence.",
         "fr": "Creative Commons Attribution-Partage dans les mêmes conditions. Attribution requise ; les dérivés doivent partager la même licence."
+      }
+    },
+    "unverified-external": {
+      "labels": { "en": "Unverified (external URL)", "fr": "Non vérifiée (URL externe)" },
+      "description": {
+        "en": "Externally hosted image referenced by URL only (e.g. api-onepiece.com imports, ADR-101); licensing not verified. Pending review or replacement through the R2 upload flow.",
+        "fr": "Image hébergée à l'extérieur, référencée par URL uniquement (p. ex. imports api-onepiece.com, ADR-101) ; licence non vérifiée. En attente de relecture ou de remplacement via le flux d'upload R2."
       }
     }
   }

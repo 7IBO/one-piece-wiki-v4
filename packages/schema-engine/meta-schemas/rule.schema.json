@@ -159,6 +159,27 @@
               "property"
             ],
             "additionalProperties": false
+          },
+          "has_active_incoming_relation": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+              },
+              "source_type": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+              }
+            },
+            "required": [
+              "type"
+            ],
+            "additionalProperties": false
           }
         },
         "additionalProperties": false
@@ -217,6 +238,21 @@
             "required": [
               "type",
               "max"
+            ],
+            "additionalProperties": false
+          },
+          "no_active_incoming_relation": {
+            "type": "object",
+            "properties": {
+              "type": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 60,
+                "pattern": "^[a-z0-9]+(?:[-_][a-z0-9]+)*$"
+              }
+            },
+            "required": [
+              "type"
             ],
             "additionalProperties": false
           }

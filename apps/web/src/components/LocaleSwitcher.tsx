@@ -11,7 +11,9 @@ import { type JSX } from 'react';
 import { type Locale, SUPPORTED_LOCALES, t } from '../lib/chrome';
 import { LOCALE_COOKIE, useLocale } from '../routes/__root';
 
-export function LocaleSwitcher(): JSX.Element {
+export function LocaleSwitcher(
+  { vertical = false }: { readonly vertical?: boolean; } = {},
+): JSX.Element {
   const router = useRouter();
   const locale = useLocale();
 
@@ -32,7 +34,9 @@ export function LocaleSwitcher(): JSX.Element {
         if (next === 'en' || next === 'fr') apply(next);
       }}
       aria-label={t(locale, 'languageLabel')}
-      className='flex items-center gap-0.5 rounded-md bg-surface p-0.5 text-xs font-medium uppercase'
+      className={`flex items-center gap-0.5 rounded-md bg-surface p-0.5 text-xs font-medium uppercase ${
+        vertical ? 'flex-col' : ''
+      }`}
     >
       {SUPPORTED_LOCALES.map((value) => (
         <Toggle
