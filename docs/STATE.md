@@ -15,7 +15,27 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (arbitrage mainteneur : ADR-099 single-home 2 + ADR-100 factual)
+**Last updated**: 2026-08-09 (PR #120 : ADR-099/100/101 livrés + design v5 « Le Log »)
+
+**2026-08-09 — lot PR #120 livré.** (a) **ADR-099** implémenté :
+`led-by`/`captains`/`introduces-character`/`awakening-of`/`total_bounty`
+supprimés (dérivations en présentation : leader/prime totale depuis
+les arêtes member-of entrantes), vocabulaires fusionnés, DSL
+arêtes-entrantes avec `CorpusContext` (check:coherence uniquement)
+
+- règle fruit-mangé≠détenu — 64 relations / 104 propriétés / 9
+  règles. (b) **ADR-100** : flag `factual` posé sur 51 propriétés de
+  production — le formulaire n'y offre plus le sac épistémique.
+  (c) **ADR-101** : importeur api-onepiece complet (9 ressources,
+  fusion EN/FR, match-diff, images en URL seule avec licence
+  `unverified-external`) — 103 tests fixtures ; endpoint bloqué ici,
+  run mainteneur : `bun run -F @onepiece-wiki/importers
+onepiece-api:import`. (d) **Design v5 « Le Log »** : rail de
+  progression signature (frise manga, remplissage or jusqu'au
+  curseur, ancres de savoir par page calculées post-filtre spoiler),
+  spine verticale 68 px, bento 12 colonnes à spans dérivés du volume,
+  plaque BOUNTY, palette abysse/os/or-paille/vermillon, cartes riches
+  (épithète/rôle/prime) taillées au contenu. 467 tests.
 
 **2026-08-09 — arbitrage mainteneur sur l'audit + directives UI.**
 Principe posé par le mainteneur : « une seule propriété/relation
