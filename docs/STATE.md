@@ -15,7 +15,29 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (design v3 clair, surface liens unifiée, audit catalogue ADR-098)
+**Last updated**: 2026-08-09 (arbitrage mainteneur : ADR-099 single-home 2 + ADR-100 factual)
+
+**2026-08-09 — arbitrage mainteneur sur l'audit + directives UI.**
+Principe posé par le mainteneur : « une seule propriété/relation
+pour gérer une donnée — pas 2x capitaine, pas 2x l'enregistrement ».
+**ADR-099** tranche TOUTES les questions de goût de l'audit :
+`led-by`/`captains`/`introduces-character`/`awakening-of` supprimées
+(leadership = `member-of{role: leader}`, crew-roles gagne `leader`,
+la règle org-rank ADR-098 tombe), `total_bounty` supprimée (dérivée
+en présentation), vocabulaires loyalty/membership fusionnés en un
+seul `membership-statuses`, DSL étendu aux arêtes entrantes
+(`has_active_incoming_relation` / `no_active_incoming_relation`,
+évalué avec contexte corpus dans check:coherence uniquement) + règle
+fruit-mangé≠détenu. Relations 68→64. **ADR-100** : flag
+`factual: true` sur les propriétés de production (numéros, titres de
+sources, dates, runtime, métadonnées d'images…) — le formulaire n'y
+offre plus le sac épistémique (cru par, attesté par…), uniquement
+les qualifiers déclarés ; `name` des personnages garde tout
+(identités cachées). Côté wiki : cartes entités enrichies (image +
+nom + épithète + rôle/rang + micro-stat contextuelle) généralisées
+membres/cast/utilisateurs/listings, prime totale d'équipage dérivée.
+PR #119 (design v4 sombre dense + unification liens + ADR-098)
+mergée sur main juste avant.
 
 **2026-08-09 — lot PR #119 : design wiki v3, unification dashboard,
 audit de redondance.** (a) Le wiki public a été redessiné DEUX fois

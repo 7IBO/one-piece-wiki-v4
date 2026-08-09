@@ -8,6 +8,92 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-100 — Factual qualifier profile: production data drops the epistemic bag
+
+**Date**: 2026-08-09
+
+**Context**: Maintainer: "sur les épisodes et autres données qui sont
+fixées, je veux pas toutes les options (genre numéro d'épisode ou
+name on veut pas avoir le cru par, attesté par etc)". The ADR-078
+registry appends every base qualifier (epistemic_status,
+actual_value, event, believed_by, known_truth_by, attested_by,
+assisted_by, review_status) to EVERY entry's "More options" — noise
+on real-world production metadata where in-universe epistemics are
+meaningless.
+
+**Decision**: new optional property-type flag **`factual`** (default
+false). A `factual: true` property offers ONLY its declared
+qualifiers (`default_qualifiers` + `allowed_qualifiers`) in the
+dashboard form — the base bag is not appended. Validation stays
+permissive (existing data unaffected; the flag shapes the EDITING
+surface, not the wire). Flag set on real-world/production metadata:
+numbers (episode/chapter/film/saga/arc/season, pages, discs, tracks,
+cards, catalog), `title_key` (source titles are production data —
+`name` on characters keeps the full bag: hidden identities are the
+epistemic model's home turf), release/publication dates, runtimes,
+image/file metadata (format, dimensions, license, attribution, url,
+alt/caption keys, spoiler_since, source_origin), platform/company
+kinds, reference fields, flags like `is_color_spread` /
+`anime_original` / `oda_supervised`. In-universe facts (bounty,
+status, epithet, classification, haki…) keep the full bag.
+
+**Consequences**: additive meta flag; the form finally matches the
+nature of each datum. `check:compat` reports additive only.
+
+---
+
+## ADR-099 — Single-home pass 2: maintainer arbitration of the audit's taste calls
+
+**Date**: 2026-08-09
+
+**Context**: Maintainer arbitrated the ADR-098 audit's open
+questions with one principle: **"je veux avoir une seule
+propriété/relation pour gérer une donnée — pas 2x capitaine, pas 2x
+l'enregistrement d'une donnée."** Every remaining dual-home falls.
+
+**Decisions** (audit references in parentheses):
+
+1. **`led-by` REMOVED** (R6). Leadership is a membership function:
+   `crew-roles` gains `leader`; `member-of{role}` is the single home
+   for who leads any group. `role` = FUNCTION (leader, cook,
+   tactician…), `held_rank` = FORMAL RANK (marine ranks) — both may
+   coexist on one edge. The ADR-098 advisory
+   `org-membership-uses-rank-not-crew-role` is DROPPED (superseded:
+   role is now legitimate on organizations).
+2. **`captains` REMOVED** (R4bis). Ship↔people routes through the
+   crew (`crewed-by` + member roles); a crewless captain is a
+   one-member crew.
+3. **`introduces-character` REMOVED** (R7). First appearance is
+   DERIVED: the earliest source holding a `features` edge for the
+   character. Presentation layers compute it (ADR-091); the build
+   inference engine (ADR-034 backlog) is the durable home.
+4. **`total_bounty` REMOVED** (P1). A crew's total bounty is derived
+   from its active members' latest visible bounties — computed in
+   the presentation layer per progression point; never stored.
+5. **`awakening-of` REMOVED** (R8) — vestigial since the ADR-058
+   transformation model; this explicitly overturns ADR-058's
+   "stays" with maintainer mandate.
+6. **Vocabulary merge** (V4): one `membership-statuses` vocabulary
+   serves both `member-of.loyalty_status` and `member-state-of`:
+   founder, member, honorary, observer, undercover, former_member,
+   defected, traitor, erased. `founding_member`→`founder` unified;
+   `presumed_dead_member` dropped (the epistemic model's job);
+   `loyalty-statuses` deleted.
+7. **DSL: incoming-edge awareness** (audit's cross-entity gap):
+   entity-scope conditions gain `has_active_incoming_relation` and
+   expectations gain `no_active_incoming_relation`, evaluated only
+   when a corpus context is provided (check:coherence; the
+   single-entity dashboard evaluation skips such rules — documented).
+   First rule: `eaten-fruit-not-concurrently-held` (a held fruit
+   cannot be concurrently eaten).
+
+**Consequences**: relations 68→64, vocabularies 65→64, properties
+105→104; migrations continue the 0009+ series (all removals are
+0-edge on the current corpus except vocabulary value renames).
+The catalogue now has exactly one home for every fact it models.
+
+---
+
 ## ADR-098 — Catalogue dedup pass: one home per fact
 
 **Date**: 2026-08-09
