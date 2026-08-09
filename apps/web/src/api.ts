@@ -16,6 +16,7 @@ import { getCookie } from '@tanstack/react-start/server';
 import { parseProgressCookie, type ProgressCursor } from '../server/progress';
 import { buildEntityView, buildHomeView, buildTypeListView } from '../server/views';
 import type { Locale } from './lib/chrome';
+import { SCOPE_PATTERN } from './lib/scope';
 
 export type {
   AvailabilityItemView,
@@ -47,7 +48,6 @@ export type { ProgressCursor };
 export const PROGRESS_COOKIE = 'web_progress';
 
 const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
-const SCOPE_PATTERN = /^[a-z][a-z0-9_]*$/;
 
 function asLocale(value: unknown): Locale {
   return value === 'fr' ? 'fr' : 'en';

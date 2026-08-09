@@ -14,12 +14,13 @@ import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { resolveDisplayName } from '@onepiece-wiki/schemas';
-import { createFileRoute, Link } from '@tanstack/react-router';
+import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, Film, GitPullRequest, History, Users } from 'lucide-react';
-import { type JSX, useMemo } from 'react';
+import { type JSX, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type SourceRef } from '../api';
 import { EntityLinksPanel } from '../components/EntityLinksPanel';
+import { IncomingEdgesManager } from '../components/IncomingEdgesManager';
 import { LoadFailed } from '../components/LoadFailed';
 import { NarrativeEditor } from '../components/NarrativeEditor';
 import { EntityForm } from '../form/EntityForm';
@@ -47,6 +48,11 @@ function EntityEditComponent(): JSX.Element {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
   const t = useT();
+  const navigate = useNavigate();
+  // ADR-097 — which incoming-edge relation group is being managed
+  // (null = read-only). Owned here so both the inferred-relations
+  // section and the links panel can open the same manager.
+  const [managingIncoming, setManagingIncoming] = useState<string | null>(null);
   const { data, error, reload } = useApiResource(
     () =>
       Promise.all([
@@ -114,6 +120,27 @@ function EntityEditComponent(): JSX.Element {
   const validFrom = (appearsIn?.valid_from_types ?? []) as readonly string[];
   const isSourceType = validTo.includes(type);
   const canHaveApparitions = validFrom.includes(type);
+
+  // ADR-097 — relations whose incoming manager is the existing
+  // /sources cast page (ADR-021): `appears-in` when this page IS a
+  // source. Everything else opens the generic incoming-edge manager.
+  // (`appears-in` is a ADR-021/091-sanctioned well-known id on this
+  // page — see the hub wiring above; the manager itself stays 100%
+  // schema-driven.)
+  const castRelationIds: readonly string[] = isSourceType && appearsIn !== undefined
+    ? [String(appearsIn.id)]
+    : [];
+
+  const openIncomingManager = (relationTypeId: string): void => {
+    if (castRelationIds.includes(relationTypeId)) {
+      void navigate({ to: '/sources/$type/$slug', params: { type, slug } });
+      return;
+    }
+    setManagingIncoming(relationTypeId);
+    document
+      .getElementById('inferred-relations-section')
+      ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+  };
 
   return (
     <div className='space-y-4'>
@@ -302,6 +329,28 @@ function EntityEditComponent(): JSX.Element {
         relationTypes={schemas.relationTypes}
         qualifierTypes={schemas.qualifierTypes}
         vocabularies={schemas.vocabularies}
+        manage={{
+          managing: managingIncoming,
+          onManage: (relationTypeId) => {
+            if (relationTypeId === null) setManagingIncoming(null);
+            else openIncomingManager(relationTypeId);
+          },
+          castRelationIds,
+          renderManager: (relationTypeId, onClose) => (
+            <IncomingEdgesManager
+              type={type}
+              slug={slug}
+              relationTypeId={relationTypeId}
+              relationTypes={schemas.relationTypes}
+              qualifierTypes={schemas.qualifierTypes}
+              vocabularies={schemas.vocabularies}
+              entityTypes={schemas.entityTypes}
+              sources={sources}
+              i18nKeys={i18nKeys}
+              onClose={onClose}
+            />
+          ),
+        }}
       />
       <EntityLinksPanel
         type={type}
@@ -309,6 +358,7 @@ function EntityEditComponent(): JSX.Element {
         relationTypes={schemas.relationTypes}
         qualifierTypes={schemas.qualifierTypes}
         vocabularies={schemas.vocabularies}
+        onManageIncoming={openIncomingManager}
       />
     </div>
   );

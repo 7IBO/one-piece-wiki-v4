@@ -196,6 +196,55 @@ export type CastResponse = {
   readonly cast: readonly CastGroup[];
 };
 
+/** One incoming edge of a relation type, as stored on the SOURCE
+ *  entity (ADR-097). `fileSha` is the source file's GitHub blob SHA
+ *  for the save's optimistic lock — null when GitHub isn't
+ *  configured (the lock is skipped for that file). */
+export type IncomingEdgeRow = {
+  readonly sourceEntityId: string;
+  readonly entityType: string;
+  readonly slug: string;
+  readonly displayName: DisplayName;
+  readonly qualifiers: Record<string, unknown>;
+  readonly fileSha: string | null;
+};
+
+/** `GET /api/entities/:type/:slug/incoming/:relationType` — the
+ *  incoming-edge manager payload (ADR-097). The relation type's
+ *  qualifier declarations + `valid_from_types` ride along so the
+ *  manager needs no second catalogue lookup. */
+export type IncomingEdgesResponse = {
+  readonly target: { readonly id: string; readonly type: string; readonly slug: string; };
+  readonly relationType: {
+    readonly id: string;
+    readonly labels: RelationTypeSchema['labels'];
+    readonly qualifiers: RelationTypeSchema['qualifiers'];
+    readonly valid_from_types: readonly string[];
+  };
+  readonly rows: readonly IncomingEdgeRow[];
+};
+
+/** Body of the incoming-edge bulk save (ADR-097). */
+export type IncomingEdgesChange = {
+  readonly add: readonly { entityId: string; qualifiers?: Record<string, unknown>; }[];
+  readonly update: readonly { entityId: string; qualifiers: Record<string, unknown>; }[];
+  readonly remove: readonly string[];
+  readonly expected: readonly { entityId: string; sha: string; }[];
+};
+
+/** Type-guard for the structured 409 `multi_file_conflict` payload —
+ *  a bulk save refused because N source files moved on main since the
+ *  manager loaded (plural optimistic lock, ADR-021/097). Returns the
+ *  conflicting entity ids so the manager can list them and prompt a
+ *  reload. */
+export function multiFileConflictEntities(err: unknown): readonly string[] | null {
+  if (!(err instanceof ApiError) || err.payload === null) return null;
+  if (err.payload['code'] !== 'multi_file_conflict') return null;
+  const raw = err.payload['entities'];
+  if (!Array.isArray(raw)) return [];
+  return raw.filter((e): e is string => typeof e === 'string');
+}
+
 /** Deep-link coordinates of a linked entity; null when the target id
  *  is dangling (not in the catalogue). */
 export type EntityRoute = {
@@ -695,6 +744,44 @@ export const api = {
   ): Promise<SaveResult> {
     const result = await postJson<SaveResult>(
       `/api/sources/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/cast`,
+      change,
+    );
+    invalidateAfterSave();
+    return result;
+  },
+  /**
+   * Reverse-scan the incoming edges of one relation type targeting
+   * this entity (ADR-097). Not cached: the manager fetches on open
+   * and freshness (fileSha locks) matters for the save.
+   */
+  async getIncomingEdges(
+    type: string,
+    slug: string,
+    relationType: string,
+  ): Promise<IncomingEdgesResponse> {
+    return getJson<IncomingEdgesResponse>(
+      `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/incoming/${
+        encodeURIComponent(relationType)
+      }`,
+    );
+  },
+  /**
+   * Bulk-apply incoming-edge changes for one relation type (ADR-097).
+   * Opens one PR titled `[DATA] Update <relation> incoming edges of
+   * <targetId>` touching the N storing entity files in one commit.
+   * Throws `ApiError` 409 `multi_file_conflict` when any expected SHA
+   * moved — see `multiFileConflictEntities`.
+   */
+  async saveIncomingEdges(
+    type: string,
+    slug: string,
+    relationType: string,
+    change: IncomingEdgesChange,
+  ): Promise<SaveResult> {
+    const result = await postJson<SaveResult>(
+      `/api/entities/${encodeURIComponent(type)}/${encodeURIComponent(slug)}/incoming/${
+        encodeURIComponent(relationType)
+      }`,
       change,
     );
     invalidateAfterSave();

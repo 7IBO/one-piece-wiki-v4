@@ -59,10 +59,15 @@ mock.module('../src/repo-ops.ts', () => ({
   },
 }));
 
-const { submitEntityEdit, submitNarrativeEdit, submitSourceCastEdit, MultiFileLockError } =
-  await import(
-    '../src/save-flow.ts'
-  );
+const {
+  submitEntityEdit,
+  submitIncomingEdgesEdit,
+  submitNarrativeEdit,
+  submitSourceCastEdit,
+  MultiFileLockError,
+} = await import(
+  '../src/save-flow.ts'
+);
 const { OptimisticLockError } = await import('../src/repo-ops.ts');
 
 // repo-ops is fully mocked, so octokit + config are never touched.
@@ -287,6 +292,82 @@ describe('submitSourceCastEdit', () => {
     });
     state.commitResult = { created: false, changes: [] };
     const result = await submitSourceCastEdit(octokit, config, castRequest);
+    expect(result.noOp).toBe(true);
+    expect(state.calls.openPR).toHaveLength(0);
+  });
+});
+
+describe('submitIncomingEdgesEdit', () => {
+  const incomingRequest = {
+    targetId: 'crew:straw-hat-pirates',
+    relationType: 'member-of',
+    contributorLogin: '7IBO',
+    contributorId: 1,
+    files: [
+      { path: 'luffy.json', content: '{"a":1}', expectedSha: 'sha-luffy' },
+      { path: 'zoro.json', content: '{"b":1}', expectedSha: null },
+    ],
+  };
+
+  it('returns noOp for an empty file set without touching GitHub', async () => {
+    const result = await submitIncomingEdgesEdit(octokit, config, {
+      ...incomingRequest,
+      files: [],
+    });
+    expect(result.noOp).toBe(true);
+    expect(state.calls.getFile).toHaveLength(0);
+  });
+
+  it('opens ONE PR titled from the target with the incoming-edges label', async () => {
+    state.files.set(key('luffy.json'), {
+      path: 'luffy.json',
+      content: 'x',
+      sha: 'sha-luffy',
+      ref: '<default>',
+    });
+    const result = await submitIncomingEdgesEdit(octokit, config, incomingRequest);
+    expect(result.noOp).toBe(false);
+    expect(result.number).toBe(7);
+    expect(state.calls.createBranch[0]).toMatch(/^incoming\/crew-straw-hat-pirates\//);
+    expect(state.calls.commit[0]!.files.map((f) => f.path)).toEqual(['luffy.json', 'zoro.json']);
+    expect(state.calls.openPR[0]!.title).toBe(
+      '[DATA] Update member-of incoming edges of crew:straw-hat-pirates',
+    );
+    expect(state.calls.openPR[0]!.labels).toContain('incoming-edges');
+    expect(state.calls.openPR[0]!.body).toContain('`crew:straw-hat-pirates`');
+    expect(state.calls.openPR[0]!.body).toContain('`member-of`');
+  });
+
+  it('skips the SHA precheck for null expectedSha and collects every conflict', async () => {
+    state.files.set(key('luffy.json'), {
+      path: 'luffy.json',
+      content: 'x',
+      sha: 'sha-MOVED',
+      ref: '<default>',
+    });
+    let caught: unknown;
+    try {
+      await submitIncomingEdgesEdit(octokit, config, incomingRequest);
+    } catch (error) {
+      caught = error;
+    }
+    expect(caught).toBeInstanceOf(MultiFileLockError);
+    expect((caught as InstanceType<typeof MultiFileLockError>).conflicts.map((c) => c.path))
+      .toEqual(['luffy.json']);
+    // zoro.json carried no expected SHA → never pre-checked.
+    expect(state.calls.getFile.map((c) => c.path)).toEqual(['luffy.json']);
+    expect(state.calls.createBranch).toHaveLength(0);
+  });
+
+  it('skips the PR when the commit changed nothing', async () => {
+    state.files.set(key('luffy.json'), {
+      path: 'luffy.json',
+      content: 'x',
+      sha: 'sha-luffy',
+      ref: '<default>',
+    });
+    state.commitResult = { created: false, changes: [] };
+    const result = await submitIncomingEdgesEdit(octokit, config, incomingRequest);
     expect(result.noOp).toBe(true);
     expect(state.calls.openPR).toHaveLength(0);
   });

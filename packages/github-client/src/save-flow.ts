@@ -312,27 +312,42 @@ export type SourceCastRequest = {
   readonly anonymousNickname?: string;
 };
 
+/** Everything that differs between the bulk N-entity-file flows
+ *  (cast — ADR-021; generic incoming edges — ADR-097). The commit /
+ *  branch / PR mechanics are identical, so both public entry points
+ *  delegate to `submitBulkEntityFilesEdit` with their own naming. */
+type BulkFilesSpec = {
+  /** Branch prefix (`cast` / `incoming`). */
+  readonly branchPrefix: string;
+  /** Entity id the branch name is derived from. */
+  readonly branchKey: string;
+  /** Commit subject == PR title without the `[DATA] ` prefix. */
+  readonly subject: string;
+  /** `**Source:**` / `**Target:**`-style header lines of the PR body. */
+  readonly headerLines: readonly string[];
+  /** Trailing explanation lines (after the `---` separator). */
+  readonly footerLines: readonly string[];
+  /** Discriminator labels beyond the shared edit/via-dashboard set. */
+  readonly extraLabels: readonly string[];
+};
+
 /**
- * Bulk cast-of-a-source edit — ADR-021. Touches N entity files in
- * ONE commit and ONE PR titled by the source rather than the file
- * owners. Used by the per-source cast manager at
- * `/sources/$type/$slug`: a contributor adds/removes M characters
- * from a chapter, the server patches each character's `relations[]`
- * to add/remove the `appears-in` to that chapter, and this function
- * lands the whole bundle as one reviewable unit.
- *
- * Optimistic locking is per-file and plural — any SHA mismatch
- * collects into a `MultiFileLockError` listing every conflicting
- * path, so the UI surfaces "5 files conflicted, refresh" instead
- * of looping one-at-a-time.
- *
- * No `existingPR` / resume path in v1 — apparitions edits are
- * typically one-shot. Documented as deferred in ADR-021.
+ * Shared engine of the bulk flows: per-file plural optimistic lock
+ * (`MultiFileLockError` collects EVERY conflicting path before
+ * throwing so the UI can say "5 files conflicted, refresh"), ONE
+ * commit carrying N independent entity files, ONE PR. No
+ * `existingPR` / resume path — bulk edits are typically one-shot
+ * (deferred in ADR-021, unchanged by ADR-097).
  */
-export async function submitSourceCastEdit(
+async function submitBulkEntityFilesEdit(
   octokit: Octokit,
   config: GitHubAppConfig,
-  request: SourceCastRequest,
+  request: {
+    readonly files: readonly CastFile[];
+    readonly contributorLogin: string | null;
+    readonly anonymousNickname?: string | undefined;
+  },
+  spec: BulkFilesSpec,
 ): Promise<OpenedPR & { noOp: boolean; }> {
   if (request.files.length === 0) {
     return { number: 0, htmlUrl: '', headBranch: '', noOp: true };
@@ -354,12 +369,12 @@ export async function submitSourceCastEdit(
   if (conflicts.length > 0) throw new MultiFileLockError(conflicts);
 
   const ts = new Date().toISOString().replace(/[:.TZ]/g, '').slice(0, 14);
-  const branch = `cast/${safeBranchSegment(request.sourceId)}/${ts}`;
+  const branch = `${spec.branchPrefix}/${safeBranchSegment(spec.branchKey)}/${ts}`;
   await createBranch(octokit, config, branch);
 
   const commit = await commitMultipleFiles(octokit, config, {
     branch,
-    message: commitMessage(`Update cast of ${request.sourceId}`),
+    message: commitMessage(spec.subject),
     files: request.files.map((f) => ({ path: f.path, content: f.content })),
   });
 
@@ -382,32 +397,105 @@ export async function submitSourceCastEdit(
 
   const opened = await openPullRequest(octokit, config, {
     headBranch: branch,
-    title: `[DATA] Update cast of ${request.sourceId}`,
+    title: `[DATA] ${spec.subject}`,
     body: [
       `**Contributors**`,
       contributorBullet,
       ``,
-      `**Source:** \`${request.sourceId}\``,
+      ...spec.headerLines,
       ``,
       `**Files changed (${request.files.length}):**`,
       ...fileLines,
       ``,
       ...(diffBlock !== null ? [diffBlock, ``] : []),
       `---`,
-      `_Cast change opened through the dashboard's per-source apparitions_`,
-      `_manager. One commit, one PR, N entity files — see ADR-021._`,
+      ...spec.footerLines,
     ].join('\n'),
     labels: [
       'edit',
       'via-dashboard',
       'area:data',
-      // `apparitions` is the discriminator that lets review tooling
-      // tell a cast bulk-edit from a single-entity edit.
-      'apparitions',
+      ...spec.extraLabels,
       ...(anonymous ? ['anonymous'] : []),
     ],
   });
   return { ...opened, noOp: false };
+}
+
+/**
+ * Bulk cast-of-a-source edit — ADR-021. Touches N entity files in
+ * ONE commit and ONE PR titled by the source rather than the file
+ * owners. Used by the per-source cast manager at
+ * `/sources/$type/$slug`: a contributor adds/removes M characters
+ * from a chapter, the server patches each character's `relations[]`
+ * to add/remove the `appears-in` to that chapter, and this function
+ * lands the whole bundle as one reviewable unit. Thin naming wrapper
+ * over `submitBulkEntityFilesEdit` since ADR-097 generalized the
+ * mechanics.
+ */
+export async function submitSourceCastEdit(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  request: SourceCastRequest,
+): Promise<OpenedPR & { noOp: boolean; }> {
+  return submitBulkEntityFilesEdit(octokit, config, request, {
+    branchPrefix: 'cast',
+    branchKey: request.sourceId,
+    subject: `Update cast of ${request.sourceId}`,
+    headerLines: [`**Source:** \`${request.sourceId}\``],
+    footerLines: [
+      `_Cast change opened through the dashboard's per-source apparitions_`,
+      `_manager. One commit, one PR, N entity files — see ADR-021._`,
+    ],
+    // `apparitions` is the discriminator that lets review tooling
+    // tell a cast bulk-edit from a single-entity edit.
+    extraLabels: ['apparitions'],
+  });
+}
+
+export type IncomingEdgesRequest = {
+  /** The TARGET entity whose incoming edges are being managed (e.g.
+   *  `crew:straw-hat-pirates`). Drives PR title, branch, commit. */
+  readonly targetId: string;
+  /** The relation-type id whose edges are edited (`member-of`, …). */
+  readonly relationType: string;
+  readonly files: readonly CastFile[];
+  /** Same contributor attribution as `SaveRequest`. */
+  readonly contributorLogin: string | null;
+  readonly contributorId: number | null;
+  readonly anonymousNickname?: string;
+};
+
+/**
+ * Generic incoming-edge bulk edit — ADR-097. The target entity's page
+ * manages relation edges STORED ON OTHER entities (a crew page edits
+ * its members' `member-of` edges, an arc page edits which chapters
+ * point at it, …). N patched entity files land in ONE commit and ONE
+ * PR titled from the target's point of view. Same plural optimistic
+ * lock (`MultiFileLockError`) as the cast flow, which is now a
+ * specialisation of the same engine.
+ */
+export async function submitIncomingEdgesEdit(
+  octokit: Octokit,
+  config: GitHubAppConfig,
+  request: IncomingEdgesRequest,
+): Promise<OpenedPR & { noOp: boolean; }> {
+  return submitBulkEntityFilesEdit(octokit, config, request, {
+    branchPrefix: 'incoming',
+    branchKey: request.targetId,
+    subject: `Update ${request.relationType} incoming edges of ${request.targetId}`,
+    headerLines: [
+      `**Target:** \`${request.targetId}\``,
+      `**Relation:** \`${request.relationType}\``,
+    ],
+    footerLines: [
+      `_Incoming-edge change opened through the dashboard's per-entity_`,
+      `_relation manager. One commit, one PR, N entity files — see ADR-097._`,
+    ],
+    // `incoming-edges` is the discriminator that lets review tooling
+    // tell a bulk incoming-edge edit from cast / single-entity edits.
+    extraLabels: ['incoming-edges'],
+  });
 }
 
 export type NarrativeFile = {

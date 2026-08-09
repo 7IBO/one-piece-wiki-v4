@@ -9,10 +9,17 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as TypeRouteImport } from './routes/$type'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TTypeRouteImport } from './routes/t.$type'
+import { Route as TypeSlugRouteImport } from './routes/$type_.$slug'
 import { Route as ETypeSlugRouteImport } from './routes/e.$type.$slug'
 
+const TypeRoute = TypeRouteImport.update({
+  id: '/$type',
+  path: '/$type',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
@@ -23,6 +30,11 @@ const TTypeRoute = TTypeRouteImport.update({
   path: '/t/$type',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TypeSlugRoute = TypeSlugRouteImport.update({
+  id: '/$type_/$slug',
+  path: '/$type/$slug',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const ETypeSlugRoute = ETypeSlugRouteImport.update({
   id: '/e/$type/$slug',
   path: '/e/$type/$slug',
@@ -31,36 +43,57 @@ const ETypeSlugRoute = ETypeSlugRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/$type': typeof TypeRoute
+  '/$type/$slug': typeof TypeSlugRoute
   '/t/$type': typeof TTypeRoute
   '/e/$type/$slug': typeof ETypeSlugRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/$type': typeof TypeRoute
+  '/$type/$slug': typeof TypeSlugRoute
   '/t/$type': typeof TTypeRoute
   '/e/$type/$slug': typeof ETypeSlugRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/$type': typeof TypeRoute
+  '/$type_/$slug': typeof TypeSlugRoute
   '/t/$type': typeof TTypeRoute
   '/e/$type/$slug': typeof ETypeSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/t/$type' | '/e/$type/$slug'
+  fullPaths: '/' | '/$type' | '/$type/$slug' | '/t/$type' | '/e/$type/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/t/$type' | '/e/$type/$slug'
-  id: '__root__' | '/' | '/t/$type' | '/e/$type/$slug'
+  to: '/' | '/$type' | '/$type/$slug' | '/t/$type' | '/e/$type/$slug'
+  id:
+    | '__root__'
+    | '/'
+    | '/$type'
+    | '/$type_/$slug'
+    | '/t/$type'
+    | '/e/$type/$slug'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  TypeRoute: typeof TypeRoute
+  TypeSlugRoute: typeof TypeSlugRoute
   TTypeRoute: typeof TTypeRoute
   ETypeSlugRoute: typeof ETypeSlugRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/$type': {
+      id: '/$type'
+      path: '/$type'
+      fullPath: '/$type'
+      preLoaderRoute: typeof TypeRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/': {
       id: '/'
       path: '/'
@@ -75,6 +108,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TTypeRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$type_/$slug': {
+      id: '/$type_/$slug'
+      path: '/$type/$slug'
+      fullPath: '/$type/$slug'
+      preLoaderRoute: typeof TypeSlugRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/e/$type/$slug': {
       id: '/e/$type/$slug'
       path: '/e/$type/$slug'
@@ -87,6 +127,8 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  TypeRoute: TypeRoute,
+  TypeSlugRoute: TypeSlugRoute,
   TTypeRoute: TTypeRoute,
   ETypeSlugRoute: ETypeSlugRoute,
 }

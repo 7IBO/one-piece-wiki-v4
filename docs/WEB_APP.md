@@ -127,6 +127,33 @@ and **Historique** → `<DASHBOARD_URL>/types/<type>/<slug>/history`.
 `DASHBOARD_URL` comes from `VITE_DASHBOARD_URL` (build-time env),
 defaulting to the production dashboard.
 
+## URLs (2026-08-09)
+
+Canonical page URLs are **`/{type}/{slug}`** with the ENTITY TYPE ID
+as segment — `/character/monkey-d-luffy`, `/crew/straw-hat-pirates`,
+`/manga-chapter/chapter-1044` — and type listings at `/{type}`.
+The historical `/e/{type}/{slug}` and `/t/{type}` paths 301-redirect
+to the canonical form, preserving `?scope=`. `$type` is validated
+against the catalogue server-side (unknown → not-found flow). The
+production domain (`one-piece.wiki`) is deploy configuration owned by
+the maintainer — the app only assumes root-relative paths.
+
+## Image treatment (2026-08-09 — "moins IA")
+
+One shared image component renders EVERY image in the app. Rules:
+
+- A broken or still-loading image is NEVER shown raw: load state is
+  tracked and the designed fallback renders until a real image
+  confirms; when an entity has no image at all, the infobox has no
+  image block (no empty frame pretending to be a photo).
+- The fallback is an editorial monogram tile — entity initial in the
+  display serif on a flat/duotone ground from the existing palette
+  tokens, consistent radius, generous negative space. No AI-ish
+  stock gradients, no glassmorphism, no emoji.
+- Aspect ratios are reserved (3:4 portraits, 1:1 thumbs), covers use
+  `object-fit: cover`, `loading="lazy"`, and a subtle (~150-200 ms)
+  fade/blur-in when a real image lands.
+
 ## i18n
 
 UI strings FR/EN mirrored from the reader locale (`web_locale` cookie,

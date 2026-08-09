@@ -57,6 +57,14 @@ type Props = {
   readonly relationTypes: Record<string, RelationTypeSchema>;
   readonly qualifierTypes: Record<string, QualifierTypeSchema>;
   readonly vocabularies: Record<string, VocabularySchema>;
+  /**
+   * ADR-097 — when provided, each INCOMING group whose relation
+   * accepts this page's type as a target (`valid_to_types`) gains a
+   * "Manage" button that calls back with the relation-type id. The
+   * entity page routes it to the generic incoming-edge manager (or
+   * the /sources cast manager for appears-in on a source page).
+   */
+  readonly onManageIncoming?: (relationTypeId: string) => void;
 };
 
 /** One direction-agnostic row: who is on the other end + qualifiers. */
@@ -142,11 +150,15 @@ const CONFLICT_KIND_LABEL_KEY = {
 } as const satisfies Record<LinkConflictKind, string>;
 
 function LinkRows(
-  { rows, direction, ctx }: {
+  { rows, direction, ctx, manageGroup }: {
     readonly rows: readonly LinkRow[];
     /** Which label of the relation type describes this direction. */
     readonly direction: 'active' | 'inverse';
     readonly ctx: LabelCtx;
+    /** ADR-097 — per-group manage affordance (incoming side only):
+     *  returns the click handler for a manageable relation group, or
+     *  null when the group has no manager. */
+    readonly manageGroup?: ((relationTypeId: string) => (() => void) | null) | undefined;
   },
 ): JSX.Element {
   const t = useT();
@@ -157,9 +169,24 @@ function LinkRows(
         const rt = ctx.relationTypes[relationType];
         const label = rt?.labels[locale]?.[direction] ?? rt?.labels.en[direction]
           ?? relationType;
+        const onManage = manageGroup !== undefined ? manageGroup(relationType) : null;
         return (
           <div key={relationType}>
-            <p className='text-muted-foreground text-xs font-medium'>{label}</p>
+            <p className='text-muted-foreground flex items-center gap-2 text-xs font-medium'>
+              {label}
+              {onManage !== null
+                ? (
+                  <button
+                    type='button'
+                    onClick={onManage}
+                    className='text-muted-foreground hover:text-foreground inline-flex items-center gap-1 text-[11px] underline-offset-2 hover:underline'
+                  >
+                    <Pencil className='size-3' aria-hidden />
+                    {t('incomingManage')}
+                  </button>
+                )
+                : null}
+            </p>
             <ul className='divide-y divide-foreground/5'>
               {group.map((row, i) => {
                 const name = row.otherDisplayName[locale]
@@ -265,7 +292,7 @@ function ConflictList(
 }
 
 export function EntityLinksPanel(
-  { type, slug, relationTypes, qualifierTypes, vocabularies }: Props,
+  { type, slug, relationTypes, qualifierTypes, vocabularies, onManageIncoming }: Props,
 ): JSX.Element {
   const t = useT();
   const locale = useLocale();
@@ -384,7 +411,24 @@ export function EntityLinksPanel(
                   <div className='mt-1.5'>
                     {incomingRows.length === 0
                       ? <p className='text-muted-foreground text-xs'>{t('linksIncomingEmpty')}</p>
-                      : <LinkRows rows={incomingRows} direction='inverse' ctx={ctx} />}
+                      : (
+                        <LinkRows
+                          rows={incomingRows}
+                          direction='inverse'
+                          ctx={ctx}
+                          manageGroup={onManageIncoming === undefined
+                            ? undefined
+                            : (relationTypeId) => {
+                              // Only relations that accept this page's
+                              // type as a target have a manager here
+                              // (schema-driven — ADR-097).
+                              const validTo = (relationTypes[relationTypeId]?.valid_to_types
+                                ?? []) as readonly string[];
+                              if (!validTo.includes(type)) return null;
+                              return () => onManageIncoming(relationTypeId);
+                            }}
+                        />
+                      )}
                   </div>
                 </section>
                 <section aria-label={t('linksOutgoingTitle')}>

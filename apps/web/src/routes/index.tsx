@@ -46,7 +46,7 @@ function TypeGroupSection({ group }: { readonly group: TypeGroup; }): JSX.Elemen
         {group.types.map((type) => (
           <li key={type.id}>
             <Link
-              to='/t/$type'
+              to='/$type'
               params={{ type: type.id }}
               className='group flex items-center justify-between gap-3 rounded-xl border border-line bg-panel px-4 py-3.5 transition-colors hover:border-gold/50 hover:bg-panel-2'
             >
