@@ -25,7 +25,7 @@ export function EntityChipLink(
   const search = useScopeSearch();
   return (
     <Link
-      to='/e/$type/$slug'
+      to='/$type/$slug'
       params={{ type: chip.type, slug: chip.slug }}
       search={search}
       className='group inline-flex max-w-full items-baseline gap-1.5'
