@@ -732,6 +732,37 @@ const UI_STRINGS = {
   // ADR-096 — per-item source affordance on believed_by / known_truth_by.
   itemSource: { en: 'Source for this item', fr: 'Source de cet élément' },
   itemSourceClear: { en: 'Remove this item’s source', fr: 'Retirer la source de cet élément' },
+  // ADR-097 — generic incoming-edge manager on entity pages.
+  incomingManage: { en: 'Manage', fr: 'Gérer' },
+  incomingManagerHint: {
+    en:
+      'Edits the relation stored on each listed entity. Saving opens ONE PR touching every modified file.',
+    fr:
+      'Modifie la relation stockée sur chaque entité listée. Enregistrer ouvre UNE PR touchant tous les fichiers modifiés.',
+  },
+  incomingEmpty: {
+    en: 'No entity holds this relation yet.',
+    fr: 'Aucune entité ne porte encore cette relation.',
+  },
+  incomingDiffSummary: {
+    en: '{add} added · {update} edited · {remove} removed',
+    fr: '{add} ajout(s) · {update} modification(s) · {remove} retrait(s)',
+  },
+  incomingSave: { en: 'Save changes', fr: 'Enregistrer les modifications' },
+  incomingPrOpened: {
+    en: 'Relations PR opened (#{n})',
+    fr: 'PR de relations ouverte (n°{n})',
+  },
+  incomingConflict: {
+    en: '{n} file(s) conflicted — reload the list and retry: {entities}',
+    fr: '{n} fichier(s) en conflit — rechargez la liste puis réessayez : {entities}',
+  },
+  incomingReload: { en: 'Reload', fr: 'Recharger' },
+  incomingRemoveRow: { en: 'Remove this relation', fr: 'Retirer cette relation' },
+  incomingRestoreRow: { en: 'Restore this relation', fr: 'Rétablir cette relation' },
+  incomingRemovedBadge: { en: 'removed', fr: 'retiré' },
+  incomingAddedBadge: { en: 'new', fr: 'nouveau' },
+  incomingEditedBadge: { en: 'edited', fr: 'modifié' },
 } as const;
 
 /**

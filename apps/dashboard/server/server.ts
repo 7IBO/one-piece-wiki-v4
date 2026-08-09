@@ -34,6 +34,12 @@
  *                                           text deletes the file)
  *   GET  /api/sources/:type/:slug/cast      reverse-scan apparitions on a source
  *   POST /api/sources/:type/:slug/cast      bulk add/remove cast → single PR
+ *   GET  /api/entities/:type/:slug/incoming/:relationType
+ *                                           reverse-scan incoming edges of one
+ *                                           relation type (ADR-097)
+ *   POST /api/entities/:type/:slug/incoming/:relationType
+ *                                           bulk add/update/remove those edges
+ *                                           on the N storing entities → one PR
  *
  * Admin endpoints (require GitHub session in ADMIN_GITHUB_USERNAMES):
  *   POST /api/admin/promote {prNumber}
@@ -53,9 +59,11 @@ import {
   listAdminQueue,
   listOpenContributions,
   loadConfig,
+  MultiFileLockError,
   type OpenContribution,
   OptimisticLockError,
   submitEntityEdit,
+  submitIncomingEdgesEdit,
   submitNarrativeEdit,
   submitSourceCastEdit,
 } from '@onepiece-wiki/github-client';
@@ -80,6 +88,13 @@ import {
   type HistoryChangeGroup,
   type HistoryDiffContext,
 } from './history-diff.ts';
+import {
+  buildIncomingEdgeFiles,
+  coalesceIncomingPlans,
+  incomingRelationError,
+  type IncomingSaveBody,
+  scanIncomingEdges,
+} from './incoming-edges.ts';
 import { computeEntityLinks } from './links.ts';
 import {
   NARRATIVE_LOCALES,
@@ -775,6 +790,202 @@ async function handleEntityLinks(type: string, slug: string): Promise<Response> 
     })),
     conflicts: links.conflicts,
   });
+}
+
+/**
+ * ADR-097 — incoming edges of one relation type, from the TARGET's
+ * point of view. `GET /api/entities/:type/:slug/incoming/:relationType`
+ * reverse-scans the snapshot for entities whose `relations[]` contain
+ * `{ type: relationType, target: <this entity> }` and returns one row
+ * per edge with display names + the source file's GitHub SHA (for the
+ * optimistic lock on save — null when GitHub isn't configured). The
+ * relation type's qualifier declarations + `valid_from_types` ride
+ * along so the manager UI needs no second catalogue lookup.
+ */
+async function handleGetIncomingEdges(
+  type: string,
+  slug: string,
+  relationTypeId: string,
+): Promise<Response> {
+  const snap = await snapshot();
+  const relationType = snap.validated.relationTypes.get(relationTypeId);
+  const gate = incomingRelationError(relationType, relationTypeId, type);
+  if (gate !== null || relationType === undefined) {
+    return badRequest(gate ?? `No relation type "${relationTypeId}" in the catalogue.`);
+  }
+  const target = await findEntity(snap, type, slug);
+  if (target === undefined) return notFound(`No entity of type ${type} with slug ${slug}`);
+
+  const rows = scanIncomingEdges(relationTypeId, target.id, snap.entities.values());
+  const names = await buildDisplayNames(snap);
+
+  // Per-file GitHub SHAs so the save can optimistic-lock each source
+  // entity (MultiFileLockError → 409 listing every conflict). Parallel
+  // getFile calls, best-effort: null (no lock) when GitHub is not
+  // configured / not installed / a lookup fails.
+  const shas = new Map<string, string | null>();
+  if (config !== null && !githubInstallMissing && rows.length > 0) {
+    try {
+      const octokit = await installationClient(config);
+      const cfg = config;
+      await Promise.all(
+        [...new Set(rows.map((r) => r.sourceEntityId))].map(async (entityId) => {
+          const [entityType = '', fileBase = ''] = entityId.split(':');
+          try {
+            const file = await getFile(octokit, cfg, dataPath(entityType, fileBase));
+            shas.set(entityId, file?.sha ?? null);
+          } catch {
+            shas.set(entityId, null);
+          }
+        }),
+      );
+    } catch (err) {
+      if (looksLikeMissingInstallation(err)) githubInstallMissing = true;
+      // SHA enrichment is best-effort — rows go out without locks.
+    }
+  }
+
+  return json({
+    target: { id: target.id, type, slug },
+    relationType: {
+      id: relationType.id,
+      labels: relationType.labels,
+      qualifiers: relationType.qualifiers,
+      valid_from_types: relationType.valid_from_types,
+    },
+    rows: rows.map((r) => ({
+      ...r,
+      displayName: names.get(r.sourceEntityId) ?? { en: null, fr: null },
+      fileSha: shas.get(r.sourceEntityId) ?? null,
+    })),
+  });
+}
+
+/**
+ * ADR-097 — bulk-apply incoming-edge changes. Body:
+ * `{ add?: [{entityId, qualifiers?}], update?: [{entityId, qualifiers}],
+ *    remove?: [entityId], expected?: [{entityId, sha}] }`.
+ * Each touched SOURCE entity is loaded from the snapshot, its
+ * `relations[]` patched (add dedupes into update when the edge already
+ * exists), the patched entity re-validated with the generated Zod
+ * schema, then gated by the ADR-088 blocking rules (422 `rule_blocked`
+ * naming the offending entity). Everything lands through
+ * `submitIncomingEdgesEdit`: one commit, one PR titled
+ * `[DATA] Update <relation> incoming edges of <targetId>`. A stale
+ * `expected` SHA surfaces as a 409 `multi_file_conflict` listing every
+ * conflicting entity so the manager can prompt a reload.
+ */
+async function handleSaveIncomingEdges(
+  cfg: GitHubAppConfig,
+  session: DashboardSession,
+  type: string,
+  slug: string,
+  relationTypeId: string,
+  req: Request,
+): Promise<Response> {
+  if (session.kind === 'github' && isBlockedLogin(session.login)) {
+    return forbidden(`User @${session.login} is blocked.`);
+  }
+
+  let body: unknown;
+  try {
+    body = await req.json();
+  } catch (err) {
+    return badRequest(`Invalid JSON: ${err instanceof Error ? err.message : String(err)}`);
+  }
+  if (body === null || typeof body !== 'object') {
+    return badRequest('Body must be an object with { add?, update?, remove?, expected? }.');
+  }
+  const payload = body as IncomingSaveBody;
+  const plans = coalesceIncomingPlans(payload);
+  if (plans.size === 0) {
+    return badRequest('Nothing to do — `add`, `update` and `remove` are all empty.');
+  }
+
+  let anonymousNickname: string | null = null;
+  if (session.kind === 'anonymous') {
+    const checked = normalizeNickname(session.nickname);
+    if (checked !== null && typeof checked === 'object') return badRequest(checked.error);
+    anonymousNickname = checked;
+  }
+
+  const snap = await snapshot();
+  const relationType = snap.validated.relationTypes.get(relationTypeId);
+  const gate = incomingRelationError(relationType, relationTypeId, type);
+  if (gate !== null || relationType === undefined) {
+    return badRequest(gate ?? `No relation type "${relationTypeId}" in the catalogue.`);
+  }
+  const target = await findEntity(snap, type, slug);
+  if (target === undefined) return notFound(`No entity of type ${type} with slug ${slug}`);
+
+  const expectedShas = new Map<string, string>();
+  for (const item of payload.expected ?? []) {
+    if (typeof item.entityId === 'string' && typeof item.sha === 'string' && item.sha !== '') {
+      expectedShas.set(item.entityId, item.sha);
+    }
+  }
+
+  const result = buildIncomingEdgeFiles(relationType, target.id, plans, {
+    findEntity: (entityId) => snap.entities.get(entityId),
+    schemaFor: (entityType) => buildEntitySchema(entityType, snap.validated),
+    rules: () => snap.validated.rules.values(),
+    pathFor: dataPath,
+    expectedShaFor: (entityId) => expectedShas.get(entityId) ?? null,
+  });
+  if (result.kind === 'bad_request') return badRequest(result.message);
+  if (result.kind === 'validation_failed') {
+    const summary = result.issues
+      .map((i) => `${result.entityId} → ${i.path.join('.') || '<root>'}: ${i.message}`)
+      .join('; ');
+    return json(
+      {
+        error: `Incoming-edge validation failed: ${summary}`,
+        code: 'validation_failed',
+        entityId: result.entityId,
+        issues: result.issues,
+      },
+      400,
+    );
+  }
+  if (result.kind === 'rule_blocked') {
+    return ruleBlockedResponse(result.findings, result.entityId);
+  }
+
+  // path → entityId so a lock conflict can be reported in entity
+  // terms (the manager lists entities, not repo paths).
+  const entityIdByPath = new Map(
+    [...plans.keys()].map((entityId) => {
+      const [entityType = '', fileBase = ''] = entityId.split(':');
+      return [dataPath(entityType, fileBase), entityId] as const;
+    }),
+  );
+
+  const octokit = await installationClient(cfg);
+  try {
+    const pr = await submitIncomingEdgesEdit(octokit, cfg, {
+      targetId: target.id,
+      relationType: relationType.id,
+      files: result.files,
+      contributorLogin: session.kind === 'github' ? session.login : null,
+      contributorId: session.kind === 'github' ? session.userId : null,
+      ...(anonymousNickname !== null ? { anonymousNickname } : {}),
+    });
+    return json({ ok: true, pr });
+  } catch (err) {
+    if (err instanceof MultiFileLockError) {
+      const entities = err.conflicts.map((c) => entityIdByPath.get(c.path) ?? c.path);
+      return json(
+        {
+          error: err.message,
+          code: 'multi_file_conflict',
+          conflicts: err.conflicts.map((c) => c.path),
+          entities,
+        },
+        409,
+      );
+    }
+    throw err;
+  }
 }
 
 // ── Narratives (per-locale prose Markdown — see /docs/DATA_MODEL.md
@@ -2405,6 +2616,29 @@ export async function handleApiRequest(req: Request): Promise<Response> {
           }
         }
         return await handleSaveNarrative(config, session, nType, nSlug, req);
+      }
+    }
+
+    // GET/POST /api/entities/:type/:slug/incoming/:relationType —
+    // generic incoming-edge manager (ADR-097). Same write guards as
+    // the cast endpoint (session + rate limit, admins exempt).
+    const incomingMatch = /^\/api\/entities\/([^/]+)\/([^/]+)\/incoming\/([^/]+)$/.exec(path);
+    if (incomingMatch !== null) {
+      const [, iType = '', iSlug = '', iRel = ''] = incomingMatch;
+      if (req.method === 'GET') return await handleGetIncomingEdges(iType, iSlug, iRel);
+      if (req.method === 'POST') {
+        if (config === null) return serviceUnavailable(`Save disabled: ${configError}`);
+        if (session === null) {
+          return unauthorized('Sign in (anonymous or GitHub) before editing relations.');
+        }
+        if (!isAdminSession()) {
+          if (rateLimitHit('save', rateLimitKey(), ANON_WRITE_LIMIT)) {
+            return tooManyRequests(
+              `Rate limit reached (${ANON_WRITE_LIMIT}/hour). Try again later.`,
+            );
+          }
+        }
+        return await handleSaveIncomingEdges(config, session, iType, iSlug, iRel, req);
       }
     }
 

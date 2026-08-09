@@ -85,7 +85,7 @@ export type RelationsEditorProps = {
   onChange: (next: RelationEntry[]) => void;
 };
 
-type QualifierShape = {
+export type QualifierShape = {
   readonly id: string;
   readonly label: string;
   readonly valueType: ValueType;
@@ -144,8 +144,11 @@ const BASE_RELATION_QUALIFIERS: readonly QualifierShape[] = [
  * before falling back to a humanised id. Declared `source_ref`
  * qualifiers (since/until/…) edit as stacked multi-source pickers,
  * same as property entries.
+ *
+ * Exported for the incoming-edge manager (ADR-097), which edits the
+ * SAME qualifier bags from the target entity's page.
  */
-function qualifierShapesFor(
+export function qualifierShapesFor(
   relationType: RelationTypeSchema | undefined,
   qualifierTypes: Record<string, QualifierTypeSchema>,
   locale: Locale,
@@ -777,7 +780,10 @@ function useEntityNameLookup(
   }, [entries, locale]);
 }
 
-function RelationQualifierField(
+/** One schema-driven qualifier input (enum → vocabulary Select,
+ *  entity_ref → picker, source_ref → stacked sources, …). Exported
+ *  for the incoming-edge manager (ADR-097). */
+export function RelationQualifierField(
   p: {
     id: string;
     label: string;
@@ -883,6 +889,21 @@ export type InferredRelationsProps = {
   relationTypes: Record<string, RelationTypeSchema>;
   qualifierTypes: Record<string, QualifierTypeSchema>;
   vocabularies: Record<string, VocabularySchema>;
+  /**
+   * ADR-097 — incoming-edge manager wiring, owned by the entity page.
+   * When present, each incoming group whose relation accepts this
+   * page's type as a target (`valid_to_types`) gains a "Manage"
+   * button; `renderManager` supplies the actual manager surface (the
+   * page imports it, keeping this module cycle-free). Relations in
+   * `castRelationIds` (appears-in on a source page) link to the
+   * existing /sources cast manager instead of a second surface.
+   */
+  manage?: {
+    readonly managing: string | null;
+    readonly onManage: (relationTypeId: string | null) => void;
+    readonly castRelationIds: readonly string[];
+    readonly renderManager: (relationTypeId: string, onClose: () => void) => JSX.Element;
+  };
 };
 
 /**
@@ -931,7 +952,11 @@ export function InferredRelations(p: InferredRelationsProps): JSX.Element | null
   };
 
   return (
-    <section className='space-y-2' aria-label={t('inferredRelationsTitle')}>
+    <section
+      id='inferred-relations-section'
+      className='scroll-mt-20 space-y-2'
+      aria-label={t('inferredRelationsTitle')}
+    >
       <div className='flex items-baseline justify-between gap-2'>
         <h2 className='text-base font-semibold'>{t('inferredRelationsTitle')}</h2>
         <span className='text-muted-foreground text-xs'>
@@ -943,11 +968,62 @@ export function InferredRelations(p: InferredRelationsProps): JSX.Element | null
         {groups.map(([relationType, rows]) => {
           const rt = p.relationTypes[relationType];
           const label = rt?.labels[locale]?.inverse ?? rt?.labels.en.inverse ?? relationType;
+          // ADR-097 — per-group manage affordance. `appears-in` on a
+          // source page keeps routing to the /sources cast manager
+          // (castRelationIds is supplied by the page); every other
+          // group whose relation targets this page's type opens the
+          // generic incoming-edge manager.
+          const manage = p.manage;
+          const isCastManaged = manage?.castRelationIds.includes(relationType) === true;
+          const isManageable = manage !== undefined
+            && !isCastManaged
+            && ((rt?.valid_to_types ?? []) as readonly string[]).includes(p.entityType);
+          const isManaging = manage !== undefined && manage.managing === relationType;
+          if (isManaging && manage !== undefined) {
+            return (
+              <div key={relationType}>
+                {manage.renderManager(relationType, () => manage.onManage(null))}
+              </div>
+            );
+          }
           return (
             <div key={relationType}>
-              <Label className='text-muted-foreground text-xs font-semibold uppercase tracking-wide'>
-                {label}
-              </Label>
+              <div className='flex items-center gap-2'>
+                <Label className='text-muted-foreground text-xs font-semibold uppercase tracking-wide'>
+                  {label}
+                </Label>
+                {isCastManaged
+                  ? (
+                    <Button
+                      render={
+                        <Link
+                          to='/sources/$type/$slug'
+                          params={{ type: p.entityType, slug: p.entitySlug }}
+                        />
+                      }
+                      variant='outline'
+                      size='xs'
+                      className='ml-auto gap-1 text-[11px]'
+                    >
+                      <Pencil className='size-3' />
+                      {t('castManage')}
+                    </Button>
+                  )
+                  : isManageable
+                  ? (
+                    <Button
+                      type='button'
+                      variant='outline'
+                      size='xs'
+                      className='ml-auto gap-1 text-[11px]'
+                      onClick={() => manage.onManage(relationType)}
+                    >
+                      <Pencil className='size-3' />
+                      {t('incomingManage')}
+                    </Button>
+                  )
+                  : null}
+              </div>
               <ul className='divide-foreground/5 mt-0.5 divide-y'>
                 {rows.map((row, i) => {
                   const name = row.sourceDisplayName[locale]

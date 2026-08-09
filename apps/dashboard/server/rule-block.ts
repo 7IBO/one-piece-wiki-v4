@@ -54,9 +54,15 @@ export function blockingRuleFindings(
 /**
  * 422 response for a save refused by blocking rules. `code:
  * 'rule_blocked'` is the discriminator the client's
- * `ruleBlockedFindings` type-guard matches on.
+ * `ruleBlockedFindings` type-guard matches on. Bulk flows (incoming
+ * edges — ADR-097) pass `entityId` so the payload names the offending
+ * SOURCE entity; the single-entity save omits it (the entity is the
+ * URL).
  */
-export function ruleBlockedResponse(findings: readonly RuleFinding[]): Response {
+export function ruleBlockedResponse(
+  findings: readonly RuleFinding[],
+  entityId?: string,
+): Response {
   const payload: BlockingFindingPayload[] = findings.map((f) => ({
     ruleId: f.ruleId,
     messages: f.messages,
@@ -64,11 +70,13 @@ export function ruleBlockedResponse(findings: readonly RuleFinding[]): Response 
     ...(f.entryIndex !== undefined ? { entryIndex: f.entryIndex } : {}),
   }));
   const summary = payload.map((f) => `[${f.ruleId}] ${f.messages.en}`).join('; ');
+  const prefix = entityId !== undefined ? `${entityId}: ` : '';
   return new Response(
     JSON.stringify({
-      error: `Save refused by blocking coherence rule(s): ${summary}`,
+      error: `Save refused by blocking coherence rule(s): ${prefix}${summary}`,
       code: 'rule_blocked',
       findings: payload,
+      ...(entityId !== undefined ? { entityId } : {}),
     }),
     { status: 422, headers: { 'content-type': 'application/json' } },
   );
