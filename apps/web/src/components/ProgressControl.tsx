@@ -57,12 +57,12 @@ export function ProgressControl(
   };
 
   const inputClass =
-    'w-full rounded-md border border-line bg-canvas px-3 py-1.5 text-sm text-fg outline-none transition-colors duration-150 focus:border-accent';
+    'w-full rounded-md border border-line bg-canvas px-3 py-1.5 text-sm tabular-nums text-fg outline-none transition-colors duration-150 focus:border-accent';
 
   return (
     <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
       <Popover.Trigger
-        className={`py-1 text-xs font-medium transition-colors duration-150 hover:text-fg ${
+        className={`rounded-md bg-surface px-2.5 py-1.5 text-xs font-medium transition-colors duration-150 hover:bg-surface-2 hover:text-fg sm:px-3 ${
           active ? 'font-mono text-fg' : 'text-muted'
         }`}
         aria-label={t(locale, 'progressTitle')}
@@ -77,7 +77,7 @@ export function ProgressControl(
           collisionPadding={12}
           className='isolate z-50'
         >
-          <Popover.Popup className='w-72 rounded-md border border-line bg-canvas p-4 shadow-lg outline-none'>
+          <Popover.Popup className='w-72 rounded-lg border border-line bg-surface p-4 shadow-2xl outline-none'>
             <p className='font-display text-base font-semibold tracking-[-0.01em] text-fg'>
               {t(locale, 'progressTitle')}
             </p>
@@ -121,13 +121,13 @@ export function ProgressControl(
                     setAnime('');
                     apply({ manga: null, anime: null });
                   }}
-                  className='py-1.5 text-xs font-medium text-muted underline decoration-line-strong underline-offset-2 transition-colors duration-150 hover:text-fg'
+                  className='py-1.5 text-xs font-medium text-faint transition-colors duration-150 hover:text-fg'
                 >
                   {t(locale, 'progressReset')}
                 </button>
                 <button
                   type='submit'
-                  className='rounded-md bg-fg px-4 py-1.5 text-xs font-semibold text-canvas transition-opacity duration-150 hover:opacity-85'
+                  className='rounded-md bg-accent px-4 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
                 >
                   {t(locale, 'progressSave')}
                 </button>

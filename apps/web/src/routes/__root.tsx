@@ -124,7 +124,7 @@ function RootLayout(): JSX.Element {
   return (
     <div className='flex min-h-dvh flex-col'>
       <header className='sticky top-0 z-10 border-b border-line bg-canvas'>
-        <div className='mx-auto flex h-14 w-full max-w-[1100px] items-center justify-between gap-3 px-4 sm:px-6'>
+        <div className='mx-auto flex h-14 w-full max-w-[1280px] items-center justify-between gap-3 px-4 sm:px-6'>
           <Link
             to='/'
             className='whitespace-nowrap font-display text-[1.05rem] font-bold tracking-[-0.02em] text-fg transition-colors duration-150 hover:text-accent'
@@ -141,11 +141,11 @@ function RootLayout(): JSX.Element {
         </div>
         {showBanner ? <FirstRunBanner /> : null}
       </header>
-      <main className='mx-auto w-full max-w-[1100px] flex-1 px-4 py-10 sm:px-6 sm:py-12'>
+      <main className='mx-auto w-full max-w-[1280px] flex-1 px-4 py-8 sm:px-6 sm:py-10'>
         <Outlet />
       </main>
       <footer className='border-t border-line'>
-        <div className='mx-auto flex w-full max-w-[1100px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-6 text-xs text-faint sm:px-6'>
+        <div className='mx-auto flex w-full max-w-[1280px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-6 text-xs text-faint sm:px-6'>
           <a
             href={GITHUB_URL}
             target='_blank'
@@ -179,7 +179,7 @@ function NotFound(): JSX.Element {
       <p className='mx-auto mt-4 max-w-md text-muted'>{t(locale, 'notFoundBody')}</p>
       <Link
         to='/'
-        className='mt-10 inline-block rounded-md bg-fg px-5 py-2.5 text-sm font-semibold text-canvas transition-opacity duration-150 hover:opacity-85'
+        className='mt-10 inline-block rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
       >
         {t(locale, 'backHome')}
       </Link>

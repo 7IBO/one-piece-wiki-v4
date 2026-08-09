@@ -30,7 +30,7 @@ export function EntityChipLink(
       search={search}
       className='group inline-flex max-w-full items-baseline gap-1.5'
     >
-      <span className='truncate text-accent transition-colors duration-150 group-hover:text-accent-hover group-hover:underline group-hover:underline-offset-2'>
+      <span className='truncate text-accent transition-colors duration-150 group-hover:text-accent-hover'>
         {chip.name}
       </span>
       {showType

@@ -16,7 +16,7 @@ export function FirstRunBanner(): JSX.Element | null {
   if (dismissed) return null;
   return (
     <div className='border-b border-line bg-surface'>
-      <div className='mx-auto flex w-full max-w-[1100px] flex-wrap items-center gap-x-4 gap-y-1.5 px-4 py-2.5 text-sm sm:px-6'>
+      <div className='mx-auto flex w-full max-w-[1280px] flex-wrap items-center gap-x-4 gap-y-1.5 px-4 py-2.5 text-sm sm:px-6'>
         <span className='font-medium text-fg'>{t(locale, 'bannerTitle')}</span>
         <span className='min-w-48 flex-1 text-muted'>{t(locale, 'bannerBody')}</span>
         <button
@@ -27,7 +27,7 @@ export function FirstRunBanner(): JSX.Element | null {
             document.cookie = `${BANNER_COOKIE}=1; path=/; max-age=31536000; samesite=lax`;
             setDismissed(true);
           }}
-          className='py-1 text-xs font-medium text-muted underline decoration-line-strong underline-offset-2 transition-colors duration-150 hover:text-fg'
+          className='rounded-md bg-surface-2 px-3 py-1 text-xs font-medium text-muted transition-colors duration-150 hover:text-fg'
         >
           {t(locale, 'bannerDismiss')}
         </button>

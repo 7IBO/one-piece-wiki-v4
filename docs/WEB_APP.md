@@ -9,21 +9,21 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
 ## Identity
 
 - **Name**: One Piece Wiki (header wordmark; `<title>` suffix).
-- **Style** (second pass 2026-08-09 — maintainer flagged the dark
-  iteration's AI tells): **modern reference work**, light-first.
-  Paper-white warm canvas, ink text, structure from full-width
-  hairline RULES and whitespace — not boxes; ONE functional color
-  (deep editorial blue, links only); ZERO decorative ornaments (no
-  dots/circles before labels, no veils, no glass/blur, no pills
-  beyond tiny uppercase tags). Typography: **Bricolage Grotesque
-  Variable** display (700, tight tracking) + **Inter Variable**
-  body, tabular numerals for counts/ids. Entity pages: bare
-  uppercase type label → display hero → ruled sections with real
-  20 px headings; infobox = Wikipedia-style definition list capped
-  by a 2 px ink rule (no card); members/cast as ruled rows with
-  square thumbs; history as an indented list ("since Chapter N"
-  inline gray meta); primary button = ink background, secondary =
-  underlined text. Single deliberate light look (no dark variant).
+- **Style** (third pass 2026-08-09, maintainer direction "ultra
+  moderne, sombre, dense, données avec label/image"): **dark
+  database register** (AniList energy). Deep blue-charcoal canvas
+  (oklch ≈0.17), two surface steps for the card system, hairlines
+  at white 8/16 %, ONE electric-blue accent (links, chips, primary
+  buttons); no ornaments, no veils, no glass. Data renders as
+  LABELED UNITS: stat tiles (tracked-uppercase label over semibold
+  value — the first infobox properties form a hero stat row, the
+  rest a 320 px sticky sidebar mosaic), entity cards (3:4
+  portrait/monogram tile + name + role/since) in auto-fill grids
+  for members/cast/users/listings, number-led cards for chapters,
+  labeled-row cards for history. Dense: 1280 px shell, sections
+  32-40 px apart, no empty bands (small remainders fold inline).
+  Bricolage Grotesque display + Inter body, tabular numerals.
+  Single deliberate dark look.
 - **Footer (every page)**: GitHub repository link
   (`https://github.com/7IBO/one-piece-wiki-v4`) and a support link
   (`https://buymeacoffee.com/7ibo`), plus locale switcher.

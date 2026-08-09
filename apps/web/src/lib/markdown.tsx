@@ -21,7 +21,7 @@ function renderInline(text: string): ReactNode {
     }
     if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
       return (
-        <code key={i} className='rounded bg-surface px-1 py-0.5 font-mono text-[0.85em]'>
+        <code key={i} className='rounded bg-surface-2 px-1 py-0.5 font-mono text-[0.85em]'>
           {part.slice(1, -1)}
         </code>
       );
@@ -142,7 +142,10 @@ export function Markdown({ markdown }: { readonly markdown: string; }): JSX.Elem
             );
           case 'code':
             return (
-              <pre key={i} className='overflow-x-auto rounded-lg bg-surface p-4 font-mono text-sm'>
+              <pre
+                key={i}
+                className='overflow-x-auto rounded-md bg-surface-2 p-4 font-mono text-sm'
+              >
                 {block.text}
               </pre>
             );
