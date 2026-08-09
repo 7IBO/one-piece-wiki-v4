@@ -1,7 +1,7 @@
 /**
  * `/<type>` — canonical type listing (the entity TYPE ID is the URL
  * segment: `/character`, `/crew`, …). Image-led poster grid: every
- * entity as a poster card — image (or monogram tile), localized name,
+ * entity as a poster card — image (or generated art), localized name,
  * a type-appropriate identity line (character epithet, chapter
  * release date, platform kind…), first-appearance meta and a status
  * tag when notable — all spoiler-checked server-side against the

@@ -174,10 +174,11 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
             <div className='w-36 shrink-0 sm:w-44'>
               <EntityImage
                 image={view.image}
+                type={view.type}
+                slug={view.slug}
                 name={view.name}
                 ratio='portrait'
                 className='w-full rounded-lg ring-1 ring-line'
-                monogramClassName='text-5xl'
               />
               {view.image.attribution !== null
                 ? (
@@ -377,10 +378,11 @@ function ConnectionRow({ item }: { readonly item: RelationItemView; }): JSX.Elem
       >
         <EntityImage
           image={item.image}
+          type={item.target.type}
+          slug={item.target.slug}
           name={item.target.name}
           ratio='square'
           className='size-10 rounded-[5px] ring-1 ring-line transition-shadow duration-150 group-hover:ring-accent/70'
-          monogramClassName='text-base'
         />
         <span className='min-w-0 flex-1'>
           <span

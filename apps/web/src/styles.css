@@ -44,6 +44,32 @@
   --color-gold: oklch(0.8 0.108 88);
 }
 
+/*
+ * Generative art tokens — the ONLY colours `lib/entity-art.ts` knows
+ * about. The generator emits `var(--art-*)` references and never a
+ * literal, so re-skinning every placeholder in the app (thousands of
+ * tiles) means editing these nine values and nothing else.
+ *
+ * Roles, not hues: `--art-bg` is the ground, `--art-ink` the dark mass
+ * (silhouettes, panel gutters, shading), `--art-glow` the light one
+ * (paper, highlights, hairlines). `--art-1..6` are an interchangeable
+ * hue wheel — compositions pick a chord from it by hash, so keep them
+ * at comparable lightness/chroma or the wall of tiles loses its rhythm.
+ * Kept out of `@theme` on purpose: they are art paints, not UI colours,
+ * and must never become Tailwind utilities.
+ */
+:root {
+  --art-bg: oklch(0.238 0.019 68);
+  --art-ink: oklch(0.152 0.014 62);
+  --art-glow: oklch(0.945 0.018 88);
+  --art-1: oklch(0.615 0.163 30);
+  --art-2: oklch(0.72 0.132 58);
+  --art-3: oklch(0.8 0.108 88);
+  --art-4: oklch(0.6 0.088 174);
+  --art-5: oklch(0.53 0.106 249);
+  --art-6: oklch(0.595 0.128 348);
+}
+
 html {
   scrollbar-gutter: stable;
   background-color: var(--color-canvas);

@@ -5,25 +5,27 @@
  * leave a raw `<img>` frame anywhere.
  *
  * Contract:
- * - The designed ground (a monogram tile: the entity's initial in the
- *   display face, gold on a quiet surface step, hairline ring)
- *   renders FIRST and stays underneath until a real image is
- *   CONFIRMED loaded (`complete && naturalWidth > 0`).
+ * - The designed ground renders FIRST and stays underneath until a real
+ *   image is CONFIRMED loaded (`complete && naturalWidth > 0`). That
+ *   ground is `EntityArt`: a deterministic generative composition keyed
+ *   on the entity id (see `lib/entity-art.ts`). The corpus has almost
+ *   no pictures, so this is the artwork on screen, not an empty state.
  * - The `<img>` sits on top at opacity 0 and fades in (~200ms) only
  *   once loaded; on failure it unmounts entirely. Load state is
  *   probed on mount too, so errors/loads that fire before hydration
  *   are never missed.
  * - Aspect ratio is reserved up front (3:4 portrait, 1:1 thumb) so
- *   layout never jumps between fallback and photo. Radius comes from
- *   the caller's className (`rounded-md`…) via `rounded-[inherit]`.
+ *   layout never jumps between art and photo. Radius comes from the
+ *   caller's className (`rounded-md`…) via `rounded-[inherit]`.
  *
  * Callers that want NO block at all when no image entity exists
  * simply don't render the component.
  */
 import { type JSX, useState } from 'react';
 import type { ImageView } from '../api';
+import { EntityArt } from './EntityArt';
 
-/** First grapheme of the entity name, uppercased — the monogram. */
+/** First grapheme of the entity name, uppercased — the artwork's mark. */
 export function initialOf(name: string): string {
   const first = [...name.trim()][0];
   return (first ?? '·').toUpperCase();
@@ -32,14 +34,16 @@ export function initialOf(name: string): string {
 export type ImageRatio = 'portrait' | 'square';
 
 export function EntityImage(
-  { image, name, ratio = 'square', className = '', monogramClassName = 'text-xl' }: {
+  { image, type, slug, name, ratio = 'square', className = '' }: {
     readonly image: ImageView | null;
+    /** Entity type id — selects the artwork's visual family. */
+    readonly type: string;
+    /** Entity slug — with the type, the `type:slug` art seed. */
+    readonly slug: string;
     readonly name: string;
     /** Reserved aspect: `portrait` = 3:4 (posters), `square` = 1:1 (thumbs). */
     readonly ratio?: ImageRatio;
     readonly className?: string;
-    /** Type scale of the monogram initial, matched to the tile size. */
-    readonly monogramClassName?: string;
   },
 ): JSX.Element {
   return (
@@ -48,16 +52,13 @@ export function EntityImage(
         ratio === 'portrait' ? 'aspect-3/4' : 'aspect-square'
       } ${className}`}
     >
-      <div
-        aria-hidden
-        className='absolute inset-0 grid select-none place-items-center rounded-[inherit] bg-surface ring-1 ring-line ring-inset'
-      >
-        <span
-          className={`display font-bold leading-none text-gold/45 ${monogramClassName}`}
-        >
-          {initialOf(name)}
-        </span>
-      </div>
+      <EntityArt
+        entityId={`${type}:${slug}`}
+        entityType={type}
+        ratio={ratio}
+        initial={initialOf(name)}
+        className='absolute inset-0 size-full rounded-[inherit]'
+      />
       {image !== null ? <Photo key={image.url} image={image} /> : null}
     </div>
   );

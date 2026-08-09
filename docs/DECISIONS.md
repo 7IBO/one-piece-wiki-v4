@@ -8,6 +8,68 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-102 — Generative entity art replaces the monogram placeholder
+
+**Date**: 2026-08-09
+
+**Context**: The corpus holds 3 image entities, all pointing at a
+placeholder domain that does not resolve, and zero image files. Every
+visual slot in `apps/web` therefore renders its fallback — a grey
+tile with the entity's initial. A wall of those is the single loudest
+"AI mockup" tell in the app, and the image situation will not change
+for a long time: the placeholder IS the picture, so it has to be
+artwork rather than an empty state.
+
+**Options considered**:
+
+1. Keep the monogram tile, improve its typography. Cheap, but a grid
+   of lettered squares reads as generated filler however it is set.
+2. Ship a handful of hand-drawn SVG placeholders per type. Nice at
+   first sight, but every entity of a type looks identical, and the
+   set has to be redrawn on each palette change.
+3. Identicon-style hashing (pixel grids, gradient blobs). Instantly
+   recognisable as machine output — the exact register to avoid.
+4. **A deterministic generative composition per entity, with a
+   per-type visual grammar and colours bound to CSS custom
+   properties.** (chosen)
+
+**Choice**: option 4. `apps/web/src/lib/entity-art.ts` hashes the
+entity id (FNV-1a) into a seeded PRNG (mulberry32) and returns a pure
+scene description; `components/EntityArt.tsx` renders it as inline
+SVG. Nine art tokens in `src/styles.css` carry every colour.
+
+**Rationale**:
+
+- **Determinism** is what makes it feel authored rather than random:
+  an entity's tile never changes, so readers learn it. Pure function,
+  no `Math.random`/`Date`, identical SSR and client output, no
+  hydration mismatch, no request, no client JS, no layout shift.
+- **Per-type grammars** carry information: a chapter looks like a
+  comic page, a volume like a cover, an arc like a landscape, a crew
+  like a flag. The mapping is a table, and **any unmapped type
+  degrades to the generic `field` family** (seeded by the type name so
+  it stays self-consistent) — the ADR-091 degradation rule, so adding
+  an entity type can never break rendering.
+- **Colour lives only in `styles.css`.** The generator emits
+  `var(--art-*)` and nothing else; a unit test fails on any hex,
+  `oklch(`, `rgb(` or named colour reaching the output. The v8
+  redesign re-skins the whole art system by editing nine values.
+- Tokens are **roles, not hues** (`--art-ink` dark mass, `--art-glow`
+  light mass, `--art-1..6` an interchangeable wheel), so the contrast
+  structure of a composition survives any palette swap.
+- The initial may appear as an oversized, cropped compositional mark
+  at ~12% opacity; it is never a letter centred in a box, and the
+  families that would look worse with it simply omit it.
+
+**Consequences**: `EntityImage` gains `type`/`slug` props (the
+`type:slug` seed) and loses `monogramClassName`; a real image URL still
+wins whenever one loads. Each tile costs ~10–16 `<path>` elements
+(~2–4 KB of markup, highly compressible) — accepted, it replaces
+network image requests that do not exist. Review tooling:
+`bun run -F @onepiece-wiki/web art:preview`.
+
+---
+
 ## ADR-101 — api-onepiece.com ingest: full-corpus candidate import, URL-only images
 
 **Date**: 2026-08-09

@@ -32,7 +32,7 @@
     "apps/web": {
       "entry": [
         "vite.config.ts",
-        "scripts/ensure-db.ts",
+        "scripts/*.ts",
         "src/router.tsx",
         "src/routeTree.gen.ts",
         "src/routes/**/*.{ts,tsx}"

@@ -13,7 +13,8 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
   reference product; the register of a high-end film/streaming
   catalogue, with its own identity). **The connection is the core
   unit**: every reference to another entity renders as an image-led
-  link module — thumbnail (shared EntityImage, monogram fallback) +
+  link module — thumbnail (shared EntityImage, generated art when
+  there is no picture) +
   name + precise sub-label (role, period, type) — and entity pages
   are HUBS of connections grouped by relation type, **ordered by
   importance** (well-known-id priority list, ADR-091: crew → fruit →
@@ -38,7 +39,7 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
   states (ring inks accent, names ink accent); no pill soup, no
   gradients, no glassmorphism, no empty heroes. Palette: warm
   charcoal canvas (oklch ≈0.18 hue 68), bone foreground, GOLD for
-  identity + stats (progress, bounty, monograms), VERMILLION for
+  identity + stats (progress, bounty), VERMILLION for
   interactive accents.
 - **Footer (every page)**: GitHub repository link
   (`https://github.com/7IBO/one-piece-wiki-v4`) and a support link
@@ -171,19 +172,53 @@ the maintainer — the app only assumes root-relative paths.
 
 ## Image treatment (2026-08-09 — "moins IA")
 
-One shared image component renders EVERY image in the app. Rules:
+One shared image component renders EVERY image in the app
+(`components/EntityImage.tsx`). Rules:
 
 - A broken or still-loading image is NEVER shown raw: load state is
-  tracked and the designed fallback renders until a real image
+  tracked and the designed ground renders until a real image
   confirms; when an entity has no image at all, the infobox has no
   image block (no empty frame pretending to be a photo).
-- The fallback is a monogram tile — entity initial in the display
-  face, gold on a quiet surface step with a hairline ring. Radius
-  follows the caller (2–6 px scale). No AI-ish stock gradients, no
-  glassmorphism, no emoji.
+- That ground is **generated artwork**, not a monogram tile (see
+  below). No AI-ish stock gradients, no glassmorphism, no emoji.
 - Aspect ratios are reserved (3:4 portraits, 1:1 thumbs), covers use
   `object-fit: cover`, `loading="lazy"`, and a subtle (~200 ms)
   fade-in when a real image lands.
+
+## Generative entity art (2026-08-09, ADR-102)
+
+The corpus has essentially no pictures, so the placeholder is the
+artwork on screen, on every card, thumb and portrait. `lib/entity-art.ts`
+turns an entity id into an abstract composition; `components/EntityArt.tsx`
+renders it as inline SVG.
+
+- **Deterministic**: the id is hashed (FNV-1a) and every parameter is
+  drawn from a seeded PRNG (mulberry32). Same id → byte-identical
+  markup, forever, on server and client. No `Math.random`, no `Date`,
+  no requests, no client JS, no layout shift.
+- **Per-type grammar**: each entity type maps to a visual family —
+  `character → figure` (eclipse / cropped profile / column, and
+  deliberately no head-and-shoulders silhouette, which is the avatar
+  icon we are running away from), `crew → ensign` (mast, flag,
+  emblem), `arc → horizon` (strata, sun, sail), `event → impact`
+  (shards from an off-frame focal point), `devil-fruit → spiral`,
+  `manga-chapter → panels` (a comic page), `volume → stack` (a cover
+  over a stack of leaves), `document`/`reference` → `folio`. **Any
+  unmapped type degrades to the generic `field` family**, whose
+  variant is picked from the TYPE hash so a new type is instantly
+  self-consistent without touching code (ADR-091 degradation rule).
+- **Re-skinning is a stylesheet edit**: the generator emits only
+  `var(--art-*)` references. The nine tokens live in `src/styles.css`
+  (`--art-bg`, `--art-ink`, `--art-glow`, `--art-1..6`) and are roles,
+  not hues — ink is the dark mass, glow the light one, 1..6 an
+  interchangeable wheel compositions draw a chord from. Changing the
+  site palette means changing those nine values, nothing else.
+- **Frames**: `portrait` (3:4), `square`, `wide` — composed for the
+  frame (the ratio joins the seed), never stretched.
+- **Review**: `bun run -F @onepiece-wiki/web art:preview [out.html]`
+  writes a contact sheet of the whole corpus at every frame, plus an
+  unknown-type degradation strip. It reads the tokens out of
+  `styles.css`, so it always shows the current skin.
 
 ## i18n
 

@@ -15,7 +15,26 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (design v7 « Vignette » — en attente du verdict mainteneur)
+**Last updated**: 2026-08-09 (art génératif d'entité ADR-102 ; design v7 « Vignette » — en attente du verdict mainteneur)
+
+**2026-08-09 — art génératif d'entité (ADR-102).** Le corpus n'a
+aucune image utilisable (3 entités `image`, domaine factice, 0
+fichier) : la tuile monogramme « lettre dans un carré gris » — le
+tell « maquette IA » le plus visible — est remplacée par une
+composition abstraite déterministe par entité
+(`apps/web/src/lib/entity-art.ts` + `components/EntityArt.tsx`).
+Hash FNV-1a de l'id → PRNG mulberry32 → mêmes paramètres pour
+toujours, SSR/client identiques, aucun JS client. **Grammaire par
+type** : character→figure, crew→ensign, arc→horizon, event→impact,
+devil-fruit→spiral, manga-chapter→panels, volume→stack,
+document/reference→folio ; **tout type non mappé dégrade vers la
+famille générique `field`** (variante dérivée du hash du TYPE) —
+règle ADR-091. **Zéro littéral de couleur** : le générateur n'émet
+que `var(--art-*)`, les 9 tokens vivent dans `src/styles.css`
+(`--art-bg/ink/glow` + `--art-1..6`, des RÔLES pas des teintes) →
+le re-skin v8 = éditer ces 9 valeurs. Planche de contrôle :
+`bun run -F @onepiece-wiki/web art:preview`. 489 tests verts,
+lint/typecheck/knip/build OK.
 
 **2026-08-09 — design v7 « Vignette » (7e itération, remplace v6).**
 v6 rejeté (« unique mais dégueulasse, ça fait pas moderne du

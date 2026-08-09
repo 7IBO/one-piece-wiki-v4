@@ -1,6 +1,6 @@
 /**
  * The poster card — the image-led unit for people/things in grids
- * (WEB_APP.md § connection modules): 3:4 image (or monogram tile)
+ * (WEB_APP.md § connection modules): 3:4 image (or generated art)
  * with a hairline ring that inks accent on hover, then a caption
  * stack — name, identity line (epithet…), context meta (role ·
  * period…), optional status tag and gold figure (bounty…). No box
@@ -64,12 +64,13 @@ export function EntityCard(
       >
         <EntityImage
           image={image}
+          type={type}
+          slug={slug}
           name={name}
           ratio='portrait'
           className={`w-full rounded-md ring-1 ring-line transition-[box-shadow,opacity] duration-150 group-hover:ring-accent/70 ${
             dimmed ? 'opacity-55 group-hover:opacity-80' : ''
           }`}
-          monogramClassName='text-4xl'
         />
         <span className='mt-1.5 block min-w-0'>
           <span
