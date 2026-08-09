@@ -7,6 +7,7 @@
   "value_constraints": { "min": 1, "step": 1 },
   "historical": false,
   "localizable": false,
+  "factual": true,
   "spoiler_sensitive": false,
   "applies_to_entity_types": ["film"]
 }

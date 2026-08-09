@@ -123,4 +123,35 @@ describe('resolveQualifiers (schema-driven, ADR-078)', () => {
     );
     expect(secondary[0]).toMatchObject({ id: 'issued_by', label: 'Issued By' });
   });
+
+  describe('factual profile (ADR-100)', () => {
+    it('factual property types get NO base qualifiers, declared ones intact', () => {
+      const { primary, secondary } = resolveQualifiers(
+        registry,
+        'en',
+        ['given_by'],
+        [{ id: 'issued_by', value_type: 'entity_ref' }],
+        [],
+        true,
+      );
+      expect(primary.map((q) => q.id)).toEqual(['given_by']);
+      expect(secondary.map((q) => q.id)).toEqual(['issued_by']);
+      // No base-kind entries leaked in.
+      expect([...primary, ...secondary].map((q) => q.id))
+        .not.toEqual(expect.arrayContaining(['epistemic_status']));
+    });
+
+    it('a factual property with no declared qualifiers offers nothing', () => {
+      const { primary, secondary } = resolveQualifiers(registry, 'en', [], [], [], true);
+      expect(primary).toHaveLength(0);
+      expect(secondary).toHaveLength(0);
+    });
+
+    it('non-factual (default) keeps appending the base bag', () => {
+      const withFlag = resolveQualifiers(registry, 'en', [], [], [], false);
+      const omitted = resolveQualifiers(registry, 'en', [], [], []);
+      expect(withFlag.secondary.map((q) => q.id)).toEqual(['epistemic_status', 'actual_value']);
+      expect(omitted.secondary.map((q) => q.id)).toEqual(['epistemic_status', 'actual_value']);
+    });
+  });
 });

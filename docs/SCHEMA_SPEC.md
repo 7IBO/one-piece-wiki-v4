@@ -194,23 +194,24 @@ A file in `/data/schemas/property-types/<id>.json`.
 
 ### Fields
 
-| Field                     | Type     | Required | Description                                                      |
-| ------------------------- | -------- | -------- | ---------------------------------------------------------------- |
-| `$schema`                 | string   | yes      | Meta-schema reference                                            |
-| `id`                      | string   | yes      | Property identifier, kebab-case                                  |
-| `schema_version`          | integer  | yes      | Bumped on breaking changes                                       |
-| `labels`                  | object   | yes      | Locale → label                                                   |
-| `value_type`              | enum     | yes      | One of the value type primitives (see below)                     |
-| `value_constraints`       | object   | no       | Type-specific constraints (min, max, pattern, enum_ref, etc.)    |
-| `unit`                    | string   | no       | Display unit (e.g. `berry`, `cm`, `kg`)                          |
-| `historical`              | boolean  | yes      | Whether values are versioned                                     |
-| `localizable`             | boolean  | yes      | Whether values are translated (then `value_key` is stored)       |
-| `romanizable`             | boolean  | no       | Name-like values may carry a `ja-latn` transliteration (ADR-095) |
-| `spoiler_sensitive`       | boolean  | yes      | Whether values must be filtered by spoiler progression           |
-| `applies_to_entity_types` | string[] | no       | Restrict which entity types can have this property               |
-| `default_qualifiers`      | string[] | no       | Property-declared qualifiers shown in the form by default        |
-| `allowed_qualifiers`      | object[] | no       | Property-declared qualifiers accessible via "more options"       |
-| `ui_hint`                 | object   | no       | Display format, input widget, icon                               |
+| Field                     | Type     | Required | Description                                                                                       |
+| ------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------- |
+| `$schema`                 | string   | yes      | Meta-schema reference                                                                             |
+| `id`                      | string   | yes      | Property identifier, kebab-case                                                                   |
+| `schema_version`          | integer  | yes      | Bumped on breaking changes                                                                        |
+| `labels`                  | object   | yes      | Locale → label                                                                                    |
+| `value_type`              | enum     | yes      | One of the value type primitives (see below)                                                      |
+| `value_constraints`       | object   | no       | Type-specific constraints (min, max, pattern, enum_ref, etc.)                                     |
+| `unit`                    | string   | no       | Display unit (e.g. `berry`, `cm`, `kg`)                                                           |
+| `historical`              | boolean  | yes      | Whether values are versioned                                                                      |
+| `localizable`             | boolean  | yes      | Whether values are translated (then `value_key` is stored)                                        |
+| `romanizable`             | boolean  | no       | Name-like values may carry a `ja-latn` transliteration (ADR-095)                                  |
+| `factual`                 | boolean  | no       | Production/real-world data: form offers only declared qualifiers, no base epistemic bag (ADR-100) |
+| `spoiler_sensitive`       | boolean  | yes      | Whether values must be filtered by spoiler progression                                            |
+| `applies_to_entity_types` | string[] | no       | Restrict which entity types can have this property                                                |
+| `default_qualifiers`      | string[] | no       | Property-declared qualifiers shown in the form by default                                         |
+| `allowed_qualifiers`      | object[] | no       | Property-declared qualifiers accessible via "more options"                                        |
+| `ui_hint`                 | object   | no       | Display format, input widget, icon                                                                |
 
 ### Value types
 

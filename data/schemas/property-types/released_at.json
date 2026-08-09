@@ -6,6 +6,7 @@
   "value_type": "date",
   "historical": false,
   "localizable": false,
+  "factual": true,
   "spoiler_sensitive": false,
   "allowed_qualifiers": [
     {

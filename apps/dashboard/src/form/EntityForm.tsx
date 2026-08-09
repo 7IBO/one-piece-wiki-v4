@@ -1986,6 +1986,8 @@ function EntryEditorFields(p: Omit<EntryEditorProps, 'open' | 'onClose' | 'asPan
         p.propertyType.default_qualifiers,
         p.propertyType.allowed_qualifiers,
         ['since'],
+        // ADR-100 — factual production data drops the base epistemic bag.
+        p.propertyType.factual === true,
       ),
     [p.propertyType, p.qualifierTypes, locale],
   );

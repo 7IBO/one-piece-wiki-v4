@@ -7,5 +7,6 @@
   "historical": false,
   "localizable": true,
   "romanizable": true,
+  "factual": true,
   "spoiler_sensitive": false
 }

@@ -7,6 +7,7 @@
   "value_constraints": { "enum_ref": "special-kinds" },
   "historical": false,
   "localizable": false,
+  "factual": true,
   "spoiler_sensitive": false,
   "applies_to_entity_types": ["anime-special"]
 }

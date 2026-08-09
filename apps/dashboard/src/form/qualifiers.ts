@@ -21,7 +21,9 @@
  * refs, entity-type filters and multiplicity. Ids referenced in
  * `default_qualifiers` (or lean `allowed_qualifiers`) resolve against
  * the registry's `common` entries; `base` entries are appended to
- * every entry's "More options".
+ * every entry's "More options" — EXCEPT on property types flagged
+ * `factual: true` (ADR-100): production/real-world data offers only
+ * its declared qualifiers, the epistemic bag is meaningless there.
  *
  * The form ignores the implementation detail of "default vs allowed"
  * by always showing every applicable qualifier. The maintainer chooses
@@ -103,6 +105,11 @@ const ALWAYS_SECONDARY: ReadonlySet<string> = new Set(['source']);
  * `allowed_qualifiers` → base qualifiers (skip anything in
  * `pinnedIds`, which the form renders as top-level fields).
  *
+ * `factual` (ADR-100) is the property type's factual flag: `true`
+ * marks production/real-world data, where the base epistemic bag is
+ * meaningless — the base-kind registry entries are NOT appended and
+ * the entry offers only the declared qualifiers.
+ *
  * Returns { primary, secondary } so the EntryEditor can pin the
  * primary set inline and put the rest behind "More options".
  */
@@ -112,6 +119,7 @@ export function resolveQualifiers(
   defaultIds: readonly string[],
   allowed: readonly AllowedQualifierDecl[],
   pinnedIds: readonly string[],
+  factual = false,
 ): { primary: readonly QualifierDef[]; secondary: readonly QualifierDef[]; } {
   const primary: QualifierDef[] = [];
   const secondary: QualifierDef[] = [];
@@ -154,11 +162,13 @@ export function resolveQualifiers(
     seen.add(decl.id);
   }
 
-  for (const q of ofKind(registry, 'base')) {
-    if (seen.has(q.id)) continue;
-    if (pinnedSet.has(q.id)) continue;
-    secondary.push(toDef(q, locale));
-    seen.add(q.id);
+  if (!factual) {
+    for (const q of ofKind(registry, 'base')) {
+      if (seen.has(q.id)) continue;
+      if (pinnedSet.has(q.id)) continue;
+      secondary.push(toDef(q, locale));
+      seen.add(q.id);
+    }
   }
 
   return { primary, secondary };

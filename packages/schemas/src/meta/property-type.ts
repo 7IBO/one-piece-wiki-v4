@@ -56,6 +56,16 @@ export const PropertyTypeSchema = z.object({
    * value accepts original-script Japanese.
    */
   romanizable: z.boolean().optional(),
+  /**
+   * Factual qualifier profile (ADR-100). `true` marks
+   * production/real-world data (episode numbers, release dates, image
+   * metadata…): the dashboard form offers ONLY the property's declared
+   * qualifiers (`default_qualifiers` + `allowed_qualifiers`) — the
+   * base epistemic bag (epistemic_status, actual_value, believed_by…)
+   * is meaningless there and is not appended. Validation stays
+   * permissive: the flag shapes the editing surface, not the wire.
+   */
+  factual: z.boolean().optional(),
   spoiler_sensitive: z.boolean().default(false),
   applies_to_entity_types: z.array(Slug).optional(),
   default_qualifiers: z.array(Slug).default([]),
