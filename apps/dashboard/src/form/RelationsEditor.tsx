@@ -30,12 +30,17 @@
  * `InferredRelations` (exported separately, rendered by the entity
  * route below the form) lists the INCOMING edges of the entity —
  * relations stored on other entities whose inverse the pipeline
- * generates — read-only with an "auto" badge, so a maintainer sees
- * that storing one direction is enough (the inverse "exists" without
- * duplicating the JSON).
+ * generates — in the SAME group/row design as the outgoing relations
+ * above (2026-08 feedback: one link surface, one design). Rows are
+ * read-only: clicking one opens a read-only detail in the same
+ * dual-mode surface, with a jump to the entity that stores the edge.
+ * The section also owns the inverse-coherence banners that used to
+ * live in the separate links panel (removed — it duplicated both
+ * this section and the relations editor).
  */
-import { formatQualifiers, type LabelCtx } from '@/components/EntityLinksPanel';
+import { LoadFailed } from '@/components/LoadFailed';
 import { Badge } from '@/components/ui/badge';
+import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { Combobox } from '@/components/ui/combobox';
 import { Label } from '@/components/ui/label';
@@ -49,9 +54,16 @@ import {
   type VocabularySchema,
 } from '@onepiece-wiki/schemas';
 import { Link } from '@tanstack/react-router';
-import { ChevronRight, Pencil, X } from 'lucide-react';
+import { ChevronRight, Info, Pencil, TriangleAlert, X } from 'lucide-react';
 import { type JSX, useEffect, useMemo, useState } from 'react';
-import { api, type EntityRef, type IncomingLinkRow, type SourceRef } from '../api';
+import {
+  api,
+  type EntityRef,
+  type IncomingLinkRow,
+  type LinkConflict,
+  type LinkConflictKind,
+  type SourceRef,
+} from '../api';
 import { useApiResource } from '../hooks/use-api-resource';
 import {
   EntityRefItemsInput,
@@ -255,7 +267,7 @@ function formatShapedValue(
   return JSON.stringify(value) ?? '';
 }
 
-type EdgeSummary = {
+export type EdgeSummary = {
   /** "Camp : Captif · Issue : Tué" — every populated qualifier except
    *  `since`, labels via registry, enum values via vocabularies. */
   readonly text: string;
@@ -263,7 +275,11 @@ type EdgeSummary = {
   readonly since: string | null;
 };
 
-function summariseEdge(
+/** Compact one-line summary of a relation edge's qualifier bag —
+ *  shared by the outgoing rows, the incoming (inferred) rows and the
+ *  incoming-edge manager (ADR-097), so every link surface reads the
+ *  same way. */
+export function summariseEdge(
   entry: RelationEntry,
   shapes: readonly QualifierShape[],
   args: {
@@ -326,16 +342,7 @@ export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
   // inline right-hand panel on desktop — same dual-mode as the
   // property entry editor.
   const [selected, setSelected] = useState<number | null>(null);
-  // lg breakpoint, decided post-hydration (SSR renders the sheet
-  // variant markup — it's portaled and closed, so nothing shows).
-  const [isDesktop, setIsDesktop] = useState(false);
-  useEffect(() => {
-    const mql = window.matchMedia('(min-width: 1024px)');
-    setIsDesktop(mql.matches);
-    const onChange = (e: MediaQueryListEvent): void => setIsDesktop(e.matches);
-    mql.addEventListener('change', onChange);
-    return () => mql.removeEventListener('change', onChange);
-  }, []);
+  const isDesktop = useIsDesktop();
 
   function update(idx: number, next: Partial<RelationEntry>): void {
     const list = p.relations.slice() as RelationEntry[];
@@ -734,6 +741,30 @@ function relationLabel(rt: RelationTypeSchema, locale: Locale): string {
   return rt.labels[locale]?.active ?? rt.labels.en.active;
 }
 
+function inverseRelationLabel(
+  rt: RelationTypeSchema | undefined,
+  relationTypeId: string,
+  locale: Locale,
+): string {
+  return rt?.labels[locale]?.inverse ?? rt?.labels.en.inverse ?? relationTypeId;
+}
+
+/** lg breakpoint, decided post-hydration (SSR renders the sheet
+ *  variant markup — it's portaled and closed, so nothing shows).
+ *  Shared by the relations editor and the inferred-relations section,
+ *  which use the same dual-mode detail surface. */
+function useIsDesktop(): boolean {
+  const [isDesktop, setIsDesktop] = useState(false);
+  useEffect(() => {
+    const mql = window.matchMedia('(min-width: 1024px)');
+    setIsDesktop(mql.matches);
+    const onChange = (e: MediaQueryListEvent): void => setIsDesktop(e.matches);
+    mql.addEventListener('change', onChange);
+    return () => mql.removeEventListener('change', onChange);
+  }, []);
+  return isDesktop;
+}
+
 /** Format `type:slug` for display, preferring the loaded translated
  *  name when available. Falls back to the slug (then the full id)
  *  so empty / loading states stay readable. */
@@ -889,6 +920,10 @@ export type InferredRelationsProps = {
   relationTypes: Record<string, RelationTypeSchema>;
   qualifierTypes: Record<string, QualifierTypeSchema>;
   vocabularies: Record<string, VocabularySchema>;
+  /** Source catalogue — compacts source_ref qualifiers ("C96") in the
+   *  row summaries and the read-only detail, exactly like the
+   *  outgoing rows above. */
+  sources: readonly SourceRef[];
   /**
    * ADR-097 — incoming-edge manager wiring, owned by the entity page.
    * When present, each incoming group whose relation accepts this
@@ -906,55 +941,200 @@ export type InferredRelationsProps = {
   };
 };
 
+const CONFLICT_KIND_LABEL_KEY = {
+  'duplicate-symmetric': 'linksConflictDuplicateSymmetric',
+  'duplicate-edge': 'linksConflictDuplicateEdge',
+  'qualifier-mismatch': 'linksConflictQualifierMismatch',
+} as const satisfies Record<LinkConflictKind, string>;
+
+/** Inverse-coherence findings, rendered inside the banners of the
+ *  inferred-relations section (folded in from the removed links
+ *  panel). */
+function ConflictList(p: {
+  readonly conflicts: readonly LinkConflict[];
+  readonly relationTypes: Record<string, RelationTypeSchema>;
+}): JSX.Element {
+  const t = useT();
+  const locale = useLocale();
+  return (
+    <ul className='divide-y divide-foreground/10'>
+      {p.conflicts.map((conflict, i) => {
+        const rt = p.relationTypes[conflict.relationType];
+        const label = rt !== undefined ? relationLabel(rt, locale) : conflict.relationType;
+        return (
+          <li key={i} className='flex flex-wrap items-baseline gap-x-2 gap-y-0.5 py-1.5'>
+            <span className='font-medium'>{t(CONFLICT_KIND_LABEL_KEY[conflict.kind])}</span>
+            <span>{label}</span>
+            <span className='font-mono'>{conflict.otherEntityId}</span>
+            <span className='text-muted-foreground basis-full'>{conflict.detail}</span>
+          </li>
+        );
+      })}
+    </ul>
+  );
+}
+
+/** Read-only detail of one incoming edge: jump-link to the entity
+ *  that STORES the edge, then every populated qualifier formatted
+ *  through the same machinery as the row summaries (enum values via
+ *  vocabularies, source refs compacted, ADR-096 items via
+ *  entityRefItems — never raw JSON). */
+function IncomingEdgeDetail(p: {
+  readonly row: IncomingLinkRow;
+  readonly shapes: readonly QualifierShape[];
+  readonly vocabularies: Record<string, VocabularySchema>;
+  readonly sources: readonly SourceRef[];
+}): JSX.Element {
+  const t = useT();
+  const locale = useLocale();
+  const qualifierLabel = useQualifierLabel();
+  const name = p.row.sourceDisplayName[locale]
+    ?? p.row.sourceDisplayName.en
+    ?? p.row.sourceEntityId;
+  const qualifiers = p.row.qualifiers;
+  const shapeById = new Map(p.shapes.map((s) => [s.id, s]));
+  // Shape order first (declared, then base), unknown keys last —
+  // same ordering rule as the row summaries.
+  const orderedIds = [
+    ...p.shapes.map((s) => s.id).filter((id) => hasRealValue(qualifiers[id])),
+    ...Object.keys(qualifiers).filter((id) => !shapeById.has(id) && hasRealValue(qualifiers[id])),
+  ];
+  return (
+    <>
+      <div className='border-border/40 border-b pb-3'>
+        {p.row.sourceRoute !== null
+          ? (
+            <Link
+              to='/types/$type/$slug'
+              params={p.row.sourceRoute}
+              title={t('linksEditOnOther')}
+              className='inline-flex items-center gap-1.5 text-sm font-medium hover:underline'
+            >
+              {name}
+              <Pencil className='text-muted-foreground size-3' aria-hidden />
+            </Link>
+          )
+          : <span className='font-mono text-xs'>{p.row.sourceEntityId}</span>}
+        <p className='text-muted-foreground mt-1 text-xs'>{t('linksEditOnOther')}</p>
+      </div>
+      {orderedIds.length === 0
+        ? <p className='text-muted-foreground text-xs'>{t('incomingNoQualifiers')}</p>
+        : (
+          <dl className='space-y-2'>
+            {orderedIds.map((id) => {
+              const shape = shapeById.get(id);
+              return (
+                <div key={id} className='space-y-0.5'>
+                  <dt className='text-muted-foreground text-[10px] uppercase tracking-wide'>
+                    {qualifierLabel(id, shape?.label ?? humanize(id))}
+                  </dt>
+                  <dd className='text-sm'>
+                    {formatShapedValue(qualifiers[id], shape, p.vocabularies, p.sources, locale)}
+                  </dd>
+                </div>
+              );
+            })}
+          </dl>
+        )}
+    </>
+  );
+}
+
 /**
- * Read-only "inverse relations (automatic)" section — the INCOMING
- * edges of the entity, i.e. relations stored on OTHER entities whose
- * inverse the build pipeline generates. Nothing here is editable:
- * the JSON stores one direction only (by design), so each row wears
- * an "auto" badge and links to the entity that stores the edge.
+ * "Inverse relations (automatic)" section — the INCOMING edges of the
+ * entity, i.e. relations stored on OTHER entities whose inverse the
+ * build pipeline generates. Rendered in the SAME group/row design as
+ * the outgoing relations (group header + full-width clickable value
+ * lines): clicking a row opens a READ-ONLY detail in the same
+ * dual-mode surface (side sheet on mobile, inline right-hand panel on
+ * desktop) with a jump to the entity that stores the edge. The group
+ * header carries the "auto" badge (stored elsewhere, one direction is
+ * enough) and the ADR-097 manage entry point.
  *
- * Rendered by the entity route between the form and the links panel
- * (RelationsEditor itself is instantiated inside EntityForm without
- * type/slug, so this lives in its own component). Renders nothing
- * while loading, on error (the links panel below owns error
- * reporting + retry), or when there is no incoming edge — no layout
- * shift for the common case.
+ * Also owns the inverse-coherence banners (duplicate edges, `since`
+ * mismatches as warnings; both-directions storage as an informative
+ * note) and the fetch error reporting — both folded in from the
+ * removed links panel, whose remaining content duplicated this
+ * section and the relations editor.
+ *
+ * Rendered by the entity route below the form (RelationsEditor itself
+ * is instantiated inside EntityForm without type/slug, so this lives
+ * in its own component). Renders nothing while loading or when there
+ * is neither an incoming edge nor a finding — no layout shift for the
+ * common case.
  */
 export function InferredRelations(p: InferredRelationsProps): JSX.Element | null {
   const t = useT();
   const locale = useLocale();
-  const { data } = useApiResource(
+  const qualifierLabel = useQualifierLabel();
+  const isDesktop = useIsDesktop();
+  const { data, error, reload } = useApiResource(
     () => api.entityLinks(p.entityType, p.entitySlug),
     [p.entityType, p.entitySlug],
   );
+  // Which incoming row (index into `incoming`) is open in the
+  // read-only detail surface — same selection model as the outgoing
+  // relations editor above.
+  const [selected, setSelected] = useState<number | null>(null);
 
   const incoming: readonly IncomingLinkRow[] = data?.incoming ?? [];
   // Group by relation type, first-seen order — same as the outgoing
   // groups above, but labelled with the type's INVERSE label since
   // the rows read from this entity's point of view.
   const groups = useMemo(() => {
-    const map = new Map<string, IncomingLinkRow[]>();
-    for (const row of incoming) {
+    const map = new Map<string, { row: IncomingLinkRow; index: number; }[]>();
+    incoming.forEach((row, index) => {
       const list = map.get(row.relationType) ?? [];
-      list.push(row);
+      list.push({ row, index });
       map.set(row.relationType, list);
-    }
+    });
     return [...map.entries()];
   }, [incoming]);
 
-  if (incoming.length === 0) return null;
+  // Qualifier shapes per relation type in use — shared by the row
+  // summaries and the read-only detail (same as the outgoing block).
+  const shapesByType = useMemo(() => {
+    const map = new Map<string, readonly QualifierShape[]>();
+    for (const [typeId] of groups) {
+      map.set(typeId, qualifierShapesFor(p.relationTypes[typeId], p.qualifierTypes, locale));
+    }
+    return map;
+  }, [groups, p.relationTypes, p.qualifierTypes, locale]);
 
-  const ctx: LabelCtx = {
-    relationTypes: p.relationTypes,
-    qualifierTypes: p.qualifierTypes,
-    vocabularies: p.vocabularies,
-    locale,
-  };
+  // Both-directions storage is a design note (inverse links are
+  // pipeline-generated); real coherence problems stay warnings.
+  const conflicts: readonly LinkConflict[] = data?.conflicts ?? [];
+  const symmetricNotes = conflicts.filter((c) => c.kind === 'duplicate-symmetric');
+  const warningConflicts = conflicts.filter((c) => c.kind !== 'duplicate-symmetric');
+
+  if (error === null && (incoming.length === 0 && conflicts.length === 0)) return null;
+
+  const selectedRow = selected !== null ? incoming[selected] : undefined;
+  const detailOpen = selectedRow !== undefined;
+  const detailTitle = selectedRow === undefined ? '' : `${
+    selectedRow.sourceDisplayName[locale]
+      ?? selectedRow.sourceDisplayName.en
+      ?? selectedRow.sourceEntityId
+  } · ${
+    inverseRelationLabel(
+      p.relationTypes[selectedRow.relationType],
+      selectedRow.relationType,
+      locale,
+    )
+  }`;
+  const detailBody = selectedRow === undefined ? null : (
+    <IncomingEdgeDetail
+      row={selectedRow}
+      shapes={shapesByType.get(selectedRow.relationType) ?? []}
+      vocabularies={p.vocabularies}
+      sources={p.sources}
+    />
+  );
 
   return (
     <section
       id='inferred-relations-section'
-      className='scroll-mt-20 space-y-2'
+      className='scroll-mt-20 space-y-3'
       aria-label={t('inferredRelationsTitle')}
     >
       <div className='flex items-baseline justify-between gap-2'>
@@ -964,96 +1144,75 @@ export function InferredRelations(p: InferredRelationsProps): JSX.Element | null
         </span>
       </div>
       <p className='text-muted-foreground text-xs'>{t('inferredRelationsHint')}</p>
-      <div className='space-y-3'>
-        {groups.map(([relationType, rows]) => {
-          const rt = p.relationTypes[relationType];
-          const label = rt?.labels[locale]?.inverse ?? rt?.labels.en.inverse ?? relationType;
-          // ADR-097 — per-group manage affordance. `appears-in` on a
-          // source page keeps routing to the /sources cast manager
-          // (castRelationIds is supplied by the page); every other
-          // group whose relation targets this page's type opens the
-          // generic incoming-edge manager.
-          const manage = p.manage;
-          const isCastManaged = manage?.castRelationIds.includes(relationType) === true;
-          const isManageable = manage !== undefined
-            && !isCastManaged
-            && ((rt?.valid_to_types ?? []) as readonly string[]).includes(p.entityType);
-          const isManaging = manage !== undefined && manage.managing === relationType;
-          if (isManaging && manage !== undefined) {
-            return (
-              <div key={relationType}>
-                {manage.renderManager(relationType, () => manage.onManage(null))}
-              </div>
-            );
+
+      {error !== null ? <LoadFailed message={error} onRetry={reload} /> : (
+        <>
+          {warningConflicts.length > 0
+            ? (
+              <Banner variant='warning' className='flex-col items-stretch gap-1'>
+                <span className='flex items-center gap-2 font-medium'>
+                  <TriangleAlert className='size-4 shrink-0 text-amber-500' />
+                  {t('linksConflictsTitle').replace('{n}', String(warningConflicts.length))}
+                </span>
+                <ConflictList conflicts={warningConflicts} relationTypes={p.relationTypes} />
+              </Banner>
+            )
+            : null}
+          {symmetricNotes.length > 0
+            ? (
+              <Banner variant='info' className='flex-col items-stretch gap-1'>
+                <span className='flex items-center gap-2 font-medium'>
+                  <Info className='text-primary size-4 shrink-0' />
+                  {t('linksSymmetricInfoTitle').replace('{n}', String(symmetricNotes.length))}
+                </span>
+                <span className='text-muted-foreground'>{t('linksSymmetricInfoNote')}</span>
+                <ConflictList conflicts={symmetricNotes} relationTypes={p.relationTypes} />
+              </Banner>
+            )
+            : null}
+
+          {
+            /* Same dual-mode layout as the relations editor: when a
+              row is selected on desktop the group list narrows and the
+              read-only detail renders inline to its right; on mobile
+              it opens as a side sheet below. */
           }
-          return (
-            <div key={relationType}>
-              <div className='flex items-center gap-2'>
-                <Label className='text-muted-foreground text-xs font-semibold uppercase tracking-wide'>
-                  {label}
-                </Label>
-                {isCastManaged
-                  ? (
-                    <Button
-                      render={
-                        <Link
-                          to='/sources/$type/$slug'
-                          params={{ type: p.entityType, slug: p.entitySlug }}
-                        />
-                      }
-                      variant='outline'
-                      size='xs'
-                      className='ml-auto gap-1 text-[11px]'
-                    >
-                      <Pencil className='size-3' />
-                      {t('castManage')}
-                    </Button>
-                  )
-                  : isManageable
-                  ? (
-                    <Button
-                      type='button'
-                      variant='outline'
-                      size='xs'
-                      className='ml-auto gap-1 text-[11px]'
-                      onClick={() => manage.onManage(relationType)}
-                    >
-                      <Pencil className='size-3' />
-                      {t('incomingManage')}
-                    </Button>
-                  )
-                  : null}
-              </div>
-              <ul className='divide-foreground/5 mt-0.5 divide-y'>
-                {rows.map((row, i) => {
-                  const name = row.sourceDisplayName[locale]
-                    ?? row.sourceDisplayName.en
-                    ?? row.sourceEntityId;
-                  const qualifierText = formatQualifiers(relationType, row.qualifiers, ctx);
+          <div
+            className={detailOpen && isDesktop
+              ? 'grid grid-cols-[minmax(0,1fr)_minmax(0,24rem)] items-start gap-5'
+              : 'min-w-0'}
+          >
+            <div className='min-w-0 space-y-3'>
+              {groups.map(([relationType, groupRows]) => {
+                const rt = p.relationTypes[relationType];
+                const label = inverseRelationLabel(rt, relationType, locale);
+                const shapes = shapesByType.get(relationType) ?? [];
+                // ADR-097 — per-group manage affordance. `appears-in`
+                // on a source page keeps routing to the /sources cast
+                // manager (castRelationIds is supplied by the page);
+                // every other group whose relation targets this page's
+                // type opens the generic incoming-edge manager.
+                const manage = p.manage;
+                const isCastManaged = manage?.castRelationIds.includes(relationType) === true;
+                const isManageable = manage !== undefined
+                  && !isCastManaged
+                  && ((rt?.valid_to_types ?? []) as readonly string[]).includes(p.entityType);
+                const isManaging = manage !== undefined && manage.managing === relationType;
+                if (isManaging && manage !== undefined) {
                   return (
-                    <li
-                      key={`${row.sourceEntityId}-${i}`}
-                      className='flex items-center gap-2 py-1.5'
-                    >
-                      <span className='min-w-0 flex-1 break-words text-sm'>
-                        {row.sourceRoute !== null
-                          ? (
-                            <Link
-                              to='/types/$type/$slug'
-                              params={row.sourceRoute}
-                              className='font-medium hover:underline'
-                            >
-                              {name}
-                            </Link>
-                          )
-                          : <span className='font-mono text-xs'>{row.sourceEntityId}</span>}
-                        {qualifierText !== ''
-                          ? (
-                            <span className='text-muted-foreground ml-2 text-xs'>
-                              {qualifierText}
-                            </span>
-                          )
-                          : null}
+                    <div key={relationType}>
+                      {manage.renderManager(relationType, () => manage.onManage(null))}
+                    </div>
+                  );
+                }
+                return (
+                  <div key={relationType}>
+                    <div className='flex items-center gap-2'>
+                      <Label className='text-muted-foreground text-xs font-semibold uppercase tracking-wide'>
+                        {label}
+                      </Label>
+                      <span className='text-muted-foreground text-xs'>
+                        {groupRows.length}
                       </span>
                       <Badge
                         variant='outline'
@@ -1062,27 +1221,139 @@ export function InferredRelations(p: InferredRelationsProps): JSX.Element | null
                       >
                         {t('autoBadge')}
                       </Badge>
-                      {row.sourceRoute !== null
+                      {isCastManaged
                         ? (
-                          <Link
-                            to='/types/$type/$slug'
-                            params={row.sourceRoute}
-                            title={t('linksEditOnOther')}
-                            aria-label={t('linksEditOnOther')}
-                            className='text-muted-foreground hover:text-foreground shrink-0 p-1 transition-colors'
+                          <Button
+                            render={
+                              <Link
+                                to='/sources/$type/$slug'
+                                params={{ type: p.entityType, slug: p.entitySlug }}
+                              />
+                            }
+                            variant='outline'
+                            size='xs'
+                            className='ml-auto gap-1 text-[11px]'
                           >
-                            <Pencil className='size-3' aria-hidden />
-                          </Link>
+                            <Pencil className='size-3' />
+                            {t('castManage')}
+                          </Button>
+                        )
+                        : isManageable
+                        ? (
+                          <Button
+                            type='button'
+                            variant='outline'
+                            size='xs'
+                            className='ml-auto gap-1 text-[11px]'
+                            onClick={() => {
+                              // The manager replaces the group — close
+                              // a detail that would go stale under it.
+                              setSelected(null);
+                              manage.onManage(relationType);
+                            }}
+                          >
+                            <Pencil className='size-3' />
+                            {t('incomingManage')}
+                          </Button>
                         )
                         : null}
-                    </li>
-                  );
-                })}
-              </ul>
+                    </div>
+                    <div className='mt-0.5 space-y-0.5'>
+                      {groupRows.map(({ row, index }) => {
+                        const name = row.sourceDisplayName[locale]
+                          ?? row.sourceDisplayName.en
+                          ?? row.sourceEntityId;
+                        const summary = summariseEdge(
+                          {
+                            type: relationType,
+                            target: row.sourceEntityId,
+                            qualifiers: row.qualifiers,
+                          },
+                          shapes,
+                          {
+                            vocabularies: p.vocabularies,
+                            sources: p.sources,
+                            locale,
+                            qualifierLabel,
+                          },
+                        );
+                        return (
+                          <button
+                            key={`${row.sourceEntityId}-${index}`}
+                            type='button'
+                            onClick={() => setSelected(index)}
+                            aria-haspopup='dialog'
+                            className={`-mx-1 flex w-full items-center gap-2 rounded-md px-1 py-1 text-left transition-colors ${
+                              selected === index ? 'bg-accent/60' : 'hover:bg-accent/40'
+                            }`}
+                          >
+                            <span className='min-w-0 flex-1 break-words text-sm'>
+                              {row.sourceRoute !== null
+                                ? name
+                                : <span className='font-mono text-xs'>{row.sourceEntityId}</span>}
+                              {summary.text !== ''
+                                ? (
+                                  <span className='text-muted-foreground ml-2 text-xs'>
+                                    {summary.text}
+                                  </span>
+                                )
+                                : null}
+                            </span>
+                            {summary.since !== null
+                              ? (
+                                <span className='text-muted-foreground shrink-0 text-xs tabular-nums'>
+                                  {summary.since}
+                                </span>
+                              )
+                              : null}
+                            <ChevronRight
+                              className='text-muted-foreground/60 size-3.5 shrink-0'
+                              aria-hidden
+                            />
+                          </button>
+                        );
+                      })}
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          );
-        })}
-      </div>
+
+            {detailOpen && isDesktop
+              ? (
+                <div className='sticky top-4'>
+                  <div className='border-border bg-card/40 rounded-lg border'>
+                    <div className='border-border flex items-center gap-2 border-b px-3 py-2.5'>
+                      <h3 className='min-w-0 flex-1 truncate text-xs font-semibold uppercase tracking-wide'>
+                        {detailTitle}
+                      </h3>
+                      <Button
+                        type='button'
+                        variant='ghost'
+                        size='icon'
+                        className='size-6 shrink-0'
+                        onClick={() => setSelected(null)}
+                        aria-label={t('close')}
+                      >
+                        <X className='size-3.5' />
+                      </Button>
+                    </div>
+                    <div className='space-y-3 px-3 py-3'>{detailBody}</div>
+                  </div>
+                </div>
+              )
+              : null}
+          </div>
+        </>
+      )}
+
+      {detailOpen && !isDesktop
+        ? (
+          <SideSheet open onClose={() => setSelected(null)} title={detailTitle}>
+            {detailBody}
+          </SideSheet>
+        )
+        : null}
     </section>
   );
 }
