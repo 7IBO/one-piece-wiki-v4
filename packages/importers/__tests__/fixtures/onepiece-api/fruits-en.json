@@ -1,0 +1,17 @@
+[
+  {
+    "id": 1,
+    "name": "Gomu Gomu no Mi",
+    "roman_name": "Gomu Gomu no Mi",
+    "type": "Paramecia",
+    "filename": "https://images.api-onepiece.com/fruits/gomu-gomu-no-mi.png"
+  },
+  {
+    "id": 2,
+    "name": "Mera Mera no Mi",
+    "roman_name": "Mera Mera no Mi",
+    "type": "Logia",
+    "filename": "https://images.api-onepiece.com/fruits/mera-mera-no-mi.jpg",
+    "technicalFile": "Ace's fruit, later Sabo's"
+  }
+]

@@ -110,3 +110,10 @@ export * from './fandom/registry.ts';
 export * from './fandom/updates.ts';
 export * from './fandom/volume.ts';
 export * from './fandom/wikitext.ts';
+
+// api-onepiece.com ingestion (ADR-101): REST client + per-resource
+// mappers + candidate-pool import run. Namespaced — several mapper
+// names (mapCharacter, mapChapter, SCHEMA_VERSION constants…)
+// deliberately mirror the fandom family and would collide in a star
+// export. See /docs/ONEPIECE_API_SYNC.md.
+export * as onepieceApi from './onepiece-api/index.ts';

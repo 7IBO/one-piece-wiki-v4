@@ -37,7 +37,7 @@ export const CHAPTER_HANDLED_FIELDS: readonly string[] = [
 ];
 
 /** Current manga-chapter schema_version — keep in sync with the type. */
-export const MANGA_CHAPTER_SCHEMA_VERSION = 8;
+export const MANGA_CHAPTER_SCHEMA_VERSION = 9;
 
 export function mapChapter(
   pair: LocalizedRecordPair,

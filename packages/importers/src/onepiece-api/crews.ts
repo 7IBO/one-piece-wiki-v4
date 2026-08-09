@@ -42,7 +42,7 @@ export const CREW_HANDLED_FIELDS: readonly string[] = [
 ];
 
 /** Current crew schema_version — keep in sync with the type. */
-export const CREW_SCHEMA_VERSION = 4;
+export const CREW_SCHEMA_VERSION = 5;
 
 export function mapCrew(
   pair: LocalizedRecordPair,

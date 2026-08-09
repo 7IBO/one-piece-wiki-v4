@@ -53,7 +53,7 @@ export const CHARACTER_HANDLED_FIELDS: readonly string[] = [
 ];
 
 /** Current character schema_version — keep in sync with the type. */
-export const CHARACTER_SCHEMA_VERSION = 7;
+export const CHARACTER_SCHEMA_VERSION = 8;
 
 /**
  * `character-statuses` mapping, longest-match first, EN + FR spellings

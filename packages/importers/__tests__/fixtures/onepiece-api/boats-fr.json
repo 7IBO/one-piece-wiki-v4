@@ -1,0 +1,8 @@
+[
+  {
+    "id": 1,
+    "name": "Thousand Sunny",
+    "type": "Sloop",
+    "crew": { "id": 1, "name": "L'Équipage du Chapeau de Paille" }
+  }
+]
