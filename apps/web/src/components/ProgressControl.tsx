@@ -4,8 +4,9 @@
  * `web_progress` cookie — the only store the server functions can
  * read for SSR-filtered first paint — then invalidates the router so
  * every loader refetches filtered views. It is mounted by TWO
- * triggers: the compact header control below, and the Log Rail strip
- * (`LogRail.tsx`), which is the signature surface of the app.
+ * triggers: the masthead stamp below, and the Log ruler strip
+ * (`LogRail.tsx`). Styled as a printed form: ruled inputs, small-cap
+ * labels, a seal-red stamp for the save action.
  */
 import { Popover } from '@base-ui/react/popover';
 import { useRouter } from '@tanstack/react-router';
@@ -53,25 +54,24 @@ export function ProgressPanel(
     void router.invalidate();
   };
 
+  // Printed form field: bottom rule only, no box.
   const inputClass =
-    'w-full rounded-md border border-line bg-canvas px-3 py-1.5 text-sm tabular-nums text-fg outline-none transition-colors duration-150 focus:border-gold';
+    'w-full border-0 border-b border-line-strong bg-transparent px-0 py-1 font-display text-lg tabular-nums text-fg outline-none transition-colors duration-150 focus:border-accent';
 
   return (
     <>
-      <p className='font-display text-base font-semibold tracking-[-0.01em] text-fg'>
-        {t(locale, 'progressTitle')}
-      </p>
-      <p className='mt-1 text-xs leading-relaxed text-faint'>
+      <p className='overline-label text-fg'>{t(locale, 'progressTitle')}</p>
+      <p className='mt-1.5 font-serif text-[13px] italic leading-snug text-muted'>
         {t(locale, 'progressHint')}
       </p>
       <form
-        className='mt-3 space-y-2.5'
+        className='mt-3 space-y-3'
         onSubmit={(event) => {
           event.preventDefault();
           apply({ manga: parseInput(manga), anime: parseInput(anime) });
         }}
       >
-        <label className='block text-xs text-muted'>
+        <label className='overline-label block'>
           {t(locale, 'progressManga')}
           <input
             type='number'
@@ -79,10 +79,10 @@ export function ProgressPanel(
             inputMode='numeric'
             value={manga}
             onChange={(event) => setManga(event.target.value)}
-            className={`mt-1 ${inputClass}`}
+            className={`mt-0.5 ${inputClass}`}
           />
         </label>
-        <label className='block text-xs text-muted'>
+        <label className='overline-label block'>
           {t(locale, 'progressAnime')}
           <input
             type='number'
@@ -90,10 +90,10 @@ export function ProgressPanel(
             inputMode='numeric'
             value={anime}
             onChange={(event) => setAnime(event.target.value)}
-            className={`mt-1 ${inputClass}`}
+            className={`mt-0.5 ${inputClass}`}
           />
         </label>
-        <div className='flex items-center justify-between gap-2 pt-1'>
+        <div className='flex items-baseline justify-between gap-2 pt-1'>
           <button
             type='button'
             onClick={() => {
@@ -101,13 +101,13 @@ export function ProgressPanel(
               setAnime('');
               apply({ manga: null, anime: null });
             }}
-            className='py-1.5 text-xs font-medium text-faint transition-colors duration-150 hover:text-fg'
+            className='cursor-pointer py-1 text-[11px] font-medium text-faint underline decoration-line-strong underline-offset-4 transition-colors duration-150 hover:text-fg'
           >
             {t(locale, 'progressReset')}
           </button>
           <button
             type='submit'
-            className='rounded-md bg-accent px-4 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+            className='overline-label cursor-pointer border border-accent px-3.5 py-1.5 text-accent transition-colors duration-150 hover:bg-accent hover:text-canvas'
           >
             {t(locale, 'progressSave')}
           </button>
@@ -117,7 +117,7 @@ export function ProgressPanel(
   );
 }
 
-/** Compact header trigger ("Ch. 1044 · Ep. 1071" or the invitation). */
+/** Masthead trigger — the reader's position set like a printed folio. */
 export function ProgressControl(
   { progress }: { readonly progress: ProgressCursor; },
 ): JSX.Element {
@@ -135,12 +135,14 @@ export function ProgressControl(
   return (
     <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
       <Popover.Trigger
-        className={`rounded-md bg-surface px-2.5 py-1.5 text-xs font-medium transition-colors duration-150 hover:bg-surface-2 hover:text-fg sm:px-3 ${
-          active ? 'font-mono text-fg' : 'text-muted'
-        }`}
         aria-label={t(locale, 'progressTitle')}
+        className={`overline-label cursor-pointer border px-2.5 py-1.5 tabular-nums transition-colors duration-150 ${
+          active
+            ? 'border-line-strong text-fg hover:border-accent hover:text-accent'
+            : 'border-accent text-accent hover:bg-accent hover:text-canvas'
+        }`}
       >
-        <span className='block max-w-28 truncate sm:max-w-44'>{summary}</span>
+        <span className='block max-w-56 truncate sm:max-w-64'>{summary}</span>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner
@@ -150,7 +152,7 @@ export function ProgressControl(
           collisionPadding={12}
           className='isolate z-50'
         >
-          <Popover.Popup className='w-72 rounded-lg border border-line bg-surface p-4 shadow-2xl outline-none'>
+          <Popover.Popup className='w-72 border border-line-strong bg-surface p-4 outline-none'>
             <ProgressPanel progress={progress} onDone={() => setOpen(false)} />
           </Popover.Popup>
         </Popover.Positioner>

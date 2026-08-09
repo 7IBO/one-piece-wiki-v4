@@ -1,13 +1,13 @@
 /**
- * The ONE entity-card unit for people/things in grids (WEB_APP.md
- * § entity cards): 3:4 portrait/monogram tile, semibold name, then —
- * only when the data exists, no empty lines — a muted identity line
- * (epithet, release date, kind…), a faint meta line (role · rank ·
- * since…) and a footer holding an optional status tag plus a
- * right-aligned micro-stat (bounty…). Purely presentational: every
- * string arrives spoiler-checked from the server view models. Long
- * values truncate with a `title` tooltip so mobile 2-col grids stay
- * clean.
+ * The ONE entity unit for people/things in grids, set as a NEWSPAPER
+ * PHOTO BLOCK (WEB_APP.md § Identity): rectangular 3:4 photo (or the
+ * monogram plate), hairline frame, then a caption stack — name in the
+ * display serif, epithet in italic serif, role/meta in the small-cap
+ * data voice, an optional status mark and right-aligned figure
+ * (bounty…). Blocks sit in a tight lattice whose 1px frames collapse
+ * into shared rules — a contact sheet, not floating cards. Purely
+ * presentational: every string arrives spoiler-checked from the
+ * server view models. Long values truncate with a `title` tooltip.
  */
 import { Link } from '@tanstack/react-router';
 import type { JSX, ReactNode } from 'react';
@@ -16,13 +16,13 @@ import { useScopeSearch } from './EntityChip';
 import { EntityImage } from './EntityImage';
 
 /**
- * Cards are sized to their CONTENT, never to the container: tracks
- * cap at 164px and left-pack, so a 4-member crew never stretches its
- * cards across a wide tile.
+ * The lattice: left-packed wrap of fixed ~150px blocks (2-up on
+ * phones); adjacent 1px frames overlap via negative margins so every
+ * interior rule reads as a single hairline.
  */
 export function CardGrid({ children }: { readonly children: ReactNode; }): JSX.Element {
   return (
-    <ul className='grid grid-cols-2 gap-2.5 sm:grid-cols-[repeat(auto-fill,minmax(124px,164px))]'>
+    <ul className='flex flex-wrap pl-px pt-px'>
       {children}
     </ul>
   );
@@ -38,46 +38,49 @@ export function EntityCard(
     readonly secondary?: string | null;
     /** Context meta line (role · rank · since…). */
     readonly meta?: string | null;
-    /** Small uppercase badge (status when not alive…). */
+    /** Small caps status mark (when not the unremarkable default). */
     readonly tag?: string | null;
-    /** Right-aligned micro-stat (bounty…). */
+    /** Right-aligned figure (bounty…). */
     readonly stat?: string | null;
   },
 ): JSX.Element {
   const search = useScopeSearch();
   const hasFooter = tag !== null || stat !== null;
   return (
-    <li>
+    <li className='-ml-px -mt-px w-[calc(50%+1px)] border border-line min-[480px]:w-[150px]'>
       <Link
         to='/$type/$slug'
         params={{ type, slug }}
         search={search}
-        className='group flex h-full flex-col rounded-lg bg-surface p-2 ring-1 ring-inset ring-line transition-[background-color,box-shadow] duration-150 hover:bg-surface-2 hover:ring-line-strong'
+        className='group flex h-full flex-col bg-canvas transition-colors duration-150 hover:bg-surface'
       >
         <EntityImage
           image={image}
           name={name}
           ratio='portrait'
-          className='w-full rounded-md'
+          className='w-full border-b border-line'
           monogramClassName='text-4xl'
         />
-        <span className='mt-2 flex min-w-0 flex-1 flex-col px-1 pb-1'>
+        <span className='flex min-w-0 flex-1 flex-col px-2 pb-2 pt-1.5'>
           <span
             title={name}
-            className='truncate text-sm font-semibold text-fg transition-colors duration-150 group-hover:text-accent'
+            className='truncate font-display text-[13.5px] font-semibold leading-snug text-fg transition-colors duration-150 group-hover:text-accent'
           >
             {name}
           </span>
           {secondary !== null
             ? (
-              <span title={secondary} className='truncate text-xs text-muted'>
+              <span title={secondary} className='truncate font-serif text-xs italic text-muted'>
                 {secondary}
               </span>
             )
             : null}
           {meta !== null
             ? (
-              <span title={meta} className='mt-0.5 truncate text-xs text-faint'>
+              <span
+                title={meta}
+                className='mt-0.5 truncate text-[10px] font-medium tracking-[0.02em] text-faint'
+              >
                 {meta}
               </span>
             )
@@ -87,7 +90,7 @@ export function EntityCard(
               <span className='mt-auto flex items-baseline justify-between gap-2 pt-1.5'>
                 {tag !== null
                   ? (
-                    <span className='rounded bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted'>
+                    <span className='truncate text-[9px] font-semibold uppercase tracking-[0.14em] text-muted'>
                       {tag}
                     </span>
                   )
@@ -96,7 +99,7 @@ export function EntityCard(
                   ? (
                     <span
                       title={stat}
-                      className='ml-auto truncate text-xs font-semibold tabular-nums text-gold'
+                      className='ml-auto shrink-0 truncate text-[11px] font-semibold tabular-nums text-gold'
                     >
                       {stat}
                     </span>

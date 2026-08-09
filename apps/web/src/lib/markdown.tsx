@@ -21,7 +21,7 @@ function renderInline(text: string): ReactNode {
     }
     if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
       return (
-        <code key={i} className='rounded bg-surface-2 px-1 py-0.5 font-mono text-[0.85em]'>
+        <code key={i} className='bg-surface px-1 py-0.5 font-mono text-[0.85em]'>
           {part.slice(1, -1)}
         </code>
       );
@@ -118,7 +118,7 @@ export function parseBlocks(markdown: string): Block[] {
 export function Markdown({ markdown }: { readonly markdown: string; }): JSX.Element {
   const blocks = parseBlocks(markdown);
   return (
-    <div className='space-y-4 leading-relaxed text-fg/90'>
+    <div className='dropcap space-y-4 font-serif text-[15.5px] leading-[1.65] text-fg/92'>
       {blocks.map((block, i) => {
         switch (block.kind) {
           case 'heading': {
@@ -126,9 +126,9 @@ export function Markdown({ markdown }: { readonly markdown: string; }): JSX.Elem
             return (
               <h3
                 key={i}
-                className={`font-display font-semibold tracking-[-0.01em] text-fg ${
+                className={`mt-8 border-b border-line pb-1 font-display font-semibold text-fg ${
                   sizes[block.level - 1] ?? 'text-base'
-                } mt-8`}
+                }`}
               >
                 {renderInline(block.text)}
               </h3>
@@ -144,7 +144,7 @@ export function Markdown({ markdown }: { readonly markdown: string; }): JSX.Elem
             return (
               <pre
                 key={i}
-                className='overflow-x-auto rounded-md bg-surface-2 p-4 font-mono text-sm'
+                className='overflow-x-auto border border-line bg-surface p-4 font-mono text-sm'
               >
                 {block.text}
               </pre>

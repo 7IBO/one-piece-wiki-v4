@@ -105,6 +105,9 @@ const STRINGS = {
   contributeHistory: { en: 'History', fr: 'Historique' },
   footerContribute: { en: 'Contribute', fr: 'Contribuer' },
   footerSupport: { en: 'Support', fr: 'Soutenir' },
+
+  // v6 "La Gazette" additions (append-only)
+  members: { en: 'Members', fr: 'Membres' },
 } as const;
 
 export type ChromeKey = keyof typeof STRINGS;

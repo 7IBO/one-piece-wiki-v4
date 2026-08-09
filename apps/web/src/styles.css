@@ -1,44 +1,51 @@
 @import 'tailwindcss';
 @import '@fontsource-variable/inter';
-@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/fraunces';
+@import '@fontsource-variable/newsreader';
+@import '@fontsource-variable/newsreader/wght-italic.css';
 
 /*
- * Public reader theme — "Le Log", the signature register (2026
- * redesign v5, see WEB_APP.md § Identity). Tailwind v4 CSS-first
- * config: tokens ONLY here, every component reads them (zero raw
- * hex/oklch in TSX).
+ * Public reader theme — v6 "La Gazette" (see WEB_APP.md § Identity):
+ * the site is set like a PRINTED reference object — a dark almanac /
+ * ship's log — not a web app. Tailwind v4 CSS-first config: tokens
+ * ONLY here, every component reads them (zero raw hex/oklch in TSX).
  *
- * Palette "abysse" — One Piece à notre sauce, no clipart:
- * - Canvas: deep ocean (very dark desaturated blue-green) with two
- *   surface steps carrying the same cast.
- * - Foreground: BONE/parchment (warm off-white), never pure white;
- *   muted grays keep the blue-green cast; hairlines are bone-tinted.
- * - Accent DUO, strictly split:
- *   · GOLD (straw hat) = identity moments — wordmark accent, the Log
- *     Rail fill/marker, bounty plaques and stats, monogram initials,
- *     focus rings, selection.
- *   · VERMILLION (`accent`) = interactive — links, buttons, current
- *     states. Nothing else carries hue.
- * - Display face: Bricolage Grotesque Variable. Body/UI: Inter
- *   Variable. Mono: ui-monospace stack.
+ * Principles (the hard rules of the register):
+ * - Typography IS the design. Fraunces (serif display) carries every
+ *   headline and entity name; Newsreader (serif text) carries prose;
+ *   Inter is demoted to a compact data face for tables, captions and
+ *   letterspaced small-cap labels. Big scale contrast, tight leading.
+ * - Structure comes from RULES, not boxes: 1px hairlines, double
+ *   rules under section heads, ruled data tables, column rules.
+ *   No cards, no rounded corners, no shadows, no gradients, no pills.
+ * - Ink and paper, dark: warm near-black ink ground, bone "paper"
+ *   text. ONE accent — a hanko/seal vermillion — reserved for
+ *   interactive marks and stamps. A restrained gold exists for the
+ *   bounty plaque only.
  */
 @theme {
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
-  --font-display: 'Bricolage Grotesque Variable', ui-sans-serif, system-ui, sans-serif;
+  --font-display: 'Fraunces Variable', Georgia, 'Times New Roman', serif;
+  --font-serif: 'Newsreader Variable', Georgia, 'Times New Roman', serif;
 
-  --color-canvas: oklch(0.16 0.022 220);
-  --color-surface: oklch(0.195 0.024 218);
-  --color-surface-2: oklch(0.235 0.026 216);
-  --color-line: oklch(0.92 0.02 85 / 0.09);
-  --color-line-strong: oklch(0.92 0.02 85 / 0.2);
+  /* Warm ink — near-black with a candle-light cast, never blue. */
+  --color-canvas: oklch(0.168 0.009 65);
+  --color-surface: oklch(0.195 0.01 66);
+  --color-surface-2: oklch(0.228 0.011 68);
+  /* Hairlines are paper-tinted ink rules. */
+  --color-line: oklch(0.9 0.02 82 / 0.14);
+  --color-line-strong: oklch(0.9 0.02 82 / 0.34);
 
-  --color-fg: oklch(0.92 0.02 85);
-  --color-muted: oklch(0.71 0.018 200);
-  --color-faint: oklch(0.55 0.016 205);
+  /* Bone / paper foreground steps. */
+  --color-fg: oklch(0.908 0.021 84);
+  --color-muted: oklch(0.72 0.018 80);
+  --color-faint: oklch(0.565 0.014 76);
 
-  --color-accent: oklch(0.62 0.19 25);
-  --color-accent-hover: oklch(0.7 0.18 28);
-  --color-gold: oklch(0.8 0.12 90);
+  /* The seal — hanko / wanted-poster vermillion. Interactive only. */
+  --color-accent: oklch(0.615 0.163 29);
+  --color-accent-hover: oklch(0.695 0.152 31);
+  /* Bounty plaque gold. Nothing else may use it. */
+  --color-gold: oklch(0.795 0.100 90);
 }
 
 html {
@@ -51,22 +58,62 @@ body {
   background-color: var(--color-canvas);
   color: var(--color-fg);
   font-family: var(--font-sans);
-  font-size: 15px;
-  line-height: 1.6;
+  font-size: 14px;
+  line-height: 1.55;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
 }
 
+/* Print inversion: selected text reads as ink on paper. */
 ::selection {
-  background-color: var(--color-gold);
+  background-color: var(--color-fg);
   color: var(--color-canvas);
 }
 
-/* One focus language everywhere: gold ring, 2px offset. */
+/* One focus language everywhere: seal-red rule, square. */
 :focus-visible {
-  outline: 2px solid var(--color-gold);
+  outline: 2px solid var(--color-accent);
   outline-offset: 2px;
-  border-radius: 2px;
+  border-radius: 0;
+}
+
+/* --- Print artifacts (shared classes, tokens-only). In the
+ * `components` layer so plain utilities can still override them. --- */
+@layer components {
+  /* Letterspaced small-cap label — the metadata voice of the gazette. */
+  .overline-label {
+    font-family: var(--font-sans);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    color: var(--color-faint);
+  }
+
+  /* Double rule — closes a masthead or a section head, almanac style. */
+  .rule-double {
+    border-bottom: 3px double var(--color-line-strong);
+  }
+
+  /* Dot leaders between a label and its figure (index / TOC rows). */
+  .leaders {
+    flex: 1 1 1rem;
+    min-width: 1rem;
+    margin: 0 0.45rem;
+    border-bottom: 1px dotted var(--color-line-strong);
+    transform: translateY(-0.28em);
+  }
+
+  /* Drop cap on the opening paragraph of a narrative. */
+  .dropcap > p:first-child::first-letter {
+    float: left;
+    font-family: var(--font-display);
+    font-size: 3.05em;
+    font-weight: 500;
+    line-height: 0.82;
+    padding-right: 0.09em;
+    padding-top: 0.06em;
+  }
 }
 
 /* Comfortable touch targets on coarse pointers (same floor as the

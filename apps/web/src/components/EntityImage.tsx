@@ -5,16 +5,18 @@
  * raw `<img>` frame anywhere.
  *
  * Contract:
- * - The designed ground (a monogram tile: the entity's initial set in
- *   the display face on a quiet duotone of the surface tokens) renders
- *   FIRST and stays underneath until a real image is CONFIRMED loaded
+ * - The designed ground (a monogram plate: the entity's initial set
+ *   in the display serif on a quiet raised-ink ground, hairline
+ *   frame — a printer's ornament, not a placeholder) renders FIRST
+ *   and stays underneath until a real image is CONFIRMED loaded
  *   (`complete && naturalWidth > 0`).
- * - The `<img>` sits on top at opacity 0 and blur-fades in (~200ms)
- *   only once loaded; on failure it unmounts entirely. Load state is
+ * - The `<img>` sits on top at opacity 0 and fades in (~200ms) only
+ *   once loaded; on failure it unmounts entirely. Load state is
  *   probed on mount too, so errors/loads that fire before hydration
  *   are never missed.
  * - Aspect ratio is reserved up front (3:4 portrait, 1:1 thumb) so
- *   layout never jumps between fallback and photo.
+ *   layout never jumps between fallback and photo. Everything is
+ *   square-cornered — photos in print are rectangles.
  *
  * Callers that want NO block at all when no image entity exists
  * (e.g. the infobox) simply don't render the component.
@@ -37,22 +39,22 @@ export function EntityImage(
     /** Reserved aspect: `portrait` = 3:4 (infobox), `square` = 1:1 (thumbs). */
     readonly ratio?: ImageRatio;
     readonly className?: string;
-    /** Type scale of the monogram initial, matched to the tile size. */
+    /** Type scale of the monogram initial, matched to the plate size. */
     readonly monogramClassName?: string;
   },
 ): JSX.Element {
   return (
     <div
       className={`relative isolate shrink-0 overflow-hidden ${
-        ratio === 'portrait' ? 'aspect-[3/4]' : 'aspect-square'
+        ratio === 'portrait' ? 'aspect-3/4' : 'aspect-square'
       } ${className}`}
     >
       <div
         aria-hidden
-        className='absolute inset-0 grid select-none place-items-center rounded-[inherit] bg-surface-2 ring-1 ring-inset ring-line'
+        className='absolute inset-0 grid select-none place-items-center bg-surface ring-1 ring-line ring-inset'
       >
         <span
-          className={`font-display font-semibold leading-none tracking-[-0.02em] text-gold/40 ${monogramClassName}`}
+          className={`font-display font-medium leading-none text-fg/35 ${monogramClassName}`}
         >
           {initialOf(name)}
         </span>
@@ -85,8 +87,8 @@ function Photo({ image }: { readonly image: ImageView; }): JSX.Element | null {
       decoding='async'
       onLoad={() => setState('loaded')}
       onError={() => setState('failed')}
-      className={`absolute inset-0 size-full rounded-[inherit] object-cover transition-[opacity,filter] duration-200 ease-out ${
-        state === 'loaded' ? 'opacity-100 blur-0' : 'opacity-0 blur-xs'
+      className={`absolute inset-0 size-full object-cover transition-opacity duration-200 ease-out ${
+        state === 'loaded' ? 'opacity-100' : 'opacity-0'
       }`}
     />
   );

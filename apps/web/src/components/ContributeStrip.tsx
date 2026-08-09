@@ -1,7 +1,8 @@
 /**
- * Quiet full-width strip at the bottom of every entity page linking
- * to the dashboard (view/edit + history) for the same entity —
- * WEB_APP.md § contribute strip. `VITE_DASHBOARD_URL` is a build-time
+ * Quiet ruled band at the bottom of every entity page linking to the
+ * dashboard (view/edit + history) for the same entity — WEB_APP.md
+ * § contribute strip. Set as a printed colophon line: hairline above,
+ * serif lead, stamped edit mark. `VITE_DASHBOARD_URL` is a build-time
  * env override; default is the production dashboard.
  */
 import { type JSX } from 'react';
@@ -19,13 +20,15 @@ export function ContributeStrip(
   const locale = useLocale();
   const base = `${DASHBOARD_URL}/types/${type}/${slug}`;
   return (
-    <div className='mt-10 flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-lg bg-surface px-5 py-4 text-sm text-muted'>
-      <span>{t(locale, 'contributeLead')}</span>
+    <div className='mt-12 flex flex-wrap items-baseline gap-x-5 gap-y-2.5 border-t border-line-strong pt-3.5'>
+      <span className='font-serif text-[14px] italic text-muted'>
+        {t(locale, 'contributeLead')}
+      </span>
       <a
         href={base}
         target='_blank'
         rel='noreferrer'
-        className='rounded-md bg-accent px-3.5 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+        className='overline-label border border-accent px-3 py-1.5 text-accent transition-colors duration-150 hover:bg-accent hover:text-canvas'
       >
         {t(locale, 'contributeEdit')}
       </a>
@@ -33,7 +36,7 @@ export function ContributeStrip(
         href={`${base}/history`}
         target='_blank'
         rel='noreferrer'
-        className='rounded-md bg-surface-2 px-3.5 py-1.5 text-xs font-medium text-muted transition-colors duration-150 hover:text-fg'
+        className='overline-label text-muted underline decoration-line-strong underline-offset-4 transition-colors duration-150 hover:text-fg'
       >
         {t(locale, 'contributeHistory')}
       </a>

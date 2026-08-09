@@ -15,7 +15,24 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (PR #120 : ADR-099/100/101 livrés + design v5 « Le Log »)
+**Last updated**: 2026-08-09 (design v6 « La Gazette » — en attente du verdict mainteneur)
+
+**2026-08-09 — design v6 « La Gazette » (après merge PR #120).** Le
+v5 « Le Log » a été rejeté par le mainteneur (« trop IA », 6e rejet).
+Diagnostic : les 5 itérations partageaient l'ADN « web app moderne à
+composants » (cards arrondies, pills, grilles uniformes, accents
+lumineux) — c'est cet ADN qui lit « IA ». v6 l'abandonne : **objet
+imprimé sombre** (almanach/gazette) — Fraunces (display) +
+Newsreader (texte) auto-hébergées, encre chaude
+`oklch(0.168 0.009 65)` + texte os, filets hairline 1px + doubles
+filets + points de conduite, zéro border-radius/ombre/dégradé/pill,
+accent unique vermillon sceau (or réservé à la plaque prime),
+LogRail restylée en règle imprimée, membres en blocs photo de
+journal (treillis 1px, légende sérif + petites capitales). 467 tests
+verts, lint/typecheck/build OK, fonctionnel inchangé
+(`server/views.ts` intact). **Ne pas merger sur main avant
+validation explicite du rendu par le mainteneur** (engagement pris
+après le 6e rejet).
 
 **2026-08-09 — lot PR #120 livré.** (a) **ADR-099** implémenté :
 `led-by`/`captains`/`introduces-character`/`awakening-of`/`total_bounty`

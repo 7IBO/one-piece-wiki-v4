@@ -1,17 +1,18 @@
 /**
- * The Log Rail — the signature surface of the app (WEB_APP.md § Le
- * Log). A persistent slim strip under the header: a stylized timeline
- * of the manga axis with graduated ticks, a GOLD fill from origin to
- * the reader's cursor and a marker at the cursor position. On entity
- * pages it additionally shows small diamond markers where THIS page's
- * knowledge anchors live (first appearance, bounty changes…) — every
- * page literally shows where in the story its data sits. No cursor =
- * unfilled rail with the invitation. The whole strip is a button
- * opening the shared `ProgressPanel`.
+ * The Log ruler — the printed measure of the reader's progression
+ * (WEB_APP.md § Identity). A slim strip under the masthead set like a
+ * ruler in a logbook: graduated ticks rising from the bottom rule,
+ * chapter figures over the major graduations, the read region shaded
+ * in paper tint, and the cursor as a seal-red rule with its figure.
+ * On entity pages small paper diamonds mark where THIS page's
+ * knowledge anchors sit on the manga axis — every page literally
+ * shows where in the story its data lives. No cursor = a bare,
+ * unshaded measure (the masthead stamp carries the invitation). The
+ * whole strip is a button opening the shared `ProgressPanel`.
  *
  * Pure CSS positioning (percent of a fixed chapter scale); the anchor
  * data arrives spoiler-filtered from `views.ts` (`logAnchors`), so
- * the rail can never reveal that something happens beyond the cursor.
+ * the ruler can never reveal that something happens beyond the cursor.
  */
 import { Popover } from '@base-ui/react/popover';
 import { type JSX, useState } from 'react';
@@ -20,10 +21,10 @@ import { t } from '../lib/chrome';
 import { useLocale } from '../routes/__root';
 import { ProgressPanel } from './ProgressControl';
 
-/** Fixed manga-axis scale — robust: the rail never rescales per page. */
+/** Fixed manga-axis scale — robust: the ruler never rescales per page. */
 const SCALE_MAX = 1150;
-/** Graduation every N chapters; numbered label every 2 graduations. */
-const TICK_STEP = 100;
+/** Minor graduation every N chapters; major (numbered) every 4 minors. */
+const TICK_STEP = 50;
 
 function pct(chapter: number): number {
   return (Math.min(Math.max(chapter, 0), SCALE_MAX) / SCALE_MAX) * 100;
@@ -43,75 +44,82 @@ export function LogRail(
   for (let n = TICK_STEP; n < SCALE_MAX; n += TICK_STEP) ticks.push(n);
   return (
     <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
-      <Popover.Trigger
-        aria-label={t(locale, 'progressTitle')}
-        className='group relative block h-8 w-full cursor-pointer overflow-hidden border-t border-line bg-canvas sm:h-9'
-      >
-        {/* Track base line */}
-        <span aria-hidden className='absolute inset-x-0 top-1/2 h-px bg-line-strong' />
-        {/* Graduations + chapter numbers */}
-        {ticks.map((n) => (
-          <span key={n} aria-hidden>
-            <span
-              className='absolute top-1/2 h-2 w-px -translate-y-1/2 bg-line-strong'
-              style={{ left: `${pct(n)}%` }}
-            />
-            {n % (TICK_STEP * 2) === 0
-              ? (
-                <span
-                  className='absolute top-1/2 hidden -translate-y-1/2 translate-x-1.5 font-mono text-[9px] tabular-nums text-faint sm:block'
-                  style={{ left: `${pct(n)}%` }}
-                >
-                  {n}
-                </span>
-              )
-              : null}
-          </span>
-        ))}
-        {/* Gold fill: origin → cursor (behind the anchors) */}
-        {cursor !== null
-          ? (
-            <>
+      <div className='mx-auto w-full max-w-[1200px] px-4 sm:px-6'>
+        <Popover.Trigger
+          aria-label={t(locale, 'progressTitle')}
+          className='group relative block h-9 w-full cursor-pointer overflow-hidden border-b border-line-strong'
+        >
+          {/* Shaded read region: origin → cursor (printed tint). */}
+          {cursor !== null
+            ? (
               <span
                 aria-hidden
-                className='absolute inset-y-0 left-0 bg-gold/10'
+                className='absolute inset-y-0 left-0 bg-fg/6'
                 style={{ width: `${fill}%` }}
               />
-              <span
-                aria-hidden
-                className='absolute inset-y-0 w-[2px] bg-gold'
-                style={{ left: `calc(${fill}% - 1px)` }}
-              />
-            </>
-          )
-          : null}
-        {/* This page's knowledge anchors (diamonds, spoiler-filtered) */}
-        {anchors.map((anchor) => (
-          <span
-            key={anchor.chapter}
-            title={`${t(locale, 'chapterShort')} ${anchor.chapter} — ${anchor.label}`}
-            className='absolute top-1/2 size-[7px] -translate-x-1/2 -translate-y-1/2 rotate-45 border border-canvas bg-gold'
-            style={{ left: `${pct(anchor.chapter)}%` }}
-          />
-        ))}
-        {/* Cursor value / invitation — chipped above everything */}
-        {cursor !== null
-          ? (
+            )
+            : null}
+          {/* Graduations rising from the bottom rule + figures. */}
+          {ticks.map((n) => {
+            const major = n % (TICK_STEP * 4) === 0;
+            // The cursor figure owns its spot — the nearest printed
+            // graduation figure yields to it.
+            const showFigure = major
+              && (cursor === null || Math.abs(n - cursor) > SCALE_MAX * 0.055);
+            return (
+              <span key={n} aria-hidden>
+                <span
+                  className={`absolute bottom-0 w-px bg-line-strong ${major ? 'h-3' : 'h-1.5'}`}
+                  style={{ left: `${pct(n)}%` }}
+                />
+                {showFigure
+                  ? (
+                    <span
+                      className='absolute bottom-3.5 hidden -translate-x-1/2 font-sans text-[9px] font-medium tabular-nums tracking-[0.08em] text-faint sm:block'
+                      style={{ left: `${pct(n)}%` }}
+                    >
+                      {n}
+                    </span>
+                  )
+                  : null}
+              </span>
+            );
+          })}
+          {/* This page's knowledge anchors (diamonds, spoiler-filtered). */}
+          {anchors.map((anchor) => (
             <span
-              className={`absolute top-1/2 -translate-y-1/2 whitespace-nowrap rounded bg-canvas/85 px-1 font-mono text-[10px] font-semibold tabular-nums text-gold ${
-                fill > 82 ? '-translate-x-full' : ''
-              }`}
-              style={{ left: fill > 82 ? `calc(${fill}% - 6px)` : `calc(${fill}% + 6px)` }}
-            >
-              {t(locale, 'chapterShort')} {cursor}
-            </span>
-          )
-          : (
-            <span className='absolute right-4 top-1/2 -translate-y-1/2 rounded bg-canvas px-1.5 text-[11px] font-medium text-muted transition-colors duration-150 group-hover:text-fg sm:right-6'>
-              {t(locale, 'setProgress')} →
-            </span>
-          )}
-      </Popover.Trigger>
+              key={anchor.chapter}
+              title={`${t(locale, 'chapterShort')} ${anchor.chapter} — ${anchor.label}`}
+              className='absolute bottom-[5px] size-[6px] -translate-x-1/2 rotate-45 bg-fg/70'
+              style={{ left: `${pct(anchor.chapter)}%` }}
+            />
+          ))}
+          {
+            /* Cursor rule + figure (knocked out of the graduations).
+              No cursor: the ruler stays a bare measure — the masthead
+              stamp carries the printed invitation. */
+          }
+          {cursor !== null
+            ? (
+              <>
+                <span
+                  aria-hidden
+                  className='absolute inset-y-0 w-[2px] bg-accent'
+                  style={{ left: `calc(${fill}% - 1px)` }}
+                />
+                <span
+                  className={`absolute top-0.5 whitespace-nowrap bg-canvas px-1 font-sans text-[9px] font-semibold uppercase tabular-nums tracking-[0.14em] text-accent ${
+                    fill > 82 ? '-translate-x-full' : ''
+                  }`}
+                  style={{ left: fill > 82 ? `calc(${fill}% - 7px)` : `calc(${fill}% + 7px)` }}
+                >
+                  {t(locale, 'chapterShort')} {cursor}
+                </span>
+              </>
+            )
+            : null}
+        </Popover.Trigger>
+      </div>
       <Popover.Portal>
         <Popover.Positioner
           side='bottom'
@@ -120,7 +128,7 @@ export function LogRail(
           collisionPadding={12}
           className='isolate z-50'
         >
-          <Popover.Popup className='w-72 rounded-lg border border-line bg-surface p-4 shadow-2xl outline-none'>
+          <Popover.Popup className='w-72 border border-line-strong bg-surface p-4 outline-none'>
             <ProgressPanel progress={progress} onDone={() => setOpen(false)} />
           </Popover.Popup>
         </Popover.Positioner>

@@ -9,23 +9,36 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
 ## Identity
 
 - **Name**: One Piece Wiki (header wordmark; `<title>` suffix).
-- **Style** (v5 "Le Log", 2026-08-09 — signature identity built on
-  the product's unique asset, the progression cursor): **the Log
-  Rail** — a persistent stylized manga-axis timeline under the
-  header (graduated ticks, gold fill from origin to the reader's
-  cursor, chipped marker; entity pages add gold diamond markers at
-  that page's knowledge anchors, computed from already
-  spoiler-filtered entries so the rail can never leak). Layout:
-  fixed 68 px LEFT SPINE (vertical wordmark, current-type glyph,
-  locale at bottom; collapses to a top bar on mobile), content
-  left-aligned in a 1280 px canvas; entity body = 12-col dense-flow
-  BENTO mosaic with spans derived from content volume, bounty as a
-  gold-framed typographic plaque. Palette "abysse": deep ocean
-  canvas (oklch ≈0.16 hue 220), bone foreground, strict duo — straw
-  GOLD for identity (rail, plaques, stats, monograms, focus) +
-  VERMILLION for all interactive. Cards content-sized
-  (minmax 124-164 px, left-packed), zero empty bands, no ornaments.
-  Bricolage Grotesque + Inter, tabular numerals.
+- **Style** (v6 "La Gazette", 2026-08-09 — the site is set like a
+  PRINTED reference object: a dark almanac / ship's log, not a web
+  app). Typography IS the design: Fraunces (serif display) for every
+  headline and entity name, Newsreader (serif text) for prose, Inter
+  demoted to a compact data face for tables and letterspaced
+  small-cap labels. Structure comes from RULES, not boxes — 1px
+  hairlines, double rules under mastheads and section heads, ruled
+  data tables, dot-leader index rows, CSS column rules; NO cards, NO
+  rounded corners, NO shadows/gradients/pills/chips/dots. Chrome: a
+  printed MASTHEAD (ear row with tagline + locale, nameplate row with
+  serif wordmark + progress stamp, double rule) over the **Log
+  ruler** — the manga-axis progression measure drawn as a printed
+  ruler (graduations rising from the bottom rule, figures over
+  majors, paper-tinted shading from origin to the reader's cursor,
+  seal-red cursor rule; entity pages add paper diamonds at that
+  page's knowledge anchors, computed from already spoiler-filtered
+  entries so the ruler can never leak). Entity pages are BROADSHEET
+  articles: headword band (small-cap overline, huge serif name,
+  double rule), then a ruled two-column body — fiche column
+  (hairline-framed photo block, WANTED-style double-ruled gold
+  bounty plate, almanac data table) beside the main matter (ruled
+  sections, drop-cap narrative, chronology tables, columnar
+  relations). Member/cast grids are newspaper PHOTO BLOCKS: 3:4
+  photo, hairline frame collapsing into a shared lattice, caption
+  stack (serif name, italic epithet, small-cap role), ~150 px,
+  left-packed. Palette: warm INK canvas (near-black, candle cast,
+  oklch ≈0.17 hue 65), BONE/paper foreground; ONE accent — hanko /
+  wanted-poster seal VERMILLION for everything interactive — plus a
+  restrained gold reserved for the bounty plate alone. Tabular
+  numerals throughout.
 - **Footer (every page)**: GitHub repository link
   (`https://github.com/7IBO/one-piece-wiki-v4`) and a support link
   (`https://buymeacoffee.com/7ibo`), plus locale switcher.
@@ -163,13 +176,13 @@ One shared image component renders EVERY image in the app. Rules:
   tracked and the designed fallback renders until a real image
   confirms; when an entity has no image at all, the infobox has no
   image block (no empty frame pretending to be a photo).
-- The fallback is an editorial monogram tile — entity initial in the
-  display serif on a flat/duotone ground from the existing palette
-  tokens, consistent radius, generous negative space. No AI-ish
+- The fallback is a monogram plate — entity initial in the display
+  serif on a quiet raised-ink ground with a hairline frame (a
+  printer's ornament, not a placeholder). Square corners, no AI-ish
   stock gradients, no glassmorphism, no emoji.
 - Aspect ratios are reserved (3:4 portraits, 1:1 thumbs), covers use
-  `object-fit: cover`, `loading="lazy"`, and a subtle (~150-200 ms)
-  fade/blur-in when a real image lands.
+  `object-fit: cover`, `loading="lazy"`, and a subtle (~200 ms)
+  fade-in when a real image lands.
 
 ## i18n
 
