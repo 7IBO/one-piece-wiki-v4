@@ -8,6 +8,129 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-105 — One appearance relation: `features-characters` folds into `features`, granularity comes from the source type
+
+**Date**: 2026-08-09
+
+**Context**: The maintainer asked the character page to show « les
+apparitions sur total d'épisode ou chapitre » and « la liste de toutes
+les apparitions ». That needs appearance edges at chapter/episode
+granularity. The brief assumed the only appearance relation was
+`features-characters` (`arc` → `character`, `role` required since
+ADR-098) and that "Luffy appears in chapter 1044" was inexpressible.
+**It already is**: `features` (ADR-069, which absorbed
+`references`/`mentions`) is declared from `manga-chapter`,
+`anime-episode`, `film`, `video-game`, `live-action-series`,
+`live-action-episode`, `anime-special`, `live-performance`, `sbs`,
+`sbs-qa` and `databook` to `character` and 12 other target types, and
+`manga-chapter`/`anime-episode` list it in both `allowed_relations` and
+`recommended_relations`. DATA_MODEL's chapter 1044 example has shipped a
+`features → character:luffy` edge since the first draft.
+
+So the real finding is not a missing relation — it is a **dual home**:
+two relations record "this work features this character", one per unit
+source and one per arc. The 2026-08-09 catalogue audit saw it (R9) and
+kept `features-characters` because its `role` payload is not derivable;
+ADR-099 then laid down the maintainer's rule — « une seule
+propriété/relation pour gérer une donnée » — and R9 was never re-judged
+under it.
+
+**Options considered**:
+
+1. **Widen `features-characters`** to the unit source types (the brief's
+   option (a)). Rejected: it would make chapter → character appearances
+   expressible **twice**, via `features` and via `features-characters`,
+   which is precisely the dual home ADR-099 forbids. The option is only
+   coherent if `features` loses `character` as a target — but `features`
+   is the general source→entity relation (13 target types); carving
+   characters out of it would split one concept along a target axis and
+   leave `features` and `features-characters` differing by nothing a
+   reader could name.
+2. **A third, finer relation** alongside the arc one (option (b)).
+   Rejected for the same reason, twice over.
+3. **Fold `features-characters` into `features`** — one relation for the
+   appearance concept, granularity carried by the **source type of the
+   edge**. Chosen.
+
+**Decision**:
+
+1. **`features-characters` is REMOVED.** `features` gains `arc` in
+   `valid_from_types` (v2) and `arc.allowed_relations` swaps
+   `features-characters` for `features` (v5). One relation, one concept:
+   `<source> --features--> <entity>`.
+2. **`role` moves onto `features`, OPTIONAL**, bound to the vocabulary
+   formerly named `arc-roles`, **renamed `narrative-roles`** (same 13
+   values, v2) — it is now reachable from every source type, not just
+   arcs. This is the `role` question resolved: a narrative function
+   (protagonist, antagonist, mentor…) is a property of a character in a
+   **work or an arc**, never of a character in chapter 1044. Forcing
+   `arc-roles` onto per-chapter edges (required, as it was on
+   `features-characters`) would have fabricated a value on every one of
+   ~1000 edges per character. Optional means chapter and episode edges
+   simply omit it, films and games may carry it, arcs are expected to.
+3. **`appearance_type` becomes OPTIONAL** (it was required on
+   `features`). An importer that knows only a chapter's character list —
+   the shape every source of dense appearance data has — must not be
+   forced to invent `full`. Absent now means "appears, manner not
+   recorded"; the vocabulary stays for when the manner is known
+   (`silhouette`, `mentioned`, `flashback`, `revelation`…). A bare edge
+   from a unit source is therefore legal, and is exactly the datum the
+   maintainer asked for.
+4. **New advisory rule `arc-appearance-needs-role`** (relation scope,
+   `applies_to_entity_types: [arc]`, `relation_when: target_type_is
+   character`, `relation_expect: qualifier_present role`). With both
+   qualifiers optional, a bare `arc → character` edge would be pure
+   duplication of its chapters — the rule says so instead of the schema
+   forbidding it, keeping ADR-085's advisory default and ADR-098's R9
+   reasoning intact without a second relation to carry it.
+5. **`saga` and `volume` are deliberately NOT valid sources.** They are
+   pure unions of their members; an appearance edge there records
+   nothing a chapter edge does not.
+
+**Position on derivation (stated, not implemented)**: yes, arc-level
+_presence_ is derivable — a character appearing in a chapter of an arc
+appears in that arc, so the set of `arc → character` presence edges is
+the union of the unit edges over the arc's `part-of-arc` members. Only
+`role` is not derivable. Once per-unit coverage is dense, presence should
+be **derived by the build inference engine** (the ADR-034 backlog; same
+move ADR-099 §3 made for first appearance) and the authored arc edge
+reserved for `role`. **This ADR implements no derivation and deletes no
+data** — flipping presence to derived is a separate change and needs the
+maintainer's approval.
+
+**Consequences**:
+
+- Relations 64 → **63**; vocabularies stay 64 (rename); rules 9 → **10**.
+- `check:compat` reports **3 breaking / 4 additive**: relation-type
+  `features-characters` removed, vocabulary `arc-roles` removed, `arc`
+  loses it from `allowed_relations`; `features` gains the `arc` source,
+  the `role` qualifier, `narrative-roles` is added, `arc` gains
+  `features`. Snapshot regenerated per the beta directive (0 users,
+  breaking-and-migrating is the normal mode).
+- **No migration.** The corpus holds **zero** `features-characters` edges
+  (the three arc files have `"relations": []`) and zero `arc-roles`
+  values, and no value shape changes — nothing to rewrite. ADR-042's
+  "breaking ⇒ migration" note and the 0008/0009 assert-only precedent
+  would suggest an invariant-asserting migration; it is deliberately not
+  added here because it would rewrite nothing. If the maintainer prefers
+  the invariant asserted, `0011-merge-features-characters-into-features`
+  is a five-line `up` that rewrites any surviving `features-characters`
+  edge into `features` (the `role` qualifier carries over unchanged).
+- **What an importer must now produce** for per-chapter appearances: on
+  the **source** entity file (chapters own their edges; the character
+  page reads them through the ADR-086 materialized inverse), one entry
+  per character in `relations`:
+  `{ "type": "features", "target": "character:luffy" }`, plus
+  `"qualifiers": { "appearance_type": "…" }` only when the manner is
+  actually known. Counting « apparitions sur total » is then
+  `count(features edges from manga-chapter → X)` over `count(manga-chapter)`,
+  both cut at the reader's progression cursor.
+- The public layer keeps binding to well-known ids under ADR-091: the
+  appearance list and counter degrade to the generic incoming-relations
+  rendering when `features` is absent.
+
+---
+
 ## ADR-104 — The per-entity tint is a curated gold-anchored palette, not a hue wheel
 
 **Date**: 2026-08-09

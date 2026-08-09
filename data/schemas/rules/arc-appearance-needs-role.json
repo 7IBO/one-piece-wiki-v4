@@ -1,0 +1,27 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "arc-appearance-needs-role",
+  "schema_version": 1,
+  "severity": "warning",
+  "labels": {
+    "en": "Arc appearance without a narrative role",
+    "fr": "Apparition d'arc sans rôle narratif"
+  },
+  "messages": {
+    "en": "An `arc` → `character` appearance without `role` records nothing the arc's chapters and episodes do not already record — presence in an arc follows from any appearance in one of its units. Either add the narrative role (protagonist, antagonist…), which is the only non-derivable part of an arc-level edge, or drop the edge and record the appearance on the chapter or episode where it happens.",
+    "fr": "Une apparition `arc` → `character` sans `role` n'enregistre rien que les chapitres et épisodes de l'arc n'enregistrent déjà — la présence dans un arc découle de toute apparition dans l'une de ses unités. Ajoutez le rôle narratif (protagoniste, antagoniste…), seule part non dérivable d'une arête au niveau de l'arc, ou supprimez l'arête et enregistrez l'apparition sur le chapitre ou l'épisode concerné."
+  },
+  "applies_to_entity_types": ["arc"],
+  "scope": "relation",
+  "relation_type": "features",
+  "relation_when": [
+    {
+      "target_type_is": { "type": "character" }
+    }
+  ],
+  "relation_expect": [
+    {
+      "qualifier_present": { "qualifier": "role" }
+    }
+  ]
+}

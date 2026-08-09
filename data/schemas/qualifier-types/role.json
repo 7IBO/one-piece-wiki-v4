@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
   "id": "role",
-  "schema_version": 2,
+  "schema_version": 3,
   "kind": "common",
   "order": 50,
   "labels": {
@@ -9,8 +9,8 @@
     "fr": "Rôle"
   },
   "descriptions": {
-    "en": "The part played in the linked entity. Enum-agnostic on purpose (ADR-098): each relation type binds `role` to its own vocabulary (event-roles on `participant`, crew-roles on `member-of`, arc-roles on `features-characters`, person-roles on `staffed-by`, company-roles on `produced-by`, depiction-roles on `depicted-by`) — the per-relation declaration is authoritative for values; this registry entry only provides the label and description.",
-    "fr": "Le rôle joué vis-à-vis de l'entité liée. Volontairement sans énumération (ADR-098) : chaque type de relation lie `role` à son propre vocabulaire (event-roles sur `participant`, crew-roles sur `member-of`, arc-roles sur `features-characters`, person-roles sur `staffed-by`, company-roles sur `produced-by`, depiction-roles sur `depicted-by`) — la déclaration par relation fait foi pour les valeurs ; cette entrée du registre ne fournit que le libellé et la description."
+    "en": "The part played in the linked entity. Enum-agnostic on purpose (ADR-098): each relation type binds `role` to its own vocabulary (event-roles on `participant`, crew-roles on `member-of`, narrative-roles on `features`, person-roles on `staffed-by`, company-roles on `produced-by`, depiction-roles on `depicted-by`) — the per-relation declaration is authoritative for values; this registry entry only provides the label and description.",
+    "fr": "Le rôle joué vis-à-vis de l'entité liée. Volontairement sans énumération (ADR-098) : chaque type de relation lie `role` à son propre vocabulaire (event-roles sur `participant`, crew-roles sur `member-of`, narrative-roles sur `features`, person-roles sur `staffed-by`, company-roles sur `produced-by`, depiction-roles sur `depicted-by`) — la déclaration par relation fait foi pour les valeurs ; cette entrée du registre ne fournit que le libellé et la description."
   },
   "value_type": "enum"
 }
