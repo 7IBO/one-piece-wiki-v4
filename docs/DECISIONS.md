@@ -8,6 +8,48 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-097 — Incoming-edge manager: edit inverse relations from the target page
+
+**Date**: 2026-08-09
+
+**Context**: Inverse relations render read-only on the target page
+("modify on the storing entity's page") — so managing a crew's
+members means visiting every character page one by one. ADR-021
+already solved this for exactly ONE relation (`appears-in`, the
+per-source cast manager: reverse-scan + bulk deltas + one PR
+touching N entity files). The maintainer wants that power on every
+entity page and for every relation — members AND their roles from
+the crew page, chapters per arc, holders per fruit, etc.
+
+**Decision** (generalize ADR-021, schema-driven):
+
+1. New endpoints `GET/POST /api/entities/:type/:slug/incoming/:R`
+   valid for any relation type R whose `valid_to_types` includes the
+   page's type. GET reverse-scans the catalogue for edges
+   `{type: R, target: this}` grouped with qualifiers + per-file SHAs;
+   POST applies `{add, update, remove}` deltas by patching each
+   SOURCE entity's `relations[]` (add dedupes into update), validates
+   every patched entity through `buildEntitySchema` AND the ADR-088
+   blocking-rule gate, then lands the bundle through the generalized
+   bulk flow (one commit, one PR titled by the target, per-file
+   optimistic locking with a plural conflict error).
+2. UI: every incoming group on the entity page gains a **Gérer**
+   button (only when the schema allows it), opening a manager with
+   schema-driven qualifier inputs (role, held_rank, since…), bulk
+   add filtered to `valid_from_types`, and the cast manager's Save
+   UX. `appears-in` on source pages keeps linking to the dedicated
+   /sources cast manager (no duplicate surface).
+3. The github-client bulk function is the ADR-021 one, widened
+   (branch prefix `incoming/`); the cast endpoint becomes a consumer
+   of the same machinery.
+
+**Consequences**: mass-editing memberships and any other incoming
+link happens where readers look for it, in one reviewable PR. No
+hardcoded relation ids anywhere — the affordance appears wherever
+the catalogue says it can.
+
+---
+
 ## ADR-096 — Per-item provenance on `believed_by` / `known_truth_by`
 
 **Date**: 2026-08-08

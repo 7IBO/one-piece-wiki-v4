@@ -15,7 +15,21 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-08 (ADR-096 : provenance par item sur believed_by)
+**Last updated**: 2026-08-09 (ADR-097 : gestion des arêtes entrantes + URLs/images web)
+
+**2026-08-09 — ADR-096 livré sur main (PR #117) ; chantier ADR-097 +
+web v2.1 en cours.** Provenance par item sur
+`believed_by`/`known_truth_by` livrée (forme union, normaliseur
+`entityRefItems`, 375 tests). Nouveau lot sur directive mainteneur :
+(1) **ADR-097** — gestionnaire d'arêtes entrantes généralisé
+(GET/POST `/api/entities/:type/:slug/incoming/:R`, bouton « Gérer »
+sur chaque groupe inverse autorisé par le schéma, deltas en un
+commit/une PR, gate ADR-088, généralisation du flow cast ADR-021) ;
+(2) **web** : URLs canoniques `/{type}/{slug}` (301 depuis
+`/e`/`/t`, domaine one-piece.wiki = config déploiement côté
+mainteneur) + refonte du traitement d'images (« moins IA » : aucun
+cadre cassé, tuiles monogramme éditoriales, ratios réservés,
+fade-in) — spec dans WEB_APP.md §URLs / §Image treatment.
 
 **2026-08-08 — ADR-095 livré sur main (PR #116) ; ADR-096 en
 cours.** Les locales de données `ja`/`ja-latn` sont éditables au
