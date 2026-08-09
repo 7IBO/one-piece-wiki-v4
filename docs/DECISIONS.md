@@ -8,6 +8,48 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-101 — api-onepiece.com ingest: full-corpus candidate import, URL-only images
+
+**Date**: 2026-08-09
+
+**Context**: Maintainer: "prévoit de récupérer toutes les données de
+onepiece-api, y compris les images (à voir pour sauvegarder les url
+d'images et pas enregistrement d'image dès maintenant, pour voir ce
+que ça donne)". IDEAS already scoped api-onepiece.com
+(`https://api.api-onepiece.com/v2/<resource>/<locale>`) as a
+candidate-pool source — quality varies, never a source of truth.
+
+**Decision**:
+
+1. New importer family in `packages/importers/src/onepiece-api/`:
+   polite client (rate-limited, cached, UA-identified, injected for
+   tests), per-resource mappers (characters, fruits, crews, boats,
+   episodes, chapters/tomes, sagas/arcs, locations…) into our
+   entity/property/relation shapes, plus a `onepiece-api:import` CLI
+   that sweeps EN+FR locales and emits candidate entity files +
+   an import report (matched-to-existing via name/slug heuristics,
+   created, skipped, unmapped fields).
+2. **Images = URL only** (maintainer's explicit experiment): image
+   ENTITIES are created with the API's image URL as `url`, license
+   `unverified-external`, attribution recording the API origin — no
+   binary is stored or re-hosted. The hotlink experiment is
+   re-evaluated once rendering is seen; the R2 pipeline (IMAGES.md)
+   remains the durable path.
+3. Same ingest safety rails as ADR-079: candidate data lands via
+   PRs only, `review_status: auto_imported`, never auto-merged; the
+   API is a CANDIDATE POOL — conflicts with existing values are
+   reported, not overwritten.
+4. Environment: api.api-onepiece.com is proxy-blocked in the cloud
+   sandbox (CONNECT 403, like Fandom) — tests run on fixtures;
+   live sweeps run on the maintainer's machine
+   (`bun run -F @onepiece-wiki/importers onepiece-api:import`).
+
+**Consequences**: the corpus can be seeded at scale (hundreds of
+characters/fruits with images) the day the maintainer runs one
+command; the wiki's card/portrait system finally gets real images.
+
+---
+
 ## ADR-100 — Factual qualifier profile: production data drops the epistemic bag
 
 **Date**: 2026-08-09
