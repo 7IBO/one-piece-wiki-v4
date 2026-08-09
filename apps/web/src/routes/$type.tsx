@@ -35,37 +35,38 @@ function TypeListPage(): JSX.Element {
   const search = scope === undefined ? {} : { scope };
   return (
     <div className='mx-auto max-w-3xl'>
-      <header className='mb-8'>
-        <h1 className='font-display text-3xl font-semibold tracking-tight text-fg'>
-          {view.label}
-        </h1>
-        <p className='mt-1.5 text-sm text-faint'>
-          <span className='font-mono text-gold'>{view.items.length}</span>{' '}
-          {t(locale, view.items.length === 1 ? 'entry' : 'entries')}
-        </p>
+      <header className='mb-10'>
+        <div className='flex flex-wrap items-baseline gap-x-3 gap-y-2'>
+          <h1 className='font-display text-[clamp(2rem,4vw,2.75rem)] font-bold leading-[1.05] tracking-[-0.03em] text-fg'>
+            {view.label}
+          </h1>
+          <span className='rounded-md border border-line bg-surface px-2 py-0.5 font-mono text-xs text-muted'>
+            {view.items.length} {t(locale, view.items.length === 1 ? 'entry' : 'entries')}
+          </span>
+        </div>
       </header>
       {view.items.length === 0
         ? (
-          <p className='rounded-xl border border-line bg-panel p-6 text-muted'>
+          <p className='rounded-xl border border-line bg-surface p-6 text-muted'>
             {t(locale, 'emptyType')}
           </p>
         )
         : (
-          <ul className='divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-panel'>
+          <ul className='divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface'>
             {view.items.map((item) => (
               <li key={item.slug}>
                 <Link
                   to='/$type/$slug'
                   params={{ type: view.type, slug: item.slug }}
                   search={search}
-                  className='group flex items-baseline justify-between gap-4 px-4 py-3 transition-colors hover:bg-panel-2'
+                  className='group flex items-baseline justify-between gap-4 px-4 py-3 transition-colors duration-150 hover:bg-surface-2'
                 >
-                  <span className='font-medium text-fg transition-colors group-hover:text-gold'>
+                  <span className='font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
                     {item.name}
                   </span>
                   {item.subtitle !== null
                     ? (
-                      <span className='hidden shrink-0 text-xs text-faint sm:block'>
+                      <span className='hidden shrink-0 font-mono text-xs text-faint sm:block'>
                         {t(locale, 'since')} {item.subtitle}
                       </span>
                     )

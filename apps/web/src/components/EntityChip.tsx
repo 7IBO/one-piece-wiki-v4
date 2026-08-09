@@ -30,12 +30,12 @@ export function EntityChipLink(
       search={search}
       className='group inline-flex max-w-full items-baseline gap-1.5'
     >
-      <span className='truncate text-sea underline decoration-sea/30 underline-offset-2 transition-colors group-hover:decoration-sea'>
+      <span className='truncate text-link underline decoration-link/30 underline-offset-2 transition-colors duration-150 group-hover:decoration-link'>
         {chip.name}
       </span>
       {showType
         ? (
-          <span className='shrink-0 text-[0.7rem] uppercase tracking-wide text-faint'>
+          <span className='shrink-0 text-[10px] font-medium uppercase tracking-[0.08em] text-faint'>
             {chip.typeLabel}
           </span>
         )

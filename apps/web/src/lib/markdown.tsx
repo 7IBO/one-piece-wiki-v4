@@ -21,7 +21,7 @@ function renderInline(text: string): ReactNode {
     }
     if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
       return (
-        <code key={i} className='rounded bg-panel-2 px-1 py-0.5 font-mono text-[0.85em]'>
+        <code key={i} className='rounded bg-surface-2 px-1 py-0.5 font-mono text-[0.85em]'>
           {part.slice(1, -1)}
         </code>
       );
@@ -33,7 +33,7 @@ function renderInline(text: string): ReactNode {
           key={i}
           href={link[2]}
           rel='noreferrer'
-          className='text-sea underline decoration-sea/40 underline-offset-2 hover:decoration-sea'
+          className='text-link underline decoration-link/40 underline-offset-2 hover:decoration-link'
         >
           {link[1]}
         </a>
@@ -126,9 +126,9 @@ export function Markdown({ markdown }: { readonly markdown: string; }): JSX.Elem
             return (
               <h3
                 key={i}
-                className={`font-display font-semibold text-fg ${
+                className={`font-display font-bold tracking-[-0.02em] text-fg ${
                   sizes[block.level - 1] ?? 'text-base'
-                } mt-6`}
+                } mt-8`}
               >
                 {renderInline(block.text)}
               </h3>
@@ -136,13 +136,13 @@ export function Markdown({ markdown }: { readonly markdown: string; }): JSX.Elem
           }
           case 'quote':
             return (
-              <blockquote key={i} className='border-l-2 border-gold/50 pl-4 text-muted italic'>
+              <blockquote key={i} className='border-l-2 border-accent/50 pl-4 text-muted italic'>
                 {renderInline(block.text)}
               </blockquote>
             );
           case 'code':
             return (
-              <pre key={i} className='overflow-x-auto rounded-lg bg-panel p-4 font-mono text-sm'>
+              <pre key={i} className='overflow-x-auto rounded-lg bg-surface p-4 font-mono text-sm'>
                 {block.text}
               </pre>
             );

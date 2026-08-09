@@ -32,14 +32,14 @@ export function LocaleSwitcher(): JSX.Element {
         if (next === 'en' || next === 'fr') apply(next);
       }}
       aria-label={t(locale, 'languageLabel')}
-      className='flex items-center gap-0.5 rounded-full border border-line bg-panel p-0.5'
+      className='flex items-center gap-0.5 rounded-lg border border-line bg-surface p-0.5'
     >
       {SUPPORTED_LOCALES.map((value) => (
         <Toggle
           key={value}
           value={value}
           aria-label={value === 'en' ? 'English' : 'Français'}
-          className='rounded-full px-2.5 py-1 font-mono text-xs uppercase text-muted transition-colors hover:text-fg data-[pressed]:bg-gold data-[pressed]:text-canvas'
+          className='rounded-md px-2 py-1 font-mono text-xs uppercase text-faint transition-colors duration-150 hover:text-fg data-[pressed]:bg-surface-2 data-[pressed]:text-fg sm:px-2.5'
         >
           {value}
         </Toggle>

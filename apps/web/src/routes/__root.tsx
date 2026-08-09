@@ -123,16 +123,13 @@ function RootLayout(): JSX.Element {
   const showBanner = chrome !== undefined && chrome.progressUnset && !chrome.bannerDismissed;
   return (
     <div className='flex min-h-dvh flex-col'>
-      <header className='sticky top-0 z-10 border-b border-line/70 bg-canvas/85 backdrop-blur'>
+      <header className='sticky top-0 z-10 border-b border-line bg-canvas/80 backdrop-blur-md'>
         <div className='mx-auto flex h-14 w-full max-w-6xl items-center justify-between gap-3 px-4 sm:px-6'>
-          <Link to='/' className='group flex items-baseline gap-2'>
-            <span className='font-display text-lg font-semibold tracking-tight text-fg transition-colors group-hover:text-gold'>
+          <Link to='/' className='group flex items-center gap-2.5'>
+            <span aria-hidden className='size-2.5 shrink-0 rounded-[4px] bg-accent' />
+            <span className='whitespace-nowrap font-display text-[1.05rem] font-bold tracking-[-0.02em] text-fg transition-colors duration-150 group-hover:text-accent'>
               {t(locale, 'siteName')}
             </span>
-            <span
-              aria-hidden
-              className='hidden size-1.5 translate-y-[-2px] rounded-full bg-gold sm:block'
-            />
           </Link>
           <div className='flex items-center gap-2'>
             <ProgressControl
@@ -144,16 +141,16 @@ function RootLayout(): JSX.Element {
         </div>
         {showBanner ? <FirstRunBanner /> : null}
       </header>
-      <main className='mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6'>
+      <main className='mx-auto w-full max-w-6xl flex-1 px-4 py-10 sm:px-6 sm:py-14'>
         <Outlet />
       </main>
-      <footer className='border-t border-line/70'>
-        <div className='mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-5 gap-y-2 px-4 py-6 text-xs text-faint sm:px-6'>
+      <footer className='border-t border-line'>
+        <div className='mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-6 gap-y-2 px-4 py-6 text-xs text-faint sm:px-6'>
           <a
             href={GITHUB_URL}
             target='_blank'
             rel='noreferrer'
-            className='text-muted underline decoration-line underline-offset-2 transition-colors hover:text-fg'
+            className='font-medium text-muted transition-colors duration-150 hover:text-fg'
           >
             GitHub — {t(locale, 'footerContribute')}
           </a>
@@ -161,11 +158,11 @@ function RootLayout(): JSX.Element {
             href={SUPPORT_URL}
             target='_blank'
             rel='noreferrer'
-            className='text-muted underline decoration-line underline-offset-2 transition-colors hover:text-fg'
+            className='font-medium text-muted transition-colors duration-150 hover:text-fg'
           >
             {t(locale, 'footerSupport')}
           </a>
-          <span className='min-w-56 flex-1'>{t(locale, 'footerNote')}</span>
+          <span className='min-w-56 flex-1 sm:text-right'>{t(locale, 'footerNote')}</span>
         </div>
       </footer>
     </div>
@@ -175,12 +172,14 @@ function RootLayout(): JSX.Element {
 function NotFound(): JSX.Element {
   const locale = useLocale();
   return (
-    <div className='py-24 text-center'>
-      <p className='font-display text-3xl font-semibold text-fg'>{t(locale, 'notFoundTitle')}</p>
-      <p className='mt-3 text-muted'>{t(locale, 'notFoundBody')}</p>
+    <div className='py-28 text-center'>
+      <p className='font-display text-4xl font-bold tracking-[-0.02em] text-fg'>
+        {t(locale, 'notFoundTitle')}
+      </p>
+      <p className='mx-auto mt-4 max-w-md text-muted'>{t(locale, 'notFoundBody')}</p>
       <Link
         to='/'
-        className='mt-8 inline-block rounded-full border border-gold/40 px-5 py-2 text-sm text-gold transition-colors hover:bg-veil'
+        className='mt-10 inline-block rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
       >
         {t(locale, 'backHome')}
       </Link>

@@ -5,10 +5,10 @@
  * raw `<img>` frame anywhere.
  *
  * Contract:
- * - The designed ground (an editorial monogram tile: the entity's
- *   initial set in the display serif on a quiet duotone of the panel
- *   tokens) renders FIRST and stays underneath until a real image is
- *   CONFIRMED loaded (`complete && naturalWidth > 0`).
+ * - The designed ground (a monogram tile: the entity's initial set in
+ *   the display face on a quiet duotone of the surface tokens) renders
+ *   FIRST and stays underneath until a real image is CONFIRMED loaded
+ *   (`complete && naturalWidth > 0`).
  * - The `<img>` sits on top at opacity 0 and blur-fades in (~200ms)
  *   only once loaded; on failure it unmounts entirely. Load state is
  *   probed on mount too, so errors/loads that fire before hydration
@@ -49,10 +49,10 @@ export function EntityImage(
     >
       <div
         aria-hidden
-        className='absolute inset-0 grid select-none place-items-center rounded-[inherit] bg-linear-to-b from-panel-2 to-panel ring-1 ring-inset ring-line/40'
+        className='absolute inset-0 grid select-none place-items-center rounded-[inherit] bg-linear-to-b from-surface-2 to-surface ring-1 ring-inset ring-line'
       >
         <span
-          className={`font-display font-medium leading-none text-gold-deep/45 ${monogramClassName}`}
+          className={`font-display font-semibold leading-none tracking-[-0.02em] text-accent/35 ${monogramClassName}`}
         >
           {initialOf(name)}
         </span>

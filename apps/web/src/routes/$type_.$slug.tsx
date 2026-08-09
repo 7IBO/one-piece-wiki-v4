@@ -79,18 +79,18 @@ function EntityPage(): JSX.Element {
 function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element {
   const locale = useLocale();
   return (
-    <div className='py-24 text-center'>
-      <p className='font-mono text-[0.7rem] uppercase tracking-[0.2em] text-faint'>
+    <div className='py-28 text-center'>
+      <p className='text-[11px] font-semibold uppercase tracking-[0.14em] text-faint'>
         {view.typeLabel}
       </p>
-      <h1 className='mt-2 font-display text-4xl font-semibold tracking-tight text-fg'>
+      <h1 className='mt-3 font-display text-[clamp(2.25rem,5vw,3.5rem)] font-bold leading-[1.05] tracking-[-0.03em] text-fg'>
         {view.name}
       </h1>
-      <p className='mt-6 font-display text-xl text-gold'>{t(locale, 'gatedTitle')}</p>
+      <p className='mt-8 text-lg font-semibold text-accent'>{t(locale, 'gatedTitle')}</p>
       <p className='mx-auto mt-3 max-w-md text-muted'>{t(locale, 'gatedBody')}</p>
       <Link
         to='/'
-        className='mt-8 inline-block rounded-full border border-gold/40 px-5 py-2 text-sm text-gold transition-colors hover:bg-veil'
+        className='mt-10 inline-block rounded-lg bg-accent px-5 py-2.5 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
       >
         {t(locale, 'backHome')}
       </Link>
@@ -109,31 +109,32 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
   const source = view.template.kind === 'source' ? view.template : null;
   return (
     <article>
-      <header className='mb-8'>
+      <header className='mb-10 sm:mb-14'>
         <div className='flex flex-wrap items-center justify-between gap-3'>
           <Link
             to='/$type'
             params={{ type: view.type }}
-            className='font-mono text-[0.7rem] uppercase tracking-[0.2em] text-faint transition-colors hover:text-gold'
+            className='inline-flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-faint transition-colors duration-150 hover:text-accent'
           >
+            <span aria-hidden className='size-1.5 rounded-full bg-accent' />
             {view.typeLabel}
             {source !== null && source.number !== null ? ` · ${source.number}` : ''}
           </Link>
           {source !== null ? <PrevNext template={source} /> : null}
         </div>
-        <h1 className='mt-2 font-display text-4xl font-semibold tracking-tight text-fg'>
+        <h1 className='mt-4 max-w-3xl font-display text-[clamp(2.5rem,5.5vw,4rem)] font-bold leading-[1.02] tracking-[-0.035em] text-fg'>
           {view.name}
         </h1>
         {view.firstAppearance !== null
           ? (
-            <p className='mt-3 text-sm text-muted'>
+            <p className='mt-4 text-sm text-muted'>
               {t(locale, 'firstAppearance')} · <EntityChipLink chip={view.firstAppearance} />
             </p>
           )
           : null}
       </header>
 
-      <div className='flex flex-col gap-8 min-[900px]:flex-row min-[900px]:items-start'>
+      <div className='flex flex-col gap-10 min-[900px]:flex-row min-[900px]:items-start min-[900px]:gap-12'>
         <div className='min-w-0 flex-1'>
           {source !== null ? <SourceSections template={source} /> : null}
           {view.template.kind === 'character' ? <CrewSections crews={view.template.crews} /> : null}
@@ -165,7 +166,7 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
 
           {view.narrative !== null
             ? (
-              <section className='mb-10'>
+              <section className='mb-12 sm:mb-16'>
                 <SectionTitle>{t(locale, 'about')}</SectionTitle>
                 <Markdown markdown={view.narrative} />
               </section>
@@ -174,9 +175,9 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
 
           {history.length > 0
             ? (
-              <section className='mb-10'>
-                <SectionTitle>{t(locale, 'history')}</SectionTitle>
-                <dl className='overflow-hidden rounded-xl border border-line bg-panel'>
+              <section className='mb-12 sm:mb-16'>
+                <SectionTitle count={history.length}>{t(locale, 'history')}</SectionTitle>
+                <dl className='space-y-8'>
                   {history.map((property) => (
                     <PropertyBlock
                       key={property.id}
@@ -190,9 +191,9 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
 
           {outgoing.length > 0
             ? (
-              <section className='mb-10'>
-                <SectionTitle>{t(locale, 'connections')}</SectionTitle>
-                <div className='space-y-4'>
+              <section className='mb-12 sm:mb-16'>
+                <SectionTitle count={outgoing.length}>{t(locale, 'connections')}</SectionTitle>
+                <div className='space-y-3'>
                   {outgoing.map((group) => <RelationGroup key={group.key} group={group} />)}
                 </div>
               </section>
@@ -201,9 +202,9 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
 
           {incoming.length > 0
             ? (
-              <section className='mb-10'>
-                <SectionTitle>{t(locale, 'referencedBy')}</SectionTitle>
-                <div className='space-y-4'>
+              <section className='mb-12 sm:mb-16'>
+                <SectionTitle count={incoming.length}>{t(locale, 'referencedBy')}</SectionTitle>
+                <div className='space-y-3'>
                   {incoming.map((group) => <RelationGroup key={group.key} group={group} />)}
                 </div>
               </section>
@@ -220,17 +221,18 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
 }
 
 // ---------------------------------------------------------------------------
-// Infobox (right rail, stacks first on mobile). The portrait block
-// only exists when a spoiler-visible image entity exists at all —
-// otherwise the infobox starts straight at the facts (no empty frame).
+// Infobox (right rail, sticky on wide screens, stacks first on
+// mobile). The portrait block only exists when a spoiler-visible
+// image entity exists at all — otherwise the infobox starts straight
+// at the facts (no empty frame).
 
 function Infobox({ view }: { readonly view: EntityView; }): JSX.Element | null {
   if (view.image === null && view.infobox.length === 0 && view.infoboxRelations.length === 0) {
     return null;
   }
   return (
-    <aside className='order-first w-full shrink-0 min-[900px]:order-none min-[900px]:w-72'>
-      <div className='overflow-hidden rounded-xl border border-line bg-panel'>
+    <aside className='order-first w-full shrink-0 min-[900px]:sticky min-[900px]:top-20 min-[900px]:order-none min-[900px]:w-[336px]'>
+      <div className='overflow-hidden rounded-2xl border border-line bg-surface'>
         {view.image !== null
           ? (
             <figure className='m-0'>
@@ -243,7 +245,7 @@ function Infobox({ view }: { readonly view: EntityView; }): JSX.Element | null {
               />
               {view.image.attribution !== null
                 ? (
-                  <figcaption className='px-4 pt-2.5 font-mono text-[0.6rem] uppercase tracking-[0.14em] text-faint'>
+                  <figcaption className='px-5 pt-3 font-mono text-[0.6rem] uppercase tracking-[0.12em] text-faint'>
                     {view.image.attribution}
                   </figcaption>
                 )
@@ -251,7 +253,7 @@ function Infobox({ view }: { readonly view: EntityView; }): JSX.Element | null {
             </figure>
           )
           : null}
-        <dl>
+        <dl className='px-5 py-2'>
           {view.infobox.map((row) => <InfoboxLine key={row.id} row={row} />)}
           {view.infoboxRelations.map((row) => <InfoboxRelationLine key={row.key} row={row} />)}
         </dl>
@@ -262,9 +264,11 @@ function Infobox({ view }: { readonly view: EntityView; }): JSX.Element | null {
 
 function InfoboxLine({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
   return (
-    <div className='border-t border-line/60 px-4 py-2.5 first:border-t-0'>
-      <dt className='text-[0.7rem] font-medium uppercase tracking-wide text-faint'>{row.label}</dt>
-      <dd className='m-0 mt-0.5 text-sm'>
+    <div className='border-t border-line py-3 first:border-t-0'>
+      <dt className='text-[11px] font-semibold uppercase tracking-[0.1em] text-faint'>
+        {row.label}
+      </dt>
+      <dd className='m-0 mt-1 text-[15px]'>
         <PropertyEntry entry={row.entry} compact />
       </dd>
     </div>
@@ -273,9 +277,11 @@ function InfoboxLine({ row }: { readonly row: InfoboxRowView; }): JSX.Element {
 
 function InfoboxRelationLine({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
   return (
-    <div className='border-t border-line/60 px-4 py-2.5'>
-      <dt className='text-[0.7rem] font-medium uppercase tracking-wide text-faint'>{row.label}</dt>
-      <dd className='m-0 mt-0.5 space-y-0.5 text-sm'>
+    <div className='border-t border-line py-3'>
+      <dt className='text-[11px] font-semibold uppercase tracking-[0.1em] text-faint'>
+        {row.label}
+      </dt>
+      <dd className='m-0 mt-1 space-y-1 text-[15px]'>
         {row.chips.map((chip) => (
           <div key={chip.id}>
             <EntityChipLink chip={chip} />
@@ -295,26 +301,26 @@ function CrewSections(
   const locale = useLocale();
   if (crews.length === 0) return null;
   return (
-    <section className='mb-10'>
-      <SectionTitle>{t(locale, 'affiliations')}</SectionTitle>
-      <div className='space-y-4'>
+    <section className='mb-12 sm:mb-16'>
+      <SectionTitle count={crews.length}>{t(locale, 'affiliations')}</SectionTitle>
+      <div className='space-y-3'>
         {crews.map((crew) => (
-          <div key={crew.crew.id} className='rounded-xl border border-line bg-panel px-4 py-3.5'>
-            <div className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
+          <div key={crew.crew.id} className='rounded-xl border border-line bg-surface px-5 py-4'>
+            <div className='flex flex-wrap items-baseline gap-x-3 gap-y-1'>
               <span className='text-xs text-faint'>{crew.label}</span>
-              <span className='font-display text-lg font-semibold'>
+              <span className='font-display text-lg font-semibold tracking-[-0.01em]'>
                 <EntityChipLink chip={crew.crew} />
               </span>
               {crew.role !== null
                 ? (
-                  <span className='rounded-full bg-veil px-2 py-0.5 text-[0.7rem] text-gold'>
+                  <span className='rounded-md bg-veil px-2 py-0.5 text-[11px] font-medium text-accent'>
                     {crew.role}
                   </span>
                 )
                 : null}
               {crew.rank !== null
                 ? (
-                  <span className='rounded-full bg-sea-veil px-2 py-0.5 text-[0.7rem] text-sea'>
+                  <span className='rounded-md bg-link-veil px-2 py-0.5 text-[11px] font-medium text-link'>
                     {crew.rank}
                   </span>
                 )
@@ -323,10 +329,10 @@ function CrewSections(
             {crew.members.length > 0
               ? (
                 <>
-                  <p className='mt-3 text-[0.7rem] font-medium uppercase tracking-wide text-faint'>
+                  <p className='mt-4 text-[11px] font-semibold uppercase tracking-[0.1em] text-faint'>
                     {t(locale, 'otherMembers')}
                   </p>
-                  <ul className='mt-2 flex flex-wrap gap-2'>
+                  <ul className='mt-2.5 flex flex-wrap gap-2'>
                     {crew.members.map((member) => (
                       <ThumbCard
                         key={member.chip.id}
@@ -352,7 +358,7 @@ function ThumbCard({ thumb }: { readonly thumb: MemberThumbView; }): JSX.Element
         to='/$type/$slug'
         params={{ type: thumb.chip.type, slug: thumb.chip.slug }}
         search={search}
-        className='group flex items-center gap-2.5 rounded-lg border border-line/70 bg-canvas/50 py-1.5 pl-1.5 pr-3 transition-colors hover:border-gold/50'
+        className='group flex items-center gap-2.5 rounded-lg border border-line bg-canvas/60 py-1.5 pl-1.5 pr-3 transition-[border-color,transform] duration-150 ease-out hover:-translate-y-px hover:border-line-strong'
       >
         <EntityImage
           image={thumb.image}
@@ -361,11 +367,11 @@ function ThumbCard({ thumb }: { readonly thumb: MemberThumbView; }): JSX.Element
           monogramClassName='text-base'
         />
         <span className='leading-tight'>
-          <span className='block text-sm text-fg transition-colors group-hover:text-gold'>
+          <span className='block text-sm font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
             {thumb.chip.name}
           </span>
           {thumb.note !== null
-            ? <span className='block text-[0.7rem] text-faint'>{thumb.note}</span>
+            ? <span className='block text-[11px] text-faint'>{thumb.note}</span>
             : null}
         </span>
       </Link>
@@ -384,8 +390,8 @@ function MemberGrid({ titleKey, members, hideTitle = false }: {
   const locale = useLocale();
   if (members.length === 0) return null;
   return (
-    <section className='mb-10'>
-      {hideTitle ? null : <SectionTitle>{t(locale, titleKey)}</SectionTitle>}
+    <section className='mb-12 sm:mb-16'>
+      {hideTitle ? null : <SectionTitle count={members.length}>{t(locale, titleKey)}</SectionTitle>}
       <ul className='grid grid-cols-1 gap-3 sm:grid-cols-2'>
         {members.map((member) => <MemberCard key={member.chip.id} member={member} />)}
       </ul>
@@ -402,7 +408,7 @@ function MemberCard({ member }: { readonly member: MemberRowView; }): JSX.Elemen
         to='/$type/$slug'
         params={{ type: member.chip.type, slug: member.chip.slug }}
         search={search}
-        className='group flex items-center gap-3 rounded-xl border border-line bg-panel px-3 py-2.5 transition-colors hover:border-gold/50 hover:bg-panel-2'
+        className='group flex items-center gap-3.5 rounded-xl border border-line bg-surface px-3.5 py-3 transition-[border-color,background-color,transform] duration-150 ease-out hover:-translate-y-px hover:border-line-strong hover:bg-surface-2'
       >
         <EntityImage
           image={member.image}
@@ -410,8 +416,8 @@ function MemberCard({ member }: { readonly member: MemberRowView; }): JSX.Elemen
           className='size-12 rounded-lg'
           monogramClassName='text-xl'
         />
-        <span className='min-w-0 leading-tight'>
-          <span className='block truncate font-medium text-fg transition-colors group-hover:text-gold'>
+        <span className='min-w-0 leading-snug'>
+          <span className='block truncate font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
             {member.chip.name}
           </span>
           <span className='block truncate text-xs text-faint'>
@@ -437,7 +443,7 @@ function PrevNext({ template }: { readonly template: SourceTemplateView; }): JSX
   const search = useScopeSearch();
   if (template.prev === null && template.next === null) return null;
   const linkClass =
-    'rounded-full border border-line bg-panel px-3.5 py-1.5 text-xs text-muted transition-colors hover:border-gold/50 hover:text-fg';
+    'rounded-lg border border-line bg-surface px-3.5 py-1.5 text-xs font-medium text-muted transition-colors duration-150 hover:border-line-strong hover:text-fg';
   return (
     <nav className='flex items-center gap-2'>
       {template.prev !== null
@@ -474,16 +480,16 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
     <>
       {template.arc !== null
         ? (
-          <section className='mb-10 rounded-xl border border-line bg-panel px-4 py-3.5'>
-            <div className='flex flex-wrap items-baseline gap-x-2.5'>
+          <section className='mb-12 rounded-xl border border-line bg-surface px-5 py-4 sm:mb-16'>
+            <div className='flex flex-wrap items-baseline gap-x-3'>
               <span className='text-xs text-faint'>{template.arc.label}</span>
-              <span className='font-display text-lg font-semibold'>
+              <span className='font-display text-lg font-semibold tracking-[-0.01em]'>
                 <EntityChipLink chip={template.arc.chip} />
               </span>
             </div>
             {template.arc.items.length > 0
               ? (
-                <ul className='mt-3 flex flex-wrap gap-1.5'>
+                <ul className='mt-3.5 flex flex-wrap gap-1.5'>
                   {template.arc.items.map((item) => (
                     <SourceNumberPill key={item.chip.id} item={item} />
                   ))}
@@ -495,9 +501,9 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
         : null}
       {template.cast.length > 0
         ? (
-          <section className='mb-10'>
+          <section className='mb-12 sm:mb-16'>
             <SectionTitle>{t(locale, 'cast')}</SectionTitle>
-            <div className='space-y-4'>
+            <div className='space-y-3'>
               {template.cast.map((group) => <CastGroup key={group.type} group={group} />)}
             </div>
           </section>
@@ -505,7 +511,7 @@ function SourceSections({ template }: { readonly template: SourceTemplateView; }
         : null}
       {template.availability.length > 0
         ? (
-          <section className='mb-10'>
+          <section className='mb-12 sm:mb-16'>
             <SectionTitle>{t(locale, 'availability')}</SectionTitle>
             <ul className='flex flex-wrap gap-2'>
               {template.availability.map((item) => (
@@ -526,7 +532,7 @@ function SourceNumberPill({ item }: { readonly item: SourceItemView; }): JSX.Ele
     return (
       <li
         aria-current='page'
-        className='rounded-lg bg-gold px-2.5 py-1 font-mono text-xs font-semibold text-canvas'
+        className='rounded-md bg-accent px-2.5 py-1 font-mono text-xs font-semibold text-canvas'
       >
         {label}
       </li>
@@ -539,7 +545,7 @@ function SourceNumberPill({ item }: { readonly item: SourceItemView; }): JSX.Ele
         params={{ type: item.chip.type, slug: item.chip.slug }}
         search={search}
         title={item.chip.name}
-        className='block rounded-lg border border-line bg-canvas/50 px-2.5 py-1 font-mono text-xs text-muted transition-colors hover:border-gold/50 hover:text-fg'
+        className='block rounded-md border border-line bg-canvas/60 px-2.5 py-1 font-mono text-xs text-muted transition-colors duration-150 hover:border-line-strong hover:text-fg'
       >
         {label}
       </Link>
@@ -549,8 +555,8 @@ function SourceNumberPill({ item }: { readonly item: SourceItemView; }): JSX.Ele
 
 function CastGroup({ group }: { readonly group: CastGroupView; }): JSX.Element {
   return (
-    <div className='rounded-xl border border-line bg-panel px-4 py-3.5'>
-      <h3 className='mb-2 text-sm font-medium text-muted'>{group.typeLabel}</h3>
+    <div className='rounded-xl border border-line bg-surface px-5 py-4'>
+      <h3 className='mb-3 text-sm font-medium text-muted'>{group.typeLabel}</h3>
       <ul className='flex flex-wrap gap-2'>
         {group.items.map((item) => <ThumbCard key={item.chip.id} thumb={item} />)}
       </ul>
@@ -561,7 +567,7 @@ function CastGroup({ group }: { readonly group: CastGroupView; }): JSX.Element {
 function AvailabilityPill({ item }: { readonly item: AvailabilityItemView; }): JSX.Element {
   if (item.url === null) {
     return (
-      <li className='rounded-full border border-line bg-panel px-3.5 py-1.5 text-sm text-muted'>
+      <li className='rounded-lg border border-line bg-surface px-3.5 py-1.5 text-sm text-muted'>
         {item.platform.name}
       </li>
     );
@@ -572,7 +578,7 @@ function AvailabilityPill({ item }: { readonly item: AvailabilityItemView; }): J
         href={item.url}
         target='_blank'
         rel='noreferrer'
-        className='block rounded-full border border-line bg-panel px-3.5 py-1.5 text-sm text-sea transition-colors hover:border-sea/50'
+        className='block rounded-lg border border-line bg-surface px-3.5 py-1.5 text-sm font-medium text-link transition-colors duration-150 hover:border-line-strong'
       >
         {item.platform.name} ↗
       </a>
@@ -591,21 +597,21 @@ function SourceList({ titleKey, items }: {
   const search = useScopeSearch();
   if (items.length === 0) return null;
   return (
-    <section className='mb-10'>
-      <SectionTitle>{t(locale, titleKey)}</SectionTitle>
-      <ul className='divide-y divide-line/60 overflow-hidden rounded-xl border border-line bg-panel'>
+    <section className='mb-12 sm:mb-16'>
+      <SectionTitle count={items.length}>{t(locale, titleKey)}</SectionTitle>
+      <ul className='divide-y divide-line overflow-hidden rounded-xl border border-line bg-surface'>
         {items.map((item) => (
           <li key={item.chip.id}>
             <Link
               to='/$type/$slug'
               params={{ type: item.chip.type, slug: item.chip.slug }}
               search={search}
-              className='group flex items-baseline gap-3 px-4 py-2.5 transition-colors hover:bg-panel-2'
+              className='group flex items-baseline gap-4 px-4 py-2.5 transition-colors duration-150 hover:bg-surface-2'
             >
               <span className='w-12 shrink-0 font-mono text-xs text-faint'>
                 {item.number ?? '—'}
               </span>
-              <span className='truncate font-medium text-fg transition-colors group-hover:text-gold'>
+              <span className='truncate font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
                 {item.chip.name}
               </span>
             </Link>
@@ -619,10 +625,19 @@ function SourceList({ titleKey, items }: {
 // ---------------------------------------------------------------------------
 // Shared building blocks (facts history + relation groups)
 
-function SectionTitle({ children }: { readonly children: string; }): JSX.Element {
+function SectionTitle(
+  { children, count }: { readonly children: string; readonly count?: number; },
+): JSX.Element {
   return (
-    <h2 className='mb-3 font-mono text-[0.7rem] uppercase tracking-[0.2em] text-faint'>
+    <h2 className='mb-4 flex items-center gap-2 text-[11px] font-semibold uppercase tracking-[0.14em] text-faint'>
       {children}
+      {count !== undefined
+        ? (
+          <span className='rounded-md border border-line bg-surface px-1.5 py-px font-mono text-[10px] normal-case tracking-normal text-muted'>
+            {count}
+          </span>
+        )
+        : null}
     </h2>
   );
 }
@@ -652,18 +667,40 @@ function EpistemicBadge(
 ): JSX.Element | null {
   if (epistemic === null) return null;
   return (
-    <span className='rounded-full bg-veil px-2 py-0.5 text-[0.7rem] text-gold'>
+    <span className='rounded-md bg-veil px-2 py-0.5 text-[11px] font-medium text-accent'>
       {epistemic.label}
     </span>
   );
 }
 
+/**
+ * One historised property: label, then its entries down a quiet
+ * timeline rail (dot + hairline), newest first as served.
+ */
 function PropertyBlock({ property }: { readonly property: PropertyView; }): JSX.Element {
   return (
-    <div className='grid grid-cols-1 gap-1 border-b border-line/60 px-4 py-3.5 last:border-b-0 sm:grid-cols-[10rem_1fr] sm:gap-4'>
-      <dt className='pt-0.5 text-sm font-medium text-muted'>{property.label}</dt>
-      <dd className='m-0 space-y-2.5'>
-        {property.entries.map((entry, i) => <PropertyEntry key={i} entry={entry} />)}
+    <div>
+      <dt className='mb-3 text-sm font-semibold text-fg'>{property.label}</dt>
+      <dd className='m-0'>
+        <ol className='m-0 list-none space-y-0 p-0'>
+          {property.entries.map((entry, i) => (
+            <li key={i} className='relative pb-4 pl-6 last:pb-0'>
+              {i < property.entries.length - 1
+                ? (
+                  <span
+                    aria-hidden
+                    className='absolute bottom-[-0.45em] left-[3px] top-[0.55em] w-px bg-line-strong'
+                  />
+                )
+                : null}
+              <span
+                aria-hidden
+                className='absolute left-0 top-[0.45em] size-[7px] rounded-full border border-line-strong bg-surface-2'
+              />
+              <PropertyEntry entry={entry} />
+            </li>
+          ))}
+        </ol>
       </dd>
     </div>
   );
@@ -697,7 +734,7 @@ function PropertyEntry(
   }
   if (entry.actualDisplay !== null) {
     details.push(
-      <span key='actual' className='text-gold/90'>
+      <span key='actual' className='text-accent/90'>
         {t(locale, 'actually')} : {entry.actualDisplay}
       </span>,
     );
@@ -707,13 +744,13 @@ function PropertyEntry(
       <div className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
         {entry.valueChip !== null
           ? <EntityChipLink chip={entry.valueChip} />
-          : <span className='text-fg'>{entry.display}</span>}
+          : <span className='font-medium text-fg'>{entry.display}</span>}
         <EpistemicBadge epistemic={entry.epistemic} />
         {entry.autoImported
           ? (
             <span
               title={t(locale, 'autoImported')}
-              className='rounded-full bg-sea-veil px-2 py-0.5 text-[0.7rem] text-sea'
+              className='rounded-md bg-link-veil px-2 py-0.5 text-[11px] font-medium text-link'
             >
               ⚠ {t(locale, 'autoImported')}
             </span>
@@ -735,12 +772,14 @@ function PropertyEntry(
 function RelationGroup({ group }: { readonly group: RelationGroupView; }): JSX.Element {
   const locale = useLocale();
   return (
-    <div className='rounded-xl border border-line bg-panel px-4 py-3.5'>
-      <h3 className='mb-2 flex items-center gap-2 text-sm font-medium text-muted'>
-        <span aria-hidden className='text-faint'>{group.inverse ? '←' : '→'}</span>
+    <div className='rounded-xl border border-line bg-surface px-5 py-4'>
+      <h3 className='mb-2.5 flex items-center gap-2 text-sm font-medium text-muted'>
+        <span aria-hidden className='font-mono text-xs text-faint'>
+          {group.inverse ? '←' : '→'}
+        </span>
         {group.label}
       </h3>
-      <ul className='space-y-1.5'>
+      <ul className='space-y-2'>
         {group.items.map((item, i) => (
           <li key={i} className='flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
             <EntityChipLink chip={item.target} showType />
