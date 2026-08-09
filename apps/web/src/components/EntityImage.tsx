@@ -17,12 +17,18 @@
  * - Aspect ratio is reserved up front (3:4 portrait, 1:1 thumb) so
  *   layout never jumps between art and photo. Radius comes from the
  *   caller's className (`rounded-md`…) via `rounded-[inherit]`.
+ * - The tile carries the entity's own colour chord (ADR-103): the
+ *   `--art-*` custom properties are set per tile, so a listing grid is
+ *   a wall of individually-coloured artwork rather than one palette
+ *   repeated. Only the art tokens are scoped here — the UI tokens are
+ *   the entity page's business (`.tinted`), so chrome stays neutral.
  *
  * Callers that want NO block at all when no image entity exists
  * simply don't render the component.
  */
-import { type JSX, useState } from 'react';
+import { type CSSProperties, type JSX, useState } from 'react';
 import type { ImageView } from '../api';
+import { entityTint } from '../lib/entity-tint';
 import { EntityArt } from './EntityArt';
 
 /** First grapheme of the entity name, uppercased — the artwork's mark. */
@@ -46,14 +52,16 @@ export function EntityImage(
     readonly className?: string;
   },
 ): JSX.Element {
+  const entityId = `${type}:${slug}`;
   return (
     <div
+      style={entityTint(entityId).vars as CSSProperties}
       className={`relative isolate shrink-0 overflow-hidden ${
         ratio === 'portrait' ? 'aspect-3/4' : 'aspect-square'
       } ${className}`}
     >
       <EntityArt
-        entityId={`${type}:${slug}`}
+        entityId={entityId}
         entityType={type}
         ratio={ratio}
         initial={initialOf(name)}

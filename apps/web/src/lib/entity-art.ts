@@ -90,6 +90,12 @@ export const ART_RATIOS = {
   square: { width: 280, height: 280 },
   /** Banners / headers. */
   wide: { width: 420, height: 180 },
+  /**
+   * The immersive page hero (ADR-103). Composed for a wide cinematic
+   * frame AND at high `detail`, so the same grammar that reads as a
+   * 150 px tile also holds a 1440 px stage.
+   */
+  hero: { width: 1440, height: 560 },
 } as const satisfies Readonly<Record<string, { readonly width: number; readonly height: number; }>>;
 
 export type ArtRatio = keyof typeof ART_RATIOS;
@@ -194,9 +200,39 @@ type Frame = {
 type Pt = readonly [number, number];
 type Rect = { readonly x: number; readonly y: number; readonly w: number; readonly h: number; };
 
-/** One decimal is plenty at these viewBox sizes and keeps the DOM small. */
+/**
+ * Euclidean distance — deliberately NOT `Math.hypot`.
+ *
+ * `Math.hypot` is implementation-defined to the last ULP, and Bun
+ * (JavaScriptCore, the SSR engine) and V8 (the browser) genuinely
+ * disagree on ~11% of inputs. That is harmless for a coordinate that
+ * gets rounded, but the screentone uses distance as a THRESHOLD: one
+ * ULP decides whether a dot exists, so server and client emitted a
+ * different number of subpaths and React reported a hydration
+ * mismatch on every page carrying artwork. `*`, `+` and `Math.sqrt`
+ * are all correctly rounded by IEEE-754, so this form is bit-identical
+ * on every engine.
+ */
+function dist(dx: number, dy: number): number {
+  return Math.sqrt(dx * dx + dy * dy);
+}
+
+/**
+ * One decimal is plenty at these viewBox sizes and keeps the DOM small.
+ *
+ * The epsilon is not cosmetic. Coordinates come out of `Math.cos`,
+ * `Math.sin`, whose last-ULP results are NOT specified
+ * to be identical across engines — and the server (JavaScriptCore, via
+ * Bun) and the browser (V8) do differ there. Two values that agree to
+ * ~1e-16 still round to different tenths when they straddle a .x5 tie,
+ * which made a handful of the thousands of emitted numbers flip between
+ * SSR and hydration and cost a "tree hydrated but some attributes…"
+ * mismatch on every page. Biasing ties consistently toward +infinity
+ * makes both engines agree, because their disagreement is many orders
+ * of magnitude smaller than the bias.
+ */
 function num(value: number): string {
-  return String(Math.round(value * 10) / 10);
+  return String(Math.round(value * 10 + 1e-9) / 10);
 }
 
 function poly(points: readonly Pt[]): string {
@@ -318,8 +354,8 @@ function screentonePath(
     for (let iy = -steps; iy <= steps; iy += 1) {
       const raw: Pt = [cx + ix * step, cy + iy * step];
       const pt = rotate(raw, [cx, cy], deg);
-      if (Math.hypot(pt[0] - cx, pt[1] - cy) > radius) continue;
-      const toLight = Math.hypot(pt[0] - light[0], pt[1] - light[1]);
+      if (dist(pt[0] - cx, pt[1] - cy) > radius) continue;
+      const toLight = dist(pt[0] - light[0], pt[1] - light[1]);
       const dot = step * 0.38 * Math.min(1, toLight / reach);
       if (dot < step * 0.14) continue;
       parts.push(circlePath(pt[0], pt[1], dot));
@@ -485,6 +521,12 @@ type GrammarContext = {
   readonly initial: string | null;
   /** Stable per entity TYPE — keeps the generic family self-consistent. */
   readonly typeSeed: number;
+  /**
+   * Richness multiplier (1 = tile). Grammars that repeat an element
+   * (strata, panels, rays…) scale their count by it, so a hero frame
+   * gains structure instead of magnifying a sparse tile.
+   */
+  readonly detail: number;
 };
 
 type GrammarResult = {
@@ -782,7 +824,7 @@ const horizon: Grammar = (ctx) => {
     ),
   );
 
-  const strata = rng.int(3, 4);
+  const strata = Math.round(rng.int(3, 4) * ctx.detail);
   const startY = f.h * rng.range(0.48, 0.58);
   for (let i = 0; i < strata; i += 1) {
     const y = startY + ((f.h - startY) * i) / strata;
@@ -827,7 +869,7 @@ const impact: Grammar = (ctx) => {
     f.h * rng.range(-0.15, 1.15),
   ];
   const toCentre = (Math.atan2(f.h / 2 - focal[1], f.w / 2 - focal[0]) * 180) / Math.PI;
-  const shards = rng.int(9, 13);
+  const shards = Math.round(rng.int(9, 13) * ctx.detail);
   const spread = rng.range(46, 74);
   let angle = toCentre - spread;
   const paints: readonly [string, string, string, string] = [p.b, p.ink, p.a, p.glow];
@@ -1265,7 +1307,7 @@ const folio: Grammar = (ctx) => {
     ),
   );
 
-  const lines = rng.int(6, 11);
+  const lines = Math.round(rng.int(6, 11) * ctx.detail);
   const lineH = page.rect.h * 0.022;
   const gap = (page.rect.y + page.rect.h * 0.9 - (headY + headH * 2)) / lines;
   for (let i = 0; i < lines; i += 1) {
@@ -1397,7 +1439,7 @@ const field: Grammar = (ctx) => {
       ),
     );
   } else {
-    const ribbons = rng.int(3, 4);
+    const ribbons = Math.round(rng.int(3, 4) * ctx.detail);
     for (let i = 0; i < ribbons; i += 1) {
       const paint = i % 3 === 0 ? p.a : i % 3 === 1 ? p.b : p.ink;
       shapes.push(
@@ -1469,14 +1511,118 @@ export function grammarForType(type: string): ArtGrammarId {
 }
 
 // ---------------------------------------------------------------------------
+// Atmosphere — the hero pass (ADR-103)
+//
+// The nine grammars were composed for tiles: at 1440x560 their focal
+// mass is correct but the frame around it is thin. Rather than
+// rewriting every family for a second size, a hero scene wraps the
+// grammar in two generic passes drawn from the SAME seeded stream:
+// `back` sweeps large-scale forms UNDER the grammar (its ground fills
+// are translucent, so they read through as depth) and `front` lays
+// fine texture OVER it. Both are pure, deterministic and paint only
+// with palette tokens, so every contract of the module still holds.
+
+/** Long sweeping masses under the composition — the large-scale forms. */
+function atmosphereBack(rng: Rng, f: Frame, p: Palette, detail: number): ArtShape[] {
+  const shapes: ArtShape[] = [];
+  const sweeps = Math.round(3 * detail);
+  const tilt = rng.range(-16, 16);
+  for (let i = 0; i < sweeps; i += 1) {
+    const paint = i % 3 === 0 ? p.a : i % 3 === 1 ? p.b : p.c;
+    shapes.push(
+      filled(
+        bandPath(
+          f,
+          tilt + rng.range(-9, 9),
+          rng.range(-0.85, 0.85),
+          f.s * rng.range(0.16, 0.52),
+        ),
+        paint,
+        rng.range(0.28, 0.6),
+        i % 2 === 0 ? 'normal' : 'screen',
+      ),
+    );
+  }
+  // Two cropped giants: forms far bigger than the frame, so the eye
+  // reads a fragment of something large rather than a centred motif.
+  const giants = Math.max(2, Math.round(detail));
+  for (let i = 0; i < giants; i += 1) {
+    shapes.push(
+      filled(
+        circlePath(
+          f.w * rng.range(-0.1, 1.1),
+          f.h * rng.range(-0.35, 1.35),
+          f.s * rng.range(0.55, 1.05),
+        ),
+        i % 2 === 0 ? p.ink : p.c,
+        rng.range(0.18, 0.42),
+        i % 2 === 0 ? 'multiply' : 'soft-light',
+      ),
+    );
+  }
+  return shapes;
+}
+
+/** Fine texture over the composition — grain, rays, a horizon glint. */
+function atmosphereFront(rng: Rng, f: Frame, p: Palette, detail: number): ArtShape[] {
+  const shapes: ArtShape[] = [];
+  // Dust: one path, many subpaths, count bounded whatever the frame.
+  const motes = Math.min(150, Math.round(70 * detail));
+  const dust: string[] = [];
+  for (let i = 0; i < motes; i += 1) {
+    dust.push(
+      circlePath(
+        rng.range(0, f.w),
+        rng.range(0, f.h),
+        f.s * rng.range(0.0012, 0.006),
+      ),
+    );
+  }
+  shapes.push(filled(dust.join(' '), p.glow, rng.range(0.18, 0.34), 'screen'));
+  // Rays: long hairlines fanning from one off-frame point.
+  const rays = Math.round(4 * detail);
+  const originX = f.w * rng.range(-0.2, 1.2);
+  const originY = f.h * rng.range(-0.9, -0.2);
+  const fan: string[] = [];
+  for (let i = 0; i < rays; i += 1) {
+    const spread = rng.range(-0.7, 0.7);
+    fan.push(
+      polyline([
+        [originX, originY],
+        [originX + spread * f.w, originY + f.diag * 1.6],
+      ]),
+    );
+  }
+  shapes.push(stroked(fan.join(' '), p.glow, f.s * 0.004, rng.range(0.08, 0.18), 'butt', 'screen'));
+  shapes.push(
+    filled(
+      bandPath(f, rng.range(-4, 4), rng.range(0.25, 0.7), f.s * rng.range(0.006, 0.016)),
+      p.glow,
+      rng.range(0.25, 0.5),
+      'screen',
+    ),
+  );
+  return shapes;
+}
+
+// ---------------------------------------------------------------------------
 // Entry point
+
+/** How rich a frame is composed: tiles stay lean, the hero gets depth. */
+const RATIO_DETAIL: Readonly<Record<ArtRatio, number>> = {
+  portrait: 1,
+  square: 1,
+  wide: 1,
+  hero: 2,
+};
 
 /**
  * Compose the artwork for one entity.
  *
  * @param id Canonical entity id (`character:luffy`) — the only seed.
  * @param type Entity type id; selects the visual family.
- * @param ratio Frame to compose for.
+ * @param ratio Frame to compose for. `hero` additionally raises the
+ *   detail level and wraps the grammar in the atmosphere passes.
  * @param initial Optional single grapheme, used as a cropped
  *   compositional mark by the families that support one.
  */
@@ -1491,7 +1637,7 @@ export function buildEntityArt(
     w: width,
     h: height,
     s: Math.min(width, height),
-    diag: Math.hypot(width, height),
+    diag: dist(width, height),
   };
   // The ratio joins the seed so a portrait and a square of the same
   // entity are composed for their frame instead of being cropped copies.
@@ -1499,20 +1645,26 @@ export function buildEntityArt(
   const grammarId = grammarForType(type);
   const grammar = GRAMMARS[grammarId];
   const palette = createPalette(rng);
+  const detail = RATIO_DETAIL[ratio];
   const result = grammar({
     rng,
     f,
     p: palette,
     initial: initial ?? null,
     typeSeed: hashString(type),
+    detail,
   });
+  // Tiles ARE the grammar; only richer frames get the wrapping passes,
+  // so nothing about the existing tile output changes.
+  const back = detail > 1 ? atmosphereBack(rng, f, palette, detail) : [];
+  const front = detail > 1 ? atmosphereFront(rng, f, palette, detail) : [];
   return {
     width,
     height,
     background: 'var(--art-bg)',
     grammar: grammarId,
-    shapes: result.shapes,
+    shapes: [...back, ...result.shapes, ...front],
     mark: result.mark,
-    markIndex: result.markIndex,
+    markIndex: back.length + result.markIndex,
   };
 }

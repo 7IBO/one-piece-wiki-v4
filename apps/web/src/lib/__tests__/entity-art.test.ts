@@ -1,4 +1,6 @@
 import { describe, expect, test } from 'bun:test';
+import { readFileSync } from 'node:fs';
+import { resolve } from 'node:path';
 import {
   ART_RATIOS,
   type ArtRatio,
@@ -8,7 +10,7 @@ import {
   hashString,
 } from '../entity-art.ts';
 
-const RATIOS: readonly ArtRatio[] = ['portrait', 'square', 'wide'];
+const RATIOS: readonly ArtRatio[] = ['portrait', 'square', 'wide', 'hero'];
 
 const IDS: readonly string[] = [
   'character:luffy',
@@ -217,6 +219,76 @@ describe('buildEntityArt — the initial is a compositional element', () => {
       expect(mark.x < 0 || mark.y > scene.height * 0.85).toBe(true);
       // Behind the focal masses, never the last thing drawn.
       expect(scene.markIndex).toBeLessThan(scene.shapes.length);
+    }
+  });
+});
+
+describe('buildEntityArt — the hero frame (ADR-103)', () => {
+  test('hero is richer than the tile of the same entity, for every grammar', () => {
+    for (const id of IDS) {
+      const [type = ''] = id.split(':');
+      const tile = buildEntityArt(id, type, 'portrait', 'A');
+      const hero = buildEntityArt(id, type, 'hero', 'A');
+      expect(hero.shapes.length).toBeGreaterThan(tile.shapes.length);
+      expect(hero.width).toBeGreaterThan(hero.height);
+    }
+  });
+
+  test('hero stays deterministic and bounded', () => {
+    for (const id of IDS) {
+      const [type = ''] = id.split(':');
+      const first = JSON.stringify(buildEntityArt(id, type, 'hero', 'A'));
+      expect(JSON.stringify(buildEntityArt(id, type, 'hero', 'A'))).toBe(first);
+      const scene = buildEntityArt(id, type, 'hero', 'A');
+      expect(scene.shapes.length).toBeLessThanOrEqual(90);
+      expect(first.length).toBeLessThan(140000);
+    }
+  });
+
+  test('raising the detail level never breaks the grammar mapping', () => {
+    expect(buildEntityArt('character:luffy', 'character', 'hero').grammar).toBe('figure');
+    expect(buildEntityArt('x:y', 'totally-unknown', 'hero').grammar).toBe('field');
+  });
+
+  test('the mark still sits inside the layer stack after the extra passes', () => {
+    for (const id of IDS) {
+      const [type = ''] = id.split(':');
+      const scene = buildEntityArt(id, type, 'hero', 'A');
+      expect(scene.markIndex).toBeGreaterThanOrEqual(0);
+      expect(scene.markIndex).toBeLessThanOrEqual(scene.shapes.length);
+    }
+  });
+});
+
+describe('buildEntityArt — identical on the SSR engine and in the browser', () => {
+  /**
+   * The scene is emitted by Bun (JavaScriptCore) during SSR and
+   * recomputed by V8 at hydration, so any operation whose last ULP is
+   * implementation-defined can change the markup between the two and
+   * cost a React hydration mismatch. `Math.hypot` does exactly that —
+   * the engines disagree on ~11% of inputs — and the screentone uses
+   * distance as a threshold, so one ULP added or removed a dot.
+   *
+   * Only `Math.sqrt` (correctly rounded by IEEE-754, like `*` and `+`)
+   * is safe for a value that feeds a comparison. This guard is on the
+   * source because a single-engine test can never observe the bug.
+   */
+  test('no implementation-defined distance function reaches the geometry', () => {
+    const source = readFileSync(resolve(import.meta.dirname, '..', 'entity-art.ts'), 'utf8');
+    const code = source.replace(/\/\*[\s\S]*?\*\//g, '');
+    expect(code).not.toMatch(/Math\.hypot/);
+    expect(code).toMatch(/Math\.sqrt/);
+  });
+
+  test('coordinate ties round away from the .x5 boundary', () => {
+    // Two values that differ only in the last ULP must serialise the
+    // same, or the two engines produce different path strings.
+    const scene = buildEntityArt('character:sabo', 'character', 'square', 'S');
+    for (const shape of scene.shapes) {
+      // A coordinate is never emitted with more than one decimal.
+      for (const token of shape.d.match(/-?\d+\.\d+/g) ?? []) {
+        expect(token.split('.')[1]?.length ?? 0).toBeLessThanOrEqual(1);
+      }
     }
   });
 });

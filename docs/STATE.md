@@ -15,7 +15,29 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (art génératif d'entité ADR-102 ; design v7 « Vignette » — en attente du verdict mainteneur)
+**Last updated**: 2026-08-09 (design v8 « Grand Line » — base d'univers immersive)
+
+**2026-08-09 — design v8 « Grand Line ».** v7 rejeté (« hyper IA,
+même les couleurs vont pas »). Premier retour de goût exploitable du
+mainteneur sur des sites de référence : **aime** starwars.com/databank
+et la page champions de League of Legends ; **tiède** letterboxd
+(« pas assez unique ») ; **rejette** pokedex (« moche »), mubi et
+criterion (« bof »). Motif extrait : l'image EST l'interface, sombre
+atmosphérique mais la couleur vient de l'œuvre, typo display brandée,
+grilles filtrables par facette, mouvement au survol, sensation de
+produit officiel de franchise — l'inverse du minimalisme arty et de
+l'éditorial imprimé, ce qui explique rétrospectivement l'échec de v6
+et v7 qui visaient précisément ce registre. Livré : héros plein cadre
+pour toutes les entités (art génératif poussé à l'échelle 1440×560,
+passes d'atmosphère), rosters filtrés par facettes dérivées du schéma,
+**teinte par entité** (ADR-103) — le hash de l'id donne une teinte qui
+repointe les tokens de thème, donc chaque page a sa couleur sans rien
+à saisir, contraste WCAG garanti par boucle de remontée de luminance
+et testé sur les 360 teintes. Bug corrigé au passage : `Math.hypot`
+diverge entre JSC (SSR Bun) et V8 sur ~11 % des entrées → mismatch
+d'hydratation sur toute page portant de l'art ; routé via `Math.sqrt`.
+507 tests verts. **Ne pas merger avant validation explicite du rendu
+par le mainteneur.**
 
 **2026-08-09 — art génératif d'entité (ADR-102).** Le corpus n'a
 aucune image utilisable (3 entités `image`, domaine factice, 0

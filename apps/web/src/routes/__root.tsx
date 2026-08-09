@@ -173,7 +173,14 @@ function RootLayout(): JSX.Element {
         <LogRail key={`rail:${railKey}`} progress={progress} anchors={anchors} />
         {showBanner ? <FirstRunBanner /> : null}
       </header>
-      <main className='mx-auto w-full max-w-[1200px] flex-1 px-4 pb-16 pt-7 sm:px-6 sm:pt-8'>
+      {
+        /* Full-bleed on purpose: an entity page opens on a hero that
+          spans the viewport. Pages own their own reading column
+          (`.page-column`), so nothing here constrains the hero — and
+          no `100vw` breakout is needed, which would overflow by the
+          width of the scrollbar. */
+      }
+      <main className='w-full flex-1 pb-16'>
         <Outlet />
       </main>
       <footer className='border-t border-line'>
@@ -206,7 +213,7 @@ function RootLayout(): JSX.Element {
 function NotFound(): JSX.Element {
   const locale = useLocale();
   return (
-    <div className='mx-auto max-w-md py-24 text-center'>
+    <div className='page-column mx-auto max-w-md py-24 text-center'>
       <p className='display text-5xl font-extrabold text-gold/50'>404</p>
       <p className='display mt-3 text-3xl font-bold text-fg'>
         {t(locale, 'notFoundTitle')}

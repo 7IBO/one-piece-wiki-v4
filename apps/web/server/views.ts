@@ -88,6 +88,8 @@ export type HomeView = {
 export type EntityListItem = {
   readonly slug: string;
   readonly name: string;
+  /** Raw facet values by property id — the listing filters on these. */
+  readonly facets: Readonly<Record<string, string>>;
   /** Display image (spoiler-checked) — listings are image-led. */
   readonly image: ImageView | null;
   /** Type-appropriate identity line (epithet, release date…), spoiler-checked. */
@@ -97,9 +99,29 @@ export type EntityListItem = {
   readonly tag: string | null;
 };
 
+/** One selectable value of a listing facet, with its population. */
+export type FacetOptionView = {
+  readonly value: string;
+  readonly label: string;
+  readonly count: number;
+};
+
+/**
+ * A filter offered by a type listing. Derived ENTIRELY from the schema
+ * (any declared enum property that actually splits the population), so
+ * there is no facet list to maintain and a type with no enum property
+ * simply gets no filters.
+ */
+export type FacetView = {
+  readonly id: string;
+  readonly label: string;
+  readonly options: readonly FacetOptionView[];
+};
+
 export type TypeListView = {
   readonly type: string;
   readonly label: string;
+  readonly facets: readonly FacetView[];
   readonly items: readonly EntityListItem[];
 };
 
@@ -969,6 +991,67 @@ export async function buildHomeView(locale: Locale): Promise<HomeView> {
   return { groups, totalEntities: total };
 }
 
+/** At most this many filter rows on a listing — more is a wall, not a tool. */
+const MAX_FACETS = 3;
+/** A facet with more options than this stops being a quick filter. */
+const MAX_FACET_OPTIONS = 8;
+
+/**
+ * Derive the filters of a type listing from the SCHEMA alone: every
+ * declared enum property whose visible values actually split the
+ * population becomes a facet, labelled through its vocabulary.
+ *
+ * Fully schema-driven — no well-known ids are consulted, so a new type
+ * gains filters the moment it declares an enum property, and a type
+ * without one simply has none (the listing then renders no filter bar).
+ */
+function buildFacets(
+  rows: readonly EntityRow[],
+  type: string,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): { facets: readonly FacetView[]; byRow: ReadonlyMap<string, Record<string, string>>; } {
+  const byRow = new Map<string, Record<string, string>>();
+  for (const row of rows) byRow.set(row.id, {});
+  const declared = cat.entityTypes.get(type)?.properties ?? [];
+  const facets: FacetView[] = [];
+  for (const declaration of declared) {
+    if (facets.length >= MAX_FACETS) break;
+    const schema = cat.propertyTypes.get(declaration.id);
+    if (schema === undefined) continue;
+    if (schema.value_type !== 'enum') continue;
+    const enumRef = schema.value_constraints?.enum_ref;
+    const counts = new Map<string, number>();
+    const values = new Map<string, string>();
+    for (const row of rows) {
+      const raw = latestRawValue(row, declaration.id, cursor);
+      if (typeof raw !== 'string' || raw === '') continue;
+      values.set(row.id, raw);
+      counts.set(raw, (counts.get(raw) ?? 0) + 1);
+    }
+    // A facet earns its place only when it separates the population.
+    if (counts.size < 2 || counts.size > MAX_FACET_OPTIONS) continue;
+    for (const [rowId, value] of values) {
+      const bucket = byRow.get(rowId);
+      if (bucket !== undefined) bucket[declaration.id] = value;
+    }
+    const options = [...counts.entries()]
+      .map(([value, count]) => ({
+        value,
+        label: vocabValueLabel(cat, enumRef, value, locale),
+        count,
+      }))
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+    facets.push({
+      id: declaration.id,
+      label: pickLabel(schema.labels, locale),
+      options,
+    });
+  }
+  return { facets, byRow };
+}
+
 export async function buildTypeListView(
   type: string,
   locale: Locale,
@@ -979,12 +1062,14 @@ export async function buildTypeListView(
   if (rows.length === 0 && !cat.entityTypes.has(type)) return null;
   // Card enrichment reads the already-loaded row blobs; the image adds
   // one prepared relation lookup per row (v7 image-led listings).
+  const { facets, byRow } = buildFacets(rows, type, cat, locale, cursor);
   const items = rows
     .map((row) => {
       const name = resolveEntityName(row, cat, locale);
       return {
         slug: row.slug,
         name,
+        facets: byRow.get(row.id) ?? {},
         image: resolveEntityImage(row, db.listRelationsFrom(row.id), cursor, null, locale, name),
         secondary: cardSecondary(row, cat, locale, cursor),
         subtitle: row.first_appearance_source === null
@@ -994,7 +1079,7 @@ export async function buildTypeListView(
       };
     })
     .sort((a, b) => a.name.localeCompare(b.name));
-  return { type, label: entityTypeLabel(cat, type, locale), items };
+  return { type, label: entityTypeLabel(cat, type, locale), facets, items };
 }
 
 function buildEntryView(

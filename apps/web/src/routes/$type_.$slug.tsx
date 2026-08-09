@@ -20,7 +20,7 @@
  * the resolved path is still `/$type/$slug`.
  */
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
-import { Fragment, type JSX, type ReactNode } from 'react';
+import { type CSSProperties, Fragment, type JSX, type ReactNode } from 'react';
 import {
   type AvailabilityItemView,
   type CastGroupView,
@@ -42,9 +42,11 @@ import {
 import { ContributeStrip } from '../components/ContributeStrip';
 import { CARD_GRID_CLASS, EntityCard } from '../components/EntityCard';
 import { EntityChipLink, ScopeContext, useScopeSearch } from '../components/EntityChip';
+import { EntityHero } from '../components/EntityHero';
 import { EntityImage } from '../components/EntityImage';
 import { ShowMoreList } from '../components/ShowMoreList';
 import { type ChromeKey, t } from '../lib/chrome';
+import { entityTint } from '../lib/entity-tint';
 import { Markdown } from '../lib/markdown';
 import { validateScopeSearch } from '../lib/scope';
 import { useLocale } from './__root';
@@ -127,7 +129,7 @@ function EntityPage(): JSX.Element {
 function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element {
   const locale = useLocale();
   return (
-    <div className='mx-auto max-w-md py-20 text-center'>
+    <div className='page-column mx-auto max-w-md py-20 text-center'>
       <p className='label-xs'>{view.typeLabel}</p>
       <h1 className='display mt-2 text-[clamp(1.9rem,4.5vw,2.8rem)] font-extrabold leading-[1.05] text-fg'>
         {view.name}
@@ -165,78 +167,76 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
     || b.items.length - a.items.length
     || a.label.localeCompare(b.label)
   );
+  const tint = entityTint(view.id);
   return (
-    <article>
-      {/* Identity header */}
-      <header className='flex flex-col gap-5 min-[560px]:flex-row min-[560px]:gap-7'>
-        {view.image !== null
-          ? (
-            <div className='w-36 shrink-0 sm:w-44'>
-              <EntityImage
-                image={view.image}
-                type={view.type}
-                slug={view.slug}
-                name={view.name}
-                ratio='portrait'
-                className='w-full rounded-lg ring-1 ring-line'
-              />
-              {view.image.attribution !== null
-                ? (
-                  <p className='mt-1.5 truncate font-mono text-[0.58rem] uppercase tracking-[0.1em] text-faint'>
-                    {view.image.attribution}
-                  </p>
-                )
-                : null}
+    <article className='tinted' style={tint.vars as CSSProperties}>
+      {
+        /* The page opens ON the entity's artwork: full-bleed hero,
+          layered for depth, tinted by this entity's own chord. */
+      }
+      <EntityHero entityId={view.id} entityType={view.type} name={view.name}>
+        <div className='flex flex-wrap items-end justify-between gap-x-8 gap-y-4'>
+          <div className='min-w-0'>
+            <div className='flex flex-wrap items-center gap-x-3 gap-y-1'>
+              <Link
+                to='/$type'
+                params={{ type: view.type }}
+                className='label-xs text-fg/70 transition-colors duration-150 hover:text-accent'
+              >
+                {view.typeLabel}
+                {source !== null && source.number !== null ? ` · ${source.number}` : ''}
+              </Link>
+              {source !== null ? <PrevNext template={source} /> : null}
             </div>
-          )
-          : null}
-        <div className='min-w-0 flex-1'>
-          <div className='flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1'>
-            <Link
-              to='/$type'
-              params={{ type: view.type }}
-              className='label-xs transition-colors duration-150 hover:text-accent'
-            >
-              {view.typeLabel}
-              {source !== null && source.number !== null ? ` · ${source.number}` : ''}
-            </Link>
-            {source !== null ? <PrevNext template={source} /> : null}
-          </div>
-          <div className='mt-1 flex flex-wrap items-start justify-between gap-x-6 gap-y-3'>
-            <h1 className='display min-w-0 text-[clamp(1.9rem,4.6vw,3rem)] font-extrabold leading-[1.04] text-fg'>
+            <h1 className='display mt-1.5 text-[clamp(2.2rem,6.4vw,4.5rem)] font-extrabold uppercase leading-[0.94] text-fg'>
               {view.name}
             </h1>
-            {bountyRow !== null
+            {view.firstAppearance !== null
               ? (
-                <div className='shrink-0 min-[560px]:text-right'>
-                  <p className='label-xs text-gold/75'>{bountyRow.label}</p>
-                  <p className='display mt-0.5 text-[1.7rem] font-extrabold leading-none tabular-nums text-gold'>
-                    {bountyRow.entry.display}
-                  </p>
-                </div>
+                <p className='mt-2.5 text-[13px] text-muted'>
+                  {t(locale, 'firstAppearance')} · <EntityChipLink chip={view.firstAppearance} />
+                </p>
               )
               : null}
           </div>
-          {view.firstAppearance !== null
+          {bountyRow !== null
             ? (
-              <p className='mt-2 text-[13px] text-muted'>
-                {t(locale, 'firstAppearance')} · <EntityChipLink chip={view.firstAppearance} />
-              </p>
-            )
-            : null}
-          {statRows.length > 0 || view.infoboxRelations.length > 0
-            ? (
-              <dl className='mt-5 flex flex-wrap gap-x-7 gap-y-3.5 border-t border-line pt-4'>
-                {statRows.map((row) => <FactItem key={row.id} row={row} />)}
-                {view.infoboxRelations.map((row) => <FactRelationItem key={row.key} row={row} />)}
-              </dl>
+              <div className='shrink-0'>
+                <p className='label-xs text-gold/80'>{bountyRow.label}</p>
+                <p className='display text-[clamp(1.6rem,3.4vw,2.4rem)] font-extrabold leading-none tabular-nums text-gold'>
+                  {bountyRow.entry.display}
+                </p>
+              </div>
             )
             : null}
         </div>
-      </header>
+      </EntityHero>
+
+      {
+        /* The facts strip sits BELOW the stage, on the canvas: data
+          wants a quiet ground, and a ruled row over artwork reads as a
+          seam rather than as structure. */
+      }
+      {statRows.length > 0 || view.infoboxRelations.length > 0
+        ? (
+          <dl className='page-column mb-10 flex flex-wrap gap-x-8 gap-y-4 border-b border-line pb-5 pt-6'>
+            {statRows.map((row) => <FactItem key={row.id} row={row} />)}
+            {view.infoboxRelations.map((row) => <FactRelationItem key={row.key} row={row} />)}
+          </dl>
+        )
+        : <div className='pt-8' />}
 
       {/* The hub: connection sections, ordered by importance. */}
-      <div className='mt-10 space-y-10'>
+      <div className='page-column space-y-10'>
+        {view.narrative !== null
+          ? (
+            <section>
+              <SectionHead>{t(locale, 'about')}</SectionHead>
+              <Markdown markdown={view.narrative} />
+            </section>
+          )
+          : null}
+
         {source !== null ? <SourceSections template={source} /> : null}
         {view.template.kind === 'character'
           ? <CrewSections crews={view.template.crews} />
@@ -269,15 +269,6 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
 
         {groups.map((group) => <ConnectionGroup key={group.key} group={group} />)}
 
-        {view.narrative !== null
-          ? (
-            <section>
-              <SectionHead>{t(locale, 'about')}</SectionHead>
-              <Markdown markdown={view.narrative} />
-            </section>
-          )
-          : null}
-
         {history.length > 0
           ? (
             <section>
@@ -290,7 +281,9 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
           : null}
       </div>
 
-      <ContributeStrip type={view.type} slug={view.slug} />
+      <div className='page-column'>
+        <ContributeStrip type={view.type} slug={view.slug} />
+      </div>
     </article>
   );
 }

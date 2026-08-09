@@ -3,27 +3,26 @@
 @import '@fontsource-variable/archivo/wdth.css';
 
 /*
- * Public reader theme — v7 "Vignette" (see WEB_APP.md § Identity):
- * a modern, image-forward reference product. Dark, crisp,
- * contemporary — the register of a high-end film/streaming catalogue,
- * with its own One Piece palette. Tailwind v4 CSS-first config:
- * tokens ONLY here, every component reads them (zero raw hex/oklch
- * in TSX).
+ * Public reader theme — v8 "Grand Line" (see WEB_APP.md § Identity):
+ * an official franchise universe database. Immersive, cinematic,
+ * branded — the register of a databank, not of a reference work.
  *
  * Principles:
- * - The CONNECTION is the core unit: every reference to another
- *   entity renders as an image-led link module (thumb + name +
- *   precise sub-label). Pages are hubs of connections, ordered by
- *   importance, built to scale (rich top, collapsed tail).
- * - Modern polish, restrained: small radii (2/4/6px), hairline
- *   rings, subtle surface steps, deliberate hover states. No pill
- *   soup, no dots, no gradients, no glassmorphism, no empty heroes.
- * - Type: Archivo Variable (semi-expanded, heavy) is the display
- *   voice — wordmark, entity names, section titles. Inter carries
- *   data and UI. Tabular numerals for every figure.
- * - Color: warm charcoal canvas, bone foreground; GOLD = identity
- *   and stats (progress fill, bounty, monograms); VERMILLION =
- *   interactive accents. Nothing else carries hue.
+ * - **The artwork is the interface.** Every entity carries a
+ *   generated composition (`lib/entity-art.ts`); pages open on it at
+ *   full bleed and listings are walls of it. Nothing is a thumbnail
+ *   beside text.
+ * - **Colour comes from the entity, not from the chrome** (ADR-103).
+ *   `lib/entity-tint.ts` hashes an id into a chord and emits it as
+ *   custom properties; the `.tinted` scope below re-points the UI
+ *   tokens to it, so every Tailwind utility inside an entity page is
+ *   already that entity's colour. The tokens declared here are the
+ *   NEUTRAL chrome default — top bar, footer and listings keep them
+ *   so navigation never wobbles.
+ * - Motion is part of the finish: tiles lift and reveal on hover,
+ *   always under `prefers-reduced-motion`.
+ * - Type: Archivo Variable, expanded and heavy, is the branded
+ *   display voice; Inter carries data and UI.
  */
 @theme {
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
@@ -116,6 +115,102 @@ body {
     text-transform: uppercase;
     color: var(--color-faint);
   }
+
+  /*
+   * The tint scope (ADR-103). An element carrying BOTH the inline
+   * custom properties from `entityTint()` and this class re-points the
+   * theme tokens every Tailwind utility already reads — so `text-accent`,
+   * `ring-line`, `bg-accent`… become that entity's colour with no
+   * component change and no per-page stylesheet. Applied to the entity
+   * article only: chrome and listings stay on the neutral defaults.
+   *
+   * The fallbacks matter: if the class is ever used without the inline
+   * vars, the page degrades to the global palette instead of losing
+   * its colours.
+   */
+  .tinted {
+    --color-accent: var(--tint-accent, oklch(0.645 0.165 30));
+    --color-accent-hover: var(--tint-accent-hover, oklch(0.715 0.15 32));
+    --color-line: var(--tint-line, oklch(0.93 0.015 85 / 0.09));
+    --color-line-strong: var(--tint-line-strong, oklch(0.93 0.015 85 / 0.19));
+    --color-surface: var(--tint-surface, oklch(0.212 0.011 70));
+  }
+
+  /*
+   * The reading column. `main` is full-bleed so a hero can span the
+   * viewport without a `100vw` breakout (which overflows by the width
+   * of the scrollbar); every page opts back into the column with this.
+   */
+  .page-column {
+    margin-inline: auto;
+    width: 100%;
+    max-width: 1200px;
+    padding-inline: 1rem;
+  }
+
+  @media (width >= 640px) {
+    .page-column {
+      padding-inline: 1.5rem;
+    }
+  }
+
+  /*
+   * Hero scrims. Two gradients, each with one job: the vertical one
+   * dissolves the stage into the canvas at its foot (so there is never
+   * a seam where the artwork stops), the horizontal one only weights
+   * the side the display type sits on. Deliberately gentler than a
+   * full blackout — the artwork is the point, and the type's contrast
+   * is already guaranteed by the tint's lightness search.
+   */
+  .hero-scrim-y {
+    background: linear-gradient(
+      to bottom,
+      color-mix(in oklab, var(--color-canvas) 46%, transparent) 0%,
+      color-mix(in oklab, var(--color-canvas) 22%, transparent) 26%,
+      color-mix(in oklab, var(--color-canvas) 30%, transparent) 50%,
+      color-mix(in oklab, var(--color-canvas) 52%, transparent) 68%,
+      color-mix(in oklab, var(--color-canvas) 78%, transparent) 84%,
+      color-mix(in oklab, var(--color-canvas) 94%, transparent) 94%,
+      var(--color-canvas) 100%
+    );
+  }
+
+  .hero-scrim-x {
+    background: linear-gradient(
+      to right,
+      color-mix(in oklab, var(--color-canvas) 88%, transparent) 0%,
+      color-mix(in oklab, var(--color-canvas) 58%, transparent) 38%,
+      color-mix(in oklab, var(--color-canvas) 10%, transparent) 72%,
+      transparent 100%
+    );
+  }
+
+  /* Depth of field. The generator draws hard-edged paths — correct at
+   * tile scale, but a 1440 px stage turns a ground split into a seam.
+   * Both hero layers are therefore defocused: the far one heavily
+   * (pure colour bleed), the near one just enough to melt its edges
+   * while its masses stay legible. */
+  .hero-depth {
+    filter: blur(34px) saturate(1.3);
+    transform: scale(1.2);
+  }
+
+  .hero-front {
+    filter: blur(2.5px) saturate(1.08);
+    transform: scale(1.02);
+  }
+
+  /* Hover lift — the shared motion of every art tile. Marked with a
+   * class so `prefers-reduced-motion` can cancel the transform wholesale
+   * (a shortened transition would still jump the layout). */
+  .motion-lift {
+    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease;
+  }
+
+  .motion-lift:hover,
+  .motion-lift:focus-visible {
+    transform: translateY(-4px);
+  }
 }
 
 /* Comfortable touch targets on coarse pointers (same floor as the
@@ -135,5 +230,12 @@ body {
     transition-duration: 0.01ms !important;
     animation-duration: 0.01ms !important;
     animation-iteration-count: 1 !important;
+  }
+
+  /* Hover lift and parallax are decoration: drop the transforms
+   * entirely rather than merely shortening them. */
+  .motion-lift:hover,
+  .motion-lift:focus-visible {
+    transform: none !important;
   }
 }

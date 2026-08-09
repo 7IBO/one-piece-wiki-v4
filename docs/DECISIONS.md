@@ -8,6 +8,93 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-103 — The entity colours its own page
+
+**Date**: 2026-08-09
+
+**Context**: Five design iterations were rejected. The taste signal we
+finally have is concrete: the maintainer likes `starwars.com/databank`
+and the League of Legends champions page, is lukewarm on Letterboxd,
+and dislikes the Pokédex ("moche"), Mubi and Criterion ("bof"). What
+the liked pages share is that **the artwork is the interface** and that
+**the chroma of a page comes from its art**, not from a UI accent — the
+chrome is nearly neutral and the picture supplies the colour. Our
+corpus has no pictures at all (3 image entities on a domain that does
+not resolve, and image egress is blocked), which is why ADR-102 made
+the placeholder generative. But a global palette applied to every page
+left the standing complaint that "même au niveau des couleurs ça va
+pas": one dull palette, every page identical.
+
+**Options considered**:
+
+1. Hand-author a colour per entity type. Ten types, one colour each —
+   every character page still looks like every other character page,
+   and it is a table to maintain forever.
+2. Let editors set an accent per entity. Real art direction, but it is
+   data we do not have, cannot backfill for thousands of entities, and
+   would have to be modelled, validated and translated.
+3. Extract the colour from the entity's image. The obvious solution
+   for a site with photography — and we have none.
+4. **Derive the colour from the entity id, deterministically, and let
+   the page inherit it.** (chosen)
+
+**Choice**: `apps/web/src/lib/entity-tint.ts` hashes the canonical id
+into a hue, builds a chord around it, and emits it as CSS custom
+properties. The `.tinted` scope in `styles.css` re-points the theme
+tokens (`--color-accent`, `--color-line`, `--color-surface`) to that
+chord, and the art tokens (`--art-*`) are re-pointed on every art tile.
+The entity page applies the scope to its article; chrome, footer and
+listings keep the neutral defaults.
+
+**Rationale**:
+
+- **The constraint becomes the identity.** Having no artwork was the
+  problem; deriving both the composition and the colour from the id
+  turns it into the one thing no other wiki has — Luffy's page and
+  Zoro's page are genuinely different colours, forever, with nobody
+  authoring anything.
+- **It costs nothing at runtime.** A hash and a few `oklch()` strings,
+  server-rendered into a `style` attribute. No request, no client JS,
+  no image bytes, no build step.
+- **Readability is proven, not hoped for.** The accent's lightness is
+  RAISED in a loop until its measured WCAG contrast against the page
+  canvas clears 4.5 — the measurement runs in oklch → sRGB, so it is
+  the pixels the browser paints that are checked. A unit test sweeps
+  all 360 hues, and a second test parses `styles.css` so the canvas
+  constant can never drift from the stylesheet it mirrors. An
+  unreadable page is not expressible.
+- **Nothing in a component changed.** Tailwind v4 compiles utilities to
+  `var(--color-accent)`, so re-pointing the property inside a scope
+  re-colours every existing `text-accent`/`ring-line`/`bg-accent` with
+  no per-page stylesheet and no prop threading.
+- **Navigation stays stable** because only the article inherits the
+  chord; the top bar, the progression control and the footer are
+  outside the scope. Listings stay neutral so their grid of
+  individually-coloured tiles reads as one collection.
+
+**Consequences**:
+
+- The hero needed art at 1440x560, where compositions tuned for 150 px
+  tiles read thin. `ART_RATIOS` gains a `hero` frame and the generator
+  gains a `detail` level: grammars scale their repeated elements by it,
+  and two generic passes (`atmosphereBack`/`atmosphereFront`) wrap the
+  grammar with large sweeping masses and fine texture. Tiles are
+  untouched — `detail` is 1 everywhere else.
+- Real pictures, when an importer finally runs, still win: `EntityImage`
+  paints them over the art exactly as before. The tint stays, which is
+  what the reference sites do anyway.
+- **A latent SSR bug surfaced and was fixed.** `Math.hypot` is
+  implementation-defined to the last ULP and Bun (JavaScriptCore) and
+  V8 disagree on ~11% of inputs; the screentone used distance as a
+  threshold, so the two engines emitted a different number of subpaths
+  and React logged a hydration mismatch on every page with artwork.
+  Distance now goes through `Math.sqrt`, which IEEE-754 requires to be
+  correctly rounded, and coordinate rounding biases ties consistently.
+  A source-level test guards it, because one engine can never observe
+  the divergence.
+
+---
+
 ## ADR-102 — Generative entity art replaces the monogram placeholder
 
 **Date**: 2026-08-09

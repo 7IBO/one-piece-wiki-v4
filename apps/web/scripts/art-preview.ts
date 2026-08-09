@@ -110,6 +110,13 @@ const sections = [
   ),
   section('every type · square', 'connection thumbs, 1:1', corpus, 'square', 96),
   section('every type · wide', 'banners, 7:3', corpus.slice(0, 12), 'wide', 300),
+  section(
+    'every type · hero',
+    'page stages, 18:7 at raised detail (ADR-103)',
+    corpus.slice(0, 6),
+    'hero',
+    620,
+  ),
   section('unknown types', '→ field (generic degradation, ADR-091)', unknown, 'portrait', 150),
   section('thumb wall', 'the 40px reality check', [...corpus, ...corpus], 'square', 40),
 ];

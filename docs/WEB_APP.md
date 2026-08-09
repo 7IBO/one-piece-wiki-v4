@@ -9,38 +9,63 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
 ## Identity
 
 - **Name**: One Piece Wiki (header wordmark; `<title>` suffix).
-- **Style** (v7 "Vignette", 2026-08-09 — a modern, image-forward
-  reference product; the register of a high-end film/streaming
-  catalogue, with its own identity). **The connection is the core
-  unit**: every reference to another entity renders as an image-led
-  link module — thumbnail (shared EntityImage, generated art when
-  there is no picture) +
-  name + precise sub-label (role, period, type) — and entity pages
-  are HUBS of connections grouped by relation type, **ordered by
-  importance** (well-known-id priority list, ADR-091: crew → fruit →
-  techniques/weapons → family → … ; unknown ids fall to the end but
-  always render). **Designed for scale**: each group shows a
-  collapsed budget (8 rows / 12 posters / 28 numbers) and folds the
-  tail behind a "Show N more" toggle; chapters/episodes use compact
-  number grids, never page-long dumps. **Former members are
-  VISIBLE**: poster grids show active AND former members; former
-  ones are subdued (dimmed image) with a "Former" tag and their
-  period — and the spoiler rule holds: a departure anchored beyond
-  the reader's cursor renders as CURRENT (`isDepartureVisible`,
-  `server/progress.ts`). Typography: Archivo Variable semi-expanded
-  (font-stretch 115%) is the display voice — wordmark, entity names,
-  section titles, figures; Inter carries data/UI; tabular numerals.
-  Chrome: slim sticky top bar over the **Log scrubber** — the
-  manga-axis progression as a modern gold progress track (gold fill
-  to the cursor, labeled marker, gold diamonds at the page's
-  knowledge anchors, computed from already spoiler-filtered entries
-  so it can never leak). Modern polish, restrained: small radii
-  (2–6 px), hairline rings, subtle surface steps, deliberate hover
-  states (ring inks accent, names ink accent); no pill soup, no
-  gradients, no glassmorphism, no empty heroes. Palette: warm
-  charcoal canvas (oklch ≈0.18 hue 68), bone foreground, GOLD for
-  identity + stats (progress, bounty), VERMILLION for
-  interactive accents.
+- **Style** (v8 "Grand Line", 2026-08-09 — an official franchise
+  universe database: immersive, cinematic, branded. The reference
+  register is `starwars.com/databank` and the LoL champions page, NOT
+  a neutral reference work, an editorial layout or an arty minimal
+  page — all three were explicitly rejected.)
+  - **The artwork is the interface.** Every entity carries a
+    deterministic generated composition (ADR-102). Entity pages open
+    on a **full-bleed hero** built at the wide `hero` frame and a
+    raised detail level, stacked three deep — a blurred over-scaled
+    copy for atmosphere, the composition itself barely defocused so
+    its hard tile-scale edges melt instead of reading as seams at
+    1440 px, then two scrims (vertical, dissolving the stage into the
+    canvas; horizontal, weighting only the type side). EVERY entity
+    gets a hero, picture or not. Listings are walls of full-tile art
+    with the name over the composition.
+  - **Colour comes from the entity, not the chrome** (ADR-103).
+    `lib/entity-tint.ts` hashes the id into a chord and emits CSS
+    custom properties; `.tinted` re-points the theme tokens so every
+    Tailwind utility inside an entity page is already that entity's
+    colour, and the `--art-*` tokens are re-pointed on every tile so a
+    grid is individually coloured. The accent's lightness is raised
+    until its measured WCAG contrast against the canvas clears 4.5 —
+    swept over all 360 hues in tests. Chrome, footer and listings keep
+    the neutral tokens so navigation never wobbles.
+  - **Facet-filtered collections.** Type listings derive their filters
+    from the SCHEMA (`buildFacets`, `server/views.ts`): any declared
+    enum property that actually splits the population becomes a facet,
+    labelled through its vocabulary, counted server-side against the
+    reader's cursor. No facet list exists to maintain; a type with no
+    enum property renders no filter bar (ADR-091 degradation).
+  - **The connection is still the core unit**: every reference is an
+    image-led link module — thumb + name + precise sub-label (role,
+    period, type) — grouped by relation type with counts and
+    **ordered by importance** (well-known-id priority list, ADR-091:
+    crew → fruit → techniques/weapons → family → …; unknown ids fall
+    to the end but always render). **Designed for scale**: each group
+    shows a collapsed budget (8 rows / 12 tiles / 28 numbers) and
+    folds the tail behind a "Show N more" toggle.
+  - **Former members stay VISIBLE**: shown with a "Former" tag, their
+    period and a subdued tile — and the spoiler rule holds, a
+    departure anchored beyond the reader's cursor renders as CURRENT
+    (`isDepartureVisible`, `server/progress.ts`).
+  - **Motion is part of the finish**: tiles lift and their art scales
+    on hover, the ring takes the entity's colour. Nothing informative
+    hides behind hover (touch readers never hover), and `.motion-lift`
+    is cancelled wholesale under `prefers-reduced-motion`.
+  - Typography: Archivo Variable, expanded (font-stretch 115%) and
+    heavy, is the branded display voice — wordmark, entity names set
+    uppercase at hero scale, section titles, figures; Inter carries
+    data/UI; tabular numerals throughout.
+  - Chrome: slim sticky top bar over the **Log scrubber** — the
+    manga-axis progression as a gold progress track (fill to the
+    cursor, labelled marker, diamonds at the page's knowledge anchors,
+    computed from already spoiler-filtered entries so it cannot leak).
+    `main` is full-bleed; every page opts into `.page-column` for its
+    reading column, so a hero spans the viewport without a `100vw`
+    breakout (which would overflow by the scrollbar width).
 - **Footer (every page)**: GitHub repository link
   (`https://github.com/7IBO/one-piece-wiki-v4`) and a support link
   (`https://buymeacoffee.com/7ibo`), plus locale switcher.
@@ -196,6 +221,15 @@ renders it as inline SVG.
   drawn from a seeded PRNG (mulberry32). Same id → byte-identical
   markup, forever, on server and client. No `Math.random`, no `Date`,
   no requests, no client JS, no layout shift.
+  **Cross-engine determinism is part of that contract**: the scene is
+  emitted by Bun (JavaScriptCore) during SSR and recomputed by V8 at
+  hydration, so no implementation-defined operation may feed a
+  threshold. `Math.hypot` did (the engines disagree on ~11% of inputs,
+  and the screentone tests distance against a radius), which cost a
+  React hydration mismatch on every page carrying art; distance goes
+  through `Math.sqrt` — correctly rounded by IEEE-754 — and coordinate
+  rounding biases ties consistently. A source-level test guards it,
+  since one engine can never observe the divergence.
 - **Per-type grammar**: each entity type maps to a visual family —
   `character → figure` (eclipse / cropped profile / column, and
   deliberately no head-and-shoulders silhouette, which is the avatar
@@ -213,8 +247,17 @@ renders it as inline SVG.
   not hues — ink is the dark mass, glow the light one, 1..6 an
   interchangeable wheel compositions draw a chord from. Changing the
   site palette means changing those nine values, nothing else.
-- **Frames**: `portrait` (3:4), `square`, `wide` — composed for the
-  frame (the ratio joins the seed), never stretched.
+- **Frames**: `portrait` (3:4), `square`, `wide`, and `hero`
+  (1440x560, the page stage) — composed for the frame (the ratio joins
+  the seed), never stretched. `hero` also raises the **detail level**:
+  grammars scale their repeated elements by it, and two generic passes
+  wrap the grammar — `atmosphereBack` sweeps large masses UNDER it
+  (they read through the translucent ground as depth) and
+  `atmosphereFront` lays dust, rays and a glint OVER it. Tiles are
+  unaffected: detail is 1 for every other frame.
+- **Per-entity colour** (ADR-103): `lib/entity-tint.ts` re-points the
+  `--art-*` tokens per tile from the entity's own chord, so the wheel
+  below is the neutral default and no two entities share a palette.
 - **Review**: `bun run -F @onepiece-wiki/web art:preview [out.html]`
   writes a contact sheet of the whole corpus at every frame, plus an
   unknown-type degradation strip. It reads the tokens out of
