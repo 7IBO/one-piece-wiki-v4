@@ -15,7 +15,125 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (PR #120 : ADR-099/100/101 livrés + design v5 « Le Log »)
+**Last updated**: 2026-08-09 (v9 — layouts par type d'entité, ADR-105/106)
+
+**2026-08-09 — v9 : layouts par type + apparitions au grain unité.**
+Demande mainteneur : trous à droite sur la page personnage, layouts
+distincts par type, toutes les données avec leur historique,
+apparitions sur total de chapitres/épisodes, hero « version large
+faible opacité en pleine largeur + rectangle arrondi format affiche
+par-dessus », prev/next dans le hero pour les entités numérotées.
+(a) **ADR-105** : `features-characters` fusionnée dans `features` —
+le grain (arc / chapitre / épisode) est porté par le type de la
+source, pas par le nom de la relation ; `arc-roles` →
+`narrative-roles` ; `role` et `appearance_type` deviennent
+optionnels ; 63 relations, 10 règles ; 3 changements cassants
+assumés, aucune migration (0 arête concernée). (b) **ADR-106** :
+registre de layouts par type — 12 modules, bandes `full`/`split`/
+`pack`, 16 types écrits, dégradation imposée par le _renderer_
+(`bandsFor` ajoute une bande finale contenant tout slot omis, type
+inconnu → `GENERIC_LAYOUT`), testée sur les 16 types + 3 inconnus.
+Historique affiché en ligne sous chaque propriété. prev/next dérivé
+de la propriété ordinale déclarée par le type (aucune liste en dur),
+voisin au-delà du curseur supprimé (le titre fuiterait). Module
+apparitions livré mais invisible : 0 arête `features` unité→personnage
+dans le corpus, il s'allumera sans changement de code. 520 tests.
+**Ne pas merger avant validation du rendu par le mainteneur.**
+
+**2026-08-09 — v8.1, révision ciblée du v8.** Retour mainteneur :
+« j'aime pas le header au niveau de la progress bar et les couleurs
+un peu aléatoires vertes et bleu. j'aime bien le gold par contre. »
+Direction v8 conservée, deux corrections. (a) **ADR-104** : la teinte
+par entité ne parcourt plus les 360° — elle indexe une liste de dix
+accords écrits à la main dans la bande chaude 12–100° (or, laiton,
+ocre, cuivre, safran, orange brûlé, vermillon, sang-de-bœuf, terre,
+ambre). Plus aucun vert/cyan/bleu/violet, y compris dans les tokens
+`--art-*`. L'or reste l'identité constante (wordmark, primes, focus).
+La variété passe par la structure de valeurs (fonds 0.17→0.31, ≥0.4
+d'amplitude par accord), pas par la teinte ; vérifié sur le mur de
+vignettes 40 px. Tests : bande chaude imposée sur les couleurs
+écrites ET sur les `--art-*` extraits de `styles.css`. (b) **LogRail
+supprimé** du header avec sa queue morte serveur (`logAnchors`,
+`collectLogAnchors`) ; la progression tient dans le `ProgressControl`
+compact. Sémantique du cookie `web_progress`, filtrage anti-spoil et
+`isDepartureVisible` inchangés. 511 tests verts. **Ne pas merger
+avant validation explicite du rendu.**
+
+**2026-08-09 — design v8 « Grand Line ».** v7 rejeté (« hyper IA,
+même les couleurs vont pas »). Premier retour de goût exploitable du
+mainteneur sur des sites de référence : **aime** starwars.com/databank
+et la page champions de League of Legends ; **tiède** letterboxd
+(« pas assez unique ») ; **rejette** pokedex (« moche »), mubi et
+criterion (« bof »). Motif extrait : l'image EST l'interface, sombre
+atmosphérique mais la couleur vient de l'œuvre, typo display brandée,
+grilles filtrables par facette, mouvement au survol, sensation de
+produit officiel de franchise — l'inverse du minimalisme arty et de
+l'éditorial imprimé, ce qui explique rétrospectivement l'échec de v6
+et v7 qui visaient précisément ce registre. Livré : héros plein cadre
+pour toutes les entités (art génératif poussé à l'échelle 1440×560,
+passes d'atmosphère), rosters filtrés par facettes dérivées du schéma,
+**teinte par entité** (ADR-103) — le hash de l'id donne une teinte qui
+repointe les tokens de thème, donc chaque page a sa couleur sans rien
+à saisir, contraste WCAG garanti par boucle de remontée de luminance
+et testé sur les 360 teintes. Bug corrigé au passage : `Math.hypot`
+diverge entre JSC (SSR Bun) et V8 sur ~11 % des entrées → mismatch
+d'hydratation sur toute page portant de l'art ; routé via `Math.sqrt`.
+507 tests verts. **Ne pas merger avant validation explicite du rendu
+par le mainteneur.**
+
+**2026-08-09 — art génératif d'entité (ADR-102).** Le corpus n'a
+aucune image utilisable (3 entités `image`, domaine factice, 0
+fichier) : la tuile monogramme « lettre dans un carré gris » — le
+tell « maquette IA » le plus visible — est remplacée par une
+composition abstraite déterministe par entité
+(`apps/web/src/lib/entity-art.ts` + `components/EntityArt.tsx`).
+Hash FNV-1a de l'id → PRNG mulberry32 → mêmes paramètres pour
+toujours, SSR/client identiques, aucun JS client. **Grammaire par
+type** : character→figure, crew→ensign, arc→horizon, event→impact,
+devil-fruit→spiral, manga-chapter→panels, volume→stack,
+document/reference→folio ; **tout type non mappé dégrade vers la
+famille générique `field`** (variante dérivée du hash du TYPE) —
+règle ADR-091. **Zéro littéral de couleur** : le générateur n'émet
+que `var(--art-*)`, les 9 tokens vivent dans `src/styles.css`
+(`--art-bg/ink/glow` + `--art-1..6`, des RÔLES pas des teintes) →
+le re-skin v8 = éditer ces 9 valeurs. Planche de contrôle :
+`bun run -F @onepiece-wiki/web art:preview`. 489 tests verts,
+lint/typecheck/knip/build OK.
+
+**2026-08-09 — design v7 « Vignette » (7e itération, remplace v6).**
+v6 rejeté (« unique mais dégueulasse, ça fait pas moderne du
+tout »). Lecture du pendule : v2–v5 modernes-mais-génériques, v6
+unique-mais-daté → la cible est les deux (finition Letterboxd/A24,
+identité propre). v7 : Archivo Variable semi-étendue en display +
+Inter data, charbon chaud/os, or = identité/chiffres, vermillon =
+interactif, petits rayons 2–6px, connexions en modules-liens
+image + nom + sous-label groupés par type avec compteurs et
+repli « Voir les N autres » (`ShowMoreList`), ordre d'importance
+ADR-091 avec dégradation. Nouveautés fonctionnelles demandées :
+**anciens membres visibles** (grille « Anciens membres » atténuée,
+période affichée) avec règle anti-spoil testée — un départ au-delà
+du curseur rend le membre ACTUEL (`isDepartureVisible` dans
+`server/progress.ts`, 5 tests) ; **design prévu pour beaucoup de
+relations** (budgets de repli 8/12/28 par type de groupe). 472
+tests verts. NB : le corpus n'a aucune arête `until` → pas
+d'ancien membre visible en captures ; chemin testé unitairement.
+
+**2026-08-09 — design v6 « La Gazette » (après merge PR #120).** Le
+v5 « Le Log » a été rejeté par le mainteneur (« trop IA », 6e rejet).
+Diagnostic : les 5 itérations partageaient l'ADN « web app moderne à
+composants » (cards arrondies, pills, grilles uniformes, accents
+lumineux) — c'est cet ADN qui lit « IA ». v6 l'abandonne : **objet
+imprimé sombre** (almanach/gazette) — Fraunces (display) +
+Newsreader (texte) auto-hébergées, encre chaude
+`oklch(0.168 0.009 65)` + texte os, filets hairline 1px + doubles
+filets + points de conduite, zéro border-radius/ombre/dégradé/pill,
+accent unique vermillon sceau (or réservé à la plaque prime),
+LogRail restylée en règle imprimée, membres en blocs photo de
+journal (treillis 1px, légende sérif + petites capitales). 467 tests
+verts, lint/typecheck/build OK, fonctionnel inchangé
+(`server/views.ts` intact). **Ne pas merger sur main avant
+validation explicite du rendu par le mainteneur** (engagement pris
+après le 6e rejet).
 
 **2026-08-09 — lot PR #120 livré.** (a) **ADR-099** implémenté :
 `led-by`/`captains`/`introduces-character`/`awakening-of`/`total_bounty`

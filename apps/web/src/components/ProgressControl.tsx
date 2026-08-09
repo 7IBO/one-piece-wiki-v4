@@ -3,9 +3,13 @@
  * (two numeric inputs + "show everything" reset) that persists to the
  * `web_progress` cookie — the only store the server functions can
  * read for SSR-filtered first paint — then invalidates the router so
- * every loader refetches filtered views. It is mounted by TWO
- * triggers: the compact header control below, and the Log Rail strip
- * (`LogRail.tsx`), which is the signature surface of the app.
+ * every loader refetches filtered views.
+ *
+ * Since v8.1 there is exactly ONE trigger: the compact header control
+ * below. It is therefore also the display of the cursor — its label
+ * IS the reader's position ("Ch. 600 · Ép. 1071"), in gold, so the
+ * state stays permanently on screen without a full-width graduated
+ * rail across the top of every page.
  */
 import { Popover } from '@base-ui/react/popover';
 import { useRouter } from '@tanstack/react-router';
@@ -54,14 +58,14 @@ export function ProgressPanel(
   };
 
   const inputClass =
-    'w-full rounded-md border border-line bg-canvas px-3 py-1.5 text-sm tabular-nums text-fg outline-none transition-colors duration-150 focus:border-gold';
+    'w-full rounded-md border border-line-strong bg-canvas px-3 py-1.5 text-sm tabular-nums text-fg outline-none transition-colors duration-150 focus:border-gold';
 
   return (
     <>
-      <p className='font-display text-base font-semibold tracking-[-0.01em] text-fg'>
+      <p className='display text-[15px] font-bold text-fg'>
         {t(locale, 'progressTitle')}
       </p>
-      <p className='mt-1 text-xs leading-relaxed text-faint'>
+      <p className='mt-1 text-xs leading-relaxed text-muted'>
         {t(locale, 'progressHint')}
       </p>
       <form
@@ -71,7 +75,7 @@ export function ProgressPanel(
           apply({ manga: parseInput(manga), anime: parseInput(anime) });
         }}
       >
-        <label className='block text-xs text-muted'>
+        <label className='block text-xs font-medium text-muted'>
           {t(locale, 'progressManga')}
           <input
             type='number'
@@ -82,7 +86,7 @@ export function ProgressPanel(
             className={`mt-1 ${inputClass}`}
           />
         </label>
-        <label className='block text-xs text-muted'>
+        <label className='block text-xs font-medium text-muted'>
           {t(locale, 'progressAnime')}
           <input
             type='number'
@@ -101,13 +105,13 @@ export function ProgressPanel(
               setAnime('');
               apply({ manga: null, anime: null });
             }}
-            className='py-1.5 text-xs font-medium text-faint transition-colors duration-150 hover:text-fg'
+            className='cursor-pointer py-1.5 text-xs font-medium text-faint transition-colors duration-150 hover:text-fg'
           >
             {t(locale, 'progressReset')}
           </button>
           <button
             type='submit'
-            className='rounded-md bg-accent px-4 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+            className='cursor-pointer rounded-md bg-accent px-4 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
           >
             {t(locale, 'progressSave')}
           </button>
@@ -117,7 +121,11 @@ export function ProgressPanel(
   );
 }
 
-/** Compact header trigger ("Ch. 1044 · Ep. 1071" or the invitation). */
+/**
+ * The header trigger — and, since v8.1, the ONLY place the spoiler
+ * cursor is shown. Set: the position in gold behind a gold hairline.
+ * Unset: the invitation to set one.
+ */
 export function ProgressControl(
   { progress }: { readonly progress: ProgressCursor; },
 ): JSX.Element {
@@ -135,12 +143,16 @@ export function ProgressControl(
   return (
     <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
       <Popover.Trigger
-        className={`rounded-md bg-surface px-2.5 py-1.5 text-xs font-medium transition-colors duration-150 hover:bg-surface-2 hover:text-fg sm:px-3 ${
-          active ? 'font-mono text-fg' : 'text-muted'
-        }`}
         aria-label={t(locale, 'progressTitle')}
+        className={`cursor-pointer rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors duration-150 hover:bg-surface ${
+          active
+            ? 'text-gold ring-1 ring-gold/35 hover:ring-gold/60'
+            : 'text-fg/85 ring-1 ring-line-strong hover:text-fg hover:ring-gold/45'
+        }`}
       >
-        <span className='block max-w-28 truncate sm:max-w-44'>{summary}</span>
+        <span className={`block max-w-56 truncate sm:max-w-64 ${active ? 'tabular-nums' : ''}`}>
+          {summary}
+        </span>
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner
@@ -150,7 +162,7 @@ export function ProgressControl(
           collisionPadding={12}
           className='isolate z-50'
         >
-          <Popover.Popup className='w-72 rounded-lg border border-line bg-surface p-4 shadow-2xl outline-none'>
+          <Popover.Popup className='w-72 rounded-lg border border-line-strong bg-surface p-4 shadow-lg shadow-black/20 outline-none'>
             <ProgressPanel progress={progress} onDone={() => setOpen(false)} />
           </Popover.Popup>
         </Popover.Positioner>

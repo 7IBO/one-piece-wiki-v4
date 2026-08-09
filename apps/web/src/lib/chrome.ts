@@ -105,6 +105,21 @@ const STRINGS = {
   contributeHistory: { en: 'History', fr: 'Historique' },
   footerContribute: { en: 'Contribute', fr: 'Contribuer' },
   footerSupport: { en: 'Support', fr: 'Soutenir' },
+
+  // v6 "La Gazette" additions (append-only)
+  members: { en: 'Members', fr: 'Membres' },
+
+  // v7 "Vignette" additions (append-only). `#` is replaced by a count.
+  formerTag: { en: 'Former', fr: 'Ancien' },
+  showNMore: { en: 'Show # more', fr: 'Voir les # autres' },
+  showLess: { en: 'Show less', fr: 'Réduire' },
+
+  // v9 per-type layouts (append-only).
+  dataSheet: { en: 'Data', fr: 'Fiche' },
+  appearances: { en: 'Appearances', fr: 'Apparitions' },
+  gallery: { en: 'Gallery', fr: 'Galerie' },
+  outOf: { en: 'of', fr: 'sur' },
+  contents: { en: 'Contents', fr: 'Contenu' },
 } as const;
 
 export type ChromeKey = keyof typeof STRINGS;

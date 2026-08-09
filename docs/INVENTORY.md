@@ -503,9 +503,11 @@ Allowed relations: `features`, `clarifies-fact`.
 | `narrative_key` | no       | no         | yes         | Arc summary key              |
 | `chapter_range` | no       | no         | no          | { first, last } source_refs  |
 
-Allowed relations: `part-of-saga`, `features-characters`, `set-in`,
-`depicted-by`. (Arc→chapter/episode is `part-of-arc`'s inferred inverse; arc→event is
-`occurs-during-arc`'s.)
+Allowed relations: `part-of-saga`, `features`, `set-in`, `depicted-by`.
+(Arc→chapter/episode is `part-of-arc`'s inferred inverse; arc→event is
+`occurs-during-arc`'s. ADR-105 folded `features-characters` into
+`features`: an arc→character edge now exists to carry `role`, presence
+being implied by the arc's chapter/episode edges.)
 
 ---
 
@@ -781,13 +783,16 @@ vocabulary, § 5.53.)
 
 ### 4.8 Source ↔ entity
 
-| Type             | From                        | To         | Inverse                | Qualifiers                                                                  |
-| ---------------- | --------------------------- | ---------- | ---------------------- | --------------------------------------------------------------------------- |
-| `features`       | source types                | any entity | `featured-in` _(gen.)_ | appearance_type (shown _or_ evoked; absorbs former `references`/`mentions`) |
-| `clarifies-fact` | `sbs`, `sbs-qa`, `databook` | any entity | `clarified-in`         | property_name                                                               |
+| Type             | From                        | To         | Inverse                | Qualifiers                                                                                                                                                               |
+| ---------------- | --------------------------- | ---------- | ---------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `features`       | source types + `arc`        | any entity | `featured-in` _(gen.)_ | appearance_type (optional — shown _or_ evoked), role (optional, `narrative-roles`); absorbs former `references`/`mentions` (ADR-069) and `features-characters` (ADR-105) |
+| `clarifies-fact` | `sbs`, `sbs-qa`, `databook` | any entity | `clarified-in`         | property_name                                                                                                                                                            |
 
 (ADR-099 removed `introduces-character`: first appearance is DERIVED
-from the earliest `features` edge per character.)
+from the earliest `features` edge per character. ADR-105 removed
+`features-characters`: granularity is carried by the SOURCE TYPE of a
+`features` edge — chapter/episode/film = presence in that unit, `arc` =
+the character's narrative `role` in the arc.)
 
 ### 4.9 Source ↔ source (adaptation)
 
@@ -797,16 +802,15 @@ from the earliest `features` edge per character.)
 
 ### 4.10 Narrative structure
 
-| Type                  | From                             | To                   | Inverse           | Qualifiers         |
-| --------------------- | -------------------------------- | -------------------- | ----------------- | ------------------ |
-| `part-of-arc`         | `manga-chapter`, `anime-episode` | `arc`                | `(inferred)`      | —                  |
-| `part-of-volume`      | `manga-chapter`, `sbs`           | `volume`             | `collects`        | since              |
-| `qa-of`               | `sbs-qa`                         | `sbs`                | `has-qa`          | —                  |
-| `has-cover-story`     | `manga-chapter`                  | `arc`                | `cover-story-in`  | installment_number |
-| `part-of-series`      | `live-action-episode`            | `live-action-series` | `(inferred)`      | since              |
-| `part-of-saga`        | `arc`                            | `saga`               | `contains-arc`    | —                  |
-| `occurs-during-arc`   | `event`                          | `arc`                | `contains-event`  | —                  |
-| `features-characters` | `arc`                            | `character`          | `featured-in-arc` | role (required)    |
+| Type                | From                             | To                   | Inverse          | Qualifiers         |
+| ------------------- | -------------------------------- | -------------------- | ---------------- | ------------------ |
+| `part-of-arc`       | `manga-chapter`, `anime-episode` | `arc`                | `(inferred)`     | —                  |
+| `part-of-volume`    | `manga-chapter`, `sbs`           | `volume`             | `collects`       | since              |
+| `qa-of`             | `sbs-qa`                         | `sbs`                | `has-qa`         | —                  |
+| `has-cover-story`   | `manga-chapter`                  | `arc`                | `cover-story-in` | installment_number |
+| `part-of-series`    | `live-action-episode`            | `live-action-series` | `(inferred)`     | since              |
+| `part-of-saga`      | `arc`                            | `saga`               | `contains-arc`   | —                  |
+| `occurs-during-arc` | `event`                          | `arc`                | `contains-event` | —                  |
 
 ### 4.11 Events
 
@@ -1112,7 +1116,7 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 `movie_ost`, `tv_ost`, `compilation`, `character_song`, `image_song`,
 `single`, `best`
 
-### 5.44 `arc-roles`
+### 5.44 `narrative-roles` (ex-`arc-roles`, ADR-105)
 
 `protagonist`, `antagonist`, `deuteragonist`, `supporting`, `mentor`,
 `ally`, `rival`, `villain`, `henchman`, `victim`, `narrator`, `cameo`,
@@ -1325,7 +1329,11 @@ These exist on every entity, declared once in primitives.
 
 `manga-chapter`, `anime-episode`, `film`, `video-game`,
 `live-action-series`, `live-action-episode`, `anime-special`,
-`live-performance`, `sbs`, `databook`
+`live-performance`, `sbs`, `sbs-qa`, `databook`, `arc`
+
+(The first eleven are units — the edge asserts presence in that exact
+unit, and is what "appearances out of total chapters/episodes" counts.
+`arc` is a container: its edges carry `role`, not presence — ADR-105.)
 
 ### 9.2 Entity types that can be `depicted-by` images
 
@@ -1360,7 +1368,7 @@ depicted by another image).
 
 - **Entity types**: 38
 - **Property types**: 104 (some shared across multiple entity types)
-- **Relation types**: 64 (canonical declared; inverses are build-generated)
+- **Relation types**: 63 (canonical declared; inverses are build-generated)
 - **Vocabularies**: 64
 - **Qualifier types**: 28 (8 base + 20 common — the ADR-078 registry)
 - **Primitive value types**: 10

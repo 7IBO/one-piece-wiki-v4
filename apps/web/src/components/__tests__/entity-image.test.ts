@@ -1,7 +1,7 @@
 import { describe, expect, test } from 'bun:test';
 import { initialOf } from '../EntityImage.tsx';
 
-describe('initialOf (monogram fallback)', () => {
+describe('initialOf (the artwork mark)', () => {
   test('uppercases the first grapheme of the name', () => {
     expect(initialOf('Monkey D. Luffy')).toBe('M');
     expect(initialOf('zoro')).toBe('Z');

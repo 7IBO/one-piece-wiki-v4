@@ -848,34 +848,103 @@ fruit's `classification`, true `name` and `zoan_model` together — see
 }
 ```
 
-## Appearance types
+## Appearances
 
-Relations of type `features` (chapter → entity) and `appears_in` (entity →
-chapter, generated as the inverse) carry an `appearance_type` qualifier. Full
-enumeration:
+An **appearance** is one edge of the single relation `features`:
 
-| Value           | Meaning                                                |
-| --------------- | ------------------------------------------------------ |
-| `full`          | The entity appears identifiable and present            |
-| `silhouette`    | Visible but unidentifiable on purpose                  |
-| `partial`       | A hand, an eye, a back of the head                     |
-| `mentioned`     | Named but not visually present                         |
-| `named_only`    | Name spoken without visual                             |
-| `flashback`     | Appears in a flashback                                 |
-| `cover_story`   | Appears in the volume cover story (parallel narrative) |
-| `recap`         | Appears in a recap page                                |
-| `vision`        | Hallucination, prophecy, dream sequence                |
-| `photograph`    | On a wanted poster, vivre card, news clipping          |
-| `portrait`      | Painting, statue                                       |
-| `corpse`        | Already dead in the appearance                         |
-| `imagined`      | Someone imagining them                                 |
-| `narrator_only` | Mentioned by the narrator without character or visual  |
+```
+<source> --features--> <entity>
+```
 
-Plus orthogonal flags:
+`features` is the ONE home for "this work shows or evokes this entity".
+ADR-069 absorbed `references`/`mentions` into it; ADR-105 absorbed the
+arc-only `features-characters`. There is no second, finer or coarser
+appearance relation: **granularity is carried by the source type of the
+edge, not by the relation name.**
 
-- `is_first_appearance: true` — first appearance of any kind
-- `is_first_full: true` — first identifiable appearance
-- `identity_revealed: false` — visual present but not yet known to be them
+### Granularity
+
+- **Unit sources** — `manga-chapter`, `anime-episode`,
+  `live-action-episode`, `film`, `anime-special`, `live-performance`,
+  `video-game`, `sbs`, `sbs-qa`, `databook`. The edge asserts that the
+  entity is present in that exact unit. This is the atomic appearance, and
+  the countable one: "Luffy appears in 1042 of 1044 published chapters" is
+  the number of `manga-chapter → character:luffy` edges over the number of
+  `manga-chapter` entities, both cut at the reader's progression cursor.
+  The full list of appearances on a character page is the same set, read
+  through the generated inverse (ADR-086 materializes it).
+- **`arc`** — a narrative container, not a unit. An arc edge exists to
+  carry the character's narrative FUNCTION in that arc (`role`), not to
+  assert presence: presence in an arc is implied by any unit appearance
+  inside it (see _Arc-level presence is derivable_ below).
+- **`live-action-series`** — also a declared source (ADR-062), for
+  statements that are genuinely series-wide. When the episode is known,
+  record the edge on the `live-action-episode`.
+
+Containers that are pure unions of units (`saga`, `volume`) are **not**
+valid sources of `features`: they would record nothing their members do
+not already record.
+
+### Qualifiers
+
+| Qualifier         | Vocabulary         | Required | Meaning                                                                                                                                                                                                                        |
+| ----------------- | ------------------ | -------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
+| `appearance_type` | `appearance-types` | no       | HOW the entity appears in that unit (full, silhouette, mentioned, flashback…). Absent = "appears, manner not recorded" — an importer that only knows a chapter's character list must NOT invent `full`.                        |
+| `role`            | `narrative-roles`  | no       | The narrative function the character holds in that work (protagonist, antagonist, mentor…). An arc-level notion — and, for a self-contained work, a film/game-level one. It is meaningless per chapter: leave it absent there. |
+
+Both qualifiers are optional, so a **bare** edge (type + target, no
+qualifier) is legal — and for a unit source it is exactly the datum we
+want: "appears in". A bare edge from an `arc`, on the other hand, says
+nothing its chapters do not already say; the advisory rule
+`arc-appearance-needs-role` flags it.
+
+Appearance edges are relations like any other: they carry the ADR-037
+relation qualifiers (`since`, `epistemic_status`, `believed_by`,
+`known_truth_by`, `revealed_since`, `event`, `attested_by`…). A `features`
+edge pointing at a hidden identity can therefore be `rumored` until its
+`revealed_since` source.
+
+### Arc-level presence is derivable
+
+A character appearing in a chapter of an arc appears in that arc: the set
+of arc→character _presence_ edges is the union of the unit→character edges
+over the arc's units (`part-of-arc`). Only `role` is not derivable.
+
+Position recorded by ADR-105: once per-unit coverage is dense, arc-level
+presence belongs to the build inference engine (the ADR-034 backlog, same
+reasoning as ADR-099 §3 for first appearance), and the authored arc edge
+should be reserved for `role`. **Nothing is derived today** — no derivation
+is implemented, no authored edge is deleted. Flipping presence to derived
+is a separate, maintainer-approved change.
+
+### `appearance-types` vocabulary
+
+| Value           | Meaning                                                 |
+| --------------- | ------------------------------------------------------- |
+| `full`          | The entity appears identifiable and present             |
+| `silhouette`    | Visible but unidentifiable on purpose                   |
+| `partial`       | A hand, an eye, a back of the head                      |
+| `mentioned`     | Named or evoked without being visually present          |
+| `flashback`     | Appears in a flashback                                  |
+| `cover_story`   | Appears in a cover story (parallel narrative)           |
+| `recap`         | Appears in a recap page                                 |
+| `vision`        | Hallucination, prophecy, dream sequence                 |
+| `photograph`    | On a wanted poster, vivre card, news clipping           |
+| `portrait`      | Painting, statue                                        |
+| `corpse`        | Already dead in the appearance                          |
+| `imagined`      | Someone imagining them                                  |
+| `revelation`    | The appearance IS the reveal of a fact about the entity |
+| `wanted_poster` | Shown as a wanted poster                                |
+| `eyecatcher`    | Anime eyecatch card                                     |
+
+### `narrative-roles` vocabulary
+
+`protagonist`, `antagonist`, `deuteragonist`, `supporting`, `mentor`,
+`ally`, `rival`, `villain`, `henchman`, `victim`, `narrator`, `cameo`,
+`background`
+
+First appearance is **not** a qualifier: it is derived from the earliest
+`features` edge per entity (ADR-099 §3).
 
 ## Name types
 

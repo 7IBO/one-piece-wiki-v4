@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
   "id": "features",
-  "schema_version": 1,
+  "schema_version": 2,
   "labels": {
     "en": { "active": "Features", "inverse": "Featured in" },
     "fr": { "active": "Présente", "inverse": "Figure dans" }
@@ -17,7 +17,8 @@
     "live-performance",
     "sbs",
     "sbs-qa",
-    "databook"
+    "databook",
+    "arc"
   ],
   "valid_to_types": [
     "character",
@@ -39,7 +40,13 @@
       "id": "appearance_type",
       "value_type": "enum",
       "enum_ref": "appearance-types",
-      "required": true
+      "required": false
+    },
+    {
+      "id": "role",
+      "value_type": "enum",
+      "enum_ref": "narrative-roles",
+      "required": false
     }
   ],
   "allow_multiple_concurrent": true,
