@@ -1,0 +1,172 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800;900&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, system-ui, sans-serif; background: #08090b; }
+    a { color: inherit; text-decoration: none; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; min-height: 1180px; background: #08090b; color: #f2f0ee; display: flex; flex-direction: column">
+
+  <div style="position: absolute; top: 0; left: 0; right: 0; z-index: 3; display: flex; align-items: center; gap: 20px; padding: 18px 48px">
+    <div style="font-size: 14px; font-weight: 800; letter-spacing: 0.02em">ONE PIECE<span style="opacity: 0.45">.WIKI</span></div>
+    <div style="flex-grow: 1"></div>
+    <div style="font-size: 11px; letter-spacing: 0.08em; opacity: 0.7">RECHERCHER</div>
+    <div style="font-size: 11px; letter-spacing: 0.08em; padding: 6px 12px; border-radius: 999px; background: rgba(255,255,255,0.1); backdrop-filter: blur(8px)">CH. 1044</div>
+  </div>
+
+  <!-- bandeau d'art pleine largeur : la couleur vient de l'illustration, pas du thème -->
+  <div style="position: relative; height: 560px; overflow: hidden; flex-shrink: 0">
+    <div style="position: absolute; inset: 0; background: linear-gradient(115deg, #3d1a14 0%, #8f3520 42%, #d4703a 72%, #f0b25c 100%)"></div>
+    <div style="position: absolute; left: 120px; top: -80px; width: 560px; height: 560px; border-radius: 50%; background: #b8402a; opacity: 0.55; filter: blur(2px)"></div>
+    <div style="position: absolute; right: 180px; top: 90px; width: 300px; height: 420px; background: #f6d089; opacity: 0.35"></div>
+    <div style="position: absolute; left: 620px; bottom: -120px; width: 700px; height: 380px; border-radius: 50% 50% 0 0; background: #2c110d; opacity: 0.6"></div>
+    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(8,9,11,0.7) 0%, rgba(8,9,11,0) 32%, rgba(8,9,11,0.55) 72%, #08090b 100%)"></div>
+
+    <div style="position: absolute; left: 48px; bottom: 44px; right: 48px; display: flex; align-items: flex-end; justify-content: space-between">
+      <div>
+        <div style="font-size: 11px; letter-spacing: 0.2em; opacity: 0.75">PERSONNAGE · CHAPEAU DE PAILLE · CAPITAINE</div>
+        <div style="font-size: 82px; font-weight: 900; line-height: 0.94; letter-spacing: -0.035em; margin-top: 10px">Monkey D. Luffy</div>
+        <div style="font-size: 17px; opacity: 0.8; margin-top: 10px">« Chapeau de Paille » — utilisateur du <a href="#" style="border-bottom: 1px solid rgba(255,255,255,0.5)">Gomu Gomu no Mi</a></div>
+      </div>
+      <div style="text-align: right">
+        <div style="font-size: 11px; letter-spacing: 0.18em; opacity: 0.65">PRIME ACTUELLE</div>
+        <div style="font-size: 46px; font-weight: 800; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; line-height: 1.05">3 000 000 000</div>
+        <div style="font-size: 12px; opacity: 0.6">depuis le chapitre 1053</div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 30px; padding: 0 48px; border-bottom: 1px solid #1a1c20">
+    <span style="font-size: 13px; font-weight: 600; padding: 16px 0; border-bottom: 2px solid #f2f0ee; margin-bottom: -1px">Portrait</span>
+    <span style="font-size: 13px; padding: 16px 0; opacity: 0.5">Apparitions · 342</span>
+    <span style="font-size: 13px; padding: 16px 0; opacity: 0.5">Techniques · 61</span>
+    <span style="font-size: 13px; padding: 16px 0; opacity: 0.5">Galerie · 18</span>
+    <span style="font-size: 13px; padding: 16px 0; opacity: 0.5">Historique</span>
+  </div>
+
+  <!-- l'équipage en grands portraits, pas en vignettes -->
+  <div style="padding: 40px 48px 0">
+    <div style="display: flex; align-items: baseline; justify-content: space-between">
+      <div style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">L'équipage au chapitre 1044</div>
+      <div style="font-size: 12px; opacity: 0.5">5 membres visibles · 5 masqués par ta progression</div>
+    </div>
+    <div style="display: flex; gap: 16px; margin-top: 20px">
+      <a href="#" style="width: 244px; flex-shrink: 0">
+        <div style="height: 300px; border-radius: 4px; background: linear-gradient(150deg, #7e2f26, #d4703a); position: relative">
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(8,9,11,0.9) 100%); border-radius: 4px"></div>
+          <div style="position: absolute; left: 14px; bottom: 12px">
+            <div style="font-size: 17px; font-weight: 700">Monkey D. Luffy</div>
+            <div style="font-size: 12px; opacity: 0.7">Capitaine · 3 Md</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; opacity: 0.45; margin-top: 8px">à bord depuis le chapitre 1</div>
+      </a>
+      <a href="#" style="width: 244px; flex-shrink: 0">
+        <div style="height: 300px; border-radius: 4px; background: linear-gradient(150deg, #1f3b34, #57907c); position: relative">
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(8,9,11,0.9) 100%); border-radius: 4px"></div>
+          <div style="position: absolute; left: 14px; bottom: 12px">
+            <div style="font-size: 17px; font-weight: 700">Roronoa Zoro</div>
+            <div style="font-size: 12px; opacity: 0.7">Second · 1,1 Md</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; opacity: 0.45; margin-top: 8px">à bord depuis le chapitre 6</div>
+      </a>
+      <a href="#" style="width: 244px; flex-shrink: 0">
+        <div style="height: 300px; border-radius: 4px; background: linear-gradient(150deg, #6b4a1c, #e0a94f); position: relative">
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(8,9,11,0.9) 100%); border-radius: 4px"></div>
+          <div style="position: absolute; left: 14px; bottom: 12px">
+            <div style="font-size: 17px; font-weight: 700">Nami</div>
+            <div style="font-size: 12px; opacity: 0.7">Navigatrice · 366 M</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; opacity: 0.45; margin-top: 8px">à bord depuis le chapitre 8</div>
+      </a>
+      <a href="#" style="width: 244px; flex-shrink: 0">
+        <div style="height: 300px; border-radius: 4px; background: linear-gradient(150deg, #23304d, #5a7099); position: relative">
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(8,9,11,0.9) 100%); border-radius: 4px"></div>
+          <div style="position: absolute; left: 14px; bottom: 12px">
+            <div style="font-size: 17px; font-weight: 700">Sanji</div>
+            <div style="font-size: 12px; opacity: 0.7">Cuisinier · 1,03 Md</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; opacity: 0.45; margin-top: 8px">à bord depuis le chapitre 43</div>
+      </a>
+      <a href="#" style="width: 244px; flex-shrink: 0">
+        <div style="height: 300px; border-radius: 4px; background: linear-gradient(150deg, #4a331c, #a9773c); position: relative">
+          <div style="position: absolute; inset: 0; background: linear-gradient(180deg, transparent 45%, rgba(8,9,11,0.9) 100%); border-radius: 4px"></div>
+          <div style="position: absolute; left: 14px; bottom: 12px">
+            <div style="font-size: 17px; font-weight: 700">Usopp</div>
+            <div style="font-size: 12px; opacity: 0.7">Tireur d'élite · 500 M</div>
+          </div>
+        </div>
+        <div style="font-size: 11px; opacity: 0.45; margin-top: 8px">à bord depuis le chapitre 23</div>
+      </a>
+      <div style="width: 90px; flex-shrink: 0; height: 300px; border-radius: 4px; border: 1px dashed #2a2d33; display: flex; align-items: center; justify-content: center; font-size: 11px; opacity: 0.4; text-align: center; line-height: 1.4">5<br>de plus</div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: 1.15fr 1fr 1fr; gap: 44px; padding: 46px 48px 56px">
+    <div>
+      <div style="font-size: 12px; letter-spacing: 0.16em; opacity: 0.45">HISTORIQUE DE LA PRIME</div>
+      <div style="margin-top: 16px">
+        <div style="display: flex; align-items: baseline; gap: 14px; padding: 11px 0; border-bottom: 1px solid #17191d">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #e0553f; flex-shrink: 0"></span>
+          <span style="font-size: 18px; font-weight: 700; font-variant-numeric: tabular-nums; flex-grow: 1">3 000 000 000</span>
+          <a href="#" style="font-size: 12px; opacity: 0.6">Ch. 1053</a>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 14px; padding: 11px 0; border-bottom: 1px solid #17191d">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #3a3d43; flex-shrink: 0"></span>
+          <span style="font-size: 16px; opacity: 0.75; font-variant-numeric: tabular-nums; flex-grow: 1">1 500 000 000</span>
+          <a href="#" style="font-size: 12px; opacity: 0.6">Ch. 1043</a>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 14px; padding: 11px 0; border-bottom: 1px solid #17191d">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #3a3d43; flex-shrink: 0"></span>
+          <span style="font-size: 16px; opacity: 0.75; font-variant-numeric: tabular-nums; flex-grow: 1">500 000 000</span>
+          <a href="#" style="font-size: 12px; opacity: 0.6">Ch. 801</a>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 14px; padding: 11px 0; border-bottom: 1px solid #17191d">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #3a3d43; flex-shrink: 0"></span>
+          <span style="font-size: 16px; opacity: 0.75; font-variant-numeric: tabular-nums; flex-grow: 1">400 000 000</span>
+          <a href="#" style="font-size: 12px; opacity: 0.6">Ch. 581</a>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: 14px; padding: 11px 0; border-bottom: 1px solid #17191d">
+          <span style="width: 8px; height: 8px; border-radius: 50%; background: #3a3d43; flex-shrink: 0"></span>
+          <span style="font-size: 16px; opacity: 0.75; font-variant-numeric: tabular-nums; flex-grow: 1">30 000 000</span>
+          <a href="#" style="font-size: 12px; opacity: 0.6">Ch. 96</a>
+        </div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size: 12px; letter-spacing: 0.16em; opacity: 0.45">FICHE</div>
+      <div style="margin-top: 16px; font-size: 14px; line-height: 2.05">
+        <div style="display: flex; justify-content: space-between"><span style="opacity: 0.5">Statut</span><span>Vivant</span></div>
+        <div style="display: flex; justify-content: space-between"><span style="opacity: 0.5">Équipage</span><a href="#" style="border-bottom: 1px solid #3a3d43">Chapeau de Paille</a></div>
+        <div style="display: flex; justify-content: space-between"><span style="opacity: 0.5">Fruit</span><a href="#" style="border-bottom: 1px solid #3a3d43">Gomu Gomu no Mi</a></div>
+        <div style="display: flex; justify-content: space-between"><span style="opacity: 0.5">Origine</span><a href="#" style="border-bottom: 1px solid #3a3d43">Fuchsia</a></div>
+        <div style="display: flex; justify-content: space-between"><span style="opacity: 0.5">Première apparition</span><a href="#" style="border-bottom: 1px solid #3a3d43">Chapitre 1</a></div>
+      </div>
+    </div>
+    <div>
+      <div style="font-size: 12px; letter-spacing: 0.16em; opacity: 0.45">LIENS</div>
+      <div style="margin-top: 16px; font-size: 14px; line-height: 2.05">
+        <div style="display: flex; justify-content: space-between"><a href="#" style="border-bottom: 1px solid #3a3d43">Portgas D. Ace</a><span style="opacity: 0.5; font-size: 12px">Frère juré</span></div>
+        <div style="display: flex; justify-content: space-between"><a href="#" style="border-bottom: 1px solid #3a3d43">Sabo</a><span style="opacity: 0.5; font-size: 12px">Frère juré</span></div>
+        <div style="display: flex; justify-content: space-between"><a href="#" style="border-bottom: 1px solid #3a3d43">Shanks</a><span style="opacity: 0.5; font-size: 12px">Mentor</span></div>
+        <div style="display: flex; justify-content: space-between"><a href="#" style="border-bottom: 1px solid #3a3d43">Marineford</a><span style="opacity: 0.5; font-size: 12px">A survécu</span></div>
+        <div style="display: flex; justify-content: space-between"><a href="#" style="border-bottom: 1px solid #3a3d43">Avis de recherche</a><span style="opacity: 0.5; font-size: 12px">Ch. 96</span></div>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

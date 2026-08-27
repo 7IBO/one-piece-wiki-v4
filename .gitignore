@@ -62,3 +62,7 @@ apps/dashboard/.dev-session-secret
 # Fandom raw-response cache (importer, ADR-079) — provenance metadata
 # lives in data/import/; raw wikitext is NEVER committed.
 .cache/
+
+# Canevas de design assemblé (payload de ~2,5 Mo régénéré à la demande
+# depuis design/*.dc.html + design/canvas.json — cf. design/README.md).
+/design/*-directions.html

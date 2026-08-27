@@ -1,0 +1,188 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;800&display=swap">
+  <style>
+    body { margin: 0; font-family: Archivo, system-ui, sans-serif; background: #0b1622; }
+    a { color: #e8c15a; text-decoration: none; }
+    a:hover { color: #f6d98a; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; min-height: 1180px; background: #0b1622; color: #e6edf3; display: flex; flex-direction: column">
+
+  <div style="display: flex; align-items: center; gap: 22px; padding: 15px 44px; border-bottom: 1px solid #16283a">
+    <div style="font-size: 15px; font-weight: 800; letter-spacing: -0.01em">One Piece<span style="color: #e8c15a">.wiki</span></div>
+    <div style="flex-grow: 1; height: 32px; border-radius: 16px; background: #0f2032; display: flex; align-items: center; padding: 0 14px; color: #5f7d97; font-size: 12px"><span style="color: #5f7d97">Rechercher…</span></div>
+    <div style="display: flex; align-items: center; gap: 9px; font-size: 11px; color: #8aa3ba">
+      <span>Progression</span>
+      <span style="width: 120px; height: 4px; border-radius: 2px; background: #16283a; position: relative; overflow: hidden"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: 84%; background: #e8c15a"></span></span>
+      <span style="color: #e6edf3; font-weight: 600">Ch. 1044</span>
+    </div>
+  </div>
+
+  <div style="padding: 34px 44px 26px; display: flex; align-items: flex-end; gap: 26px; border-bottom: 1px solid #16283a">
+    <div style="width: 132px; height: 132px; flex-shrink: 0; border-radius: 6px; background: linear-gradient(150deg, #14314a, #2f6b7a); position: relative; overflow: hidden">
+      <div style="position: absolute; left: -20px; bottom: -30px; width: 140px; height: 140px; border-radius: 50%; background: #e8c15a; opacity: 0.35"></div>
+    </div>
+    <div style="flex-grow: 1">
+      <div style="font-size: 10px; letter-spacing: 0.18em; color: #5f7d97">PERSONNAGE</div>
+      <div style="font-size: 44px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.05; margin-top: 4px">Monkey D. Luffy</div>
+      <div style="font-size: 14px; color: #8aa3ba; margin-top: 5px">Capitaine des <a href="#">Chapeaux de Paille</a> · 342 apparitions sur 1044 chapitres lus</div>
+    </div>
+    <div style="text-align: right; flex-shrink: 0">
+      <div style="font-size: 10px; letter-spacing: 0.16em; color: #5f7d97">PRIME AU CH. 1044</div>
+      <div style="font-size: 32px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em; color: #e8c15a">3 000 000 000</div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 28px; padding: 0 44px; border-bottom: 1px solid #16283a">
+    <span style="font-size: 12px; font-weight: 600; padding: 14px 0; border-bottom: 2px solid #e8c15a; margin-bottom: -1px">Chronologie</span>
+    <span style="font-size: 12px; padding: 14px 0; color: #5f7d97">Fiche</span>
+    <span style="font-size: 12px; padding: 14px 0; color: #5f7d97">Équipage</span>
+    <span style="font-size: 12px; padding: 14px 0; color: #5f7d97">Techniques · 61</span>
+    <span style="font-size: 12px; padding: 14px 0; color: #5f7d97">Galerie · 18</span>
+  </div>
+
+  <!-- l'axe du temps EST le layout : chaque donnée est accrochée au chapitre où elle est vraie -->
+  <div style="display: flex; padding: 30px 44px 60px; gap: 0">
+
+    <div style="width: 108px; flex-shrink: 0; text-align: right; padding-right: 22px; font-size: 11px; color: #5f7d97; letter-spacing: 0.04em; font-variant-numeric: tabular-nums">
+      <div style="height: 30px"></div>
+      <div style="height: 118px">CH. 1</div>
+      <div style="height: 118px">CH. 96</div>
+      <div style="height: 118px">CH. 581</div>
+      <div style="height: 118px">CH. 801</div>
+      <div style="height: 118px">CH. 1043</div>
+      <div style="height: 118px; color: #e8c15a; font-weight: 700">CH. 1053</div>
+      <div style="height: 60px">…</div>
+    </div>
+
+    <div style="width: 1px; background: linear-gradient(180deg, #16283a 0%, #234a68 50%, #16283a 100%); position: relative; flex-shrink: 0; margin-top: 30px; margin-bottom: 60px"></div>
+
+    <div style="flex-grow: 1; padding-left: 30px; min-width: 0; position: relative; margin-top: 30px">
+
+      <div style="height: 118px; position: relative">
+        <div style="position: absolute; left: -36px; top: 5px; width: 11px; height: 11px; border-radius: 50%; background: #0b1622; border: 2px solid #2f6b7a"></div>
+        <div style="font-size: 10px; letter-spacing: 0.14em; color: #5f7d97">DÉBUT</div>
+        <div style="font-size: 17px; font-weight: 600; margin-top: 4px">Quitte <a href="#">Fuchsia</a> et fonde l'équipage</div>
+        <div style="font-size: 13px; color: #8aa3ba; margin-top: 5px; max-width: 640px">Statut <span style="color: #e6edf3">Vivant</span> · Équipage <a href="#">Chapeau de Paille</a> · Rôle <span style="color: #e6edf3">Capitaine</span> · Fruit <a href="#">Gomu Gomu no Mi</a></div>
+      </div>
+
+      <div style="height: 118px; position: relative">
+        <div style="position: absolute; left: -36px; top: 5px; width: 11px; height: 11px; border-radius: 50%; background: #0b1622; border: 2px solid #e8c15a"></div>
+        <div style="font-size: 10px; letter-spacing: 0.14em; color: #5f7d97">PRIME · 1<sup>re</sup> valeur</div>
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 4px">
+          <span style="font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums">30 000 000</span>
+          <a href="#" style="font-size: 12px">Avis de recherche émis</a>
+        </div>
+        <div style="font-size: 13px; color: #8aa3ba; margin-top: 5px">Après <a href="#">Arlong Park</a> · source : <span style="color: #8aa3ba">chapitre 96, case 14</span></div>
+      </div>
+
+      <div style="height: 118px; position: relative">
+        <div style="position: absolute; left: -36px; top: 5px; width: 11px; height: 11px; border-radius: 50%; background: #0b1622; border: 2px solid #e8c15a"></div>
+        <div style="font-size: 10px; letter-spacing: 0.14em; color: #5f7d97">PRIME</div>
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 4px">
+          <span style="font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums">400 000 000</span>
+          <span style="font-size: 12px; color: #5f7d97">×13,3</span>
+        </div>
+        <div style="font-size: 13px; color: #8aa3ba; margin-top: 5px">Après <a href="#">Marineford</a> · frère juré <a href="#">Portgas D. Ace</a> — <span style="color: #c47f6a">décédé au ch. 574</span></div>
+      </div>
+
+      <div style="height: 118px; position: relative">
+        <div style="position: absolute; left: -36px; top: 5px; width: 11px; height: 11px; border-radius: 50%; background: #0b1622; border: 2px solid #e8c15a"></div>
+        <div style="font-size: 10px; letter-spacing: 0.14em; color: #5f7d97">PRIME</div>
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 4px">
+          <span style="font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums">500 000 000</span>
+          <span style="font-size: 12px; color: #5f7d97">Dressrosa</span>
+        </div>
+        <div style="font-size: 13px; color: #8aa3ba; margin-top: 5px">Devient l'un des <a href="#">Pires Générations</a></div>
+      </div>
+
+      <div style="height: 118px; position: relative">
+        <div style="position: absolute; left: -36px; top: 5px; width: 11px; height: 11px; border-radius: 50%; background: #0b1622; border: 2px solid #e8c15a"></div>
+        <div style="font-size: 10px; letter-spacing: 0.14em; color: #5f7d97">PRIME</div>
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 4px">
+          <span style="font-size: 24px; font-weight: 700; font-variant-numeric: tabular-nums">1 500 000 000</span>
+          <span style="font-size: 12px; color: #5f7d97">Whole Cake</span>
+        </div>
+        <div style="font-size: 13px; color: #8aa3ba; margin-top: 5px">Équipage : 10 membres · dernier arrivé <a href="#">Jinbe</a></div>
+      </div>
+
+      <div style="height: 118px; position: relative">
+        <div style="position: absolute; left: -37px; top: 4px; width: 13px; height: 13px; border-radius: 50%; background: #e8c15a"></div>
+        <div style="font-size: 10px; letter-spacing: 0.14em; color: #e8c15a">VALEUR ACTUELLE À TA PROGRESSION</div>
+        <div style="display: flex; align-items: baseline; gap: 12px; margin-top: 4px">
+          <span style="font-size: 30px; font-weight: 800; font-variant-numeric: tabular-nums; letter-spacing: -0.02em">3 000 000 000</span>
+          <a href="#" style="font-size: 12px">Empereur</a>
+        </div>
+        <div style="font-size: 13px; color: #8aa3ba; margin-top: 5px">Après <a href="#">Onigashima</a> · statut <span style="color: #e6edf3">Vivant</span></div>
+      </div>
+
+      <div style="height: 60px; position: relative">
+        <div style="position: absolute; left: -33px; top: 6px; width: 5px; height: 5px; border-radius: 50%; background: #234a68"></div>
+        <div style="font-size: 13px; color: #4d6b85; font-style: italic">3 événements masqués au-delà du chapitre 1044</div>
+      </div>
+
+    </div>
+
+    <div style="width: 300px; flex-shrink: 0; margin-left: 34px; margin-top: 30px">
+      <div style="font-size: 10px; letter-spacing: 0.16em; color: #5f7d97">ÉQUIPAGE AU CH. 1044</div>
+      <div style="margin-top: 12px; display: flex; flex-direction: column; gap: 8px">
+        <a href="#" style="display: flex; align-items: center; gap: 10px; color: inherit">
+          <span style="width: 34px; height: 34px; border-radius: 4px; background: linear-gradient(140deg, #14314a, #b8402a); flex-shrink: 0"></span>
+          <span style="flex-grow: 1"><span style="font-size: 13px; font-weight: 600; display: block">Monkey D. Luffy</span><span style="font-size: 11px; color: #5f7d97">Capitaine · ch. 1</span></span>
+          <span style="font-size: 11px; color: #8aa3ba; font-variant-numeric: tabular-nums">3 Md</span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 10px; color: inherit">
+          <span style="width: 34px; height: 34px; border-radius: 4px; background: linear-gradient(140deg, #14314a, #2f6b5a); flex-shrink: 0"></span>
+          <span style="flex-grow: 1"><span style="font-size: 13px; font-weight: 600; display: block">Roronoa Zoro</span><span style="font-size: 11px; color: #5f7d97">Second · ch. 6</span></span>
+          <span style="font-size: 11px; color: #8aa3ba; font-variant-numeric: tabular-nums">1,1 Md</span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 10px; color: inherit">
+          <span style="width: 34px; height: 34px; border-radius: 4px; background: linear-gradient(140deg, #14314a, #b8863a); flex-shrink: 0"></span>
+          <span style="flex-grow: 1"><span style="font-size: 13px; font-weight: 600; display: block">Nami</span><span style="font-size: 11px; color: #5f7d97">Navigatrice · ch. 8</span></span>
+          <span style="font-size: 11px; color: #8aa3ba; font-variant-numeric: tabular-nums">366 M</span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 10px; color: inherit">
+          <span style="width: 34px; height: 34px; border-radius: 4px; background: linear-gradient(140deg, #14314a, #8a5a2b); flex-shrink: 0"></span>
+          <span style="flex-grow: 1"><span style="font-size: 13px; font-weight: 600; display: block">Usopp</span><span style="font-size: 11px; color: #5f7d97">Tireur d'élite · ch. 23</span></span>
+          <span style="font-size: 11px; color: #8aa3ba; font-variant-numeric: tabular-nums">500 M</span>
+        </a>
+        <a href="#" style="display: flex; align-items: center; gap: 10px; color: inherit">
+          <span style="width: 34px; height: 34px; border-radius: 4px; background: linear-gradient(140deg, #14314a, #3b4a6b); flex-shrink: 0"></span>
+          <span style="flex-grow: 1"><span style="font-size: 13px; font-weight: 600; display: block">Sanji</span><span style="font-size: 11px; color: #5f7d97">Cuisinier · ch. 43</span></span>
+          <span style="font-size: 11px; color: #8aa3ba; font-variant-numeric: tabular-nums">1,03 Md</span>
+        </a>
+        <div style="font-size: 11px; color: #4d6b85; padding-top: 4px">+ 5 membres · voir l'onglet Équipage</div>
+      </div>
+
+      <div style="font-size: 10px; letter-spacing: 0.16em; color: #5f7d97; margin-top: 30px">DENSITÉ D'APPARITION</div>
+      <div style="display: flex; gap: 2px; align-items: flex-end; height: 56px; margin-top: 12px">
+        <span style="flex: 1; height: 62%; background: #234a68"></span>
+        <span style="flex: 1; height: 40%; background: #234a68"></span>
+        <span style="flex: 1; height: 78%; background: #234a68"></span>
+        <span style="flex: 1; height: 30%; background: #234a68"></span>
+        <span style="flex: 1; height: 92%; background: #2f6b7a"></span>
+        <span style="flex: 1; height: 55%; background: #234a68"></span>
+        <span style="flex: 1; height: 70%; background: #234a68"></span>
+        <span style="flex: 1; height: 100%; background: #e8c15a"></span>
+        <span style="flex: 1; height: 45%; background: #234a68"></span>
+        <span style="flex: 1; height: 66%; background: #234a68"></span>
+        <span style="flex: 1; height: 20%; background: #1a3a52"></span>
+        <span style="flex: 1; height: 84%; background: #2f6b7a"></span>
+      </div>
+      <div style="display: flex; justify-content: space-between; font-size: 10px; color: #4d6b85; margin-top: 6px"><span>Ch. 1</span><span>Ch. 1044</span></div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
