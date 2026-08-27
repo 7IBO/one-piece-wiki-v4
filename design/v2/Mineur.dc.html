@@ -1,0 +1,157 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Archivo, system-ui, sans-serif; background: #0a0b0e; }
+    a { color: #9fb8d0; text-decoration: none; }
+    a:hover { color: #c5d6e6; }
+    .panel { border: 1px solid #1e222a; background: #101217; border-radius: 6px; padding: 14px 16px; }
+    .lbl { font-size: 9px; letter-spacing: 0.18em; color: #6a7280; }
+    .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 10px 0; border-bottom: 1px solid #191c23; font-size: 14px; }
+    .last { border-bottom: none; }
+    .k { color: #8b939f; }
+    .num { font-variant-numeric: tabular-nums; }
+    .tab { font-size: 12.5px; padding: 13px 0; color: #79818d; }
+    .on { color: #eceef2; font-weight: 600; border-bottom: 2px solid #e0553f; margin-bottom: -1px; }
+    .chip { font-size: 11px; padding: 4px 9px; border: 1px solid #232833; border-radius: 3px; color: #b3bac4; display: inline-block; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; background: #0a0b0e; color: #eceef2">
+
+  <div style="display: flex; align-items: stretch; height: 46px; border-bottom: 1px solid #1e222a">
+    <div style="display: flex; align-items: center; padding: 0 18px; font-size: 14px; font-weight: 800; border-right: 1px solid #1e222a">One Piece<span style="color: #e0553f">.Wiki</span></div>
+    <div style="flex-grow: 1; display: flex; align-items: center; padding: 0 16px; font-size: 12px; color: #6a7280">⌕&nbsp;&nbsp;Rechercher — personnages, fruits, chapitres, arcs, épisodes…</div>
+    <div style="display: flex; align-items: center; gap: 9px; padding: 0 16px; border-left: 1px solid #1e222a; font-size: 11px">
+      <span style="color: #6a7280">MA PROGRESSION</span>
+      <span style="width: 90px; height: 3px; border-radius: 2px; background: #1e222a; position: relative"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: 84%; background: #e8c15a; border-radius: 2px"></span></span>
+      <span class="num" style="font-weight: 700; color: #e8c15a">CH. 1044</span>
+    </div>
+  </div>
+
+  <div style="position: relative; height: 258px; overflow: hidden; border-bottom: 1px solid #1e222a">
+    <div style="position: absolute; inset: 0; background: linear-gradient(105deg, #1d1a16 0%, #423a2c 46%, #6b5f47 76%, #9a8c6d 100%); opacity: 0.2"></div>
+    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,11,14,0.55) 0%, rgba(10,11,14,0.2) 45%, #0a0b0e 100%)"></div>
+    <div style="position: absolute; left: 40px; top: 34px; right: 40px; display: flex; gap: 22px; align-items: flex-start">
+      <div style="width: 168px; height: 168px; border-radius: 10px; flex-shrink: 0; background: linear-gradient(145deg, #26221a, #6b5f47); border: 1px solid #2c3038; position: relative; overflow: hidden">
+        <div style="position: absolute; left: 40px; top: 46px; width: 88px; height: 88px; border-radius: 50%; background: #9a8c6d; opacity: 0.3"></div>
+      </div>
+      <div style="padding-top: 6px; min-width: 0">
+        <div class="lbl">PERSONNAGE · <a href="#" style="color: #6a7280">BANDITS DE MONTAGNE</a> · CHEF</div>
+        <div style="font-size: 42px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.06; margin-top: 5px">Higuma</div>
+        <div style="font-size: 14px; color: #a3abb6; margin-top: 6px">Chef d'un groupe de bandits sévissant autour de <a href="#">Fuchsia</a></div>
+        <div style="display: flex; gap: 7px; margin-top: 13px">
+          <span class="chip">Manga</span><span class="chip">Anime</span>
+          <span class="chip" style="border-color: #3a3020; color: #c9a86f">Entité peu documentée</span>
+        </div>
+      </div>
+      <div style="flex-grow: 1"></div>
+      <div style="display: flex; border: 1px solid #232833; border-radius: 6px; background: rgba(16,18,23,0.72); flex-shrink: 0">
+        <div style="padding: 11px 17px; border-right: 1px solid #232833"><div class="lbl">PRIME</div><div class="num" style="font-size: 20px; font-weight: 700; color: #e0553f; margin-top: 2px">8 000 000</div><div style="font-size: 10px; color: #6a7280">depuis le ch. 1</div></div>
+        <div style="padding: 11px 17px; border-right: 1px solid #232833"><div class="lbl">STATUT</div><div style="font-size: 20px; font-weight: 700; color: #c47f6a; margin-top: 2px">Décédé</div><div style="font-size: 10px; color: #6a7280">chapitre 1</div></div>
+        <div style="padding: 11px 17px"><div class="lbl">APPARITIONS</div><div class="num" style="font-size: 20px; font-weight: 700; margin-top: 2px">4</div><div style="font-size: 10px; color: #6a7280">chapitres</div></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- moins de données ⇒ moins d'onglets. Les onglets suivent le contenu, pas un gabarit -->
+  <div style="display: flex; gap: 24px; padding: 0 40px; border-bottom: 1px solid #1e222a">
+    <span class="tab on">Vue d'ensemble</span>
+    <span class="tab">Apparitions <span style="color: #565e69">4</span></span>
+    <span class="tab">Sources</span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; padding: 14px 40px 40px">
+
+    <!-- peu de champs ⇒ le panneau ne rétrécit pas, il respire -->
+    <div class="panel" style="grid-column: span 4">
+      <div class="lbl">FICHE</div>
+      <div style="margin-top: 11px">
+        <div class="row"><span class="k">Groupe</span><a href="#">Bandits de montagne</a></div>
+        <div class="row"><span class="k">Rôle</span><span>Chef</span></div>
+        <div class="row"><span class="k">Zone d'activité</span><a href="#">Fuchsia</a> · <a href="#">East Blue</a></div>
+        <div class="row"><span class="k">Prime</span><span class="num">8 000 000</span></div>
+        <div class="row last"><span class="k">1<sup>re</sup> apparition</span><a href="#">Chapitre 1</a></div>
+      </div>
+    </div>
+
+    <div class="panel" style="grid-column: span 8">
+      <div class="lbl">CHRONOLOGIE</div>
+      <div style="margin-top: 14px; position: relative; padding-left: 22px">
+        <div style="position: absolute; left: 4px; top: 7px; bottom: 12px; width: 1px; background: #232833"></div>
+        <div style="position: relative; padding-bottom: 18px">
+          <div style="position: absolute; left: -22px; top: 5px; width: 9px; height: 9px; border-radius: 50%; background: #0a0b0e; border: 2px solid #3a4048"></div>
+          <div style="font-size: 16px; font-weight: 600">Humilie <a href="#">Monkey D. Luffy</a> à la taverne de <a href="#">Makino</a></div>
+          <div style="font-size: 13px; color: #8b939f; margin-top: 3px">Chapitre 1 · <a href="#">Shanks</a> laisse faire, ce que Luffy lui reproche.</div>
+        </div>
+        <div style="position: relative">
+          <div style="position: absolute; left: -22px; top: 5px; width: 9px; height: 9px; border-radius: 50%; background: #0a0b0e; border: 2px solid #4a2f2a"></div>
+          <div style="font-size: 16px; font-weight: 600; color: #c47f6a">Dévoré par le Roi des Côtes</div>
+          <div style="font-size: 13px; color: #8b939f; margin-top: 3px">Chapitre 1 · l'événement qui coûte son bras à <a href="#">Shanks</a>.</div>
+        </div>
+      </div>
+      <div style="font-size: 11.5px; color: #6a7280; margin-top: 15px; border-top: 1px solid #191c23; padding-top: 11px; line-height: 1.65">
+        Deux événements, tous deux dans le même chapitre. Une chronologie courte reste une chronologie : c'est la même grammaire que sur une page à cinquante entrées.
+      </div>
+    </div>
+
+    <!-- peu d'apparitions ⇒ on les montre toutes, en grand, plutôt que d'en résumer beaucoup -->
+    <div class="panel" style="grid-column: span 12">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <div class="lbl">SES QUATRE APPARITIONS — TOUTES</div><span style="font-size: 10px; color: #6a7280">manga et anime</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 12px; margin-top: 13px">
+        <a href="#" style="color: inherit"><div style="height: 118px; border-radius: 5px; background: linear-gradient(145deg, #1d1a16, #6b5f47)"></div><div style="font-size: 14px; font-weight: 600; margin-top: 7px">Chapitre 1</div><div style="font-size: 11.5px; color: #8b939f; margin-top: 2px">Romance Dawn · rôle central</div></a>
+        <a href="#" style="color: inherit"><div style="height: 118px; border-radius: 5px; background: linear-gradient(145deg, #1a1c22, #47566b)"></div><div style="font-size: 14px; font-weight: 600; margin-top: 7px">Chapitre 434</div><div style="font-size: 11.5px; color: #8b939f; margin-top: 2px">Flashback · mentionné</div></a>
+        <a href="#" style="color: inherit"><div style="height: 118px; border-radius: 5px; background: linear-gradient(145deg, #221a1a, #6b4747)"></div><div style="font-size: 14px; font-weight: 600; margin-top: 7px">Épisode 1</div><div style="font-size: 11.5px; color: #8b939f; margin-top: 2px">Adaptation du chapitre 1</div></a>
+        <a href="#" style="color: inherit"><div style="height: 118px; border-radius: 5px; background: linear-gradient(145deg, #1a2220, #476b5f)"></div><div style="font-size: 14px; font-weight: 600; margin-top: 7px">Épisode 4</div><div style="font-size: 11.5px; color: #8b939f; margin-top: 2px">Rappel · contenu ajouté</div></a>
+      </div>
+    </div>
+
+    <div class="panel" style="grid-column: span 5">
+      <div class="lbl">CE QUI POINTE VERS CETTE PAGE — 6</div>
+      <div style="margin-top: 10px">
+        <div class="row"><a href="#">Monkey D. Luffy</a><span style="font-size: 12px; color: #8b939f">Antagoniste ponctuel</span></div>
+        <div class="row"><a href="#">Shanks</a><span style="font-size: 12px; color: #8b939f">Confrontation · ch. 1</span></div>
+        <div class="row"><a href="#">Fuchsia</a><span style="font-size: 12px; color: #8b939f">Zone d'activité</span></div>
+        <div class="row"><a href="#">Roi des Côtes</a><span style="font-size: 12px; color: #8b939f">Cause du décès</span></div>
+        <div class="row last"><a href="#">Chapitre 1</a><span style="font-size: 12px; color: #8b939f">Première apparition</span></div>
+      </div>
+      <div style="font-size: 11.5px; color: #6a7280; margin-top: 11px; border-top: 1px solid #191c23; padding-top: 10px; line-height: 1.65">
+        Ce panneau est ce qui sauve les pages pauvres : une entité peu documentée est presque toujours <span style="color: #b3bac4">bien reliée</span>.
+      </div>
+    </div>
+
+    <!-- sur une page pauvre, contribuer devient l'objet principal, pas un encart en pied -->
+    <div class="panel" style="grid-column: span 7; border-color: #2c2a22">
+      <div class="lbl" style="color: #c9a86f">CETTE PAGE EST INCOMPLÈTE</div>
+      <div style="font-size: 14px; color: #b3bac4; margin-top: 11px; line-height: 1.7">
+        Six propriétés attendues pour un personnage n'ont pas de valeur ici. Elles sont nommées, pas devinées — si l'information n'existe pas dans l'œuvre, marque-la comme telle plutôt que de la laisser vide.
+      </div>
+      <div style="display: flex; flex-wrap: wrap; gap: 7px; margin-top: 13px">
+        <span class="chip" style="border-color: #3a3020; color: #c9a86f">date de naissance</span>
+        <span class="chip" style="border-color: #3a3020; color: #c9a86f">taille</span>
+        <span class="chip" style="border-color: #3a3020; color: #c9a86f">nom japonais</span>
+        <span class="chip" style="border-color: #3a3020; color: #c9a86f">seiyū</span>
+        <span class="chip" style="border-color: #3a3020; color: #c9a86f">image</span>
+        <span class="chip" style="border-color: #3a3020; color: #c9a86f">résumé</span>
+      </div>
+      <div style="display: flex; gap: 9px; margin-top: 15px; align-items: center">
+        <span style="font-size: 13px; font-weight: 600; padding: 8px 15px; border-radius: 4px; background: #e0553f; color: #14171d">Compléter cette page</span>
+        <span style="font-size: 12px; color: #6a7280">Ta contribution part en pull request, relue avant publication.</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
