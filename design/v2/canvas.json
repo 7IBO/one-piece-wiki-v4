@@ -46,7 +46,7 @@
       "x": 3120,
       "y": 1580,
       "w": 1440,
-      "h": 1320
+      "h": 1240
     },
     {
       "file": "Mobile.dc.html",
@@ -63,47 +63,54 @@
       "x": -430,
       "y": 0,
       "w": 350,
-      "text": "REGLER SA PROGRESSION SANS RIEN NOMMER. Le probleme : parcourir une liste de chapitres pour se situer est deja un spoiler, les titres en disent trop. La reponse : une recherche dichotomique sur des NOMBRES NUS. \"As-tu lu le chapitre 512 ?\" Oui/Non/Je ne sais plus. Une dizaine de questions couvrent 1145 chapitres et aucune ne peut rien reveler. Le dialogue a ete remis a plat : un seul cadre, des filets au lieu de boites imbriquees, une seule forme de bouton, un seul aplat d'or (Enregistrer), et le meme langage d'onglets que les pages."
+      "text": "REGLER SA PROGRESSION. La recherche dichotomique sur des numeros a ete abandonnee : elle demandait une dizaine de clics au moment le plus critique du parcours, et elle posait une question a laquelle personne ne sait repondre — on ne retient pas un numero de chapitre, on retient un ARC. On demande donc le dernier arc termine, regroupe par saga, avec sa plage de chapitres. Un clic. Puis une reglette facultative a l'interieur de l'arc pour qui veut etre precis. Les noms d'arcs sont de la metadonnee de publication — des noms de lieux imprimes sur les volumes et dans les menus des plateformes — pas du contenu narratif : ils ne revelent pas ce qui s'y passe."
+    },
+    {
+      "id": "sources",
+      "x": -430,
+      "y": 400,
+      "w": 350,
+      "text": "APPARITIONS : UN ONGLET PAR TYPE DE SOURCE. Chapitres, episodes, films, autres sources. Ca regle le melange a la racine plutot qu'en surface : dans une liste d'un seul type, toutes les vignettes ont le meme ratio, toutes les numerotations sont comparables, et les comptes redeviennent lisibles. C'est aussi la seule facon de tenir 342 chapitres ET 1062 episodes sur la meme page."
     },
     {
       "id": "or",
       "x": -430,
-      "y": 420,
+      "y": 760,
       "w": 350,
       "text": "L'OR PARTOUT. Valeur actuelle, onglet actif, position de lecture — et desormais les LIENS, en or attenue #c9ae72 qui passe a l'or plein au survol. Le vermillon #e0553f ne garde que la rupture : retcon, mort, contradiction."
     },
     {
       "id": "images",
       "x": -430,
-      "y": 700,
+      "y": 1040,
       "w": 350,
       "text": "IMAGES. Les portraits d'equipage retrecissent (158 px de large). Les apparitions passent en LISTE : la vignette garde son ratio d'origine mais toutes ont la MEME HAUTEUR, donc les lignes s'alignent. Un chapitre 2:3 fait 27 px de large, un episode 16:9 en fait 78 — et les deux tiennent sur la meme ligne sans etre deformes."
     },
     {
       "id": "langue",
       "x": -430,
-      "y": 1060,
+      "y": 1400,
       "w": 350,
       "text": "LANGUE dans l'en-tete : liste maison, pas un <select> natif, montree ouverte sur la planche Personnage. Cinq langues, la courante en or avec sa coche."
     },
     {
       "id": "ratios",
       "x": -430,
-      "y": 1330,
+      "y": 1670,
       "w": 350,
       "text": "Les cinq classes de ratio viennent du code (apps/web/src/lib/image-ratio.ts) : portrait 3:4, cover 2:3, square 1:1, plate 16:9, banner 21:9, derivees des pixels puis du role de depicted-by. Un personnage est en 3:4 partout."
     },
     {
       "id": "spoil",
       "x": -430,
-      "y": 1640,
+      "y": 1980,
       "w": 350,
       "text": "REGLE ANTI-SPOIL. Compter ce qui est cache revele ce qui est cache : aucun compteur d'absence, aucune tuile pointillee, aucune barre grisee au-dela de la position de lecture."
     },
     {
       "id": "structure",
       "x": -430,
-      "y": 1900,
+      "y": 2240,
       "w": 350,
       "text": "COTE DONNEES : presque tout existe deja (intervalles d'adhesion, retcon, croyances par personnage, apparitions au chapitre, ratios). Deux manques reels, parques dans IDEAS.md et demandant chacun un ADR : la precision de since (le cas Rocks) et le marqueur \"cette information n'existe pas dans l'oeuvre\"."
     }

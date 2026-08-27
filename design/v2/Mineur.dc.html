@@ -21,6 +21,8 @@
     .num { font-variant-numeric: tabular-nums; }
     .tab { font-size: 12.5px; padding: 13px 0; color: #79818d; }
     .on { color: #eceef2; font-weight: 600; border-bottom: 2px solid #e8c15a; margin-bottom: -1px; }
+    .stab { font-size: 11.5px; padding: 0 0 7px; color: #79818d; }
+    .stab.on { color: #eceef2; font-weight: 600; box-shadow: inset 0 -2px 0 #e8c15a; }
     .chip { font-size: 11px; padding: 4px 9px; border: 1px solid #232833; border-radius: 3px; color: #b3bac4; display: inline-block; }
   </style>
 </helmet>
@@ -106,7 +108,11 @@
     <!-- peu d'apparitions ⇒ on les montre toutes, en grand, plutôt que d'en résumer beaucoup -->
     <div class="panel" style="grid-column: span 7">
       <div style="display: flex; justify-content: space-between; align-items: baseline">
-        <div class="lbl">SES QUATRE APPARITIONS — TOUTES</div><span style="font-size: 10px; color: #6a7280">hauteur constante, ratio d'origine</span>
+        <div class="lbl">APPARITIONS — TOUTES</div><span style="font-size: 10px; color: #6a7280">4 au total</span>
+      </div>
+      <div style="display: flex; gap: 18px; margin-top: 12px; border-bottom: 1px solid #1e222a">
+        <span class="stab on">Chapitres <span style="color: #565e69">2</span></span>
+        <span class="stab">Épisodes <span style="color: #565e69">2</span></span>
       </div>
       <div style="margin-top: 11px">
         <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #191c23; color: inherit">
@@ -120,18 +126,6 @@
           <span style="font-size: 13.5px; font-weight: 600; width: 110px; flex-shrink: 0">Chapitre 434</span>
           <span style="font-size: 13px; color: #c9ae72; flex-grow: 1; min-width: 0">Flashback</span>
           <span style="font-size: 11px; color: #6a7280">Mentionné</span>
-        </a>
-        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #191c23; color: inherit">
-          <span style="height: 44px; aspect-ratio: 16 / 9; border-radius: 3px; flex-shrink: 0; background: linear-gradient(150deg, #221a1a, #6b4747)"></span>
-          <span style="font-size: 13.5px; font-weight: 600; width: 110px; flex-shrink: 0">Épisode 1</span>
-          <span style="font-size: 13px; color: #c9ae72; flex-grow: 1; min-width: 0">Adaptation du chapitre 1</span>
-          <span style="font-size: 11px; color: #6a7280">Rôle central</span>
-        </a>
-        <a href="#" style="display: flex; align-items: center; gap: 12px; padding: 9px 0; border-bottom: 1px solid #191c23; color: inherit">
-          <span style="height: 44px; aspect-ratio: 16 / 9; border-radius: 3px; flex-shrink: 0; background: linear-gradient(150deg, #1a2220, #476b5f)"></span>
-          <span style="font-size: 13.5px; font-weight: 600; width: 110px; flex-shrink: 0">Épisode 4</span>
-          <span style="font-size: 13px; color: #c9ae72; flex-grow: 1; min-width: 0">Rappel</span>
-          <span style="font-size: 11px; color: #6a7280">Contenu ajouté</span>
         </a>
       </div>
     </div>

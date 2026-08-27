@@ -260,33 +260,59 @@ Ce dialogue remplace le panneau à deux champs numériques actuel
 lecteur connaît son numéro — c'est-à-dire précisément l'hypothèse que
 cette demande invalide.
 
-### Pourquoi la première version n'était pas propre
+### Deux versions abandonnées avant celle-ci
 
-Le mainteneur : « ça paraît pas clean la popup, je sais pas comment
-dire ». Le diagnostic, cinq défauts qui s'additionnent :
+**La recherche dichotomique sur des numéros** — « As-tu lu le chapitre
+512 ? », dix fois — était spoiler-proof et inutilisable. Deux défauts
+rédhibitoires : une dizaine de clics **au moment le plus critique du
+parcours**, celui où un visiteur décide de rester ou de partir ; et
+surtout une question **à laquelle personne ne sait répondre**. On ne
+retient pas un numéro de chapitre. On retient un arc : « j'ai fini
+Marineford », « je suis dans Wano ».
 
-1. **Des boîtes imbriquées.** Le cadre du dialogue contenait un groupe
-   de pastilles, puis un encadré, puis un second encadré teinté, puis
-   une barre de pied. Quatre conteneurs empilés dans un conteneur.
-2. **Deux surfaces accentuées qui se disputaient l'attention** : le bloc
-   des questions guidées avait un fond jaune et une bordure dorée, en
-   concurrence avec le nombre en or et le bouton d'enregistrement.
-3. **Cinq formes de contrôle** pour un seul dialogue : pastilles,
-   encadré, pilules, boutons, réglette.
-4. **Des marges toutes différentes** — 22/26, 16/18, 18, 15/26.
-5. **Deux modes présentés à égalité**, ce qui donnait une page de
-   réglages plutôt qu'une décision à prendre.
+Elle optimisait donc la sûreté anti-spoil au prix de l'utilisabilité —
+un mauvais échange, puisqu'un réglage que personne ne termine ne protège
+personne.
 
-La reprise applique l'inverse : **un seul cadre**, des **filets**
-horizontaux au lieu de boîtes imbriquées, **une seule forme de bouton**,
-**un seul aplat d'or** (le bouton Enregistrer), une marge horizontale
-unique de 28 px, et le **même langage d'onglets que les pages** —
-Manga / Anime en texte souligné d'or, pas un troisième composant inventé
-pour l'occasion.
+**La version en boîtes imbriquées** — cinq défauts cumulés : quatre
+conteneurs empilés dans un conteneur ; deux surfaces accentuées en
+concurrence (fond jaune + bordure dorée contre le bouton doré) ; cinq
+formes de contrôle pour un seul dialogue ; des marges toutes
+différentes ; et deux modes présentés à égalité, ce qui donnait une page
+de réglages plutôt qu'une décision.
 
-La question devient le centre visuel ; le curseur direct redevient une
-**ligne**, plus une section ; les préréglages sont une rangée de pilules
-discrètes.
+### Ce que fait la version retenue
+
+**On demande le dernier arc terminé.** Une liste d'arcs dans l'ordre,
+groupée par saga, chacun avec sa plage de chapitres. **Un clic.** Puis
+une réglette facultative à l'intérieur de l'arc choisi, pour qui veut
+être précis au chapitre près.
+
+Les **noms d'arcs ne sont pas des spoilers** : ce sont des noms de lieux
+— Alabasta, Dressrosa, Wano — imprimés sur les jaquettes de volumes et
+listés dans les menus de toutes les plateformes de diffusion. C'est de
+la métadonnée de publication, au même titre que « 1 145 chapitres
+parus », pas du contenu narratif. Les **titres de chapitres**, eux, en
+disent trop : c'est pourquoi ils n'apparaissent nulle part dans ce
+dialogue.
+
+Réserve assumée : quelques arcs portent le nom d'un lieu devenu célèbre
+pour ce qui s'y passe. Le regroupement par saga limite naturellement
+l'exposition — on parcourt sa propre saga, pas la liste entière — et
+aucun résumé d'arc n'est affiché, seulement des noms et des plages.
+
+Côté forme : **un seul cadre**, des filets horizontaux au lieu de boîtes
+imbriquées, **une seule forme de bouton**, **un seul aplat d'or** (le
+bouton Enregistrer), une marge horizontale unique de 28 px, et le **même
+langage d'onglets que les pages**.
+
+### Apparitions : un onglet par type de source
+
+Chapitres, épisodes, films, autres sources. Le mélange est réglé **à la
+racine** plutôt qu'en surface : dans une liste d'un seul type, toutes
+les vignettes ont le même ratio, toutes les numérotations sont
+comparables, et les comptes redeviennent lisibles. C'est aussi la seule
+forme qui tienne 342 chapitres **et** 1 062 épisodes sur la même page.
 
 ## Trois corrections d'affichage
 
