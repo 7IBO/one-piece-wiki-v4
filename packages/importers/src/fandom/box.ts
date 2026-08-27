@@ -107,6 +107,46 @@ export function slugify(name: string, maxLength = 60): string {
   return (lastDash > 0 ? cut.slice(0, lastDash) : cut).replace(/-+$/, '');
 }
 
+/**
+ * Placeholder names that must NEVER become an entity.
+ *
+ * A live `Devil Fruits` crawl created `character:n-a` — a character
+ * literally called "N/A", carrying a bounty of 220, a height of 180
+ * and a birthday. Every field was junk read off a template's empty
+ * slots, and only a `bounty` constraint (not a multiple of 100000)
+ * stopped it reaching the corpus. That is a wrong entity, not an
+ * incomplete one, and nothing downstream can tell the difference.
+ *
+ * Compared after slugification, so `N/A`, `n/a`, `N.A.` and `- N/A -`
+ * all collapse to the same token. Deliberately short: the cost of
+ * missing a real entity named "None" is one absent page, while the
+ * cost of admitting a fabricated one is a lie the wiki then serves
+ * with a straight face.
+ */
+const PLACEHOLDER_SLUGS: ReadonlySet<string> = new Set([
+  'n-a',
+  'na',
+  'none',
+  'nil',
+  'null',
+  'unknown',
+  'tba',
+  'tbd',
+  'tbc',
+  'unnamed',
+  'n-a-n-a',
+]);
+
+/**
+ * Is this name a template placeholder rather than a thing? Callers
+ * must treat `true` exactly like an empty slug: return null, map
+ * nothing.
+ */
+export function isPlaceholderName(name: string): boolean {
+  const slug = slugify(name);
+  return slug === '' || PLACEHOLDER_SLUGS.has(slug);
+}
+
 export type JapaneseName = {
   /** Native-script name (the `ja` data locale of ADR-095). */
   readonly ja: string | null;

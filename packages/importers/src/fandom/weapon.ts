@@ -20,6 +20,7 @@ import {
   type BoxMapContext,
   entityIdFor,
   IMAGE_PARAMS,
+  isPlaceholderName,
   matchVocabularyIn,
   paramReader,
   parseSourceRefs,
@@ -88,7 +89,8 @@ export function mapWeapon(page: ParsedPage, ctx: BoxMapContext = {}): WeaponMapR
 
   const enName = cleanValue(get('name') ?? page.title);
   const slug = slugify(enName);
-  if (slug === '') return null;
+  // A template placeholder is not a thing (see isPlaceholderName).
+  if (slug === '' || isPlaceholderName(enName)) return null;
   const id = entityIdFor('weapon', slug, page.title, ctx.titleIndex);
   const base = id.split(':')[1] ?? slug;
 

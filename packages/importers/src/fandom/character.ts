@@ -19,6 +19,7 @@
  * Anything unresolved, "former"-annotated, or fuzzy stays a warning
  * for the AI-extraction / human pass.
  */
+import { isPlaceholderName } from './box.ts';
 import type { ParsedPage } from './client.ts';
 import { extractWikiLinks, resolveTitle, type TitleIndex } from './registry.ts';
 import {
@@ -230,7 +231,8 @@ export function mapCharacter(
     return null;
   }
   const slug = slugify(cleanValue(enName));
-  if (slug === '') return null;
+  // A template placeholder is not a thing (see isPlaceholderName).
+  if (slug === '' || isPlaceholderName(cleanValue(enName))) return null;
   const id = `character:${slug}`;
 
   // Debut source ("first" carries the chapter+episode Qref) anchors

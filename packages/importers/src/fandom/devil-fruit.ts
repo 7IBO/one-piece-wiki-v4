@@ -27,6 +27,7 @@ import {
   type BoxMapContext,
   entityIdFor,
   IMAGE_PARAMS,
+  isPlaceholderName,
   matchVocabularyIn,
   paramReader,
   parseSourceRefs,
@@ -113,7 +114,8 @@ export function mapDevilFruit(
   // `name` override). `ename` is a LIST of dub variants — see below.
   const enName = cleanValue(get('name') ?? page.title);
   const slug = slugify(enName);
-  if (slug === '') return null;
+  // A template placeholder is not a thing (see isPlaceholderName).
+  if (slug === '' || isPlaceholderName(enName)) return null;
   const id = entityIdFor('devil-fruit', slug, page.title, ctx.titleIndex);
   const base = id.split(':')[1] ?? slug;
 

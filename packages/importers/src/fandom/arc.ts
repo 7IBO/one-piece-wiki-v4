@@ -22,6 +22,7 @@ import {
   type BoxMapContext,
   entityIdFor,
   IMAGE_PARAMS,
+  isPlaceholderName,
   matchVocabularyIn,
   paramReader,
   PRESENTATION_PARAMS,
@@ -117,7 +118,8 @@ export function mapArc(page: ParsedPage, ctx: BoxMapContext = {}): ArcMapResult 
 
   const enName = stripArcSuffix(cleanValue(get('name') ?? page.title));
   const slug = slugify(enName);
-  if (slug === '') return null;
+  // A template placeholder is not a thing (see isPlaceholderName).
+  if (slug === '' || isPlaceholderName(enName)) return null;
   const id = entityIdFor('arc', slug, page.title, ctx.titleIndex);
   const base = id.split(':')[1] ?? slug;
 

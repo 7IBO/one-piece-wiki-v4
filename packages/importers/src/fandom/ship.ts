@@ -19,6 +19,7 @@ import {
   type BoxMapContext,
   entityIdFor,
   IMAGE_PARAMS,
+  isPlaceholderName,
   paramReader,
   parseSourceRefs,
   PRESENTATION_PARAMS,
@@ -93,7 +94,8 @@ export function mapShip(page: ParsedPage, ctx: BoxMapContext = {}): ShipMapResul
 
   const enName = cleanValue(get('name') ?? page.title);
   const slug = slugify(enName);
-  if (slug === '') return null;
+  // A template placeholder is not a thing (see isPlaceholderName).
+  if (slug === '' || isPlaceholderName(enName)) return null;
   const id = entityIdFor('ship', slug, page.title, ctx.titleIndex);
   const base = id.split(':')[1] ?? slug;
 

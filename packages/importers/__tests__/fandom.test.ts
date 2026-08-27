@@ -7,6 +7,7 @@
 import { describe, expect, it } from 'bun:test';
 import { join } from 'node:path';
 import { GENERATED_DIR } from '../../schema-engine/src/paths.ts';
+import { isPlaceholderName } from '../src/fandom/box.ts';
 import { mapChapter } from '../src/fandom/chapter.ts';
 import type { ParsedPage } from '../src/fandom/client.ts';
 import { FandomClient } from '../src/fandom/client.ts';
@@ -42,6 +43,28 @@ describe('wikitext parser', () => {
 
   it('cleans links, refs and quotes from values', () => {
     expect(cleanValue("'''[[Monkey D. Luffy|Luffy]]'''<ref>x</ref>")).toBe('Luffy');
+  });
+
+  it('refuses to build an entity from a template placeholder', () => {
+    // A live `Devil Fruits` crawl produced `character:n-a` — a
+    // character literally called "N/A", with a bounty of 220, a height
+    // of 180 and a birthday, every field read off empty template
+    // slots. Only a `bounty` step constraint stopped it reaching the
+    // corpus. A wrong entity is worse than a missing one: nothing
+    // downstream can tell it from a real page.
+    expect(isPlaceholderName('N/A')).toBe(true);
+    expect(isPlaceholderName('n/a')).toBe(true);
+    expect(isPlaceholderName('N.A.')).toBe(true);
+    expect(isPlaceholderName('  Unknown  ')).toBe(true);
+    expect(isPlaceholderName('TBA')).toBe(true);
+    expect(isPlaceholderName('none')).toBe(true);
+    expect(isPlaceholderName('')).toBe(true);
+    // Real names must survive, including ones that merely contain a
+    // placeholder word.
+    expect(isPlaceholderName('Monkey D. Luffy')).toBe(false);
+    expect(isPlaceholderName('Nami')).toBe(false);
+    expect(isPlaceholderName('None Other Than Zoro')).toBe(false);
+    expect(isPlaceholderName('Nana')).toBe(false);
   });
 
   it('unwraps <nowiki>, keeping what it protects', () => {
