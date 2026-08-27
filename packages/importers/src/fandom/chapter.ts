@@ -16,6 +16,7 @@
  * Unknown/unparseable fields become `warnings`, never guesses.
  */
 import type { ParsedPage } from './client.ts';
+import { readOrdinalTitle } from './ordinal-title.ts';
 import { cleanValue, findTemplate, parseLooseDate, parseLooseNumber } from './wikitext.ts';
 
 export type ChapterEntity = {
@@ -86,8 +87,14 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
   // carries NO chapter-number param — the ordinal lives in the page
   // title ("Chapter 1044"). The infobox params are kept as fallback
   // for oddly-titled pages.
-  const fromTitle = /^Chapter\s+(\d+)$/i.exec(page.title.trim());
-  const numberRaw = fromTitle?.[1] ?? get('chapter', 'number');
+  const titleVerdict = readOrdinalTitle('Chapter', page.title);
+  // A parenthesised variant ("Chapter 1 (Digital Colored)") carries the
+  // same ordinal in its infobox — letting it fall through would
+  // overwrite the real chapter. See ordinal-title.ts.
+  if (titleVerdict.kind === 'variant') return null;
+  const numberRaw = titleVerdict.kind === 'canonical'
+    ? String(titleVerdict.ordinal)
+    : get('chapter', 'number');
   const number = numberRaw === undefined ? null : parseLooseNumber(numberRaw);
   if (number === null) {
     // Without the ordinal there is no id/slug — not mappable.

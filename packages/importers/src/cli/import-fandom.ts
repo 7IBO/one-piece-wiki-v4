@@ -88,7 +88,7 @@ const client = new FandomClient({
 
 if (kind === 'crawl') {
   // bun run import:fandom crawl --category "One Piece Chapters" --depth 2
-  //   [--page "Monkey D. Luffy"] [--limit 50] [--stage]
+  //   [--page "Monkey D. Luffy"] [--limit 50] [--skip-known] [--stage]
   const opt = (name: string): readonly string[] =>
     args.flatMap((a, i) => (a === `--${name}` && args[i + 1] !== undefined ? [args[i + 1]!] : []));
   const categories = opt('category');
@@ -98,11 +98,16 @@ if (kind === 'crawl') {
   const registry = await loadRegistry();
   const occupations = await loadOccupationIndex();
 
+  // Successive bounded runs should ADVANCE through a category, not
+  // re-fetch the same first `limit` pages (run 5, 2026-08-07).
+  const skipKnown = args.includes('--skip-known');
+
   const report = await crawl(client, { categories, pages: seedPages }, {
     limit,
     categoryDepth,
     registry,
     occupations,
+    skipKnown,
     log: (line) => process.stdout.write(`  ${line}\n`),
   });
 
@@ -115,7 +120,28 @@ if (kind === 'crawl') {
       for (const sk of staged.skipped) process.stdout.write(`  skip ${sk.path}: ${sk.reason}\n`);
     }
   }
-  process.stdout.write(`\n${report.results.length} mapped, ${report.failures.length} failed.\n`);
+  const skipNote = report.skippedKnown > 0 ? `, ${report.skippedKnown} already known` : '';
+  process.stdout.write(
+    `\n${report.results.length} mapped, ${report.failures.length} failed${skipNote}.\n`,
+  );
+  // The reasons were collected all along and thrown away at print time
+  // — run 5 reported "8 mapped, 17 failed" and nothing else, which is
+  // unactionable. Group them so a 1000-page run stays readable.
+  if (report.failures.length > 0) {
+    const byReason = new Map<string, string[]>();
+    for (const f of report.failures) {
+      const bucket = byReason.get(f.reason) ?? [];
+      bucket.push(f.page);
+      byReason.set(f.reason, bucket);
+    }
+    process.stdout.write('Failures:\n');
+    const worstFirst = [...byReason.entries()].sort((a, b) => b[1].length - a[1].length);
+    for (const [reason, titles] of worstFirst) {
+      process.stdout.write(`  ${titles.length}× ${reason}\n`);
+      for (const t of titles.slice(0, 5)) process.stdout.write(`      ${t}\n`);
+      if (titles.length > 5) process.stdout.write(`      … and ${titles.length - 5} more\n`);
+    }
+  }
   if (report.unknownBoxes.length > 0) {
     process.stdout.write('Next mappers to build (infobox kinds seen):\n');
     for (const b of report.unknownBoxes.slice(0, 10)) {
@@ -182,7 +208,7 @@ if (kind === 'crawl') {
 } else {
   process.stderr.write(
     'Usage: bun run import:fandom <chapter|episode|character|volume> <page…> [--stage] [--overwrite]\n'
-      + '       bun run import:fandom crawl --category <name>… [--depth N] [--page <title>…] [--limit N] [--stage]\n'
+      + '       bun run import:fandom crawl --category <name>… [--depth N] [--page <title>…] [--limit N] [--skip-known] [--stage]\n'
       + '       bun run import:fandom check-updates\n',
   );
   process.exitCode = 1;

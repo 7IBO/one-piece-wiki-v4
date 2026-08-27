@@ -12,6 +12,7 @@
  * 3.9%), NOT the `tv_rating` content rating — deliberately not mapped.
  */
 import type { ParsedPage } from './client.ts';
+import { readOrdinalTitle } from './ordinal-title.ts';
 import { cleanValue, findTemplate, parseLooseNumber } from './wikitext.ts';
 
 export type EpisodeMapResult = {
@@ -77,8 +78,14 @@ export function mapEpisode(page: ParsedPage): EpisodeMapResult | null {
     return undefined;
   };
 
-  const fromTitle = /^Episode\s+(\d+)$/i.exec(page.title.trim());
-  const numberRaw = fromTitle?.[1] ?? get('#', 'number', 'episode');
+  const titleVerdict = readOrdinalTitle('Episode', page.title);
+  // "Episode 1 (Special Edited Version)" carries #=1 in its Episode Box.
+  // Eight of those were imported as anime-episode:1..8 on 2026-08-07 —
+  // the exact regression ordinal-title.ts exists to stop.
+  if (titleVerdict.kind === 'variant') return null;
+  const numberRaw = titleVerdict.kind === 'canonical'
+    ? String(titleVerdict.ordinal)
+    : get('#', 'number', 'episode');
   const number = numberRaw === undefined ? null : parseLooseNumber(numberRaw);
   if (number === null) return null;
 
