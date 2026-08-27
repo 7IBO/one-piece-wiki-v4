@@ -11,5 +11,10 @@
       "value_key": "anime-episode.521.title"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:return-to-sabaody"
+    }
+  ]
 }

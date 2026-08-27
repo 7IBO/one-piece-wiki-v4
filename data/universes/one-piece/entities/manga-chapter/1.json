@@ -31,6 +31,10 @@
         "external_id": "1000486",
         "verified_at": "2026-08-08"
       }
+    },
+    {
+      "type": "part-of-arc",
+      "target": "arc:romance-dawn"
     }
   ]
 }

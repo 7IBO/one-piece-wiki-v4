@@ -11,5 +11,10 @@
       "value_key": "manga-chapter.1007.title"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:wano-country"
+    }
+  ]
 }

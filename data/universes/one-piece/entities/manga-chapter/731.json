@@ -15,5 +15,10 @@
       "territory": "jp"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:dressrosa"
+    }
+  ]
 }

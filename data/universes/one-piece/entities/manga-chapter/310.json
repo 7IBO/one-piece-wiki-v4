@@ -14,5 +14,10 @@
       "value": 19
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:long-ring-long-land"
+    }
+  ]
 }

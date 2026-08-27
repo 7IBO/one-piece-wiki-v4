@@ -10,7 +10,10 @@
         "value_key": "arc.water-7.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 15
+    }
   },
   "relations": []
 }

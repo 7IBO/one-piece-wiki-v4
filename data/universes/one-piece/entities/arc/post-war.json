@@ -10,7 +10,10 @@
         "value_key": "arc.post-war.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 23
+    }
   },
   "relations": []
 }

@@ -11,5 +11,10 @@
       "value_key": "anime-episode.341.title"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:thriller-bark"
+    }
+  ]
 }

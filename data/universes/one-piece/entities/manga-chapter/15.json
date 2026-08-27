@@ -11,5 +11,10 @@
       "value_key": "manga-chapter.15.title"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:orange-town"
+    }
+  ]
 }
