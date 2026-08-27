@@ -78,7 +78,9 @@ function TypeListPage(): ReactElement {
   const items = useMemo(() => {
     const filtered = view.items.filter((item) => matches(item, selection));
     if (!alphabetical) return filtered;
-    return [...filtered].sort((a, b) => a.name.localeCompare(b.name));
+    // `filter` already returned a fresh array; copying it again to
+    // sort was pure waste (react-doctor, js-tosorted-immutable).
+    return filtered.toSorted((a, b) => a.name.localeCompare(b.name));
   }, [view.items, selection, alphabetical]);
 
   const visible = items.slice(0, shown);
