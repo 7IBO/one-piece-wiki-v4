@@ -108,3 +108,87 @@ describe('diffContract', () => {
     expect(breaking.some((f) => f.message.includes('property removed'))).toBe(true);
   });
 });
+
+/**
+ * Bounds in the lockfile (ADR-117). Before this, the snapshot recorded
+ * `value_type` but never `value_constraints`, so a bound could move in
+ * either direction and CI still reported "matches the snapshot" — the
+ * type was locked, the bound was not. The rule mirrors the one applied
+ * everywhere else in this classifier, read as "what used to validate and
+ * no longer does": tightening breaks, widening does not.
+ */
+describe('diffContract — property bounds', () => {
+  const bounded = (
+    constraints: {
+      min?: number | null;
+      max?: number | null;
+      step?: number | null;
+      pattern?: string | null;
+    } | undefined,
+  ): SchemaContract => ({
+    entityTypes: {},
+    relationTypes: {},
+    vocabularies: {},
+    propertyTypes: {
+      number: {
+        value_type: 'number',
+        enum_ref: null,
+        historical: false,
+        localizable: false,
+        ...(constraints === undefined ? {} : {
+          constraints: {
+            min: constraints.min ?? null,
+            max: constraints.max ?? null,
+            step: constraints.step ?? null,
+            pattern: constraints.pattern ?? null,
+          },
+        }),
+      },
+    },
+  });
+
+  const kinds = (prev: SchemaContract, next: SchemaContract): string[] =>
+    diffContract(prev, next).map((f) => f.kind);
+
+  it('treats a raised min as breaking and a lowered one as additive', () => {
+    expect(kinds(bounded({ min: 0 }), bounded({ min: 1 }))).toEqual(['breaking']);
+    expect(kinds(bounded({ min: 1 }), bounded({ min: 0 }))).toEqual(['additive']);
+  });
+
+  it('treats introducing a bound as breaking and dropping one as additive', () => {
+    // No bound -> a bound can invalidate rows that were legal before.
+    expect(kinds(bounded({}), bounded({ min: 1 }))).toEqual(['breaking']);
+    expect(kinds(bounded({}), bounded({ max: 10 }))).toEqual(['breaking']);
+    expect(kinds(bounded({ min: 1 }), bounded({}))).toEqual(['additive']);
+  });
+
+  it('mirrors the rule for max — lower is stricter', () => {
+    expect(kinds(bounded({ max: 100 }), bounded({ max: 10 }))).toEqual(['breaking']);
+    expect(kinds(bounded({ max: 10 }), bounded({ max: 100 }))).toEqual(['additive']);
+  });
+
+  it('only calls a step change additive when the new step divides the old', () => {
+    // 2 -> 1 admits everything step 2 did, and more.
+    expect(kinds(bounded({ step: 2 }), bounded({ step: 1 }))).toEqual(['additive']);
+    // 1 -> 2 drops every odd value.
+    expect(kinds(bounded({ step: 1 }), bounded({ step: 2 }))).toEqual(['breaking']);
+    // 3 -> 2 is not a widening even though it is smaller: 3 no longer validates.
+    expect(kinds(bounded({ step: 3 }), bounded({ step: 2 }))).toEqual(['breaking']);
+  });
+
+  it('calls any live pattern change breaking, since regex subsumption is not tested', () => {
+    expect(kinds(bounded({ pattern: '^a+$' }), bounded({ pattern: '^a*$' }))).toEqual(['breaking']);
+    expect(kinds(bounded({ pattern: '^a+$' }), bounded({}))).toEqual(['additive']);
+  });
+
+  it('stays silent against a pre-ADR-117 snapshot that carries no bounds', () => {
+    // Reporting "none -> 0" for every bounded property would render the
+    // migration itself as a wall of breaking changes. The regeneration
+    // establishes the baseline; the next run compares for real.
+    expect(kinds(bounded(undefined), bounded({ min: 0, step: 1 }))).toEqual([]);
+  });
+
+  it('reports nothing when the bounds are unchanged', () => {
+    expect(kinds(bounded({ min: 0, step: 1 }), bounded({ min: 0, step: 1 }))).toEqual([]);
+  });
+});

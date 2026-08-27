@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "volume",
-  "schema_version": 2,
+  "schema_version": 1,
   "labels": { "en": "Volume", "fr": "Tome" },
   "url_segment": "volumes",
   "properties": [

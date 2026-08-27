@@ -8,6 +8,243 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-117 — Les bornes entrent dans le lockfile de compat
+
+**Date**: 2026-08-27
+
+**Contexte**. En vérifiant, à la demande du mainteneur, que les entités
+portent bien les bons typages, un trou est apparu dans `check:compat`
+(ADR-042). Le snapshot enregistrait, par propriété :
+
+```json
+{
+  "value_type": "number",
+  "enum_ref": null,
+  "historical": false,
+  "localizable": false
+}
+```
+
+Le **type** était verrouillé. La **borne** ne l'était pas. `min` pouvait
+donc passer de 1 à 0 — ou de 0 à 1 — et la CI répondait « matches the
+snapshot ». C'est précisément ce qui s'est produit en ADR-116 : j'avais
+lu ce silence comme « le changement est additif », alors qu'il voulait
+dire « le changement est invisible ». Deux choses très différentes.
+
+Le risque n'est pas théorique. Un resserrement invalide des données
+légales la veille, et c'est exactement le genre de changement que le
+lockfile existe pour attraper.
+
+**Décision**. `value_constraints` entre dans le contrat, sous
+`constraints` (`min`, `max`, `step`, `pattern` ; `enum_ref` garde son
+champ dédié et n'est pas dupliqué), avec la classification que le reste
+du classifieur applique déjà, lue comme « qu'est-ce qui validait hier et
+ne valide plus » :
+
+| Changement                                     | Verdict     |
+| ---------------------------------------------- | ----------- |
+| `min` relevé, `max` abaissé                    | **cassant** |
+| borne introduite là où il n'y en avait pas     | **cassant** |
+| `min` abaissé, `max` relevé, borne retirée     | additif     |
+| `step` dont le nouveau divise l'ancien (2 → 1) | additif     |
+| tout autre changement de `step`                | **cassant** |
+| `pattern` modifié                              | **cassant** |
+| `pattern` retiré                               | additif     |
+
+`step` et `pattern` sont traités de façon conservatrice **à dessein**.
+Un pas n'est un élargissement prouvé que s'il divise l'ancien ; 3 → 2 est
+plus petit mais rejette la valeur 3, donc cassant. Pour `pattern` il
+n'existe pas de test bon marché d'inclusion de langages réguliers, donc
+toute modification d'un motif vivant est cassante — seul son retrait est
+prouvablement additif. Mieux vaut un faux « cassant » qu'un vrai
+changement laissé passer.
+
+**Le cas de migration**. Un snapshot écrit avant cette ADR ne porte
+aucune borne. `diffConstraints` reste alors **silencieux** : inventer
+« none → 0 » pour chaque propriété bornée afficherait la migration
+elle-même comme un mur de changements cassants. La régénération pose la
+référence, la comparaison réelle commence au run suivant.
+
+**Conséquences**. Le snapshot est régénéré une fois (aucun verdict
+émis). +1 champ au contrat, +7 tests. Le tripwire sur `number`
+(ADR-116) est **conservé** : le lockfile détecte qu'une borne bouge, il
+ne dit pas _pourquoi_ elle doit valoir 0 — un relecteur qui régénère le
+snapshot accepterait `min: 1` en silence. Le test, lui, porte la raison
+(le chapitre 0 existe). Les deux gardes disent des choses différentes.
+
+---
+
+## ADR-116 — `number` accepte 0, et un crawl n'est plus jamais jeté
+
+**Date**: 2026-08-27
+
+**Contexte**. Le run d'import 8 (`One Piece Chapters`, depth 3) a mappé
+**398 chapitres** en dix minutes de crawl throttlé à 1 req/s, puis a tout
+perdu. Une seule entité était invalide :
+
+```
+[ENTITY_VALIDATION_FAILED] .../manga-chapter/0.json
+  properties.number.value: Number must be greater than or equal to 1
+```
+
+Deux problèmes distincts, qu'il faut ne pas confondre.
+
+### 1. Le chapitre 0 existe
+
+`number` portait `min: 1`, ce qui encode « les chapitres sont indexés à
+partir de 1 ». C'est faux : le **chapitre 0** est un one-shot prologue
+publié dans le Jump en 2009 pour le film _Strong World_, il a sa page sur
+Fandom, il est canon. La donnée importée était juste ; c'est la
+contrainte qui refusait une œuvre réelle.
+
+**Décision**. `value_constraints.min` passe de 1 à 0 sur `number`
+(partagé par `manga-chapter`, `anime-episode`, `live-action-episode`,
+`volume`).
+
+**Correction d'une erreur commise en écrivant cette ADR.** J'avais noté
+que « `schema:generate` produit un diff vide, la contrainte n'étant pas
+gravée dans le Zod généré ». C'est faux deux fois.
+`packages/schemas/generated/` est **gitignoré** (`.gitignore:25`), donc
+un `git diff` dessus est toujours vide et ne prouve rien ; et la
+contrainte **est** gravée dans le Zod généré :
+
+```ts
+export const NumberEntry = z.object({ …, value: z.number().min(0).step(1) })
+```
+
+Le typage est appliqué à deux endroits volontairement synchronisés — le
+Zod généré (`validate`, CI) et `valueSchemaFor` à l'exécution (formulaire
+du dashboard) — pour qu'« une édition acceptée par le dashboard soit la
+même que celle acceptée par la CI » (`entity-schema.ts`). Vérifié par
+sondes sur le corpus réel : `-1` rejeté (min), `3.5` rejeté (step),
+`"12"` rejeté (type), `0` accepté.
+
+**Et le point qui compte vraiment** : `check:compat` est passé sans
+régénérer le snapshot non pas parce que le changement est _additif_, mais
+parce qu'il est **invisible** au lockfile. Le snapshot n'enregistre que
+`value_type`, `enum_ref`, `historical`, `localizable` — jamais
+`value_constraints`. Le TYPE est verrouillé, la CONTRAINTE ne l'est pas.
+N'importe quelle borne peut donc dériver sans que la CI le remarque.
+
+Option écartée : filtrer l'ordinal 0 dans le mapper, comme on filtre déjà
+les variantes « Digital Colored ». Ce n'est pas le même geste — une
+variante est un doublon de la même œuvre, le chapitre 0 est une œuvre de
+plus. Le filtrer aurait perdu une donnée vraie pour préserver une
+contrainte fausse.
+
+### 2. L'ordre des étapes jetait le travail coûteux
+
+Le crawl est l'artefact **cher et non rejouable** : dix minutes de
+requêtes rate-limitées. Il était produit, puis soumis à une validation
+bloquante, et n'atteignait une branche qu'après. Un seul fichier invalide
+suffisait donc à tout détruire.
+
+C'est le quatrième run perdu de cette façon. Les runs 3-5 étaient morts
+symétriquement, sur une permission d'ouverture de PR — et la correction
+d'alors n'avait traité que la PR, pas le principe.
+
+**Décision**. L'ordre devient **stage → push → validate → PR** :
+
+- `Push the crawl` pousse la branche dès la fin du crawl ;
+- `Validate the staged corpus` porte `continue-on-error: true` et **ne
+  fait plus échouer le job** — son verdict est _rapporté_ (résumé du run
+  - corps de la PR), pas _appliqué_ ;
+- la PR reste en **draft** et rien ne merge sans humain, donc un fichier
+  invalide sur une branche d'import coûte une correction sur la branche,
+  pas un nouveau crawl.
+
+**Conséquences**. Un import ne peut plus perdre son travail. En
+contrepartie une branche d'import peut porter des données invalides —
+acceptable puisqu'elle est isolée, en draft, et que son état est écrit en
+toutes lettres sur la PR. La CI de `main` reste stricte : c'est elle, pas
+l'importeur, qui garde le corpus.
+
+---
+
+## ADR-115 — Reset de tous les `schema_version` à 1
+
+**Date**: 2026-08-27
+
+**Contexte**. ADR-059 avait posé le modèle _migrate-forward_ et annoncé,
+en toutes lettres, ce reset comme prévu et sain : « the planned v1 reset
+of all `schema_version` to 1 […] pre-v1 is the volatile phase, so the
+dev-time version churn is discarded and real migration history starts at
+launch ». Cette ADR ne décide donc rien de neuf — elle exécute une
+décision déjà consignée, et enregistre ce que l'exécution a appris.
+
+Le déclencheur est un constat du mainteneur : rien ne dépend de la
+valeur. Vérification faite, c'est exact, et le rapport `schema:versions`
+le montrait déjà crûment :
+
+```
+manga-chapter   type v9   v1×10  v6×24   ⚠ 34 behind
+character       type v8   v1×10          ⚠ 10 behind
+38 entity types, 61 entities; 54 behind their type's current version.
+```
+
+**54 entités sur 61 étaient « en retard ».** Le champ n'a jamais
+déclenché une seule migration : il n'enregistrait que le fait que
+personne n'avait jamais migré, parce que tous les changements de schéma
+avaient été additifs. Un champ qui ne dit rien d'autre que « rien ne
+s'est passé » est du bruit, et pire, un bruit qui se lit comme une
+alerte.
+
+**Ce dont on a vérifié l'indépendance** — aucun consommateur ne branche
+sur la valeur :
+
+| Consommateur                            | Dépendance réelle                                                        |
+| --------------------------------------- | ------------------------------------------------------------------------ |
+| Zod généré (×38)                        | `z.number().int().positive()` — 1 passe                                  |
+| `validate`                              | valide contre le schéma **courant**, quelle que soit la version déclarée |
+| `check:compat` / `schema-snapshot.json` | **zéro occurrence** : le contrat de compat ignore le champ               |
+| `db-builder` → SQLite                   | colonne stockée, jamais lue pour brancher                                |
+| `sdk/client.ts`                         | exposée dans `RecordRecord`, cosmétique                                  |
+| `EntityForm`                            | recopie l'enveloppe telle quelle                                         |
+| `coherence.ts`                          | `ENTITY_SCHEMA_VERSION_AHEAD` : entité ≤ type                            |
+
+La version n'entre jamais comme littéral dans le Zod généré : le
+printeur émet une ligne fixe, `schema_version: z.number().int().positive()`
+(`printers/entities.ts`), identique pour les 38 types. Et
+`bun run check:compat` passe **sans régénérer le snapshot**.
+
+_(Note : j'avais d'abord étayé ce point par « `schema:generate` produit un
+diff vide ». Cette observation ne vaut rien —
+`packages/schemas/generated/` est gitignoré, donc un `git diff` dessus est
+toujours vide. La conclusion tient, la preuve avancée était mauvaise ;
+voir ADR-116.)_
+
+**Décision**. Tous les `schema_version` passent à 1 :
+
+- 372 occurrences dans `data/` — `data/schemas/**` et
+  `data/universes/one-piece/schemas/**` (schémas propres à l'univers,
+  facilement oubliés) et `data/universes/**/entities/**` ;
+- 21 constantes `*_SCHEMA_VERSION` dans `packages/importers/**`.
+
+**Le champ est conservé, pas supprimé.** C'est le choix du mainteneur, et
+il a une raison : `ENTITY_SCHEMA_VERSION_AHEAD` et `schema:versions`
+restent en place et redeviennent utiles le jour où de vraies migrations
+démarreront après le lancement. L'alternative — supprimer le champ — est
+plus propre sur le papier (un champ figé à 1 pour toujours ment lui
+aussi) mais jetterait l'outillage de migration avec.
+
+**Conséquences**.
+
+- `schema:versions` rapporte désormais `0 behind` sur 61 entités.
+- Aucune migration de données : la forme des entités est inchangée, seul
+  l'entier d'enveloppe bouge.
+- Les fixtures de test qui portent une version ≠ 1
+  (`onepiece-api-import.test.ts`, `emit.test.ts`) sont **laissées
+  telles quelles** : elles n'assertent pas la valeur, ce sont des
+  entrées synthétiques pour un test de layout de fichiers. Le reset
+  porte sur le corpus et le catalogue, pas sur l'interdiction d'un
+  entier dans une fixture.
+- **Un import en vol réintroduira d'anciennes versions.** Tout crawl
+  lancé avant ce reset porte les constantes d'avant ; sa PR, si elle est
+  mergée après, réinjecte des entités ≠ 1. Le reset est idempotent —
+  le rejouer suffit.
+
+---
+
 ## ADR-114 — `absent_properties` : distinguer « pas encore renseigné » de « n'existe pas dans l'œuvre »
 
 **Date**: 2026-08-27

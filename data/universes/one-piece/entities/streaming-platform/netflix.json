@@ -1,7 +1,7 @@
 {
   "id": "streaming-platform:netflix",
   "type": "streaming-platform",
-  "schema_version": 3,
+  "schema_version": 1,
   "slug": "netflix",
   "canonical_name_key": "streaming-platform.netflix.name",
   "properties": {

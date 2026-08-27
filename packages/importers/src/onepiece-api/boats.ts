@@ -33,8 +33,8 @@ export const BOAT_HANDLED_FIELDS: readonly string[] = [
   'crew',
 ];
 
-/** Current ship schema_version — keep in sync with the type. */
-export const SHIP_SCHEMA_VERSION = 4;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const SHIP_SCHEMA_VERSION = 1;
 
 export function mapBoat(
   pair: LocalizedRecordPair,

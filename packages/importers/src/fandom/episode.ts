@@ -62,8 +62,8 @@ export const EPISODE_HANDLED_PARAMS: readonly string[] = [
  */
 export const EPISODE_IGNORED_PARAMS: readonly string[] = ['rating'];
 
-/** Current anime-episode schema_version — keep in sync with the type. */
-export const ANIME_EPISODE_SCHEMA_VERSION = 3;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const ANIME_EPISODE_SCHEMA_VERSION = 1;
 
 export function mapEpisode(page: ParsedPage): EpisodeMapResult | null {
   const box = findTemplate(page.wikitext, ...EPISODE_INFOBOX_NAMES);

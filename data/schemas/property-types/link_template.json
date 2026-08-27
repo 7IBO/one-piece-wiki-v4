@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
   "id": "link_template",
-  "schema_version": 2,
+  "schema_version": 1,
   "labels": { "en": "Link template", "fr": "Modèle de lien" },
   "value_type": "string",
   "historical": true,

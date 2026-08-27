@@ -67,8 +67,8 @@ export const CHAPTER_HANDLED_PARAMS: readonly string[] = [
   'volume',
 ];
 
-/** Current manga-chapter schema_version — keep in sync with the type. */
-export const MANGA_CHAPTER_SCHEMA_VERSION = 6;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const MANGA_CHAPTER_SCHEMA_VERSION = 1;
 
 export function mapChapter(page: ParsedPage): ChapterMapResult | null {
   const box = findTemplate(page.wikitext, ...CHAPTER_INFOBOX_NAMES);

@@ -77,8 +77,8 @@ export const CREW_IGNORED_PARAMS: readonly string[] = [
   'captitle',
 ];
 
-/** Current crew schema_version — keep in sync with the type. */
-export const CREW_SCHEMA_VERSION = 5;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const CREW_SCHEMA_VERSION = 1;
 
 export function mapCrew(page: ParsedPage, ctx: BoxMapContext = {}): CrewMapResult | null {
   const box = findTemplate(page.wikitext, ...CREW_INFOBOX_NAMES);

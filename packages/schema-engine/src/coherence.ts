@@ -489,7 +489,10 @@ export function checkCoherence(
 /**
  * Schema-version sanity: an entity may sit at an OLDER `schema_version` than
  * its type (it predates an additive bump and still validates — that is fine,
- * see the `schema:versions` report + the migrate-forward model in ADR-029/059),
+ * see the `schema:versions` report + the migrate-forward model in ADR-029/059).
+ * Since the v1 reset (ADR-115) both sides are 1, so this check passes trivially
+ * — it is kept because it costs nothing and guards the day real migrations
+ * start bumping types again,
  * but it must never declare a version NEWER than the type has ever reached.
  * That can only mean corrupt data or a type bump that was forgotten, so it is
  * an error. Behind-the-type entities are reported, not failed, to avoid noise

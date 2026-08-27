@@ -1,7 +1,7 @@
 {
   "id": "manga-chapter:13",
   "type": "manga-chapter",
-  "schema_version": 6,
+  "schema_version": 1,
   "slug": "chapter-13",
   "properties": {
     "number": {

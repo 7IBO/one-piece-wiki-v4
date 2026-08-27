@@ -164,6 +164,40 @@ Un fruit apparu dans un épisode filler (`devil-fruit:hiso-hiso-no-mi →
 anime-episode:54`) exige donc aussi les épisodes, pas seulement les
 chapitres.
 
+### Les noms de catégories ne se devinent pas
+
+**Deuxième constat du 2026-08-27.** Un run sur `Chapters` a rendu
+`category "Chapters": 0 page(s)` en zéro seconde, sans erreur. La
+catégorie **n'existe pas** : MediaWiki répond une liste vide pour une
+catégorie inexistante, exactement comme pour une catégorie vide. L'échec
+est donc **silencieux**, et l'exemple donné par le workflow lui-même
+(`e.g. Chapters, Humans`) était faux depuis le début.
+
+Le relevé de structure (`docs/audits/fandom-structure-*.json`, 2 641
+catégories réelles) fait autorité. Les noms utiles :
+
+| Type visé       | Catégorie réelle         | Pages | Sous-cat. |
+| --------------- | ------------------------ | ----: | --------: |
+| `manga-chapter` | **`One Piece Chapters`** |     0 |         5 |
+| `anime-episode` | **`Episodes`**           |     0 |         8 |
+| `character`     | **`Characters`**         |     0 |        12 |
+| `character`     | `Humans`                 |  1051 |         4 |
+| `devil-fruit`   | `Devil Fruits`           |     6 |         7 |
+| `crew`          | `Pirate Crews`           |     8 |         4 |
+| `arc`           | `Story Arcs`             |    34 |         1 |
+| `volume`        | `One Piece Volumes`      |   116 |         1 |
+| `location`      | `Locations`              |     4 |        21 |
+
+**La colonne « Pages » explique la profondeur.** La plupart des
+catégories utiles ne contiennent **aucune page en direct** : tout est
+dans les sous-catégories. `One Piece Chapters` en a cinq, `Episodes`
+huit, `Locations` vingt et une. Sous la profondeur nécessaire, le crawl
+renvoie 0 sans rien dire — d'où `depth` par défaut à 3.
+
+Trois types n'ont **aucune catégorie rattachée** dans le relevé :
+`saga`, `organization`, `technique`. Ils devront être peuplés autrement
+(depuis les pages qui les référencent, ou à la main).
+
 ### Ordre recommandé
 
 1. `Chapters` — l'ancre de presque tout
@@ -291,3 +325,24 @@ names, revision ids) and are gitignored build artifacts anyway.
 - **New category correspondence**: add a row to
   `CATEGORY_ENTITY_TYPES` in `src/fandom/analyze.ts` (data maintained
   in code — the report tells you which categories need it).
+
+## Un crawl n'est jamais jeté
+
+L'ordre des étapes du workflow est **stage → push → validate → PR**, et
+c'est délibéré (ADR-116). Le crawl est l'artefact cher : dix minutes de
+requêtes throttlées à 1 req/s qu'on ne rejoue pas pour rien. Il atteint
+donc une branche **avant** que quoi que ce soit ait le droit de le juger.
+
+La validation tourne ensuite avec `continue-on-error: true` : son verdict
+est écrit dans le résumé du run et dans le corps de la PR, mais il ne
+fait pas échouer le job.
+
+**Si la validation échoue, corrige le fichier fautif sur la branche
+d'import — ne relance pas le crawl.** Le relancer dépenserait dix
+minutes de plus pour retomber exactement sur le même fichier.
+
+Historique de la règle : le run 8 a mappé 398 chapitres et les a tous
+perdus parce que `manga-chapter/0.json` violait `number` min 1 (le
+chapitre 0 existe : one-shot prologue de _Strong World_). Les runs 3-5
+étaient morts de la même façon, sur une permission de PR. Quatre runs
+perdus avant que l'ordre des étapes soit corrigé plutôt que ses symptômes.

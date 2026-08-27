@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
   "id": "features",
-  "schema_version": 2,
+  "schema_version": 1,
   "labels": {
     "en": { "active": "Features", "inverse": "Featured in" },
     "fr": { "active": "Présente", "inverse": "Figure dans" }

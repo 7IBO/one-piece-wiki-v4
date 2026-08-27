@@ -70,7 +70,7 @@ A file in `/data/schemas/entity-types/<id>.json`.
 | ------------------------- | -------- | -------- | ---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `$schema`                 | string   | yes      | Meta-schema reference                                                                                                                                                                    |
 | `id`                      | string   | yes      | Type identifier, kebab-case (e.g. `character`)                                                                                                                                           |
-| `schema_version`          | integer  | yes      | Bumped on breaking changes                                                                                                                                                               |
+| `schema_version`          | integer  | yes      | Toujours `1` jusqu'au lancement (ADR-115)                                                                                                                                                |
 | `universes`               | string[] | no       | Universe ids this type belongs to. Omitted/empty = shared **core** (every universe). A list scopes it (e.g. `["one-piece"]`). See ADR-035 / "Universe scoping" below                     |
 | `labels`                  | object   | yes      | Locale → label, used in UI and breadcrumbs                                                                                                                                               |
 | `url_segment`             | string   | yes      | Segment used in URLs (kebab-case English, e.g. `characters`)                                                                                                                             |
@@ -198,7 +198,7 @@ A file in `/data/schemas/property-types/<id>.json`.
 | ------------------------- | -------- | -------- | ------------------------------------------------------------------------------------------------- |
 | `$schema`                 | string   | yes      | Meta-schema reference                                                                             |
 | `id`                      | string   | yes      | Property identifier, kebab-case                                                                   |
-| `schema_version`          | integer  | yes      | Bumped on breaking changes                                                                        |
+| `schema_version`          | integer  | yes      | Toujours `1` jusqu'au lancement (ADR-115)                                                         |
 | `labels`                  | object   | yes      | Locale → label                                                                                    |
 | `value_type`              | enum     | yes      | One of the value type primitives (see below)                                                      |
 | `value_constraints`       | object   | no       | Type-specific constraints (min, max, pattern, enum_ref, etc.)                                     |
@@ -357,7 +357,7 @@ A file in `/data/schemas/relation-types/<id>.json`.
 | --------------------------- | -------- | -------- | --------------------------------------------------------------------------------------------------------------------- |
 | `$schema`                   | string   | yes      | Meta-schema reference                                                                                                 |
 | `id`                        | string   | yes      | Relation identifier, kebab-case                                                                                       |
-| `schema_version`            | integer  | yes      | Bumped on breaking changes                                                                                            |
+| `schema_version`            | integer  | yes      | Toujours `1` jusqu'au lancement (ADR-115)                                                                             |
 | `labels`                    | object   | yes      | Locale → `{ active, inverse }` labels                                                                                 |
 | `valid_from_types`          | string[] | yes      | Allowed source entity types                                                                                           |
 | `valid_to_types`            | string[] | yes      | Allowed target entity types                                                                                           |
@@ -501,7 +501,7 @@ enumerated lists with localized labels and optional metadata.
 | ---------------- | ------- | -------- | ----------------------------------------- |
 | `$schema`        | string  | yes      | Meta-schema reference                     |
 | `id`             | string  | yes      | Vocabulary identifier                     |
-| `schema_version` | integer | yes      | Bumped on breaking changes                |
+| `schema_version` | integer | yes      | Toujours `1` jusqu'au lancement (ADR-115) |
 | `values`         | object  | yes      | Map value → { labels, optional metadata } |
 
 ### Example
@@ -664,7 +664,12 @@ The following are breaking changes and require a migration script:
 
 All breaking changes:
 
-1. Bump `schema_version` on the affected schema file
+1. Bump `schema_version` on the affected schema file — **suspendu jusqu'au
+   lancement.** Tous les `schema_version` ont été remis à 1 (ADR-115) et y
+   restent pendant la phase pré-v1 : rien ne branche sur la valeur, et un
+   compteur qui n'a jamais déclenché de migration se lisait comme une alerte
+   permanente (54 entités sur 61 « en retard »). Le vrai garde-fou d'un
+   changement cassant est l'étape 2 + `check:compat`, pas l'entier.
 2. Provide a migration script in `/data/migrations/`
 3. Are reviewed by ≥2 admins
 4. Are labeled `schema-breaking` on the PR
@@ -672,7 +677,10 @@ All breaking changes:
 This is enforced by the **`check:compat` schema lockfile** (ADR-042):
 `packages/schema-engine/schema-snapshot.json` captures the public contract the
 SDK/API and external consumers depend on; CI fails on **any** divergence and
-classifies each diff additive vs breaking. Regenerate it with
+classifies each diff additive vs breaking. Depuis ADR-117 le contrat couvre
+aussi les **bornes** (`min`, `max`, `step`, `pattern`) : auparavant le type
+était verrouillé mais la borne ne l'était pas, si bien qu'un resserrement
+passait sans un mot. Regenerate it with
 `bun run compat:snapshot` and commit it in the same PR — so the contract change
 shows up in review. The model evolves **expand → migrate → contract** (add the
 new, migrate data, mark old `deprecated`, remove later) so the SDK/API never

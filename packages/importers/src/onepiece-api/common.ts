@@ -227,8 +227,8 @@ export function earliestAnchor(properties: Readonly<Record<string, unknown>>): s
   return best?.id ?? null;
 }
 
-/** Current image schema_version — keep in sync with the type. */
-export const IMAGE_SCHEMA_VERSION = 2;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const IMAGE_SCHEMA_VERSION = 1;
 
 const URL_FORMATS: ReadonlyMap<string, string> = new Map([
   ['png', 'png'],

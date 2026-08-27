@@ -35,8 +35,8 @@ export const EPISODE_HANDLED_FIELDS: readonly string[] = [
   'saga',
 ];
 
-/** Current anime-episode schema_version — keep in sync with the type. */
-export const ANIME_EPISODE_SCHEMA_VERSION = 6;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const ANIME_EPISODE_SCHEMA_VERSION = 1;
 
 export function mapEpisode(
   pair: LocalizedRecordPair,

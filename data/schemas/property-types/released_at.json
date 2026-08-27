@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/property-type.schema.json",
   "id": "released_at",
-  "schema_version": 2,
+  "schema_version": 1,
   "labels": { "en": "Release date", "fr": "Date de sortie" },
   "value_type": "date",
   "historical": false,
