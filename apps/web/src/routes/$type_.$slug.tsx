@@ -849,6 +849,16 @@ function ContentsSections(
  *  list of titled entries, columned so it fills its band. */
 const LEDGER_THRESHOLD = 20;
 
+/**
+ * Where the reader sits in an ordered list, for `ShowMoreList`'s
+ * collapsed window. `undefined` when nothing is marked current — a
+ * container page listing its own contents has no "you are here".
+ */
+function anchorOf(items: readonly SourceItemView[]): { anchorIndex: number; } | undefined {
+  const index = items.findIndex((item) => item.current);
+  return index === -1 ? undefined : { anchorIndex: index };
+}
+
 function ContentsList(
   { items, columns }: {
     readonly items: readonly SourceItemView[];
@@ -860,6 +870,7 @@ function ContentsList(
   return (
     <ShowMoreList
       limit={NUMBER_LIMIT}
+      {...anchorOf(items)}
       listClassName={`grid gap-x-8 ${columns ? rowColumns(items.length) : 'grid-cols-1'}`}
       items={items.map((item) => (
         <li key={item.chip.id} className='border-b border-line'>
@@ -916,6 +927,7 @@ function PositionSection(
         ? (
           <ShowMoreList
             limit={NUMBER_LIMIT}
+            {...anchorOf(arc.items)}
             listClassName='flex flex-wrap gap-1.5'
             items={arc.items.map((item) => <SourceNumberCell key={item.chip.id} item={item} />)}
           />
@@ -961,6 +973,7 @@ function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): 
   return (
     <ShowMoreList
       limit={NUMBER_LIMIT}
+      {...anchorOf(items)}
       listClassName='grid grid-cols-[repeat(auto-fill,minmax(6.5rem,1fr))] gap-2'
       items={items.map((item) => (
         <li key={item.chip.id}>
