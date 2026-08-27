@@ -1,116 +1,153 @@
 {
   "artboards": [
     {
-      "file": "Main.dc.html",
-      "title": "Personnage — carte au survol, langue ouverte",
+      "file": "Accueil.dc.html",
+      "title": "Accueil — l'univers, pas un index",
       "x": 0,
       "y": 0,
       "w": 1440,
-      "h": 1420
+      "h": 1560
+    },
+    {
+      "file": "Liste.dc.html",
+      "title": "Liste — personnages, à facettes",
+      "x": 1560,
+      "y": 0,
+      "w": 1440,
+      "h": 1340
+    },
+    {
+      "file": "Main.dc.html",
+      "title": "Personnage — carte au survol",
+      "x": 3120,
+      "y": 0,
+      "w": 1440,
+      "h": 1460
     },
     {
       "file": "Chapitre.dc.html",
       "title": "Chapitre 1044 — entité ordinale",
-      "x": 1560,
-      "y": 0,
+      "x": 0,
+      "y": 1720,
       "w": 1440,
       "h": 1260
     },
     {
       "file": "Progression.dc.html",
-      "title": "Régler sa progression sans rien nommer",
-      "x": 3120,
-      "y": 0,
+      "title": "Progression — par arc",
+      "x": 1560,
+      "y": 1720,
       "w": 1440,
-      "h": 940
+      "h": 980
     },
     {
       "file": "Fruit.dc.html",
       "title": "Fruit du démon — rétroactivité",
-      "x": 0,
-      "y": 1580,
+      "x": 3120,
+      "y": 1720,
       "w": 1440,
       "h": 1300
     },
     {
       "file": "Equipage.dc.html",
       "title": "Équipage — adhésions par intervalles",
-      "x": 1560,
-      "y": 1580,
+      "x": 0,
+      "y": 3160,
       "w": 1440,
       "h": 1300
     },
     {
       "file": "Mineur.dc.html",
       "title": "Entité pauvre en données",
-      "x": 3120,
-      "y": 1580,
+      "x": 1560,
+      "y": 3160,
       "w": 1440,
       "h": 1240
     },
     {
       "file": "Mobile.dc.html",
       "title": "Mobile — 390 px",
-      "x": 0,
-      "y": 3040,
+      "x": 3120,
+      "y": 3160,
       "w": 390,
       "h": 1620
     }
   ],
   "annotations": [
     {
+      "id": "accueil",
+      "x": -430,
+      "y": -360,
+      "w": 350,
+      "text": "ACCUEIL : L'UNIVERS, PAS UN INDEX. La page s'ouvre sur TA position — \"Reprends la ou tu t'es arrete\" — et non sur une barre de recherche. Trois modules personnalises par la progression : ce que tu viens de croiser (entites des 5 derniers chapitres lus, personnalise et sans aucun risque), l'etat de ta lecture, et la reprise. Puis l'exploration par type, la communaute et la contribution."
+    },
+    {
+      "id": "sorties",
+      "x": -430,
+      "y": -40,
+      "w": 350,
+      "text": "LES DERNIERES SORTIES ONT LEUR PROPRE INTERRUPTEUR. Une DATE de parution est un fait public ; un TITRE de chapitre raconte. Le module affiche donc numero et date, masque les titres, et propose de les afficher quand meme. C'est le seul endroit du site ou l'on montre quelque chose au-dela de la progression, et ca ne se fait que sur demande explicite."
+    },
+    {
+      "id": "liste",
+      "x": -430,
+      "y": 300,
+      "w": 350,
+      "text": "LISTES A FACETTES. Bandeau plus bas et sans illustration — c'est une liste, pas une entite. Les filtres viennent du SCHEMA : une facette par propriete enumeree du type, jamais une liste ecrite a la main, donc un nouveau type de donnee cree ses filtres tout seul. Les comptes sont ceux de la progression : une entite qui apparait plus tard n'est ni listee ni comptee. Trois vues : grille, tableau, chronologie."
+    },
+    {
       "id": "progression",
       "x": -430,
-      "y": 0,
+      "y": 620,
       "w": 350,
       "text": "REGLER SA PROGRESSION. La recherche dichotomique sur des numeros a ete abandonnee : elle demandait une dizaine de clics au moment le plus critique du parcours, et elle posait une question a laquelle personne ne sait repondre — on ne retient pas un numero de chapitre, on retient un ARC. On demande donc le dernier arc termine, regroupe par saga, avec sa plage de chapitres. Un clic. Puis une reglette facultative a l'interieur de l'arc pour qui veut etre precis. Les noms d'arcs sont de la metadonnee de publication — des noms de lieux imprimes sur les volumes et dans les menus des plateformes — pas du contenu narratif : ils ne revelent pas ce qui s'y passe."
     },
     {
       "id": "sources",
       "x": -430,
-      "y": 400,
+      "y": 1020,
       "w": 350,
       "text": "APPARITIONS : UN ONGLET PAR TYPE DE SOURCE. Chapitres, episodes, films, autres sources. Ca regle le melange a la racine plutot qu'en surface : dans une liste d'un seul type, toutes les vignettes ont le meme ratio, toutes les numerotations sont comparables, et les comptes redeviennent lisibles. C'est aussi la seule facon de tenir 342 chapitres ET 1062 episodes sur la meme page."
     },
     {
       "id": "or",
       "x": -430,
-      "y": 760,
+      "y": 1380,
       "w": 350,
       "text": "L'OR PARTOUT. Valeur actuelle, onglet actif, position de lecture — et desormais les LIENS, en or attenue #c9ae72 qui passe a l'or plein au survol. Le vermillon #e0553f ne garde que la rupture : retcon, mort, contradiction."
     },
     {
       "id": "images",
       "x": -430,
-      "y": 1040,
+      "y": 1660,
       "w": 350,
       "text": "IMAGES. Les portraits d'equipage retrecissent (158 px de large). Les apparitions passent en LISTE : la vignette garde son ratio d'origine mais toutes ont la MEME HAUTEUR, donc les lignes s'alignent. Un chapitre 2:3 fait 27 px de large, un episode 16:9 en fait 78 — et les deux tiennent sur la meme ligne sans etre deformes."
     },
     {
       "id": "langue",
       "x": -430,
-      "y": 1400,
+      "y": 2020,
       "w": 350,
       "text": "LANGUE dans l'en-tete : liste maison, pas un <select> natif, montree ouverte sur la planche Personnage. Cinq langues, la courante en or avec sa coche."
     },
     {
       "id": "ratios",
       "x": -430,
-      "y": 1670,
+      "y": 2290,
       "w": 350,
       "text": "Les cinq classes de ratio viennent du code (apps/web/src/lib/image-ratio.ts) : portrait 3:4, cover 2:3, square 1:1, plate 16:9, banner 21:9, derivees des pixels puis du role de depicted-by. Un personnage est en 3:4 partout."
     },
     {
       "id": "spoil",
       "x": -430,
-      "y": 1980,
+      "y": 2600,
       "w": 350,
       "text": "REGLE ANTI-SPOIL. Compter ce qui est cache revele ce qui est cache : aucun compteur d'absence, aucune tuile pointillee, aucune barre grisee au-dela de la position de lecture."
     },
     {
       "id": "structure",
       "x": -430,
-      "y": 2240,
+      "y": 2860,
       "w": 350,
       "text": "COTE DONNEES : presque tout existe deja (intervalles d'adhesion, retcon, croyances par personnage, apparitions au chapitre, ratios). Deux manques reels, parques dans IDEAS.md et demandant chacun un ADR : la precision de since (le cas Rocks) et le marqueur \"cette information n'existe pas dans l'oeuvre\"."
     }

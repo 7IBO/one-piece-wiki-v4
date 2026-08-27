@@ -340,3 +340,57 @@ rien ne dépasse. C'est aussi la seule forme qui tienne à 342 entrées.
 
 Le sélecteur de **langue** entre dans l'en-tête, en liste maison plutôt
 qu'en `<select>` natif, montré ouvert sur la planche personnage.
+
+## L'accueil : l'univers, pas un index
+
+`Accueil.dc.html`. Demande du mainteneur : « je veux pas que ça soit
+style wiki mais bien style page d'accueil de l'univers One Piece ».
+
+La différence tient à ce sur quoi la page **ouvre**. Un wiki ouvre sur
+une barre de recherche : il attend une question. Une page d'univers
+ouvre sur **ta position** — « Reprends là où tu t'es arrêté », le
+chapitre suivant, l'état de ta lecture. Le site sait déjà où tu en es ;
+s'en servir est ce qui le distingue d'un index.
+
+Trois modules sont personnalisés par la progression, et **aucun ne prend
+de risque** :
+
+- **Ce que tu viens de croiser** — les entités des cinq derniers
+  chapitres lus. Entièrement personnalisé, entièrement dans le passé.
+- **Ta lecture** — manga, anime, arc en cours.
+- **La reprise** — un bouton vers le chapitre suivant.
+
+Puis l'exploration par type (huit tuiles avec leurs comptes), la
+communauté, et la contribution.
+
+### Les dernières sorties ont leur propre interrupteur
+
+C'est le seul endroit du site qui montre quelque chose au-delà de la
+progression, et la distinction est nette : une **date de parution** est
+un fait public, imprimé partout ; un **titre de chapitre** raconte.
+
+Le module affiche donc numéro et date, **masque les titres**, et propose
+un lien « les afficher quand même ». Le franchissement existe, mais il
+est explicite, local, et jamais par défaut.
+
+## Les listes à facettes
+
+`Liste.dc.html`. Bandeau plus bas et sans illustration : c'est une
+liste, pas une entité — la hiérarchie visuelle doit le dire avant qu'on
+lise le titre.
+
+**Les filtres viennent du schéma.** Une facette par propriété énumérée
+du type — équipage, statut, fruit du démon, arc de première apparition —
+jamais une liste écrite à la main. Un nouveau type de donnée crée donc
+ses filtres tout seul, ce qui est la contrepartie directe de la règle
+« aucun nom de propriété codé en dur » (`CLAUDE.md`).
+
+**Les comptes sont ceux de la progression.** « 412 personnages apparus
+jusqu'au chapitre 1044 », pas 1 412. Une entité qui apparaît plus tard
+n'est ni listée, ni comptée, ni signalée comme manquante.
+
+Trois vues sur les mêmes données : grille (portraits 3:4), tableau (pour
+comparer des valeurs), chronologie (pour situer dans le temps). Le
+chargement se fait par lots plutôt que par pagination numérotée : sur
+1 412 personnages, un numéro de page n'est une information pour
+personne.

@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Archivo, system-ui, sans-serif; background: #0a0b0e; }
+    a { color: #c9ae72; text-decoration: none; }
+    a:hover { color: #e8c15a; }
+    .panel { border: 1px solid #1e222a; background: #101217; border-radius: 6px; padding: 14px 16px; }
+    .lbl { font-size: 9px; letter-spacing: 0.18em; color: #6a7280; }
+    .num { font-variant-numeric: tabular-nums; }
+    .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 8px 0; border-bottom: 1px solid #191c23; font-size: 13px; }
+    .last { border-bottom: none; }
+    .k { color: #8b939f; }
+    .chip { font-size: 11px; padding: 4px 9px; border: 1px solid #232833; border-radius: 3px; color: #b3bac4; display: inline-block; }
+    .sec { font-size: 18px; font-weight: 800; letter-spacing: -0.02em; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; background: #0a0b0e; color: #eceef2">
+
+  <div style="display: flex; align-items: stretch; height: 46px; border-bottom: 1px solid #1e222a">
+    <div style="display: flex; align-items: center; padding: 0 18px; font-size: 14px; font-weight: 800; border-right: 1px solid #1e222a">One Piece<span style="color: #e8c15a">.Wiki</span></div>
+    <div style="flex-grow: 1; display: flex; align-items: center; padding: 0 16px; font-size: 12px; color: #6a7280">⌕&nbsp;&nbsp;Rechercher — personnages, fruits, chapitres, arcs, épisodes…</div>
+    <div style="display: flex; align-items: center; gap: 6px; padding: 0 14px; border-left: 1px solid #1e222a; font-size: 11.5px; color: #b3bac4">Français<span style="color: #6a7280; font-size: 9px">▾</span></div>
+    <div style="display: flex; align-items: center; gap: 9px; padding: 0 16px; border-left: 1px solid #1e222a; font-size: 11px">
+      <span style="color: #6a7280">MA PROGRESSION</span>
+      <span class="num" style="font-weight: 700; color: #e8c15a">CH. 1044</span>
+    </div>
+  </div>
+
+  <!-- l'accueil s'ouvre sur TA position, pas sur un index -->
+  <div style="position: relative; height: 380px; overflow: hidden; border-bottom: 1px solid #1e222a">
+    <div style="position: absolute; inset: 0; background: linear-gradient(100deg, #101a2e 0%, #1d3a5c 34%, #3f6f8f 62%, #c98a4a 88%, #e8b45c 100%); opacity: 0.30"></div>
+    <div style="position: absolute; left: 120px; top: -60px; width: 460px; height: 460px; border-radius: 50%; background: #2f6b7a; opacity: 0.28"></div>
+    <div style="position: absolute; right: 220px; top: 40px; width: 260px; height: 300px; background: #e8b45c; opacity: 0.13"></div>
+    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,11,14,0.5) 0%, rgba(10,11,14,0.18) 40%, #0a0b0e 100%)"></div>
+
+    <div style="position: absolute; left: 40px; top: 62px; right: 40px; display: flex; align-items: flex-end; justify-content: space-between; gap: 40px">
+      <div style="max-width: 640px">
+        <div class="lbl">TU EN ES AU CHAPITRE 1044 · ARC DE WANO</div>
+        <div style="font-size: 46px; font-weight: 900; letter-spacing: -0.035em; line-height: 1.04; margin-top: 10px">Reprends là où<br>tu t'es arrêté.</div>
+        <div style="font-size: 15px; color: #a3abb6; margin-top: 12px; line-height: 1.6">
+          Tout ce que tu lis ici s'arrête à ta position. Aucune page, aucune recherche, aucune illustration ne te montrera la suite.
+        </div>
+        <div style="display: flex; gap: 10px; margin-top: 20px">
+          <span style="font-size: 13.5px; font-weight: 600; padding: 10px 20px; border-radius: 6px; background: #e8c15a; color: #14171d">Continuer au chapitre 1045</span>
+          <span style="font-size: 13.5px; font-weight: 600; padding: 10px 20px; border-radius: 6px; border: 1px solid #2c3038; color: #d6dae0">Changer ma progression</span>
+        </div>
+      </div>
+
+      <div class="panel" style="width: 320px; flex-shrink: 0; background: rgba(16,18,23,0.82)">
+        <div class="lbl">TA LECTURE</div>
+        <div style="margin-top: 9px">
+          <div class="row"><span class="k">Manga</span><span class="num">1 044 <span style="color: #6a7280">/ 1 145</span></span></div>
+          <div class="row"><span class="k">Anime</span><span class="num">1 071 <span style="color: #6a7280">/ 1 122</span></span></div>
+          <div class="row last"><span class="k">Arc en cours</span><a href="#">Pays de Wano</a></div>
+        </div>
+        <div style="position: relative; height: 4px; border-radius: 2px; background: #1e222a; margin-top: 12px">
+          <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 91%; background: #e8c15a; border-radius: 2px"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; padding: 26px 40px 44px">
+
+    <!-- entièrement personnalisé, entièrement sans risque : ce sont des
+         entités que le lecteur VIENT de croiser -->
+    <div style="grid-column: span 8">
+      <div style="display: flex; align-items: baseline; justify-content: space-between">
+        <div class="sec">Ce que tu viens de croiser</div>
+        <span style="font-size: 11.5px; color: #6a7280">chapitres 1039 à 1044</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 10px; margin-top: 14px">
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 5px; background: linear-gradient(145deg, #2a1512, #b8402a)"></div><div style="font-size: 12.5px; font-weight: 600; margin-top: 6px">Luffy</div><div style="font-size: 10.5px; color: #6a7280">Personnage</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 5px; background: linear-gradient(145deg, #1a1620, #6b3f7a)"></div><div style="font-size: 12.5px; font-weight: 600; margin-top: 6px">Kaido</div><div style="font-size: 10.5px; color: #6a7280">Personnage</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 5px; background: linear-gradient(145deg, #1a2e20, #4f8f52)"></div><div style="font-size: 12.5px; font-weight: 600; margin-top: 6px">Gomu Gomu</div><div style="font-size: 10.5px; color: #6a7280">Fruit</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 5px; background: linear-gradient(145deg, #1a1c24, #3f4d7a)"></div><div style="font-size: 12.5px; font-weight: 600; margin-top: 6px">Yamato</div><div style="font-size: 10.5px; color: #6a7280">Personnage</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 5px; background: linear-gradient(145deg, #201a16, #7a5a3f)"></div><div style="font-size: 12.5px; font-weight: 600; margin-top: 6px">Onigashima</div><div style="font-size: 10.5px; color: #6a7280">Lieu</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 5px; background: linear-gradient(145deg, #16201d, #2f6b5a)"></div><div style="font-size: 12.5px; font-weight: 600; margin-top: 6px">Momonosuke</div><div style="font-size: 10.5px; color: #6a7280">Personnage</div></a>
+      </div>
+    </div>
+
+    <!-- les sorties sont des faits de PUBLICATION, pas du récit.
+         Mais un titre de chapitre, si. D'où l'interrupteur. -->
+    <div style="grid-column: span 4">
+      <div style="display: flex; align-items: baseline; justify-content: space-between">
+        <div class="sec">Dernières sorties</div>
+        <a href="#" style="font-size: 11px">Tout</a>
+      </div>
+      <div class="panel" style="margin-top: 14px">
+        <div class="row"><span><span class="num" style="font-weight: 600">Chapitre 1145</span> <span class="k">· 25 août</span></span><span class="chip">Titre masqué</span></div>
+        <div class="row"><span><span class="num" style="font-weight: 600">Chapitre 1144</span> <span class="k">· 18 août</span></span><span class="chip">Titre masqué</span></div>
+        <div class="row"><span><span class="num" style="font-weight: 600">Épisode 1122</span> <span class="k">· 24 août</span></span><span class="chip">Titre masqué</span></div>
+        <div class="row last"><span><span class="num" style="font-weight: 600">Volume 111</span> <span class="k">· 4 juillet</span></span><span class="chip">Titre masqué</span></div>
+        <div style="font-size: 11.5px; color: #6a7280; margin-top: 12px; border-top: 1px solid #191c23; padding-top: 11px; line-height: 1.6">
+          Les dates de parution sont publiques ; les titres, non — ils racontent. <a href="#">Les afficher quand même</a>
+        </div>
+      </div>
+    </div>
+
+    <div style="grid-column: span 12; margin-top: 14px">
+      <div class="sec">Explorer l'univers</div>
+      <div style="display: grid; grid-template-columns: repeat(8, 1fr); gap: 10px; margin-top: 14px">
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 4 / 3; border-radius: 6px; background: linear-gradient(145deg, #17131a, #6b3f5a); position: relative"><span style="position: absolute; left: 11px; bottom: 10px; font-size: 13.5px; font-weight: 700">Personnages</span></div><div class="num" style="font-size: 11px; color: #6a7280; margin-top: 5px">1 412</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 4 / 3; border-radius: 6px; background: linear-gradient(145deg, #131a17, #3f6b5a); position: relative"><span style="position: absolute; left: 11px; bottom: 10px; font-size: 13.5px; font-weight: 700">Équipages</span></div><div class="num" style="font-size: 11px; color: #6a7280; margin-top: 5px">98</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 4 / 3; border-radius: 6px; background: linear-gradient(145deg, #1a1a13, #6b6b3f); position: relative"><span style="position: absolute; left: 11px; bottom: 10px; font-size: 13.5px; font-weight: 700">Fruits du Démon</span></div><div class="num" style="font-size: 11px; color: #6a7280; margin-top: 5px">216</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 4 / 3; border-radius: 6px; background: linear-gradient(145deg, #131719, #3f5a6b); position: relative"><span style="position: absolute; left: 11px; bottom: 10px; font-size: 13.5px; font-weight: 700">Lieux</span></div><div class="num" style="font-size: 11px; color: #6a7280; margin-top: 5px">414</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 4 / 3; border-radius: 6px; background: linear-gradient(145deg, #1a1513, #7a5a3f); position: relative"><span style="position: absolute; left: 11px; bottom: 10px; font-size: 13.5px; font-weight: 700">Arcs</span></div><div class="num" style="font-size: 11px; color: #6a7280; margin-top: 5px">32</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 4 / 3; border-radius: 6px; background: linear-gradient(145deg, #16131a, #4a3f6b); position: relative"><span style="position: absolute; left: 11px; bottom: 10px; font-size: 13.5px; font-weight: 700">Chapitres</span></div><div class="num" style="font-size: 11px; color: #6a7280; margin-top: 5px">1 044 lus</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 4 / 3; border-radius: 6px; background: linear-gradient(145deg, #131a1a, #3f6b6b); position: relative"><span style="position: absolute; left: 11px; bottom: 10px; font-size: 13.5px; font-weight: 700">Épisodes</span></div><div class="num" style="font-size: 11px; color: #6a7280; margin-top: 5px">1 071 vus</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 4 / 3; border-radius: 6px; background: linear-gradient(145deg, #1a1316, #6b3f4a); position: relative"><span style="position: absolute; left: 11px; bottom: 10px; font-size: 13.5px; font-weight: 700">Films</span></div><div class="num" style="font-size: 11px; color: #6a7280; margin-top: 5px">15</div></a>
+      </div>
+    </div>
+
+    <div style="grid-column: span 5; margin-top: 14px">
+      <div style="display: flex; align-items: baseline; justify-content: space-between">
+        <div class="sec">La communauté</div><span class="chip">Bientôt</span>
+      </div>
+      <div class="panel" style="margin-top: 14px">
+        <div class="row"><a href="#">Théories sur le Century Void</a><span style="font-size: 11px; color: #6a7280">142 messages</span></div>
+        <div class="row"><a href="#">Qui rejoindra l'équipage ?</a><span style="font-size: 11px; color: #6a7280">89 messages</span></div>
+        <div class="row last"><a href="#">Le quiz de la semaine</a><span style="font-size: 11px; color: #6a7280">312 joueurs</span></div>
+        <div style="font-size: 11.5px; color: #6a7280; margin-top: 12px; border-top: 1px solid #191c23; padding-top: 11px; line-height: 1.6">
+          Le forum filtrera les fils au-delà de ta progression, comme le reste du site.
+        </div>
+      </div>
+    </div>
+
+    <div style="grid-column: span 7; margin-top: 14px">
+      <div class="sec">Ce wiki se construit avec toi</div>
+      <div class="panel" style="margin-top: 14px">
+        <div style="display: flex; gap: 26px">
+          <div style="flex-grow: 1">
+            <div style="font-size: 13.5px; color: #b3bac4; line-height: 1.7">
+              Chaque donnée porte le chapitre où elle devient vraie, son statut et sa source. Une contribution part en pull request et passe en relecture avant publication.
+            </div>
+            <div style="display: flex; gap: 9px; margin-top: 15px">
+              <span style="font-size: 13px; font-weight: 600; padding: 9px 17px; border-radius: 5px; background: #e8c15a; color: #14171d">Contribuer</span>
+              <span style="font-size: 13px; font-weight: 600; padding: 9px 17px; border-radius: 5px; border: 1px solid #2c3038; color: #d6dae0">Pages à compléter</span>
+            </div>
+          </div>
+          <div style="width: 190px; flex-shrink: 0">
+            <div class="row"><span class="k">Entités</span><span class="num">2 187</span></div>
+            <div class="row"><span class="k">Sources citées</span><span class="num">9 411</span></div>
+            <div class="row last"><span class="k">À compléter</span><span class="num" style="color: #c9a86f">318</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
