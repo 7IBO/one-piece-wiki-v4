@@ -15,7 +15,46 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (v9 livré ; `docs/VISION.md` créé)
+**Last updated**: 2026-08-27 (tri des PR ouvertes ; corpus à 61 entités)
+
+**2026-08-27 — remontée et tri de toutes les PR ouvertes.**
+`main` = `f0101b7`.
+
+- **#121 mergée** — design v7→v9, ADR-102..107, `docs/VISION.md`, lot
+  licence + correctifs d'import + instrumentation de l'analyseur.
+- **#94 mergée** (chapitres Fandom) — vérifiée titre par titre avant
+  merge (« Incident at the Tavern », « Dog », « Gong »… sont les vrais
+  titres). Corpus **37 → 61 entités**, `validate` / `schema:check` /
+  `check:references` verts après merge.
+- **#96 fermée sans merge** (épisodes Fandom, run 31224649430) —
+  **données fausses, pas incomplètes** : les 25 premières pages de la
+  catégorie `Episodes` sont les « Special Edited Version », et huit
+  récapitulatifs post-ellipse avaient été écrits sous
+  `anime-episode:1..8`. `anime-episode:1` portait « The New Beginning!
+  The Straw Hats Reunite! » au lieu de « I'm Luffy! ... ». La forme
+  étant parfaite, `validate` ne pouvait pas le voir. Le correctif
+  (`ordinal-title.ts` + `orderCrawlQueue`) est sur `main` ; **relancer
+  `fandom-import` sur la catégorie Episodes** produira les bons.
+- **#90 fermée** (bande d'images dashboard, ADR-070/072) — la
+  fonctionnalité reste souhaitable mais la branche n'est pas
+  rattrapable : ses numéros d'ADR sont **déjà pris sur `main`** par
+  d'autres décisions (070 = runner de migrations, 071 = entité
+  `volume`), plus 4 conflits dont `url.json` (qui a gagné `factual`).
+  À réimplémenter sur base actuelle. Sans urgence : le corpus n'a
+  aucune image réelle.
+- **#1 et #2 fermées** — tests de bout en bout du dashboard de mai.
+  #1 fusionnait nom et épithète (« Baggy le clown ») là où `main` les
+  sépare correctement ; #2 réintroduisait `caused-death-of`,
+  supprimée par ADR-098, et aurait cassé `validate`.
+
+**Lancé** : `fandom-analyze` (workflow_dispatch sur `main`, preset
+complet) — le relevé structurel est l'entrée obligée de la refonte de
+schéma, et le runner GitHub a l'egress que la sandbox n'a pas. Le
+rapport est commité sur une branche `audit/`.
+
+**En cours** : recherche du wiki public (plein texte, tolérante aux
+fautes, multilingue, filtrée par le curseur anti-spoil) — `apps/web`
+n'en avait **aucune**.
 
 > **LIRE `/docs/VISION.md` AVANT TOUT TRAVAIL SUR `apps/web`, LES
 > IMPORTEURS OU L'ACQUISITION.** Il porte l'intention produit, les publics
