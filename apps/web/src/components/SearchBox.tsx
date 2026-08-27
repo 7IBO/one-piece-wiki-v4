@@ -28,6 +28,28 @@ import { t } from '../lib/chrome';
 import { useLocale } from '../routes/__root';
 import { SearchPalette } from './SearchPalette';
 
+/**
+ * True once there is room for the plate's full placeholder.
+ *
+ * Resolved AFTER mount on purpose: the server cannot know the
+ * viewport, so SSR emits the short form, which is correct at every
+ * width and never truncates mid-word. The long one — the plate's
+ * « Rechercher — personnages, fruits, chapitres, arcs, épisodes… » —
+ * arrives when the segment can hold it. Same shape as
+ * `useFinePointer` in HoverPreview.
+ */
+function useWideHeader(): boolean {
+  const [wide, setWide] = useState(false);
+  useEffect(() => {
+    const query = window.matchMedia('(min-width: 1024px)');
+    const sync = (): void => setWide(query.matches);
+    sync();
+    query.addEventListener('change', sync);
+    return () => query.removeEventListener('change', sync);
+  }, []);
+  return wide;
+}
+
 function queryFromLocation(search: unknown): string {
   if (search === null || typeof search !== 'object') return '';
   const q = (search as Record<string, unknown>)['q'];
@@ -44,6 +66,7 @@ export function SearchBox(
   });
   const [value, setValue] = useState(urlQuery);
   const [palette, setPalette] = useState(false);
+  const wide = useWideHeader();
 
   useEffect(() => setValue(urlQuery), [urlQuery]);
 
@@ -101,7 +124,7 @@ export function SearchBox(
           value={value}
           autoComplete='off'
           spellCheck={false}
-          placeholder={t(locale, 'searchPlaceholder')}
+          placeholder={t(locale, wide ? 'searchPlaceholder' : 'searchPlaceholderShort')}
           onChange={(event) => setValue(event.target.value)}
           onClick={() => setPalette(true)}
           onKeyDown={(event) => {

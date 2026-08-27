@@ -68,7 +68,7 @@ function HomePage(): ReactElement {
         cursor={view.cursor}
       />
       {/* The plate's body: 12 columns, 12px gutters, 26/40/44 padding. */}
-      <div className='mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-3 px-5 pb-11 pt-6.5 md:grid-cols-12 md:px-10'>
+      <div className='mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-3 px-5 pb-11 pt-6.5 lg:grid-cols-12 lg:px-10'>
         <Crossed items={view.crossed} span={view.crossedSpan} />
         <Releases items={view.releases} />
         <Explore groups={view.groups} />
@@ -130,9 +130,9 @@ function Hero(
   const locale = useLocale();
   const reading = axes.length > 0;
   return (
-    <section className='relative overflow-hidden border-b border-line md:h-95'>
+    <section className='relative overflow-hidden border-b border-line lg:h-95'>
       <HeroField />
-      <div className='relative mx-auto flex h-full w-full max-w-[1440px] flex-col items-start justify-end gap-10 px-5 pb-14 pt-10 md:flex-row md:items-end md:justify-between md:px-10'>
+      <div className='relative mx-auto flex h-full w-full max-w-[1440px] flex-col items-start justify-end gap-10 px-5 pb-14 pt-10 lg:flex-row lg:items-end lg:justify-between lg:px-10'>
         <div className='max-w-160'>
           <p className='label-xs text-muted'>
             {reading && primary !== null
@@ -173,7 +173,7 @@ function ReadingCard(
     ? 0
     : Math.min(100, Math.round((primary.at / Math.max(primary.total, primary.at)) * 100));
   return (
-    <div className='w-full shrink-0 rounded-md border border-line bg-surface/85 px-4 py-3.5 backdrop-blur-sm md:w-80'>
+    <div className='w-full shrink-0 rounded-md border border-line bg-surface/85 px-4 py-3.5 backdrop-blur-sm lg:w-80'>
       <p className='label-xs text-muted'>{t(locale, 'homeReading')}</p>
       <dl className='mt-2.5'>
         {axes.map((axis, i) => (
@@ -222,7 +222,7 @@ function Crossed(
   const locale = useLocale();
   if (items.length === 0) return null;
   return (
-    <section className='md:col-span-8'>
+    <section className='lg:col-span-8'>
       <div className='flex items-baseline justify-between gap-4'>
         <SectionTitle>{t(locale, 'homeCrossed')}</SectionTitle>
         {span !== null && (
@@ -231,7 +231,7 @@ function Crossed(
           </span>
         )}
       </div>
-      <ul className='mt-3.5 grid grid-cols-3 gap-2.5 sm:grid-cols-6'>
+      <ul className='mt-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 xl:grid-cols-6'>
         {items.map((item) => (
           <li key={`${item.sourceType}/${item.slug}`}>
             <Link
@@ -270,7 +270,7 @@ function Releases({ items }: { readonly items: readonly ReleaseView[]; }): React
   const locale = useLocale();
   if (items.length === 0) return null;
   return (
-    <section className='md:col-span-4'>
+    <section className='lg:col-span-4'>
       <div className='flex items-baseline justify-between gap-4'>
         <SectionTitle>{t(locale, 'homeReleases')}</SectionTitle>
       </div>
@@ -278,7 +278,12 @@ function Releases({ items }: { readonly items: readonly ReleaseView[]; }): React
         {items.map((item, i) => (
           <div
             key={`${item.sourceType}/${item.slug}`}
-            className={`flex items-baseline justify-between gap-3 py-2 text-[13px] ${
+            // A narrow column cannot hold « Manga chapter 1044 ·
+            // March 7, 2022 » AND its title on one line, and clipping
+            // the title is the worst of the three outcomes: the number
+            // is already on the left. So the row WRAPS and the title
+            // takes the second line rather than losing its end.
+            className={`flex flex-wrap items-baseline justify-between gap-x-3 py-2 text-[13px] ${
               i === items.length - 1 ? '' : 'border-b border-[color:#191c23]'
             }`}
           >
@@ -300,7 +305,7 @@ function Releases({ items }: { readonly items: readonly ReleaseView[]; }): React
                   {t(locale, 'homeTitleHidden')}
                 </span>
               )
-              : <span className='min-w-0 shrink truncate text-right text-fg'>{item.title}</span>}
+              : <span className='min-w-0 shrink text-fg sm:text-right'>{item.title}</span>}
           </div>
         ))}
         <p className='mt-3 border-t border-[color:#191c23] pt-2.75 text-[11.5px] leading-relaxed text-muted'>
@@ -318,9 +323,9 @@ function Explore({ groups }: { readonly groups: readonly TypeGroup[]; }): ReactE
   const locale = useLocale();
   const types = groups.flatMap((g) => g.types);
   return (
-    <section className='mt-3.5 md:col-span-12'>
+    <section className='mt-3.5 lg:col-span-12'>
       <SectionTitle>{t(locale, 'homeExplore')}</SectionTitle>
-      <ul className='mt-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-8'>
+      <ul className='mt-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-8'>
         {types.map((type) => <TypeTile key={type.id} type={type} />)}
       </ul>
     </section>
@@ -355,7 +360,7 @@ function TypeTile({ type }: { readonly type: TypeGroup['types'][number]; }): Rea
             aria-hidden
             className='absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent'
           />
-          <span className='absolute bottom-2.5 left-2.75 right-2.5 truncate text-[13.5px] font-bold text-white'>
+          <span className='absolute bottom-2.5 left-2.75 right-2.5 line-clamp-2 text-[13.5px] font-bold leading-tight text-white'>
             {type.label}
           </span>
         </span>
@@ -371,7 +376,7 @@ function TypeTile({ type }: { readonly type: TypeGroup['types'][number]; }): Rea
 function Community(): ReactElement {
   const locale = useLocale();
   return (
-    <section className='mt-3.5 md:col-span-5'>
+    <section className='mt-3.5 lg:col-span-5'>
       <div className='flex items-baseline justify-between gap-4'>
         <SectionTitle>{t(locale, 'homeCommunity')}</SectionTitle>
         <span className='rounded-[3px] border border-line-strong px-2.5 py-1 text-[11px] text-[color:var(--color-muted)]'>
@@ -405,10 +410,10 @@ function Contribute(
     .sort((a, b) => b.count - a.count)
     .slice(0, 2);
   return (
-    <section className='mt-3.5 md:col-span-7'>
+    <section className='mt-3.5 lg:col-span-7'>
       <SectionTitle>{t(locale, 'homeContribute')}</SectionTitle>
       <div className='mt-3.5 rounded-md border border-line bg-surface px-4 py-3.5'>
-        <div className='flex flex-col gap-6.5 sm:flex-row'>
+        <div className='flex flex-col gap-6.5 lg:flex-row'>
           <div className='min-w-0 flex-1'>
             <p className='text-[13.5px] leading-[1.7] text-[color:var(--color-muted)]'>
               {t(locale, 'homeContributeBody')}
@@ -429,7 +434,7 @@ function Contribute(
               </Link>
             </div>
           </div>
-          <dl className='w-full shrink-0 sm:w-47.5'>
+          <dl className='w-full shrink-0 lg:w-47.5'>
             <Stat label={t(locale, 'entitiesIndexed')} value={total} last={biggest.length === 0} />
             {biggest.map((type, i) => (
               <Stat
