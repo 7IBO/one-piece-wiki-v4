@@ -79,7 +79,13 @@ export function planArcEdges(
 ): readonly ArcEdge[] {
   const edges: ArcEdge[] = [];
   const claimed = new Set<string>();
-  for (const span of spans) {
+  // CLOSED RANGES FIRST, open ones after. An ongoing arc says
+  // `1126-` — it claims everything from there on, with no end to stop
+  // it. Run it before a closed arc and it swallows that arc's
+  // chapters on the "first arc wins" rule below. A bounded claim is
+  // more specific than an unbounded one, so it goes first.
+  const closedFirst = [...spans].sort((a, b) => openness(a) - openness(b));
+  for (const span of closedFirst) {
     push(span.chapters, corpus.chapters, 'manga-chapter', span.arcId);
     push(span.episodes, corpus.episodes, 'anime-episode', span.arcId);
   }
@@ -92,8 +98,7 @@ export function planArcEdges(
     arcId: string,
   ): void {
     if (range === null) return;
-    for (let n = range.from; n <= range.to; n += 1) {
-      if (!have.has(n)) continue;
+    for (const n of membersOf(range, have)) {
       const sourceId = `${type}:${n}`;
       // OVERLAPPING RANGES ARE REAL: an arc and the cover-story arc
       // running beside it can both claim a chapter, and Fandom's own
@@ -104,6 +109,29 @@ export function planArcEdges(
       edges.push({ sourceId, arcId });
     }
   }
+}
+
+/** 1 when either span is open, so open arcs sort after closed ones. */
+function openness(span: ArcSpans): number {
+  return span.chapters?.to === null || span.episodes?.to === null ? 1 : 0;
+}
+
+/**
+ * The ordinals of a range that the corpus ACTUALLY HOLDS.
+ *
+ * A closed range walks its own span. An open one has no end to walk
+ * to, so it is driven by the corpus instead: everything at or after
+ * `from` that exists. That inversion is the whole reason this is a
+ * function — an open range must never be turned into a number by
+ * guessing a last chapter.
+ */
+function membersOf(range: OrdinalRange, have: ReadonlySet<number>): readonly number[] {
+  if (range.to === null) {
+    return [...have].filter((n) => n >= range.from).sort((a, b) => a - b);
+  }
+  const out: number[] = [];
+  for (let n = range.from; n <= range.to; n += 1) if (have.has(n)) out.push(n);
+  return out;
 }
 
 /** Sources claimed by more than one arc — reported, never merged. */
@@ -127,8 +155,7 @@ export function findOverlaps(
     arcId: string,
   ): void {
     if (range === null) return;
-    for (let n = range.from; n <= range.to; n += 1) {
-      if (!have.has(n)) continue;
+    for (const n of membersOf(range, have)) {
       const key = `${type}:${n}`;
       bySource.set(key, [...(bySource.get(key) ?? []), arcId]);
     }

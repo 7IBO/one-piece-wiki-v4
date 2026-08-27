@@ -102,3 +102,68 @@ describe('findOverlaps', () => {
     expect(findOverlaps([arabasta, romanceDawn], corpus)).toEqual([]);
   });
 });
+
+describe('the ongoing arc — an open range (2026-08-27)', () => {
+  // Elbaph renders `1126-`: it has no last chapter because it has not
+  // ended. `parseOrdinalRange` used to return null for that, so
+  // `arc:elbaph` got 0 edges and chapters 1126-1131 carried no arc at
+  // all — the arc a reader is CURRENTLY reading was the one arc the
+  // wiki could never place.
+  const egghead: ArcSpans = {
+    arcId: 'arc:egghead',
+    page: 'Egghead Arc',
+    chapters: { from: 1058, to: 1125 },
+    episodes: null,
+  };
+  const elbaph: ArcSpans = {
+    arcId: 'arc:elbaph',
+    page: 'Elbaph Arc',
+    chapters: { from: 1126, to: null },
+    episodes: null,
+  };
+  const corpus = {
+    chapters: new Set([1058, 1125, 1126, 1128, 1131]),
+    episodes: new Set<number>(),
+  };
+
+  it('claims every chapter the corpus holds from its start on', () => {
+    expect(planArcEdges([elbaph], corpus)).toEqual([
+      { sourceId: 'manga-chapter:1126', arcId: 'arc:elbaph' },
+      { sourceId: 'manga-chapter:1128', arcId: 'arc:elbaph' },
+      { sourceId: 'manga-chapter:1131', arcId: 'arc:elbaph' },
+    ]);
+  });
+
+  it('invents nothing: a gap in the corpus stays a gap', () => {
+    // 1127, 1129 and 1130 are not imported. An open range must not
+    // turn "everything after 1126" into edges for chapters that do
+    // not exist.
+    const edges = planArcEdges([elbaph], corpus);
+    expect(edges.map((e) => e.sourceId)).not.toContain('manga-chapter:1127');
+  });
+
+  it('LOSES to a closed arc, whatever order the spans arrive in', () => {
+    // The load-bearing one. An unbounded claim run first would
+    // swallow Egghead's chapters on the "first arc wins" rule.
+    for (const spans of [[elbaph, egghead], [egghead, elbaph]]) {
+      const byChapter = new Map(
+        planArcEdges(spans, corpus).map((e) => [e.sourceId, e.arcId]),
+      );
+      expect(byChapter.get('manga-chapter:1058')).toBe('arc:egghead');
+      expect(byChapter.get('manga-chapter:1125')).toBe('arc:egghead');
+      expect(byChapter.get('manga-chapter:1126')).toBe('arc:elbaph');
+      expect(byChapter.get('manga-chapter:1131')).toBe('arc:elbaph');
+    }
+  });
+
+  it('takes its place in the arc ordering like any other', () => {
+    expect(orderArcs([elbaph, egghead]).map((a) => a.arcId))
+      .toEqual(['arc:egghead', 'arc:elbaph']);
+  });
+
+  it('reports a real overlap rather than hiding it', () => {
+    const greedy: ArcSpans = { ...elbaph, chapters: { from: 1058, to: null } };
+    const clash = findOverlaps([egghead, greedy], corpus);
+    expect(clash.map((c) => c.sourceId)).toContain('manga-chapter:1058');
+  });
+});

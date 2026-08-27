@@ -91,7 +91,12 @@ export function parseRenderedInfobox(html: string): ReadonlyMap<string, string> 
 /** An inclusive ordinal span read off an infobox value. */
 export type OrdinalRange = {
   readonly from: number;
-  readonly to: number;
+  /**
+   * `null` for an OPEN range — an arc still being serialised. Elbaph
+   * renders `1126-` because it has no last chapter yet, and there is
+   * no honest number to put here.
+   */
+  readonly to: number | null;
 };
 
 /**
@@ -102,11 +107,23 @@ export type OrdinalRange = {
  *   "Anime Episodes: 92-130, 39 episodes"   → 92…130
  *   "Volumes 17-24, 8 volumes"              → 17…24
  *   "Chapter 1, 1 chapter"                  → 1…1
+ *   "1126-"                                 → 1126…OPEN
  *
  * The label prefix is skipped rather than matched, so a renamed or
  * translated label cannot break this. A value with no range — the
  * `-, chapters` an arc with none renders — yields null, never a
  * fabricated span.
+ *
+ * ## The open range, and why it was missing
+ *
+ * The ONGOING arc renders `1126-`: no last chapter exists yet. The
+ * first version of this returned null for it, on the rule "never a
+ * fabricated span" — right about `-, chapters`, wrong here. `1126-`
+ * names a real start; only the end is unknown. The cost was exact and
+ * invisible: `arc:elbaph` got 0 edges and chapters 1126-1131 got no
+ * arc at all, so the arc a reader is CURRENTLY reading was the one
+ * arc the wiki could never place. A rule that silently excludes the
+ * present is worse than one that occasionally over-claims.
  */
 export function parseOrdinalRange(value: string): OrdinalRange | null {
   const span = /(\d+)\s*[-–—]\s*(\d+)/.exec(value);
@@ -116,6 +133,11 @@ export function parseOrdinalRange(value: string): OrdinalRange | null {
     // A descending range is a parse gone wrong, not a fact.
     return from <= to ? { from, to } : null;
   }
+  // A number, a dash, and then nothing or a comma — `1126-` and
+  // `1126-, chapters`. Anchored on what FOLLOWS the dash so it cannot
+  // swallow half of a closed range.
+  const open = /(\d+)\s*[-–—]\s*(?:$|,)/.exec(value);
+  if (open !== null) return { from: Number(open[1]), to: null };
   const single = /(?:^|\D)(\d+)\s*,/.exec(value);
   if (single !== null) {
     const only = Number(single[1]);

@@ -75,4 +75,29 @@ describe('parseOrdinalRange', () => {
     // A descending range is a parse gone wrong, not a fact.
     expect(parseOrdinalRange('217-155, 63 chapters')).toBeNull();
   });
+
+  describe('the ONGOING arc renders an open range', () => {
+    it('reads `1126-` as a start with no end', async () => {
+      // Elbaph, the arc being serialised right now. Read off the real
+      // capture, not invented: `1126-` with nothing after the dash.
+      const box = parseRenderedInfobox(await fixture('Elbaph_Arc'));
+      expect(box.get('chapter')).toBe('1126-');
+      expect(parseOrdinalRange('1126-')).toEqual({ from: 1126, to: null });
+      expect(parseOrdinalRange('1126-, chapters')).toEqual({ from: 1126, to: null });
+    });
+
+    it('still refuses a dash with no number before it', () => {
+      // The distinction that matters: `-, chapters` names nothing,
+      // `1126-` names a start. The first version conflated them and
+      // the current arc got zero edges because of it.
+      expect(parseOrdinalRange('-, chapters')).toBeNull();
+      expect(parseOrdinalRange('-')).toBeNull();
+    });
+
+    it('never mistakes half of a closed range for an open one', async () => {
+      const box = parseRenderedInfobox(await fixture('Egghead_Arc'));
+      expect(parseOrdinalRange(box.get('chapter') ?? '')).toEqual({ from: 1058, to: 1125 });
+      expect(parseOrdinalRange('1058-1125, 68 chapters')).toEqual({ from: 1058, to: 1125 });
+    });
+  });
 });
