@@ -8,6 +8,71 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-112 — Trois rôles de couleur disjoints ; la teinte d'entité colore l'ambiance, jamais la sémantique
+
+**Date**: 2026-08-27
+
+**Contexte**. Onze itérations de design ont été rejetées, avec un même
+mot revenant : « les couleurs ne vont pas », « ça fait des couleurs au
+hasard ». ADR-111 avait retravaillé la _palette_ (les teintes
+disponibles) sans toucher à la _sémantique_ (ce que chaque couleur veut
+dire). Or le défaut était là.
+
+Dans l'état ADR-103/111, le vermillon `--color-accent` servait
+simultanément de couleur de lien, de couleur d'action principale et de
+marqueur de valeur courante — et `.tinted` le re-pointait vers la teinte
+de l'entité. Conséquence : **la même couleur voulait dire trois choses,
+et sa valeur changeait d'une page à l'autre**. Un lecteur ne pouvait
+apprendre aucune règle. L'or, la seule couleur que le mainteneur ait
+jamais validée, était cantonné au mot-symbole.
+
+**Options considérées**.
+
+1. _Retoucher encore les teintes._ Rejeté : c'est ce qu'ont fait les
+   onze itérations précédentes, sans succès. Le problème n'est pas
+   quelle couleur, mais combien de choses elle dit.
+2. _Supprimer la teinte par entité._ Rejeté : elle est l'acquis
+   d'ADR-102/103 et donne au site son identité ; ce qu'il faut, c'est
+   la cantonner.
+3. _Donner un rôle unique à chaque couleur, et sortir la teinte de la
+   sémantique._ Retenu.
+
+**Décision**.
+
+| Rôle                     | Token                 | Emploi                                                                             |
+| ------------------------ | --------------------- | ---------------------------------------------------------------------------------- |
+| Vrai pour toi maintenant | `gold`                | valeur courante, onglet actif, position de lecture, mot-symbole, action principale |
+| Lien                     | `link` / `link-hover` | tous les liens : même or, désaturé, remontant à l'or plein au survol               |
+| Rupture                  | `accent`              | valeur corrigée rétroactivement, contradiction, mort. Rare par construction        |
+| Identité de l'entité     | `tint`                | ambiance : filets, surface, anneaux de survol                                      |
+
+`.tinted` **ne re-pointe plus `--color-accent`**. Il re-pointe `tint`,
+`line`, `line-strong` et `surface`. Le fond des panneaux prend un token
+dédié `--color-panel`, délibérément **hors teinte** : une page colorée
+garde des panneaux neutres, sinon la couleur redevient un lavis — le
+mode d'échec de toutes les versions précédentes.
+
+**Conséquences**.
+
+- Une couleur veut dire la même chose sur toutes les pages. C'est la
+  condition pour qu'elle informe au lieu de décorer.
+- L'or devient la couleur la plus vue, ce qui est cohérent avec le seul
+  retour positif obtenu.
+- Le vermillon devient rare : trois occurrences sur les dix planches du
+  canevas `design/v2`, toutes sur la rétroactivité d'un nom de fruit.
+- Le fond de page passe à une encre neutre — la couleur vient du
+  bandeau, pas du substrat. `PAGE_CANVAS` dans `lib/entity-tint.ts`
+  suit, et le test qui compare les deux a effectivement attrapé la
+  dérive au premier essai.
+- Les contrastes sont vérifiés : texte 16.9:1, liens 9.2:1, or 11.4:1,
+  vermillon 5.2:1 sur le fond.
+
+ADR-103 et ADR-111 restent en vigueur pour tout le reste : la teinte
+existe, elle est calculée pareil, elle est simplement cantonnée à
+l'ambiance.
+
+---
+
 ## ADR-111 — The palette is a shelf of tankōbon spines on an oceanic ground; ADR-104's warm band is withdrawn
 
 **Date**: 2026-08-27

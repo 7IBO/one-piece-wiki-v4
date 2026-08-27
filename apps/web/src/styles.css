@@ -84,6 +84,12 @@
   --color-accent: oklch(0.630 0.178 31); /* #e0553f */
   --color-accent-hover: oklch(0.700 0.160 33);
   --color-tint: oklch(0.630 0.178 31);
+
+  /* Le fond des panneaux. Volontairement HORS de la teinte par entite :
+   * une page coloree garde des panneaux neutres, sinon la couleur
+   * redevient un lavis — l'echec de chaque version precedente. La
+   * couleur vient du bandeau, les panneaux portent la donnee. */
+  --color-panel: oklch(0.182 0.011 268);
 }
 
 /*
@@ -162,6 +168,23 @@ body {
     letter-spacing: 0.09em;
     text-transform: uppercase;
     color: var(--color-faint);
+  }
+
+  /*
+   * Le panneau — l'unite de la grille (canevas `design/v2`). Chaque
+   * module de la page d'entite en est un : une bordure d'un pixel, un
+   * fond a peine detache du fond de page, un rayon discret. C'est ce
+   * qui donne la lecture « grille de panneaux » plutot que « longue
+   * page de sections », et c'est ce qui permet a des modules de
+   * densites tres differentes de cohabiter sans hierarchie parasite.
+   *
+   * Le fond est `--color-panel`, hors teinte : voir sa declaration.
+   */
+  .panel {
+    border: 1px solid var(--color-line);
+    border-radius: 0.5rem;
+    background-color: var(--color-panel);
+    padding: 1rem 1.125rem 1.125rem;
   }
 
   /*

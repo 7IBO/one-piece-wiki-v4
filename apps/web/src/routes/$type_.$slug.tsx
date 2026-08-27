@@ -394,8 +394,9 @@ function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): JSX.El
 // Bands: how a layout arranges its modules.
 
 /** Masonry that packs small modules instead of leaving a half-empty row. */
-const PACK_CLASS = 'columns-1 gap-x-9 sm:columns-2 xl:columns-3 [&>*]:break-inside-avoid';
-const MAIN_PACK_CLASS = 'columns-1 gap-x-9 lg:columns-2 [&>*]:break-inside-avoid';
+const PACK_CLASS =
+  'columns-1 gap-x-9 sm:columns-2 xl:columns-3 [&>*]:mb-9 [&>*]:break-inside-avoid';
+const MAIN_PACK_CLASS = 'columns-1 gap-x-9 lg:columns-2 [&>*]:mb-9 [&>*]:break-inside-avoid';
 
 /**
  * Render a set of slots as one block, choosing the packing from how
@@ -454,7 +455,7 @@ function renderSlots(
   const nodes: JSX.Element[] = [];
   for (const slot of slots) {
     const node = renderSlot(slot, view, wide);
-    if (node !== null) nodes.push(<Fragment key={slot}>{node}</Fragment>);
+    if (node !== null) nodes.push(<div key={slot} className='panel'>{node}</div>);
   }
   return nodes;
 }
