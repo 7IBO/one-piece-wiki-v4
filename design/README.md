@@ -49,6 +49,8 @@ La fusion tient en trois décisions :
 | `Chapitre.dc.html` | entité ordinale | prev/next encadrant le bandeau, chronologie **inversée** |
 | `Fruit.dc.html`    | fruit du démon  | nom rétroactif, porteurs successifs, croyances par perso |
 | `Equipage.dc.html` | équipage        | anciens membres, date connue ≠ présence attestée         |
+| `Mineur.dc.html`   | entité pauvre   | le vrai test de « page entière à chaque fois »           |
+| `Mobile.dc.html`   | mobile 390 px   | même grammaire, une colonne                              |
 
 ### Rôles de couleur — trois, jamais mélangés
 
@@ -67,3 +69,55 @@ données : densité d'apparitions, arêtes entrantes, chronologies,
 adaptations manga↔anime, et le décompte de ce qui est masqué par la
 progression. Un panneau sans données **disparaît** — il ne s'affiche
 jamais vide. C'est ce qui avait tué les v5 à v7.
+
+### Compter ce qui est caché est un spoiler
+
+La faute la plus grave de la première version, relevée par le mainteneur.
+Les planches affichaient « 5 membres masqués par ta progression », « 17
+valeurs masquées », « Wano : 146ᵉ sur 149 ». Chacune de ces mentions
+**révèle exactement ce qu'elle prétend cacher** : que l'équipage monte à
+dix, qu'il reste beaucoup à apprendre, que l'arc se termine dans trois
+chapitres. Une barre grisée après la position de lecture dans un
+graphique de densité trahit de la même façon le nombre d'arcs restants.
+
+**Règle : l'absence doit être invisible, jamais dénombrée.** On peut dire
+_que_ la page est celle qui existait à la position de lecture. On ne dit
+jamais _combien_ il y a derrière — ni en compteur, ni en tuile
+pointillée, ni en barre grisée.
+
+Elle vaut pour toute la surface publique : compteurs d'onglets, totaux de
+listes, graphiques, cartes au survol, métadonnées de page. Elle est plus
+stricte que « ne pas afficher les valeurs futures » : il faut aussi ne
+pas trahir leur nombre.
+
+Reste légitime tout ce qui se compte **jusqu'à** la position de lecture :
+« 342 apparitions sur 1044 chapitres » ne dit rien de l'avenir, puisque
+1044 est le curseur du lecteur lui-même.
+
+### Ce que les nouvelles planches répondent
+
+**Carte au survol** (`Main.dc.html`). Demandée dans le brief d'origine,
+absente de la première version. Elle est soumise **au même filtre que la
+page** : Ace y est « Décédé · ch. 574 » pour un lecteur au chapitre 1044,
+et « Vivant » pour un lecteur au chapitre 500.
+
+**Entité pauvre en données** (`Mineur.dc.html`). Le vrai test de « page
+entière à chaque fois » n'est pas Luffy, c'est un personnage à quatre
+apparitions. Réponse : **moins de données ne veut pas dire plus de
+panneaux, mais des panneaux plus grands**. Les quatre apparitions passent
+en grandes cartes au lieu d'être résumées, les arêtes entrantes portent
+la page — une entité peu documentée est presque toujours bien reliée — et
+contribuer devient l'objet principal, avec les champs manquants
+**nommés** plutôt que devinés. Les onglets suivent le contenu : trois
+ici, sept sur la page personnage.
+
+**Mobile** (`Mobile.dc.html`). La plaque passe au-dessus au lieu d'à
+côté, la bande de statistiques et les onglets défilent horizontalement,
+les panneaux s'empilent en une colonne. Mêmes URLs qu'en desktop.
+
+### Nom du site
+
+« One Piece.Wiki » dans l'en-tête, le point en accent vermillon. Les
+formes acceptées sont « OnePiece.Wiki », « One Piece Wiki » et « One
+Piece.Wiki ». L'abréviation « OP/WIKI » de la première version est
+abandonnée.
