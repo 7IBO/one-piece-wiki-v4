@@ -11,5 +11,10 @@
       "value_key": "manga-chapter.0.title"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-volume",
+      "target": "volume:0"
+    }
+  ]
 }
