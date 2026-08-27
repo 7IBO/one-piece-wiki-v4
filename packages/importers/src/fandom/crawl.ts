@@ -15,29 +15,55 @@
  * rate limiter is the politeness contract with Fandom.
  */
 import type { MapperEmit } from '../emit.ts';
+import { mapArc } from './arc.ts';
+import type { BoxMapContext, VocabularyIndexes } from './box.ts';
 import { mapChapter } from './chapter.ts';
 import { type CharacterMapContext, mapCharacter } from './character.ts';
 import type { FandomClient, ParsedPage } from './client.ts';
+import { mapCrew } from './crew.ts';
+import { mapDevilFruit } from './devil-fruit.ts';
 import { mapEpisode } from './episode.ts';
 import { orderCrawlQueue, readOrdinalTitle } from './ordinal-title.ts';
+import { mapOrganization } from './organization.ts';
 import type { FandomRegistry } from './registry.ts';
 import { buildTitleIndex, detectEntityLinks, normalizeTitle } from './registry.ts';
+import { mapShip } from './ship.ts';
 import { mapVolume } from './volume.ts';
+import { mapWeapon } from './weapon.ts';
 import { findTemplate, parseRedirect, parseTemplates } from './wikitext.ts';
 
-export type MapperKind = 'chapter' | 'episode' | 'character' | 'volume';
+export type MapperKind =
+  | 'chapter'
+  | 'episode'
+  | 'character'
+  | 'volume'
+  | 'devil-fruit'
+  | 'crew'
+  | 'ship'
+  | 'organization'
+  | 'weapon'
+  | 'arc';
 
 type Mapper = (page: ParsedPage) => (MapperEmit & { warnings: readonly string[]; }) | null;
 
 /** Mapper table bound to the run's resolution context — the character
  *  mapper resolves relation links via the registry's title index and
  *  occupations via the vocabulary map. */
-function buildMappers(ctx: CharacterMapContext): Record<MapperKind, Mapper> {
+function buildMappers(
+  ctx: CharacterMapContext,
+  boxCtx: BoxMapContext,
+): Record<MapperKind, Mapper> {
   return {
     chapter: mapChapter,
     episode: mapEpisode,
     character: (page) => mapCharacter(page, ctx),
     volume: mapVolume,
+    'devil-fruit': (page) => mapDevilFruit(page, boxCtx),
+    crew: (page) => mapCrew(page, boxCtx),
+    ship: (page) => mapShip(page, boxCtx),
+    organization: (page) => mapOrganization(page, boxCtx),
+    weapon: (page) => mapWeapon(page, boxCtx),
+    arc: (page) => mapArc(page, boxCtx),
   };
 }
 
@@ -47,6 +73,12 @@ const BOX_TO_KIND: readonly (readonly [string, MapperKind])[] = [
   ['episode box', 'episode'],
   ['char box', 'character'],
   ['volume box', 'volume'],
+  ['devil fruit box', 'devil-fruit'],
+  ['crew box', 'crew'],
+  ['ship box', 'ship'],
+  ['organization box', 'organization'],
+  ['weapon box', 'weapon'],
+  ['arc box', 'arc'],
 ];
 
 /**
@@ -128,6 +160,9 @@ export async function crawl(
     /** Lowercased occupation label/id → occupations vocabulary id —
      *  enables the character mapper's occupation matching. */
     readonly occupations?: ReadonlyMap<string, string>;
+    /** Vocabulary id → label/id index — enables the "* Box" mappers'
+     *  enum resolution (classification, weapon type/grade, org type). */
+    readonly vocabularies?: VocabularyIndexes;
     /**
      * Skip pages the registry already tracks, so successive bounded
      * runs ADVANCE through a category instead of re-fetching the same
@@ -161,10 +196,18 @@ export async function crawl(
   const boxCounts = new Map<string, number>();
   const seen = new Set<string>();
   const registry: FandomRegistry = options.registry ?? { pages: [] };
-  const mappers = buildMappers({
-    titleIndex: buildTitleIndex(registry),
-    ...(options.occupations !== undefined ? { occupations: options.occupations } : {}),
-  });
+  const titleIndex = buildTitleIndex(registry);
+  const occupations = options.occupations ?? options.vocabularies?.get('occupations');
+  const mappers = buildMappers(
+    {
+      titleIndex,
+      ...(occupations !== undefined ? { occupations } : {}),
+    },
+    {
+      titleIndex,
+      ...(options.vocabularies !== undefined ? { vocabularies: options.vocabularies } : {}),
+    },
+  );
 
   const known = options.skipKnown === true
     ? new Set(

@@ -145,6 +145,13 @@ const STRINGS = {
     fr:
       'Aucun résultat. Vérifie l’orthographe — ou cela se trouve peut-être au-delà de ta progression.',
   },
+
+  // Entity sub-pages (ADR-110, append-only).
+  sectionOverview: { en: 'Overview', fr: 'Vue d’ensemble' },
+  emptySection: {
+    en: 'Nothing under this section yet.',
+    fr: 'Rien dans cette section pour le moment.',
+  },
 } as const;
 
 export type ChromeKey = keyof typeof STRINGS;

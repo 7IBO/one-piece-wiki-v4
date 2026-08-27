@@ -124,8 +124,10 @@ Semantics (v1):
    the reader sets both.
 3. An entity page whose every `appears-in`/`first_source` anchor is
    beyond the cursor renders as a "not yet in your progression" screen
-   (name shown, data withheld) rather than a 404 — the reader chose the
-   URL; we warn, we don't gaslight.
+   (data withheld) rather than a 404 — the reader chose the URL; we
+   warn, we don't gaslight. What it can print of the NAME is whatever
+   rule 7 allows, which for an entity gated on its own existence is the
+   slug, never the authored name.
 4. Epistemic reveals: an entry whose `epistemic_status` is a
    believed-state with `actual_value` shows ONLY the believed value
    until the revealing source (the entry carrying the revealed state)
@@ -134,11 +136,55 @@ Semantics (v1):
 5. Relation edges carry `since` too — same rule as (1).
 6. Images: an image whose `spoiler_since` is beyond the cursor is not
    rendered (alt slot hidden entirely).
+7. **Names are gated like values.** See § Display names below — the one
+   rule that used to have an exception, and no longer does.
 
 The cursor UI: header button "📍 Ch. 1044 · Ép. 1071" (or "Définir ma
 progression") opening a small panel with the two numeric inputs +
 "tout afficher" reset. Server functions read the cookie so SSR output
 is already filtered — no client-side flash of spoilers.
+
+## Display names — one resolution, one gate
+
+A name is a historisable value like any other: a character can be
+renamed at chapter 96, and the Gomu Gomu no Mi becomes the "Hito Hito
+no Mi, Model: Nika" at 1044. **Showing a reader a name they have not
+reached is a spoiler**, exactly like showing them a bounty they have
+not reached.
+
+`resolveEntityName` (`server/views.ts`) therefore does NOT read
+`canonical_name_key`. It runs `DISPLAY_NAME_SQL`
+(`server/search-sql.ts`) — the _same statement, with the same
+`search_gates` predicate_, that labels a search result — so a page
+title, the hero, the `<title>` tag, a chip, a link label, a listing
+card and a search hit cannot disagree about which name the reader has
+reached. Ordering mirrors what the builder recorded in `name_rank`:
+`canonical_name_key` first, then the entity type's
+`display_name_properties` in order, latest entry winning, reader locale
+as the last tiebreak.
+
+Because the gate sits in the WHERE clause, a canonical name the reader
+has not reached does not exist for that query, and resolution falls
+through to the name that WAS in force at the cursor.
+
+Two fallbacks, in order:
+
+1. the entity carries no indexed candidate name at all — its
+   `canonical_name_key` is not held by any localizable property, which
+   is what an `image` entity does. Such a key carries no `since`, hence
+   no progression anchor, so it is resolved straight from
+   `translations` exactly as before;
+2. the entity HAS names and the reader has reached none of them:
+   **degrade to the slug**. Reaching for the raw key here is the leak.
+
+_History_: until 2026-08-27 this function resolved
+`canonical_name_key` without the cursor, so an entity page could title
+itself with a name from beyond the reader's progression while search
+correctly refused to surface it. The corpus never exhibited it (every
+multi-named entity happens to declare its EARLIEST name as canonical),
+which is why `apps/web/server/__tests__/display-name.test.ts` grafts
+two synthetic entities onto a throwaway copy of the artifact and
+mirrors the two search cases: a later NAME, and a later EXISTENCE.
 
 ## Canon-scope context (live-action, films…)
 
@@ -206,6 +252,106 @@ gives it the full width and lets it use its own columns; a row list
 derives its column count from its item count (one row spans; two rows
 make two columns). No fixed N-column grid ever holds a single item —
 that was the "trou à droite" the maintainer rejected in v8.
+
+### Sub-pages, not tabs (ADR-110, 2026-08-27)
+
+An entity that outgrows one screen splits into **sub-pages at real
+URLs** — `/crew/straw-hat-pirates/appearances`,
+`/character/monkey-d-luffy/relations` — not client-side tabs. The
+decisive criterion is VISION.md § 3: « Visiteur Google » is a named
+audience, and a tab is not a destination (it cannot be indexed,
+linked, shared, or opened in a new tab). ADR-110 has the full
+reasoning and the options weighed.
+
+`src/lib/entity-sections.ts` is the registry, and it does **not** fork
+the layout registry above: a section is a SUBSET OF SLOT NAMES. The
+type's authored bands are computed exactly as before (`bandsFor`) and
+then sliced down to the slots the current page owns (`restrictBands`),
+so a crew's roster still leads at full width and an aside is still an
+aside. `src/routes/$type_.$slug_.$section.tsx` is thirty lines: it
+resolves the section and renders the SAME article component.
+
+Authored sections (well-known type ids, ADR-091):
+
+| type                   | sub-pages                                    |
+| ---------------------- | -------------------------------------------- |
+| `crew`, `organization` | `former-members` · `gallery` · `appearances` |
+| `character`            | `relations` · `gallery` · `appearances`      |
+
+What earns a sub-page: a module that grows without bound with the
+corpus (a roster's alumni, an appearance ledger over a thousand
+chapters, a gallery of stills), or one that answers a different
+question from the one the page opened on. What stays on the overview:
+the identity of the thing — its data sheet, its prose, and the one
+module the type is really about (a crew IS its roster).
+
+Three invariants, each with a test
+(`src/lib/__tests__/entity-sections.test.ts`):
+
+- **Nothing is dropped.** `overviewSlots` is a SET DIFFERENCE, not a
+  list: every slot belongs to exactly one page, and a slot added to
+  `ALL_SLOTS` tomorrow lands on the overview by default rather than
+  falling off the site.
+- **No empty sub-page is ever offered.** `slotHasContent` is the single
+  judgement of "does this module have anything", used both to skip a
+  module and to decide whether to LINK a section — so a tab can never
+  promise a blank page. An entity with nothing to split shows no
+  navigation at all (a lone tab is not navigation), which is why the
+  Straw Hat Pirates render as one page today: their roster is the only
+  populated module in the corpus.
+- **Unauthored types are untouched.** No sections, one page, every
+  module on it — the ADR-106 behaviour, unchanged.
+
+A declared section whose modules are empty for one entity still
+RESOLVES (it is part of the page, not a claim about what exists) and
+says so; a section id the type does not declare is a genuine 404. Each
+sub-page carries its own `<title>` — `Name — Section — One Piece
+Wiki` — because a duplicate title in an index is exactly the problem
+sub-pages were chosen to avoid.
+
+### Hover preview on desktop (2026-08-27)
+
+« Hover card sur desktop sur genre des liens ou on a pas d'image »
+(VISION.md § 5.1). Dwell on a link that carries no picture — an inline
+chip, a chapter number in a ledger, a title in a contents list — and a
+small plate opens beside it: the entity's artwork or photo, its name,
+its identity line, two or three facts, its first appearance.
+`src/components/HoverPreview.tsx` wraps the link; `buildEntityPreview`
+(`server/views.ts`) builds the model.
+
+- **A preview is a SURFACING**, exactly like a search hit: built
+  server-side at the reader's cursor, and an entity beyond the cursor
+  returns null — the card never opens, and no placeholder admits that
+  something exists later (ADR-108's third hazard).
+- **Desktop only.** Everything is behind
+  `(hover: hover) and (pointer: fine)`, evaluated after mount, so SSR
+  emits no card and a phone never renders one. Nothing informative is
+  hidden behind hover: every fact on the card is also on the page it
+  links to.
+- **Keyboard**: focusing the link opens the same card, Escape and
+  scrolling close it. The card is `aria-hidden` and
+  `pointer-events: none` — a sighted-user affordance holding nothing to
+  interact with and nothing a reader could not get by following the
+  link, so announcing it would only make the link read twice.
+- **`prefers-reduced-motion`** cancels the entrance animation outright
+  (`.hover-card`, `styles.css`).
+- **Register**: squared off (3 px), hairlined, opaque, artwork-led and
+  in the entity's own chord (ADR-103) — a plate lifted off the page,
+  not the floating rounded SaaS popover VISION.md § 4 rejects.
+
+**Loading strategy** — three compounding guards, so this is never an
+N+1 storm:
+
+1. **Hover intent.** Nothing is requested until the pointer has rested
+   on the link for 170 ms. Sweeping a cursor across a roster of forty
+   links fires zero requests.
+2. **A module-level memo keyed `locale/type/slug/scope`.** A preview is
+   fetched at most ONCE per entity per page session, whatever the
+   number of links pointing at it. The artifact is immutable at runtime
+   (CLAUDE.md), so a cached preview cannot go stale; changing the
+   cursor reloads the page, which is also what discards the memo.
+3. **One in-flight promise per key**, so two links hovered in quick
+   succession share a single request instead of racing.
 
 ### Hero (v9): backdrop + figure
 
@@ -312,13 +458,13 @@ artifact by `packages/db-builder` at `bun run build:db` time
 (BUILD_PIPELINE.md § 9) and is never touched at runtime. `apps/web`
 only queries it:
 
-| file                           | role                                                                                                                                                        |
-| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `server/search-sql.ts`         | the SQL of both passes + the spoiler gate + the FTS5 MATCH expression. Pure strings and parameter arrays, so the gate is unit-testable without an artifact. |
-| `server/db.ts`                 | the three prepared statements (lexical, fuzzy, display name), created once per process.                                                                     |
-| `server/search.ts`             | the policy layer: how the passes combine, how a hit becomes a rank, how a result becomes a card.                                                            |
-| `src/routes/search.tsx`        | `/search?q=…` — SSR, cursor-filtered first paint.                                                                                                           |
-| `src/components/SearchBox.tsx` | the header field.                                                                                                                                           |
+| file                           | role                                                                                                                                                                                                                                          |
+| ------------------------------ | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `server/search-sql.ts`         | the SQL of both passes + the spoiler gate + the FTS5 MATCH expression + `DISPLAY_NAME_SQL`, which the WHOLE app uses to resolve names (§ Display names). Pure strings and parameter arrays, so the gate is unit-testable without an artifact. |
+| `server/db.ts`                 | the prepared statements (lexical, fuzzy, display name, has-display-name), created once per process.                                                                                                                                           |
+| `server/search.ts`             | the policy layer: how the passes combine, how a hit becomes a rank, how a result becomes a card.                                                                                                                                              |
+| `src/routes/search.tsx`        | `/search?q=…` — SSR, cursor-filtered first paint.                                                                                                                                                                                             |
+| `src/components/SearchBox.tsx` | the header field.                                                                                                                                                                                                                             |
 
 **Two passes.**
 
@@ -390,14 +536,14 @@ Two distinct cases, both covered:
   findable under its old name at cursor 100 and not under "Hito Hito no
   Mi, Model: Nika".
 
-The **label** of a result goes through the same gate
-(`SEARCH_DISPLAY_NAME_SQL`): it mirrors `resolveEntityName`
-(`canonical_name_key` first, then `display_name_properties` in order,
-latest entry winning) and adds the cursor that resolution lacks — so a
-renamed entity is listed under the name it had at the reader's cursor,
-never the later one. Everything else on the card (identity line, status
-tag, image) comes from the same `buildEntityCardView` a listing uses,
-already spoiler-checked.
+The **label** of a result goes through the same gate — and, since
+2026-08-27, through the same STATEMENT as every other name on the site
+(`DISPLAY_NAME_SQL`, § Display names above). `resolveEntityName` runs
+it too, so a renamed entity is listed under the name it had at the
+reader's cursor AND its page titles itself with exactly that name;
+search no longer needs a label of its own. Everything else on the card
+(identity line, status tag, image) comes from the same
+`buildEntityCardView` a listing uses, already spoiler-checked.
 
 Covered by `apps/web/server/__tests__/search.test.ts` (both spoiler
 cases against the real artifact), `.../search-sql.test.ts` (the gate is
@@ -434,7 +580,9 @@ defaulting to the production dashboard.
 
 Canonical page URLs are **`/{type}/{slug}`** with the ENTITY TYPE ID
 as segment — `/character/monkey-d-luffy`, `/crew/straw-hat-pirates`,
-`/manga-chapter/chapter-1044` — and type listings at `/{type}`.
+`/manga-chapter/chapter-1044` — type listings at `/{type}`, and entity
+sub-pages at **`/{type}/{slug}/{section}`** (ADR-110), whose segment is
+a kebab-case English id from `src/lib/entity-sections.ts`.
 The historical `/e/{type}/{slug}` and `/t/{type}` paths 301-redirect
 to the canonical form, preserving `?scope=`. `$type` is validated
 against the catalogue server-side (unknown → not-found flow). The
@@ -452,9 +600,77 @@ One shared image component renders EVERY image in the app
   image block (no empty frame pretending to be a photo).
 - That ground is **generated artwork**, not a monogram tile (see
   below). No AI-ish stock gradients, no glassmorphism, no emoji.
-- Aspect ratios are reserved (3:4 portraits, 1:1 thumbs), covers use
-  `object-fit: cover`, `loading="lazy"`, and a subtle (~200 ms)
-  fade-in when a real image lands.
+- Aspect ratios are reserved up front so layout never jumps between art
+  and photo, `loading="lazy"`, and a subtle (~200 ms) fade-in when a
+  real image lands. WHICH ratio is the subject of the next section.
+
+## Image ratios — fixed per kind of image (2026-08-27)
+
+The maintainer's requirement: « Les images affichées doivent respecter
+un ratio précis analysé pour chaque type d'image ». The decisive word
+is _type of image_: **a ratio is a property of what the picture IS, not
+of the slot it lands in.** A 16:9 episode still cropped into a 3:4
+poster frame is not a portrait, it is a mutilated still.
+
+`src/lib/image-ratio.ts` owns the whole rule; `EntityImage` applies it,
+which means `EntityCard`, `EntityHero`, the gallery and every
+connection thumb apply it too, since they all render through that one
+component. `EntityArt` follows: when a frame takes an image's own
+ratio, the artwork ground underneath is composed for the nearest
+generator frame (`artFrameFor`).
+
+### The five ratio classes
+
+| class      | ratio | what it holds                                             |
+| ---------- | ----- | --------------------------------------------------------- |
+| `portrait` | 3:4   | people, crews, posters — the databank portrait            |
+| `cover`    | 2:3   | volume / book / databook covers (the tankōbon proportion) |
+| `square`   | 1:1   | emblems, jolly rogers, icons, connection thumbs           |
+| `plate`    | 16:9  | episode stills, scenes, location views — the screen       |
+| `banner`   | 21:9  | colour spreads and headers — wider than a screen          |
+
+### How an image gets one — schema first, never a hardcoded map alone
+
+1. **Its own pixels.** The `image` entity type already declares
+   `image_width` / `image_height` (`data/schemas/entity-types/image.json`).
+   When both are present that IS the ratio, exactly, with nothing to
+   maintain. This is why no new data mechanism was invented.
+2. **Its depiction role.** Failing intrinsic dimensions, the `role`
+   qualifier of the `depicted-by` edge says what the picture is, and
+   its values come from the schema vocabulary `depiction-roles` — so
+   the table below is keyed on authored values, not invented ones:
+
+   | role                                                    | class      |
+   | ------------------------------------------------------- | ---------- |
+   | `primary_portrait`, `secondary_portrait`, `silhouette`  | `portrait` |
+   | `cover`                                                 | `cover`    |
+   | `scene`, `emotional_moment`, `location_view`            | `plate`    |
+   | `color_spread`                                          | `banner`   |
+   | `group_photo`, `ability_illustration`, `equipment_view` | `square`   |
+
+3. **Nothing.** An unclassified role — or a role the corpus invents
+   tomorrow — yields no ratio, and the caller keeps its own frame.
+   That is the ADR-091 degradation: an unknown image type still renders
+   sanely, it simply is not special-cased.
+
+### Frame vs picture
+
+Two decisions, deliberately separate:
+
+- **The frame.** `ratio` names the SLOT's shape and is what a grid
+  needs — a wall of cards stays a wall of cards whatever pictures land
+  in it. `fit="native"` hands the frame over to the image's own ratio
+  instead, and is used where the picture IS the subject: the hero
+  figure and the gallery plates.
+- **The picture inside.** It fills the frame (`object-fit: cover`)
+  only while its own ratio is within `CROP_TOLERANCE` (1.15) of the
+  frame's — a 3:4 portrait in a 1:1 thumb is a legitimate crop of a
+  portrait. Beyond that it is `contain`ed over the artwork ground
+  instead, letterboxed rather than butchered. An image whose ratio
+  nothing declares keeps the historical `cover`.
+
+`src/lib/__tests__/image-ratio.test.ts` pins the derivation order, the
+crop rule and the degradation.
 
 ## Generative entity art (2026-08-09, ADR-102)
 

@@ -16,13 +16,25 @@
  * updates belong to the diff/re-import path, not blind writes.
  */
 
+/**
+ * Data locales a mapper may emit (ADR-095): `en` always, plus the two
+ * Japanese tiers when the source carries the original name (`jname`)
+ * and its romanization (`rname`). `fr` is human-authored, never
+ * imported.
+ */
+export type EmitTranslations = {
+  readonly en: Record<string, string>;
+  readonly ja?: Record<string, string>;
+  readonly 'ja-latn'?: Record<string, string>;
+};
+
 export type MapperEmit = {
   readonly entity: {
     readonly id: string;
     readonly type: string;
     readonly [key: string]: unknown;
   };
-  readonly translations: { readonly en: Record<string, string>; };
+  readonly translations: EmitTranslations;
 };
 
 export type EmitFile = {
@@ -54,10 +66,13 @@ export function buildEmitFiles(
     content: serialize(output.entity),
     kind: 'entity',
   }];
-  if (Object.keys(output.translations.en).length > 0) {
+  const locales: readonly (keyof EmitTranslations)[] = ['en', 'ja', 'ja-latn'];
+  for (const locale of locales) {
+    const bundle = output.translations[locale];
+    if (bundle === undefined || Object.keys(bundle).length === 0) continue;
     files.push({
-      path: `data/universes/${universe}/translations/en/${type}/${base}.json`,
-      content: serialize(output.translations.en),
+      path: `data/universes/${universe}/translations/${locale}/${type}/${base}.json`,
+      content: serialize(bundle),
       kind: 'translation',
     });
   }

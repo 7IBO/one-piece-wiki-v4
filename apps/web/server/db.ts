@@ -19,8 +19,9 @@ import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
 import type { ProgressCursor } from './progress.ts';
 import {
+  DISPLAY_NAME_SQL,
   gateParams,
-  SEARCH_DISPLAY_NAME_SQL,
+  HAS_DISPLAY_NAME_SQL,
   SEARCH_FUZZY_SQL,
   SEARCH_LEXICAL_SQL,
 } from './search-sql.ts';
@@ -118,7 +119,8 @@ type Statements = {
   readonly narrative: Statement;
   readonly searchLexical: Statement;
   readonly searchFuzzy: Statement;
-  readonly searchDisplayName: Statement;
+  readonly displayName: Statement;
+  readonly hasDisplayName: Statement;
 };
 
 let statements: Statements | null = null;
@@ -161,7 +163,8 @@ function getStatements(): Statements {
     narrative: db.prepare('SELECT markdown FROM narratives WHERE entity_id = ? AND locale = ?'),
     searchLexical: db.prepare(SEARCH_LEXICAL_SQL),
     searchFuzzy: db.prepare(SEARCH_FUZZY_SQL),
-    searchDisplayName: db.prepare(SEARCH_DISPLAY_NAME_SQL),
+    displayName: db.prepare(DISPLAY_NAME_SQL),
+    hasDisplayName: db.prepare(HAS_DISPLAY_NAME_SQL),
   };
   return statements;
 }
@@ -284,22 +287,39 @@ export function searchFuzzy(
 }
 
 /**
- * The name to label a search result with: the entity's most canonical
- * name that the reader's cursor allows. Null when every name-bearing
- * string of that entity is still gated — the caller then falls back to
- * the slug, as the rest of the app does.
+ * The name to DISPLAY an entity under, for this reader: its most
+ * canonical name whose progression anchors the cursor has passed.
+ * Used by every surface — entity page title, hero, `<title>`, chips
+ * and link labels (`resolveEntityName`) as well as search cards — so
+ * a later name can never appear on one and not the other.
+ *
+ * Null when every name-bearing string of that entity is gated, OR
+ * when the entity has none indexed at all; {@link hasDisplayName}
+ * tells the two apart.
  */
-export function searchDisplayName(
+export function displayNameAtCursor(
   entityId: string,
   cursor: ProgressCursor,
   locale: string,
 ): string | null {
-  const row = getStatements().searchDisplayName.get(
+  const row = getStatements().displayName.get(
     entityId,
     ...gateParams(cursor),
     locale,
   ) as { text: string; } | null;
   return row === null ? null : row.text;
+}
+
+/**
+ * Does the entity carry any candidate display name in the index at
+ * all (ignoring the cursor)? See {@link HAS_DISPLAY_NAME_SQL}: false
+ * means "names itself through a key no property declares", which is
+ * anchor-free and safe to resolve directly; true with a null
+ * {@link displayNameAtCursor} means "every name is still gated", and
+ * the caller must degrade to the slug.
+ */
+export function hasDisplayName(entityId: string): boolean {
+  return getStatements().hasDisplayName.get(entityId) !== null;
 }
 
 /** Resolve one i18n key for a locale, falling back to `en`. */

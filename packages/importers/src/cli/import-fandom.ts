@@ -8,7 +8,13 @@
  *
  *   bun run import:fandom chapter "Chapter 1044" "Chapter 1045"
  *   bun run import:fandom character Hyougoro --stage
+ *   bun run import:fandom devil-fruit "Gomu Gomu no Mi" --stage
+ *   bun run import:fandom crawl --category "Devil Fruits" --depth 2 --stage
  *   bun run import:fandom check-updates
+ *
+ * Kinds (ADR-079 + ADR-109): chapter, episode, character, volume,
+ * devil-fruit, crew, ship, organization, weapon, arc. `crawl`
+ * auto-detects the infobox, so a category run needs no kind.
  *
  * `check-updates` compares the live revisions of every ledger page
  * (data/import/fandom-pages.json) and lists the stale ones — the CI
@@ -20,15 +26,34 @@
 import { join } from 'node:path';
 import { REPO_ROOT } from '../../../schema-engine/src/paths.ts';
 import { buildEmitFiles, type MapperEmit, stageToLocal } from '../emit.ts';
+import { mapArc } from '../fandom/arc.ts';
+import type { BoxMapContext } from '../fandom/box.ts';
 import { mapChapter } from '../fandom/chapter.ts';
 import { mapCharacter } from '../fandom/character.ts';
 import { FandomClient, type ParsedPage } from '../fandom/client.ts';
-import { crawl } from '../fandom/crawl.ts';
+import { crawl, type MapperKind } from '../fandom/crawl.ts';
+import { mapCrew } from '../fandom/crew.ts';
+import { mapDevilFruit } from '../fandom/devil-fruit.ts';
 import { mapEpisode } from '../fandom/episode.ts';
+import { mapOrganization } from '../fandom/organization.ts';
 import { buildTitleIndex, type FandomRegistry, staleEntries } from '../fandom/registry.ts';
+import { mapShip } from '../fandom/ship.ts';
+import { loadVocabularyIndexes } from '../fandom/vocabulary.ts';
 import { mapVolume } from '../fandom/volume.ts';
+import { mapWeapon } from '../fandom/weapon.ts';
 
-type MapperKind = 'chapter' | 'episode' | 'character' | 'volume';
+const MAPPER_KINDS: readonly MapperKind[] = [
+  'chapter',
+  'episode',
+  'character',
+  'volume',
+  'devil-fruit',
+  'crew',
+  'ship',
+  'organization',
+  'weapon',
+  'arc',
+];
 
 const REGISTRY_PATH = join(REPO_ROOT, 'data', 'import', 'fandom-pages.json');
 
@@ -36,43 +61,28 @@ async function loadRegistry(): Promise<FandomRegistry> {
   return (await Bun.file(REGISTRY_PATH).json()) as FandomRegistry;
 }
 
-/**
- * Lowercased occupation labels (en/fr) and raw value ids → value id,
- * from the committed `occupations` vocabulary — feeds the character
- * mapper's exact-match occupation resolution.
- */
-async function loadOccupationIndex(): Promise<ReadonlyMap<string, string>> {
-  const vocabPath = join(
-    REPO_ROOT,
-    'data',
-    'universes',
-    'one-piece',
-    'schemas',
-    'vocabulary',
-    'occupations.json',
-  );
-  const vocab = (await Bun.file(vocabPath).json()) as {
-    values: Record<string, { labels: { en?: string; fr?: string; }; }>;
-  };
-  const index = new Map<string, string>();
-  for (const [id, term] of Object.entries(vocab.values)) {
-    index.set(id.toLowerCase(), id);
-    if (term.labels.en !== undefined) index.set(term.labels.en.toLowerCase(), id);
-    if (term.labels.fr !== undefined) index.set(term.labels.fr.toLowerCase(), id);
-  }
-  return index;
-}
-
 async function buildMappers(): Promise<
   Record<MapperKind, (page: ParsedPage) => (MapperEmit & { warnings: readonly string[]; }) | null>
 > {
-  const [registry, occupations] = await Promise.all([loadRegistry(), loadOccupationIndex()]);
-  const ctx = { titleIndex: buildTitleIndex(registry), occupations };
+  const [registry, vocabularies] = await Promise.all([
+    loadRegistry(),
+    loadVocabularyIndexes(REPO_ROOT),
+  ]);
+  const titleIndex = buildTitleIndex(registry);
+  const occupations = vocabularies.get('occupations');
+  const ctx = { titleIndex, ...(occupations !== undefined ? { occupations } : {}) };
+  const boxCtx: BoxMapContext = { titleIndex, vocabularies };
   return {
     chapter: mapChapter,
     episode: mapEpisode,
     character: (page) => mapCharacter(page, ctx),
     volume: mapVolume,
+    'devil-fruit': (page) => mapDevilFruit(page, boxCtx),
+    crew: (page) => mapCrew(page, boxCtx),
+    ship: (page) => mapShip(page, boxCtx),
+    organization: (page) => mapOrganization(page, boxCtx),
+    weapon: (page) => mapWeapon(page, boxCtx),
+    arc: (page) => mapArc(page, boxCtx),
   };
 }
 
@@ -96,7 +106,7 @@ if (kind === 'crawl') {
   const limit = Number(opt('limit')[0] ?? '25');
   const categoryDepth = Number(opt('depth')[0] ?? '2');
   const registry = await loadRegistry();
-  const occupations = await loadOccupationIndex();
+  const vocabularies = await loadVocabularyIndexes(REPO_ROOT);
 
   // Successive bounded runs should ADVANCE through a category, not
   // re-fetch the same first `limit` pages (run 5, 2026-08-07).
@@ -106,7 +116,7 @@ if (kind === 'crawl') {
     limit,
     categoryDepth,
     registry,
-    occupations,
+    vocabularies,
     skipKnown,
     log: (line) => process.stdout.write(`  ${line}\n`),
   });
@@ -173,7 +183,7 @@ if (kind === 'crawl') {
     process.exitCode = 2; // distinct from crash — "work to do".
   }
 } else if (
-  kind !== undefined && ['chapter', 'episode', 'character', 'volume'].includes(kind)
+  kind !== undefined && (MAPPER_KINDS as readonly string[]).includes(kind)
   && pages.length > 0
 ) {
   const mapper = (await buildMappers())[kind as MapperKind];
@@ -207,7 +217,7 @@ if (kind === 'crawl') {
   if (failures > 0) process.exitCode = 1;
 } else {
   process.stderr.write(
-    'Usage: bun run import:fandom <chapter|episode|character|volume> <page…> [--stage] [--overwrite]\n'
+    `Usage: bun run import:fandom <${MAPPER_KINDS.join('|')}> <page…> [--stage] [--overwrite]\n`
       + '       bun run import:fandom crawl --category <name>… [--depth N] [--page <title>…] [--limit N] [--skip-known] [--stage]\n'
       + '       bun run import:fandom check-updates\n',
   );

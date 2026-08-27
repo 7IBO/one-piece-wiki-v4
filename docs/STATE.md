@@ -15,7 +15,7 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-27 (tri des PR ouvertes ; corpus à 61 entités)
+**Last updated**: 2026-08-27 (six mappers Fandom ADR-109 ; corpus à 61 entités)
 
 **2026-08-27 — remontée et tri de toutes les PR ouvertes.**
 `main` = `f0101b7`.
@@ -47,10 +47,81 @@ this file is the current status + the open threads.
   sépare correctement ; #2 réintroduisait `caused-death-of`,
   supprimée par ADR-098, et aurait cassé `validate`.
 
+**Livré (2026-08-27) — six mappers Fandom** (ADR-109), écrits contre
+le relevé structurel `docs/audits/fandom-structure-2026-08-27.*` :
+`devil-fruit` (211 pages), `crew` (149), `ship` (141), `organization`
+(114), `weapon` (112), `arc` (70). **4 infobox mappées sur 39 → 10.**
+Couverture des champs relevés : **71 mappés / 18 ignorés / 0 non
+mappé**. Les shapes du relevé décident de la destination : `wikilink*`
+→ relation (dans le seul sens canonique — ADR-033/098), `first` → axe
+`since` + warning nommant l'arête `features` à poser côté chapitre,
+`jname`/`rname` → locales de données `ja`/`ja-latn` (ADR-095, `emit.ts`
+écrit les deux sidecars), `enum_like` → vocabulaire existant,
+`colorscheme`/`image` → ignorés explicitement (ADR-107 pour les
+images). 4 valeurs de vocabulaire **additives** (`ship-types.unknown`,
+`weapon-types.unknown`, `org-types.unknown`, `arc-subtypes.filler`) —
+`check:compat` : 4 additifs, 0 breaking, snapshot régénéré.
+
+- **À faire en premier après merge** : lancer `fandom-import` sur les
+  six catégories (le maintainer a l'egress ; la sandbox non), puis
+  **relire les fixtures synthétiques** `packages/importers/__tests__/
+  fixtures/{devil-fruit,crew,ship,organization,weapon,arc}-*.json`
+  contre les vraies réponses `action=parse` et les remplacer.
+- **Pauvretés de schéma relevées, NON contournées** (voir ADR-109) :
+  `name` n'a **aucun qualifieur de variante de traduction**, donc les
+  listes `ename` (VIZ/Funimation/4Kids, remplies à 100% sur cinq des
+  six boîtes) n'ont nulle part où aller ; `ship` n'a ni classe de
+  navire ni dimensions ; `weapon` n'a pas de relation côté arme vers
+  son porteur ; `organization` n'a ni `status` ni `disbanded_at` ;
+  `arc` n'a pas de plage de dates.
+- **Îles hors périmètre** : Island Box (414 pages) reste le plus gros
+  trou et demande un ADR de modélisation des lieux.
+
 **Lancé** : `fandom-analyze` (workflow_dispatch sur `main`, preset
 complet) — le relevé structurel est l'entrée obligée de la refonte de
 schéma, et le runner GitHub a l'egress que la sandbox n'a pas. Le
 rapport est commité sur une branche `audit/`.
+
+**Livré (2026-08-27) — quatre chantiers UI du wiki public**
+(`apps/web` + `docs/`). Détail complet dans `docs/WEB_APP.md` ;
+la décision tabs/sous-pages est **ADR-110**.
+
+1. **Fuite de spoiler sur les noms — corrigée.** `resolveEntityName`
+   ne lit plus `canonical_name_key` : elle exécute `DISPLAY_NAME_SQL`
+   (`server/search-sql.ts`), **la même requête et la même barrière
+   `search_gates`** que le libellé d'un résultat de recherche. Titre de
+   page, hero, `<title>`, puces, libellés de liens, cartes de listing
+   et résultats de recherche partagent désormais UNE résolution :
+   ils ne peuvent plus se contredire. Repli 1 : entité dont la clé
+   canonique n'est portée par aucune propriété localisable (les
+   entités `image`) — sans ancre, donc résolue directement. Repli 2 :
+   entité dont **tous** les noms sont au-delà du curseur → le slug,
+   jamais la clé brute. Le corpus réel ne pouvait pas exhiber le bug
+   (toutes les entités multi-nommées déclarent leur nom le PLUS ANCIEN
+   comme canonique) : `server/__tests__/display-name.test.ts` greffe
+   donc deux entités synthétiques sur une copie jetable de l'artefact
+   et rejoue les deux cas de la recherche (nom postérieur, existence
+   postérieure). 4 de ses 7 tests échouent sans le correctif.
+2. **Hover card desktop** sur les liens sans image (puces en ligne,
+   numéros de chapitre, listes de contenu). Filtrée par le curseur
+   côté serveur (`buildEntityPreview`) — un aperçu est une
+   _surfaçation_, comme un résultat de recherche. `(hover: hover) and
+   (pointer: fine)` uniquement, focus clavier, Échap, reduced-motion.
+   Chargement : intention de survol 170 ms + mémo module clé
+   `locale/type/slug/scope` + une seule promesse en vol par clé.
+3. **Ratios d'image fixés par type d'image** (`src/lib/image-ratio.ts`)
+   — dérivés de ce que l'image EST : `image_width`/`image_height` du
+   schéma d'abord, sinon le rôle `depicted-by` (vocabulaire
+   `depiction-roles`), sinon rien et le cadre appelant reste (ADR-091).
+   Cinq classes documentées ; une image dont le ratio s'écarte du cadre
+   est `contain`ée sur l'art plutôt que massacrée en `cover`.
+4. **Sous-pages plutôt qu'onglets** (ADR-110) :
+   `/{type}/{slug}/{section}`, registre `src/lib/entity-sections.ts`
+   qui **découpe** les bandes d'ADR-106 au lieu de les dupliquer.
+   Aujourd'hui les Chapeaux de Paille s'affichent en une seule page —
+   leur équipage est le seul module peuplé du corpus, donc l'invariant
+   « jamais de sous-page vide » supprime la navigation. C'est le
+   mécanisme qui fonctionne, pas un manque.
 
 **Livré (2026-08-27) — recherche du wiki public** (ADR-108). `apps/web`
 n'en avait **aucune** ; il y a maintenant un index FTS5 + trigrammes
@@ -80,11 +151,11 @@ construit DANS `dist/onepiece.db` par `packages/db-builder`, une route
   de résultats. Les narratifs ne sont pas indexés tant que les marqueurs
   `:::spoiler:::` ne sont pas analysés (voir ADR-108).
 
-**Note de dette repérée en passant** : `resolveEntityName`
-(`server/views.ts`) résout `canonical_name_key` **sans** le curseur, si
-bien qu'une page d'entité peut afficher un nom postérieur au curseur là
-où la recherche, elle, filtre. Aligner la page d'entité est un
-changement séparé, volontairement hors périmètre ici.
+**Note de dette repérée en passant — CORRIGÉE le 2026-08-27** (voir
+l'entrée « chantiers UI » ci-dessous) : `resolveEntityName`
+(`server/views.ts`) résolvait `canonical_name_key` **sans** le curseur,
+si bien qu'une page d'entité pouvait afficher un nom postérieur au
+curseur là où la recherche, elle, filtrait.
 
 > **LIRE `/docs/VISION.md` AVANT TOUT TRAVAIL SUR `apps/web`, LES
 > IMPORTEURS OU L'ACQUISITION.** Il porte l'intention produit, les publics

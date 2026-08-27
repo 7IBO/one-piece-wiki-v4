@@ -16,7 +16,11 @@
  *      is the object the reader recognises. `figure` picks its shape
  *      per entity type (`lib/entity-layout.ts`): a 3:4 poster for
  *      people, crews, volumes; a 16:9 plate for episodes, arcs and
- *      events, whose subject is a scene rather than a person.
+ *      events, whose subject is a scene rather than a person. That is
+ *      the FALLBACK shape: when the picture declares a ratio of its
+ *      own (`lib/image-ratio.ts` — intrinsic pixels, else its
+ *      depiction role) the figure adopts it, because here the picture
+ *      is the subject and must not be cropped into a slot.
  *
  * `nav` holds the ordinal navigation of sequential entities — previous
  * pinned to the left edge of the stage, next to the right edge (the
@@ -82,6 +86,7 @@ export function EntityHero(
             slug={slug}
             name={name}
             ratio={figure === 'plate' ? 'wide' : 'portrait'}
+            fit='native'
             className={`hero-figure rounded-xl ring-1 ring-line-strong ${
               figure === 'plate'
                 ? 'w-40 sm:w-64 lg:w-80'

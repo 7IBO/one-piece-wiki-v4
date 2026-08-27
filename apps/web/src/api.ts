@@ -15,7 +15,12 @@ import { createServerFn } from '@tanstack/react-start';
 import { getCookie } from '@tanstack/react-start/server';
 import { parseProgressCookie, type ProgressCursor } from '../server/progress';
 import { buildSearchView } from '../server/search';
-import { buildEntityView, buildHomeView, buildTypeListView } from '../server/views';
+import {
+  buildEntityPreview,
+  buildEntityView,
+  buildHomeView,
+  buildTypeListView,
+} from '../server/views';
 import type { Locale } from './lib/chrome';
 import { SCOPE_PATTERN } from './lib/scope';
 
@@ -29,6 +34,7 @@ export type {
   EntityChip,
   EntityListItem,
   EntityPageView,
+  EntityPreviewView,
   EntityView,
   FacetOptionView,
   FacetView,
@@ -108,6 +114,29 @@ export const fetchSearch = createServerFn({ method: 'GET' })
   // The cursor is the whole point: a reader must never match a string
   // that only exists beyond their progression.
   .handler(({ data }) => buildSearchView(data.q, data.locale, readProgress()));
+
+/**
+ * The hover-card preview of one entity (WEB_APP.md § Hover preview).
+ * Same validation and same cursor as `fetchEntity` — a preview is a
+ * surfacing, so it is gated exactly like a page and a search hit; the
+ * server returns null for anything the reader has not reached and the
+ * card simply never opens.
+ *
+ * Called at most ONCE per entity per session: the client memoizes by
+ * `type/slug` and only fires after a hover-intent delay (see
+ * `components/HoverPreview.tsx`), so running a pointer down a list of
+ * links costs nothing.
+ */
+export const fetchPreview = createServerFn({ method: 'GET' })
+  .inputValidator((input: { locale: Locale; type: string; slug: string; scope?: string; }) => ({
+    locale: asLocale(input.locale),
+    type: asSlug(input.type),
+    slug: asSlug(input.slug),
+    scope: asScope(input.scope),
+  }))
+  .handler(({ data }) =>
+    buildEntityPreview(data.type, data.slug, data.locale, readProgress(), data.scope)
+  );
 
 export const fetchEntity = createServerFn({ method: 'GET' })
   .inputValidator((input: { locale: Locale; type: string; slug: string; scope?: string; }) => ({

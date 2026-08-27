@@ -34,9 +34,13 @@ describe('detectKind', () => {
       parse: { wikitext: string; };
     };
     expect(detectKind(chapter.parse.wikitext)).toEqual({ kind: 'chapter' });
-    expect(detectKind('{{Crew Box|name=Straw Hats}}')).toEqual({
+    expect(detectKind('{{Crew Box|name=Straw Hats}}')).toEqual({ kind: 'crew' });
+    // Island Box is deliberately mapper-less (ADR-109 §scope: islands
+    // need their own modelling ADR) — the analyzer's "next mapper to
+    // build" signal has to keep working.
+    expect(detectKind('{{Island Box|name=Water 7}}')).toEqual({
       kind: 'unknown',
-      box: 'Crew Box',
+      box: 'Island Box',
     });
     expect(detectKind('just prose')).toEqual({ kind: 'none' });
   });
@@ -95,15 +99,15 @@ describe('crawl', () => {
           { title: 'Chapter 1044' },
           { title: 'Hyougoro' },
           { title: 'Monkey D. Luffy/Personality and Relationships' }, // redirect page
-          { title: 'Straw Hat Pirates' }, // unknown box
+          { title: 'Water 7' }, // unknown box
         ],
       },
     });
-    const crewPage = JSON.stringify({
+    const islandPage = JSON.stringify({
       parse: {
-        title: 'Straw Hat Pirates',
+        title: 'Water 7',
         pageid: 7,
-        wikitext: '{{Crew Box|name=Straw Hats}} They sail with [[Going Merry]].',
+        wikitext: '{{Island Box|name=Water 7}} Home port of the [[Going Merry]].',
       },
     });
     const personality = JSON.stringify({
@@ -121,7 +125,7 @@ describe('crawl', () => {
         'redirect-personality',
       ),
       'page=Monkey D. Luffy/Personality': personality,
-      'page=Straw Hat Pirates': crewPage,
+      'page=Water 7': islandPage,
     });
 
     const report = await crawl(client, { categories: ['Test'] }, { limit: 10 });
@@ -133,9 +137,9 @@ describe('crawl', () => {
     ]);
     const redirected = report.results.find((r) => r.redirectedFrom !== undefined);
     expect(redirected?.redirectedFrom).toBe('Monkey D. Luffy/Personality and Relationships');
-    expect(report.unknownBoxes).toEqual([{ box: 'Crew Box', count: 1 }]);
-    expect(report.failures.some((f) => f.reason.includes('Crew Box'))).toBe(true);
-    // The crew page's link feeds the frontier.
+    expect(report.unknownBoxes).toEqual([{ box: 'Island Box', count: 1 }]);
+    expect(report.failures.some((f) => f.reason.includes('Island Box'))).toBe(true);
+    // The island page's link feeds the frontier.
     expect(report.frontier.some((f) => f.title === 'Going Merry')).toBe(true);
   });
 

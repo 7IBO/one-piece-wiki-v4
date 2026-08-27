@@ -1,0 +1,8 @@
+{
+  "_SYNTHETIC": "HAND-WRITTEN fixture (2026-08-27) — NOT a captured API response. The sandbox network policy denies onepiece.fandom.com (ADR-079 §6), so this wikitext is modelled param-for-param on the field inventory of docs/audits/fandom-structure-2026-08-27.{md,json} (names, fill rates and value shapes of the sampled pages). VALIDATE against a live action=parse response on the first CI run and replace with the capture, as was done for chapter-1044/episode-1071/hyougoro.",
+  "parse": {
+    "title": "Black Cat Pirates",
+    "pageid": 990002,
+    "wikitext": "{{Crew Box\n|colorscheme = BlackCatPiratesColors\n|jroger      = Black Cat Pirates' Jolly Roger.png\n|jname       = 黒猫海賊団\n|rname       = ''Kuroneko Kaizokudan''\n|ename       = Black Cat Pirates (VIZ, Funimation); Black Cat Gang (4Kids)\n|first       = [[Chapter 25]]; [[Episode 9]]\n|captain     = [[Kuro]] (First Captain, Former); [[Jango]] (Second Captain; Former)\n|captitle    = Captains\n|ship        = [[Bezan Black]]\n|bounty      = At least 16,000,000\n}}\n\nThe '''Black Cat Pirates''' were a crew led by [[Kuro]]."
+  }
+}

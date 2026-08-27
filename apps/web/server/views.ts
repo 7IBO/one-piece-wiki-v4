@@ -56,11 +56,26 @@ export type LabelledValue = {
   readonly chip?: EntityChip;
 };
 
-/** A spoiler-checked, display-ready image slot. */
+/**
+ * A spoiler-checked, display-ready image slot.
+ *
+ * It carries the FACTS about its own shape — the intrinsic pixel
+ * dimensions the `image` entity declares, and the depiction `role`
+ * that says what kind of picture it is. Turning those into an aspect
+ * ratio is a presentation decision and lives in
+ * `src/lib/image-ratio.ts`; both are null far more often than not, and
+ * every consumer degrades to its own frame (ADR-091).
+ */
 export type ImageView = {
   readonly url: string;
   readonly alt: string;
   readonly attribution: string | null;
+  /** Intrinsic width in pixels (`image_width`), when declared. */
+  readonly width: number | null;
+  /** Intrinsic height in pixels (`image_height`), when declared. */
+  readonly height: number | null;
+  /** `depicted-by` role — a `depiction-roles` vocabulary value. */
+  readonly role: string | null;
 };
 
 // ---------------------------------------------------------------------------
@@ -469,35 +484,81 @@ function epistemicView(
 // ---------------------------------------------------------------------------
 // Entity name resolution
 
-function resolveEntityName(row: EntityRow, cat: ValidatedCatalogue, locale: Locale): string {
-  const schema = cat.entityTypes.get(row.type);
-  const key = row.canonical_name_key
-    ?? nameKeyFor(row.data, schema?.display_name_properties ?? undefined);
-  if (key !== null) {
-    const translated = db.getTranslation(locale, key);
-    if (translated !== null) return translated;
+/**
+ * The name to show an entity under, FOR THIS READER.
+ *
+ * Names are historised like everything else (an entity renamed at
+ * chapter 96, a devil fruit whose true name lands at 1044), so
+ * resolving one is a spoiler decision, not a lookup. This function
+ * therefore does not read `canonical_name_key` directly: it runs
+ * `DISPLAY_NAME_SQL` (`server/search-sql.ts`) — the SAME statement,
+ * with the same `search_gates` predicate, that labels a search result.
+ * One resolution, one gate, so a page title, a hero, a `<title>`, a
+ * link label and a search card can never disagree.
+ *
+ * Two fallbacks, in this order:
+ *
+ * 1. the entity carries NO indexed candidate name at all (its
+ *    `canonical_name_key` is not held by any localizable property —
+ *    an `image` entity does this): such a key carries no `since`, so
+ *    it is anchor-free and safe to resolve straight from
+ *    `translations`, exactly as before;
+ * 2. the entity HAS names but the reader has reached none of them:
+ *    degrade to the slug. Reaching for the raw key here is the leak.
+ */
+function resolveEntityName(
+  row: EntityRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): string {
+  const reached = db.displayNameAtCursor(row.id, cursor, locale);
+  if (reached !== null) return reached;
+  if (!db.hasDisplayName(row.id)) {
+    const schema = cat.entityTypes.get(row.type);
+    const key = row.canonical_name_key
+      ?? nameKeyFor(row.data, schema?.display_name_properties ?? undefined);
+    if (key !== null) {
+      const translated = db.getTranslation(locale, key);
+      if (translated !== null) return translated;
+    }
   }
   return humanize(row.slug);
 }
 
-function chipForRow(row: EntityRow, cat: ValidatedCatalogue, locale: Locale): EntityChip {
+function chipForRow(
+  row: EntityRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): EntityChip {
   return {
     id: row.id,
     type: row.type,
     typeLabel: entityTypeLabel(cat, row.type, locale),
     slug: row.slug,
-    name: resolveEntityName(row, cat, locale),
+    name: resolveEntityName(row, cat, locale, cursor),
   };
 }
 
-function chipFor(id: string, cat: ValidatedCatalogue, locale: Locale): EntityChip | null {
+function chipFor(
+  id: string,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): EntityChip | null {
   const row = db.getEntityById(id);
-  return row === null ? null : chipForRow(row, cat, locale);
+  return row === null ? null : chipForRow(row, cat, locale, cursor);
 }
 
 /** Chip for a possibly-dangling reference: falls back to the raw id. */
-function chipOrPlaceholder(id: string, cat: ValidatedCatalogue, locale: Locale): EntityChip {
-  const chip = chipFor(id, cat, locale);
+function chipOrPlaceholder(
+  id: string,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): EntityChip {
+  const chip = chipFor(id, cat, locale, cursor);
   if (chip !== null) return chip;
   const [type = '', slug = id] = id.includes(':') ? id.split(':', 2) : ['', id];
   return { id, type, typeLabel: humanize(type), slug, name: humanize(slug) };
@@ -615,7 +676,7 @@ function buildSequence(
     const sibling = index.get(number + delta);
     if (sibling === undefined || !isSourceVisible(sibling.id, cursor)) return null;
     return {
-      chip: chipForRow(sibling, cat, locale),
+      chip: chipForRow(sibling, cat, locale, cursor),
       number: ordinalValue(sibling, propertyId) ?? number + delta,
     };
   };
@@ -656,7 +717,14 @@ function latestVisibleDisplay(
   });
   const last = entries[entries.length - 1];
   if (last === undefined) return null;
-  const resolved = displayValue(last, 'value', cat.propertyTypes.get(propertyId), cat, locale);
+  const resolved = displayValue(
+    last,
+    'value',
+    cat.propertyTypes.get(propertyId),
+    cat,
+    locale,
+    cursor,
+  );
   if (resolved === null) return null;
   return resolved.display === '' || resolved.display === '—' ? null : resolved.display;
 }
@@ -732,6 +800,7 @@ function displayScalar(
   schema: PropertyType | undefined,
   cat: ValidatedCatalogue,
   locale: Locale,
+  cursor: ProgressCursor,
 ): { display: string; chip: EntityChip | null; } {
   if (raw === null || raw === undefined) return { display: '—', chip: null };
   const valueType = schema?.value_type;
@@ -745,7 +814,7 @@ function displayScalar(
     };
   }
   if (Array.isArray(raw)) {
-    const parts = raw.map((v) => displayScalar(v, schema, cat, locale).display);
+    const parts = raw.map((v) => displayScalar(v, schema, cat, locale, cursor).display);
     return { display: parts.join(', '), chip: null };
   }
   if (typeof raw !== 'string') return { display: JSON.stringify(raw), chip: null };
@@ -755,7 +824,7 @@ function displayScalar(
   }
   if (valueType === 'date') return { display: formatDate(raw, locale), chip: null };
   if ((valueType === 'entity_ref' || valueType === 'source_ref') && raw.includes(':')) {
-    const chip = chipOrPlaceholder(raw, cat, locale);
+    const chip = chipOrPlaceholder(raw, cat, locale, cursor);
     return { display: chip.name, chip };
   }
   return { display: raw, chip: null };
@@ -772,6 +841,7 @@ function displayValue(
   schema: PropertyType | undefined,
   cat: ValidatedCatalogue,
   locale: Locale,
+  cursor: ProgressCursor,
 ): { display: string; chip: EntityChip | null; } | null {
   const key = payload[`${valueField}_key`];
   if (typeof key === 'string') {
@@ -779,7 +849,7 @@ function displayValue(
     return { display: translated ?? key, chip: null };
   }
   if (!(valueField in payload)) return null;
-  return displayScalar(payload[valueField], schema, cat, locale);
+  return displayScalar(payload[valueField], schema, cat, locale, cursor);
 }
 
 // ---------------------------------------------------------------------------
@@ -833,10 +903,11 @@ function displayQualifierValue(
   def: QualifierDef,
   cat: ValidatedCatalogue,
   locale: Locale,
+  cursor: ProgressCursor,
 ): { value: string; chip?: EntityChip; } {
   if (Array.isArray(raw)) {
     return {
-      value: raw.map((v) => displayQualifierValue(v, def, cat, locale).value).join(', '),
+      value: raw.map((v) => displayQualifierValue(v, def, cat, locale, cursor).value).join(', '),
     };
   }
   if (typeof raw === 'boolean') {
@@ -849,10 +920,10 @@ function displayQualifierValue(
   if (raw !== null && typeof raw === 'object') {
     const [item] = entityRefItems([raw]);
     if (item !== undefined) {
-      const head = displayQualifierValue(item.target, def, cat, locale);
+      const head = displayQualifierValue(item.target, def, cat, locale, cursor);
       const sources = entityRefItemSources(item);
       if (sources.length === 0) return head;
-      const names = sources.map((s) => chipFor(s, cat, locale)?.name ?? s).join(', ');
+      const names = sources.map((s) => chipFor(s, cat, locale, cursor)?.name ?? s).join(', ');
       return { ...head, value: `${head.value} (${names})` };
     }
   }
@@ -865,7 +936,7 @@ function displayQualifierValue(
       || (def.valueType === undefined && /^[a-z0-9-]+:[a-z0-9-]+$/.test(raw)))
     && raw.includes(':')
   ) {
-    const chip = chipFor(raw, cat, locale);
+    const chip = chipFor(raw, cat, locale, cursor);
     if (chip !== null) return { value: chip.name, chip };
   }
   if (def.valueType === 'date') return { value: formatDate(raw, locale) };
@@ -877,12 +948,13 @@ function collectQualifiers(
   local: readonly LocalQualifier[],
   cat: ValidatedCatalogue,
   locale: Locale,
+  cursor: ProgressCursor,
 ): readonly LabelledValue[] {
   const out: LabelledValue[] = [];
   for (const [id, raw] of Object.entries(payload)) {
     if (AXIS_KEYS.has(id) || raw === null || raw === undefined) continue;
     const def = qualifierDefFor(id, local, cat);
-    const { value, chip } = displayQualifierValue(raw, def, cat, locale);
+    const { value, chip } = displayQualifierValue(raw, def, cat, locale, cursor);
     out.push({
       label: qualifierLabel(id, cat, locale),
       value,
@@ -899,11 +971,12 @@ function edgeQualifierLabel(
   schema: RelationType | undefined,
   cat: ValidatedCatalogue,
   locale: Locale,
+  cursor: ProgressCursor,
 ): string | null {
   const raw = edge.qualifiers?.[qualifierId];
   if (raw === null || raw === undefined) return null;
   const def = qualifierDefFor(qualifierId, schema?.qualifiers ?? [], cat);
-  return displayQualifierValue(raw, def, cat, locale).value;
+  return displayQualifierValue(raw, def, cat, locale, cursor).value;
 }
 
 // ---------------------------------------------------------------------------
@@ -1006,10 +1079,18 @@ function buildImageView(
     ? db.getTranslation(locale, altKeyEntry) ?? fallbackAlt
     : fallbackAlt;
   const attribution = latestRawValue(image, 'attribution', cursor);
+  const width = latestRawValue(image, 'image_width', EMPTY_CURSOR);
+  const height = latestRawValue(image, 'image_height', EMPTY_CURSOR);
   return {
     url,
     alt,
     attribution: typeof attribution === 'string' ? attribution : null,
+    // Intrinsic dimensions are read WITHOUT the cursor, like ordinals:
+    // a file's pixel size is not a story fact and cannot spoil.
+    width: typeof width === 'number' && Number.isFinite(width) ? width : null,
+    height: typeof height === 'number' && Number.isFinite(height) ? height : null,
+    // Filled by the caller, which is the one holding the edge.
+    role: null,
   };
 }
 
@@ -1048,7 +1129,13 @@ function resolveEntityImages(
       : (origin === LIVE_ACTION_SCOPE ? 1 : 0);
     const role = edge.qualifiers?.['role'];
     const roleScore = typeof role === 'string' ? ROLE_PRIORITY[role] ?? 4 : 5;
-    candidates.push({ view, originScore, roleScore });
+    candidates.push({
+      // The depiction role is what says WHAT the picture is, hence the
+      // ratio it must be displayed at (`src/lib/image-ratio.ts`).
+      view: typeof role === 'string' ? { ...view, role } : view,
+      originScore,
+      roleScore,
+    });
   }
   candidates.sort((a, b) => a.originScore - b.originScore || a.roleScore - b.roleScore);
   return candidates.map((candidate) => candidate.view);
@@ -1073,9 +1160,10 @@ function resolveEntityImage(
  * exported so `server/search.ts` composes the existing view model
  * instead of growing a second, divergent copy of card enrichment.
  *
- * The chip's `name` is the site-wide display name; search overrides it
- * with a CURSOR-CHECKED one (`db.searchDisplayName`), because a
- * result label must never be a name the reader has not reached.
+ * The chip's `name` is the site-wide display name, which is already
+ * cursor-checked (`resolveEntityName` runs `DISPLAY_NAME_SQL`), so
+ * search no longer needs a label of its own: a result can never be
+ * listed under a name the reader has not reached.
  */
 export type EntityCardView = {
   readonly chip: EntityChip;
@@ -1092,7 +1180,7 @@ export function buildEntityCardView(
 ): EntityCardView | null {
   const row = db.getEntityById(entityId);
   if (row === null) return null;
-  const chip = chipForRow(row, cat, locale);
+  const chip = chipForRow(row, cat, locale, cursor);
   return {
     chip,
     image: resolveEntityImage(row, db.listRelationsFrom(row.id), cursor, null, locale, chip.name),
@@ -1217,7 +1305,7 @@ export async function buildTypeListView(
   const { facets, byRow } = buildFacets(rows, type, cat, locale, cursor);
   const items = rows
     .map((row) => {
-      const name = resolveEntityName(row, cat, locale);
+      const name = resolveEntityName(row, cat, locale, cursor);
       return {
         slug: row.slug,
         name,
@@ -1226,7 +1314,7 @@ export async function buildTypeListView(
         secondary: cardSecondary(row, cat, locale, cursor),
         subtitle: row.first_appearance_source === null
           ? null
-          : chipFor(row.first_appearance_source, cat, locale)?.name ?? null,
+          : chipFor(row.first_appearance_source, cat, locale, cursor)?.name ?? null,
         tag: cardStatusTag(row, cat, locale, cursor),
       };
     })
@@ -1242,25 +1330,29 @@ function buildEntryView(
   locale: Locale,
   cursor: ProgressCursor,
 ): PropertyEntryView {
-  const value = displayValue(entry.row.value, 'value', schema, cat, locale);
+  const value = displayValue(entry.row.value, 'value', schema, cat, locale, cursor);
   // Epistemic non-leak (WEB_APP.md § spoiler gating, rule 4): with an
   // active cursor, the concealed truth (`actual_value`) is shown only
   // once the revealing entry — by construction a LATER entry — is
   // itself visible. Without a cursor the wiki default shows all.
   const revealSafe = !cursorActive(cursor) || entry.hasLaterVisible;
   const actual = revealSafe
-    ? displayValue(entry.row.value, 'actual_value', schema, cat, locale)
+    ? displayValue(entry.row.value, 'actual_value', schema, cat, locale, cursor)
     : null;
   const reviewStatus = entry.row.value['review_status'];
   return {
     display: value?.display ?? '—',
     valueChip: value?.chip ?? null,
-    since: entry.row.since_source === null ? null : chipFor(entry.row.since_source, cat, locale),
-    until: entry.row.until_source === null ? null : chipFor(entry.row.until_source, cat, locale),
+    since: entry.row.since_source === null
+      ? null
+      : chipFor(entry.row.since_source, cat, locale, cursor),
+    until: entry.row.until_source === null
+      ? null
+      : chipFor(entry.row.until_source, cat, locale, cursor),
     epistemic: epistemicView(cat, entry.row.epistemic_status, locale),
     actualDisplay: actual?.display ?? null,
-    event: entry.row.event_id === null ? null : chipFor(entry.row.event_id, cat, locale),
-    qualifiers: collectQualifiers(entry.row.value, localQualifiers, cat, locale),
+    event: entry.row.event_id === null ? null : chipFor(entry.row.event_id, cat, locale, cursor),
+    qualifiers: collectQualifiers(entry.row.value, localQualifiers, cat, locale, cursor),
     autoImported: reviewStatus === 'auto_imported',
   };
 }
@@ -1342,8 +1434,8 @@ function buildRelationViews(
     // thumbnail + identity line; dangling targets degrade to the chip.
     const targetRow = db.getEntityById(rel.target_entity_id);
     const target = targetRow === null
-      ? chipOrPlaceholder(rel.target_entity_id, cat, locale)
-      : chipForRow(targetRow, cat, locale);
+      ? chipOrPlaceholder(rel.target_entity_id, cat, locale, cursor)
+      : chipForRow(targetRow, cat, locale, cursor);
     const item: RelationItemView = {
       target,
       image: targetRow === null ? null : resolveEntityImage(
@@ -1355,12 +1447,12 @@ function buildRelationViews(
         target.name,
       ),
       secondary: targetRow === null ? null : cardSecondary(targetRow, cat, locale, cursor),
-      since: rel.since_source === null ? null : chipFor(rel.since_source, cat, locale),
-      until: rel.until_source === null ? null : chipFor(rel.until_source, cat, locale),
+      since: rel.since_source === null ? null : chipFor(rel.since_source, cat, locale, cursor),
+      until: rel.until_source === null ? null : chipFor(rel.until_source, cat, locale, cursor),
       epistemic: epistemicView(cat, rel.epistemic_status, locale),
       qualifiers: rel.qualifiers === null
         ? []
-        : collectQualifiers(rel.qualifiers, schema?.qualifiers ?? [], cat, locale),
+        : collectQualifiers(rel.qualifiers, schema?.qualifiers ?? [], cat, locale, cursor),
     };
     const key = rel.relation_type;
     const bucket = groups.get(key);
@@ -1400,7 +1492,7 @@ function memberThumb(
   cursor: ProgressCursor,
   scope: string | null,
 ): MemberThumbView {
-  const chip = chipForRow(target, cat, locale);
+  const chip = chipForRow(target, cat, locale, cursor);
   return {
     chip,
     image: resolveEntityImage(
@@ -1426,7 +1518,7 @@ function memberRow(
 ): MemberRowView | null {
   const target = db.getEntityById(edge.target_entity_id);
   if (target === null) return null;
-  const chip = chipForRow(target, cat, locale);
+  const chip = chipForRow(target, cat, locale, cursor);
   const schema = cat.relationTypes.get(edge.relation_type.replace(/\.inverse$/, ''));
   return {
     chip,
@@ -1439,12 +1531,12 @@ function memberRow(
       chip.name,
     ),
     secondary: cardSecondary(target, cat, locale, cursor),
-    role: edgeQualifierLabel(edge, 'role', schema, cat, locale),
-    rank: edgeQualifierLabel(edge, 'held_rank', schema, cat, locale),
-    since: edge.since_source === null ? null : chipFor(edge.since_source, cat, locale),
+    role: edgeQualifierLabel(edge, 'role', schema, cat, locale, cursor),
+    rank: edgeQualifierLabel(edge, 'held_rank', schema, cat, locale, cursor),
+    since: edge.since_source === null ? null : chipFor(edge.since_source, cat, locale, cursor),
     until: edge.until_source === null || !isSourceVisible(edge.until_source, cursor)
       ? null
-      : chipFor(edge.until_source, cat, locale),
+      : chipFor(edge.until_source, cat, locale, cursor),
     stat: withStat ? cardStat(target, cat, locale, cursor) : null,
   };
 }
@@ -1472,7 +1564,7 @@ function buildCharacterTemplate(
       if (target === null) continue;
       members.push(memberThumb(
         target,
-        edgeQualifierLabel(memberEdge, 'role', schema, cat, locale),
+        edgeQualifierLabel(memberEdge, 'role', schema, cat, locale, cursor),
         cat,
         locale,
         cursor,
@@ -1480,10 +1572,10 @@ function buildCharacterTemplate(
       ));
     }
     crews.push({
-      crew: chipForRow(crewRow, cat, locale),
+      crew: chipForRow(crewRow, cat, locale, cursor),
       label: resolveEdgeLabel(edge, cat, locale),
-      role: edgeQualifierLabel(edge, 'role', schema, cat, locale),
-      rank: edgeQualifierLabel(edge, 'held_rank', schema, cat, locale),
+      role: edgeQualifierLabel(edge, 'role', schema, cat, locale, cursor),
+      rank: edgeQualifierLabel(edge, 'held_rank', schema, cat, locale, cursor),
       members: members.sort((a, b) => a.chip.name.localeCompare(b.chip.name)),
     });
   }
@@ -1557,9 +1649,10 @@ function sourceItem(
   currentId: string,
   cat: ValidatedCatalogue,
   locale: Locale,
+  cursor: ProgressCursor,
 ): SourceItemView {
   return {
-    chip: chipForRow(target, cat, locale),
+    chip: chipForRow(target, cat, locale, cursor),
     number: ordinalOf(target, cat),
     current: target.id === currentId,
   };
@@ -1586,7 +1679,7 @@ function containedSources(
     const target = db.getEntityById(edge.target_entity_id);
     if (target === null) continue;
     if (targetType !== null && target.type !== targetType) continue;
-    items.push(sourceItem(target, currentId, cat, locale));
+    items.push(sourceItem(target, currentId, cat, locale, cursor));
   }
   return items.sort(byNumber);
 }
@@ -1612,7 +1705,7 @@ function buildAvailability(
     const urlOverride = edge.qualifiers?.['url'];
     const externalId = edge.qualifiers?.['external_id'];
     items.push({
-      platform: chipForRow(platform, cat, locale),
+      platform: chipForRow(platform, cat, locale, cursor),
       url: resolveAvailabilityUrl({
         locale,
         urlOverride: typeof urlOverride === 'string' ? urlOverride : null,
@@ -1638,7 +1731,7 @@ function buildCast(
     const target = db.getEntityById(edge.target_entity_id);
     if (target === null) continue;
     const schema = cat.relationTypes.get('features');
-    const note = edgeQualifierLabel(edge, 'appearance_type', schema, cat, locale);
+    const note = edgeQualifierLabel(edge, 'appearance_type', schema, cat, locale, cursor);
     const thumb = memberThumb(target, note, cat, locale, cursor, scope);
     const bucket = groups.get(target.type);
     if (bucket === undefined) {
@@ -1670,7 +1763,7 @@ function buildSourceTemplate(
     const arcRow = db.getEntityById(arcEdge.target_entity_id);
     if (arcRow !== null) {
       arc = {
-        chip: chipForRow(arcRow, cat, locale),
+        chip: chipForRow(arcRow, cat, locale, cursor),
         label: resolveEdgeLabel(arcEdge, cat, locale),
         items: containedSources(
           arcRow.id,
@@ -1701,6 +1794,7 @@ function buildContainerTemplate(
   edges: readonly RelationRow[],
   cat: ValidatedCatalogue,
   locale: Locale,
+  cursor: ProgressCursor,
 ): ContainerTemplateView {
   const groups = new Map<string, {
     relationKey: string;
@@ -1714,7 +1808,7 @@ function buildContainerTemplate(
     const target = db.getEntityById(edge.target_entity_id);
     if (target === null) continue;
     const key = `${edge.relation_type}:${target.type}`;
-    const item = sourceItem(target, row.id, cat, locale);
+    const item = sourceItem(target, row.id, cat, locale, cursor);
     const bucket = groups.get(key);
     if (bucket === undefined) {
       groups.set(key, {
@@ -1761,7 +1855,7 @@ function buildAppearances(
     const target = db.getEntityById(edge.target_entity_id);
     if (target === null || ordinalPropertyOf(cat, target.type) === null) continue;
     const key = `${edge.relation_type}:${target.type}`;
-    const item = sourceItem(target, '', cat, locale);
+    const item = sourceItem(target, '', cat, locale, cursor);
     const bucket = groups.get(key);
     if (bucket === undefined) {
       groups.set(key, {
@@ -1846,7 +1940,7 @@ function buildTemplate(
     case 'saga':
     case 'volume':
     case 'live-action-series':
-      return buildContainerTemplate(row, edges, cat, locale);
+      return buildContainerTemplate(row, edges, cat, locale, cursor);
     case 'devil-fruit':
       return buildFruitTemplate(edges, cat, locale, cursor, scope);
     default:
@@ -1869,7 +1963,7 @@ function buildInfoboxRelations(
     rows.push({
       key,
       label: resolveEdgeLabel(first, cat, locale),
-      chips: matching.map((edge) => chipOrPlaceholder(edge.target_entity_id, cat, locale)),
+      chips: matching.map((edge) => chipOrPlaceholder(edge.target_entity_id, cat, locale, cursor)),
     });
   }
   // Derived leadership row (ADR-099): active incoming `member-of`
@@ -1881,8 +1975,9 @@ function buildInfoboxRelations(
     if (edge.relation_type !== MEMBER_OF_INVERSE || edgeEnded(edge, cursor)) continue;
     const role = edge.qualifiers?.['role'];
     if (typeof role !== 'string' || !LEADERSHIP_MEMBER_ROLES.has(role)) continue;
-    const label = edgeQualifierLabel(edge, 'role', memberOfSchema, cat, locale) ?? humanize(role);
-    const chip = chipOrPlaceholder(edge.target_entity_id, cat, locale);
+    const label = edgeQualifierLabel(edge, 'role', memberOfSchema, cat, locale, cursor)
+      ?? humanize(role);
+    const chip = chipOrPlaceholder(edge.target_entity_id, cat, locale, cursor);
     const bucket = byRole.get(role);
     if (bucket === undefined) byRole.set(role, { label, chips: [chip] });
     else bucket.chips.push(chip);
@@ -1953,6 +2048,77 @@ function scopeToPropagate(
   return incoming;
 }
 
+/**
+ * The hover-card preview (WEB_APP.md § Hover preview): the least a
+ * reader needs to decide whether to follow a link — the entity's
+ * artwork or photo, its name, its identity line, and two or three
+ * facts.
+ *
+ * **A preview is a SURFACING, exactly like a search hit.** It is
+ * therefore built at the reader's cursor from the same helpers the
+ * page uses, and an entity the reader has not reached returns null —
+ * no card, not even a redacted one, since a redacted card would itself
+ * announce that something exists later (ADR-108's third hazard).
+ */
+export type EntityPreviewView = {
+  readonly chip: EntityChip;
+  readonly image: ImageView | null;
+  /** Identity line (epithet, release date…), spoiler-checked. */
+  readonly secondary: string | null;
+  /** Status micro-tag when it is not the unremarkable default. */
+  readonly tag: string | null;
+  readonly firstAppearance: string | null;
+  /** A few headline facts, in the type's own declared order. */
+  readonly facts: readonly LabelledValue[];
+};
+
+/** How many facts a preview shows. More is a page, not a preview. */
+const PREVIEW_FACT_LIMIT = 3;
+
+export async function buildEntityPreview(
+  type: string,
+  slug: string,
+  locale: Locale,
+  cursor: ProgressCursor = EMPTY_CURSOR,
+  scope: string | null = null,
+): Promise<EntityPreviewView | null> {
+  const cat = await getCatalogue();
+  const row = db.getEntityBySlug(type, slug);
+  if (row === null) return null;
+  // Same gate as the page (rule 3): beyond the cursor, no preview.
+  if (
+    !isSourceVisible(row.id, cursor)
+    || (row.first_appearance_source !== null
+      && !isSourceVisible(row.first_appearance_source, cursor))
+  ) {
+    return null;
+  }
+  const chip = chipForRow(row, cat, locale, cursor);
+  const edges = db.listRelationsFrom(row.id).filter((edge) => isEdgeVisible(edge, cursor));
+  const secondaryProperty = CARD_SECONDARY_PROPERTIES[row.type];
+  const { infobox } = buildPropertyViews(row, cat, locale, cursor, scope);
+  const facts: LabelledValue[] = [];
+  for (const entry of infobox) {
+    if (facts.length >= PREVIEW_FACT_LIMIT) break;
+    // The identity line already says this one; a fact that renders as
+    // an em dash says nothing at all.
+    if (entry.id === secondaryProperty) continue;
+    const value = entry.entry.display;
+    if (value === '' || value === '—') continue;
+    facts.push({ label: entry.label, value });
+  }
+  return {
+    chip,
+    image: resolveEntityImage(row, edges, cursor, scope, locale, chip.name),
+    secondary: cardSecondary(row, cat, locale, cursor),
+    tag: cardStatusTag(row, cat, locale, cursor),
+    firstAppearance: row.first_appearance_source === null
+      ? null
+      : chipFor(row.first_appearance_source, cat, locale, cursor)?.name ?? null,
+    facts,
+  };
+}
+
 export async function buildEntityView(
   type: string,
   slug: string,
@@ -1964,7 +2130,7 @@ export async function buildEntityView(
   const row = db.getEntityBySlug(type, slug);
   if (row === null) return null;
   const typeLabel = entityTypeLabel(cat, row.type, locale);
-  const name = resolveEntityName(row, cat, locale);
+  const name = resolveEntityName(row, cat, locale, cursor);
 
   // Progression gate (WEB_APP.md rule 3): when every appearance anchor
   // sits beyond the cursor — or the entity IS a beyond-cursor source
@@ -2003,7 +2169,7 @@ export async function buildEntityView(
   const infobox = totalBounty === null ? declaredInfobox : [...declaredInfobox, totalBounty];
   const firstAppearance = row.first_appearance_source === null
     ? null
-    : chipFor(row.first_appearance_source, cat, locale);
+    : chipFor(row.first_appearance_source, cat, locale, cursor);
   const images = resolveEntityImages(row, edges, cursor, scope, locale, name);
   return {
     kind: 'entity',

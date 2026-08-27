@@ -1,0 +1,8 @@
+{
+  "_SYNTHETIC": "HAND-WRITTEN fixture (2026-08-27) — NOT a captured API response. The sandbox network policy denies onepiece.fandom.com (ADR-079 §6), so this wikitext is modelled param-for-param on the field inventory of docs/audits/fandom-structure-2026-08-27.{md,json} (names, fill rates and value shapes of the sampled pages). VALIDATE against a live action=parse response on the first CI run and replace with the capture, as was done for chapter-1044/episode-1071/hyougoro.",
+  "parse": {
+    "title": "Wano Country Arc",
+    "pageid": 990006,
+    "wikitext": "{{Arc Box\n|image       = Wano Country Arc Infobox.png\n|imagetext   =\n|jname       = ワノ国編\n|rname       = ''Wano Kuni Hen''\n|type        = Cover\n|date        = 2018-2022 (Manga) 2019-2023 (Anime)\n|chapter     = 909-1057, 149 chapters\n|vol         = 90-105, 16 volumes\n|episode     = 890-1085, 196 episodes\n|prev        = [[Levely Arc]]\n|next        = [[Egghead Arc]]\n|prev anime  = [[Levely Arc]]\n|next anime  = [[Egghead Arc]]\n}}\n\nThe '''Wano Country Arc''' is the thirty-first story arc."
+  }
+}

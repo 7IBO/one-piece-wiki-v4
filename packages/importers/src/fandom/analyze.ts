@@ -23,10 +23,17 @@
  */
 import { readdir } from 'node:fs/promises';
 import { join, resolve } from 'node:path';
+import { ARC_HANDLED_PARAMS, ARC_IGNORED_PARAMS, ARC_INFOBOX_NAMES } from './arc.ts';
 import { CHAPTER_HANDLED_PARAMS, CHAPTER_INFOBOX_NAMES } from './chapter.ts';
 import { CHARACTER_HANDLED_PARAMS, CHARACTER_INFOBOX_NAMES } from './character.ts';
 import type { FandomClient } from './client.ts';
 import type { MapperKind } from './crawl.ts';
+import { CREW_HANDLED_PARAMS, CREW_IGNORED_PARAMS, CREW_INFOBOX_NAMES } from './crew.ts';
+import {
+  DEVIL_FRUIT_HANDLED_PARAMS,
+  DEVIL_FRUIT_IGNORED_PARAMS,
+  DEVIL_FRUIT_INFOBOX_NAMES,
+} from './devil-fruit.ts';
 import {
   EPISODE_HANDLED_PARAMS,
   EPISODE_IGNORED_PARAMS,
@@ -34,12 +41,19 @@ import {
 } from './episode.ts';
 import { describeShape, type FieldShape, profileField } from './field-shape.ts';
 import {
+  ORGANIZATION_HANDLED_PARAMS,
+  ORGANIZATION_IGNORED_PARAMS,
+  ORGANIZATION_INFOBOX_NAMES,
+} from './organization.ts';
+import {
   aggregateStructures,
   type PageStructure,
   type StructureAggregate,
   surveyPage,
 } from './page-structure.ts';
+import { SHIP_HANDLED_PARAMS, SHIP_IGNORED_PARAMS, SHIP_INFOBOX_NAMES } from './ship.ts';
 import { VOLUME_HANDLED_PARAMS, VOLUME_INFOBOX_NAMES } from './volume.ts';
+import { WEAPON_HANDLED_PARAMS, WEAPON_IGNORED_PARAMS, WEAPON_INFOBOX_NAMES } from './weapon.ts';
 import { parseTemplates, type WikiTemplate } from './wikitext.ts';
 
 /** One entity type of our schema catalogue (id + property ids). */
@@ -138,6 +152,9 @@ export const CATEGORY_ENTITY_TYPES: Readonly<Record<string, string>> = {
   'crews': 'crew',
   'pirate-crews': 'crew',
   'organizations': 'organization',
+  // The wiki files its organizations under "Groups" (13 pages + 15
+  // subcategories) — there is no "Organizations" category (ADR-109).
+  'groups': 'organization',
   'locations': 'location',
   'islands': 'location',
   'towns': 'location',
@@ -250,6 +267,48 @@ const INFOBOX_MAPPERS: readonly InfoboxMapperInfo[] = [
     templates: VOLUME_INFOBOX_NAMES,
     handled: VOLUME_HANDLED_PARAMS,
     ignored: [],
+  },
+  {
+    kind: 'devil-fruit',
+    entityType: 'devil-fruit',
+    templates: DEVIL_FRUIT_INFOBOX_NAMES,
+    handled: DEVIL_FRUIT_HANDLED_PARAMS,
+    ignored: DEVIL_FRUIT_IGNORED_PARAMS,
+  },
+  {
+    kind: 'crew',
+    entityType: 'crew',
+    templates: CREW_INFOBOX_NAMES,
+    handled: CREW_HANDLED_PARAMS,
+    ignored: CREW_IGNORED_PARAMS,
+  },
+  {
+    kind: 'ship',
+    entityType: 'ship',
+    templates: SHIP_INFOBOX_NAMES,
+    handled: SHIP_HANDLED_PARAMS,
+    ignored: SHIP_IGNORED_PARAMS,
+  },
+  {
+    kind: 'organization',
+    entityType: 'organization',
+    templates: ORGANIZATION_INFOBOX_NAMES,
+    handled: ORGANIZATION_HANDLED_PARAMS,
+    ignored: ORGANIZATION_IGNORED_PARAMS,
+  },
+  {
+    kind: 'weapon',
+    entityType: 'weapon',
+    templates: WEAPON_INFOBOX_NAMES,
+    handled: WEAPON_HANDLED_PARAMS,
+    ignored: WEAPON_IGNORED_PARAMS,
+  },
+  {
+    kind: 'arc',
+    entityType: 'arc',
+    templates: ARC_INFOBOX_NAMES,
+    handled: ARC_HANDLED_PARAMS,
+    ignored: ARC_IGNORED_PARAMS,
   },
 ];
 
