@@ -1,0 +1,19 @@
+{
+  "id": "arc:goat-island",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "goat-island",
+  "canonical_name_key": "arc.goat-island.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.goat-island.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,16 @@
+{
+  "id": "arc:water-7",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "water-7",
+  "canonical_name_key": "arc.water-7.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.water-7.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

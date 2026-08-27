@@ -1,0 +1,16 @@
+{
+  "id": "arc:drum-island",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "drum-island",
+  "canonical_name_key": "arc.drum-island.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.drum-island.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,16 @@
+{
+  "id": "arc:zou",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "zou",
+  "canonical_name_key": "arc.zou.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.zou.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

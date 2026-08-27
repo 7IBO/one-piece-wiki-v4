@@ -1,0 +1,16 @@
+{
+  "id": "arc:little-garden",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "little-garden",
+  "canonical_name_key": "arc.little-garden.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.little-garden.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

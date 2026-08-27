@@ -1,0 +1,16 @@
+{
+  "id": "arc:thriller-bark",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "thriller-bark",
+  "canonical_name_key": "arc.thriller-bark.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.thriller-bark.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

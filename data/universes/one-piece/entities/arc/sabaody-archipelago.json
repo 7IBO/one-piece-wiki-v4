@@ -1,0 +1,16 @@
+{
+  "id": "arc:sabaody-archipelago",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "sabaody-archipelago",
+  "canonical_name_key": "arc.sabaody-archipelago.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.sabaody-archipelago.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

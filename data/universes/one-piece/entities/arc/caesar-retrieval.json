@@ -1,0 +1,19 @@
+{
+  "id": "arc:caesar-retrieval",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "caesar-retrieval",
+  "canonical_name_key": "arc.caesar-retrieval.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.caesar-retrieval.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}

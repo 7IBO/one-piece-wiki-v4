@@ -1,0 +1,16 @@
+{
+  "id": "arc:return-to-sabaody",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "return-to-sabaody",
+  "canonical_name_key": "arc.return-to-sabaody.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.return-to-sabaody.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "arc:warship-island",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "warship-island",
+  "canonical_name_key": "arc.warship-island.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.warship-island.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}

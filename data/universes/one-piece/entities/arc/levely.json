@@ -1,0 +1,16 @@
+{
+  "id": "arc:levely",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "levely",
+  "canonical_name_key": "arc.levely.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.levely.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,16 @@
+{
+  "id": "arc:syrup-village",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "syrup-village",
+  "canonical_name_key": "arc.syrup-village.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.syrup-village.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

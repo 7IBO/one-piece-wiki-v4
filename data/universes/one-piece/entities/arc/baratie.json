@@ -1,0 +1,17 @@
+{
+  "id": "arc:baratie",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "baratie",
+  "canonical_name_key": "arc.baratie.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.baratie.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:42"
+      }
+    ]
+  },
+  "relations": []
+}

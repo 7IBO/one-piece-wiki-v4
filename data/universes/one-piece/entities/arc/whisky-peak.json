@@ -1,0 +1,17 @@
+{
+  "id": "arc:whisky-peak",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "whisky-peak",
+  "canonical_name_key": "arc.whisky-peak.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.whisky-peak.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:106"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "arc:silver-mine",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "silver-mine",
+  "canonical_name_key": "arc.silver-mine.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.silver-mine.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}

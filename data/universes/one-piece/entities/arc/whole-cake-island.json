@@ -1,0 +1,16 @@
+{
+  "id": "arc:whole-cake-island",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "whole-cake-island",
+  "canonical_name_key": "arc.whole-cake-island.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.whole-cake-island.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

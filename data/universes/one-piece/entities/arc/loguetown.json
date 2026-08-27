@@ -1,0 +1,16 @@
+{
+  "id": "arc:loguetown",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "loguetown",
+  "canonical_name_key": "arc.loguetown.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.loguetown.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

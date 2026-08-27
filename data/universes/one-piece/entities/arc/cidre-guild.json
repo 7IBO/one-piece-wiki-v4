@@ -1,0 +1,19 @@
+{
+  "id": "arc:cidre-guild",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "cidre-guild",
+  "canonical_name_key": "arc.cidre-guild.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.cidre-guild.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}

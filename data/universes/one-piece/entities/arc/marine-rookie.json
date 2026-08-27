@@ -1,0 +1,19 @@
+{
+  "id": "arc:marine-rookie",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "marine-rookie",
+  "canonical_name_key": "arc.marine-rookie.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.marine-rookie.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}

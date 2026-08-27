@@ -1,0 +1,16 @@
+{
+  "id": "arc:punk-hazard",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "punk-hazard",
+  "canonical_name_key": "arc.punk-hazard.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.punk-hazard.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

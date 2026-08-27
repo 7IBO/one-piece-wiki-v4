@@ -1,0 +1,19 @@
+{
+  "id": "arc:ruluka-island",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "ruluka-island",
+  "canonical_name_key": "arc.ruluka-island.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.ruluka-island.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}

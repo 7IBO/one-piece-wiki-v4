@@ -1,0 +1,16 @@
+{
+  "id": "arc:dressrosa",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "dressrosa",
+  "canonical_name_key": "arc.dressrosa.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.dressrosa.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

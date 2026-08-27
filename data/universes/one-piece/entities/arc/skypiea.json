@@ -1,0 +1,16 @@
+{
+  "id": "arc:skypiea",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "skypiea",
+  "canonical_name_key": "arc.skypiea.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.skypiea.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}
