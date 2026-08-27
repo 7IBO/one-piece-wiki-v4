@@ -15,8 +15,103 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-27 (pont arc→chapitres : décision en attente ;
-palette de recherche ADR-118 ; frontière d'import réparée)
+**Last updated**: 2026-08-27 (doublon `arc:wano` fusionné ; fuite
+anti-spoil sur 46 arcs découverte — voir ci-dessous)
+
+## 2026-08-27 — 46 arcs sur 50 ne sont pas anti-spoilés — À DÉCIDER
+
+**C'est la promesse centrale du produit qui fuit, et je ne l'ai pas
+corrigé dans la PR qui l'a révélée.**
+
+`buildEntityView` ferme une page quand `first_appearance_source` est
+au-delà du curseur. Comptage sur l'artefact courant :
+
+| type            | entités |                        avec ancre |
+| --------------- | ------: | --------------------------------: |
+| `arc`           |      50 |                             **4** |
+| `manga-chapter` |    1193 | 0 (se ferment sur leur propre id) |
+| `anime-episode` |     594 |                          0 (idem) |
+| `character`     |      10 |                                10 |
+
+Un arc sans ancre s'affiche **entièrement, à n'importe quel curseur**,
+avec la liste de ses chapitres. Pour un lecteur au chapitre 100, la
+page `arc/wano-country` déballe 149 chapitres jusqu'à 1057.
+
+Comment c'est sorti : le test `entities beyond the progression render
+gated` s'appuyait sur `arc:wano`, un stub semé à la main dont le
+`since` était **la seule chose** qui ancrait un arc. La migration 0011
+l'a fusionné dans `arc:wano-country` (voir plus bas) et le test est
+tombé. Le test n'a jamais couvert « les arcs sont anti-spoilés » ; il
+couvrait « ce stub-là a un `since` ».
+
+Les 4 arcs ancrés sont les rescapés du semis manuel. Les 46 autres
+viennent de Fandom, qui ne fournit rien de tel.
+
+**Ce qui est maintenant calculable** — et ne l'était pas avant la passe
+d'arêtes (ADR-119) : l'ancre d'un conteneur est le minimum ordinal de
+ce qu'il contient. 44 arcs sur 50 ont des chapitres ; Wano tomberait
+sur 909, East Blue sur 1.
+
+**Pourquoi je ne l'ai pas fait tout de suite** : `first_appearance_source`
+est une primitive du modèle épistémique, pas un détail de pipeline. La
+dériver pour les conteneurs change ce que le mot veut dire (« première
+apparition » vs « ouverture »), et CLAUDE.md interdit ce genre de
+glissement sans ADR. **Décision demandée** : ADR pour dériver l'ancre
+des conteneurs depuis leurs membres, ou autre primitive
+(`opens_at` distinct) ?
+
+En attendant, la fuite est là, antérieure à la migration, et élargie
+d'exactement un arc par elle.
+
+## 2026-08-27 — doublon `arc:wano` / `arc:wano-country` (migration 0011)
+
+Deux entités décrivaient un seul arc : un stub semé à la main (3
+relations) et la page Fandom (`arc_number: 31`, 149 chapitres après
+ADR-119). Rien ne l'a détecté jusqu'à ce qu'une page chapitre soit
+**rendue** : le chapitre 1044 affichait « PART OF ARC / WANO COUNTRY »
+au-dessus d'un ruban de deux cases, parce qu'il portait les deux
+arêtes.
+
+`mergeEntity` avait raison de les unir — il ne peut pas savoir que deux
+ids nomment la même chose. Résolu dans les données
+(`data/migrations/0011-merge-duplicate-wano-arc.ts`, `--allow-lossy` :
+le `since: manga-chapter:1043` du stub était écrit à la main et faux).
+
+Deux leçons opérationnelles :
+
+1. **Quatre séries d'assertions étaient épinglées au corpus**
+   (`views.test.ts` : `[1043, 1044, 1053]` en dur). Réécrites pour
+   affirmer le contrat — le chapitre courant est dans son ruban une
+   seule fois, marqué courant, parmi des frères ordonnés — plutôt que
+   la population.
+2. **Le serveur web bundle sa copie de `dist/onepiece.db` au build.**
+   Un serveur laissé tourner sert l'ancien artefact et ment. Première
+   relecture de la page après migration : ruban à 3 cases. Après
+   redémarrage : 149. Toujours redémarrer avant de conclure.
+
+## 2026-08-27 — 9 titres de chapitre sont restés des placeholders
+
+Même famille que le stub `arc:wano` : de la donnée semée à la main que
+l'import ne peut pas corriger.
+
+`stageToLocal` fusionne les traductions avec « les clés existantes
+gagnent », **y compris sous `--overwrite`** — la règle protège une
+traduction humaine d'un écrasement machine, et elle a raison. Mais elle
+ne distingue pas une traduction humaine d'un **placeholder semé**.
+Résultat, 9 chapitres sur 1193 gardent `"Chapter N"` comme titre
+pendant que les 1184 autres ont le vrai :
+
+`96, 432, 550, 574, 585, 731, 1043, 1044, 1053` — exactement les
+chapitres semés à la main avant l'importeur.
+
+Visible sur la page : `manga-chapter/chapter-1044` affiche
+« TITRE : Chapter 1044 » alors que 1045 affiche « Next Level ».
+
+Correction possible en un run CI (supprimer les 9 clés puis
+réimporter ces 9 pages), pas faite ici pour ne pas mélanger une
+correction de données à une correction d'UI. Fandom n'est pas
+joignable depuis cette session (proxy 403), donc ça passe forcément
+par le workflow.
 
 ## 2026-08-27 — pourquoi l'import des arcs n'a rien donné
 

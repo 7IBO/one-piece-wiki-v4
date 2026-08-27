@@ -18,10 +18,6 @@
   "relations": [
     {
       "type": "part-of-arc",
-      "target": "arc:wano"
-    },
-    {
-      "type": "part-of-arc",
       "target": "arc:wano-country"
     }
   ]

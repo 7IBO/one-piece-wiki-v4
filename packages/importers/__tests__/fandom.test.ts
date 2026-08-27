@@ -271,7 +271,32 @@ describe('chapter mapper: the fields it was leaving on the table (2026-08-27)', 
   it('warns rather than guessing when a field will not parse', () => {
     const r = mapChapter(page('{{Chapter Box|title=X|vol=Straw Hat Theater|anime=none}}'));
     expect(r?.entity.relations).toEqual([]);
-    expect(r?.warnings.join(' ')).toContain('unparseable volume');
-    expect(r?.warnings.join(' ')).toContain('unparseable anime episode');
+    expect(r?.warnings.join(' ')).toContain('no usable volume');
+    expect(r?.warnings.join(' ')).toContain('no usable episode');
+  });
+
+  it('refuses a volume 0 — tankōbon are numbered from 1', () => {
+    // This shipped as `manga-chapter:0 → volume:0` and `check:references`
+    // caught it: the Strong World prologue is a one-shot belonging to
+    // no volume, and a parsed 0 is a placeholder wearing a number.
+    //
+    // Note the asymmetry with `number`: chapter 0 IS legitimate
+    // (ADR-116), which is why the property accepts it. The guard
+    // belongs to the volume ordinal, not to zeros in general.
+    const r = mapChapter(page('{{Chapter Box|title=X|vol=0|anime=Episode 0}}'));
+    expect(r?.entity.relations).toEqual([]);
+    expect(r?.warnings.join(' ')).toContain('no usable volume');
+    expect(r?.warnings.join(' ')).toContain('no usable episode');
+  });
+
+  it('still accepts chapter 0 itself', () => {
+    const zero = mapChapter({
+      title: 'Chapter 0',
+      pageId: 1,
+      wikitext: '{{Chapter Box|title=Strong World}}',
+      url: 'https://onepiece.fandom.com/wiki/Chapter_0',
+    });
+    expect(zero?.entity.id).toBe('manga-chapter:0');
+    expect(zero?.entity.properties['number']).toEqual({ value: 0 });
   });
 });
