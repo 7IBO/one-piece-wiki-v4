@@ -1,0 +1,93 @@
+# Wire arc ranges into `part-of-arc` edges (ADR-119 + ADR-033) —
+# MANUAL trigger.
+#
+# The one place the two extraction substrates work together. The
+# WIKITEXT gives each arc its identity — the arc mapper derives the
+# entity id from the page — and the RENDERED html gives the chapter
+# and episode ranges, which the wikitext writes as `auto` and a Lua
+# module computes at expansion.
+#
+# The edges land on the SOURCES (`part-of-arc` is stored on each
+# chapter and episode, ADR-033); the ordering lands on the arcs as
+# `arc_number`. Both go through `mergeEntity`, so an existing file
+# gains the edge and loses nothing — that fold is what the destructive
+# `--overwrite` run of 2026-08-27 taught us to write.
+#
+# Same order as the import workflow, for the same reason: the crawl is
+# the expensive, unrepeatable artifact, so it reaches a branch BEFORE
+# anything is allowed to judge it.
+name: fandom-arc-edges
+on:
+  workflow_dispatch:
+    inputs:
+      category:
+        description: 'Arc category to crawl (exact name, no Category: prefix)'
+        required: true
+        default: 'Story Arcs'
+      limit:
+        description: 'Max arc pages this run'
+        required: true
+        default: '100'
+      depth:
+        description: 'Subcategory levels to descend'
+        required: true
+        default: '2'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  arc-edges:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run schema:generate
+
+      - name: Plan and apply the arc edges
+        run: >
+          bun run import:fandom arc-edges
+          --category "${{ github.event.inputs.category }}"
+          --depth "${{ github.event.inputs.depth }}"
+          --limit "${{ github.event.inputs.limit }}"
+          --stage
+
+      - name: Push the result
+        id: push
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "No edge to add — every one is already in place." >> "$GITHUB_STEP_SUMMARY"
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          branch="import/arc-edges-${{ github.run_id }}"
+          git config user.name "fandom-importer[bot]"
+          git config user.email "noreply@one-piece.wiki"
+          git checkout -b "$branch"
+          git add data/
+          git commit -m "data(import): part-of-arc edges from the rendered arc ranges (run ${{ github.run_id }})"
+          git push -u origin "$branch"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      # Reported, never enforced: the work is already safe on the
+      # branch, and an edge that fails validation costs a fix there,
+      # not another crawl.
+      - name: Validate the corpus
+        if: steps.push.outputs.pushed == 'true'
+        continue-on-error: true
+        run: |
+          if bun run validate && bun run check:references; then
+            echo "### Validation: passed" >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "### Validation: FAILED"
+              echo ""
+              echo "The edges are safe on \`${{ steps.push.outputs.branch }}\`."
+              echo "`check:references` refusing an edge means it points at an entity"
+              echo "the corpus does not hold — fix the plan, not the reference check."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
