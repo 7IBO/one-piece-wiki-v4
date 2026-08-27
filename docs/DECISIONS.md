@@ -8,6 +8,85 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-120 — Le chapitre lit l'HTML rendu, mesuré et non supposé
+
+**Date**: 2026-08-27
+
+**Contexte**: ADR-119 a ouvert l'HTML rendu comme second substrat, en
+le gardant délibérément étroit : « un repli pour les valeurs
+CALCULÉES ». La question posée ici est de savoir si le chapitre en
+fait partie. Elle a été tranchée par un comptage sur le corpus réel,
+après un crawl wikitext complet de 1193 pages de la catégorie
+« One Piece Chapters » :
+
+| champ                  | issu du wikitext |
+| ---------------------- | ---------------- |
+| `part-of-volume`       | **1** / 1193     |
+| `adapted-by` (épisode) | **0** / 1193     |
+| `released_at`          | **10** / 1193    |
+| `page_count`           | 251 / 1193       |
+
+Les dix `released_at` sont exactement les 9 chapitres semés à la main
+plus le chapitre 1 : **aucun** ne vient de l'import. Le mapper
+wikitext lit pourtant `vol`, `anime` et la date depuis longtemps — il
+lit des champs que le wikitext ne contient pas.
+
+Les mêmes pages en `prop=text` portent les quatre champs, sur les cinq
+échantillonnées (1, 500, 909, 1044, 1131) : `vol`, `date2`, `page`,
+`anime`, plus `ename`, `jname`, `rname`.
+
+C'est le constat des plages d'arcs, à l'identique : la valeur est
+calculée à l'expansion du gabarit, et `prop=wikitext` ne la verra
+jamais.
+
+**Options**:
+
+- A — Étendre le substrat rendu au chapitre.
+- B — Garder le wikitext et accepter qu'un chapitre n'ait ni volume,
+  ni date, ni épisode adapté.
+- C — Dériver le volume depuis `Volume Box.chapters` (littéral) et
+  laisser tomber date et épisode.
+
+**Choix**: A.
+
+**Rationale**: B laisse la planche Chapitre inconstructible — sans
+volume, sans date et sans adaptation, il ne reste que le numéro et le
+titre. C récupère le volume seul et demande quand même un second
+passage pour le reste : deux substrats pour un champ au lieu de quatre.
+
+Le coût annoncé par ADR-119 — « une dépendance au rendu de Fandom
+plutôt qu'à sa source » — est ici payé pour quatre champs factuels et
+1193 entités, pas pour un cas isolé. Le périmètre reste celui
+d'ADR-119 : ce sont bien des valeurs calculées, pas un contournement
+de confort.
+
+**Conséquences**:
+
+- `enrichChapterFromRendered` lit un infobox rendu et rend
+  propriétés, relations et traductions. Écrit **contre les captures
+  réelles** (`__tests__/fixtures/rendered/Chapter_*.infobox.html`,
+  découpées dans la réponse, jamais rédigées), pour la raison qu'ADR-119
+  a apprise à ses dépens.
+- `bun run import:fandom chapter-render --from N --to N --limit N
+  --stage` applique l'enrichissement par tranches — une requête rendue
+  par chapitre, donc jamais 1193 d'un coup.
+- **Une exception nommée à « les clés existantes gagnent »**. La
+  fusion des traductions protège une traduction humaine, et elle a
+  raison. Mais elle ne distingue pas une traduction humaine d'un
+  **placeholder semé par le projet** : 9 chapitres gardaient
+  `"Chapter 1044"` pendant que leurs voisins portaient le vrai titre.
+  `isSeededChapterTitle` reconnaît cette forme-là et **elle seule** —
+  le mot `Chapter` suivi du numéro du chapitre. Tout le reste est le
+  travail de quelqu'un et n'est pas touché, y compris un vrai titre qui
+  commencerait par ce mot.
+- Un désaccord de données est apparu au passage et n'est pas arbitré
+  ici : le corpus dit que le chapitre 1044 est paru le **7 mars 2022**,
+  la page rendue dit le **28 mars 2022**. La valeur du corpus est
+  semée à la main ; celle de Fandom est sourcée. L'enrichissement
+  fera gagner Fandom, comme pour toute propriété que le mapper produit.
+
+---
+
 ## ADR-119 — L'HTML rendu comme second substrat, pour les valeurs calculées seulement
 
 **Date**: 2026-08-27

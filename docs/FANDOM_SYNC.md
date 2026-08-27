@@ -289,8 +289,47 @@ Les deux autres portes sont fermées aussi :
 
 `action=parse&prop=text` renvoie le gabarit **expansé** — les plages y
 sont écrites. C'est faisable, mais ça change le substrat d'extraction
-(HTML rendu au lieu de wikitext) pour ce mapper. **Décision du
-mainteneur requise** avant de l'ouvrir : cf. `docs/STATE.md`.
+(HTML rendu au lieu de wikitext) pour ce mapper. Tranché par ADR-119
+(arcs), puis étendu au chapitre par ADR-120.
+
+## Le substrat rendu, et où il s'arrête (ADR-119, ADR-120)
+
+Deux substrats coexistent. Le wikitext reste le défaut ; l'HTML rendu
+est un repli pour les valeurs **calculées à l'expansion du gabarit**,
+que `prop=wikitext` ne peut pas voir par construction.
+
+Ce n'est pas une préférence, c'est un comptage. Après un crawl
+wikitext complet de 1193 pages de chapitres :
+
+| champ            |                         wikitext | rendu (5 pages échantillonnées) |
+| ---------------- | -------------------------------: | ------------------------------: |
+| `part-of-volume` |                         1 / 1193 |                           5 / 5 |
+| `adapted-by`     |                         0 / 1193 |                           5 / 5 |
+| `released_at`    | 10 / 1193 (tous semés à la main) |                           5 / 5 |
+| `page_count`     |                       251 / 1193 |                           5 / 5 |
+
+Commandes :
+
+```
+bun run import:fandom render "Chapter 1044" --out docs/audits/rendered
+bun run import:fandom arc-edges  --category "Story Arcs" --stage
+bun run import:fandom chapter-render --from 1 --to 200 --limit 200 --stage
+```
+
+`chapter-render` fait **une requête rendue par chapitre**. Il est donc
+découpé en tranches (`--from` / `--to` / `--limit`) et tourne via le
+workflow `fandom-chapter-render`, jamais sur 1193 pages d'un coup.
+
+### L'exception nommée à « les clés existantes gagnent »
+
+`stageToLocal` fusionne les traductions en faisant gagner les clés
+existantes, y compris sous `--overwrite`. La règle protège une
+traduction humaine et elle a raison — mais elle ne distingue pas une
+traduction humaine d'un **placeholder semé par le projet**.
+
+`isSeededChapterTitle` reconnaît cette forme-là et elle seule : le mot
+`Chapter` suivi du numéro du chapitre. Tout le reste est le travail de
+quelqu'un et n'est pas touché.
 
 ## Mapper coverage (ADR-079 + ADR-109)
 

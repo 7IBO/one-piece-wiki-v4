@@ -33,6 +33,7 @@ import { buildEmitFiles, type MapperEmit, mergeEntity, stageToLocal } from '../e
 import { type ArcSpans, findOverlaps, orderArcs, planArcEdges } from '../fandom/arc-ranges.ts';
 import { mapArc } from '../fandom/arc.ts';
 import type { BoxMapContext } from '../fandom/box.ts';
+import { enrichChapterFromRendered, isSeededChapterTitle } from '../fandom/chapter-rendered.ts';
 import { mapChapter } from '../fandom/chapter.ts';
 import { mapCharacter } from '../fandom/character.ts';
 import { FandomClient, type ParsedPage } from '../fandom/client.ts';
@@ -367,6 +368,125 @@ if (kind === 'crawl') {
   } else {
     process.stdout.write('(dry-run — pass --stage to write files)\n');
   }
+} else if (kind === 'chapter-render') {
+  // bun run import:fandom chapter-render [--from N] [--to N] [--limit N] [--stage]
+  //
+  // The chapter substrate switch (ADR-119 applied to chapters).
+  // Measured on the corpus after a full 1193-page category crawl of
+  // WIKITEXT: part-of-volume 1/1193, adapted-by 0/1193, released_at
+  // 10/1193 — and all ten of those were hand-seeded, none imported.
+  // The same pages fetched with `prop=text` carry every one of them.
+  //
+  // One rendered fetch per chapter, so it is chunked: `--from`/`--to`
+  // bound the range and `--limit` bounds the run, letting CI walk the
+  // corpus in passes instead of one 20-minute request storm.
+  const opt = (name: string): string | undefined =>
+    args.flatMap((
+      a,
+      i,
+    ) => (a === `--${name}` && args[i + 1] !== undefined ? [args[i + 1]!] : []))[0];
+  const from = Number(opt('from') ?? '0');
+  const to = Number(opt('to') ?? String(Number.MAX_SAFE_INTEGER));
+  const limit = Number(opt('limit') ?? '50');
+
+  const onDisk = [...await ordinalsOnDisk('manga-chapter')]
+    .filter((n) => n >= from && n <= to)
+    .sort((a, b) => a - b)
+    .slice(0, limit);
+  process.stdout.write(`${onDisk.length} chapter(s) in range, fetching rendered pages…\n`);
+
+  let entitiesWritten = 0;
+  let titlesWritten = 0;
+  let seedsReplaced = 0;
+  const failures: string[] = [];
+  for (const number of onDisk) {
+    const title = `Chapter ${number}`;
+    let enrichment: ReturnType<typeof enrichChapterFromRendered> = null;
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      const rendered = await client.fetchRendered(title);
+      enrichment = enrichChapterFromRendered(rendered.html);
+    } catch (error) {
+      failures.push(`${title}: ${error instanceof Error ? error.message : String(error)}`);
+      continue;
+    }
+    if (enrichment === null) {
+      failures.push(`${title}: no chapter infobox in the rendered page`);
+      continue;
+    }
+    // The infobox names the chapter it belongs to. If that disagrees
+    // with the page we asked for, the page is a redirect or a
+    // disambiguation and folding it in would corrupt a neighbour.
+    if (enrichment.number !== number) {
+      failures.push(`${title}: infobox says chapter ${enrichment.number}`);
+      continue;
+    }
+    for (const warning of enrichment.warnings) {
+      process.stdout.write(`  warn ${title}: ${warning}\n`);
+    }
+    if (!stage) continue;
+
+    // eslint-disable-next-line no-await-in-loop
+    if (
+      await addToEntity(`manga-chapter:${number}`, {
+        properties: enrichment.properties,
+        relations: enrichment.relations,
+      })
+    ) entitiesWritten += 1;
+
+    for (const [locale, bundle] of Object.entries(enrichment.translations)) {
+      const path = join(
+        REPO_ROOT,
+        'data',
+        'universes',
+        'one-piece',
+        'translations',
+        locale,
+        'manga-chapter',
+        `${number}.json`,
+      );
+      const file = Bun.file(path);
+      // eslint-disable-next-line no-await-in-loop
+      const current = (await file.exists())
+        // eslint-disable-next-line no-await-in-loop
+        ? (await file.json()) as Record<string, string>
+        : {};
+      const next = { ...current };
+      for (const [key, value] of Object.entries(bundle)) {
+        const stored = current[key];
+        // Existing keys win — an import must never clobber a human
+        // translation. The ONE exception is the seed the project
+        // wrote for itself, which is not a translation at all.
+        if (stored === undefined) next[key] = value;
+        else if (isSeededChapterTitle(number, stored) && stored !== value) {
+          next[key] = value;
+          seedsReplaced += 1;
+          process.stdout.write(`  seed → real: ${locale} ${key} "${stored}" → "${value}"\n`);
+        }
+      }
+      const before = (await file.exists()) ? await file.text() : '';
+      const after = `${JSON.stringify(next, null, 2)}\n`;
+      if (after !== before) {
+        // eslint-disable-next-line no-await-in-loop
+        await Bun.write(path, after);
+        titlesWritten += 1;
+      }
+    }
+  }
+
+  process.stdout.write(
+    `\n${onDisk.length - failures.length} enriched, ${failures.length} failed.\n`,
+  );
+  if (stage) {
+    process.stdout.write(
+      `Staged: ${entitiesWritten} entity file(s), ${titlesWritten} translation file(s)`
+        + `, ${seedsReplaced} seeded title(s) replaced.\n`,
+    );
+  } else process.stdout.write('(dry-run — pass --stage to write files)\n');
+  for (const failure of failures.slice(0, 20)) process.stdout.write(`  ${failure}\n`);
+  if (failures.length > 20) {
+    process.stdout.write(`  … and ${failures.length - 20} more\n`);
+  }
 } else if (kind === 'render') {
   // bun run import:fandom render "Alabasta Arc" --out docs/audits/rendered
   //
@@ -460,6 +580,7 @@ if (kind === 'crawl') {
     `Usage: bun run import:fandom <${MAPPER_KINDS.join('|')}> <page…> [--stage] [--overwrite]\n`
       + '       bun run import:fandom crawl --category <name>… [--depth N] [--page <title>…] [--limit N] [--skip-known] [--stage]\n'
       + '       bun run import:fandom arc-edges [--category <name>…] [--limit N] [--stage]\n'
+      + '       bun run import:fandom chapter-render [--from N] [--to N] [--limit N] [--stage]\n'
       + '       bun run import:fandom render <page…> [--out <dir>]\n'
       + '       bun run import:fandom check-updates\n',
   );
