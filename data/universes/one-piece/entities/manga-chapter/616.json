@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:616",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-616",
+  "properties": {
+    "number": {
+      "value": 616
+    },
+    "title_key": {
+      "value_key": "manga-chapter.616.title"
+    },
+    "page_count": {
+      "value": 17
+    }
+  },
+  "relations": []
+}

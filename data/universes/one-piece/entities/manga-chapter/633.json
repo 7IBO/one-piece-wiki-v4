@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:633",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-633",
+  "properties": {
+    "number": {
+      "value": 633
+    },
+    "title_key": {
+      "value_key": "manga-chapter.633.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "manga-chapter:763",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-763",
+  "properties": {
+    "number": {
+      "value": 763
+    },
+    "title_key": {
+      "value_key": "manga-chapter.763.title"
+    }
+  },
+  "relations": []
+}
