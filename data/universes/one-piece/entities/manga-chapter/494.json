@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:494",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-494",
+  "properties": {
+    "number": {
+      "value": 494
+    },
+    "title_key": {
+      "value_key": "manga-chapter.494.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

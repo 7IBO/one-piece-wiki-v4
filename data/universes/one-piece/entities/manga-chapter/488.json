@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:488",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-488",
+  "properties": {
+    "number": {
+      "value": 488
+    },
+    "title_key": {
+      "value_key": "manga-chapter.488.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

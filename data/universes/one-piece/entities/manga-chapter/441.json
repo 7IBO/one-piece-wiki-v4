@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:441",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-441",
+  "properties": {
+    "number": {
+      "value": 441
+    },
+    "title_key": {
+      "value_key": "manga-chapter.441.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

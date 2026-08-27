@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:450",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-450",
+  "properties": {
+    "number": {
+      "value": 450
+    },
+    "title_key": {
+      "value_key": "manga-chapter.450.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:437",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-437",
+  "properties": {
+    "number": {
+      "value": 437
+    },
+    "title_key": {
+      "value_key": "manga-chapter.437.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

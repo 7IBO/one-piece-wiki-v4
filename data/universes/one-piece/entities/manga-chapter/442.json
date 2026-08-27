@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:442",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-442",
+  "properties": {
+    "number": {
+      "value": 442
+    },
+    "title_key": {
+      "value_key": "manga-chapter.442.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

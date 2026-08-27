@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:423",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-423",
+  "properties": {
+    "number": {
+      "value": 423
+    },
+    "title_key": {
+      "value_key": "manga-chapter.423.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

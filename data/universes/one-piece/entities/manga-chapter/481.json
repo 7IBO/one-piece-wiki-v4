@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:481",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-481",
+  "properties": {
+    "number": {
+      "value": 481
+    },
+    "title_key": {
+      "value_key": "manga-chapter.481.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}
