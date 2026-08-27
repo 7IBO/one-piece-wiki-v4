@@ -8,6 +8,70 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-118 — La recherche gagne une palette convoquée ; la page reste
+
+**Date**: 2026-08-27
+
+**Contexte**: ADR-108 a livré `/search` comme une PAGE, et écrivait
+noir sur blanc : _« No autocomplete popover: results are a page, and a
+floating suggestion card is exactly the "modern web app" register
+WEB_APP.md § Identity rejects. »_ Le mainteneur a ensuite validé le
+canevas v2, dont la planche `Recherche.dc.html` **est** une palette en
+surimpression — champ-en-tête, puces par type avec compteurs, résultats
+groupés, navigation ↑↓↵, pied « Limité à ta progression ».
+
+Ce n'est donc pas une décision que je prends : c'est un renversement
+décidé par le mainteneur en validant la maquette. Cet ADR l'enregistre
+et dit ce qui, d'ADR-108, survit.
+
+**Options**:
+
+- A — Remplacer `/search` par la palette. Une seule surface, mais on
+  perd l'URL partageable, le rendu serveur avant hydratation, et le
+  chemin sans JavaScript.
+- B — Ajouter la palette, garder la page. Deux surfaces sur le même
+  moteur de recherche serveur.
+- C — Ne rien faire, au motif qu'ADR-108 l'interdit. Ce serait opposer
+  un ADR à celui qui l'a arbitré.
+
+**Choix**: B.
+
+**Rationale**: Ce qui rendait ADR-108 juste n'était pas « pas de
+surimpression », c'était _rien ne flotte que le lecteur n'ait
+convoqué_. Une palette ouverte par ⌘K ou par le champ est convoquée ;
+une carte de suggestions qui surgit pendant la frappe ne l'est pas. La
+distinction tient, et le registre de VISION.md avec elle.
+
+Garder la page coûte peu et rapporte tout ce qu'une surimpression ne
+sait pas faire : `/search?q=…` se partage, se met en favori, se rend
+côté serveur, et fonctionne avant hydratation comme sans JavaScript.
+Le `<form>` de l'en-tête reste donc un vrai formulaire ; la palette se
+greffe dessus.
+
+**Conséquences**:
+
+- `SearchPalette` interroge `fetchSearch`, exactement la même fonction
+  serveur que la page : un seul classement, une seule grille, un seul
+  passage par la barrière anti-spoil (qui vit en SQL).
+- **Les compteurs de puces comptent l'écran, jamais le corpus.** Un
+  résultat que le lecteur n'a pas atteint n'arrive jamais jusqu'au
+  composant ; le compter serait imprimer un décompte de ce qu'on lui
+  cache, ce qui est un spoiler en soi (« 5 personnages » dit qu'il en
+  existe cinq). `lib/search-groups.ts` porte la règle et ses tests.
+- **« au-delà de ta progression » n'est dit que si un curseur existe.**
+  Servie à un lecteur qui n'a rien déclaré, la phrase serait une fausse
+  explication pour un échec ordinaire — même règle que celle que porte
+  l'en-tête de `routes/index.tsx` depuis la refonte de l'accueil : ne
+  jamais compter ni expliquer ce qui est retenu.
+- Le pied « Limité à ta progression » suit la même condition.
+- La palette n'invente rien que le serveur ne fournisse : la maquette
+  montrait « résultats pour _gomu gomu_ » sur une faute de frappe, mais
+  `buildSearchView` renvoie `approximate: boolean` sans terme corrigé.
+  On affiche donc la mention approximative existante, pas une
+  correction fabriquée.
+
+---
+
 ## ADR-117 — Les bornes entrent dans le lockfile de compat
 
 **Date**: 2026-08-27
