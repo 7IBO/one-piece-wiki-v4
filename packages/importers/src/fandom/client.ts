@@ -35,6 +35,15 @@ export type ParsedPage = {
   readonly wikitext: string;
   /** Canonical page URL — stored as import provenance (`sourceUrl`). */
   readonly url: string;
+  /**
+   * Revision this wikitext came from, when the API reported one.
+   * Absent for a response served from a cache written before the
+   * importer started asking for `revid` — the ledger then records the
+   * page with no `lastRevId`, which reads as "never imported at a
+   * known revision" and re-fetches on the next sync. Degrading to a
+   * re-fetch is the safe direction.
+   */
+  readonly revId?: number;
 };
 
 /** One category row from `list=allcategories` + `acprop=size`. */
@@ -97,7 +106,7 @@ export class FandomClient {
     const params = new URLSearchParams({
       action: 'parse',
       page,
-      prop: 'wikitext',
+      prop: 'wikitext|revid',
       format: 'json',
       formatversion: '2',
     });
@@ -120,7 +129,7 @@ export class FandomClient {
 
     const envelope = JSON.parse(raw) as {
       error?: { code?: string; info?: string; };
-      parse?: { title?: string; pageid?: number; wikitext?: string; };
+      parse?: { title?: string; pageid?: number; wikitext?: string; revid?: number; };
     };
     if (envelope.error !== undefined) {
       throw new Error(
@@ -138,6 +147,7 @@ export class FandomClient {
       pageId: parse.pageid ?? 0,
       wikitext: parse.wikitext,
       url: this.pageUrl(parse.title),
+      ...(typeof parse.revid === 'number' ? { revId: parse.revid } : {}),
     };
   }
 

@@ -127,11 +127,73 @@ export function staleEntries(
   return out;
 }
 
-/** Insert or update one page link (immutably, keyed by entityId). */
-export function upsertPage(
+/** One page an import run actually reached, as the run saw it. */
+export type ImportedPage = {
+  readonly entityId: string;
+  /** Canonical title the mapper ran on (after any redirect hop). */
+  readonly page: string;
+  readonly pageId: number;
+  /** Revision the wikitext came from, when the API reported one. */
+  readonly revId?: number;
+  /** Alias the run entered through, when the seed was a redirect. */
+  readonly alias?: string;
+  /** ISO timestamp of the run. */
+  readonly importedAt: string;
+};
+
+/**
+ * Merge one run's observation onto what the ledger already knows.
+ *
+ * A wholesale replace would be wrong here: a crawl reaches a page
+ * through AT MOST ONE alias, so writing the run's view over the entry
+ * would discard every redirect learned by earlier runs and by
+ * `check-updates` (which reads them in batches of fifty). Aliases
+ * therefore accumulate; identity fields are refreshed only when the
+ * run actually observed them.
+ */
+function mergeImport(
+  previous: FandomPageLink | undefined,
+  imported: ImportedPage,
+): FandomPageLink {
+  const aliases = new Set(previous?.redirects ?? []);
+  // A page renamed on Fandom leaves its old title behind as a working
+  // alias — inbound wikilinks still use it.
+  if (previous !== undefined && normalizeTitle(previous.page) !== normalizeTitle(imported.page)) {
+    aliases.add(previous.page);
+  }
+  if (
+    imported.alias !== undefined
+    && normalizeTitle(imported.alias) !== normalizeTitle(imported.page)
+  ) {
+    aliases.add(imported.alias);
+  }
+  const revId = imported.revId ?? previous?.lastRevId;
+  const pageId = imported.pageId !== 0 ? imported.pageId : (previous?.pageId ?? 0);
+  return {
+    entityId: imported.entityId,
+    page: imported.page,
+    pageId,
+    redirects: [...aliases].sort((a, b) => a.localeCompare(b)),
+    ...(revId !== undefined ? { lastRevId: revId } : {}),
+    lastImportedAt: imported.importedAt,
+  };
+}
+
+/**
+ * Fold a run's imports into the ledger, keyed by entity id, sorted so
+ * the committed file diffs line-by-line rather than wholesale.
+ *
+ * This is what makes `--skip-known` mean anything: until the ledger is
+ * written back, every bounded run re-crawls the same first `limit`
+ * pages of a category and the frontier never advances.
+ */
+export function recordImports(
   registry: FandomRegistry,
-  link: FandomPageLink,
+  imports: readonly ImportedPage[],
 ): FandomRegistry {
-  const rest = registry.pages.filter((p) => p.entityId !== link.entityId);
-  return { pages: [...rest, link].sort((a, b) => a.entityId.localeCompare(b.entityId)) };
+  const byId = new Map(registry.pages.map((p) => [p.entityId, p]));
+  for (const one of imports) byId.set(one.entityId, mergeImport(byId.get(one.entityId), one));
+  return {
+    pages: [...byId.values()].sort((a, b) => a.entityId.localeCompare(b.entityId)),
+  };
 }

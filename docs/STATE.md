@@ -15,8 +15,47 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-27 (refonte design v12 : quatre tranches
-livrées sur `claude/test-atopl8` ; ADR-112)
+**Last updated**: 2026-08-27 (frontière d'import réparée : le registre
+Fandom est enfin réécrit)
+
+## 2026-08-27 — la frontière d'import était un no-op
+
+Le plan « sources d'abord, sujets ensuite » (chapitres 398→1145,
+épisodes 401→1122, puis les 117 fruits qui les référencent) butait sur
+un défaut simple et invisible : `data/import/fandom-pages.json` était
+**lu et jamais écrit**. Trois entrées au registre face à 881 entités
+importées. `--skip-known` sautait donc une page sur 881, et chaque run
+borné repartait de « Chapter 0 » — le commentaire du code affirmait
+depuis le run 5 que « successive bounded runs should ADVANCE », et
+c'était faux.
+
+Réparé : tout run qui **stage** replie ses résultats dans le registre
+(`recordImports`) et le réécrit. Trois points qui comptent :
+
+- **Les alias s'accumulent.** Un crawl n'atteint une page que par UN
+  redirect au plus ; un remplacement en bloc effacerait le reste du jeu
+  d'alias appris par les runs précédents et par `check-updates` (qui les
+  lit par paquets de cinquante). `mergeImport` fusionne, et garde
+  l'ancien titre d'une page renommée comme alias — les wikiliens
+  entrants l'utilisent encore.
+- **La révision est capturée.** `action=parse` demande maintenant
+  `prop=wikitext|revid`, donc une entrée porte la révision réellement
+  lue. Sans ça `check-updates` aurait déclaré les 881 pages périmées à
+  perpétuité (`lastRevId === undefined` ⇒ jamais importée).
+- **Une entrée est écrite même quand le fichier d'entité a été sauté**
+  parce qu'il existait : c'est ce que ce saut veut dire, et le registre
+  est la seule mémoire de la provenance (aucun fichier d'entité ne la
+  porte).
+
+Pas d'ADR : ADR-081 décrivait déjà ce registre et ce comportement. Ce
+n'était pas une décision à prendre, c'était du code qui ne faisait pas
+ce qu'il disait.
+
+**Conduite à tenir pour la reprise des imports** : le premier run par
+catégorie part **sans** `skip_known` (il remappe l'existant sans
+l'écraser et l'inscrit au registre avec de vraies `pageId`/`revid`) ;
+les suivants passent `skip_known` et avancent. Une PR d'import mergée
+avant de lancer la suivante, sinon deux runs repartent du même point.
 
 ## 2026-08-27 — refonte design v12, et le vrai goulot d'étranglement
 

@@ -20,6 +20,10 @@
  * (data/import/fandom-pages.json) and lists the stale ones — the CI
  * sync workflow runs exactly this.
  *
+ * Any run that STAGES also writes the ledger back, so `--skip-known`
+ * advances: chained bounded runs walk forward through a category
+ * instead of re-fetching its first `limit` pages every time.
+ *
  * NETWORK: needs egress to onepiece.fandom.com (blocked in cloud
  * Claude sandboxes; fine locally and on CI runners — ADR-079 §6).
  */
@@ -36,7 +40,13 @@ import { mapCrew } from '../fandom/crew.ts';
 import { mapDevilFruit } from '../fandom/devil-fruit.ts';
 import { mapEpisode } from '../fandom/episode.ts';
 import { mapOrganization } from '../fandom/organization.ts';
-import { buildTitleIndex, type FandomRegistry, staleEntries } from '../fandom/registry.ts';
+import {
+  buildTitleIndex,
+  type FandomRegistry,
+  type ImportedPage,
+  recordImports,
+  staleEntries,
+} from '../fandom/registry.ts';
 import { mapShip } from '../fandom/ship.ts';
 import { loadVocabularyIndexes } from '../fandom/vocabulary.ts';
 import { mapVolume } from '../fandom/volume.ts';
@@ -59,6 +69,40 @@ const REGISTRY_PATH = join(REPO_ROOT, 'data', 'import', 'fandom-pages.json');
 
 async function loadRegistry(): Promise<FandomRegistry> {
   return (await Bun.file(REGISTRY_PATH).json()) as FandomRegistry;
+}
+
+/**
+ * Write the ledger back after a staging run.
+ *
+ * Until this existed the ledger was read and never written: three
+ * entries against 881 imported entities, so `--skip-known` skipped
+ * nothing and every bounded run re-crawled the same first `limit`
+ * pages of a category. Chaining runs to walk 1145 chapters only works
+ * because the frontier is now PERSISTED.
+ *
+ * Only `--stage` writes. A dry run must leave the tree untouched, and
+ * a ledger entry for an entity whose file was never written would
+ * make the next run skip a page it has not actually imported.
+ */
+async function saveRegistry(registry: FandomRegistry): Promise<void> {
+  await Bun.write(REGISTRY_PATH, `${JSON.stringify(registry, null, 2)}\n`);
+}
+
+/** What the ledger records about one page a run mapped. */
+function importedFrom(
+  page: ParsedPage,
+  entityId: string,
+  importedAt: string,
+  alias?: string,
+): ImportedPage {
+  return {
+    entityId,
+    page: page.title,
+    pageId: page.pageId,
+    ...(page.revId !== undefined ? { revId: page.revId } : {}),
+    ...(alias !== undefined ? { alias } : {}),
+    importedAt,
+  };
 }
 
 async function buildMappers(): Promise<
@@ -121,6 +165,8 @@ if (kind === 'crawl') {
     log: (line) => process.stdout.write(`  ${line}\n`),
   });
 
+  const importedAt = new Date().toISOString();
+  const imported: ImportedPage[] = [];
   for (const r of report.results) {
     const files = buildEmitFiles(r.mapped);
     if (stage) {
@@ -129,6 +175,17 @@ if (kind === 'crawl') {
       for (const p of staged.written) process.stdout.write(`  wrote ${p}\n`);
       for (const sk of staged.skipped) process.stdout.write(`  skip ${sk.path}: ${sk.reason}\n`);
     }
+    // Recorded even when the entity file was SKIPPED as already
+    // present: "this page is imported" is exactly what that skip
+    // means, and the ledger is how the next run knows it.
+    imported.push(importedFrom(r.page, r.mapped.entity.id, importedAt, r.redirectedFrom));
+  }
+  if (stage && imported.length > 0) {
+    const next = recordImports(registry, imported);
+    await saveRegistry(next);
+    process.stdout.write(
+      `  ledger: ${imported.length} page(s) recorded, ${next.pages.length} tracked total\n`,
+    );
   }
   const skipNote = report.skippedKnown > 0 ? `, ${report.skippedKnown} already known` : '';
   process.stdout.write(
@@ -187,6 +244,8 @@ if (kind === 'crawl') {
   && pages.length > 0
 ) {
   const mapper = (await buildMappers())[kind as MapperKind];
+  const importedAt = new Date().toISOString();
+  const imported: ImportedPage[] = [];
   let failures = 0;
   for (const page of pages) {
     // eslint-disable-next-line no-await-in-loop
@@ -207,9 +266,17 @@ if (kind === 'crawl') {
     } else {
       for (const f of files) process.stdout.write(`  (dry-run) ${f.path}\n`);
     }
+    imported.push(importedFrom(parsed, result.entity.id, importedAt));
     process.stdout.write(`OK "${page}" → ${result.entity.id}\n`);
   }
   if (stage) {
+    if (imported.length > 0) {
+      const next = recordImports(await loadRegistry(), imported);
+      await saveRegistry(next);
+      process.stdout.write(
+        `  ledger: ${imported.length} page(s) recorded, ${next.pages.length} tracked total\n`,
+      );
+    }
     process.stdout.write(
       'Staged. Run the gauntlet (schema:check, validate, check:references) before committing.\n',
     );

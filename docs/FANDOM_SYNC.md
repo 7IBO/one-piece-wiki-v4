@@ -205,12 +205,36 @@ Trois types n'ont **aucune catégorie rattachée** dans le relevé :
 3. `Volumes`, `Movies` si nécessaires
 4. puis les sujets : `Devil Fruits`, `Humans`, `Crews`, …
 
-### Contrainte opérationnelle : une PR à la fois
+### La frontière : `--skip-known` et le registre
 
 `skip_known` s'appuie sur `data/import/fandom-pages.json`, **commité par
-la PR d'import**. Deux runs lancés avant que la première PR soit mergée
-repartent donc du même point et se marchent dessus. Enchaîner les runs
-suppose de merger chaque PR avant de lancer la suivante.
+la PR d'import**.
+
+Jusqu'au 2026-08-27 ce registre était **lu et jamais écrit** : trois
+entrées face à 881 entités importées. `--skip-known` ne sautait donc
+rien, et chaque run borné refetchait les mêmes `limit` premières pages
+de la catégorie — la frontière était un no-op, et l'intention (« deux
+runs successifs avancent ») n'était vraie que dans le commentaire du
+code. Tout run qui **stage** réécrit désormais le registre
+(`recordImports`), avec le `revid` de la révision effectivement lue.
+
+Deux conséquences opérationnelles :
+
+- **Une PR à la fois.** Le registre n'avance qu'une fois la PR d'import
+  mergée. Deux runs lancés avant repartent du même point et se marchent
+  dessus.
+- **Le premier run d'une catégorie déjà partiellement importée se
+  lance SANS `skip_known`.** Les 406 chapitres et 400 épisodes déjà au
+  corpus ne sont pas au registre : un premier passage les remappe (les
+  fichiers d'entité existants ne sont jamais écrasés, cf. `emit.ts`) et
+  les **inscrit**, ce qui donne au registre de vraies `pageId` et
+  `lastRevId` plutôt qu'une provenance reconstituée. Les runs suivants
+  passent `skip_known` et avancent.
+
+Une entrée est écrite même quand le fichier d'entité a été **sauté
+parce qu'il existait déjà** : c'est exactement ce que ce saut veut dire
+— « cette page est importée » — et le registre est la seule mémoire de
+ce fait (aucun fichier d'entité ne porte sa provenance Fandom).
 
 ## Mapper coverage (ADR-079 + ADR-109)
 

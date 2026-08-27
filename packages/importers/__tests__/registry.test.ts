@@ -10,9 +10,9 @@ import {
   detectEntityLinks,
   type FandomRegistry,
   normalizeTitle,
+  recordImports,
   resolveTitle,
   staleEntries,
-  upsertPage,
 } from '../src/fandom/registry.ts';
 import { parseRedirect } from '../src/fandom/wikitext.ts';
 
@@ -82,18 +82,79 @@ describe('update detection', () => {
     ]);
   });
 
-  it('upsertPage replaces by entityId and keeps the ledger sorted', () => {
-    const next = upsertPage(registry, {
+  it('fetchParse asks for the revid and carries it onto the page', async () => {
+    // The ledger's `lastRevId` is the whole basis of staleness: a page
+    // recorded without one re-fetches forever.
+    const seen: string[] = [];
+    const client = new FandomClient({
+      minDelayMs: 0,
+      fetchImpl: ((url: string | URL | Request) => {
+        seen.push(String(url));
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              parse: {
+                title: 'Chapter 1044',
+                pageid: 333114,
+                revid: 987,
+                wikitext: '{{Chapter Box}}',
+              },
+            }),
+            { status: 200 },
+          ),
+        );
+      }) as typeof fetch,
+    });
+    const page = await client.fetchParse('Chapter 1044');
+    expect(seen[0]).toContain('prop=wikitext%7Crevid');
+    expect(page.revId).toBe(987);
+  });
+
+  it('recordImports appends new pages and keeps the ledger sorted by id', () => {
+    const next = recordImports(registry, [
+      {
+        entityId: 'manga-chapter:1045',
+        page: 'Chapter 1045',
+        pageId: 333115,
+        revId: 42,
+        importedAt: '2026-06-14T22:00:00Z',
+      },
+    ]);
+    expect(next.pages.map((p) => p.entityId)).toEqual([
+      'character:luffy',
+      'manga-chapter:1044',
+      'manga-chapter:1045',
+    ]);
+    expect(next.pages[2]?.lastRevId).toBe(42);
+    expect(next.pages[2]?.lastImportedAt).toBe('2026-06-14T22:00:00Z');
+  });
+
+  it('recordImports never drops aliases an earlier run learned', () => {
+    // A crawl reaches a page through at most ONE alias; a wholesale
+    // replace would erase the rest of the redirect set.
+    const next = recordImports(registry, [{
       entityId: 'character:luffy',
       page: 'Monkey D. Luffy',
       pageId: 1444,
-      redirects: ['Straw Hat Luffy', 'Luffy', 'Lucy'],
-      lastRevId: 150,
-      lastImportedAt: '2026-06-14T22:00:00Z',
-    });
-    expect(next.pages).toHaveLength(2);
-    expect(next.pages[0]?.entityId).toBe('character:luffy');
+      revId: 150,
+      alias: 'Mugiwara',
+      importedAt: '2026-06-14T22:00:00Z',
+    }]);
+    expect(next.pages[0]?.redirects).toEqual(['Luffy', 'Mugiwara', 'Straw Hat Luffy']);
     expect(next.pages[0]?.lastRevId).toBe(150);
+  });
+
+  it('recordImports keeps a renamed page reachable under its old title', () => {
+    const next = recordImports(registry, [{
+      entityId: 'manga-chapter:1044',
+      page: 'Chapter 1044 (canonical)',
+      pageId: 333114,
+      importedAt: '2026-06-14T22:00:00Z',
+    }]);
+    const moved = next.pages.find((p) => p.entityId === 'manga-chapter:1044');
+    expect(moved?.redirects).toEqual(['Chapter 1044']);
+    // No revid observed this run: the one already on file survives.
+    expect(moved?.lastRevId).toBe(200);
   });
 
   it('client.queryInfo parses info+redirects; recentChangesSince parses the feed', async () => {
