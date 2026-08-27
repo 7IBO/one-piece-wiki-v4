@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.601.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2010-10-25",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:return-to-sabaody"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:61"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:521"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:2"
     }
   ]
 }

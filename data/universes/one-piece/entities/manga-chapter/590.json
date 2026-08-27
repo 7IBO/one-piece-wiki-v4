@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.590.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2010-07-05",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:post-war"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:60"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:505"
     }
   ]
 }

@@ -12,12 +12,32 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2010-10-18",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:return-to-sabaody"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:61"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:519"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:520"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:2"
     }
   ]
 }

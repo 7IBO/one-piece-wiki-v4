@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.584.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2010-05-17",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:post-war"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:59"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:494"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:495"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:498"
     }
   ]
 }

@@ -11,7 +11,7 @@
       "value_key": "manga-chapter.432.title"
     },
     "released_at": {
-      "value": "2006-09-15",
+      "value": "2006-10-30",
       "territory": "jp"
     },
     "page_count": {
@@ -22,6 +22,14 @@
     {
       "type": "part-of-arc",
       "target": "arc:post-enies-lobby"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:45"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:314"
     }
   ]
 }

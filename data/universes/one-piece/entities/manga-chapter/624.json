@@ -12,12 +12,32 @@
     },
     "page_count": {
       "value": 17
+    },
+    "released_at": {
+      "value": "2011-05-16",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:fish-man-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:63"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:544"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:545"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:13"
     }
   ]
 }

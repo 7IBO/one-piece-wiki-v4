@@ -12,12 +12,28 @@
     },
     "page_count": {
       "value": 17
+    },
+    "released_at": {
+      "value": "2010-12-20",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:fish-man-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:62"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:527"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:6"
     }
   ]
 }

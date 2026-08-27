@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.631.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2011-07-11",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:fish-man-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:64"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:551"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:15"
     }
   ]
 }

@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.538.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2009-04-06",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:impel-down"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:55"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:439"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:440"
     }
   ]
 }

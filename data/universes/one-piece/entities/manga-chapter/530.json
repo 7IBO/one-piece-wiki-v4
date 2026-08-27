@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.530.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2009-02-02",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:impel-down"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:54"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:431"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:425"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:432"
     }
   ]
 }

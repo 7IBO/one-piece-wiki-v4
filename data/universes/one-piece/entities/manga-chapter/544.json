@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.544.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2009-06-01",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:impel-down"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:56"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:454"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:446"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:447"
     }
   ]
 }
