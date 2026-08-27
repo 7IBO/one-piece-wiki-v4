@@ -164,6 +164,40 @@ Un fruit apparu dans un épisode filler (`devil-fruit:hiso-hiso-no-mi →
 anime-episode:54`) exige donc aussi les épisodes, pas seulement les
 chapitres.
 
+### Les noms de catégories ne se devinent pas
+
+**Deuxième constat du 2026-08-27.** Un run sur `Chapters` a rendu
+`category "Chapters": 0 page(s)` en zéro seconde, sans erreur. La
+catégorie **n'existe pas** : MediaWiki répond une liste vide pour une
+catégorie inexistante, exactement comme pour une catégorie vide. L'échec
+est donc **silencieux**, et l'exemple donné par le workflow lui-même
+(`e.g. Chapters, Humans`) était faux depuis le début.
+
+Le relevé de structure (`docs/audits/fandom-structure-*.json`, 2 641
+catégories réelles) fait autorité. Les noms utiles :
+
+| Type visé       | Catégorie réelle         | Pages | Sous-cat. |
+| --------------- | ------------------------ | ----: | --------: |
+| `manga-chapter` | **`One Piece Chapters`** |     0 |         5 |
+| `anime-episode` | **`Episodes`**           |     0 |         8 |
+| `character`     | **`Characters`**         |     0 |        12 |
+| `character`     | `Humans`                 |  1051 |         4 |
+| `devil-fruit`   | `Devil Fruits`           |     6 |         7 |
+| `crew`          | `Pirate Crews`           |     8 |         4 |
+| `arc`           | `Story Arcs`             |    34 |         1 |
+| `volume`        | `One Piece Volumes`      |   116 |         1 |
+| `location`      | `Locations`              |     4 |        21 |
+
+**La colonne « Pages » explique la profondeur.** La plupart des
+catégories utiles ne contiennent **aucune page en direct** : tout est
+dans les sous-catégories. `One Piece Chapters` en a cinq, `Episodes`
+huit, `Locations` vingt et une. Sous la profondeur nécessaire, le crawl
+renvoie 0 sans rien dire — d'où `depth` par défaut à 3.
+
+Trois types n'ont **aucune catégorie rattachée** dans le relevé :
+`saga`, `organization`, `technique`. Ils devront être peuplés autrement
+(depuis les pages qui les référencent, ou à la main).
+
 ### Ordre recommandé
 
 1. `Chapters` — l'ancre de presque tout

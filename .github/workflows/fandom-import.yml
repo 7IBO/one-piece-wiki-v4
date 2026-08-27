@@ -12,16 +12,24 @@ on:
   workflow_dispatch:
     inputs:
       category:
-        description: 'Fandom category to crawl (e.g. Chapters, Humans)'
+        description: >-
+          Fandom category to crawl, EXACT name without the Category: prefix.
+          The obvious guesses are often wrong — "Chapters" does not exist.
+          Real ones: One Piece Chapters, Episodes, Characters, Humans,
+          Devil Fruits, Pirate Crews, Story Arcs, Locations, One Piece Volumes.
+          Full list: docs/audits/fandom-structure-*.json (2641 categories).
         required: true
       limit:
         description: 'Max pages to fetch this run'
         required: true
         default: '25'
       depth:
-        description: 'Subcategory levels to descend (Fandom nests articles under e.g. Volume N)'
+        description: >-
+          Subcategory levels to descend. Most real categories hold ZERO pages
+          directly — "One Piece Chapters" is 5 subcategories, "Episodes" is 8.
+          Below the needed depth the crawl silently returns 0 pages.
         required: true
-        default: '2'
+        default: '3'
       skip_known:
         description: 'Skip pages already in data/import/fandom-pages.json so successive runs advance'
         required: true
