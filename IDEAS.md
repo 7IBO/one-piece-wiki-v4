@@ -806,3 +806,41 @@ demande l'accord du mainteneur et une entrée dans DECISIONS.md.
 Note au passage : `no-multi-comp` sur `apps/web/src/routes/__root.tsx`
 est un faux positif. Un fichier de route TanStack Start regroupe
 légitimement le document racine, la mise en page et le 404.
+
+## Précision de `since` : « au plus tard à », le cas Rocks (2026-08-27)
+
+`since` est un `source_ref` qui affirme « à partir de cette source ».
+Quand on sait seulement qu'un personnage **était présent** au chapitre N
+sans qu'aucune case ne montre son arrivée — l'équipage de Rocks, Karoo
+chez les Chapeaux de Paille — écrire `since: manga-chapter:N` affirme
+une date d'arrivée qui n'est pas dans l'œuvre.
+
+`attested_by` ne couvre pas ce cas : il désigne une référence externe
+(interview, site officiel), pas une borne temporelle floue.
+
+Piste : un qualificateur de **précision** sur `since` (`exact` par
+défaut, `at_latest` sinon), plutôt qu'un second champ propre à
+`member-of` — toutes les propriétés historisées en bénéficieraient d'un
+coup. L'UI distingue alors « à bord depuis le ch. 6 » de « présent au
+ch. 130, arrivée inconnue ».
+
+Touche le contrat des quatre axes, donc **ADR obligatoire** avant toute
+implémentation. Soulevé par les maquettes `design/v2`.
+
+## Marqueur « cette information n'existe pas dans l'œuvre » (2026-08-27)
+
+Le panneau de contribution d'une page pauvre nomme les propriétés
+attendues sans valeur. Sans marqueur d'absence **délibérée**, il
+réclamera éternellement la date de naissance d'un personnage qu'Oda n'a
+jamais datée — et un contributeur finira par inventer une valeur pour
+faire taire l'alerte. C'est le pire résultat possible pour un wiki dont
+la promesse est la traçabilité.
+
+Il faut distinguer « connu comme inexistant » de « pas encore
+renseigné ». Ce n'est pas un `epistemic_status` : celui-ci qualifie une
+valeur présente, pas son absence.
+
+Conséquences à instruire : effet sur les règles de validation, sur le
+calcul de complétude d'une page, et sur les importeurs (Fandom laisse un
+champ vide sans jamais dire pourquoi). **ADR obligatoire.** Soulevé par
+les maquettes `design/v2`.

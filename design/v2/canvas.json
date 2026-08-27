@@ -6,7 +6,7 @@
       "x": 0,
       "y": 0,
       "w": 1440,
-      "h": 1480
+      "h": 1560
     },
     {
       "file": "Chapitre.dc.html",
@@ -14,90 +14,83 @@
       "x": 1560,
       "y": 0,
       "w": 1440,
-      "h": 1260
+      "h": 1240
     },
     {
       "file": "Fruit.dc.html",
       "title": "Fruit du démon — rétroactivité",
       "x": 0,
-      "y": 1640,
+      "y": 1720,
       "w": 1440,
       "h": 1300
     },
     {
       "file": "Equipage.dc.html",
-      "title": "Équipage — anciens membres",
+      "title": "Équipage — adhésions par intervalles",
       "x": 1560,
-      "y": 1640,
+      "y": 1720,
       "w": 1440,
-      "h": 1220
+      "h": 1460
     },
     {
       "file": "Mineur.dc.html",
       "title": "Entité pauvre en données",
       "x": 0,
-      "y": 3070,
+      "y": 3320,
       "w": 1440,
-      "h": 1260
+      "h": 1440
     },
     {
       "file": "Mobile.dc.html",
       "title": "Mobile — 390 px",
       "x": 1560,
-      "y": 3070,
+      "y": 3320,
       "w": 390,
-      "h": 1520
+      "h": 1620
     }
   ],
   "annotations": [
     {
-      "id": "spoil",
+      "id": "or",
       "x": -430,
       "y": 0,
       "w": 350,
-      "text": "CORRECTION MAJEURE. Compter ce qui est cache revele ce qui est cache. \"5 membres masques\" disait que l'equipage monte a 10. \"146e sur 149\" disait que Wano finit dans 3 chapitres. Tout retire. On dit QUE la page s'arrete a ta position, jamais COMBIEN il y a derriere."
+      "text": "L'OR REPREND LE PREMIER ROLE. Le depot avait deja tranche (styles.css) : l'or est l'identite, le vermillon l'accent interactif. Le canevas inventait un TROISIEME role. Corrige : l'or #e8c15a porte tout ce qui est VRAI POUR TOI MAINTENANT — valeur actuelle, onglet actif, position de lecture. Le vermillon #e0553f ne garde que la RUPTURE : retcon, mort, contradiction. Rare par construction."
     },
     {
-      "id": "principe",
+      "id": "ratios",
       "x": -430,
-      "y": 320,
+      "y": 400,
       "w": 350,
-      "text": "UNE direction, SIX vues. Chassis en grille 12 colonnes, chronologie en TYPE DE PANNEAU, bandeau a hauteur reduite. Meme grammaire partout, jeu de panneaux different par type d'entite."
+      "text": "RATIOS : le code avait deja raison. apps/web/src/lib/image-ratio.ts definit cinq classes — portrait 3:4, cover 2:3, square 1:1, plate 16:9, banner 21:9 — derivees des pixels de l'image puis du role de l'arete depicted-by. Le canevas inventait des hauteurs (92, 84, 82, 148, 76 px). Il obeit maintenant : un personnage est en 3:4 PARTOUT, un chapitre en 2:3, un episode et un navire en 16:9, un fruit et un pavillon en 1:1."
     },
     {
-      "id": "couleurs",
+      "id": "mixte",
       "x": -430,
-      "y": 580,
+      "y": 800,
       "w": 350,
-      "text": "TROIS ROLES DE COULEUR, jamais melanges. Liens #9fb8d0 : il y en a partout, ils doivent etre calmes. Vermillon #e0553f : valeur actuelle et onglet actif, rien d'autre. Or #e8c15a : ta position de lecture, rien d'autre. Fond #0a0b0e, panneaux #101217."
+      "text": "COROLLAIRE, visible sur l'entite pauvre : quatre apparitions, deux chapitres en 2:3 et deux episodes en 16:9, alignes en haut avec des hauteurs differentes. Recadrer un plan 16:9 en portrait n'en fait pas un portrait, ca en fait un plan mutile. Melanger les ratios dans une rangee est plus juste que les uniformiser."
     },
     {
-      "id": "survol",
+      "id": "nami",
       "x": -430,
-      "y": 870,
+      "y": 1150,
       "w": 350,
-      "text": "NOUVEAU — CARTE AU SURVOL, sur la planche Personnage. Elle affiche l'entite a TA progression : Ace y est \"Decede ch. 574\" pour toi, mais un lecteur au chapitre 500 y lirait \"Vivant\". La carte est soumise au meme filtre que la page."
+      "text": "\"NAMI — DEFINITIVEMENT\" etait une ellipse illisible. Nami adhere au ch. 8, rompt au ch. 69 (Arlong), revient au ch. 95. Le modele le sait deja : member-of porte since ET until, allow_multiple_concurrent et historical. C'est l'affichage qui mentait. On ecrit l'intervalle : ch. 8-69, puis depuis le ch. 95."
     },
     {
-      "id": "pauvre",
+      "id": "spoil",
       "x": -430,
-      "y": 1180,
+      "y": 1520,
       "w": 350,
-      "text": "NOUVEAU — ENTITE PAUVRE EN DONNEES. Le vrai test de \"page entiere a chaque fois\". Higuma a quatre apparitions. Reponse : moins de donnees ne veut pas dire plus de panneaux, mais des panneaux PLUS GRANDS. Les 4 apparitions passent en grandes cartes, les aretes entrantes sauvent la page, et contribuer devient l'objet principal avec les champs manquants NOMMES."
+      "text": "REGLE ANTI-SPOIL. Compter ce qui est cache revele ce qui est cache. Aucun compteur d'absence, aucune tuile pointillee, aucune barre grisee au-dela de la position de lecture. Le \"pas encore lu\" sous la fleche suivante est retire pour la meme raison : il pointait la frontiere."
     },
     {
-      "id": "mobile",
+      "id": "structure",
       "x": -430,
-      "y": 1560,
+      "y": 1880,
       "w": 350,
-      "text": "NOUVEAU — MOBILE 390 px. La plaque passe au-dessus au lieu d'a cote, la bande de stats et les onglets defilent horizontalement, les panneaux s'empilent en une colonne. Memes URLs qu'en desktop."
-    },
-    {
-      "id": "onglets",
-      "x": -430,
-      "y": 1830,
-      "w": 350,
-      "text": "ONGLETS = VRAIES URLS rendues cote serveur. Et ils suivent le contenu : Higuma n'en a que trois, pas sept. Un onglet vide ne s'affiche pas."
+      "text": "COTE DONNEES : presque tout existe deja. Intervalles d'adhesion, retcon (epistemic_status retconned), croyances par personnage, apparitions au chapitre (ADR-105), ratios d'images. DEUX MANQUES REELS, detailles dans design/README.md : la precision de since (le cas Rocks : present au ch. N sans date d'arrivee connue), et le marqueur \"cette information n'existe pas dans l'oeuvre\" pour que le panneau de contribution cesse de reclamer l'impossible."
     }
   ],
   "launch": { "view": "canvas" }

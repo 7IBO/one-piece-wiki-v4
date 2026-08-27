@@ -121,3 +121,104 @@ les panneaux s'empilent en une colonne. Mêmes URLs qu'en desktop.
 formes acceptées sont « OnePiece.Wiki », « One Piece Wiki » et « One
 Piece.Wiki ». L'abréviation « OP/WIKI » de la première version est
 abandonnée.
+
+## Ce que ces maquettes demandent au modèle de données
+
+Analyse faite en lisant les schémas, pas de mémoire. La conclusion tient
+en une phrase : **presque tout existe déjà**, et les deux manques réels
+sont petits mais nets.
+
+### Déjà supporté — rien à faire
+
+| Ce que la maquette montre                            | Ce qui le porte                                                                          |
+| ---------------------------------------------------- | ---------------------------------------------------------------------------------------- |
+| Adhésions par intervalles (Nami : ch. 8–69, puis 95) | `member-of` : `since` + `until`, `allow_multiple_concurrent: true`, `historical: true`   |
+| Membre parti puis revenu                             | idem, deux entrées ; règle `former-member-needs-until`                                   |
+| Nom du fruit corrigé rétroactivement                 | `epistemic_status: retconned` + `since` + `actual_value`                                 |
+| Qui croit quoi, personnage par personnage            | `believed_by` / `known_truth_by` (ADR-096 : provenance par item)                         |
+| Apparitions au chapitre et à l'épisode               | ADR-105 : arête `features`, granularité portée par le type de source                     |
+| Ratios d'images par type d'image                     | `image_width`/`image_height`, puis rôle de `depicted-by` (vocabulaire `depiction-roles`) |
+| Fiches par type d'entité                             | ADR-106 : layouts par type, déjà en place                                                |
+
+Ce qui reste à faire pour ces lignes est **du build, pas du schéma** :
+
+- **« Ce qui devient vrai dans ce chapitre »** est un index inverse
+  source → valeurs dont le `since` pointe cette source. Entièrement
+  dérivable au `build:db`, aucune donnée nouvelle.
+- **Densité d'apparitions par arc** : agrégat des arêtes `features`
+  croisées avec l'appartenance à l'arc. Idem.
+- **Adaptation manga ↔ anime** : arête `adapted-by`, déjà là ; il faut
+  la remonter dans la vue.
+
+### Manque n° 1 — la précision de `since` (le cas Rocks)
+
+`member-of.since` est **obligatoire** et vaut un `source_ref`. Quand on
+sait seulement qu'un personnage **était présent** au chapitre N sans
+qu'aucune case ne montre son arrivée, écrire `since: manga-chapter:N`
+**affirme qu'il a rejoint à ce moment-là**. C'est faux, et c'est
+exactement le cas soulevé dans le brief d'origine à propos de l'équipage
+de Rocks.
+
+Rien dans les qualificateurs existants ne distingue « à partir de » de
+« au plus tard à ». `attested_by` ne convient pas : il désigne une
+référence **externe** (interview, site officiel), pas une borne
+temporelle.
+
+Piste : un qualificateur de précision sur `since` (`exact` par défaut,
+`at_latest` sinon) plutôt qu'un second champ, pour que toutes les
+propriétés historisées en profitent d'un coup et pas seulement
+`member-of`. **Demande un ADR** — c'est le contrat des quatre axes qui
+bouge.
+
+### Manque n° 2 — « cette information n'existe pas dans l'œuvre »
+
+Le panneau de contribution de la page pauvre nomme les propriétés
+attendues qui n'ont pas de valeur. Sans marqueur d'absence délibérée, il
+réclamera éternellement la date de naissance d'un bandit qu'Oda n'a
+jamais datée, et un contributeur finira par inventer une valeur pour
+faire taire l'alerte — le pire résultat possible pour un wiki.
+
+Il faut pouvoir écrire « connu comme inexistant », distinct de « pas
+encore renseigné ». Ce n'est pas un `epistemic_status` : celui-ci
+qualifie une valeur présente, pas son absence. **Demande un ADR** aussi.
+
+Les deux manques sont consignés dans `/IDEAS.md` conformément à
+`CLAUDE.md` : rien n'est implémenté avant l'arbitrage.
+
+### Le rôle des couleurs, corrigé
+
+`apps/web/src/styles.css` avait déjà tranché : l'or est l'identité
+(mot-symbole, chiffres de titre, anneau de focus), le vermillon est
+l'accent interactif du chrome, re-pointé par la teinte d'entité
+(ADR-103/111). Le canevas avait inventé un **troisième** rôle en donnant
+au vermillon les valeurs courantes.
+
+Corrigé, et dans le sens de la préférence du mainteneur :
+
+| Rôle                     | Couleur             | Où                                                  |
+| ------------------------ | ------------------- | --------------------------------------------------- |
+| Vrai pour toi maintenant | or `#e8c15a`        | valeur actuelle, onglet actif, position de lecture  |
+| Rupture                  | vermillon `#e0553f` | retcon, mort, contradiction — rare par construction |
+| Identité de l'entité     | teinte par entité   | ambiance du bandeau, déjà en place                  |
+| Liens                    | `#9fb8d0`           | partout, donc calmes                                |
+
+L'or est désormais la couleur la plus vue, ce qui est cohérent : c'est
+celle qui a été validée.
+
+### Les ratios, alignés sur le code
+
+`apps/web/src/lib/image-ratio.ts` définit cinq classes — portrait 3:4,
+cover 2:3, square 1:1, plate 16:9, banner 21:9 — dérivées **d'abord des
+pixels de l'image**, ensuite du rôle de l'arête `depicted-by`. Le
+canevas inventait des hauteurs arbitraires (92, 84, 82, 148, 76 px).
+
+Il obéit maintenant : un personnage est en 3:4 **partout** où il
+apparaît, un chapitre en 2:3, un épisode et un navire en 16:9, un fruit
+et un pavillon en 1:1. Les cadres sont posés en `aspect-ratio`, jamais
+en hauteur fixe.
+
+Corollaire visible sur la page pauvre : ses quatre apparitions mélangent
+deux chapitres en 2:3 et deux épisodes en 16:9, alignés en haut, de
+hauteurs différentes. C'est volontaire — recadrer un plan 16:9 en
+portrait n'en fait pas un portrait, ça en fait un plan mutilé, ce que le
+commentaire d'en-tête de `image-ratio.ts` dit déjà mot pour mot.
