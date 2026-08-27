@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:298",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-298",
+  "properties": {
+    "number": {
+      "value": 298
+    },
+    "title_key": {
+      "value_key": "anime-episode.298.title"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:137",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-137",
+  "properties": {
+    "number": {
+      "value": 137
+    },
+    "title_key": {
+      "value_key": "anime-episode.137.title"
+    }
+  },
+  "relations": []
+}

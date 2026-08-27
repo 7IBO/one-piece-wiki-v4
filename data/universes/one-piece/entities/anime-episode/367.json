@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:367",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-367",
+  "properties": {
+    "number": {
+      "value": 367
+    },
+    "title_key": {
+      "value_key": "anime-episode.367.title"
+    }
+  },
+  "relations": []
+}

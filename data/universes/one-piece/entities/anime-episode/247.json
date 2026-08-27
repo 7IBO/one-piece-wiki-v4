@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:247",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-247",
+  "properties": {
+    "number": {
+      "value": 247
+    },
+    "title_key": {
+      "value_key": "anime-episode.247.title"
+    }
+  },
+  "relations": []
+}

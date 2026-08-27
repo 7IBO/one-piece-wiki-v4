@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:64",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-64",
+  "properties": {
+    "number": {
+      "value": 64
+    },
+    "title_key": {
+      "value_key": "anime-episode.64.title"
+    }
+  },
+  "relations": []
+}

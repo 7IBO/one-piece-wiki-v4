@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:173",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-173",
+  "properties": {
+    "number": {
+      "value": 173
+    },
+    "title_key": {
+      "value_key": "anime-episode.173.title"
+    }
+  },
+  "relations": []
+}
