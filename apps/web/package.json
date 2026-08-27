@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "bun scripts/ensure-db.ts && bun --bun vite dev",
-    "build": "vite build",
+    "build": "vite build && bun scripts/bundle-db.ts",
     "start": "bun .output/server/index.mjs",
     "art:preview": "bun scripts/art-preview.ts",
     "typecheck": "tsc --noEmit"

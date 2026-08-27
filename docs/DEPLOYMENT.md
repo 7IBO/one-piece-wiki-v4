@@ -12,10 +12,10 @@ vérifier que sur la plateforme.
 
 ## 1. État actuel
 
-| Application      | Déployée ? | Runtime    | Notes                               |
-| ---------------- | ---------- | ---------- | ----------------------------------- |
-| `apps/dashboard` | oui        | Node       | seule cible du `vercel.json` racine |
-| `apps/web`       | **non**    | Bun requis | le wiki public n'a aucune URL       |
+| Application      | Déployée ? | Runtime | Notes                               |
+| ---------------- | ---------- | ------- | ----------------------------------- |
+| `apps/dashboard` | oui        | Node    | seule cible du `vercel.json` racine |
+| `apps/web`       | oui        | Bun     | projet `one-piece-wiki-v4-web`      |
 
 `vercel.json` à la racine :
 
@@ -55,59 +55,76 @@ pas.
 Conséquence : **on garde un seul driver SQLite** pour le build et pour la
 lecture, et l'abstraction Node envisagée par ADR-012 reste au placard.
 
-## 3. Le vrai risque : embarquer la base dans le bundle
+## 3. Embarquer la base dans le bundle — résolu
 
-C'est ici que le déploiement échouera si on ne fait rien, et c'est le
-point qui mérite l'attention.
+Deux défauts se cachaient l'un derrière l'autre. Les deux sont corrigés.
 
-- `dist/onepiece.db` est un **artefact de build gitignoré**, produit
-  pendant le build Vercel (Turbo : `@onepiece-wiki/web#build` dépend de
-  `@onepiece-wiki/db-builder#build:db`).
-- `resolveDbPath()` le trouve en **remontant l'arborescence** à la
-  recherche de `dist/onepiece.db`, et honore la variable
-  `ONEPIECE_DB_PATH` si elle est définie.
-- Or **Nitro trace les imports, pas les lectures de fichiers à
-  l'exécution.** Un `existsSync` dans une boucle de remontée est
-  invisible pour le traceur. Le `.db` ne sera donc pas inclus dans le
-  bundle de la fonction, et le serveur lèvera son erreur « artefact
-  manquant » en production alors que tout passe en local.
+### 3.1 L'artefact n'était pas embarqué
+
+Nitro trace les `import`. `server/db.ts` localise la base par une
+**remontée d'arborescence à l'exécution** (`resolveDbPath`), invisible
+pour tout bundler. Le `.db` n'était donc pas tracé dans le déploiement,
+et le serveur mourait sur :
+
+```
+SQLite artifact not found at /var/task/dist/onepiece.db
+```
+
+`apps/web/scripts/bundle-db.ts`, branché en fin de `build`, copie
+l'artefact **à côté de l'entrée serveur** — dans
+`.vercel/output/functions/__server.func/dist/` sur Vercel, dans
+`.output/server/dist/` sinon. C'est exactement là que la remontée
+existante aboutit : aucune variable d'environnement n'est nécessaire,
+`ONEPIECE_DB_PATH` reste une échappatoire optionnelle.
+
+### 3.2 L'artefact n'était pas autonome
+
+Découvert en testant 3.1 : `dist/onepiece.db` faisait **4 Ko et
+contenait zéro table**. Le db-builder ouvrait la base en
+`journal_mode = WAL` et ne checkpointait jamais, donc les 543 Ko de
+données vivaient dans `dist/onepiece.db-wal`.
+
+Tout fonctionnait en local **uniquement parce que le fichier annexe se
+trouvait à côté**. Le premier transport du seul `.db` livrait une base
+vide — c'est ce qui s'est produit au premier essai de bundling.
+
+`packages/db-builder/src/writer.ts` termine désormais par
+`wal_checkpoint(TRUNCATE)` puis `journal_mode = DELETE` : l'artefact
+est un fichier unique et autonome, sans annexes. WAL n'apportait rien à
+une base lue en seule lecture.
+
+**Vérifié de bout en bout** : base de la racine masquée, serveur
+construit démarré, `/`, `/search?q=luffy`, `/character/monkey-d-luffy`
+et `/manga-chapter/chapter-1044` répondent tous 200 avec du vrai
+contenu.
 
 ### ⚠️ Le raccourci à ne surtout pas prendre
 
 Copier `dist/onepiece.db` dans `apps/web/public/` le rendrait
 **téléchargeable publiquement**. La base contient l'intégralité du
 corpus, tous curseurs confondus : n'importe qui pourrait l'ouvrir et
-lire ce qui se passe mille chapitres plus loin. Cela détruirait la
-promesse centrale du site.
-
-Le filtrage anti-spoil n'a de valeur que parce qu'il est **fait côté
-serveur**. La base ne doit jamais franchir la frontière réseau, ni comme
-fichier statique, ni sérialisée dans le HTML.
-
-### La bonne approche
-
-Copier l'artefact dans la sortie **serveur** après le build, puis
-pointer `ONEPIECE_DB_PATH` dessus. À implémenter et à vérifier sur la
-plateforme :
-
-1. Un hook post-build qui copie `dist/onepiece.db` dans le répertoire de
-   sortie serveur de Nitro.
-2. `ONEPIECE_DB_PATH` défini sur le chemin résultant dans les variables
-   d'environnement du projet Vercel.
-3. Vérification que le fichier survit au tracing (le bundle final doit
-   le contenir).
+lire ce qui se passe mille chapitres plus loin. Le filtrage anti-spoil
+n'a de valeur que parce qu'il est fait côté serveur.
 
 ## 4. Ce que le mainteneur doit faire sur la plateforme
 
 Ces étapes ne sont pas scriptables depuis le dépôt :
 
-1. **Créer un second projet Vercel** sur `7IBO/one-piece-wiki-v4`.
+1. **Créer un second projet Vercel** sur `7IBO/one-piece-wiki-v4`. ✅ fait
 2. Régler sa **Root Directory** sur `apps/web`, et activer **« Include
    files outside the root directory »** — le build a besoin des
-   workspaces et de `/data`.
-3. Définir `ONEPIECE_DB_PATH` dans les variables d'environnement.
+   workspaces et de `/data`. ✅ fait
+3. **Laisser les trois overrides ÉTEINTS** (Build Command, Output
+   Directory, Install Command) : `apps/web/vercel.json` fournit les
+   commandes et fait autorité. Un override **activé mais vide** n'est
+   pas neutre — Vercel l'interprète comme « la sortie est la Root
+   Directory » et a publié `apps/web/` **en statique**, servant le code
+   source et renvoyant 404 sur toutes les routes.
 4. Brancher le domaine (`one-piece.wiki` est le nom retenu dans
    `WEB_APP.md`) sur ce projet, **pas** sur celui du dashboard.
+
+`ONEPIECE_DB_PATH` n'est **pas** nécessaire : le hook de build place
+l'artefact là où la résolution le cherche déjà.
 
 ## 5. Contrainte de fond à garder en tête
 

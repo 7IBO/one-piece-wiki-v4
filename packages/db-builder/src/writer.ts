@@ -200,9 +200,19 @@ export function writeDatabase(path: string, rows: DatabaseRows): WriteResult {
   const db = new Database(path, { create: true });
   let counts: WriteResult['counts'];
   try {
+    // WAL makes the bulk insert fast, but the artifact must end up as a
+    // SINGLE self-contained file: it is copied into deployment bundles
+    // and read there with no sidecars. Left in WAL, `onepiece.db` was
+    // 4 KB with ZERO tables while all 500+ KB sat in `onepiece.db-wal`
+    // — every local run worked only because the sidecar happened to be
+    // next to it, and the first deployment that copied the file alone
+    // served an empty database.
     db.exec('PRAGMA journal_mode = WAL');
     db.exec('PRAGMA foreign_keys = OFF');
     counts = populateDatabase(db, rows);
+    // Fold the WAL back into the main file and drop the sidecars.
+    db.exec('PRAGMA wal_checkpoint(TRUNCATE)');
+    db.exec('PRAGMA journal_mode = DELETE');
   } finally {
     db.close();
   }
