@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:669",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-669",
+  "properties": {
+    "number": {
+      "value": 669
+    },
+    "title_key": {
+      "value_key": "anime-episode.669.title"
+    }
+  },
+  "relations": []
+}

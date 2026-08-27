@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:746",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-746",
+  "properties": {
+    "number": {
+      "value": 746
+    },
+    "title_key": {
+      "value_key": "anime-episode.746.title"
+    }
+  },
+  "relations": []
+}

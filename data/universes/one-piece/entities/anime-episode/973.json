@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:973",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-973",
+  "properties": {
+    "number": {
+      "value": 973
+    },
+    "title_key": {
+      "value_key": "anime-episode.973.title"
+    }
+  },
+  "relations": []
+}

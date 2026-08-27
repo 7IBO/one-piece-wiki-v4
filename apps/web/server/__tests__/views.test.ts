@@ -400,12 +400,18 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     // source numbers.)
     const eastBlue = await entity('arc', 'east-blue');
     expect(eastBlue.sequence).toBeNull();
-    // A single-instance ordered type: on the axis, but with no siblings.
+    // An ordered type, read at its FIRST instance. This asserted
+    // `next === null` too, back when the corpus held one volume — the
+    // fifth assertion this week to break on an import rather than on
+    // a defect. What is true of volume 1 whatever the corpus holds:
+    // it is on the axis, it is number 1, and nothing precedes it.
     const volume = await entity('volume', 'volume-1');
     expect(volume.sequence?.propertyId).toBe('number');
     expect(volume.sequence?.number).toBe(1);
     expect(volume.sequence?.prev).toBeNull();
-    expect(volume.sequence?.next).toBeNull();
+    // And if a neighbour exists at all, it comes after — never before.
+    const next = volume.sequence?.next;
+    if (next !== null && next !== undefined) expect(next.number ?? 0).toBeGreaterThan(1);
   });
 
   test('container template groups everything an entity contains', async () => {

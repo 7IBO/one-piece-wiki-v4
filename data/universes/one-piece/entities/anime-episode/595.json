@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:595",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-595",
+  "properties": {
+    "number": {
+      "value": 595
+    },
+    "title_key": {
+      "value_key": "anime-episode.595.title"
+    }
+  },
+  "relations": []
+}

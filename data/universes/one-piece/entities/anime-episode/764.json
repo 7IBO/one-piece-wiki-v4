@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:764",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-764",
+  "properties": {
+    "number": {
+      "value": 764
+    },
+    "title_key": {
+      "value_key": "anime-episode.764.title"
+    }
+  },
+  "relations": []
+}

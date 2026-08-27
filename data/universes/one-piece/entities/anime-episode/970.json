@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:970",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-970",
+  "properties": {
+    "number": {
+      "value": 970
+    },
+    "title_key": {
+      "value_key": "anime-episode.970.title"
+    }
+  },
+  "relations": []
+}

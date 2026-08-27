@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:834",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-834",
+  "properties": {
+    "number": {
+      "value": 834
+    },
+    "title_key": {
+      "value_key": "anime-episode.834.title"
+    }
+  },
+  "relations": []
+}
