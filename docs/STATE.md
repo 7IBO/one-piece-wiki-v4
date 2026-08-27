@@ -15,8 +15,35 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-27 (frontière d'import réparée : le registre
-Fandom est enfin réécrit)
+**Last updated**: 2026-08-27 (palette de recherche ADR-118 ; frontière
+d'import réparée)
+
+## 2026-08-27 — la palette de recherche (ADR-118)
+
+La planche `Recherche.dc.html` du canevas v2 est implémentée. ADR-108
+avait pourtant écrit « No autocomplete popover » ; le mainteneur a
+validé un canevas qui en contient une, donc le renversement est le
+sien et ADR-118 l'enregistre plutôt que de l'opposer.
+
+Ce qui survit d'ADR-108 : `/search` reste la page, l'URL partageable,
+le rendu serveur et le chemin sans JavaScript. Le `<form>` de
+l'en-tête reste un vrai formulaire ; la palette se greffe dessus (⌘K,
+Ctrl-K, ou le focus sur le champ) et interroge la même `fetchSearch`.
+
+Deux règles anti-spoil portées par le code et ses tests
+(`lib/search-groups.ts`) :
+
+- **les compteurs de puces comptent l'écran, jamais le corpus** — la
+  barrière tourne en SQL, un résultat non atteint n'arrive jamais au
+  composant, et le compter reviendrait à imprimer un décompte de ce
+  qu'on cache ;
+- **« au-delà de ta progression » n'est dit que si un curseur
+  existe** ; le pied « Limité à ta progression » aussi.
+
+La palette n'invente rien : la maquette montrait « résultats pour
+_gomu gomu_ » sur une faute de frappe, mais `buildSearchView` renvoie
+`approximate: boolean` sans terme corrigé — on affiche la mention
+existante, pas une correction fabriquée.
 
 ## 2026-08-27 — la frontière d'import était un no-op
 

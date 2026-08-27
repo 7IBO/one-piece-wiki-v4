@@ -157,7 +157,7 @@ function RootLayout(): ReactElement {
           >
             One Piece <span className='text-gold'>Wiki</span>
           </Link>
-          <SearchBox />
+          <SearchBox progress={progress} />
           <div className='flex items-center gap-2.5'>
             <ProgressControl key={cursorKey} progress={progress} />
             <LocaleSwitcher />

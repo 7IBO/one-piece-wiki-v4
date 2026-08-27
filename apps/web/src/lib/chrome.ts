@@ -178,6 +178,18 @@ const STRINGS = {
     fr: 'Tape un nom pour chercher dans le wiki.',
   },
   searchResults: { en: 'results', fr: 'résultats' },
+  paletteAll: { en: 'All', fr: 'Tout' },
+  paletteEsc: { en: 'Esc', fr: 'Échap' },
+  paletteBrowse: { en: 'browse', fr: 'parcourir' },
+  paletteOpen: { en: 'open', fr: 'ouvrir' },
+  paletteSearching: { en: 'Searching…', fr: 'Recherche…' },
+  // Said ONLY when a cursor is actually set: offered to a reader who
+  // declared nothing, it would be a false explanation for a plain miss.
+  paletteEmptyGated: {
+    en: 'Nothing found. Check the spelling — or it lies beyond your progression.',
+    fr: 'Aucun résultat. Vérifie l’orthographe — ou cela se trouve au-delà de ta progression.',
+  },
+  paletteGated: { en: 'Limited to your progression', fr: 'Limité à ta progression' },
   searchResult: { en: 'result', fr: 'résultat' },
   searchApproximate: {
     en: 'No exact match — showing the closest entries.',
