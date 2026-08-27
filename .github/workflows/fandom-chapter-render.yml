@@ -1,0 +1,100 @@
+# Enrich manga chapters from their RENDERED infobox (ADR-120) —
+# MANUAL trigger.
+#
+# The chapter substrate switch. Measured on the corpus after a full
+# 1193-page WIKITEXT crawl of "One Piece Chapters":
+#
+#   part-of-volume    1 / 1193
+#   adapted-by        0 / 1193
+#   released_at      10 / 1193  (all hand-seeded — none imported)
+#   page_count      251 / 1193
+#
+# The same pages fetched with `prop=text` carry every one of those, on
+# all five sampled. It is the arc-range finding again (ADR-119): the
+# values are computed at template-expansion time and `prop=wikitext`
+# can never see them.
+#
+# One rendered fetch per chapter, so this is CHUNKED. Run it in passes
+# with --from/--to rather than asking for 1193 pages at once; the
+# earlier full category crawl took 13 minutes and Fandom rate-limits.
+#
+# Same order as the other import workflows, for the same reason: the
+# crawl is the expensive, unrepeatable artifact, so it reaches a
+# branch BEFORE anything is allowed to judge it.
+name: fandom-chapter-render
+on:
+  workflow_dispatch:
+    inputs:
+      from:
+        description: 'First chapter number in range'
+        required: true
+        default: '1'
+      to:
+        description: 'Last chapter number in range'
+        required: true
+        default: '200'
+      limit:
+        description: 'Max chapters this run (bounds the request storm)'
+        required: true
+        default: '200'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  chapter-render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run schema:generate
+
+      - name: Enrich the chapters from their rendered infobox
+        run: >
+          bun run import:fandom chapter-render
+          --from "${{ github.event.inputs.from }}"
+          --to "${{ github.event.inputs.to }}"
+          --limit "${{ github.event.inputs.limit }}"
+          --stage
+
+      - name: Push the result
+        id: push
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Nothing to enrich — every field is already in place." >> "$GITHUB_STEP_SUMMARY"
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          branch="import/chapter-render-${{ github.run_id }}"
+          git config user.name "fandom-importer[bot]"
+          git config user.email "noreply@one-piece.wiki"
+          git checkout -b "$branch"
+          git add data/
+          git commit -m "data(import): enrich chapters ${{ github.event.inputs.from }}-${{ github.event.inputs.to }} from the rendered infobox (run ${{ github.run_id }})"
+          git push -u origin "$branch"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+
+      # Reported, never enforced: the work is already safe on the
+      # branch. `adapted-by` and `part-of-volume` point at episodes and
+      # volumes the corpus may not hold yet — that is a MISSING ENTITY,
+      # not a bad edge, and the fix is to import them, not to drop the
+      # relation.
+      - name: Validate the corpus
+        if: steps.push.outputs.pushed == 'true'
+        continue-on-error: true
+        run: |
+          if bun run validate && bun run check:references; then
+            echo "### Validation: passed" >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "### Validation: FAILED"
+              echo ""
+              echo "The enrichment is safe on \`${{ steps.push.outputs.branch }}\`."
+              echo "Expect unresolved \`volume:N\` and \`anime-episode:N\` until those"
+              echo "entities are imported — that is a gap in the corpus, not a bad edge."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
