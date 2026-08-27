@@ -1,0 +1,15 @@
+{
+  "id": "volume:19",
+  "type": "volume",
+  "schema_version": 1,
+  "slug": "volume-19",
+  "properties": {
+    "number": {
+      "value": 19
+    },
+    "title_key": {
+      "value_key": "volume.19.title"
+    }
+  },
+  "relations": []
+}
