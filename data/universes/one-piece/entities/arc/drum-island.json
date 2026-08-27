@@ -10,7 +10,10 @@
         "value_key": "arc.drum-island.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 10
+    }
   },
   "relations": []
 }

@@ -10,7 +10,10 @@
         "value_key": "arc.punk-hazard.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 26
+    }
   },
   "relations": []
 }

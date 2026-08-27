@@ -14,5 +14,10 @@
       "value": 15
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:marineford"
+    }
+  ]
 }

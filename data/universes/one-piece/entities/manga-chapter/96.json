@@ -19,6 +19,10 @@
     {
       "type": "part-of-arc",
       "target": "arc:east-blue"
+    },
+    {
+      "type": "part-of-arc",
+      "target": "arc:loguetown"
     }
   ]
 }

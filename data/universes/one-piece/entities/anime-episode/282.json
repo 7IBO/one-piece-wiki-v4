@@ -11,5 +11,10 @@
       "value_key": "anime-episode.282.title"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:enies-lobby"
+    }
+  ]
 }

@@ -10,7 +10,10 @@
         "value_key": "arc.romance-dawn.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 1
+    }
   },
   "relations": []
 }

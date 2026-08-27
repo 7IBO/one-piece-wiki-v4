@@ -10,7 +10,10 @@
         "value_key": "arc.arlong-park.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 5
+    }
   },
   "relations": []
 }

@@ -10,7 +10,10 @@
         "value_key": "arc.long-ring-long-land.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 14
+    }
   },
   "relations": []
 }

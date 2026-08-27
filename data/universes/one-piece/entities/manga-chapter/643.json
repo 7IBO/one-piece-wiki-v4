@@ -11,5 +11,10 @@
       "value_key": "manga-chapter.643.title"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:fish-man-island"
+    }
+  ]
 }

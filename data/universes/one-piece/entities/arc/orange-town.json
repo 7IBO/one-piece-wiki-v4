@@ -10,7 +10,10 @@
         "value_key": "arc.orange-town.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 2
+    }
   },
   "relations": []
 }

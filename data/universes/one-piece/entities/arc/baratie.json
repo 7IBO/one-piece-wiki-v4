@@ -11,7 +11,10 @@
         "name_type": "common",
         "since": "manga-chapter:42"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 4
+    }
   },
   "relations": []
 }

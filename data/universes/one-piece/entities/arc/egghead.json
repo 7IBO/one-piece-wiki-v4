@@ -10,7 +10,10 @@
         "value_key": "arc.egghead.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 32
+    }
   },
   "relations": []
 }

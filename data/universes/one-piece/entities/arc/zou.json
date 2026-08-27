@@ -10,7 +10,10 @@
         "value_key": "arc.zou.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 28
+    }
   },
   "relations": []
 }

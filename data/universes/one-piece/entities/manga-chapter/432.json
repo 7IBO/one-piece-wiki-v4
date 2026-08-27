@@ -18,5 +18,10 @@
       "value": 19
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:post-enies-lobby"
+    }
+  ]
 }

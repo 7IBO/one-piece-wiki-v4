@@ -14,5 +14,10 @@
       "value": 17
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-arc",
+      "target": "arc:skypiea"
+    }
+  ]
 }

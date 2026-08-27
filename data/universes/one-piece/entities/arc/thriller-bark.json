@@ -10,7 +10,10 @@
         "value_key": "arc.thriller-bark.name.common",
         "name_type": "common"
       }
-    ]
+    ],
+    "arc_number": {
+      "value": 18
+    }
   },
   "relations": []
 }
