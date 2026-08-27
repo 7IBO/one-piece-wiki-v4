@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:345",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-345",
+  "properties": {
+    "number": {
+      "value": 345
+    },
+    "title_key": {
+      "value_key": "manga-chapter.345.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

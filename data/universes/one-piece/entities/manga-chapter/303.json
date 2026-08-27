@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:303",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-303",
+  "properties": {
+    "number": {
+      "value": 303
+    },
+    "title_key": {
+      "value_key": "manga-chapter.303.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

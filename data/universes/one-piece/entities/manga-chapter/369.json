@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:369",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-369",
+  "properties": {
+    "number": {
+      "value": 369
+    },
+    "title_key": {
+      "value_key": "manga-chapter.369.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

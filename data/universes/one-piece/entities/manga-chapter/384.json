@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:384",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-384",
+  "properties": {
+    "number": {
+      "value": 384
+    },
+    "title_key": {
+      "value_key": "manga-chapter.384.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

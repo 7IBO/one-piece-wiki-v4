@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:301",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-301",
+  "properties": {
+    "number": {
+      "value": 301
+    },
+    "title_key": {
+      "value_key": "manga-chapter.301.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:386",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-386",
+  "properties": {
+    "number": {
+      "value": 386
+    },
+    "title_key": {
+      "value_key": "manga-chapter.386.title"
+    },
+    "page_count": {
+      "value": 15
+    }
+  },
+  "relations": []
+}

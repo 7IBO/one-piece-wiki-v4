@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:311",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-311",
+  "properties": {
+    "number": {
+      "value": 311
+    },
+    "title_key": {
+      "value_key": "manga-chapter.311.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

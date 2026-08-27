@@ -1,0 +1,15 @@
+{
+  "id": "manga-chapter:327",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-327",
+  "properties": {
+    "number": {
+      "value": 327
+    },
+    "title_key": {
+      "value_key": "manga-chapter.327.title"
+    }
+  },
+  "relations": []
+}
