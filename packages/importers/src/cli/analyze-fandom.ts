@@ -29,6 +29,7 @@ import {
   loadEntityTypeCatalogue,
   parseAnalyzeArgs,
   renderMarkdownSummary,
+  resolveOutDir,
 } from '../fandom/analyze.ts';
 import { FandomClient } from '../fandom/client.ts';
 
@@ -57,7 +58,7 @@ async function main(): Promise<number> {
       ...(args.maxInfoboxes !== null ? { maxInfoboxes: args.maxInfoboxes } : {}),
       log: (line) => process.stdout.write(`  ${line}\n`),
     });
-    const out = args.out ?? DEFAULT_OUT;
+    const out = args.out === null ? DEFAULT_OUT : resolveOutDir(args.out, REPO_ROOT);
     const jsonPath = join(out, 'fandom-analyze.json');
     const mdPath = join(out, 'fandom-analyze.md');
     await Bun.write(jsonPath, `${JSON.stringify(report, null, 2)}\n`);

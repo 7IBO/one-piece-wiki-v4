@@ -22,7 +22,7 @@
  *    tests drive the entire sweep with fixture-backed fetch stubs.
  */
 import { readdir } from 'node:fs/promises';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { CHAPTER_HANDLED_PARAMS, CHAPTER_INFOBOX_NAMES } from './chapter.ts';
 import { CHARACTER_HANDLED_PARAMS, CHARACTER_INFOBOX_NAMES } from './character.ts';
 import type { FandomClient } from './client.ts';
@@ -626,6 +626,22 @@ export type AnalyzeCliArgs = {
 export const FULL_SWEEP_SAMPLES = 40;
 
 /** Parse `fandom:analyze` CLI flags; throws on anything malformed. */
+/**
+ * Resolve `--out` against the REPO ROOT, never the process cwd.
+ *
+ * `bun run -F @onepiece-wiki/importers fandom:analyze` runs with cwd
+ * set to the package directory, so a relative `--out docs/audits`
+ * landed in `packages/importers/docs/audits/` while the caller — and
+ * the CI step that commits the report — looked at `<repo>/docs/audits`.
+ * The CLI logged the relative path it was handed, so nothing revealed
+ * the mismatch: run 1 of `fandom-analyze` surveyed the entire wiki for
+ * 18 minutes, wrote its report, and then died on `mv: cannot stat`,
+ * discarding it. An absolute `--out` is returned unchanged.
+ */
+export function resolveOutDir(out: string, repoRoot: string): string {
+  return resolve(repoRoot, out);
+}
+
 export function parseAnalyzeArgs(argv: readonly string[]): AnalyzeCliArgs {
   let samples = 5;
   let samplesExplicit = false;

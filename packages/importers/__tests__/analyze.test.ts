@@ -15,6 +15,7 @@ import {
   loadEntityTypeCatalogue,
   parseAnalyzeArgs,
   renderMarkdownSummary,
+  resolveOutDir,
 } from '../src/fandom/analyze.ts';
 import { FandomClient } from '../src/fandom/client.ts';
 
@@ -257,5 +258,17 @@ describe('parseAnalyzeArgs', () => {
     expect(() => parseAnalyzeArgs(['--samples', 'many'])).toThrow('--samples');
     expect(() => parseAnalyzeArgs(['--samples'])).toThrow('expects a value');
     expect(() => parseAnalyzeArgs(['--frobnicate'])).toThrow('unknown flag');
+  });
+});
+
+describe('resolveOutDir', () => {
+  it('resolves a relative --out against the repo root, not the cwd', () => {
+    // The bug this guards: `bun run -F` sets cwd to the package dir, so
+    // `--out docs/audits` used to mean packages/importers/docs/audits.
+    expect(resolveOutDir('docs/audits', '/repo')).toBe('/repo/docs/audits');
+  });
+
+  it('leaves an absolute --out untouched', () => {
+    expect(resolveOutDir('/var/tmp/report', '/repo')).toBe('/var/tmp/report');
   });
 });
