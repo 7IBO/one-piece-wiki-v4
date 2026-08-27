@@ -1,0 +1,19 @@
+{
+  "id": "arc:ice-hunter",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "ice-hunter",
+  "canonical_name_key": "arc.ice-hunter.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.ice-hunter.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}

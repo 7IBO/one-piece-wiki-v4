@@ -1,0 +1,16 @@
+{
+  "id": "arc:elbaph",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "elbaph",
+  "canonical_name_key": "arc.elbaph.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.elbaph.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

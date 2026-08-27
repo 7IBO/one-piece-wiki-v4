@@ -1,0 +1,16 @@
+{
+  "id": "arc:little-east-blue",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "little-east-blue",
+  "canonical_name_key": "arc.little-east-blue.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.little-east-blue.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

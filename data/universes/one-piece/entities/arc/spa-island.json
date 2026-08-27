@@ -1,0 +1,19 @@
+{
+  "id": "arc:spa-island",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "spa-island",
+  "canonical_name_key": "arc.spa-island.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.spa-island.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,16 @@
+{
+  "id": "arc:orange-town",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "orange-town",
+  "canonical_name_key": "arc.orange-town.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.orange-town.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

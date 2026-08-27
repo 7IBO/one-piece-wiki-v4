@@ -1,0 +1,16 @@
+{
+  "id": "arc:jaya",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "jaya",
+  "canonical_name_key": "arc.jaya.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.jaya.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

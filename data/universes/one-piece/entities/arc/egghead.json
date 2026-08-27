@@ -1,0 +1,16 @@
+{
+  "id": "arc:egghead",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "egghead",
+  "canonical_name_key": "arc.egghead.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.egghead.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

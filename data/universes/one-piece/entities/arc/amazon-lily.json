@@ -1,0 +1,16 @@
+{
+  "id": "arc:amazon-lily",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "amazon-lily",
+  "canonical_name_key": "arc.amazon-lily.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.amazon-lily.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

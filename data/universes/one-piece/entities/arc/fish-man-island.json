@@ -1,0 +1,16 @@
+{
+  "id": "arc:fish-man-island",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "fish-man-island",
+  "canonical_name_key": "arc.fish-man-island.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.fish-man-island.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

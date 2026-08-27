@@ -1,0 +1,19 @@
+{
+  "id": "arc:z-s-ambition",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "z-s-ambition",
+  "canonical_name_key": "arc.z-s-ambition.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.z-s-ambition.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}

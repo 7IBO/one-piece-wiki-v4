@@ -1,0 +1,16 @@
+{
+  "id": "arc:post-enies-lobby",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "post-enies-lobby",
+  "canonical_name_key": "arc.post-enies-lobby.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.post-enies-lobby.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

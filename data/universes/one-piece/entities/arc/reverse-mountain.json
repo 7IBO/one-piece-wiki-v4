@@ -1,0 +1,16 @@
+{
+  "id": "arc:reverse-mountain",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "reverse-mountain",
+  "canonical_name_key": "arc.reverse-mountain.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.reverse-mountain.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

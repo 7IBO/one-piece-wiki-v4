@@ -1,0 +1,16 @@
+{
+  "id": "arc:impel-down",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "impel-down",
+  "canonical_name_key": "arc.impel-down.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.impel-down.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

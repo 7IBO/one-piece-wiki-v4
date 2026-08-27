@@ -1,0 +1,16 @@
+{
+  "id": "arc:long-ring-long-land",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "long-ring-long-land",
+  "canonical_name_key": "arc.long-ring-long-land.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.long-ring-long-land.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "arc:foxy-s-return",
+  "type": "arc",
+  "schema_version": 1,
+  "slug": "foxy-s-return",
+  "canonical_name_key": "arc.foxy-s-return.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "arc.foxy-s-return.name.common",
+        "name_type": "common"
+      }
+    ],
+    "arc_subtype": {
+      "value": "filler"
+    }
+  },
+  "relations": []
+}
