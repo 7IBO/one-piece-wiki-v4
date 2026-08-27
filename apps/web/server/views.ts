@@ -26,6 +26,7 @@ import * as db from './db.ts';
 import type { EntityRow, PropertyRow, RelationRow } from './db.ts';
 import { type LinkTemplateEntry, resolveAvailabilityUrl } from './links.ts';
 import {
+  CURSOR_AXES,
   cursorActive,
   EMPTY_CURSOR,
   isDepartureVisible,
@@ -92,9 +93,59 @@ export type TypeGroup = {
   readonly types: readonly TypeSummary[];
 };
 
+/**
+ * One progression axis on the home page: where the reader is, and how
+ * far the axis runs.
+ *
+ * `total` is the number of SOURCES that exist — not a count of hidden
+ * content. The distinction is the whole anti-spoiler rule: "5 members
+ * hidden by your progression" reveals that five more members exist and
+ * is forbidden; "chapter 1044 of 1145" reveals nothing a bookshop
+ * shelf does not, because the existence and numbering of published
+ * chapters is public. Never put a count of WITHHELD FACTS here.
+ */
+export type AxisView = {
+  readonly sourceType: string;
+  readonly label: string;
+  /** Where the reader says they are. */
+  readonly at: number;
+  /** How many of this source type the corpus holds. */
+  readonly total: number;
+  /** The next one, when it exists — the "resume" target. */
+  readonly next: { readonly slug: string; readonly number: number; } | null;
+};
+
+/** The reader's position, or `null` when they have declared none. */
+export type ReadingView = {
+  readonly axes: readonly AxisView[];
+  /** The axis to lead with: the one the reader has gone furthest on. */
+  readonly primary: AxisView | null;
+};
+
+/**
+ * A recent release. The DATE is public — a magazine schedule is not a
+ * spoiler — but the TITLE is withheld beyond the cursor, because a
+ * chapter title tells you what happens in it. `title: null` means
+ * "exists, dated, not named for you yet".
+ */
+export type ReleaseView = {
+  readonly sourceType: string;
+  readonly typeLabel: string;
+  readonly slug: string;
+  readonly number: number | null;
+  readonly releasedAt: string | null;
+  readonly title: string | null;
+  readonly beyondCursor: boolean;
+};
+
 export type HomeView = {
   readonly groups: readonly TypeGroup[];
   readonly totalEntities: number;
+  /** Null when the reader has declared no progression at all. */
+  readonly reading: ReadingView | null;
+  readonly releases: readonly ReleaseView[];
+  /** Echoed so the page can mount its own progression control. */
+  readonly cursor: ProgressCursor;
 };
 
 // ---------------------------------------------------------------------------
@@ -1202,7 +1253,102 @@ export function propertyLabel(
 // ---------------------------------------------------------------------------
 // Views
 
-export async function buildHomeView(locale: Locale): Promise<HomeView> {
+/** How many recent releases the home page shows. */
+const HOME_RELEASES = 6;
+
+/**
+ * The reader's position on every declared axis, plus the axis to lead
+ * with. Built from `CURSOR_AXES`, so a third axis (live action, films)
+ * appears here the day it is declared — nothing below names an axis.
+ *
+ * Returns `null` when the reader has declared nothing: the home page
+ * then leads with the universe rather than with an empty progress bar.
+ */
+function buildReading(
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): ReadingView | null {
+  if (!cursorActive(cursor)) return null;
+  const axes: AxisView[] = [];
+  for (const { axis, sourceType } of CURSOR_AXES) {
+    const at = cursor[axis];
+    if (at === null) continue;
+    const propertyId = ordinalPropertyOf(cat, sourceType);
+    if (propertyId === null) continue;
+    const index = ordinalIndexFor(sourceType, propertyId);
+    // The POPULATION of the axis, not a count of withheld facts — see
+    // the note on AxisView. A shelf of published volumes says as much.
+    const total = index.size;
+    if (total === 0) continue;
+    const after = index.get(at + 1);
+    axes.push({
+      sourceType,
+      label: entityTypeLabel(cat, sourceType, locale),
+      at,
+      total,
+      next: after === undefined ? null : { slug: after.slug, number: at + 1 },
+    });
+  }
+  if (axes.length === 0) return null;
+  // Lead with the axis the reader has gone furthest along, measured as
+  // a FRACTION: 400 episodes out of 1122 is less progress than 1044
+  // chapters out of 1145, and the bigger raw number would mislead.
+  const primary = axes.reduce((best, a) => (a.at / a.total > best.at / best.total ? a : best));
+  return { axes, primary };
+}
+
+/**
+ * The newest sources, one list across every axis.
+ *
+ * Ordered by ORDINAL, not by date: only 10 of 406 chapters and none of
+ * the 400 episodes carry `released_at`, so a date sort would show an
+ * almost empty block. For a serialised work the ordinal IS the release
+ * order, and the date is shown when it happens to be known.
+ *
+ * The date is public, the title is not: a chapter title tells you what
+ * happens in it. Beyond the cursor, `title` is null and the caller
+ * renders a withheld state — never a count of what is withheld.
+ */
+function buildReleases(
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): readonly ReleaseView[] {
+  const out: ReleaseView[] = [];
+  const named = cursorActive(cursor);
+  for (const { sourceType } of CURSOR_AXES) {
+    const propertyId = ordinalPropertyOf(cat, sourceType);
+    if (propertyId === null) continue;
+    const index = ordinalIndexFor(sourceType, propertyId);
+    const newest = [...index.entries()]
+      .sort((a, b) => b[0] - a[0])
+      .slice(0, HOME_RELEASES);
+    for (const [number, row] of newest) {
+      // A reader who has declared NOTHING is protected, not exposed.
+      // `isSourceVisible` answers true for an axis with no cursor —
+      // correct for "this value has no `since`", wrong here: it would
+      // hand every chapter title to someone who never said where they
+      // are. The home page states what EXISTS (a number, a date) and
+      // withholds what it MEANS (the title) until the reader opts in.
+      const visible = named && isSourceVisible(row.id, cursor);
+      out.push({
+        sourceType,
+        typeLabel: entityTypeLabel(cat, sourceType, locale),
+        slug: row.slug,
+        number,
+        releasedAt: latestVisibleDisplay(row, 'released_at', cat, locale, cursor),
+        title: visible ? db.displayNameAtCursor(row.id, cursor, locale) : null,
+        beyondCursor: !visible,
+      });
+    }
+  }
+  return out
+    .sort((a, b) => (b.number ?? 0) - (a.number ?? 0))
+    .slice(0, HOME_RELEASES);
+}
+
+export async function buildHomeView(locale: Locale, cursor: ProgressCursor): Promise<HomeView> {
   const cat = await getCatalogue();
   const grouped = new Map<string, TypeSummary[]>();
   let total = 0;
@@ -1228,7 +1374,13 @@ export async function buildHomeView(locale: Locale): Promise<HomeView> {
       const countOf = (g: TypeGroup): number => g.types.reduce((sum, t) => sum + t.count, 0);
       return countOf(b) - countOf(a) || a.id.localeCompare(b.id);
     });
-  return { groups, totalEntities: total };
+  return {
+    groups,
+    totalEntities: total,
+    reading: buildReading(cat, locale, cursor),
+    releases: buildReleases(cat, locale, cursor),
+    cursor,
+  };
 }
 
 /** At most this many filter rows on a listing — more is a wall, not a tool. */

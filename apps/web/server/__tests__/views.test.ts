@@ -36,7 +36,7 @@ async function entity(
 describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
   test('home view groups every entity type with counts', async () => {
     const { buildHomeView } = await import('../views.ts');
-    const home = await buildHomeView('en');
+    const home = await buildHomeView('en', cursor());
     expect(home.totalEntities).toBeGreaterThan(0);
     const allTypes = home.groups.flatMap((group) => group.types.map((t) => t.id));
     expect(allTypes).toContain('character');
@@ -45,6 +45,43 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
       .find((t) => t.id === 'character');
     expect(character?.label).toBe('Character');
     expect(character?.count).toBeGreaterThan(0);
+  });
+
+  test('with NO progression declared, the home names nothing', async () => {
+    // The maintainer's rule for the landing page: a reader who has
+    // told this wiki nothing is protected, not exposed. It may say a
+    // chapter EXISTS and give its number — a bookshop shelf says as
+    // much — but never what it is called, because a chapter title
+    // tells you what happens in it.
+    //
+    // This does NOT fall out of the gate for free: `isSourceVisible`
+    // answers true for an axis with no cursor, so without an explicit
+    // rule the unset home would hand out every title on the site.
+    const { buildHomeView } = await import('../views.ts');
+    const home = await buildHomeView('en', cursor());
+    expect(home.reading).toBeNull();
+    expect(home.releases.length).toBeGreaterThan(0);
+    for (const release of home.releases) {
+      expect(release.title).toBeNull();
+      expect(release.beyondCursor).toBe(true);
+      // What EXISTS is still stated — the page is protective, not empty.
+      expect(release.number).not.toBeNull();
+    }
+  });
+
+  test('with a progression, titles appear up to it and stop there', async () => {
+    const { buildHomeView } = await import('../views.ts');
+    const home = await buildHomeView('en', cursor(100));
+    expect(home.reading).not.toBeNull();
+    const manga = home.reading?.axes.find((a) => a.sourceType === 'manga-chapter');
+    expect(manga?.at).toBe(100);
+    // The denominator counts WORKS THAT EXIST (public), never withheld
+    // facts — so it exceeds the reader's own position.
+    expect(manga?.total).toBeGreaterThan(100);
+    for (const release of home.releases) {
+      if (release.sourceType !== 'manga-chapter' || release.number === null) continue;
+      if (release.number > 100) expect(release.title).toBeNull();
+    }
   });
 
   test('type list resolves localized names', async () => {
