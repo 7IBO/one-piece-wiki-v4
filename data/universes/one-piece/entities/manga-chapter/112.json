@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.112.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "1999-11-08",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:whisky-peak"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:13"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:68"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:66"
     }
   ]
 }

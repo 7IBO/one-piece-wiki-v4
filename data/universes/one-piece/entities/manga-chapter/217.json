@@ -9,12 +9,24 @@
     },
     "title_key": {
       "value_key": "manga-chapter.217.title"
+    },
+    "released_at": {
+      "value": "2002-02-04",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:arabasta"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:24"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:130"
     }
   ]
 }
