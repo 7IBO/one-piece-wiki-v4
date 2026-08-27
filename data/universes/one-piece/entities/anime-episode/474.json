@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:474",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-474",
+  "properties": {
+    "number": {
+      "value": 474
+    },
+    "title_key": {
+      "value_key": "anime-episode.474.title"
+    }
+  },
+  "relations": []
+}

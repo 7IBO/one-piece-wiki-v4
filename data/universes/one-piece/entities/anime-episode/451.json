@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:451",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-451",
+  "properties": {
+    "number": {
+      "value": 451
+    },
+    "title_key": {
+      "value_key": "anime-episode.451.title"
+    }
+  },
+  "relations": []
+}

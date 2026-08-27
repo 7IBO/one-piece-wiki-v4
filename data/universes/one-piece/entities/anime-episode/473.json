@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:473",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-473",
+  "properties": {
+    "number": {
+      "value": 473
+    },
+    "title_key": {
+      "value_key": "anime-episode.473.title"
+    }
+  },
+  "relations": []
+}

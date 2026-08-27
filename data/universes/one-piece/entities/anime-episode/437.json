@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:437",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-437",
+  "properties": {
+    "number": {
+      "value": 437
+    },
+    "title_key": {
+      "value_key": "anime-episode.437.title"
+    }
+  },
+  "relations": []
+}
