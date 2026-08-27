@@ -8,6 +8,288 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-110 — Entity sections are SUB-PAGES at real URLs, not client-side tabs
+
+**Date**: 2026-08-27
+
+**Status**: Accepted
+
+**Supersedes nothing. Extends** ADR-106 (per-type layouts) and ADR-091
+(presentation bindings with mandatory degradation).
+
+### Context
+
+Left open in VISION.md § 5.1, in the maintainer's words: « tabs pour
+pas avoir des pages trop longues, genre pour equipage, tab principal
+avec membres, autre tab pour voir les apparitions, etc ? Les tabs
+doivent maybe etre sous forme de sous pages ? » — and, in the same
+bullet: « Les sous-pages sont indexables et partageables, les onglets
+sont plus fluides. Le SEO pèse lourd vu que l'entrée par Google est un
+usage cité. »
+
+The pressure is real and it grows with the corpus, not with the design.
+A crew page today is a roster of five; the same page for the Marines,
+or a character's appearance ledger over a thousand chapters, is a
+scroll nobody reads. ADR-106 already answered "which module leads" —
+it does not answer "what does the page stop showing".
+
+Three constraints frame the choice:
+
+1. **`Visiteur Google` is one of four named audiences** (VISION.md
+   § 3), and § 5.4 makes SEO the priority acquisition channel. Whatever
+   we build has to be findable.
+2. **ADR-106's layout registry must not fork.** A per-type layout is
+   already a maintained artefact; a second, parallel per-type "tab
+   registry" listing the same slots again would drift from it the first
+   time a slot is added.
+3. **ADR-091's degradation rule is absolute**: no presentation
+   mechanism may hide data, and an unauthored type must still render
+   everything.
+
+### Options considered
+
+**A. Client-side tabs.** One URL, panels toggled in the browser.
+Fluid, instant, familiar. And a tab is **not a destination**: it cannot
+be linked, shared, bookmarked, opened in a new tab, hit by a search
+engine, or reached by the browser's Back button. A Google visitor
+looking for "straw hat pirates former members" would land on the
+overview and have to hunt. The hidden panels are also either in the
+DOM — in which case the page is not shorter, only more folded, and the
+spoiler surface is unchanged — or absent, in which case they are a
+fetch behind an interaction with none of the addressability a fetch
+behind a URL would give. **Rejected: it forfeits the one audience the
+vision names, for a benefit (fluidity) that a client-side router
+already provides.**
+
+**B. Tabs with a URL fragment or a search param** (`?tab=members`).
+Shareable, and the Back button works. But a fragment is not sent to the
+server and a search param is canonicalised away by crawlers unless it
+is explicitly declared significant; both index as ONE page with all its
+content, which is the duplicate-content shape rather than the
+several-focused-pages shape. It also keeps every panel's data in a
+single server response, so the page's cost stays the sum of its
+sections. **Rejected: shareable but not indexable, and it does not make
+the page smaller.**
+
+**C. Sub-routes** (`/crew/straw-hat-pirates/former-members`).
+Indexable, linkable, shareable, Back-able; each page carries its own
+`<title>`; the loader for a section can, later, fetch only what that
+section needs. The costs are real and were weighed: one more route
+file, one more registry, and a navigation that must never offer an
+empty page. **Chosen.**
+
+**D. Do nothing until a page actually hurts.** Defensible — the corpus
+is 61 entities — but the URL shape is the expensive part to change
+later (links, indexes, redirects), and the mechanism costs ~200 lines.
+**Rejected: this is the decision that gets harder with time, not
+easier.**
+
+### Decision
+
+**Sub-pages at `/{type}/{slug}/{section}`**, where `{section}` is a
+kebab-case English id, exactly like every other slug in the project.
+
+The registry is `apps/web/src/lib/entity-sections.ts`, and it is
+deliberately NOT a second layout registry: **a section is a subset of
+SLOT NAMES** from ADR-106's fixed vocabulary. The type's authored bands
+are computed as before (`bandsFor`) and then sliced to the slots the
+current page owns (`restrictBands`), so the sub-page inherits the
+type's layout instead of re-declaring it — a crew's roster still leads
+at full width, an aside is still an aside.
+`src/routes/$type_.$slug_.$section.tsx` resolves the section and
+renders the SAME article component as the overview.
+
+Authored sections (well-known type ids, ADR-091 binding):
+
+| type                   | sub-pages                                    |
+| ---------------------- | -------------------------------------------- |
+| `crew`, `organization` | `former-members` · `gallery` · `appearances` |
+| `character`            | `relations` · `gallery` · `appearances`      |
+
+What earns a sub-page: a module that grows WITHOUT BOUND with the
+corpus (a roster's alumni, an appearance ledger over a thousand
+chapters, a gallery of stills), or one that answers a different
+question from the one the page opened on. What stays on the overview:
+the identity of the thing — its data sheet, its prose, and the one
+module the type is really about (a crew IS its roster, which is why
+`members` stays on the overview and matches « tab principal avec
+membres »).
+
+Three invariants, each enforced in code and tested
+(`src/lib/__tests__/entity-sections.test.ts`):
+
+1. **Nothing is dropped.** `overviewSlots` is a SET DIFFERENCE over
+   `ALL_SLOTS`, never a list: every slot belongs to exactly one page,
+   and a slot added tomorrow lands on the overview by default rather
+   than falling off the site. Remove a type's sections and its page
+   collapses back to everything-on-one-page.
+2. **No empty sub-page is ever offered.** `slotHasContent` is the
+   single judgement of "does this module have anything to show", used
+   BOTH to skip a module and to decide whether to LINK a section — so a
+   link can never promise a blank page. An entity with nothing to split
+   renders no navigation at all: a lone tab is not navigation.
+3. **Unauthored types are untouched** (ADR-091): no sections, no
+   sub-page URLs, one page holding every module.
+
+A declared section that is empty for one entity still RESOLVES — it is
+part of the page, not a claim about what exists — and says so; a
+section id the type does not declare is a genuine 404, because that URL
+names nothing. Each sub-page emits its own `<title>`
+(`Name — Section — One Piece Wiki`), since a duplicate title in an
+index is precisely the failure mode sub-pages were chosen to avoid.
+
+### Consequences
+
+- The Google visitor can land directly on the question they asked.
+- Navigation stays fluid in practice: these are `<Link>`s on a
+  client-side router, so moving between sections is a client
+  transition, not a document load. The URL is the only thing that
+  differs from option A — and it is the thing that mattered.
+- Spoiler semantics are untouched: a section is a presentation split
+  over an already-gated view model, and a gated entity shows the same
+  "not yet in your progression" screen on every one of its URLs.
+- Today the Straw Hat Pirates render as a single page: their roster is
+  the only populated module in a 61-entity corpus, so invariant 2
+  suppresses the navigation. That is the mechanism working, and it is
+  what makes the sub-pages appear on their own as the corpus fills.
+- Open, deliberately deferred: per-section server fetching (the loader
+  still builds the full view model — correct at this corpus size, and
+  the split is now the natural place to narrow it), and a
+  `rel="canonical"` / sitemap pass, which belongs with the parked
+  SEO/SSG work in ROADMAP Phase 6.x.
+
+---
+
+## ADR-109 — Six "* Box" mappers: the survey's value shapes decide property vs vocabulary vs relation
+
+**Date**: 2026-08-27
+
+**Context**: `VISION.md` §1 makes filling the corpus the single biggest
+lever on the project, and the corpus stood at 61 entities. The
+2026-08-27 full-wiki structural survey
+(`docs/audits/fandom-structure-2026-08-27.{md,json}`, ADR-092
+`fandom:analyze --full`) measured the gap precisely: **4 of 39 infobox
+templates had a mapper**, and — decisively — it classified every field
+of every template by **value shape**, not just by name. Six of the
+mapper-less templates feed entity types that ALREADY exist in the
+catalogue, so importing them is engineering, not modelling:
+
+| Template         | Entity type    | Pages |
+| ---------------- | -------------- | ----: |
+| Devil Fruit Box  | `devil-fruit`  |   211 |
+| Crew Box         | `crew`         |   149 |
+| Ship Box         | `ship`         |   141 |
+| Organization Box | `organization` |   114 |
+| Weapon Box       | `weapon`       |   112 |
+| Arc Box          | `arc`          |    70 |
+
+Island Box (414 pages, the biggest single gap) is deliberately OUT of
+scope: islands need a modelling decision of their own, and inventing a
+location shape inside an import PR is exactly what CLAUDE.md forbids.
+
+**Decision**:
+
+1. **Six deterministic mappers** — `devil-fruit`, `crew`, `ship`,
+   `organization`, `weapon`, `arc` — in `packages/importers/src/fandom/`,
+   following the existing chapter/character/volume convention
+   (`*_INFOBOX_NAMES`, `*_HANDLED_PARAMS`, `*_IGNORED_PARAMS`,
+   registered in `INFOBOX_MAPPERS` and `BOX_TO_KIND`). Together they
+   cover **71 mapped / 18 ignored / 0 unmapped** of the 89 fields the
+   survey observed on those templates.
+
+2. **The survey's value shape decides the destination**, per field:
+   - `wikilink` / `wikilink_list` → a **relation**, never a string
+     property — but only when the relation's canonical direction
+     starts on the entity being imported (ADR-033). So
+     `Devil Fruit.user` → `held-by`, `Ship.affiliation` → `crewed-by`,
+     `Organization.affiliation/residency/allies/affiliates` →
+     `subordinate-to` / `based-in` / `ally-of`. `Crew.captain`,
+     `Crew.ship`, `Weapon.owner`, `Organization.leader` and every
+     `prev`/`next` on Arc Box point the OTHER way — they are reported
+     as warnings and stay a single edge on the other entity (ADR-098/099
+     "one home per fact"), never mirrored into an inverse.
+   - `first` (`wikilink_list` on Devil Fruit / Ship / Weapon / Crew Box)
+     is the **debut anchor**: it becomes the `since` axis of the
+     entity's initial values, which is where the corpus already keeps
+     it (`devil-fruit:gomu-gomu`). The appearance EDGE is `features`,
+     whose canonical direction is source → entity (ADR-105), so each
+     mapper emits a warning naming the exact edge to add on the
+     chapter/episode file rather than inventing an entity-side one.
+   - `enum_like` / free-English enums → the **existing vocabulary**,
+     resolved through an index built from the committed vocabulary
+     files (`fandom/vocabulary.ts`) rather than a literal table in
+     mapper code. Three passes — exact, whole-word, in-word — with a
+     warning on every non-exact hit so the admin queue sees the
+     inference.
+   - `template` `jname` (`{{Ruby|base|reading}}`, ~10 boxes) + `rname`
+     → the **`ja` / `ja-latn` data locales of ADR-095**, i.e.
+     translations of `name`, never string properties. `emit.ts` grows
+     `EmitTranslations` and writes the two extra sidecars.
+   - `colorscheme` / `backcolor` / `textcolor` / `switchAM`, the
+     infobox header overrides and Ship Box's `status` (a display
+     switch valued `1`/`2`, not a lifecycle) are **pure Fandom
+     presentation**, declared in `*_IGNORED_PARAMS` so they stop
+     counting as gaps in the analyze report.
+   - `image` / `jroger` / `imagetext` / `multiimage` are ignored on
+     **licensing** grounds, not modelling ones (ADR-107 rules 7-11:
+     Fandom images are never ingested).
+
+3. **Four additive vocabulary values**, each justified by a required
+   property with no Fandom source:
+   - `ship-types.unknown` — the Ship Box carries **no vessel class**
+     at all, yet `ship.ship_type` is required. Every ship therefore
+     imports as `unknown` + a warning. Adding the value is what makes
+     141 ships importable at all; guessing a class from a silhouette
+     is not something a deterministic mapper may do.
+   - `weapon-types.unknown` and `org-types.unknown` — same shape:
+     `weapon_type` is required and Fandom's `type` is prose;
+     `organization_type` is required and the box has no type field.
+   - `arc-subtypes.filler` — Arc Box's `type` has exactly two observed
+     values, `Cover` and `Filler`; `cover_story` already existed, so
+     one value closes the field.
+     No property was added, none removed, none reshaped. `check:compat`
+     reports 4 additive changes, 0 breaking; the snapshot is regenerated.
+
+4. **Entity ids reuse the ADR-081 ledger** when the page is already
+   bound (`entityIdFor`), so a re-import cannot fork
+   `devil-fruit:gomu-gomu` into `devil-fruit:gomu-gomu-no-mi`. The EN
+   name is the wiki's own page title (or the box's `name` override) —
+   `ename` is a LIST of dub variants and is never the primary name.
+
+**Schema poverty found and NOT papered over** (reported as warnings,
+no schema widened):
+
+- `ship`: no dimension property (`height`/`length` on 5% of pages), and
+  `ship_type` has no source at all;
+- `weapon`: no owner-side relation (`wields-weapon` is character →
+  weapon; the weapon side owns only `forged-by`, the smith), and no
+  `price`;
+- `crew` / `organization`: no `total_bounty` (ADR-098 left the
+  derivation open) — the box's `bounty` is a crew total;
+- `organization`: no `status` / `disbanded_at`, although `crew` has
+  `disbanded_at`;
+- `arc`: no publication/broadcast date range, and no relation for
+  arc ordering — `arc_number` is the single home, and the Arc Box does
+  not carry it, so `prev`/`next` cannot be ingested;
+- `name` has **no translation-variant qualifier**, so the dub-title
+  lists in `ename` (100% filled on five of the six boxes) have nowhere
+  to live. `translation_variant` exists only as a qualifier on
+  `publications`. This is the single biggest recurring gap; closing it
+  is a modelling decision, not an import one.
+
+**Consequences**: `import:fandom` gains six kinds
+(`devil-fruit|crew|ship|organization|weapon|arc`) and `crawl` routes
+their boxes automatically; the analyze report's gap list drops 89
+fields. Fixtures are SYNTHETIC (the sandbox denies
+onepiece.fandom.com, ADR-079 §6) and modelled param-for-param on the
+survey's inventory — they must be validated against live
+`action=parse` responses on the first CI run, like `volume-12` still
+must. `crawl.test.ts` and `analyze.test.ts` used Crew Box as their
+example of a mapper-less template; they now use Island Box and a
+`Video Game Box` stub.
+
+---
+
 ## ADR-108 — Search is an FTS5 + trigram index built into the artifact, gated by materialized progression anchors
 
 **Date**: 2026-08-27

@@ -58,9 +58,17 @@ import { CARD_GRID_CLASS, EntityCard } from '../components/EntityCard';
 import { EntityChipLink, ScopeContext, useScopeSearch } from '../components/EntityChip';
 import { EntityHero } from '../components/EntityHero';
 import { EntityImage } from '../components/EntityImage';
+import { HoverPreview } from '../components/HoverPreview';
 import { ShowMoreList } from '../components/ShowMoreList';
 import { type ChromeKey, t } from '../lib/chrome';
 import { bandsFor, type LayoutBand, layoutFor, type SlotKey } from '../lib/entity-layout';
+import {
+  type EntitySection,
+  restrictBands,
+  slotHasContent,
+  slotsForSection,
+  visibleSections,
+} from '../lib/entity-sections';
 import { entityTint } from '../lib/entity-tint';
 import { Markdown } from '../lib/markdown';
 import { validateScopeSearch } from '../lib/scope';
@@ -145,7 +153,7 @@ function EntityPage(): JSX.Element {
   if (view.kind === 'gated') return <GatedScreen view={view} />;
   return (
     <ScopeContext.Provider value={view.propagateScope}>
-      <EntityArticle view={view} />
+      <EntityArticle view={view} section={null} />
     </ScopeContext.Provider>
   );
 }
@@ -153,7 +161,7 @@ function EntityPage(): JSX.Element {
 // ---------------------------------------------------------------------------
 // Gated ("not yet in your progression")
 
-function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element {
+export function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element {
   const locale = useLocale();
   return (
     <div className='page-column mx-auto max-w-md py-20 text-center'>
@@ -178,9 +186,22 @@ function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element
 // ---------------------------------------------------------------------------
 // The article: hero, then the type's bands.
 
-function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
+/**
+ * The entity article, on its overview (`section === null`) or on one
+ * of its sub-pages (ADR-110). The authored bands are computed once and
+ * then RESTRICTED to the slots this page owns, so a sub-page inherits
+ * the type's layout instead of forking it: a crew's roster still leads
+ * at full width, an aside is still an aside.
+ */
+export function EntityArticle(
+  { view, section }: {
+    readonly view: EntityView;
+    readonly section: EntitySection | null;
+  },
+): JSX.Element {
   const tint = entityTint(view.id);
   const layout = layoutFor(view.type);
+  const bands = restrictBands(bandsFor(view.type), slotsForSection(view.type, section));
   return (
     <article className='tinted' style={tint.vars as CSSProperties}>
       <EntityHero
@@ -194,12 +215,73 @@ function EntityArticle({ view }: { readonly view: EntityView; }): JSX.Element {
         <Identity view={view} />
       </EntityHero>
 
+      <SectionNav view={view} current={section} />
+
       <div className='page-column space-y-12 pt-9'>
-        {bandsFor(view.type).map((band, index) => <Band key={index} band={band} view={view} />)}
+        {bands.map((band, index) => <Band key={index} band={band} view={view} />)}
+        {bands.length === 0 ? <EmptySection /> : null}
         <ContributeStrip type={view.type} slug={view.slug} />
       </div>
     </article>
   );
+}
+
+/**
+ * The sub-page navigation (ADR-110). Real links to real URLs — an
+ * indexable, shareable destination each, which is the whole point of
+ * choosing sub-pages over tabs. Rendered only when the entity actually
+ * has something to split: a lone tab is not navigation.
+ */
+function SectionNav(
+  { view, current }: {
+    readonly view: EntityView;
+    readonly current: EntitySection | null;
+  },
+): JSX.Element | null {
+  const locale = useLocale();
+  const search = useScopeSearch();
+  const sections = visibleSections(view);
+  if (sections.length === 0) return null;
+  const item =
+    'block border-b-2 px-0.5 pb-2 pt-3 text-[12px] font-bold uppercase tracking-[0.08em] transition-colors duration-150';
+  const active = 'border-accent text-fg';
+  const idle = 'border-transparent text-muted hover:text-fg';
+  return (
+    <nav className='page-column border-b border-line'>
+      <ul className='-mb-px flex flex-wrap items-center gap-x-6'>
+        <li>
+          <Link
+            to='/$type/$slug'
+            params={{ type: view.type, slug: view.slug }}
+            search={search}
+            aria-current={current === null ? 'page' : undefined}
+            className={`${item} ${current === null ? active : idle}`}
+          >
+            {t(locale, 'sectionOverview')}
+          </Link>
+        </li>
+        {sections.map((section) => (
+          <li key={section.id}>
+            <Link
+              to='/$type/$slug/$section'
+              params={{ type: view.type, slug: view.slug, section: section.id }}
+              search={search}
+              aria-current={current?.id === section.id ? 'page' : undefined}
+              className={`${item} ${current?.id === section.id ? active : idle}`}
+            >
+              {t(locale, section.labelKey)}
+            </Link>
+          </li>
+        ))}
+      </ul>
+    </nav>
+  );
+}
+
+/** A sub-page URL that resolves but has nothing in it (yet). */
+function EmptySection(): JSX.Element {
+  const locale = useLocale();
+  return <p className='py-10 text-sm text-muted'>{t(locale, 'emptySection')}</p>;
 }
 
 /** Overline, name, identity line and the ONE headline figure. */
@@ -384,6 +466,11 @@ function renderSlots(
  * own.
  */
 function renderSlot(slot: SlotKey, view: EntityView, wide: boolean): ReactNode {
+  // One source of truth for "has this module anything to show"
+  // (`lib/entity-sections.ts`) — the same predicate decides whether a
+  // sub-page is offered, so a link can never promise a blank page.
+  // The narrowing checks below are TypeScript's, not a second opinion.
+  if (!slotHasContent(slot, view)) return null;
   switch (slot) {
     case 'sheet':
       return view.properties.length === 0 && view.infoboxRelations.length === 0
@@ -767,24 +854,26 @@ function ContentsList(
       listClassName={`grid gap-x-8 ${columns ? rowColumns(items.length) : 'grid-cols-1'}`}
       items={items.map((item) => (
         <li key={item.chip.id} className='border-b border-line'>
-          <Link
-            to='/$type/$slug'
-            params={{ type: item.chip.type, slug: item.chip.slug }}
-            search={search}
-            aria-current={item.current ? 'page' : undefined}
-            className='group flex items-baseline gap-3 py-2.5'
-          >
-            <span
-              className={`display w-12 shrink-0 text-[15px] font-extrabold tabular-nums ${
-                item.current ? 'text-accent' : 'text-gold/80'
-              }`}
+          <HoverPreview type={item.chip.type} slug={item.chip.slug}>
+            <Link
+              to='/$type/$slug'
+              params={{ type: item.chip.type, slug: item.chip.slug }}
+              search={search}
+              aria-current={item.current ? 'page' : undefined}
+              className='group flex items-baseline gap-3 py-2.5'
             >
-              {item.number ?? '·'}
-            </span>
-            <span className='min-w-0 flex-1 truncate text-[13.5px] font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
-              {item.chip.name}
-            </span>
-          </Link>
+              <span
+                className={`display w-12 shrink-0 text-[15px] font-extrabold tabular-nums ${
+                  item.current ? 'text-accent' : 'text-gold/80'
+                }`}
+              >
+                {item.number ?? '·'}
+              </span>
+              <span className='min-w-0 flex-1 truncate text-[13.5px] font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
+                {item.chip.name}
+              </span>
+            </Link>
+          </HoverPreview>
         </li>
       ))}
     />
@@ -842,15 +931,17 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Ele
   }
   return (
     <li>
-      <Link
-        to='/$type/$slug'
-        params={{ type: item.chip.type, slug: item.chip.slug }}
-        search={search}
-        title={item.chip.name}
-        className='grid min-w-10 place-items-center rounded-md px-2 py-1.5 text-xs font-medium tabular-nums text-muted ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-fg hover:ring-line-strong'
-      >
-        {label}
-      </Link>
+      <HoverPreview type={item.chip.type} slug={item.chip.slug}>
+        <Link
+          to='/$type/$slug'
+          params={{ type: item.chip.type, slug: item.chip.slug }}
+          search={search}
+          title={item.chip.name}
+          className='grid min-w-10 place-items-center rounded-md px-2 py-1.5 text-xs font-medium tabular-nums text-muted ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-fg hover:ring-line-strong'
+        >
+          {label}
+        </Link>
+      </HoverPreview>
     </li>
   );
 }
@@ -864,22 +955,24 @@ function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): 
       listClassName='grid grid-cols-[repeat(auto-fill,minmax(6.5rem,1fr))] gap-2'
       items={items.map((item) => (
         <li key={item.chip.id}>
-          <Link
-            to='/$type/$slug'
-            params={{ type: item.chip.type, slug: item.chip.slug }}
-            search={search}
-            title={item.chip.name}
-            className={`group block rounded-md p-2 ring-1 transition-[background-color,box-shadow] duration-150 hover:bg-surface ${
-              item.current ? 'bg-surface ring-accent' : 'ring-line hover:ring-line-strong'
-            }`}
-          >
-            <span className='display block text-base font-bold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-accent'>
-              {item.number ?? '·'}
-            </span>
-            <span className='block truncate text-[10.5px] text-faint'>
-              {item.chip.name}
-            </span>
-          </Link>
+          <HoverPreview type={item.chip.type} slug={item.chip.slug}>
+            <Link
+              to='/$type/$slug'
+              params={{ type: item.chip.type, slug: item.chip.slug }}
+              search={search}
+              title={item.chip.name}
+              className={`group block rounded-md p-2 ring-1 transition-[background-color,box-shadow] duration-150 hover:bg-surface ${
+                item.current ? 'bg-surface ring-accent' : 'ring-line hover:ring-line-strong'
+              }`}
+            >
+              <span className='display block text-base font-bold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-accent'>
+                {item.number ?? '·'}
+              </span>
+              <span className='block truncate text-[10.5px] text-faint'>
+                {item.chip.name}
+              </span>
+            </Link>
+          </HoverPreview>
         </li>
       ))}
     />
@@ -983,6 +1076,7 @@ function GallerySection(
               slug={`${slug}-still-${index}`}
               name={image.alt}
               ratio='wide'
+              fit='native'
               className='w-full rounded-lg ring-1 ring-line'
             />
             {image.attribution !== null

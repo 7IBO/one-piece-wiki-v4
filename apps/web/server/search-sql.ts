@@ -8,6 +8,11 @@
  * unit-tested without an artifact: the FTS5 MATCH expression, and the
  * SPOILER GATE.
  *
+ * The display-name statement at the bottom is used by the WHOLE app,
+ * not only by `/search`: `resolveEntityName` in `server/views.ts` runs
+ * it too, so a page title, a hero, a `<title>` and a search card can
+ * never disagree about which name the reader has reached.
+ *
  * ## The gate
  *
  * A doc is visible iff the reader's cursor has passed EVERY anchor
@@ -128,17 +133,28 @@ export const SEARCH_FUZZY_SQL: string = `
    LIMIT ?`;
 
 /**
- * The name to LABEL a result with — resolved through the same gate, so
- * the label can never be a name the reader has not reached. Mirrors
- * `resolveEntityName` (canonical key first, then the entity type's
- * `display_name_properties` in order, latest entry winning) and adds
- * the cursor it lacks. Locale is the last tiebreak: it separates two
- * rows describing the SAME name entry, never a canonical name from a
- * lesser one.
+ * The name to DISPLAY an entity under — everywhere, not only on a
+ * search card: page title, `<title>`, hero, link labels, chips
+ * (`resolveEntityName`, `server/views.ts`). The name a reader sees is
+ * a surfacing exactly like a search hit, so it goes through the very
+ * same gate and the very same statement.
+ *
+ * Ordering mirrors what the BUILDER recorded in `name_rank`
+ * (`packages/db-builder/src/search.ts`): 0 = the entity's
+ * `canonical_name_key`, then 1 + the position of the property in the
+ * entity type's `display_name_properties`. `entry_index DESC` makes
+ * the LATEST entry of a property win, and locale is the last tiebreak:
+ * it separates two rows describing the SAME name entry, never a
+ * canonical name from a lesser one.
+ *
+ * Because the gate is in the WHERE clause, a canonical name the reader
+ * has not reached is not merely deprioritised — it does not exist for
+ * this query, and resolution falls to the name that WAS in force at
+ * the cursor.
  *
  * Parameters: entity id, …gate, reader locale.
  */
-export const SEARCH_DISPLAY_NAME_SQL: string = `
+export const DISPLAY_NAME_SQL: string = `
   SELECT d.text, d.locale
     FROM search_docs d
    WHERE d.entity_id = ?
@@ -147,4 +163,26 @@ export const SEARCH_DISPLAY_NAME_SQL: string = `
    ORDER BY d.name_rank ASC,
             d.entry_index DESC,
             CASE WHEN d.locale = ? THEN 0 WHEN d.locale = 'en' THEN 1 ELSE 2 END
+   LIMIT 1`;
+
+/**
+ * Does the entity carry ANY candidate display name in the index,
+ * cursor or no cursor? This is what separates the two reasons
+ * {@link DISPLAY_NAME_SQL} can come back empty:
+ *
+ * - **no rows at all** — the entity's `canonical_name_key` is not
+ *   carried by any localizable property (an `image` entity names
+ *   itself through a key no property declares). Such a key has no
+ *   `since` and therefore no progression anchor: it cannot be a later
+ *   name, and resolving it directly from `translations` is safe;
+ * - **rows exist but every one is gated** — the entity HAS names and
+ *   the reader has reached none of them. Falling back to the raw key
+ *   there is precisely the leak this module exists to prevent, so the
+ *   caller must degrade to the slug instead.
+ *
+ * Parameters: entity id.
+ */
+export const HAS_DISPLAY_NAME_SQL: string = `
+  SELECT 1 FROM search_docs d
+   WHERE d.entity_id = ? AND d.name_rank IS NOT NULL
    LIMIT 1`;

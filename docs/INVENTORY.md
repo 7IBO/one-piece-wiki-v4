@@ -949,7 +949,9 @@ excludes it.)
 ### 5.12 `org-types`
 
 `marine`, `world_government_branch`, `cipher_pol`, `revolutionary`,
-`secret_society`, `royal_court`, `merchant_guild`, `religious_order`
+`secret_society`, `royal_court`, `merchant_guild`, `religious_order`,
+`unknown` (ADR-109: `organization_type` is required and the Fandom
+Organization Box carries no type field)
 
 ### 5.13 `location-subtypes`
 
@@ -967,7 +969,8 @@ excludes it.)
 
 `sword`, `katana`, `gun`, `cannon`, `staff`, `knife`, `spear`, `axe`,
 `hammer`, `whip`, `kanabo`, `bow`, `shuriken`, `naginata`, `shikomizue`,
-`cutlass`, `saber`, `exotic`
+`cutlass`, `saber`, `exotic`, `unknown` (ADR-109: `weapon_type` is
+required and Fandom's Weapon Box `type` is prose)
 
 ### 5.16 `weapon-grades`
 
@@ -978,12 +981,15 @@ boolean properties `is_cursed` / `is_black_blade`, not grades)
 ### 5.17 `ship-types`
 
 `caravel`, `galleon`, `sloop`, `frigate`, `marine_warship`, `submarine`,
-`flying_ship`, `mini_ship`, `pirate_ship`
+`flying_ship`, `mini_ship`, `pirate_ship`, `unknown` (ADR-109: `ship_type`
+is required and the Fandom Ship Box carries no vessel class at all)
 
 ### 5.18 `arc-subtypes`
 
 `introductory`, `training`, `exploration`, `war`, `mystery`,
-`political`, `tournament`, `flashback`, `cover_story`
+`political`, `tournament`, `flashback`, `cover_story`, `filler`
+(ADR-109: the Arc Box `type` field's two observed values are `Cover`
+and `Filler`)
 
 ### 5.19 `event-subtypes`
 

@@ -218,6 +218,30 @@ body {
     box-shadow: 0 18px 44px -14px color-mix(in oklab, var(--color-canvas) 92%, transparent);
   }
 
+  /* The desktop hover preview (`components/HoverPreview.tsx`). Squared
+   * off, hairlined and opaque — a plate lifted off the page, not a
+   * floating rounded SaaS popover (VISION.md § 4). The shadow is what
+   * separates it from the content underneath; the entrance is a short
+   * rise, cancelled outright under `prefers-reduced-motion` below. */
+  .hover-card {
+    box-shadow: 0 20px 46px -16px oklch(0 0 0 / 0.75);
+    animation: hover-card-in 130ms cubic-bezier(0.22, 1, 0.36, 1) both;
+  }
+
+  /* The rise uses `translate`, not `transform`: the component owns
+   * `transform` (it flips the card above the link when there is no
+   * room below) and an animation would otherwise win over it. */
+  @keyframes hover-card-in {
+    from {
+      opacity: 0;
+      translate: 0 4px;
+    }
+    to {
+      opacity: 1;
+      translate: 0 0;
+    }
+  }
+
   /* Hover lift — the shared motion of every art tile. Marked with a
    * class so `prefers-reduced-motion` can cancel the transform wholesale
    * (a shortened transition would still jump the layout). */
@@ -255,5 +279,10 @@ body {
   .motion-lift:hover,
   .motion-lift:focus-visible {
     transform: none !important;
+  }
+
+  /* The preview appears, it does not travel. */
+  .hover-card {
+    animation: none !important;
   }
 }

@@ -6,10 +6,10 @@
 import { describe, expect, test } from 'bun:test';
 import { CURSOR_AXES } from '../progress.ts';
 import {
+  DISPLAY_NAME_SQL,
   ftsMatchExpression,
   GATE_PREDICATE,
   gateParams,
-  SEARCH_DISPLAY_NAME_SQL,
   SEARCH_FUZZY_SQL,
   SEARCH_LEXICAL_SQL,
 } from '../search-sql.ts';
@@ -67,7 +67,7 @@ describe('the spoiler gate', () => {
   });
 
   test('is applied in the WHERE clause of every pass, before any LIMIT', () => {
-    for (const sql of [SEARCH_LEXICAL_SQL, SEARCH_FUZZY_SQL, SEARCH_DISPLAY_NAME_SQL]) {
+    for (const sql of [SEARCH_LEXICAL_SQL, SEARCH_FUZZY_SQL, DISPLAY_NAME_SQL]) {
       expect(sql).toContain(GATE_PREDICATE);
       const gateAt = sql.indexOf('NOT EXISTS');
       const limitAt = sql.lastIndexOf('LIMIT');

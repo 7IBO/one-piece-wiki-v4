@@ -15,6 +15,7 @@ import { Route as IndexRouteImport } from './routes/index'
 import { Route as TTypeRouteImport } from './routes/t.$type'
 import { Route as TypeSlugRouteImport } from './routes/$type_.$slug'
 import { Route as ETypeSlugRouteImport } from './routes/e.$type.$slug'
+import { Route as TypeSlugSectionRouteImport } from './routes/$type_.$slug_.$section'
 
 const SearchRoute = SearchRouteImport.update({
   id: '/search',
@@ -46,6 +47,11 @@ const ETypeSlugRoute = ETypeSlugRouteImport.update({
   path: '/e/$type/$slug',
   getParentRoute: () => rootRouteImport,
 } as any)
+const TypeSlugSectionRoute = TypeSlugSectionRouteImport.update({
+  id: '/$type_/$slug_/$section',
+  path: '/$type/$slug/$section',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -53,6 +59,7 @@ export interface FileRoutesByFullPath {
   '/search': typeof SearchRoute
   '/$type/$slug': typeof TypeSlugRoute
   '/t/$type': typeof TTypeRoute
+  '/$type/$slug/$section': typeof TypeSlugSectionRoute
   '/e/$type/$slug': typeof ETypeSlugRoute
 }
 export interface FileRoutesByTo {
@@ -61,6 +68,7 @@ export interface FileRoutesByTo {
   '/search': typeof SearchRoute
   '/$type/$slug': typeof TypeSlugRoute
   '/t/$type': typeof TTypeRoute
+  '/$type/$slug/$section': typeof TypeSlugSectionRoute
   '/e/$type/$slug': typeof ETypeSlugRoute
 }
 export interface FileRoutesById {
@@ -70,6 +78,7 @@ export interface FileRoutesById {
   '/search': typeof SearchRoute
   '/$type_/$slug': typeof TypeSlugRoute
   '/t/$type': typeof TTypeRoute
+  '/$type_/$slug_/$section': typeof TypeSlugSectionRoute
   '/e/$type/$slug': typeof ETypeSlugRoute
 }
 export interface FileRouteTypes {
@@ -80,6 +89,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/$type/$slug'
     | '/t/$type'
+    | '/$type/$slug/$section'
     | '/e/$type/$slug'
   fileRoutesByTo: FileRoutesByTo
   to:
@@ -88,6 +98,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/$type/$slug'
     | '/t/$type'
+    | '/$type/$slug/$section'
     | '/e/$type/$slug'
   id:
     | '__root__'
@@ -96,6 +107,7 @@ export interface FileRouteTypes {
     | '/search'
     | '/$type_/$slug'
     | '/t/$type'
+    | '/$type_/$slug_/$section'
     | '/e/$type/$slug'
   fileRoutesById: FileRoutesById
 }
@@ -105,6 +117,7 @@ export interface RootRouteChildren {
   SearchRoute: typeof SearchRoute
   TypeSlugRoute: typeof TypeSlugRoute
   TTypeRoute: typeof TTypeRoute
+  TypeSlugSectionRoute: typeof TypeSlugSectionRoute
   ETypeSlugRoute: typeof ETypeSlugRoute
 }
 
@@ -152,6 +165,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof ETypeSlugRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/$type_/$slug_/$section': {
+      id: '/$type_/$slug_/$section'
+      path: '/$type/$slug/$section'
+      fullPath: '/$type/$slug/$section'
+      preLoaderRoute: typeof TypeSlugSectionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -161,6 +181,7 @@ const rootRouteChildren: RootRouteChildren = {
   SearchRoute: SearchRoute,
   TypeSlugRoute: TypeSlugRoute,
   TTypeRoute: TTypeRoute,
+  TypeSlugSectionRoute: TypeSlugSectionRoute,
   ETypeSlugRoute: ETypeSlugRoute,
 }
 export const routeTree = rootRouteImport

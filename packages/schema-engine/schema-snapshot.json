@@ -2927,6 +2927,7 @@
     "arc-subtypes": [
       "cover_story",
       "exploration",
+      "filler",
       "flashback",
       "introductory",
       "mystery",
@@ -3472,6 +3473,7 @@
       "revolutionary",
       "royal_court",
       "secret_society",
+      "unknown",
       "world_government_branch"
     ],
     "performance-kinds": [
@@ -3554,7 +3556,8 @@
       "mini_ship",
       "pirate_ship",
       "sloop",
-      "submarine"
+      "submarine",
+      "unknown"
     ],
     "source-origins": [
       "anime_promotional",
@@ -3649,6 +3652,7 @@
       "spear",
       "staff",
       "sword",
+      "unknown",
       "whip"
     ]
   }

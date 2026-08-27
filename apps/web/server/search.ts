@@ -312,10 +312,12 @@ export async function buildSearchView(
     const hit = candidate.hit;
     const card = buildEntityCardView(hit.entity_id, cat, locale, cursor);
     if (card === null) continue;
-    // The label is resolved through the SAME gate as the match, so it
-    // can never be a later name (a renamed character is listed under
-    // the name they had at the reader's cursor).
-    const name = db.searchDisplayName(hit.entity_id, cursor, locale) ?? card.chip.name;
+    // The label is resolved through the SAME gate as the match — and
+    // now through the same statement as every other surface of the
+    // app, since `resolveEntityName` runs `DISPLAY_NAME_SQL` too. A
+    // renamed entity is listed under the name it had at the reader's
+    // cursor, and its page titles itself with exactly that name.
+    const name = card.chip.name;
     // A slug hit is never shown as "what matched": it is a URL
     // fragment, not something the reader wrote or would recognise.
     const matchedIsName = hit.field === SEARCH_SLUG_FIELD

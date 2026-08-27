@@ -104,7 +104,10 @@ What it does, all through the polite rate-limited `FandomClient`
    `EPISODE_HANDLED_PARAMS` + `EPISODE_IGNORED_PARAMS`,
    `VOLUME_HANDLED_PARAMS`); each category is matched to an entity
    type via the maintained slug table (`CATEGORY_ENTITY_TYPES` in
-   `src/fandom/analyze.ts`) with a singularised-slug fallback.
+   `src/fandom/analyze.ts`) with a singularised-slug fallback. Since
+   ADR-109 ten templates are marked: Chapter / Char / Episode / Volume
+   Box plus Devil Fruit / Crew / Ship / Organization / Weapon / Arc
+   Box.
 
 Output: `fandom-analyze.json` (machine-readable, diffable) and
 `fandom-analyze.md` (summary — overview, field inventory with shapes
@@ -131,6 +134,49 @@ egress). `.github/workflows/fandom-analyze.yml` closes that loop: on
 <run>` branch**. The runner does the looking; the commit is how it
 reports back. Nothing is merged, and the workflow never touches
 `/data`.
+
+## Mapper coverage (ADR-079 + ADR-109)
+
+`import:fandom <kind> "<Page>" [--stage]` runs one mapper on one page;
+`import:fandom crawl --category "<Category>"` auto-detects the box.
+
+| Kind           | Infobox          | Entity type     | Fields mapped/ignored/unmapped |
+| -------------- | ---------------- | --------------- | ------------------------------ |
+| `chapter`      | Chapter Box      | `manga-chapter` | 5/0/7                          |
+| `character`    | Char Box         | `character`     | 18/0/12                        |
+| `episode`      | Episode Box      | `anime-episode` | 6/1/36                         |
+| `volume`       | Volume Box       | `volume`        | 4/0/1                          |
+| `devil-fruit`  | Devil Fruit Box  | `devil-fruit`   | 9/4/0                          |
+| `crew`         | Crew Box         | `crew`          | 10/3/0                         |
+| `ship`         | Ship Box         | `ship`          | 11/4/0                         |
+| `organization` | Organization Box | `organization`  | 16/2/0                         |
+| `weapon`       | Weapon Box       | `weapon`        | 10/2/0                         |
+| `arc`          | Arc Box          | `arc`           | 15/3/0                         |
+
+Counts are against the 2026-08-27 survey's field inventory
+(`docs/audits/fandom-structure-2026-08-27.json`). "ignored" means
+DELIBERATELY not mapped — Fandom presentation params (`colorscheme`,
+`backcolor`, `switchAM`, infobox header overrides) and image params,
+which ADR-107 forbids ingesting. A field the schema has no home for is
+neither mapped nor ignored in the entity: it is emitted as a **warning**
+naming the gap, so nothing is silently invented.
+
+Categories to feed the `fandom-import` workflow (all nest their
+articles one or two levels down, hence `depth: 2`):
+
+| Kind                                   | Category input           | Pages + subcats                  |
+| -------------------------------------- | ------------------------ | -------------------------------- |
+| `devil-fruit`                          | `Devil Fruits`           | 6 + 7 subcats                    |
+| `crew`                                 | `Pirate Crews`           | 8 + 4 subcats                    |
+| `ship`                                 | `Ships`                  | 21 + 7 subcats                   |
+| `organization`                         | `Groups`                 | 13 + 15 subcats (there is **no** |
+| "Organizations" category on this wiki) |                          |                                  |
+| `weapon`                               | `Swords`, then `Weapons` | 47 + 1, 12 + 12 subcats          |
+| `arc`                                  | `Story Arcs`             | 34 + 1 subcat                    |
+
+**Islands are the remaining big gap** — Island Box, 414 pages. It needs
+a location-modelling ADR first (ADR-109 §scope) and is not a mapper
+task.
 
 ## `fandom:updates`
 
@@ -192,9 +238,13 @@ names, revision ids) and are gitignored build artifacts anyway.
 
 - **New mapper**: export its `*_INFOBOX_NAMES` + `*_HANDLED_PARAMS`
   (and `*_IGNORED_PARAMS` if it deliberately skips fields) and add it
-  to `INFOBOX_MAPPERS` in `src/fandom/analyze.ts` and `BOX_TO_KIND`
-  in `src/fandom/crawl.ts`. Keep the handled list in sync with the
-  mapper's `get(...)` calls.
+  to `INFOBOX_MAPPERS` in `src/fandom/analyze.ts`, `BOX_TO_KIND` +
+  `MapperKind` in `src/fandom/crawl.ts`, and `MAPPER_KINDS` in
+  `src/cli/import-fandom.ts`. Keep the handled list in sync with the
+  mapper's `get(...)` calls. Shared "* Box" decoding (the `jname`/
+  `rname` locale pair, `first` source refs, `<br>`/`;`/`----`
+  splitting, vocabulary matching, wikilink → relation resolution)
+  lives in `src/fandom/box.ts` — reuse it rather than re-deriving it.
 - **New category correspondence**: add a row to
   `CATEGORY_ENTITY_TYPES` in `src/fandom/analyze.ts` (data maintained
   in code — the report tells you which categories need it).

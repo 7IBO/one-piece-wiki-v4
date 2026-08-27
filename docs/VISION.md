@@ -117,16 +117,19 @@ kitsch**. Quelques touches seulement, par-dessus la palette or existante.
 
 ### 5.1 UI web
 
-- Onglets ou sous-pages pour éviter les pages trop longues (équipage :
-  membres / apparitions / historique). **Décision à prendre** : les
-  sous-pages sont indexables et partageables, les onglets sont plus fluides.
-  Le SEO pèse lourd vu que l'entrée par Google est un usage cité.
+- ~~Onglets ou sous-pages pour éviter les pages trop longues~~ →
+  **tranché : sous-pages** (`/crew/x/appearances`), ADR-110. Le SEO a
+  emporté la décision, comme annoncé ici : un onglet n'est pas une
+  destination. La fluidité est préservée par le routeur client.
 - Un composant de lien **adapté au type de la cible**, pas un rendu unique.
-- **Hover card** sur desktop pour les liens sans image.
+- ~~**Hover card** sur desktop pour les liens sans image.~~ → livré
+  (2026-08-27), filtrée par le curseur.
 - Équipage : grille de cards personnage (nom, prime, image).
-- Recherche complète : plein texte, tolérante aux fautes, multilingue.
-- **Ratios d'image fixés par type d'image** (portrait, couverture, bandeau,
-  still d'épisode…), analysés et documentés.
+- ~~Recherche complète : plein texte, tolérante aux fautes, multilingue.~~
+  → livrée (ADR-108).
+- ~~**Ratios d'image fixés par type d'image**~~ → livrés (2026-08-27) :
+  dérivés du schéma (`image_width`/`image_height`, puis le rôle
+  `depicted-by`), documentés dans `WEB_APP.md` § Image ratios.
 - Performance : rapide et mis en cache.
 - Desktop et mobile.
 
