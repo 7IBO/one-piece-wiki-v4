@@ -135,6 +135,49 @@ egress). `.github/workflows/fandom-analyze.yml` closes that loop: on
 reports back. Nothing is merged, and the workflow never touches
 `/data`.
 
+## L'ordre d'import : les sources avant les sujets
+
+**Constat du premier passage live** (2026-08-27, catégorie `Devil Fruits`,
+60 pages). Le crawl a réussi en 75 secondes et les six mappers d'ADR-109
+ont produit des entités correctes — `name`, `classification`,
+`zoan_model`, chacune avec son ancre `since`. C'est `check:references`
+qui a arrêté le run : **138 erreurs de référence**, toutes de la même
+forme :
+
+```
+[ENTITY_REFERENCE_NOT_FOUND] devil-fruit:hie-hie-no-mi → manga-chapter:303
+  at properties.name[0].since
+```
+
+Rien n'est cassé dans les mappers. Le corpus ne contenait que 34
+chapitres, et chaque `since` produit pointe un chapitre qui n'existe pas
+encore.
+
+**La règle qui en découle**, et qui n'était écrite nulle part :
+
+> Les **sources** — chapitres, épisodes, volumes, films — doivent être
+> importées **avant** les entités qui s'y ancrent. Tout l'axe `since`
+> repose sur elles ; importer un sujet avant ses sources produit un
+> corpus qui ne valide pas.
+
+Un fruit apparu dans un épisode filler (`devil-fruit:hiso-hiso-no-mi →
+anime-episode:54`) exige donc aussi les épisodes, pas seulement les
+chapitres.
+
+### Ordre recommandé
+
+1. `Chapters` — l'ancre de presque tout
+2. `Episodes` — pour les entités anime-only
+3. `Volumes`, `Movies` si nécessaires
+4. puis les sujets : `Devil Fruits`, `Humans`, `Crews`, …
+
+### Contrainte opérationnelle : une PR à la fois
+
+`skip_known` s'appuie sur `data/import/fandom-pages.json`, **commité par
+la PR d'import**. Deux runs lancés avant que la première PR soit mergée
+repartent donc du même point et se marchent dessus. Enchaîner les runs
+suppose de merger chaque PR avant de lancer la suivante.
+
 ## Mapper coverage (ADR-079 + ADR-109)
 
 `import:fandom <kind> "<Page>" [--stage]` runs one mapper on one page;
