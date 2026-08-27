@@ -15,8 +15,22 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-27 (doublon `arc:wano` fusionné ; fuite
-anti-spoil sur 46 arcs découverte — voir ci-dessous)
+**Last updated**: 2026-08-27 (ADR-120 substrat rendu pour les
+chapitres ; ADR-121 plage ouverte ; 114 volumes importés ; fuite
+anti-spoil sur 46 arcs en attente d'arbitrage)
+
+### Chaîne de merge en cours
+
+`#157` (ADR-121 + test dépunaisé) → `#158` (114 volumes) →
+`import/chapter-render-33125002723` (enrichissement chapitres 0-100).
+
+L'ordre est **contraint** : l'enrichissement écrit des
+`part-of-volume` que `check:references` refuse tant que les volumes ne
+sont pas dans le corpus, et #158 ne passe pas tant que le test
+dépunaisé de #157 n'est pas sur `main`.
+
+Il reste **11 tranches** d'enrichissement à lancer (chapitres 101 à
+1131), une requête rendue par chapitre.
 
 ## 2026-08-27 — 46 arcs sur 50 ne sont pas anti-spoilés — À DÉCIDER
 
@@ -56,9 +70,45 @@ sur 909, East Blue sur 1.
 est une primitive du modèle épistémique, pas un détail de pipeline. La
 dériver pour les conteneurs change ce que le mot veut dire (« première
 apparition » vs « ouverture »), et CLAUDE.md interdit ce genre de
-glissement sans ADR. **Décision demandée** : ADR pour dériver l'ancre
-des conteneurs depuis leurs membres, ou autre primitive
-(`opens_at` distinct) ?
+glissement sans ADR.
+
+### Mesure : les deux notions ne coïncident pas, et c'est tranchant
+
+44 arcs sur 50 ont des membres numérotés, donc une ouverture
+dérivable ; 6 resteraient sans ancre (`caesar-retrieval`,
+`cidre-guild`, `elbaph`, `marine-rookie`, `silver-mine`, `uta-s-past`
+— les mêmes orphelins que la passe d'arêtes n'a pas atteints).
+
+Mais **3 des 4 ancres existantes contredisent la dérivation**, et
+toujours dans le même sens :
+
+| arc           | ancre semée | ouverture dérivée |
+| ------------- | ----------: | ----------------: |
+| `baratie`     |      ch. 42 |        ch. **19** |
+| `whisky-peak` |     ch. 106 |        ch. **64** |
+| `marineford`  |     ch. 550 |       ch. **457** |
+
+Ce n'est pas une erreur de saisie : c'est une autre notion. Le Baratie
+est _nommé_ vers 42, l'arc _commence_ à 19. Marineford est nommé à 550,
+la guerre s'ouvre à 457. `first_appearance_source` semé à la main
+voulait dire « où ce nom apparaît », pas « où l'arc commence ».
+
+**Conséquence pour l'arbitrage** : écraser `first_appearance_source`
+avec l'ouverture détruirait une information réelle sur ces 3 arcs, et
+en dirait une fausse sur les 41 autres. Ça oriente fortement vers une
+**primitive distincte** (`opens_at`) plutôt que vers une dérivation qui
+réécrit celle qui existe.
+
+Reste la question de fond, qui est produit et pas technique : sur quoi
+une page d'arc doit-elle se fermer ? Un lecteur au chapitre 500 est _au
+milieu_ de Marineford — se fermer sur 550 lui cacherait un arc qu'il
+est en train de lire. Se fermer sur 457 est juste pour « puis-je voir
+cette page », et le _nom_ de l'arc garde son propre `since` pour le
+reste. C'est l'option que je proposerais, mais elle n'est pas à moi.
+
+**Décision demandée** : primitive `opens_at` distincte, dérivée du
+minimum ordinal des membres, et c'est elle qui ferme une page de
+conteneur ?
 
 En attendant, la fuite est là, antérieure à la migration, et élargie
 d'exactement un arc par elle.
@@ -88,6 +138,34 @@ Deux leçons opérationnelles :
    Un serveur laissé tourner sert l'ancien artefact et ment. Première
    relecture de la page après migration : ruban à 3 cases. Après
    redémarrage : 149. Toujours redémarrer avant de conclure.
+
+## 2026-08-27 — l'arc EN COURS ne pouvait structurellement pas être placé
+
+Trouvé en cherchant pourquoi 6 arcs n'avaient aucune arête. Cinq sont
+`arc_subtype: filler` — anime-only, donc pas de chapitres, c'est
+correct. **Elbaph était la seule anomalie**, et c'est l'arc manga en
+cours : les chapitres 1126 à 1131 n'avaient aucun arc.
+
+Capture de la page rendue avant d'écrire une ligne :
+
+| arc        | `chapter` rendu          | parsé      |
+| ---------- | ------------------------ | ---------- |
+| Egghead    | `1058-1125, 68 chapters` | 1058…1125  |
+| **Elbaph** | **`1126-`**              | **`null`** |
+
+Elbaph est en cours de sérialisation : pas de dernier chapitre, donc
+plage ouverte. `parseOrdinalRange` la rejetait sous ma propre règle
+« jamais une plage fabriquée » — juste pour `-, chapters`, fausse ici.
+
+**Le coût était exact et invisible : l'arc que le lecteur est en train
+de lire était le seul que le wiki ne pouvait jamais placer**, et il le
+serait resté à chaque nouvel arc. Corrigé par ADR-121.
+
+Le piège du correctif, qui vaut d'être retenu : une plage ouverte
+réclame tout à partir de son début, donc si elle passe avant un arc
+fermé elle avale ses chapitres sur la règle « le premier arc gagne ».
+Les plages fermées sont désormais planifiées d'abord — une
+réclamation bornée est plus spécifique qu'une non bornée.
 
 ## 2026-08-27 — 9 titres de chapitre sont restés des placeholders
 
