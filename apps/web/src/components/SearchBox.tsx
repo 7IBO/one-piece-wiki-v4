@@ -22,32 +22,42 @@
  * cursor, the locale and the ranking.
  */
 import { useNavigate, useRouterState } from '@tanstack/react-router';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState, useSyncExternalStore } from 'react';
 import type { ProgressCursor } from '../api';
 import { t } from '../lib/chrome';
 import { useLocale } from '../routes/__root';
 import { SearchPalette } from './SearchPalette';
 
+/** The width at which the header segment can hold the full placeholder. */
+const WIDE_HEADER = '(min-width: 1024px)';
+
+function subscribeToWidth(onChange: () => void): () => void {
+  const query = window.matchMedia(WIDE_HEADER);
+  query.addEventListener('change', onChange);
+  return () => query.removeEventListener('change', onChange);
+}
+
 /**
  * True once there is room for the plate's full placeholder.
  *
- * Resolved AFTER mount on purpose: the server cannot know the
- * viewport, so SSR emits the short form, which is correct at every
- * width and never truncates mid-word. The long one — the plate's
- * « Rechercher — personnages, fruits, chapitres, arcs, épisodes… » —
- * arrives when the segment can hold it. Same shape as
- * `useFinePointer` in HoverPreview.
+ * `useSyncExternalStore`, not `useState` + a mount effect: the media
+ * query IS an external store, and this is the hook that reads one
+ * without the extra render the effect version costs. Its third
+ * argument is the SERVER snapshot — false — so SSR emits the short
+ * form, which is correct at every width and never truncates mid-word;
+ * the long one arrives when the segment can hold it, in the same
+ * commit as hydration rather than one render later.
+ *
+ * (react-doctor flagged the effect version as `no-initialize-state`
+ * and was right. `useFinePointer` in HoverPreview has the same shape
+ * and the same fix available — out of scope here, noted in IDEAS.)
  */
 function useWideHeader(): boolean {
-  const [wide, setWide] = useState(false);
-  useEffect(() => {
-    const query = window.matchMedia('(min-width: 1024px)');
-    const sync = (): void => setWide(query.matches);
-    sync();
-    query.addEventListener('change', sync);
-    return () => query.removeEventListener('change', sync);
-  }, []);
-  return wide;
+  return useSyncExternalStore(
+    subscribeToWidth,
+    () => window.matchMedia(WIDE_HEADER).matches,
+    () => false,
+  );
 }
 
 function queryFromLocation(search: unknown): string {
