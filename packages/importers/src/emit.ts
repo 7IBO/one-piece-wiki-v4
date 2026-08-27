@@ -79,6 +79,48 @@ export function buildEmitFiles(
   return files;
 }
 
+/** The parts of an entity file this module reasons about. */
+type EntityShape = {
+  properties?: Record<string, unknown>;
+  relations?: readonly { readonly type: string; readonly target: string; }[];
+  [key: string]: unknown;
+};
+
+/**
+ * Fold a re-import onto the file already on disk.
+ *
+ * The rule, in one line: **the mapper wins where it speaks, and is
+ * silent everywhere else.**
+ *
+ * - A property the mapper produced replaces the stored one — that is
+ *   the point of re-running after a fix, and a corrected value must
+ *   be able to land.
+ * - A property the mapper did NOT produce is kept. An infobox has no
+ *   `released_at` for most chapters; that silence is not a claim that
+ *   the date is wrong.
+ * - Relations are UNIONED by (type, target), never replaced. An arc
+ *   edge written by the arc pass and a volume edge read from the
+ *   infobox are different facts about the same chapter, and neither
+ *   is evidence against the other.
+ */
+export function mergeEntity(stored: EntityShape, incoming: EntityShape): string {
+  const seen = new Set<string>();
+  const relations = [...(stored.relations ?? []), ...(incoming.relations ?? [])]
+    .filter((r) => {
+      const key = `${r.type}\u0000${r.target}`;
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    });
+  const merged = {
+    ...stored,
+    ...incoming,
+    properties: { ...stored.properties, ...incoming.properties },
+    ...(relations.length > 0 ? { relations } : {}),
+  };
+  return `${JSON.stringify(merged, null, 2)}\n`;
+}
+
 export type StageResult = {
   readonly written: readonly string[];
   readonly skipped: readonly { readonly path: string; readonly reason: string; }[];
@@ -114,6 +156,20 @@ export async function stageToLocal(
       const incoming = JSON.parse(file.content) as Record<string, string>;
       // Existing keys win: imports never clobber human translations.
       content = `${JSON.stringify({ ...incoming, ...current }, null, 2)}\n`;
+    }
+    if (file.kind === 'entity' && exists) {
+      // `--overwrite` MERGES; it does not replace. Wholesale
+      // replacement was destructive in exactly the case the flag
+      // exists for: re-running a category after the mapper learned to
+      // read MORE fields. The 2026-08-27 chapter re-run gained one
+      // `part-of-volume` and destroyed two `released_at`, two
+      // `part-of-arc`, one `part-of-volume` and one `available-on` —
+      // values a human or another importer had put there, which no
+      // infobox carries.
+      content = mergeEntity(
+        (await existing.json()) as EntityShape,
+        JSON.parse(file.content) as EntityShape,
+      );
     }
     await Bun.write(absolute, content);
     written.push(file.path);
