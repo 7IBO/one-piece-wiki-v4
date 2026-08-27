@@ -22,7 +22,7 @@
       "x": 3120,
       "y": 0,
       "w": 1440,
-      "h": 980
+      "h": 940
     },
     {
       "file": "Fruit.dc.html",
@@ -48,7 +48,14 @@
       "w": 1440,
       "h": 1320
     },
-    { "file": "Mobile.dc.html", "title": "Mobile — 390 px", "x": 0, "y": 3040, "w": 390, "h": 1620 }
+    {
+      "file": "Mobile.dc.html",
+      "title": "Mobile — 390 px",
+      "x": 0,
+      "y": 3040,
+      "w": 390,
+      "h": 1620
+    }
   ],
   "annotations": [
     {
@@ -56,7 +63,7 @@
       "x": -430,
       "y": 0,
       "w": 350,
-      "text": "REGLER SA PROGRESSION SANS RIEN NOMMER. Le probleme : parcourir une liste de chapitres pour se situer est deja un spoiler, les titres en disent trop. La reponse : une recherche dichotomique sur des NOMBRES NUS. \"As-tu lu le chapitre 512 ?\" Oui/Non/Je ne sais plus. Environ 10 questions couvrent 1145 chapitres, et aucune ne peut rien reveler puisque rien n'est nomme. Pour qui connait son numero, le curseur direct reste au-dessus."
+      "text": "REGLER SA PROGRESSION SANS RIEN NOMMER. Le probleme : parcourir une liste de chapitres pour se situer est deja un spoiler, les titres en disent trop. La reponse : une recherche dichotomique sur des NOMBRES NUS. \"As-tu lu le chapitre 512 ?\" Oui/Non/Je ne sais plus. Une dizaine de questions couvrent 1145 chapitres et aucune ne peut rien reveler. Le dialogue a ete remis a plat : un seul cadre, des filets au lieu de boites imbriquees, une seule forme de bouton, un seul aplat d'or (Enregistrer), et le meme langage d'onglets que les pages."
     },
     {
       "id": "or",
@@ -101,5 +108,7 @@
       "text": "COTE DONNEES : presque tout existe deja (intervalles d'adhesion, retcon, croyances par personnage, apparitions au chapitre, ratios). Deux manques reels, parques dans IDEAS.md et demandant chacun un ADR : la precision de since (le cas Rocks) et le marqueur \"cette information n'existe pas dans l'oeuvre\"."
     }
   ],
-  "launch": { "view": "canvas" }
+  "launch": {
+    "view": "canvas"
+  }
 }

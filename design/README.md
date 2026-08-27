@@ -260,12 +260,46 @@ Ce dialogue remplace le panneau à deux champs numériques actuel
 lecteur connaît son numéro — c'est-à-dire précisément l'hypothèse que
 cette demande invalide.
 
+### Pourquoi la première version n'était pas propre
+
+Le mainteneur : « ça paraît pas clean la popup, je sais pas comment
+dire ». Le diagnostic, cinq défauts qui s'additionnent :
+
+1. **Des boîtes imbriquées.** Le cadre du dialogue contenait un groupe
+   de pastilles, puis un encadré, puis un second encadré teinté, puis
+   une barre de pied. Quatre conteneurs empilés dans un conteneur.
+2. **Deux surfaces accentuées qui se disputaient l'attention** : le bloc
+   des questions guidées avait un fond jaune et une bordure dorée, en
+   concurrence avec le nombre en or et le bouton d'enregistrement.
+3. **Cinq formes de contrôle** pour un seul dialogue : pastilles,
+   encadré, pilules, boutons, réglette.
+4. **Des marges toutes différentes** — 22/26, 16/18, 18, 15/26.
+5. **Deux modes présentés à égalité**, ce qui donnait une page de
+   réglages plutôt qu'une décision à prendre.
+
+La reprise applique l'inverse : **un seul cadre**, des **filets**
+horizontaux au lieu de boîtes imbriquées, **une seule forme de bouton**,
+**un seul aplat d'or** (le bouton Enregistrer), une marge horizontale
+unique de 28 px, et le **même langage d'onglets que les pages** —
+Manga / Anime en texte souligné d'or, pas un troisième composant inventé
+pour l'occasion.
+
+La question devient le centre visuel ; le curseur direct redevient une
+**ligne**, plus une section ; les préréglages sont une rangée de pilules
+discrètes.
+
 ## Trois corrections d'affichage
 
 **Les liens rejoignent la famille de l'or** : or atténué `#c9ae72` au
-repos, or plein `#e8c15a` au survol. Le vermillon ne subsiste que sur la
-rupture — retcon, mort, contradiction. Il ne reste que trois occurrences
-sur les sept planches.
+repos, or plein `#e8c15a` au survol.
+
+**Le vermillon ne subsiste que sur la rétroactivité.** Les valeurs qui
+basculent dans un chapitre — « Gear Fifth · débloquée » — ne sont pas
+des alertes : ce sont les nouvelles valeurs vraies à cette position.
+Elles passent en or comme partout ailleurs. Il ne reste **trois
+occurrences de vermillon dans tout le canevas**, toutes sur la page du
+fruit, là où un nom a été corrigé rétroactivement — le seul cas où une
+donnée contredit ce qu'elle affirmait avant.
 
 **Les portraits d'équipage rétrécissent** à 158 px de large. La grille
 en cinq colonnes pleine largeur donnait des cartes de 256 px, hors de
