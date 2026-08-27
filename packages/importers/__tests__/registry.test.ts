@@ -200,3 +200,44 @@ describe('update detection', () => {
     expect(calls).toBe(2);
   });
 });
+
+describe('rendered html (ADR-119)', () => {
+  it('asks for prop=text and returns the expanded page', async () => {
+    // Some infobox values exist ONLY after template expansion: an arc
+    // page writes `chapter = auto` and a Lua module computes the range.
+    // `prop=wikitext` can never see that number.
+    const seen: string[] = [];
+    const client = new FandomClient({
+      minDelayMs: 0,
+      fetchImpl: ((url: string | URL | Request) => {
+        seen.push(String(url));
+        return Promise.resolve(
+          new Response(
+            JSON.stringify({
+              parse: { title: 'Arabasta Arc', text: '<aside>106-114, 9 chapters</aside>' },
+            }),
+            { status: 200 },
+          ),
+        );
+      }) as typeof fetch,
+    });
+    const rendered = await client.fetchRendered('Arabasta Arc');
+    expect(seen[0]).toContain('prop=text');
+    expect(rendered.title).toBe('Arabasta Arc');
+    expect(rendered.html).toContain('106-114');
+  });
+
+  it('surfaces a MediaWiki error rather than returning empty html', async () => {
+    const client = new FandomClient({
+      minDelayMs: 0,
+      fetchImpl: (() =>
+        Promise.resolve(
+          new Response(
+            JSON.stringify({ error: { code: 'missingtitle', info: 'The page does not exist.' } }),
+            { status: 200 },
+          ),
+        )) as typeof fetch,
+    });
+    expect(client.fetchRendered('Nope')).rejects.toThrow(/missingtitle/);
+  });
+});

@@ -222,6 +222,34 @@ if (kind === 'crawl') {
     }
   }
   if (!stage) process.stdout.write('(dry-run — pass --stage to write files)\n');
+} else if (kind === 'render') {
+  // bun run import:fandom render "Alabasta Arc" --out docs/audits/rendered
+  //
+  // Capture the RENDERED html of pages, verbatim, as fixtures. This
+  // exists because the parser for that html must be written against
+  // the real thing: the arc mapper's previous fixture was synthetic,
+  // and a synthetic fixture only ever proves the parser agrees with
+  // whatever was invented for it. Cloud sessions cannot reach Fandom
+  // (403 at the proxy), so CI captures and commits; the session reads
+  // the repository.
+  const outFlag = args.flatMap((a, i) =>
+    a === '--out' && args[i + 1] !== undefined ? [args[i + 1]!] : []
+  );
+  const outDir = outFlag[0] ?? join(REPO_ROOT, 'docs', 'audits', 'rendered');
+  if (pages.length === 0) {
+    process.stderr.write('render: give at least one page title.\n');
+    process.exitCode = 1;
+  } else {
+    for (const page of pages) {
+      // eslint-disable-next-line no-await-in-loop
+      const rendered = await client.fetchRendered(page);
+      const safe = rendered.title.replace(/[^A-Za-z0-9._-]/g, '_');
+      const path = join(outDir, `${safe}.html`);
+      // eslint-disable-next-line no-await-in-loop
+      await Bun.write(path, rendered.html);
+      process.stdout.write(`  wrote ${path} (${rendered.html.length} bytes)\n`);
+    }
+  }
 } else if (kind === 'check-updates') {
   const registry = await loadRegistry();
   const titles = registry.pages.map((p) => p.page);
@@ -286,6 +314,7 @@ if (kind === 'crawl') {
   process.stderr.write(
     `Usage: bun run import:fandom <${MAPPER_KINDS.join('|')}> <page…> [--stage] [--overwrite]\n`
       + '       bun run import:fandom crawl --category <name>… [--depth N] [--page <title>…] [--limit N] [--skip-known] [--stage]\n'
+      + '       bun run import:fandom render <page…> [--out <dir>]\n'
       + '       bun run import:fandom check-updates\n',
   );
   process.exitCode = 1;
