@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:1034",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-1034",
+  "properties": {
+    "number": {
+      "value": 1034
+    },
+    "title_key": {
+      "value_key": "anime-episode.1034.title"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:987",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-987",
+  "properties": {
+    "number": {
+      "value": 987
+    },
+    "title_key": {
+      "value_key": "anime-episode.987.title"
+    }
+  },
+  "relations": []
+}
