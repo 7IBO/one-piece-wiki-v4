@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:463",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-463",
+  "properties": {
+    "number": {
+      "value": 463
+    },
+    "title_key": {
+      "value_key": "manga-chapter.463.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

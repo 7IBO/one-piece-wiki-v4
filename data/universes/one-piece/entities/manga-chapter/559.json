@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:559",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-559",
+  "properties": {
+    "number": {
+      "value": 559
+    },
+    "title_key": {
+      "value_key": "manga-chapter.559.title"
+    },
+    "page_count": {
+      "value": 17
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:497",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-497",
+  "properties": {
+    "number": {
+      "value": 497
+    },
+    "title_key": {
+      "value_key": "manga-chapter.497.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

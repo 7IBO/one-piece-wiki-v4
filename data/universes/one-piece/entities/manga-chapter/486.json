@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:486",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-486",
+  "properties": {
+    "number": {
+      "value": 486
+    },
+    "title_key": {
+      "value_key": "manga-chapter.486.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

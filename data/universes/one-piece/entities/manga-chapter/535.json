@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:535",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-535",
+  "properties": {
+    "number": {
+      "value": 535
+    },
+    "title_key": {
+      "value_key": "manga-chapter.535.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

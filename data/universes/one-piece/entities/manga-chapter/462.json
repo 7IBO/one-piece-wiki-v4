@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:462",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-462",
+  "properties": {
+    "number": {
+      "value": 462
+    },
+    "title_key": {
+      "value_key": "manga-chapter.462.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:410",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-410",
+  "properties": {
+    "number": {
+      "value": 410
+    },
+    "title_key": {
+      "value_key": "manga-chapter.410.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

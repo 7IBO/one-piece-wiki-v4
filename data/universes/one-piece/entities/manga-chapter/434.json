@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:434",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-434",
+  "properties": {
+    "number": {
+      "value": 434
+    },
+    "title_key": {
+      "value_key": "manga-chapter.434.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}
