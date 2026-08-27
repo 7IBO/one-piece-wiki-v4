@@ -42,10 +42,27 @@ contract is `/CLAUDE.md`; conventions in `/docs/CONVENTIONS.md`.
 
 ```
 bun run format && bun run lint && bun run knip \
-  && bun run typecheck && bun run validate \
-  && bun run check:references && bun run check:coherence && bun test \
-  && bun run -F @onepiece-wiki/dashboard build
+  && bun run typecheck && bun run schema:check && bun run validate \
+  && bun run check:references && bun run check:coherence \
+  && bun run check:compat \
+  && bun run build:db && bun test \
+  && bun run -F @onepiece-wiki/dashboard build \
+  && bun run -F @onepiece-wiki/web build
 ```
+
+**`build:db` MUST come before `bun test`, and this is the step people
+skip.** Several suites read `dist/onepiece.db` and carry
+`describe.skipIf(!hasArtifact)`: without the artifact they do not fail,
+they **vanish**, and the run reports a confident green over tests that
+never executed. That gap let the chapter import #94 merge with two red
+data-count tests while CI said success, and it caught this skill's own
+author out again on #130 — a local "680 pass" that omitted the artifact,
+against a CI that found two real failures in the same commit.
+
+The rest of the line matters too: `schema:check`, `check:compat` and the
+**web** build are all in CI. A gauntlet that claims to match CI while
+running a subset is worse than no gauntlet, because it buys confidence
+it has not earned.
 
 `check:coherence` (ADR-032 W-A) is the cross-entity gate: relation
 schema-compliance (allowed_relations, valid_from/to types, required

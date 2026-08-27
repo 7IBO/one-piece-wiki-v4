@@ -1428,6 +1428,19 @@ computed server-side or emitted as generated TS manifests under
 
 ## Gotchas (so they don't bite again)
 
+- **`bun run build:db` AVANT `bun test`, toujours.** Plusieurs suites
+  lisent `dist/onepiece.db` sous `describe.skipIf(!hasArtifact)` : sans
+  l'artefact elles ne rougissent pas, elles **disparaissent**, et le run
+  annonce un vert serein sur des tests qui n'ont pas tourné. Ça a laissé
+  passer l'import #94 avec deux tests rouges, et ça a repiégé la même
+  personne sur #130 (« 680 pass » en local, deux échecs réels en CI sur
+  le même commit). Le gauntlet du skill `toolchain` a été corrigé pour
+  correspondre vraiment à la CI.
+- **Un compte de population du corpus ne se code pas en dur dans un
+  test.** `sequence.total` était figé à 34 : un import de chapitres l'a
+  fait passer à 406 et a rougi un test qui portait sur la logique de
+  séquence, pas sur la taille des données. Asserter la relation
+  (gaté < non gaté), pas le nombre.
 - **Un test anti-spoil s'énonce sur l'entité qu'il vise**, pas sur la
   taille du résultat. « le résultat est vide » ne tenait que tant que
   rien d'autre dans le corpus ne pouvait matcher : `1053` a fini par
