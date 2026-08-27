@@ -320,7 +320,13 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(ch1044.sequence?.number).toBe(1044);
     expect(ch1044.sequence?.prev?.chip.slug).toBe('chapter-1043');
     expect(ch1044.sequence?.prev?.number).toBe(1043);
-    expect(ch1044.sequence?.next).toBeNull(); // no chapter-1045 in corpus
+    // `next` was asserted null here, with the comment "no chapter-1045
+    // in corpus". True when the corpus stopped at 1044, false the
+    // moment an import went past it — the third time this file has
+    // pinned a corpus fact and had a DATA pull request pay for it.
+    // What cannot change is that a neighbour BRACKETS the ordinal.
+    expect(ch1044.sequence?.next?.number ?? Number.POSITIVE_INFINITY).toBeGreaterThan(1044);
+    expect(ch1044.sequence?.prev?.number ?? Number.NEGATIVE_INFINITY).toBeLessThan(1044);
     // `total` counts the population the reader may see. Asserted as a
     // property, not a magic number: this count grows with every import
     // (a chapter crawl took it from 34 to 406), and pinning it made an
@@ -343,7 +349,16 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     const ch1043 = await entity('manga-chapter', 'chapter-1043', 'en', cursor(1043));
     // 1044 exists, but announcing even its title would be a spoiler.
     expect(ch1043.sequence?.next).toBeNull();
-    expect(ch1043.sequence?.prev).toBeNull(); // 1042 is not in the corpus
+    // `prev` was asserted null with the comment "1042 is not in the
+    // corpus" — an absence, which proved nothing about the gate, and
+    // which a later import falsified. The claim that holds for ANY
+    // corpus is the gate's own rule: every neighbour it hands out sits
+    // at or before the cursor, in either direction.
+    for (const side of [ch1043.sequence?.prev, ch1043.sequence?.next]) {
+      if (side !== null && side !== undefined) {
+        expect(side.number).toBeLessThanOrEqual(1043);
+      }
+    }
     expect(ch1043.sequence?.number).toBe(1043);
     // The load-bearing claim is that gating SHRINKS the visible
     // population — chapters past the cursor (1044, 1053) drop out. The
