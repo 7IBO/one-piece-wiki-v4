@@ -259,10 +259,22 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(ch1044.sequence?.prev?.chip.slug).toBe('chapter-1043');
     expect(ch1044.sequence?.prev?.number).toBe(1043);
     expect(ch1044.sequence?.next).toBeNull(); // no chapter-1045 in corpus
-    // `total` counts the population the reader may see.
-    expect(ch1044.sequence?.total).toBe(34);
+    // `total` counts the population the reader may see. Asserted as a
+    // property, not a magic number: this count grows with every import
+    // (a chapter crawl took it from 34 to 406), and pinning it made an
+    // unrelated DATA pull request fail on a test about SEQUENCE logic.
+    // The rest of this file already states corpus-sized facts this way.
+    expect(ch1044.sequence?.total).toBeGreaterThan(1);
+    // Chapter 1 is NOT the start of the axis: chapter 0 exists — the
+    // Strong World prologue one-shot (Jump 2009). It was long absent
+    // from the corpus, and `number` even forbade it (min 1) until
+    // ADR-116. Now that it is imported, chapter 1 has a predecessor,
+    // and that is the sequence logic working, not a regression.
     const ch1 = await entity('manga-chapter', 'chapter-1');
-    expect(ch1.sequence?.prev).toBeNull();
+    expect(ch1.sequence?.prev?.number).toBe(0);
+    const ch0 = await entity('manga-chapter', 'chapter-0');
+    expect(ch0.sequence?.number).toBe(0);
+    expect(ch0.sequence?.prev).toBeNull(); // 0 IS the start of the axis
   });
 
   test('sequence hides a neighbour beyond the progression cursor', async () => {
@@ -271,7 +283,12 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(ch1043.sequence?.next).toBeNull();
     expect(ch1043.sequence?.prev).toBeNull(); // 1042 is not in the corpus
     expect(ch1043.sequence?.number).toBe(1043);
-    expect(ch1043.sequence?.total).toBe(32); // 1044 and 1053 are beyond
+    // The load-bearing claim is that gating SHRINKS the visible
+    // population — chapters past the cursor (1044, 1053) drop out. The
+    // exact sizes follow the corpus; the inequality between them does
+    // not, so it is what we assert.
+    const ungated = (await entity('manga-chapter', 'chapter-1043')).sequence?.total ?? 0;
+    expect(ch1043.sequence?.total ?? 0).toBeLessThan(ungated);
     const siblings = ch1043.template.kind === 'source' ? ch1043.template.arc?.items ?? [] : [];
     expect(siblings.map((s) => s.number)).toEqual([1043]);
   });
