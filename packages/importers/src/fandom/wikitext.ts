@@ -176,6 +176,19 @@ export function findTemplate(
  */
 export function cleanValue(value: string): string {
   return value
+    // `<nowiki>` is an ESCAPE, not content: editors wrap punctuation in
+    // it to stop MediaWiki interpreting the characters. Unwrap it —
+    // dropping the tags, KEEPING what they protect. Missing this put
+    // literal markup in front of readers: 41 of 400 imported episode
+    // titles read `We are Friends<nowiki>!!</nowiki>`.
+    //
+    // Unwrapped FIRST, so the inner text then goes through the same
+    // link/template cleaning as everything else. That is a deliberate
+    // simplification: a strictly correct reader would shield nowiki
+    // spans from those passes. In this corpus they wrap punctuation
+    // (`!!`, `?!`), never wiki syntax, so the difference cannot bite —
+    // revisit if a `<nowiki>[[…]]</nowiki>` ever shows up.
+    .replace(/<\/?nowiki\s*\/?>/gi, '')
     .replace(/<ref[^>]*\/>/g, '')
     .replace(/<ref[^>]*>[\s\S]*?<\/ref>/g, '')
     .replace(/\{\{[\s\S]*?\}\}/g, '')

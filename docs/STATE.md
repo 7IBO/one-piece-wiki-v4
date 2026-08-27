@@ -1412,7 +1412,31 @@ computed server-side or emitted as generated TS manifests under
   `packages/media` helper (URL resolution, srcset, blur). Responsive
   variants via Cloudflare = deploy-config, flag for platform.
 
+## Décision produit en attente
+
+- **Un axe sans curseur n'est pas filtré du tout.** `progress.ts`,
+  `isSourceVisible` : `if (limit === null) return true;`. Un lecteur qui
+  déclare seulement sa progression manga voit donc **tous** les épisodes
+  d'anime, et réciproquement. C'est du comportement d'origine, resté
+  invisible tant que le corpus n'avait aucun épisode ; l'import des 400
+  premiers l'a révélé (un test anti-spoil sur le chapitre 1053 s'est mis
+  à remonter `anime-episode:105`).
+  Les deux lectures se défendent : filtrer à zéro cacherait toute la
+  partie anime à quiconque ne renseigne que le manga ; ne pas filtrer
+  expose des titres d'épisodes en avance sur le manga lu. **À trancher
+  par le mainteneur**, puis ADR.
+
 ## Gotchas (so they don't bite again)
+
+- **Un test anti-spoil s'énonce sur l'entité qu'il vise**, pas sur la
+  taille du résultat. « le résultat est vide » ne tenait que tant que
+  rien d'autre dans le corpus ne pouvait matcher : `1053` a fini par
+  atteindre `anime-episode:105`, et un test sur le gating manga a échoué
+  sur une entité anime dont il ne parlait pas.
+- **`<nowiki>` est une échappe, pas du contenu.** `cleanValue` ne le
+  retirait pas : 41 titres d'épisodes sur 400 sont arrivés dans le
+  corpus en lisant `We are Friends<nowiki>!!</nowiki>`. Les balises
+  partent, le texte reste.
 
 - **Un crawl Fandom n'est jamais jeté** (ADR-116). L'ordre du workflow
   est stage → push → validate → PR ; la validation ne fait pas échouer

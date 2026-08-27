@@ -44,6 +44,18 @@ describe('wikitext parser', () => {
     expect(cleanValue("'''[[Monkey D. Luffy|Luffy]]'''<ref>x</ref>")).toBe('Luffy');
   });
 
+  it('unwraps <nowiki>, keeping what it protects', () => {
+    // A real defect, caught on the episode crawl: 41 of 400 titles
+    // reached the corpus reading `We are Friends<nowiki>!!</nowiki>`.
+    // `<nowiki>` is an escape — the tags go, the text stays.
+    expect(cleanValue('We are Friends<nowiki>!!</nowiki>')).toBe('We are Friends!!');
+    expect(cleanValue('Chance of Survival: 0%<nowiki>!!</nowiki> Chopper vs Priest Ohm'))
+      .toBe('Chance of Survival: 0%!! Chopper vs Priest Ohm');
+    // Self-closing and stray closing tags must not survive either.
+    expect(cleanValue('A<nowiki/>B')).toBe('AB');
+    expect(cleanValue('A</nowiki>B')).toBe('AB');
+  });
+
   it('parses REAL Qref params (chap/ep/sbs/vol) from the Luffy page', async () => {
     const page = await fixture('luffy-excerpt');
     const ids = parseQrefs(page.wikitext).map((q) => q.sourceId);

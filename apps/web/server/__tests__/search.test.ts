@@ -151,8 +151,21 @@ describe.skipIf(!hasArtifact)('search (real artifact)', () => {
   });
 
   test('a chapter beyond the cursor is unfindable by its own number or title', async () => {
-    expect(await ids('1053', 'en', cursor(100))).toEqual([]);
-    expect(await ids('chapter-1053', 'en', cursor(100))).toEqual([]);
+    // The claim is about THIS chapter, so it is stated about this
+    // chapter. It used to be written as "the result set is empty",
+    // which held only while the corpus had no other entity whose
+    // number could match: importing the episodes made `1053` also
+    // reach `anime-episode:105`, and a test about manga gating failed
+    // on an anime entity it was never about.
+    //
+    // NOTE, and it is not a leak introduced here: an axis with NO
+    // cursor is ungated by design (`progress.ts`, `limit === null`
+    // returns true), so a reader who declared only manga progress sees
+    // every episode. Pre-existing behaviour, newly VISIBLE because
+    // episodes now exist. Whether that is the intent is a product
+    // decision, recorded in docs/STATE.md.
+    expect(await ids('1053', 'en', cursor(100))).not.toContain('manga-chapter:1053');
+    expect(await ids('chapter-1053', 'en', cursor(100))).not.toContain('manga-chapter:1053');
     expect(await ids('1053', 'en')).toContain('manga-chapter:1053');
   });
 
