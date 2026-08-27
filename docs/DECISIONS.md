@@ -8,6 +8,192 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-108 — Search is an FTS5 + trigram index built into the artifact, gated by materialized progression anchors
+
+**Date**: 2026-08-27
+
+**Status**: Accepted
+
+### Context
+
+`apps/web` shipped with **no search at all** — no route, no component,
+no index. A wiki without search is unusable, and the maintainer's
+requirement is explicit: « Recherche complète, par texte poussé,
+gestion des fautes ou multilangues. » Full-text, typo-tolerant,
+multilingual.
+
+Three constraints shape every option:
+
+1. **SQLite is derived and disposable** (CLAUDE.md). Nothing may be
+   computed or written at request time; the index has to be a build
+   product of `packages/db-builder`.
+2. **No property name may be hardcoded in the pipeline.** What is
+   searchable has to fall out of the schema. (ADR-091's exception
+   covers `apps/web` templates and `server/views.ts` only.)
+3. **The site filters every value by the reader's progression cursor**,
+   and search is the one surface where a leak is silent. Two distinct
+   hazards, easy to conflate:
+   - an entity whose **existence** is a spoiler (`event:nika-reveal`,
+     anchored at chapter 1044);
+   - an entity that exists, whose **later name** is a spoiler (Luffy is
+     "Straw Hat" only from chapter 96; the Gomu Gomu no Mi becomes the
+     "Hito Hito no Mi, Model: Nika" at 1044).
+
+   And a third, subtler one: a **"hidden result" placeholder is itself a
+   spoiler.** Telling a reader at chapter 100 that three results were
+   withheld tells them something exists at 1044.
+
+BUILD_PIPELINE.md § 9 had planned **Pagefind** (a static, chunked,
+client-side index over emitted stub HTML), from a period when the app
+was expected to be statically generated.
+
+### Options considered
+
+**A. Pagefind, as originally planned.** Its index is client-side and
+static: filtering by the cursor would happen in the browser, after the
+chunks are fetched — so the browser would receive, and the network tab
+would reveal, every string the reader is not allowed to see. It would
+also mean maintaining a second corpus (stub HTML) beside the SQLite one
+and re-implementing localisation and gating outside the schema. A
+per-cursor index is not an option either: the cursor is a two-axis
+continuum, not a handful of buckets. **Rejected: incompatible with the
+product's one differentiator.**
+
+**B. LIKE queries over the existing tables.** No new artifact surface,
+but no ranking, no accent folding, no typo tolerance, and a table scan
+per query. **Rejected: not the "recherche complète" that was asked for.**
+
+**C. An external search service (Meilisearch, Typesense, Algolia).**
+Real relevance and real typo tolerance out of the box, and every one of
+them wants a running service, a network hop, an API key, and the same
+spoiler problem solved by filter attributes that would have to be
+enumerated per cursor value. It also violates "do not reach for a
+runtime database to solve a build-time problem". **Rejected.**
+
+**D. SQLite FTS5 inside the artifact, plus our own trigram table.**
+Chosen.
+
+Within D, one sub-decision deserves recording: FTS5 ships a `trigram`
+tokenizer, which looks like the obvious way to get typo tolerance. It
+is not — its `MATCH` is a _contiguous substring_ query, so "zorro"
+would not match "Zoro" at all. Trigram **overlap scoring** is what
+tolerates a typo, and that needs our own posting table.
+
+### Decision
+
+**The search index is four tables inside `dist/onepiece.db`, written by
+`packages/db-builder` during `bun run build:db`.**
+
+- `search_docs` — one row per (entity, field, entry, locale)
+  searchable string, with its weight class and display-name rank.
+- `search_fts` — an external-content FTS5 index over `search_docs.text`,
+  tokenised `unicode61 remove_diacritics 2` (accent folding at index
+  AND query time, which is what French needs).
+- `search_trigrams` — a (trigram → document WORD) posting list, with
+  each word's own trigram count, for Sørensen–Dice overlap scoring.
+- `search_gates` — the progression anchors that gate each doc.
+
+**What is searchable is derived from the schema.** A property is
+indexed iff its property type declares `value_type: "i18n_key"`; a
+value is classified `name` iff its property type declares
+`romanizable: true` — a flag that exists (ADR-095) precisely to mark
+"name-like values (`name`, `epithet`, `title_key`) — never free text",
+which is exactly the distinction ranking needs. Display-name priority
+comes from `canonical_name_key` then `display_name_properties`. No
+property id appears in the builder. `actual_value` is never indexed.
+
+**Only the UI locales (`en`, `fr`) are indexed.** `ja` / `ja-latn` are
+data locales (ADR-095): dashboard-only, and "the public wiki does not
+render them in v1". A search hit IS a surfacing — it is the reason a
+row appears, and there is no way to explain the match without exposing
+the string. They remain in the `translations` table; lifting this is a
+one-line change the day ADR-095 is revisited. Matching is
+**cross-locale**: a French reader finds an entity by its English name
+and vice versa, and the result is labelled in the reader's locale.
+
+**Querying is two passes** (`apps/web/server/search.ts`): lexical
+(FTS5 prefix terms, AND-ed, ranked by `bm25`) and, only when the
+lexical pass found nothing, fuzzy (Dice overlap per query term,
+intersected across terms, threshold 0.5, terms of ≥ 4 letters). Making
+the fuzzy pass a strict fallback is deliberate: a query that already
+matches something is not a misspelling, and below four letters every
+short word is a near-neighbour of every other ("hat" is a 0.57 Dice
+match for "chat"). Final score is
+`match quality × string weight × entity-type weight`; the type weights
+are a presentation binding (ADR-091) with a high default, so an
+unlisted type is unranked, not demoted.
+
+**Spoiler gating is enforced in SQL, and it is the load-bearing part.**
+Each doc's anchors are materialized at build time: the entity's own id
+when it is a numbered source, its `first_appearance_source`, and the
+entry's own `since` — keeping the latest ordinal per source type. The
+cursor is applied as a `NOT EXISTS` correlated subquery **in the WHERE
+clause of both passes and of the display-name lookup**, so SQLite
+excludes gated rows _before_ the `LIMIT`. The predicate is generated
+from `CURSOR_AXES` in `server/progress.ts`, so adding an axis never
+means hand-editing SQL, and an axis the reader has not set binds `NULL`
+and filters nothing.
+
+Consequences of that shape:
+
+- an entity whose existence is a spoiler returns **nothing** — not a
+  redacted row, not a count, not a "3 results hidden" line;
+- a later name simply is not in the reader's index, while the earlier
+  name still is, so a renamed entity stays findable under the name it
+  had at the cursor;
+- the **label** of a result goes through the same gate, so a result is
+  never titled with a name from beyond the cursor. That makes search
+  slightly _stricter_ than the entity page, which still resolves
+  `canonical_name_key` without the cursor — a divergence noted rather
+  than silently introduced; aligning the entity page is a separate
+  change.
+
+**The UI reuses the collection wall** (`CardGrid` + `EntityCard`)
+rather than inventing a result-row language: a search result IS an
+entity and should look like the same entity on its type listing. The
+header carries a plain `<form role="search">` — no autocomplete
+popover, which is the "modern web app" register VISION.md § 4 rejects.
+
+### Rationale
+
+The artifact is already SQLite, already read through `bun:sqlite`,
+already shipped to Vercel as one file, and already the only place
+derived facts are computed. Putting search inside it means one corpus,
+one build, one deployment unit, zero new runtime dependencies — and,
+decisively, it means the spoiler filter is a `WHERE` clause on the same
+query rather than a second system that has to be taught the epistemic
+model.
+
+The gate design (anchors as rows, filtered in SQL) is the whole reason
+this is safe. Post-filtering in JS after a `LIMIT` silently drops
+results; filtering before it cannot. And because gates are rows rather
+than a packed reference, a doc can be gated on several axes at once
+without the builder knowing what an axis is.
+
+Narratives are **not** indexed in v1: their spoiler markers
+(`:::spoiler chapter:N{…}:::`) are not parsed anywhere yet, so indexing
+the prose would leak. The corpus carries no narratives today; the day
+the markers are parsed, each block becomes a doc with its own gate rows
+and nothing else changes.
+
+### Consequences
+
+- BUILD_PIPELINE.md § 9 no longer describes Pagefind. ROADMAP Phase 6.3
+  keeps only the ⌘K palette and result facets.
+- `packages/db-builder` gains a dependency on `@onepiece-wiki/schemas`
+  — justified: the folding and trigram functions
+  (`packages/schemas/src/search-text.ts`) must be byte-identical on the
+  build side and the query side, and a second copy would diverge
+  silently.
+- The artifact grows by one row per searchable string plus its trigram
+  postings (163 docs on today's 61-entity corpus). At full scale this
+  is the largest table in the file; if it ever matters, the trigram
+  postings are the part to make optional.
+- Search quality now depends on translation coverage, which is a data
+  problem — the right place for it (VISION.md § 5.2).
+
+---
+
 ## ADR-107 — Licensing posture: structured facts only, never prose, and an assumed-risk image policy
 
 **Date**: 2026-08-27

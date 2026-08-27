@@ -18,14 +18,19 @@ import type {
   PropertyRow,
   RelationRow,
 } from './extract.ts';
-import { DDL } from './schema.ts';
+import { DDL, SEARCH_FTS_REBUILD } from './schema.ts';
+import type { SearchRows } from './search.ts';
 
 type Binding = SQLQueryBindings;
 
-/** Everything the artifact stores: extracted entity rows + content trees. */
+/**
+ * Everything the artifact stores: extracted entity rows + content
+ * trees + the search index (ADR-108).
+ */
 export type DatabaseRows = ExtractedRows & {
   readonly translations: readonly TranslationRow[];
   readonly narratives: readonly NarrativeRow[];
+  readonly search: SearchRows;
 };
 
 export type WriteResult = {
@@ -38,6 +43,7 @@ export type WriteResult = {
     appearances: number;
     translations: number;
     narratives: number;
+    search_docs: number;
   };
 };
 
@@ -73,6 +79,18 @@ export function populateDatabase(db: Database, rows: DatabaseRows): WriteResult[
   );
   const insertNarrative = db.prepare(
     `INSERT INTO narratives (universe, entity_id, locale, markdown) VALUES (?, ?, ?, ?)`,
+  );
+  const insertSearchDoc = db.prepare(
+    `INSERT INTO search_docs
+      (doc_id, entity_id, entity_type, slug, locale, field, kind, name_rank,
+       entry_index, text)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  );
+  const insertSearchGate = db.prepare(
+    `INSERT INTO search_gates (doc_id, source_type, ordinal) VALUES (?, ?, ?)`,
+  );
+  const insertSearchTrigram = db.prepare(
+    `INSERT INTO search_trigrams (doc_id, word_index, word_size, trigram) VALUES (?, ?, ?, ?)`,
   );
 
   const bindEntity = (r: EntityRow): Binding[] => [
@@ -132,6 +150,30 @@ export function populateDatabase(db: Database, rows: DatabaseRows): WriteResult[
     for (const row of data.narratives) {
       insertNarrative.run(row.universe, row.entity_id, row.locale, row.markdown);
     }
+    for (const row of data.search.docs) {
+      insertSearchDoc.run(
+        row.doc_id,
+        row.entity_id,
+        row.entity_type,
+        row.slug,
+        row.locale,
+        row.field,
+        row.kind,
+        row.name_rank,
+        row.entry_index,
+        row.text,
+      );
+    }
+    for (const row of data.search.gates) {
+      insertSearchGate.run(row.doc_id, row.source_type, row.ordinal);
+    }
+    for (const row of data.search.trigrams) {
+      insertSearchTrigram.run(row.doc_id, row.word_index, row.word_size, row.trigram);
+    }
+    // External-content FTS5: build the inverted index from the rows
+    // just written. Inside the transaction, so the artifact is never
+    // observable with a stale index.
+    db.exec(SEARCH_FTS_REBUILD);
   });
   txn(rows);
 
@@ -143,6 +185,7 @@ export function populateDatabase(db: Database, rows: DatabaseRows): WriteResult[
     appearances: rows.appearances.length,
     translations: rows.translations.length,
     narratives: rows.narratives.length,
+    search_docs: rows.search.docs.length,
   };
 }
 

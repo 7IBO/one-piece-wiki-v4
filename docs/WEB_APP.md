@@ -76,8 +76,10 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
     heavy, is the branded display voice — wordmark, entity names set
     uppercase at hero scale, section titles, figures; Inter carries
     data/UI; tabular numerals throughout.
-  - Chrome: ONE slim sticky top bar — wordmark, the compact
-    progression control, the locale switcher. Nothing else. The
+  - Chrome: ONE slim sticky top bar — wordmark, the **search field**
+    (ADR-108), the compact progression control, the locale switcher.
+    Nothing else. Below `sm` the field wraps onto its own full-width
+    line inside the same bar rather than opening a second register. The
     graduated manga-axis rail that used to span the header (the "Log
     scrubber", v5–v8) was **removed in v8.1**: a permanent full-width
     chart of the whole series above every page was chrome shouting
@@ -299,6 +301,127 @@ Templates (v1):
 - **Everything else**: generic template (current skeleton), which is
   also the fallback whenever a specific template's data is missing.
 
+## Search (ADR-108)
+
+Full-text, typo-tolerant, multilingual, and spoiler-gated — the
+maintainer's requirement verbatim: « Recherche complète, par texte
+poussé, gestion des fautes ou multilangues. »
+
+**Where the work happens.** The index is built into the SQLite
+artifact by `packages/db-builder` at `bun run build:db` time
+(BUILD_PIPELINE.md § 9) and is never touched at runtime. `apps/web`
+only queries it:
+
+| file                           | role                                                                                                                                                        |
+| ------------------------------ | ----------------------------------------------------------------------------------------------------------------------------------------------------------- |
+| `server/search-sql.ts`         | the SQL of both passes + the spoiler gate + the FTS5 MATCH expression. Pure strings and parameter arrays, so the gate is unit-testable without an artifact. |
+| `server/db.ts`                 | the three prepared statements (lexical, fuzzy, display name), created once per process.                                                                     |
+| `server/search.ts`             | the policy layer: how the passes combine, how a hit becomes a rank, how a result becomes a card.                                                            |
+| `src/routes/search.tsx`        | `/search?q=…` — SSR, cursor-filtered first paint.                                                                                                           |
+| `src/components/SearchBox.tsx` | the header field.                                                                                                                                           |
+
+**Two passes.**
+
+1. **Lexical** — FTS5 prefix matching over `search_fts`, ranked by
+   `bm25`. Answers almost every query: exact words, prefixes ("lu" →
+   Luffy), multi-word (all terms must occur in the same string) and —
+   through the `unicode61 remove_diacritics 2` tokenizer — accents
+   ("equipage" → « Équipage du Chapeau de Paille »).
+2. **Fuzzy** — Sørensen–Dice trigram overlap against each document's
+   best-matching WORD, run once per query term and **intersected**
+   across terms. A strict fallback: it fires only when the lexical pass
+   found nothing, so a working query never pays for it and never gets
+   near-miss noise mixed in. Terms shorter than four letters are not
+   fuzzy-matched (below that every short word is a near-neighbour of
+   every other: "hat" is a 0.57 Dice match for "chat"). This is the
+   typo tolerance — "zorro" → Roronoa Zoro, "nammi" → Nami,
+   "marinford" → Marineford. The page says so ("No exact match —
+   showing the closest entries") rather than pretending.
+
+**Multilingual.** The index carries one row per UI locale that has a
+value. A query matches rows in ANY indexed locale, so a French reader
+finds an entity by its English name and vice versa; the reader's own
+locale only gets a small ranking bonus, and the result is always
+**labelled in the reader's locale**. `ja` / `ja-latn` are data locales
+(ADR-095) and are deliberately not indexed — a search hit is a
+surfacing, and those never surface in the public UI.
+
+**Ranking** is `match quality × string weight × entity-type weight`,
+all readable constants in `server/search.ts`:
+
+- _quality_: exact string 1.0 · whole-string prefix 0.85 · lexical
+  0.60–0.80 by bm25 rank · fuzzy 0.15–0.50 by Dice. A fuzzy hit can
+  never outrank a real one.
+- _string weight_: `name` 1.0 · `slug` 0.7 · `text` 0.5. Which class a
+  string belongs to is decided by the BUILDER from the schema
+  (`romanizable` marks a name-like property type), never from a list of
+  property ids.
+- _entity-type weight_: a presentation binding (ADR-091) so the
+  character "Nami" beats the chapter titled "Nami". Every id absent
+  from the table degrades to a high default (0.85): an unlisted type is
+  unranked, not demoted.
+
+Only the best-scoring string per entity survives — a page is one
+result, whichever of its names matched.
+
+### Spoiler gating — the subtle part
+
+Every indexed string carries the progression anchors that gate it
+(`search_gates`): the entity's own existence anchors (its id when it is
+a numbered source, plus its `first_appearance_source`) AND the entry's
+own `since`. The reader's cursor is applied as a `NOT EXISTS` predicate
+**in the WHERE clause of every pass**, so SQLite excludes gated rows
+before the `LIMIT`. Post-filtering a limited result set would silently
+drop results.
+
+Two distinct cases, both covered:
+
+- **The entity's existence is the spoiler.** `event:nika-reveal` is
+  anchored at chapter 1044. At cursor 100 no query reaches it — not its
+  name, not its French name, not its slug, not the bare word "nika".
+  It returns **nothing**, never a redacted "hidden result" row: such a
+  row would itself announce that something exists later. It is not
+  counted either.
+- **The entity exists, a LATER NAME is the spoiler.** Luffy exists from
+  chapter 1; "Straw Hat" is his epithet only from chapter 96. At cursor
+  50, searching "Straw Hat" does not return him — but "Luffy" does, and
+  the crew _named_ "Straw Hat Pirates" since chapter 1 still shows up.
+  The rule gates strings, not words. Likewise the Gomu Gomu no Mi is
+  findable under its old name at cursor 100 and not under "Hito Hito no
+  Mi, Model: Nika".
+
+The **label** of a result goes through the same gate
+(`SEARCH_DISPLAY_NAME_SQL`): it mirrors `resolveEntityName`
+(`canonical_name_key` first, then `display_name_properties` in order,
+latest entry winning) and adds the cursor that resolution lacks — so a
+renamed entity is listed under the name it had at the reader's cursor,
+never the later one. Everything else on the card (identity line, status
+tag, image) comes from the same `buildEntityCardView` a listing uses,
+already spoiler-checked.
+
+Covered by `apps/web/server/__tests__/search.test.ts` (both spoiler
+cases against the real artifact), `.../search-sql.test.ts` (the gate is
+in the WHERE, before the LIMIT), `packages/db-builder/__tests__/search.test.ts`
+(what the schema makes searchable, and the gate rows) and
+`packages/schemas/__tests__/search-text.test.ts` (folding + typo
+similarity).
+
+### The page
+
+`/search?q=…`, server-rendered against the cursor. Results reuse the
+collection wall (`CardGrid` + `EntityCard`) rather than a bespoke
+result-row language: a search result IS an entity and should look
+exactly like the same entity on its type listing — artwork-led tile,
+name over the composition, its own colour chord, the type as the corner
+tag. The only search-specific addition is the card's `meta` line, which
+names WHICH string matched when it was not the displayed name
+("Epithet · Straw Hat"), so a hit on an alias explains itself.
+
+No autocomplete popover: results are a page. A floating suggestion card
+is exactly the "modern web app" register § Identity rejects. The header
+field is a plain `<form role="search">` — Tab reaches it, Enter
+submits, the field mirrors `?q=` so Back refills it.
+
 ## Contribute strip (bottom of every entity page)
 
 A quiet full-width strip: "Ces données sont libres —" with buttons
@@ -400,5 +523,6 @@ URLs stay locale-free (slugs are English, CLAUDE.md).
 
 ## Out of scope for v1 (parked, see ROADMAP Phase 6.x)
 
-Search, SEO/SSG pass, OG images, comparison view, relation graphs,
-per-arc easter eggs, PWA/offline.
+SEO/SSG pass, OG images, comparison view, relation graphs, per-arc
+easter eggs, PWA/offline. (**Search shipped** — ADR-108, § Search
+above. The ⌘K palette and result facets stay parked.)

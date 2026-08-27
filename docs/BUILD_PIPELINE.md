@@ -18,8 +18,8 @@ directory.)
 
 This runs `packages/db-builder` against `/data`. Output:
 
-- `/dist/onepiece.db` — SQLite, read-only at runtime
-- `/dist/search/` — Pagefind index
+- `/dist/onepiece.db` — SQLite, read-only at runtime (the search index
+  is inside it: ADR-108 replaced the planned Pagefind sidecar)
 - `/dist/manifest.json` — build metadata (commit hash, date, counts)
 - `/dist/translations/` — per-locale resolved string bundles (optional
   optimization)
@@ -128,15 +128,64 @@ Build a reachability map across sources:
 - This enables the spoiler filter to handle "I'm at episode 1071" as
   equivalent to "I've read chapter 1044".
 
-### 9. Search index
+### 9. Search index (ADR-108)
 
-Generate Pagefind-compatible static index:
+Build the SQLite search index — **inside the artifact, at build time**.
+Nothing about search is computed at request time: SQLite is derived and
+disposable, and CLAUDE.md forbids mutating it at runtime.
 
-- For each entity, emit a stub HTML document with name, type, and key
-  fields
-- Pagefind builds a chunked, ranked index for client-side fuzzy search
-- The index is filtered at query time by entity type, canon scope, and
-  spoiler progression
+`packages/db-builder/src/search.ts` walks the extracted entity rows and
+the resolved translations and emits three tables plus an FTS5 index
+(§ 10 below for the DDL). It is **fully schema-driven**:
+
+- a property is indexed **iff its property type declares
+  `value_type: "i18n_key"`** — i.e. iff its values are localizable
+  text. Numbers, enums, dates and refs are not text and are not
+  indexed. No property id appears anywhere in the builder.
+- a value is classified **`name` iff its property type declares
+  `romanizable: true`**. That flag exists (ADR-095) to mark "name-like
+  values (`name`, `epithet`, `title_key`) — never free text", which is
+  exactly the distinction ranking needs. Any other localizable value is
+  `text`; the entity's slug is indexed as `slug`.
+- display-name priority (`name_rank`) comes from the entity's
+  `canonical_name_key`, then from the entity type's
+  `display_name_properties` — mirroring `resolveEntityName` in the
+  reader app.
+- **only the UI locales (`en`, `fr`) are indexed.** `ja` / `ja-latn`
+  are DATA locales (ADR-095): dashboard-only, never surfaced in the
+  public UI — and a search hit IS a surfacing, since it is the reason a
+  row appears. They stay in the `translations` table. A locale whose
+  value is byte-identical (after folding) to one already emitted for
+  the same entry is skipped: cross-locale matching already covers it.
+- `actual_value` (the concealed truth behind a believed value) is
+  **never** indexed — it would make a reveal findable before the reveal.
+
+**Spoiler anchors are materialized, not computed at query time.** Every
+doc gets a row in `search_gates` for each numeric progression anchor
+that gates it: the entity's own id when it is a numbered source
+(`manga-chapter:1044`), its `first_appearance_source`, and the entry's
+own `since`. Per source type only the LATEST ordinal survives — a doc
+is visible only once the reader has passed every one of its anchors.
+The builder does not know which source types are cursor axes; it emits
+every numeric anchor and the reader app (a presentation binding,
+ADR-091) enforces only the axes it knows.
+
+**Trigrams are stored per WORD** (`word_index`, `word_size`) so the
+reader's fuzzy pass can score a query term against a document's best
+word rather than against the union of all its words. Folding
+(`normalizeSearchText`) and trigram slicing live in
+`packages/schemas/src/search-text.ts`, shared verbatim with the query
+side — a divergence between the two would silently stop matching.
+
+Output is fully sorted and `doc_id`s are assigned in that order, so two
+builds of the same data are byte-identical.
+
+Narratives are **not** indexed in v1: their spoiler markers
+(`:::spoiler chapter:N{…}:::`, I18N_STRATEGY.md) are not parsed
+anywhere yet, so indexing the prose would leak past the cursor. The
+corpus carries no narratives today; the day the markers are parsed into
+per-block anchors, each block becomes a doc with its own gate rows and
+nothing else changes.
 
 ### 10. SQLite write
 
@@ -232,20 +281,62 @@ CREATE INDEX idx_relations_type ON relations(relation_type);
 CREATE INDEX idx_appearances_entity ON appearances(entity_id);
 CREATE INDEX idx_appearances_source ON appearances(source_id);
 
--- FTS5 for full-text search on key fields
-CREATE VIRTUAL TABLE entities_fts USING fts5(
-  id UNINDEXED,
-  name_en,
-  name_fr,
-  epithet_en,
-  epithet_fr,
-  content='',
-  contentless_delete=1
+-- Search index (ADR-108). One row per (entity, field, entry, locale)
+-- searchable string; the columns are generic, never per-property.
+CREATE TABLE search_docs (
+  doc_id      INTEGER PRIMARY KEY,
+  entity_id   TEXT NOT NULL,
+  entity_type TEXT NOT NULL,
+  slug        TEXT NOT NULL,
+  locale      TEXT NOT NULL,   -- 'en' | 'fr' | '*' (locale-neutral: slugs)
+  field       TEXT NOT NULL,   -- property id, or 'slug'
+  kind        TEXT NOT NULL,   -- 'name' | 'text' | 'slug' (schema-derived)
+  name_rank   INTEGER,         -- 0 = canonical_name_key, else 1 + priority
+  entry_index INTEGER NOT NULL,
+  text        TEXT NOT NULL
 );
+
+-- External-content FTS5: the text lives once, in search_docs.
+-- `remove_diacritics 2` folds accents at index AND query time, which is
+-- what makes "equipage" find "Équipage".
+CREATE VIRTUAL TABLE search_fts USING fts5(
+  text,
+  content='search_docs',
+  content_rowid='doc_id',
+  tokenize='unicode61 remove_diacritics 2'
+);
+
+-- The spoiler filter. A doc is visible iff the reader's cursor has
+-- passed EVERY one of its anchors. Rows, not a packed ref, so the
+-- cursor filters with integer comparisons inside the WHERE clause —
+-- before any LIMIT.
+CREATE TABLE search_gates (
+  doc_id      INTEGER NOT NULL,
+  source_type TEXT NOT NULL,   -- e.g. 'manga-chapter'
+  ordinal     INTEGER NOT NULL
+);
+
+-- Typo tolerance: a (trigram → doc word) posting list scored with
+-- Sørensen–Dice at query time. Per WORD, not per document.
+CREATE TABLE search_trigrams (
+  doc_id     INTEGER NOT NULL,
+  word_index INTEGER NOT NULL,
+  word_size  INTEGER NOT NULL, -- that word's trigram count
+  trigram    TEXT NOT NULL
+);
+
+CREATE INDEX idx_search_docs_entity   ON search_docs(entity_id, name_rank);
+CREATE INDEX idx_search_gates_doc     ON search_gates(doc_id);
+CREATE INDEX idx_search_trigrams_gram ON search_trigrams(trigram);
 ```
 
 The actual schema is generated from the entity types at build time; the
 above is illustrative.
+
+After the search rows are inserted, still inside the writer's
+transaction, the external-content index is built with
+`INSERT INTO search_fts(search_fts) VALUES('rebuild')` — so the
+artifact is never observable with a stale index.
 
 ### 11. Manifest
 
@@ -260,7 +351,8 @@ above is illustrative.
     "relations_inferred": 2740,
     "appearances": 18342,
     "translations": 40210,
-    "narratives": 1876
+    "narratives": 1876,
+    "search_docs": 51204
   },
   "schema_versions": {
     "character": 1,

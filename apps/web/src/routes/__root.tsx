@@ -9,8 +9,8 @@
  * chrome (this is the public site, not the editing tool).
  *
  * Chrome register (v8.1, WEB_APP.md § Identity): ONE slim sticky top
- * bar — wordmark, the compact progression control, the locale
- * switcher. Nothing else. The graduated progression rail that used to
+ * bar — wordmark, the search field (ADR-108), the compact progression
+ * control, the locale switcher. Nothing else. The graduated progression rail that used to
  * span the header was removed in v8.1: a permanent full-width chart
  * of the whole manga above every page was chrome shouting over
  * content. The reader's position is still always on screen and one
@@ -24,6 +24,7 @@ import { type ProgressCursor } from '../api';
 import { BANNER_COOKIE, FirstRunBanner } from '../components/FirstRunBanner';
 import { LocaleSwitcher } from '../components/LocaleSwitcher';
 import { ProgressControl } from '../components/ProgressControl';
+import { SearchBox } from '../components/SearchBox';
 import { type Locale, t } from '../lib/chrome';
 // Plain (non bun:sqlite) server module — safe for a mixed import; the
 // server-fn compiler strips it from the browser bundle.
@@ -135,13 +136,21 @@ function RootLayout(): JSX.Element {
   return (
     <div className='flex min-h-dvh flex-col'>
       <header className='sticky top-0 z-20 border-b border-line bg-canvas'>
-        <div className='mx-auto flex h-13 w-full max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6'>
+        {
+          /* Still ONE bar (WEB_APP.md § Identity) — the search field
+            joins the wordmark and the two controls rather than adding
+            a second register. Below `sm` it wraps to its own full-width
+            line, because a field squeezed between the wordmark and the
+            progression label is a field nobody can type in. */
+        }
+        <div className='mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2.5 sm:h-13 sm:flex-nowrap sm:py-0 sm:px-6'>
           <Link
             to='/'
             className='display whitespace-nowrap text-[17px] font-extrabold tracking-tight text-fg transition-colors duration-150 hover:text-gold'
           >
             One Piece <span className='text-gold'>Wiki</span>
           </Link>
+          <SearchBox />
           <div className='flex items-center gap-2.5'>
             <ProgressControl key={cursorKey} progress={progress} />
             <LocaleSwitcher />

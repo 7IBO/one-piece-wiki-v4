@@ -9,12 +9,18 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as SearchRouteImport } from './routes/search'
 import { Route as TypeRouteImport } from './routes/$type'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as TTypeRouteImport } from './routes/t.$type'
 import { Route as TypeSlugRouteImport } from './routes/$type_.$slug'
 import { Route as ETypeSlugRouteImport } from './routes/e.$type.$slug'
 
+const SearchRoute = SearchRouteImport.update({
+  id: '/search',
+  path: '/search',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const TypeRoute = TypeRouteImport.update({
   id: '/$type',
   path: '/$type',
@@ -44,6 +50,7 @@ const ETypeSlugRoute = ETypeSlugRouteImport.update({
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/$type': typeof TypeRoute
+  '/search': typeof SearchRoute
   '/$type/$slug': typeof TypeSlugRoute
   '/t/$type': typeof TTypeRoute
   '/e/$type/$slug': typeof ETypeSlugRoute
@@ -51,6 +58,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/$type': typeof TypeRoute
+  '/search': typeof SearchRoute
   '/$type/$slug': typeof TypeSlugRoute
   '/t/$type': typeof TTypeRoute
   '/e/$type/$slug': typeof ETypeSlugRoute
@@ -59,19 +67,33 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/$type': typeof TypeRoute
+  '/search': typeof SearchRoute
   '/$type_/$slug': typeof TypeSlugRoute
   '/t/$type': typeof TTypeRoute
   '/e/$type/$slug': typeof ETypeSlugRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/$type' | '/$type/$slug' | '/t/$type' | '/e/$type/$slug'
+  fullPaths:
+    | '/'
+    | '/$type'
+    | '/search'
+    | '/$type/$slug'
+    | '/t/$type'
+    | '/e/$type/$slug'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/$type' | '/$type/$slug' | '/t/$type' | '/e/$type/$slug'
+  to:
+    | '/'
+    | '/$type'
+    | '/search'
+    | '/$type/$slug'
+    | '/t/$type'
+    | '/e/$type/$slug'
   id:
     | '__root__'
     | '/'
     | '/$type'
+    | '/search'
     | '/$type_/$slug'
     | '/t/$type'
     | '/e/$type/$slug'
@@ -80,6 +102,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   TypeRoute: typeof TypeRoute
+  SearchRoute: typeof SearchRoute
   TypeSlugRoute: typeof TypeSlugRoute
   TTypeRoute: typeof TTypeRoute
   ETypeSlugRoute: typeof ETypeSlugRoute
@@ -87,6 +110,13 @@ export interface RootRouteChildren {
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/search': {
+      id: '/search'
+      path: '/search'
+      fullPath: '/search'
+      preLoaderRoute: typeof SearchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/$type': {
       id: '/$type'
       path: '/$type'
@@ -128,6 +158,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   TypeRoute: TypeRoute,
+  SearchRoute: SearchRoute,
   TypeSlugRoute: TypeSlugRoute,
   TTypeRoute: TTypeRoute,
   ETypeSlugRoute: ETypeSlugRoute,

@@ -15,7 +15,76 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (v9 livré ; `docs/VISION.md` créé)
+**Last updated**: 2026-08-27 (tri des PR ouvertes ; corpus à 61 entités)
+
+**2026-08-27 — remontée et tri de toutes les PR ouvertes.**
+`main` = `f0101b7`.
+
+- **#121 mergée** — design v7→v9, ADR-102..107, `docs/VISION.md`, lot
+  licence + correctifs d'import + instrumentation de l'analyseur.
+- **#94 mergée** (chapitres Fandom) — vérifiée titre par titre avant
+  merge (« Incident at the Tavern », « Dog », « Gong »… sont les vrais
+  titres). Corpus **37 → 61 entités**, `validate` / `schema:check` /
+  `check:references` verts après merge.
+- **#96 fermée sans merge** (épisodes Fandom, run 31224649430) —
+  **données fausses, pas incomplètes** : les 25 premières pages de la
+  catégorie `Episodes` sont les « Special Edited Version », et huit
+  récapitulatifs post-ellipse avaient été écrits sous
+  `anime-episode:1..8`. `anime-episode:1` portait « The New Beginning!
+  The Straw Hats Reunite! » au lieu de « I'm Luffy! ... ». La forme
+  étant parfaite, `validate` ne pouvait pas le voir. Le correctif
+  (`ordinal-title.ts` + `orderCrawlQueue`) est sur `main` ; **relancer
+  `fandom-import` sur la catégorie Episodes** produira les bons.
+- **#90 fermée** (bande d'images dashboard, ADR-070/072) — la
+  fonctionnalité reste souhaitable mais la branche n'est pas
+  rattrapable : ses numéros d'ADR sont **déjà pris sur `main`** par
+  d'autres décisions (070 = runner de migrations, 071 = entité
+  `volume`), plus 4 conflits dont `url.json` (qui a gagné `factual`).
+  À réimplémenter sur base actuelle. Sans urgence : le corpus n'a
+  aucune image réelle.
+- **#1 et #2 fermées** — tests de bout en bout du dashboard de mai.
+  #1 fusionnait nom et épithète (« Baggy le clown ») là où `main` les
+  sépare correctement ; #2 réintroduisait `caused-death-of`,
+  supprimée par ADR-098, et aurait cassé `validate`.
+
+**Lancé** : `fandom-analyze` (workflow_dispatch sur `main`, preset
+complet) — le relevé structurel est l'entrée obligée de la refonte de
+schéma, et le runner GitHub a l'egress que la sandbox n'a pas. Le
+rapport est commité sur une branche `audit/`.
+
+**Livré (2026-08-27) — recherche du wiki public** (ADR-108). `apps/web`
+n'en avait **aucune** ; il y a maintenant un index FTS5 + trigrammes
+construit DANS `dist/onepiece.db` par `packages/db-builder`, une route
+`/search` et un champ dans la barre du haut.
+
+- **Plein texte** : FTS5 `unicode61 remove_diacritics 2` (préfixes,
+  multi-mots, insensible aux accents — « equipage » trouve « Équipage
+  du Chapeau de Paille »), classé par `bm25`.
+- **Fautes** : recouvrement de trigrammes (Sørensen–Dice) par MOT du
+  document, en **repli strict** — il ne se déclenche que si la passe
+  lexicale n'a rien trouvé. « zorro » → Roronoa Zoro, « nammi » → Nami,
+  « marinford » → Marineford.
+- **Multilingue** : une ligne par locale d'INTERFACE (`en`, `fr`) ;
+  `ja` / `ja-latn` restent des locales de DONNÉES (ADR-095) et ne sont
+  **pas** indexées — un résultat de recherche est une exposition. Le
+  match est inter-locale, l'affichage est dans la locale du lecteur.
+- **Anti-spoil** : chaque chaîne indexée porte ses ancres de
+  progression (`search_gates`) ; le curseur filtre **en SQL, avant le
+  LIMIT**. Les deux cas sont couverts et testés : une entité dont
+  l'_existence_ est un spoiler (`event:nika-reveal`, ch. 1044) ne
+  renvoie **rien** — jamais une ligne « résultat masqué », qui serait
+  elle-même un spoiler ; et une entité qui existe mais dont le _nom
+  tardif_ est un spoiler reste trouvable sous le nom qu'elle porte au
+  curseur (Luffy au ch. 50 : « Luffy » oui, « Straw Hat » non).
+- **Ce qui reste ouvert** (Phase 6.3) : la palette ⌘K et les facettes
+  de résultats. Les narratifs ne sont pas indexés tant que les marqueurs
+  `:::spoiler:::` ne sont pas analysés (voir ADR-108).
+
+**Note de dette repérée en passant** : `resolveEntityName`
+(`server/views.ts`) résout `canonical_name_key` **sans** le curseur, si
+bien qu'une page d'entité peut afficher un nom postérieur au curseur là
+où la recherche, elle, filtre. Aligner la page d'entité est un
+changement séparé, volontairement hors périmètre ici.
 
 > **LIRE `/docs/VISION.md` AVANT TOUT TRAVAIL SUR `apps/web`, LES
 > IMPORTEURS OU L'ACQUISITION.** Il porte l'intention produit, les publics

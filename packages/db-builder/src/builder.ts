@@ -1,8 +1,8 @@
 /**
  * Build pipeline: load schemas + entities (validated through the
  * schema engine), extract rows, materialize inverse relations, load
- * translations + narratives, write SQLite, emit manifest. Returns the
- * final manifest plus counts.
+ * translations + narratives, build the search index, write SQLite,
+ * emit manifest. Returns the final manifest plus counts.
  */
 import {
   loadEntities,
@@ -15,6 +15,7 @@ import { loadNarrativeRows, loadTranslationRows } from './content.ts';
 import { extract } from './extract.ts';
 import { type Manifest, writeManifest } from './manifest.ts';
 import { DB_PATH, MANIFEST_PATH } from './paths.ts';
+import { buildSearchRows } from './search.ts';
 import { writeDatabase, type WriteResult } from './writer.ts';
 
 export type BuildResult = {
@@ -68,9 +69,13 @@ export async function build(options: BuildOptions = {}): Promise<BuildResult> {
     throw new Error(`Narratives reference unknown entities: ${ids}`);
   }
 
+  // Search index (ADR-108): derived from the extracted entity rows and
+  // the resolved translations, so it can never disagree with either.
+  const search = buildSearchRows(rows.entities, translations, validated);
+
   const dbPath = options.dbPath ?? DB_PATH;
   const manifestPath = options.manifestPath ?? MANIFEST_PATH;
-  const write = writeDatabase(dbPath, { ...rows, translations, narratives });
+  const write = writeDatabase(dbPath, { ...rows, translations, narratives, search });
   const manifest = writeManifest(manifestPath, write);
 
   return { dbPath, manifestPath, manifest, write };

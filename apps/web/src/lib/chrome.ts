@@ -120,6 +120,31 @@ const STRINGS = {
   gallery: { en: 'Gallery', fr: 'Galerie' },
   outOf: { en: 'of', fr: 'sur' },
   contents: { en: 'Contents', fr: 'Contenu' },
+
+  // Search (ADR-108, append-only).
+  searchLabel: { en: 'Search the wiki', fr: 'Rechercher dans le wiki' },
+  searchPlaceholder: { en: 'Search…', fr: 'Rechercher…' },
+  searchSubmit: { en: 'Search', fr: 'Rechercher' },
+  searchTitle: { en: 'Search', fr: 'Recherche' },
+  searchLead: {
+    en: 'Names, epithets, titles — in English or in French, typos forgiven.',
+    fr: 'Noms, surnoms, titres — en français ou en anglais, fautes pardonnées.',
+  },
+  searchPrompt: {
+    en: 'Type a name to search the wiki.',
+    fr: 'Tape un nom pour chercher dans le wiki.',
+  },
+  searchResults: { en: 'results', fr: 'résultats' },
+  searchResult: { en: 'result', fr: 'résultat' },
+  searchApproximate: {
+    en: 'No exact match — showing the closest entries.',
+    fr: 'Aucune correspondance exacte — voici les entrées les plus proches.',
+  },
+  searchEmpty: {
+    en: 'Nothing found. Check the spelling — or it may lie beyond your progress.',
+    fr:
+      'Aucun résultat. Vérifie l’orthographe — ou cela se trouve peut-être au-delà de ta progression.',
+  },
 } as const;
 
 export type ChromeKey = keyof typeof STRINGS;

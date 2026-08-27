@@ -14,6 +14,7 @@ process.stdout.write(
     + `relations=${counts.relations} (inferred=${counts.relations_inferred}) `
     + `appearances=${counts.appearances} `
     + `translations=${counts.translations} `
-    + `narratives=${counts.narratives}\n`
+    + `narratives=${counts.narratives} `
+    + `search_docs=${counts.search_docs}\n`
     + `Manifest at ${result.manifestPath}\n`,
 );
