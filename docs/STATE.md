@@ -15,8 +15,22 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-27 (doublon `arc:wano` fusionné ; fuite
-anti-spoil sur 46 arcs découverte — voir ci-dessous)
+**Last updated**: 2026-08-27 (ADR-120 substrat rendu pour les
+chapitres ; ADR-121 plage ouverte ; 114 volumes importés ; fuite
+anti-spoil sur 46 arcs en attente d'arbitrage)
+
+### Chaîne de merge en cours
+
+`#157` (ADR-121 + test dépunaisé) → `#158` (114 volumes) →
+`import/chapter-render-33125002723` (enrichissement chapitres 0-100).
+
+L'ordre est **contraint** : l'enrichissement écrit des
+`part-of-volume` que `check:references` refuse tant que les volumes ne
+sont pas dans le corpus, et #158 ne passe pas tant que le test
+dépunaisé de #157 n'est pas sur `main`.
+
+Il reste **11 tranches** d'enrichissement à lancer (chapitres 101 à
+1131), une requête rendue par chapitre.
 
 ## 2026-08-27 — 46 arcs sur 50 ne sont pas anti-spoilés — À DÉCIDER
 
@@ -124,6 +138,34 @@ Deux leçons opérationnelles :
    Un serveur laissé tourner sert l'ancien artefact et ment. Première
    relecture de la page après migration : ruban à 3 cases. Après
    redémarrage : 149. Toujours redémarrer avant de conclure.
+
+## 2026-08-27 — l'arc EN COURS ne pouvait structurellement pas être placé
+
+Trouvé en cherchant pourquoi 6 arcs n'avaient aucune arête. Cinq sont
+`arc_subtype: filler` — anime-only, donc pas de chapitres, c'est
+correct. **Elbaph était la seule anomalie**, et c'est l'arc manga en
+cours : les chapitres 1126 à 1131 n'avaient aucun arc.
+
+Capture de la page rendue avant d'écrire une ligne :
+
+| arc        | `chapter` rendu          | parsé      |
+| ---------- | ------------------------ | ---------- |
+| Egghead    | `1058-1125, 68 chapters` | 1058…1125  |
+| **Elbaph** | **`1126-`**              | **`null`** |
+
+Elbaph est en cours de sérialisation : pas de dernier chapitre, donc
+plage ouverte. `parseOrdinalRange` la rejetait sous ma propre règle
+« jamais une plage fabriquée » — juste pour `-, chapters`, fausse ici.
+
+**Le coût était exact et invisible : l'arc que le lecteur est en train
+de lire était le seul que le wiki ne pouvait jamais placer**, et il le
+serait resté à chaque nouvel arc. Corrigé par ADR-121.
+
+Le piège du correctif, qui vaut d'être retenu : une plage ouverte
+réclame tout à partir de son début, donc si elle passe avant un arc
+fermé elle avale ses chapitres sur la règle « le premier arc gagne ».
+Les plages fermées sont désormais planifiées d'abord — une
+réclamation bornée est plus spécifique qu'une non bornée.
 
 ## 2026-08-27 — 9 titres de chapitre sont restés des placeholders
 
