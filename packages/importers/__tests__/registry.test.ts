@@ -241,3 +241,37 @@ describe('rendered html (ADR-119)', () => {
     expect(client.fetchRendered('Nope')).rejects.toThrow(/missingtitle/);
   });
 });
+
+describe('CLI argument parsing (2026-08-27)', () => {
+  // The `render` run captured all five real pages, then asked Fandom
+  // for a page called "docs/audits/rendered" and failed — because the
+  // VALUE of `--out` was read as a positional. The parse rule belongs
+  // in a test, not only in the CLI.
+  const VALUE_FLAGS = new Set(['--category', '--page', '--limit', '--depth', '--out']);
+  const positionals = (args: readonly string[]): readonly string[] =>
+    args.filter((a, i) => !a.startsWith('--') && !VALUE_FLAGS.has(args[i - 1] ?? ''));
+
+  it('never reads a flag VALUE as a positional', () => {
+    expect(positionals(['render', 'Arabasta Arc', '--out', 'docs/audits/rendered']))
+      .toEqual(['render', 'Arabasta Arc']);
+  });
+
+  it('keeps positionals that merely FOLLOW a boolean flag', () => {
+    expect(positionals(['chapter', '--stage', 'Chapter 1044']))
+      .toEqual(['chapter', 'Chapter 1044']);
+  });
+
+  it('handles a crawl line with several value flags', () => {
+    expect(positionals([
+      'crawl',
+      '--category',
+      'Episodes',
+      '--depth',
+      '8',
+      '--limit',
+      '600',
+      '--skip-known',
+      '--stage',
+    ])).toEqual(['crawl']);
+  });
+});

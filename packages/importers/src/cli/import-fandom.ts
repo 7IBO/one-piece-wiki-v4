@@ -133,7 +133,17 @@ async function buildMappers(): Promise<
 const args = process.argv.slice(2);
 const stage = args.includes('--stage');
 const overwrite = args.includes('--overwrite');
-const positional = args.filter((a) => !a.startsWith('--'));
+/**
+ * Flags that take a VALUE. Without this list the value was read as a
+ * positional: `render "Arabasta Arc" --out docs/audits/rendered` sent
+ * the importer looking for a Fandom page called "docs/audits/rendered"
+ * — after correctly capturing all five real pages, so the run failed
+ * having done its job and committed nothing.
+ */
+const VALUE_FLAGS = new Set(['--category', '--page', '--limit', '--depth', '--out']);
+const positional = args.filter((a, i) =>
+  !a.startsWith('--') && !VALUE_FLAGS.has(args[i - 1] ?? '')
+);
 const [kind, ...pages] = positional;
 
 const client = new FandomClient({
