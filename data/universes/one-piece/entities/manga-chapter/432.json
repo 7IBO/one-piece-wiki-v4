@@ -13,6 +13,9 @@
     "released_at": {
       "value": "2006-09-15",
       "territory": "jp"
+    },
+    "page_count": {
+      "value": 19
     }
   },
   "relations": []
