@@ -7,10 +7,11 @@
  * constraint did not guard against bad data, it rejected a true work,
  * and it took a 398-chapter import down with it.
  *
- * The bound is data, not code, so nothing else would notice it being
- * tightened back: the generated Zod carries no literal for it (the
- * constraint is applied at validation time by `entity-schema.ts`) and
- * `check:compat` does not track value_constraints. Hence this test.
+ * Since ADR-117 `check:compat` DOES track bounds, so a drift is caught —
+ * but the lockfile only says "min moved, breaking", never *why* it must
+ * be 0. A reviewer regenerating the snapshot would accept `min: 1` in
+ * silence. This test carries the reason instead. The two guards say
+ * different things; keep both.
  */
 import { describe, expect, it } from 'bun:test';
 

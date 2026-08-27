@@ -677,7 +677,10 @@ All breaking changes:
 This is enforced by the **`check:compat` schema lockfile** (ADR-042):
 `packages/schema-engine/schema-snapshot.json` captures the public contract the
 SDK/API and external consumers depend on; CI fails on **any** divergence and
-classifies each diff additive vs breaking. Regenerate it with
+classifies each diff additive vs breaking. Depuis ADR-117 le contrat couvre
+aussi les **bornes** (`min`, `max`, `step`, `pattern`) : auparavant le type
+était verrouillé mais la borne ne l'était pas, si bien qu'un resserrement
+passait sans un mot. Regenerate it with
 `bun run compat:snapshot` and commit it in the same PR — so the contract change
 shows up in review. The model evolves **expand → migrate → contract** (add the
 new, migrate data, mark old `deprecated`, remove later) so the SDK/API never

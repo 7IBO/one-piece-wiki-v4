@@ -8,6 +8,72 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-117 — Les bornes entrent dans le lockfile de compat
+
+**Date**: 2026-08-27
+
+**Contexte**. En vérifiant, à la demande du mainteneur, que les entités
+portent bien les bons typages, un trou est apparu dans `check:compat`
+(ADR-042). Le snapshot enregistrait, par propriété :
+
+```json
+{
+  "value_type": "number",
+  "enum_ref": null,
+  "historical": false,
+  "localizable": false
+}
+```
+
+Le **type** était verrouillé. La **borne** ne l'était pas. `min` pouvait
+donc passer de 1 à 0 — ou de 0 à 1 — et la CI répondait « matches the
+snapshot ». C'est précisément ce qui s'est produit en ADR-116 : j'avais
+lu ce silence comme « le changement est additif », alors qu'il voulait
+dire « le changement est invisible ». Deux choses très différentes.
+
+Le risque n'est pas théorique. Un resserrement invalide des données
+légales la veille, et c'est exactement le genre de changement que le
+lockfile existe pour attraper.
+
+**Décision**. `value_constraints` entre dans le contrat, sous
+`constraints` (`min`, `max`, `step`, `pattern` ; `enum_ref` garde son
+champ dédié et n'est pas dupliqué), avec la classification que le reste
+du classifieur applique déjà, lue comme « qu'est-ce qui validait hier et
+ne valide plus » :
+
+| Changement                                     | Verdict     |
+| ---------------------------------------------- | ----------- |
+| `min` relevé, `max` abaissé                    | **cassant** |
+| borne introduite là où il n'y en avait pas     | **cassant** |
+| `min` abaissé, `max` relevé, borne retirée     | additif     |
+| `step` dont le nouveau divise l'ancien (2 → 1) | additif     |
+| tout autre changement de `step`                | **cassant** |
+| `pattern` modifié                              | **cassant** |
+| `pattern` retiré                               | additif     |
+
+`step` et `pattern` sont traités de façon conservatrice **à dessein**.
+Un pas n'est un élargissement prouvé que s'il divise l'ancien ; 3 → 2 est
+plus petit mais rejette la valeur 3, donc cassant. Pour `pattern` il
+n'existe pas de test bon marché d'inclusion de langages réguliers, donc
+toute modification d'un motif vivant est cassante — seul son retrait est
+prouvablement additif. Mieux vaut un faux « cassant » qu'un vrai
+changement laissé passer.
+
+**Le cas de migration**. Un snapshot écrit avant cette ADR ne porte
+aucune borne. `diffConstraints` reste alors **silencieux** : inventer
+« none → 0 » pour chaque propriété bornée afficherait la migration
+elle-même comme un mur de changements cassants. La régénération pose la
+référence, la comparaison réelle commence au run suivant.
+
+**Conséquences**. Le snapshot est régénéré une fois (aucun verdict
+émis). +1 champ au contrat, +7 tests. Le tripwire sur `number`
+(ADR-116) est **conservé** : le lockfile détecte qu'une borne bouge, il
+ne dit pas _pourquoi_ elle doit valoir 0 — un relecteur qui régénère le
+snapshot accepterait `min: 1` en silence. Le test, lui, porte la raison
+(le chapitre 0 existe). Les deux gardes disent des choses différentes.
+
+---
+
 ## ADR-116 — `number` accepte 0, et un crawl n'est plus jamais jeté
 
 **Date**: 2026-08-27
