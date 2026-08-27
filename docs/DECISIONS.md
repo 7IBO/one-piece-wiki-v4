@@ -8,6 +8,66 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-114 — `absent_properties` : distinguer « pas encore renseigné » de « n'existe pas dans l'œuvre »
+
+**Date**: 2026-08-27
+
+**Contexte**. Les maquettes `design/v2` prévoient, sur une page pauvre en
+données, un panneau qui **nomme les propriétés attendues sans valeur**
+pour guider la contribution. Le panneau est inutilisable sans marqueur
+d'absence délibérée : il réclamerait éternellement la date de naissance
+d'un personnage qu'Oda n'a jamais datée, et un contributeur finirait par
+inventer une valeur pour faire taire l'alerte.
+
+C'est le scénario le plus dommageable pour ce projet en particulier :
+toute sa promesse est que chaque donnée porte sa source.
+
+**Options considérées**.
+
+1. _Un `epistemic_status` supplémentaire._ Rejeté : `epistemic_status`
+   qualifie une valeur **présente** — sa nature de vérité. Il n'a rien à
+   dire sur une valeur absente.
+2. _Une entrée de propriété sans valeur_ (`{ "no_value": "not_in_work" }`).
+   Rejeté pour deux raisons. D'abord la forme : une absence est une
+   affirmation sur l'œuvre entière, pas sur un point du temps — elle n'a
+   ni `since` ni historique, donc le conteneur historisé est le mauvais.
+   Ensuite le rayon d'explosion : rendre `value` optionnel obligerait
+   chaque consommateur d'entrées — validateur, printeurs, dashboard,
+   pipeline, web — à gérer un cas dégénéré.
+3. _Un champ à la racine de l'entité._ Retenu.
+
+**Décision**. `absent_properties`, à la racine, à côté de `properties` :
+
+```json
+"absent_properties": {
+  "birth_date": { "reason": "not_in_work" },
+  "bounty": { "reason": "not_applicable", "source": "manga-chapter:1" }
+}
+```
+
+Vocabulaire `absence-reasons` : `not_in_work` (la question a un sens,
+l'œuvre n'y répond jamais) et `not_applicable` (la question ne se pose
+pas). Champs optionnels `source` — une question posée en SBS à laquelle
+l'auteur a refusé de répondre en est une — et `note`.
+
+**Conséquences**.
+
+- **Rayon d'explosion minimal.** Le champ est additif à la racine : rien
+  de ce qui lit `properties` n'en est affecté. Un consommateur qui
+  l'ignore continue de fonctionner exactement comme avant.
+- **Deux invariants tenus par `check:coherence`**, sans quoi le marqueur
+  deviendrait un fourre-tout : `ABSENT_PROPERTY_HAS_VALUE` interdit
+  d'affirmer à la fois une valeur et son absence ;
+  `ABSENT_PROPERTY_UNKNOWN` interdit de déclarer absente une propriété
+  que le type ne déclare pas.
+- **Le calcul de complétude devient honnête** : attendues − renseignées −
+  déclarées absentes. C'est ce que le panneau de contribution affichera.
+- **Les importeurs ne le remplissent pas.** Fandom laisse un champ vide
+  sans jamais dire pourquoi ; seul un humain peut affirmer une absence.
+  L'écrire depuis un mapper serait fabriquer de la donnée.
+
+---
+
 ## ADR-113 — `since_precision` : distinguer « à partir de » de « au plus tard à »
 
 **Date**: 2026-08-27

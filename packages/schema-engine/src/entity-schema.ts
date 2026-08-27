@@ -6,6 +6,7 @@
  * disk: one Zod, three boundaries.
  */
 import {
+  AbsentProperty,
   EntityId,
   EpistemicStatus,
   I18N_KEY_PATTERN,
@@ -214,6 +215,9 @@ export function buildEntitySchema(
     slug_history: z.array(Slug).default([]),
     canonical_name_key: I18nKeyString.optional(),
     properties: z.object(propertyShape),
+    // ADR-114 — les proprietes connues comme sans valeur. Additif a la
+    // racine : rien de ce qui lit `properties` n'en est affecte.
+    absent_properties: z.record(z.string(), AbsentProperty).optional(),
     relations: z.array(relationSchema).default([]),
   }).passthrough();
 }

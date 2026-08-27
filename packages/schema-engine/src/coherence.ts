@@ -28,6 +28,8 @@
  *  - RULE_FINDING (advisory)        a declarative advisory rule matched
  *                                   (ADR-085 — canon-exception knowledge)
  *  - UNREFERENCED_ENTITY            no other entity points at this one
+ *  - ABSENT_PROPERTY_HAS_VALUE      declared absent AND carrying a value
+ *  - ABSENT_PROPERTY_UNKNOWN        declared absent but not a property of the type
  *                                   (relation target, entity/source ref,
  *                                   or a since/until/source/event axis) —
  *                                   a coherence smell, e.g. an uploaded
@@ -59,6 +61,8 @@ export type CoherenceFinding = {
     | 'RELATION_DECLARES_BASE_QUALIFIER'
     | 'DUPLICATE_RELATION'
     | 'DUPLICATE_PROPERTY_VALUE'
+    | 'ABSENT_PROPERTY_HAS_VALUE'
+    | 'ABSENT_PROPERTY_UNKNOWN'
     | 'ENTITY_SCHEMA_VERSION_AHEAD'
     // Declarative rules (ADR-085) + inverse-edge coherence
     | 'RULE_FINDING'
@@ -275,6 +279,7 @@ export function checkCoherence(
     const data = entity.data as {
       relations?: unknown[];
       properties?: Record<string, unknown>;
+      absent_properties?: Record<string, unknown>;
     };
 
     if (Array.isArray(data.relations)) {
@@ -317,6 +322,44 @@ export function checkCoherence(
               message: `Property entry duplicates properties.${propertyId}[${prior}] exactly.`,
             });
           }
+        }
+      }
+    }
+
+    // ADR-114 — deux invariants sur les proprietes declarees absentes.
+    // Sans eux le marqueur devient un endroit ou ranger n'importe quoi,
+    // et une page pourrait affirmer a la fois une valeur et son absence.
+    const absent = data.absent_properties;
+    if (absent !== null && typeof absent === 'object' && !Array.isArray(absent)) {
+      const declared = new Set<string>(
+        (catalogue.entityTypes.get(entity.type)?.properties ?? []).map((p) => p.id),
+      );
+      const properties = data.properties !== null && typeof data.properties === 'object'
+        ? (data.properties as Record<string, unknown>)
+        : {};
+      for (const propertyId of Object.keys(absent)) {
+        if (!declared.has(propertyId)) {
+          findings.push({
+            code: 'ABSENT_PROPERTY_UNKNOWN',
+            severity: 'error',
+            source: entity.id,
+            path: `absent_properties.${propertyId}`,
+            message:
+              `\`${propertyId}\` is declared absent but is not a property of type \`${entity.type}\`.`,
+          });
+          continue;
+        }
+        const value = properties[propertyId];
+        const hasValue = Array.isArray(value) ? value.length > 0 : value !== undefined;
+        if (hasValue) {
+          findings.push({
+            code: 'ABSENT_PROPERTY_HAS_VALUE',
+            severity: 'error',
+            source: entity.id,
+            path: `absent_properties.${propertyId}`,
+            message:
+              `\`${propertyId}\` is declared absent AND carries a value. Drop one of the two.`,
+          });
         }
       }
     }

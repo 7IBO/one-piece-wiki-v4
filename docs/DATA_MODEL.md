@@ -158,6 +158,43 @@ Deux conséquences directes :
 La règle `since-precision-needs-since` refuse une précision orpheline :
 elle qualifie `since`, elle n'a aucun sens sans lui.
 
+### Ce qu'on sait ne pas exister (ADR-114)
+
+Une propriété attendue peut n'avoir **jamais** de valeur : une date de
+naissance que l'auteur n'a pas donnée, une prime sur quelqu'un qui n'a
+jamais été recherché. Sans marqueur, une page incomplète réclame
+éternellement les mêmes champs, et un contributeur finit par en inventer
+un pour faire taire l'alerte — le pire résultat possible pour un wiki
+dont la promesse est la traçabilité.
+
+`absent_properties` vit **à la racine de l'entité**, à côté de
+`properties` :
+
+```json
+"absent_properties": {
+  "birth_date": { "reason": "not_in_work" },
+  "bounty": { "reason": "not_applicable", "source": "manga-chapter:1" }
+}
+```
+
+| Raison           | Sens                                                 |
+| ---------------- | ---------------------------------------------------- |
+| `not_in_work`    | la question a un sens ici, l'œuvre n'y répond jamais |
+| `not_applicable` | la question ne se pose pas pour cette entité         |
+
+Ce n'est **pas** un `epistemic_status` : celui-ci qualifie une valeur
+présente, pas son absence. Et ce n'est pas une entrée de propriété : une
+absence est une affirmation sur l'œuvre entière, pas sur un point du
+temps — elle n'a donc ni `since` ni historique.
+
+Deux invariants tenus par `check:coherence` :
+
+- **`ABSENT_PROPERTY_HAS_VALUE`** — on ne peut pas affirmer à la fois une
+  valeur et son absence ;
+- **`ABSENT_PROPERTY_UNKNOWN`** — on ne peut déclarer absente qu'une
+  propriété que le type déclare, sinon le marqueur devient un endroit où
+  ranger n'importe quoi.
+
 ### Epistemic status
 
 Every value can be qualified by **what kind of truth it is** at the moment it

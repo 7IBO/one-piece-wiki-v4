@@ -3076,6 +3076,10 @@
     }
   },
   "vocabularies": {
+    "absence-reasons": [
+      "not_applicable",
+      "not_in_work"
+    ],
     "adaptation-coverage": [
       "compressed",
       "expanded",
