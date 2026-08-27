@@ -325,3 +325,24 @@ names, revision ids) and are gitignored build artifacts anyway.
 - **New category correspondence**: add a row to
   `CATEGORY_ENTITY_TYPES` in `src/fandom/analyze.ts` (data maintained
   in code — the report tells you which categories need it).
+
+## Un crawl n'est jamais jeté
+
+L'ordre des étapes du workflow est **stage → push → validate → PR**, et
+c'est délibéré (ADR-116). Le crawl est l'artefact cher : dix minutes de
+requêtes throttlées à 1 req/s qu'on ne rejoue pas pour rien. Il atteint
+donc une branche **avant** que quoi que ce soit ait le droit de le juger.
+
+La validation tourne ensuite avec `continue-on-error: true` : son verdict
+est écrit dans le résumé du run et dans le corps de la PR, mais il ne
+fait pas échouer le job.
+
+**Si la validation échoue, corrige le fichier fautif sur la branche
+d'import — ne relance pas le crawl.** Le relancer dépenserait dix
+minutes de plus pour retomber exactement sur le même fichier.
+
+Historique de la règle : le run 8 a mappé 398 chapitres et les a tous
+perdus parce que `manga-chapter/0.json` violait `number` min 1 (le
+chapitre 0 existe : one-shot prologue de _Strong World_). Les runs 3-5
+étaient morts de la même façon, sur une permission de PR. Quatre runs
+perdus avant que l'ordre des étapes soit corrigé plutôt que ses symptômes.

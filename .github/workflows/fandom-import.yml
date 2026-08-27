@@ -58,23 +58,21 @@ jobs:
           --limit "${{ github.event.inputs.limit }}"
           ${{ github.event.inputs.skip_known == 'true' && '--skip-known' || '' }}
           --stage
-      - name: Validate the staged corpus
-        run: bun run schema:check && bun run validate && bun run check:references
-      - name: Open the import PR
-        env:
-          # Runs 3-5 all died here with "GitHub Actions is not permitted
-          # to create or approve pull requests" — a repo setting
-          # (Settings -> Actions -> General -> Workflow permissions).
-          # The branch had already been pushed, so a whole crawl was
-          # thrown away over a permission the job did not need to hold.
-          # Two mitigations: an optional PAT in IMPORT_PR_TOKEN opens the
-          # PR even while the setting is off, and a failure to open the
-          # PR no longer fails the job — the branch is the deliverable,
-          # the PR is a convenience.
-          GH_TOKEN: ${{ secrets.IMPORT_PR_TOKEN || github.token }}
+      # The CRAWL is the expensive, unrepeatable artifact: ten
+      # rate-limited minutes that cannot be replayed cheaply. So it
+      # reaches a branch BEFORE anything is allowed to judge it.
+      #
+      # Run 8 mapped 398 chapters and threw every one away because a
+      # single staged file failed validation (`manga-chapter/0.json`
+      # against `number` min 1) — the fourth run lost to a late gate,
+      # after runs 3-5 died the same way on a PR permission. The order
+      # below is the whole lesson: stage -> PUSH -> validate -> report.
+      - name: Push the crawl
+        id: push
         run: |
-          if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
-            echo "Nothing staged — no PR."
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Nothing staged — nothing to push."
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
             exit 0
           fi
           branch="import/fandom-${{ github.run_id }}"
@@ -84,23 +82,74 @@ jobs:
           git add data/
           git commit -m "data(import): crawl '${{ github.event.inputs.category }}' (run ${{ github.run_id }})"
           git push -u origin "$branch"
-          compare="${{ github.server_url }}/${{ github.repository }}/compare/${branch}?expand=1"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "### Crawl pushed to \`$branch\`" >> "$GITHUB_STEP_SUMMARY"
+
+      # Never fails the job — the crawl is already safe on the branch, so
+      # the verdict is REPORTED (step summary + PR body), not enforced.
+      # Nothing merges without a human, so an invalid staged file costs a
+      # fix on the branch, not a re-crawl.
+      - name: Validate the staged corpus
+        id: validate
+        if: steps.push.outputs.pushed == 'true'
+        continue-on-error: true
+        run: |
+          if bun run schema:check && bun run validate && bun run check:references; then
+            echo "verdict=passed" >> "$GITHUB_OUTPUT"
+            echo "### Validation: passed" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "verdict=FAILED" >> "$GITHUB_OUTPUT"
+            {
+              echo "### Validation: FAILED"
+              echo ""
+              echo "The crawl is safe on \`${{ steps.push.outputs.branch }}\`."
+              echo "Fix the offending file on that branch — do NOT re-run the import."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Open the import PR
+        if: steps.push.outputs.pushed == 'true'
+        env:
+          # Runs 3-5 all died here with "GitHub Actions is not permitted
+          # to create or approve pull requests" — a repo setting
+          # (Settings -> Actions -> General -> Workflow permissions).
+          # An optional PAT in IMPORT_PR_TOKEN opens the PR even while the
+          # setting is off, and a failure to open the PR does not fail the
+          # job — the branch is the deliverable, the PR is a convenience.
+          GH_TOKEN: ${{ secrets.IMPORT_PR_TOKEN || github.token }}
+          BRANCH: ${{ steps.push.outputs.branch }}
+          VERDICT: ${{ steps.validate.outputs.verdict }}
+        run: |
+          compare="${{ github.server_url }}/${{ github.repository }}/compare/${BRANCH}?expand=1"
           # Labels must exist before `gh pr create --label` (run 4 died on
           # a missing `import` label) — create them idempotently.
           gh label create via-dashboard --color 5319E7 --description "Opened through the dashboard PR flow" --force || true
           gh label create import --color 0E8A16 --description "Automated Fandom import (ADR-079)" --force || true
+          body=$(cat <<EOF
+          Automated crawl of category **${{ github.event.inputs.category }}** (limit ${{ github.event.inputs.limit }}).
+          Deterministic infobox extraction only — review in the dashboard admin queue.
+          See the run log for warnings, the import frontier, and unmapped infobox kinds.
+
+          **Validation: ${VERDICT}**
+
+          Validation runs *after* the push and never discards a crawl. If it
+          FAILED, fix the offending file on this branch — re-running the import
+          would just spend another ten rate-limited minutes to reach the same file.
+          EOF
+          )
           if gh pr create --draft \
             --title "[DATA] Import from Fandom: ${{ github.event.inputs.category }} (run ${{ github.run_id }})" \
-            --body "Automated crawl of category **${{ github.event.inputs.category }}** (limit ${{ github.event.inputs.limit }}). Deterministic infobox extraction only — review in the dashboard admin queue. See the run log for warnings, the import frontier, and unmapped infobox kinds." \
+            --body "$body" \
             --label via-dashboard --label import
           then
             echo "### Import PR opened" >> "$GITHUB_STEP_SUMMARY"
           else
-            echo "::warning::Could not open the PR. The branch $branch is pushed and holds the crawl — open the PR by hand, or enable Settings -> Actions -> General -> Workflow permissions -> 'Allow GitHub Actions to create and approve pull requests' (or set an IMPORT_PR_TOKEN secret)."
+            echo "::warning::Could not open the PR. The branch $BRANCH is pushed and holds the crawl — open the PR by hand, or enable Settings -> Actions -> General -> Workflow permissions -> 'Allow GitHub Actions to create and approve pull requests' (or set an IMPORT_PR_TOKEN secret)."
             {
               echo "### Branch pushed, PR not opened"
               echo ""
-              echo "The crawl is safe on \`$branch\`. Open it here: $compare"
+              echo "The crawl is safe on \`$BRANCH\`. Open it here: $compare"
               echo ""
               echo "To let the workflow do this itself, enable **Settings -> Actions -> General -> Workflow permissions -> Allow GitHub Actions to create and approve pull requests**, or add an \`IMPORT_PR_TOKEN\` secret."
             } >> "$GITHUB_STEP_SUMMARY"

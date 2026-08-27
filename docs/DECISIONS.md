@@ -8,6 +8,71 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-116 — `number` accepte 0, et un crawl n'est plus jamais jeté
+
+**Date**: 2026-08-27
+
+**Contexte**. Le run d'import 8 (`One Piece Chapters`, depth 3) a mappé
+**398 chapitres** en dix minutes de crawl throttlé à 1 req/s, puis a tout
+perdu. Une seule entité était invalide :
+
+```
+[ENTITY_VALIDATION_FAILED] .../manga-chapter/0.json
+  properties.number.value: Number must be greater than or equal to 1
+```
+
+Deux problèmes distincts, qu'il faut ne pas confondre.
+
+### 1. Le chapitre 0 existe
+
+`number` portait `min: 1`, ce qui encode « les chapitres sont indexés à
+partir de 1 ». C'est faux : le **chapitre 0** est un one-shot prologue
+publié dans le Jump en 2009 pour le film _Strong World_, il a sa page sur
+Fandom, il est canon. La donnée importée était juste ; c'est la
+contrainte qui refusait une œuvre réelle.
+
+**Décision**. `value_constraints.min` passe de 1 à 0 sur `number`
+(partagé par `manga-chapter`, `anime-episode`, `live-action-episode`,
+`volume`). Élargir une contrainte est additif : `check:compat` passe sans
+régénérer le snapshot, et `schema:generate` produit un diff vide — la
+contrainte numérique est appliquée à la validation par
+`entity-schema.ts`, pas gravée dans le Zod généré.
+
+Option écartée : filtrer l'ordinal 0 dans le mapper, comme on filtre déjà
+les variantes « Digital Colored ». Ce n'est pas le même geste — une
+variante est un doublon de la même œuvre, le chapitre 0 est une œuvre de
+plus. Le filtrer aurait perdu une donnée vraie pour préserver une
+contrainte fausse.
+
+### 2. L'ordre des étapes jetait le travail coûteux
+
+Le crawl est l'artefact **cher et non rejouable** : dix minutes de
+requêtes rate-limitées. Il était produit, puis soumis à une validation
+bloquante, et n'atteignait une branche qu'après. Un seul fichier invalide
+suffisait donc à tout détruire.
+
+C'est le quatrième run perdu de cette façon. Les runs 3-5 étaient morts
+symétriquement, sur une permission d'ouverture de PR — et la correction
+d'alors n'avait traité que la PR, pas le principe.
+
+**Décision**. L'ordre devient **stage → push → validate → PR** :
+
+- `Push the crawl` pousse la branche dès la fin du crawl ;
+- `Validate the staged corpus` porte `continue-on-error: true` et **ne
+  fait plus échouer le job** — son verdict est _rapporté_ (résumé du run
+  - corps de la PR), pas _appliqué_ ;
+- la PR reste en **draft** et rien ne merge sans humain, donc un fichier
+  invalide sur une branche d'import coûte une correction sur la branche,
+  pas un nouveau crawl.
+
+**Conséquences**. Un import ne peut plus perdre son travail. En
+contrepartie une branche d'import peut porter des données invalides —
+acceptable puisqu'elle est isolée, en draft, et que son état est écrit en
+toutes lettres sur la PR. La CI de `main` reste stricte : c'est elle, pas
+l'importeur, qui garde le corpus.
+
+---
+
 ## ADR-115 — Reset de tous les `schema_version` à 1
 
 **Date**: 2026-08-27
