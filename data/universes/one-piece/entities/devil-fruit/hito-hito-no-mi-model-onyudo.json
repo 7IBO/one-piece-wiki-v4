@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:hito-hito-no-mi-model-onyudo",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "hito-hito-no-mi-model-onyudo",
+  "canonical_name_key": "devil-fruit.hito-hito-no-mi-model-onyudo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.hito-hito-no-mi-model-onyudo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:936"
+      },
+      {
+        "value_key": "devil-fruit.hito-hito-no-mi-model-onyudo.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:936"
+      }
+    ],
+    "classification": [
+      {
+        "value": "mythical_zoan",
+        "since": "manga-chapter:936"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Onyudo",
+        "since": "manga-chapter:936"
+      }
+    ]
+  },
+  "relations": []
+}

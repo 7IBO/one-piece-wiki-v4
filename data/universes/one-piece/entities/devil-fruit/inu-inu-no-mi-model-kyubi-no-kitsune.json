@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:inu-inu-no-mi-model-kyubi-no-kitsune",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "inu-inu-no-mi-model-kyubi-no-kitsune",
+  "canonical_name_key": "devil-fruit.inu-inu-no-mi-model-kyubi-no-kitsune.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-kyubi-no-kitsune.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:925"
+      },
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-kyubi-no-kitsune.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:925"
+      }
+    ],
+    "classification": [
+      {
+        "value": "mythical_zoan",
+        "since": "manga-chapter:925"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Kyubi no Kitsune",
+        "since": "manga-chapter:925"
+      }
+    ]
+  },
+  "relations": []
+}

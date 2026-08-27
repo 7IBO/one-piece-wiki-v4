@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:mini-mini-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "mini-mini-no-mi",
+  "canonical_name_key": "devil-fruit.mini-mini-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.mini-mini-no-mi.name.common",
+        "name_type": "common",
+        "since": "anime-episode:575"
+      },
+      {
+        "value_key": "devil-fruit.mini-mini-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "anime-episode:575"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "anime-episode:575"
+      }
+    ]
+  },
+  "relations": []
+}

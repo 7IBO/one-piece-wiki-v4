@@ -1,0 +1,36 @@
+{
+  "id": "devil-fruit:gomu-gomu-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "gomu-gomu-no-mi",
+  "canonical_name_key": "devil-fruit.gomu-gomu-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.gomu-gomu-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1"
+      },
+      {
+        "value_key": "devil-fruit.gomu-gomu-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "manga-chapter:1"
+      }
+    ]
+  },
+  "relations": [
+    {
+      "type": "held-by",
+      "target": "character:luffy",
+      "qualifiers": {
+        "since": "manga-chapter:1"
+      }
+    }
+  ]
+}

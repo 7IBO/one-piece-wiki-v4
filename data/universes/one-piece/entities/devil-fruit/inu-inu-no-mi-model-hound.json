@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:inu-inu-no-mi-model-hound",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "inu-inu-no-mi-model-hound",
+  "canonical_name_key": "devil-fruit.inu-inu-no-mi-model-hound.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-hound.name.common",
+        "name_type": "common",
+        "since": "sbs:volume-110"
+      },
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-hound.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "sbs:volume-110"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "sbs:volume-110"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Hound",
+        "since": "sbs:volume-110"
+      }
+    ]
+  },
+  "relations": []
+}

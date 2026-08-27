@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:mira-mira-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "mira-mira-no-mi",
+  "canonical_name_key": "devil-fruit.mira-mira-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.mira-mira-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:831"
+      },
+      {
+        "value_key": "devil-fruit.mira-mira-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:831"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "manga-chapter:831"
+      }
+    ]
+  },
+  "relations": []
+}

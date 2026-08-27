@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:inu-inu-no-mi-model-dachshund",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "inu-inu-no-mi-model-dachshund",
+  "canonical_name_key": "devil-fruit.inu-inu-no-mi-model-dachshund.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-dachshund.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:184"
+      },
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-dachshund.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:184"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "manga-chapter:184"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Dachshund",
+        "since": "manga-chapter:184"
+      }
+    ]
+  },
+  "relations": []
+}

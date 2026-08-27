@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:artificial-devil-fruit",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "artificial-devil-fruit",
+  "canonical_name_key": "devil-fruit.artificial-devil-fruit.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.artificial-devil-fruit.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:684"
+      },
+      {
+        "value_key": "devil-fruit.artificial-devil-fruit.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:684"
+      }
+    ],
+    "classification": [
+      {
+        "value": "unknown",
+        "since": "manga-chapter:684"
+      }
+    ]
+  },
+  "relations": []
+}

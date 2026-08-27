@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:batto-batto-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "batto-batto-no-mi",
+  "canonical_name_key": "devil-fruit.batto-batto-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.batto-batto-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1072"
+      },
+      {
+        "value_key": "devil-fruit.batto-batto-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:1072"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "manga-chapter:1072"
+      }
+    ]
+  },
+  "relations": []
+}

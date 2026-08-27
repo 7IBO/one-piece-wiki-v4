@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:gasu-gasu-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "gasu-gasu-no-mi",
+  "canonical_name_key": "devil-fruit.gasu-gasu-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.gasu-gasu-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:658"
+      },
+      {
+        "value_key": "devil-fruit.gasu-gasu-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:658"
+      }
+    ],
+    "classification": [
+      {
+        "value": "logia",
+        "since": "manga-chapter:658"
+      }
+    ]
+  },
+  "relations": []
+}

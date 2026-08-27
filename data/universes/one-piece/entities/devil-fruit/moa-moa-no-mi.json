@@ -1,0 +1,25 @@
+{
+  "id": "devil-fruit:moa-moa-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "moa-moa-no-mi",
+  "canonical_name_key": "devil-fruit.moa-moa-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.moa-moa-no-mi.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "devil-fruit.moa-moa-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:gocha-gocha-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "gocha-gocha-no-mi",
+  "canonical_name_key": "devil-fruit.gocha-gocha-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.gocha-gocha-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:900"
+      },
+      {
+        "value_key": "devil-fruit.gocha-gocha-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:900"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "manga-chapter:900"
+      }
+    ]
+  },
+  "relations": []
+}

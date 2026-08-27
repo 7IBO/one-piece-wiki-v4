@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:ami-ami-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "ami-ami-no-mi",
+  "canonical_name_key": "devil-fruit.ami-ami-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.ami-ami-no-mi.name.common",
+        "name_type": "common",
+        "since": "anime-episode:427"
+      },
+      {
+        "value_key": "devil-fruit.ami-ami-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "anime-episode:427"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "anime-episode:427"
+      }
+    ]
+  },
+  "relations": []
+}

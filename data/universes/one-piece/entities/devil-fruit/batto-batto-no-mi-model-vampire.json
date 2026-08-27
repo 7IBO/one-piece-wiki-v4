@@ -1,0 +1,30 @@
+{
+  "id": "devil-fruit:batto-batto-no-mi-model-vampire",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "batto-batto-no-mi-model-vampire",
+  "canonical_name_key": "devil-fruit.batto-batto-no-mi-model-vampire.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.batto-batto-no-mi-model-vampire.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "devil-fruit.batto-batto-no-mi-model-vampire.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "classification": [
+      {
+        "value": "mythical_zoan"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Vampire"
+      }
+    ]
+  },
+  "relations": []
+}

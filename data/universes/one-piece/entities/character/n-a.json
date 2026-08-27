@@ -1,0 +1,34 @@
+{
+  "id": "character:n-a",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "n-a",
+  "canonical_name_key": "character.n-a.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.n-a.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 220
+      }
+    ],
+    "height": [
+      {
+        "value": 180
+      }
+    ],
+    "birthday": {
+      "value": "07-08"
+    }
+  },
+  "relations": []
+}

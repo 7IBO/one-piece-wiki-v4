@@ -1,0 +1,21 @@
+{
+  "id": "devil-fruit:dero-dero-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "dero-dero-no-mi",
+  "canonical_name_key": "devil-fruit.dero-dero-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.dero-dero-no-mi.name.common",
+        "name_type": "common"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia"
+      }
+    ]
+  },
+  "relations": []
+}
