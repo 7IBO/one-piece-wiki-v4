@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:442",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-442",
+  "properties": {
+    "number": {
+      "value": 442
+    },
+    "title_key": {
+      "value_key": "anime-episode.442.title"
+    }
+  },
+  "relations": []
+}

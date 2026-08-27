@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:552",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-552",
+  "properties": {
+    "number": {
+      "value": 552
+    },
+    "title_key": {
+      "value_key": "anime-episode.552.title"
+    }
+  },
+  "relations": []
+}

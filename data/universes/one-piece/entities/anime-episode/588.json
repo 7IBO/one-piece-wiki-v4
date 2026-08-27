@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:588",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-588",
+  "properties": {
+    "number": {
+      "value": 588
+    },
+    "title_key": {
+      "value_key": "anime-episode.588.title"
+    }
+  },
+  "relations": []
+}

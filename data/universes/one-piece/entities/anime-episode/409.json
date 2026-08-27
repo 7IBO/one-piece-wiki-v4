@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:409",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-409",
+  "properties": {
+    "number": {
+      "value": 409
+    },
+    "title_key": {
+      "value_key": "anime-episode.409.title"
+    }
+  },
+  "relations": []
+}
