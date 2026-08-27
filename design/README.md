@@ -394,3 +394,36 @@ comparer des valeurs), chronologie (pour situer dans le temps). Le
 chargement se fait par lots plutôt que par pagination numérotée : sur
 1 412 personnages, un numéro de page n'est une information pour
 personne.
+
+## La recherche
+
+`Recherche.dc.html`. C'était le dernier placeholder mort du canevas.
+
+**La saisie est l'en-tête** : ni titre, ni barre de fenêtre, ni chrome
+inutile. On ouvre pour taper.
+
+**Les résultats sont groupés par type**, chacun avec sa vignette au bon
+ratio et **une donnée qui le distingue** — le capitaine pour un
+personnage, le porteur pour un fruit, l'arc pour un chapitre. Un nom
+seul ne permet pas de choisir entre deux homonymes, et One Piece en est
+plein.
+
+Les trois cartes du bas montrent ce que la recherche sait faire **en
+situation plutôt qu'en promesse** :
+
+- **faute de frappe** — « gomo gmu » n'a aucune correspondance exacte,
+  on propose « gomu gomu » ;
+- **multilingue** — « ゴムゴム » trouve le fruit, parce que les noms
+  japonais et romanisés sont indexés (ADR-095) alors que l'affichage
+  reste dans la langue du lecteur ;
+- **échec honnête** — « joyboy » ne renvoie rien, et la page dit les
+  deux raisons possibles sans trancher : orthographe, ou au-delà de la
+  progression.
+
+Cette dernière formulation est délibérée. Dire « 3 résultats masqués »
+révélerait qu'il y a quelque chose à trouver. Dire « ou cela se trouve
+au-delà de ta progression » couvre le cas sans rien confirmer — c'est
+d'ailleurs déjà la chaîne présente dans `lib/chrome.ts`.
+
+Le pied de la palette rappelle « Limité à ta progression », **sans
+compteur** : la règle vaut ici comme partout.
