@@ -29,7 +29,8 @@
  */
 import { join } from 'node:path';
 import { REPO_ROOT } from '../../../schema-engine/src/paths.ts';
-import { buildEmitFiles, type MapperEmit, stageToLocal } from '../emit.ts';
+import { buildEmitFiles, type MapperEmit, mergeEntity, stageToLocal } from '../emit.ts';
+import { type ArcSpans, findOverlaps, orderArcs, planArcEdges } from '../fandom/arc-ranges.ts';
 import { mapArc } from '../fandom/arc.ts';
 import type { BoxMapContext } from '../fandom/box.ts';
 import { mapChapter } from '../fandom/chapter.ts';
@@ -47,6 +48,7 @@ import {
   recordImports,
   staleEntries,
 } from '../fandom/registry.ts';
+import { parseOrdinalRange, parseRenderedInfobox } from '../fandom/rendered-box.ts';
 import { mapShip } from '../fandom/ship.ts';
 import { loadVocabularyIndexes } from '../fandom/vocabulary.ts';
 import { mapVolume } from '../fandom/volume.ts';
@@ -86,6 +88,55 @@ async function loadRegistry(): Promise<FandomRegistry> {
  */
 async function saveRegistry(registry: FandomRegistry): Promise<void> {
   await Bun.write(REGISTRY_PATH, `${JSON.stringify(registry, null, 2)}\n`);
+}
+
+/**
+ * The ordinals a source type actually holds on disk.
+ *
+ * Read from the FILES, not from a range: a plage of 155-217 licenses
+ * an edge only for the chapters that exist, and a relation pointing
+ * at a missing entity is what `check:references` refuses.
+ */
+async function ordinalsOnDisk(type: string): Promise<ReadonlySet<number>> {
+  const dir = join(REPO_ROOT, 'data', 'universes', 'one-piece', 'entities', type);
+  const out = new Set<number>();
+  const glob = new Bun.Glob('*.json');
+  for await (const file of glob.scan({ cwd: dir })) {
+    const n = Number(file.replace(/\.json$/, ''));
+    if (Number.isInteger(n)) out.add(n);
+  }
+  return out;
+}
+
+/**
+ * Fold a fragment onto an entity already on disk, returning whether
+ * anything changed.
+ *
+ * `mergeEntity` is the same fold `--overwrite` uses, so the same rule
+ * holds: what is already there survives, relations union, and a
+ * repeated run writes nothing the second time.
+ */
+async function addToEntity(entityId: string, fragment: unknown): Promise<boolean> {
+  const [type, base] = entityId.split(':');
+  if (type === undefined || base === undefined) return false;
+  const path = join(
+    REPO_ROOT,
+    'data',
+    'universes',
+    'one-piece',
+    'entities',
+    type,
+    `${base}.json`,
+  );
+  const file = Bun.file(path);
+  if (!(await file.exists())) return false;
+  const before = await file.text();
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any -- the
+  // shape is the corpus entity file; mergeEntity is what types it.
+  const after = mergeEntity(JSON.parse(before) as any, fragment as any);
+  if (after === before) return false;
+  await Bun.write(path, after);
+  return true;
 }
 
 /** What the ledger records about one page a run mapped. */
@@ -232,6 +283,90 @@ if (kind === 'crawl') {
     }
   }
   if (!stage) process.stdout.write('(dry-run — pass --stage to write files)\n');
+} else if (kind === 'arc-edges') {
+  // bun run import:fandom arc-edges --category "Story Arcs" [--stage]
+  //
+  // The one place the two substrates work together. The WIKITEXT
+  // gives each arc its identity (the arc mapper derives the entity id
+  // from the page); the RENDERED html gives the chapter and episode
+  // ranges, which the wikitext writes as `auto` (ADR-119).
+  //
+  // The edges themselves land on the SOURCES — `part-of-arc` is
+  // stored on each chapter and episode (ADR-033) — and the ordering
+  // lands on the arcs as `arc_number`. Both go through `mergeEntity`,
+  // so an existing file gains the edge and loses nothing.
+  const opt = (name: string): readonly string[] =>
+    args.flatMap((a, i) => (a === `--${name}` && args[i + 1] !== undefined ? [args[i + 1]!] : []));
+  const categories = opt('category');
+  const limit = Number(opt('limit')[0] ?? '100');
+  const registry = await loadRegistry();
+  const vocabularies = await loadVocabularyIndexes(REPO_ROOT);
+
+  const report = await crawl(client, {
+    categories: categories.length > 0 ? categories : ['Story Arcs'],
+  }, {
+    limit,
+    categoryDepth: Number(opt('depth')[0] ?? '2'),
+    registry,
+    vocabularies,
+    log: (line) => process.stdout.write(`  ${line}\n`),
+  });
+
+  const spans: ArcSpans[] = [];
+  for (const result of report.results) {
+    if (result.kind !== 'arc') continue;
+    // eslint-disable-next-line no-await-in-loop
+    const rendered = await client.fetchRendered(result.page.title);
+    const box = parseRenderedInfobox(rendered.html);
+    spans.push({
+      arcId: result.mapped.entity.id,
+      page: result.page.title,
+      chapters: parseOrdinalRange(box.get('chapter') ?? ''),
+      episodes: parseOrdinalRange(box.get('episode') ?? ''),
+    });
+  }
+  process.stdout.write(`\n${spans.length} arc(s) with a rendered infobox.\n`);
+
+  const corpus = {
+    chapters: await ordinalsOnDisk('manga-chapter'),
+    episodes: await ordinalsOnDisk('anime-episode'),
+  };
+  const edges = planArcEdges(spans, corpus);
+  const numbers = orderArcs(spans);
+  const overlaps = findOverlaps(spans, corpus);
+
+  process.stdout.write(
+    `${edges.length} part-of-arc edge(s), ${numbers.length} arc_number(s)`
+      + `${overlaps.length > 0 ? `, ${overlaps.length} contested source(s)` : ''}.\n`,
+  );
+  // A source claimed by two arcs is a DATA problem. The planner had
+  // to pick one; saying nothing would bury it.
+  for (const clash of overlaps.slice(0, 10)) {
+    process.stdout.write(`  contested ${clash.sourceId}: ${clash.arcIds.join(', ')}\n`);
+  }
+
+  if (stage) {
+    let written = 0;
+    for (const edge of edges) {
+      // eslint-disable-next-line no-await-in-loop
+      if (
+        await addToEntity(edge.sourceId, {
+          relations: [{ type: 'part-of-arc', target: edge.arcId }],
+        })
+      ) {
+        written += 1;
+      }
+    }
+    for (const { arcId, arcNumber } of numbers) {
+      // eslint-disable-next-line no-await-in-loop
+      if (await addToEntity(arcId, { properties: { arc_number: { value: arcNumber } } })) {
+        written += 1;
+      }
+    }
+    process.stdout.write(`Staged: ${written} entity file(s) updated.\n`);
+  } else {
+    process.stdout.write('(dry-run — pass --stage to write files)\n');
+  }
 } else if (kind === 'render') {
   // bun run import:fandom render "Alabasta Arc" --out docs/audits/rendered
   //
@@ -324,6 +459,7 @@ if (kind === 'crawl') {
   process.stderr.write(
     `Usage: bun run import:fandom <${MAPPER_KINDS.join('|')}> <page…> [--stage] [--overwrite]\n`
       + '       bun run import:fandom crawl --category <name>… [--depth N] [--page <title>…] [--limit N] [--skip-known] [--stage]\n'
+      + '       bun run import:fandom arc-edges [--category <name>…] [--limit N] [--stage]\n'
       + '       bun run import:fandom render <page…> [--out <dir>]\n'
       + '       bun run import:fandom check-updates\n',
   );
