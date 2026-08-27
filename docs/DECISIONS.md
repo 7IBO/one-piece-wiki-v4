@@ -8,6 +8,68 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-119 — L'HTML rendu comme second substrat, pour les valeurs calculées seulement
+
+**Date**: 2026-08-27
+
+**Contexte**: ADR-079 a bâti toute l'extraction Fandom sur
+`action=parse&prop=wikitext` : du texte source, déterministe, sans
+rendu. Le relevé du 2026-08-27 montre que certaines valeurs
+**n'existent pas** dans ce substrat.
+
+Une page d'arc écrit `chapter = auto` ; un module Lua calcule
+« 106-114, 9 chapters » à l'expansion du gabarit. Sur 25 pages d'arcs,
+`chapter`, `episode` et `vol` ne prennent que 3 ou 4 valeurs distinctes
+en tout — quand `Volume Box.chapters` en prend 25 sur 25. Aucun mapper
+lisant le wikitext ne verra jamais ces plages, quel que soit son soin.
+
+Or c'est le pont manquant : `Chapter Box` et `Episode Box` n'ont aucun
+champ d'arc, les pages d'arc n'ont aucune wikitable, et sans plage il
+n'y a ni `part-of-arc` sur les 1145 chapitres, ni dérivation
+anime→manga.
+
+**Options**:
+
+- A — HTML rendu (`prop=text`) pour ce seul besoin.
+- B — Ordre des arcs seulement (`prev`/`next`, littéraux), sans plages.
+- C — Passer par les volumes : `Volume Box.chapters` est littéral et
+  complet, mais rien ne relie volume → arc dans le relevé.
+
+**Choix**: A, tranché par le mainteneur.
+
+**Rationale**: B et C ne donnent pas les plages, donc pas la dérivation
+anime→manga qui a été choisie. A les donne directement.
+
+Le coût est réel et assumé : un second substrat à maintenir, et une
+dépendance au rendu de Fandom plutôt qu'à sa source. On l'accepte parce
+qu'il n'y a pas d'autre chemin vers une donnée qui existe, est
+factuelle, et manque à deux fonctionnalités.
+
+**Conséquences**:
+
+- **Portée étroite, et gardée étroite.** `fetchRendered` est un
+  repli pour les valeurs CALCULÉES. Tout le reste continue de lire le
+  wikitext. Ce n'est pas une migration de l'importeur.
+- Les deux substrats se rejoignent sur la même clé : l'infobox
+  portable de Fandom rend `data-source="chapter"`, soit exactement le
+  nom du paramètre wikitext. Le parseur s'accroche à cet attribut, pas
+  au libellé affiché, qui est de la présentation traduisible.
+- Le cache distingue les deux documents (`<page>.json` /
+  `<page>.html.json`) : le rendu d'une page n'est pas son wikitext.
+- **Le parseur s'écrit contre du VRAI HTML.** Le mapper d'arcs avait
+  une fixture synthétique, et une fixture synthétique ne prouve jamais
+  que le parseur lit le monde — seulement qu'il est d'accord avec ce
+  qu'on a inventé pour lui. C'est exactement comme l'import des arcs a
+  pu rendre 0 relation en ayant l'air correct. D'où le workflow
+  `fandom-render.yml` : le runner capture les pages rendues et les
+  commite sur une branche `audit/`, la session lit le dépôt (elle ne
+  peut pas joindre Fandom, 403 au proxy). Rien n'est écrit tant que la
+  fixture réelle n'est pas là.
+- Ça ne touche pas ADR-107 : de l'HTML rendu reste des faits
+  structurés. Aucune prose n'est extraite, ni ici ni ailleurs.
+
+---
+
 ## ADR-118 — La recherche gagne une palette convoquée ; la page reste
 
 **Date**: 2026-08-27
