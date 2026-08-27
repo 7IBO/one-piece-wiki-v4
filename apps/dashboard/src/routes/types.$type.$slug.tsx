@@ -10,12 +10,12 @@
  * `types.$type.tsx`).
  */
 import { createFileRoute, Outlet } from '@tanstack/react-router';
-import type { JSX } from 'react';
+import type { ReactElement } from 'react';
 
 export const Route = createFileRoute('/types/$type/$slug')({
   component: EntitySlugLayout,
 });
 
-function EntitySlugLayout(): JSX.Element {
+function EntitySlugLayout(): ReactElement {
   return <Outlet />;
 }

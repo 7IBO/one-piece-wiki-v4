@@ -18,7 +18,7 @@ import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover
 import { DATA_LOCALES, type DataLocale } from '@onepiece-wiki/schemas';
 import { diffLines } from 'diff';
 import { ArrowRight, ChevronDown, ChevronRight } from 'lucide-react';
-import { type JSX, useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import type { Translations } from '../api';
 import { type Locale, useT } from './locale';
 
@@ -66,7 +66,7 @@ export function DiffPopover(p: {
   data: EntityData;
   translations: Translations;
   locale: Locale;
-}): JSX.Element {
+}): ReactElement {
   const t = useT();
   const { properties, translations, relations, total } = useMemo(
     () => computeDiff(p),
@@ -156,7 +156,7 @@ export function DiffPopover(p: {
 
 function DiffSection(
   { title, children }: { title: string; children: React.ReactNode; },
-): JSX.Element {
+): ReactElement {
   return (
     <section className='space-y-1'>
       <h3 className='text-muted-foreground text-[10px] font-semibold uppercase tracking-wider'>
@@ -182,7 +182,7 @@ function DiffRow(
     before: DiffCell;
     after: DiffCell;
   },
-): JSX.Element {
+): ReactElement {
   const expandable = before.full !== before.summary || after.full !== after.summary;
   const [open, setOpen] = useState(false);
 
@@ -255,7 +255,7 @@ function DiffRow(
  *  contributor has to scroll past to get back to the save bar. */
 const MAX_DIFF_LINES = 30;
 
-function SplitDiff({ before, after }: { before: string; after: string; }): JSX.Element {
+function SplitDiff({ before, after }: { before: string; after: string; }): ReactElement {
   const chunks = useMemo(() => diffLines(before, after, { newlineIsToken: false }), [
     before,
     after,
@@ -324,7 +324,7 @@ type SplitRowData =
   }
   | { readonly kind: 'collapsed'; readonly count: number; };
 
-function SplitRow({ row }: { row: SplitRowData; }): JSX.Element {
+function SplitRow({ row }: { row: SplitRowData; }): ReactElement {
   if (row.kind === 'collapsed') {
     return (
       <tr className='text-muted-foreground/60 bg-muted/10'>
@@ -347,7 +347,7 @@ function SplitRow({ row }: { row: SplitRowData; }): JSX.Element {
 
 function Cell(
   { line, side }: { line: ChunkLine | null; side: 'left' | 'right'; },
-): JSX.Element {
+): ReactElement {
   if (line === null) {
     return <td className='bg-muted/10 w-1/2 align-top' aria-hidden='true' />;
   }
@@ -543,7 +543,7 @@ function DiffRowHeader({
   open: boolean;
   expandable: boolean;
   label: React.ReactNode;
-}): JSX.Element {
+}): ReactElement {
   return (
     <div className='flex items-center gap-1'>
       {expandable
@@ -576,7 +576,7 @@ function DiffRowSummary({
   after: DiffCell;
   beforeIsEmpty: boolean;
   afterIsEmpty: boolean;
-}): JSX.Element {
+}): ReactElement {
   return (
     <div className='ml-4 relative grid grid-cols-2 items-center text-[11px]'>
       <span
@@ -603,7 +603,7 @@ function DiffRowSummary({
   );
 }
 
-function RelationDiffRow({ diff }: { diff: RelationDiff; }): JSX.Element {
+function RelationDiffRow({ diff }: { diff: RelationDiff; }): ReactElement {
   return (
     <li className='py-1.5'>
       <p className='text-foreground mb-1 truncate text-[11px] font-medium font-mono'>

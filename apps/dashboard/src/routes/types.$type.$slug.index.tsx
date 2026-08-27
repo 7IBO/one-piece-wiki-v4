@@ -16,7 +16,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { resolveDisplayName } from '@onepiece-wiki/schemas';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, Film, GitPullRequest, History, Users } from 'lucide-react';
-import { type JSX, useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type SourceRef } from '../api';
 import { IncomingEdgesManager } from '../components/IncomingEdgesManager';
@@ -43,7 +43,7 @@ export const Route = createFileRoute('/types/$type/$slug/')({
 const emptySources: readonly SourceRef[] = [];
 const emptyKeys: readonly string[] = [];
 
-function EntityEditComponent(): JSX.Element {
+function EntityEditComponent(): ReactElement {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
   const t = useT();

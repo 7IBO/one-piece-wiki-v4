@@ -23,7 +23,7 @@ import { useT } from '@/form/locale';
 import { cn } from '@/lib/utils';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Check, ChevronsUpDown } from 'lucide-react';
-import { type JSX, type ReactNode, useMemo, useRef, useState } from 'react';
+import { type ReactElement, type ReactNode, useMemo, useRef, useState } from 'react';
 
 export type ComboboxItem = {
   readonly value: string;
@@ -54,7 +54,7 @@ export function Combobox(
      *  groups where the picker should drop its own border. */
     triggerClassName?: string;
   },
-): JSX.Element {
+): ReactElement {
   const t = useT();
   const [open, setOpenState] = useState(false);
   const [query, setQuery] = useState('');
@@ -148,7 +148,7 @@ function VirtualizedList(p: {
   allowCustom: boolean;
   emptyText: string;
   onPick: (value: string) => void;
-}): JSX.Element {
+}): ReactElement {
   const t = useT();
   const scrollRef = useRef<HTMLDivElement>(null);
 

@@ -10,10 +10,10 @@
  * `isolation: isolate` keeps the layers' blend modes inside the tile:
  * without it, a `screen` layer would composite against the page.
  */
-import type { JSX } from 'react';
+import type { ReactElement } from 'react';
 import { type ArtRatio, type ArtShape, buildEntityArt } from '../lib/entity-art';
 
-function Layer({ shape }: { readonly shape: ArtShape; }): JSX.Element {
+function Layer({ shape }: { readonly shape: ArtShape; }): ReactElement {
   return (
     <path
       d={shape.d}
@@ -39,7 +39,7 @@ export function EntityArt(
     readonly initial?: string | null;
     readonly className?: string;
   },
-): JSX.Element {
+): ReactElement {
   const scene = buildEntityArt(entityId, entityType, ratio, initial ?? undefined);
   const before = scene.shapes.slice(0, scene.markIndex);
   const after = scene.shapes.slice(scene.markIndex);

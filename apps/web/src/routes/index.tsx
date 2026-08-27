@@ -12,7 +12,7 @@
  * without the holes. Nothing here knows a type id.
  */
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { type CSSProperties, type JSX } from 'react';
+import { type CSSProperties, type ReactElement } from 'react';
 import { fetchHome, type TypeGroup } from '../api';
 import { EntityArt } from '../components/EntityArt';
 import { t } from '../lib/chrome';
@@ -24,7 +24,7 @@ export const Route = createFileRoute('/')({
   component: HomePage,
 });
 
-function HomePage(): JSX.Element {
+function HomePage(): ReactElement {
   const view = Route.useLoaderData();
   const locale = useLocale();
   // Flattened in group order: the grouping is information (it labels
@@ -56,7 +56,7 @@ function TypePlate(
     readonly group: string;
     readonly type: TypeGroup['types'][number];
   },
-): JSX.Element {
+): ReactElement {
   // The type's OWN id seeds its plate, so every plate on the page is a
   // different colour and a different visual family.
   const seed = `${type.id}:index`;

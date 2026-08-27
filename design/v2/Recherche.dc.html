@@ -1,0 +1,148 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Archivo, system-ui, sans-serif; background: #0a0b0e; }
+    a { color: #c9ae72; text-decoration: none; }
+    .num { font-variant-numeric: tabular-nums; }
+    .quiet { font-size: 12px; color: #6a7280; }
+    .grp { font-size: 9px; letter-spacing: 0.18em; color: #6a7280; padding: 14px 20px 7px; }
+    .res { display: flex; align-items: center; gap: 12px; padding: 8px 20px; }
+    .res.on { background: #1c1a12; }
+    .kbd { font-size: 10px; padding: 2px 6px; border: 1px solid #2c3038; border-radius: 3px; color: #8b939f; }
+    .chip { font-size: 11.5px; padding: 5px 11px; border-radius: 999px; border: 1px solid #232833; color: #b3bac4; }
+    .chip.on { border-color: #e8c15a; color: #e8c15a; background: #1c1a12; }
+    .rule { height: 1px; background: #1e222a; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 900px; background: #0a0b0e; color: #eceef2; position: relative; overflow: hidden">
+
+  <div style="position: absolute; inset: 0; opacity: 0.26">
+    <div style="display: flex; align-items: stretch; height: 46px; border-bottom: 1px solid #1e222a">
+      <div style="display: flex; align-items: center; padding: 0 18px; font-size: 14px; font-weight: 800; border-right: 1px solid #1e222a">One Piece<span style="color: #e8c15a">.Wiki</span></div>
+      <div style="flex-grow: 1"></div>
+      <div style="display: flex; align-items: center; gap: 9px; padding: 0 16px; border-left: 1px solid #1e222a; font-size: 11px"><span style="color: #6a7280">MA PROGRESSION</span><span class="num" style="font-weight: 700; color: #e8c15a">CH. 1044</span></div>
+    </div>
+    <div style="height: 292px; background: linear-gradient(105deg, #2a1512, #b8402a 55%, #e8a04f); opacity: 0.3"></div>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(6,7,9,0.76)"></div>
+
+  <div style="position: absolute; left: 50%; top: 74px; transform: translateX(-50%); width: 720px; border: 1px solid #2c3038; border-radius: 10px; background: #12151a; box-shadow: 0 28px 70px rgba(0,0,0,0.7); overflow: hidden">
+
+    <!-- la saisie EST l'en-tête : pas de titre, pas de chrome inutile -->
+    <div style="display: flex; align-items: center; gap: 12px; padding: 16px 20px">
+      <span style="font-size: 17px; color: #6a7280">⌕</span>
+      <span style="flex-grow: 1; font-size: 19px; font-weight: 500">gomu<span style="color: #e8c15a">|</span></span>
+      <span class="quiet num">38 résultats</span>
+      <span class="kbd">Échap</span>
+    </div>
+    <div class="rule"></div>
+
+    <div style="display: flex; gap: 7px; padding: 12px 20px">
+      <span class="chip on">Tout</span>
+      <span class="chip">Personnages <span style="color: #6a7280">6</span></span>
+      <span class="chip">Fruits <span style="color: #6a7280">3</span></span>
+      <span class="chip">Techniques <span style="color: #6a7280">21</span></span>
+      <span class="chip">Chapitres <span style="color: #6a7280">8</span></span>
+    </div>
+    <div class="rule"></div>
+
+    <div style="padding-bottom: 8px">
+      <div class="grp">FRUITS DU DÉMON</div>
+      <div class="res on">
+        <span style="width: 34px; height: 34px; border-radius: 4px; flex-shrink: 0; background: linear-gradient(145deg, #1a2e20, #4f8f52)"></span>
+        <span style="flex-grow: 1; min-width: 0">
+          <span style="font-size: 14px; font-weight: 600; display: block"><span style="color: #e8c15a">Gomu Gomu</span> no Mi</span>
+          <span class="quiet">Zoan mythique · porté par Monkey D. Luffy</span>
+        </span>
+        <span class="kbd">↵</span>
+      </div>
+
+      <div class="grp">PERSONNAGES</div>
+      <div class="res">
+        <span style="width: 26px; aspect-ratio: 3 / 4; border-radius: 3px; flex-shrink: 0; background: linear-gradient(145deg, #2a1512, #b8402a)"></span>
+        <span style="flex-grow: 1; min-width: 0">
+          <span style="font-size: 14px; font-weight: 600; display: block">Monkey D. Luffy</span>
+          <span class="quiet">Capitaine des Chapeaux de Paille · utilisateur du <span style="color: #c9ae72">Gomu Gomu no Mi</span></span>
+        </span>
+        <span class="num quiet">3 Md</span>
+      </div>
+      <div class="res">
+        <span style="width: 26px; aspect-ratio: 3 / 4; border-radius: 3px; flex-shrink: 0; background: linear-gradient(145deg, #1e1214, #7a2f3f)"></span>
+        <span style="flex-grow: 1; min-width: 0">
+          <span style="font-size: 14px; font-weight: 600; display: block">Nika</span>
+          <span class="quiet">Personnage · lié au <span style="color: #c9ae72">Gomu Gomu no Mi</span></span>
+        </span>
+      </div>
+
+      <div class="grp">TECHNIQUES</div>
+      <div class="res">
+        <span style="width: 34px; height: 34px; border-radius: 4px; flex-shrink: 0; background: linear-gradient(145deg, #1a1a13, #6b6b3f)"></span>
+        <span style="flex-grow: 1; min-width: 0">
+          <span style="font-size: 14px; font-weight: 600; display: block"><span style="color: #e8c15a">Gomu Gomu</span> no Pistol</span>
+          <span class="quiet">Technique · première utilisation au chapitre 1</span>
+        </span>
+      </div>
+      <div class="res">
+        <span style="width: 34px; height: 34px; border-radius: 4px; flex-shrink: 0; background: linear-gradient(145deg, #1a1a13, #6b6b3f)"></span>
+        <span style="flex-grow: 1; min-width: 0">
+          <span style="font-size: 14px; font-weight: 600; display: block"><span style="color: #e8c15a">Gomu Gomu</span> no Bazooka</span>
+          <span class="quiet">Technique · première utilisation au chapitre 12</span>
+        </span>
+      </div>
+
+      <div class="grp">CHAPITRES</div>
+      <div class="res">
+        <span style="width: 24px; aspect-ratio: 2 / 3; border-radius: 3px; flex-shrink: 0; background: linear-gradient(150deg, #1c2340, #6b5a9f)"></span>
+        <span style="flex-grow: 1; min-width: 0">
+          <span style="font-size: 14px; font-weight: 600; display: block">Chapitre 1044</span>
+          <span class="quiet">Le Guerrier de la Libération · le <span style="color: #c9ae72">Gomu Gomu no Mi</span> y est renommé</span>
+        </span>
+        <span class="quiet">Wano</span>
+      </div>
+    </div>
+
+    <div class="rule"></div>
+    <!-- ce que la recherche sait faire, dit sans jargon et sans compteur d'absence -->
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 11px 20px; background: #0f1216">
+      <div style="display: flex; align-items: center; gap: 8px" class="quiet">
+        <span class="kbd">↑</span><span class="kbd">↓</span> parcourir
+        <span class="kbd" style="margin-left: 8px">↵</span> ouvrir
+        <span class="kbd" style="margin-left: 8px">⌘K</span> rouvrir
+      </div>
+      <span class="quiet">Limité à ta progression</span>
+    </div>
+  </div>
+
+  <!-- tolérance aux fautes et multilingue : montrées en situation, pas promises -->
+  <div style="position: absolute; left: 50%; top: 640px; transform: translateX(-50%); width: 720px; display: flex; gap: 12px">
+    <div style="flex: 1; border: 1px solid #232833; border-radius: 8px; background: #101217; padding: 13px 16px">
+      <div style="font-size: 9px; letter-spacing: 0.18em; color: #6a7280">FAUTE DE FRAPPE</div>
+      <div style="font-size: 14px; margin-top: 8px">Recherche de « <span style="color: #8b939f">gomo gmu</span> »</div>
+      <div class="quiet" style="margin-top: 5px; line-height: 1.6">Aucune correspondance exacte — résultats pour <a href="#">gomu gomu</a>.</div>
+    </div>
+    <div style="flex: 1; border: 1px solid #232833; border-radius: 8px; background: #101217; padding: 13px 16px">
+      <div style="font-size: 9px; letter-spacing: 0.18em; color: #6a7280">MULTILINGUE</div>
+      <div style="font-size: 14px; margin-top: 8px">Recherche de « <span style="color: #8b939f">ゴムゴム</span> »</div>
+      <div class="quiet" style="margin-top: 5px; line-height: 1.6">Trouve <a href="#">Gomu Gomu no Mi</a> — les noms japonais et romanisés sont indexés, l'affichage reste dans ta langue.</div>
+    </div>
+    <div style="flex: 1; border: 1px solid #232833; border-radius: 8px; background: #101217; padding: 13px 16px">
+      <div style="font-size: 9px; letter-spacing: 0.18em; color: #6a7280">RIEN TROUVÉ</div>
+      <div style="font-size: 14px; margin-top: 8px">Recherche de « <span style="color: #8b939f">joyboy</span> »</div>
+      <div class="quiet" style="margin-top: 5px; line-height: 1.6">Aucun résultat. Vérifie l'orthographe — ou cela se trouve au-delà de ta progression.</div>
+    </div>
+  </div>
+
+</div>
+</x-dc>
+</body>
+</html>

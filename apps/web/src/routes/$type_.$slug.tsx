@@ -32,7 +32,7 @@
  * the resolved path is still `/$type/$slug`.
  */
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
-import { type CSSProperties, Fragment, type JSX, type ReactNode } from 'react';
+import { type CSSProperties, Fragment, type ReactElement, type ReactNode } from 'react';
 import {
   type AppearanceGroupView,
   type AvailabilityItemView,
@@ -60,6 +60,7 @@ import { EntityHero } from '../components/EntityHero';
 import { EntityImage } from '../components/EntityImage';
 import { HoverPreview } from '../components/HoverPreview';
 import { ShowMoreList } from '../components/ShowMoreList';
+import { SourceTabs } from '../components/SourceTabs';
 import { type ChromeKey, t } from '../lib/chrome';
 import { bandsFor, type LayoutBand, layoutFor, type SlotKey } from '../lib/entity-layout';
 import {
@@ -148,7 +149,7 @@ function rowColumns(count: number): string {
   return 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
 }
 
-function EntityPage(): JSX.Element {
+function EntityPage(): ReactElement {
   const view = Route.useLoaderData();
   if (view.kind === 'gated') return <GatedScreen view={view} />;
   return (
@@ -161,7 +162,7 @@ function EntityPage(): JSX.Element {
 // ---------------------------------------------------------------------------
 // Gated ("not yet in your progression")
 
-export function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element {
+export function GatedScreen({ view }: { readonly view: GatedEntityView; }): ReactElement {
   const locale = useLocale();
   return (
     <div className='page-column mx-auto max-w-md py-20 text-center'>
@@ -175,7 +176,7 @@ export function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.
       </div>
       <Link
         to='/'
-        className='mt-8 inline-block rounded-md bg-accent px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+        className='mt-8 inline-block rounded-md bg-gold px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
       >
         {t(locale, 'backHome')}
       </Link>
@@ -198,7 +199,7 @@ export function EntityArticle(
     readonly view: EntityView;
     readonly section: EntitySection | null;
   },
-): JSX.Element {
+): ReactElement {
   const tint = entityTint(view.id);
   const layout = layoutFor(view.type);
   const bands = restrictBands(bandsFor(view.type), slotsForSection(view.type, section));
@@ -237,14 +238,14 @@ function SectionNav(
     readonly view: EntityView;
     readonly current: EntitySection | null;
   },
-): JSX.Element | null {
+): ReactElement | null {
   const locale = useLocale();
   const search = useScopeSearch();
   const sections = visibleSections(view);
   if (sections.length === 0) return null;
   const item =
     'block border-b-2 px-0.5 pb-2 pt-3 text-[12px] font-bold uppercase tracking-[0.08em] transition-colors duration-150';
-  const active = 'border-accent text-fg';
+  const active = 'border-gold text-fg';
   const idle = 'border-transparent text-muted hover:text-fg';
   return (
     <nav className='page-column border-b border-line'>
@@ -279,13 +280,13 @@ function SectionNav(
 }
 
 /** A sub-page URL that resolves but has nothing in it (yet). */
-function EmptySection(): JSX.Element {
+function EmptySection(): ReactElement {
   const locale = useLocale();
   return <p className='py-10 text-sm text-muted'>{t(locale, 'emptySection')}</p>;
 }
 
 /** Overline, name, identity line and the ONE headline figure. */
-function Identity({ view }: { readonly view: EntityView; }): JSX.Element {
+function Identity({ view }: { readonly view: EntityView; }): ReactElement {
   const locale = useLocale();
   // The bounty (or a crew's derived total) is the ONE gold figure of
   // the header (ADR-091 binding, degrades to nothing when absent).
@@ -298,7 +299,7 @@ function Identity({ view }: { readonly view: EntityView; }): JSX.Element {
           <Link
             to='/$type'
             params={{ type: view.type }}
-            className='text-fg/70 transition-colors duration-150 hover:text-accent'
+            className='text-fg/70 transition-colors duration-150 hover:text-link-hover'
           >
             {view.typeLabel}
           </Link>
@@ -336,7 +337,7 @@ function Identity({ view }: { readonly view: EntityView; }): JSX.Element {
  * the right edge. The view model already withheld any neighbour
  * beyond the reader's cursor, so nothing here can leak a title.
  */
-function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): JSX.Element | null {
+function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): ReactElement | null {
   const locale = useLocale();
   const search = useScopeSearch();
   if (sequence.prev === null && sequence.next === null) return null;
@@ -352,7 +353,7 @@ function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): JSX.El
             search={search}
             className={shell}
           >
-            <span aria-hidden className='text-accent'>←</span>
+            <span aria-hidden className='text-faint'>←</span>
             <span className='min-w-0'>
               <span className='label-xs block'>{t(locale, 'previous')}</span>
               <span className='block truncate font-semibold tabular-nums text-fg'>
@@ -382,7 +383,7 @@ function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): JSX.El
                 {sequence.next.number}
               </span>
             </span>
-            <span aria-hidden className='text-accent'>→</span>
+            <span aria-hidden className='text-faint'>→</span>
           </Link>
         )
         : <span />}
@@ -394,8 +395,9 @@ function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): JSX.El
 // Bands: how a layout arranges its modules.
 
 /** Masonry that packs small modules instead of leaving a half-empty row. */
-const PACK_CLASS = 'columns-1 gap-x-9 sm:columns-2 xl:columns-3 [&>*]:break-inside-avoid';
-const MAIN_PACK_CLASS = 'columns-1 gap-x-9 lg:columns-2 [&>*]:break-inside-avoid';
+const PACK_CLASS =
+  'columns-1 gap-x-9 sm:columns-2 xl:columns-3 [&>*]:mb-9 [&>*]:break-inside-avoid';
+const MAIN_PACK_CLASS = 'columns-1 gap-x-9 lg:columns-2 [&>*]:mb-9 [&>*]:break-inside-avoid';
 
 /**
  * Render a set of slots as one block, choosing the packing from how
@@ -408,7 +410,7 @@ function packed(
   slots: readonly SlotKey[],
   view: EntityView,
   packClass: string,
-): JSX.Element | null {
+): ReactElement | null {
   const count = renderSlots(slots, view, false).length;
   if (count === 0) return null;
   const nodes = renderSlots(slots, view, count === 1);
@@ -417,7 +419,7 @@ function packed(
 
 function Band(
   { band, view }: { readonly band: LayoutBand; readonly view: EntityView; },
-): JSX.Element | null {
+): ReactElement | null {
   if (band.kind === 'full') {
     const nodes = renderSlots(band.slots, view, true);
     return nodes.length === 0 ? null : <div className='space-y-12'>{nodes}</div>;
@@ -450,11 +452,11 @@ function renderSlots(
   slots: readonly SlotKey[],
   view: EntityView,
   wide: boolean,
-): readonly JSX.Element[] {
-  const nodes: JSX.Element[] = [];
+): readonly ReactElement[] {
+  const nodes: ReactElement[] = [];
   for (const slot of slots) {
     const node = renderSlot(slot, view, wide);
-    if (node !== null) nodes.push(<Fragment key={slot}>{node}</Fragment>);
+    if (node !== null) nodes.push(<div key={slot} className='panel'>{node}</div>);
   }
   return nodes;
 }
@@ -531,7 +533,7 @@ function renderSlot(slot: SlotKey, view: EntityView, wide: boolean): ReactNode {
 /** Section head: display title + count, over a hairline. */
 function SectionHead(
   { children, count }: { readonly children: string; readonly count?: number; },
-): JSX.Element {
+): ReactElement {
   return (
     <h2 className='display mb-3.5 flex items-baseline gap-2 border-b border-line pb-2 text-[15px] font-bold uppercase tracking-[0.04em] text-fg'>
       {children}
@@ -542,7 +544,7 @@ function SectionHead(
   );
 }
 
-function NarrativeSection({ markdown }: { readonly markdown: string; }): JSX.Element {
+function NarrativeSection({ markdown }: { readonly markdown: string; }): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -559,7 +561,7 @@ function NarrativeSection({ markdown }: { readonly markdown: string; }): JSX.Ele
 
 function DataSheet(
   { view, wide }: { readonly view: EntityView; readonly wide: boolean; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -583,32 +585,39 @@ function DataSheet(
  * changed over the story — the earlier states listed under it. The
  * history lives HERE, next to the property it belongs to.
  */
-function SheetRow({ property }: { readonly property: PropertyView; }): JSX.Element {
+function SheetRow({ property }: { readonly property: PropertyView; }): ReactElement {
   const entries = property.entries;
   const latest = entries[entries.length - 1];
-  const earlier = entries.slice(0, -1);
+  // Du plus recent au plus ancien : la valeur vraie a la position du
+  // lecteur est la reponse, l'historique l'explique. Dans l'autre sens
+  // il fallait lire jusqu'en bas pour savoir ou on en est.
+  const older = entries.slice(0, -1).reverse();
   return (
     <div className='border-t border-line py-2.5'>
       <dt className='label-xs'>{property.label}</dt>
       <dd className='m-0 mt-1 text-[13.5px] text-fg'>
-        {latest === undefined ? null : <PropertyEntry entry={latest} />}
-        {earlier.length > 0
-          ? (
-            <ol className='m-0 mt-2 list-none space-y-1 border-l border-line py-0.5 pl-3'>
-              {earlier.map((entry, index) => (
+        {older.length === 0
+          ? (latest === undefined ? null : <PropertyEntry entry={latest} />)
+          : (
+            <ol className='timeline mt-1.5'>
+              {latest === undefined ? null : (
+                <li>
+                  <PropertyEntry entry={latest} />
+                </li>
+              )}
+              {older.map((entry, index) => (
                 <li key={index} className='text-[12.5px] text-muted'>
                   <PropertyEntry entry={entry} past />
                 </li>
               ))}
             </ol>
-          )
-          : null}
+          )}
       </dd>
     </div>
   );
 }
 
-function SheetRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
+function SheetRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): ReactElement {
   return (
     <div className='border-t border-line py-2.5'>
       <dt className='label-xs'>{row.label}</dt>
@@ -628,7 +637,7 @@ function SheetRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): J
 
 function Connections(
   { view, wide }: { readonly view: EntityView; readonly wide: boolean; },
-): JSX.Element {
+): ReactElement {
   const groups = [...view.relations].sort((a, b) =>
     relationRank(a.key) - relationRank(b.key)
     || Number(a.inverse) - Number(b.inverse)
@@ -651,7 +660,7 @@ function Connections(
 
 function ConnectionGroup(
   { group, columns }: { readonly group: RelationGroupView; readonly columns: boolean; },
-): JSX.Element {
+): ReactElement {
   return (
     <>
       <SectionHead count={group.items.length}>{group.label}</SectionHead>
@@ -668,7 +677,7 @@ function ConnectionGroup(
  * One connection module: thumb + name + precise sub-label (identity
  * line or type, qualifiers, period). The whole row is the link.
  */
-function ConnectionRow({ item }: { readonly item: RelationItemView; }): JSX.Element {
+function ConnectionRow({ item }: { readonly item: RelationItemView; }): ReactElement {
   const locale = useLocale();
   const search = useScopeSearch();
   const subParts: string[] = [item.secondary ?? item.target.typeLabel];
@@ -691,12 +700,12 @@ function ConnectionRow({ item }: { readonly item: RelationItemView; }): JSX.Elem
           slug={item.target.slug}
           name={item.target.name}
           ratio='square'
-          className='size-10 rounded-[5px] ring-1 ring-line transition-shadow duration-150 group-hover:ring-accent/70'
+          className='size-10 rounded-[5px] ring-1 ring-line transition-shadow duration-150 group-hover:ring-tint/70'
         />
         <span className='min-w-0 flex-1'>
           <span
             title={item.target.name}
-            className='block truncate text-[13.5px] font-semibold text-fg transition-colors duration-150 group-hover:text-accent'
+            className='block truncate text-[13.5px] font-semibold text-fg transition-colors duration-150 group-hover:text-link-hover'
           >
             {item.target.name}
           </span>
@@ -714,7 +723,7 @@ function ConnectionRow({ item }: { readonly item: RelationItemView; }): JSX.Elem
 
 function CrewSections(
   { crews }: { readonly crews: readonly CrewSectionView[]; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -774,7 +783,7 @@ function MemberGrid({ titleKey, members, former = false }: {
   readonly titleKey: ChromeKey;
   readonly members: readonly MemberRowView[];
   readonly former?: boolean;
-}): JSX.Element {
+}): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -792,7 +801,7 @@ function MemberGrid({ titleKey, members, former = false }: {
 
 function MemberCard(
   { member, former }: { readonly member: MemberRowView; readonly former: boolean; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const metaParts = [
     [member.role, member.rank].filter((part) => part !== null).join(' · '),
@@ -823,7 +832,7 @@ function ContentsSections(
     readonly groups: readonly ContainerGroupView[];
     readonly wide: boolean;
   },
-): JSX.Element {
+): ReactElement {
   return (
     <div className={wide && groups.length > 1 ? 'grid gap-9 xl:grid-cols-2' : 'space-y-9'}>
       {groups.map((group) => (
@@ -845,7 +854,7 @@ function ContentsList(
     readonly items: readonly SourceItemView[];
     readonly columns: boolean;
   },
-): JSX.Element {
+): ReactElement {
   const search = useScopeSearch();
   if (items.length > LEDGER_THRESHOLD) return <NumberGrid items={items} />;
   return (
@@ -864,12 +873,12 @@ function ContentsList(
             >
               <span
                 className={`display w-12 shrink-0 text-[15px] font-extrabold tabular-nums ${
-                  item.current ? 'text-accent' : 'text-gold/80'
+                  item.current ? 'text-gold' : 'text-muted'
                 }`}
               >
                 {item.number ?? '·'}
               </span>
-              <span className='min-w-0 flex-1 truncate text-[13.5px] font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
+              <span className='min-w-0 flex-1 truncate text-[13.5px] font-medium text-fg transition-colors duration-150 group-hover:text-link-hover'>
                 {item.chip.name}
               </span>
             </Link>
@@ -888,7 +897,7 @@ function PositionSection(
       readonly items: readonly SourceItemView[];
     };
   },
-): JSX.Element {
+): ReactElement {
   return (
     <section>
       <div className='mb-3 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 border-b border-line pb-2'>
@@ -897,7 +906,7 @@ function PositionSection(
           <Link
             to='/$type/$slug'
             params={{ type: arc.chip.type, slug: arc.chip.slug }}
-            className='text-accent transition-colors duration-150 hover:text-accent-hover'
+            className='text-link transition-colors duration-150 hover:text-link-hover'
           >
             {arc.chip.name}
           </Link>
@@ -916,14 +925,14 @@ function PositionSection(
   );
 }
 
-function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Element {
+function SourceNumberCell({ item }: { readonly item: SourceItemView; }): ReactElement {
   const search = useScopeSearch();
   const label = item.number === null ? item.chip.name : String(item.number);
   if (item.current) {
     return (
       <li
         aria-current='page'
-        className='grid min-w-10 place-items-center rounded-md bg-accent px-2 py-1.5 text-xs font-semibold tabular-nums text-canvas'
+        className='grid min-w-10 place-items-center rounded-md bg-gold px-2 py-1.5 text-xs font-semibold tabular-nums text-canvas'
       >
         {label}
       </li>
@@ -947,7 +956,7 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Ele
 }
 
 /** Ordered instalments as a dense plate grid — number over title. */
-function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): JSX.Element {
+function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): ReactElement {
   const search = useScopeSearch();
   return (
     <ShowMoreList
@@ -962,10 +971,10 @@ function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): 
               search={search}
               title={item.chip.name}
               className={`group block rounded-md p-2 ring-1 transition-[background-color,box-shadow] duration-150 hover:bg-surface ${
-                item.current ? 'bg-surface ring-accent' : 'ring-line hover:ring-line-strong'
+                item.current ? 'bg-surface ring-gold' : 'ring-line hover:ring-line-strong'
               }`}
             >
-              <span className='display block text-base font-bold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-accent'>
+              <span className='display block text-base font-bold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-link-hover'>
                 {item.number ?? '·'}
               </span>
               <span className='block truncate text-[10.5px] text-faint'>
@@ -982,7 +991,7 @@ function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): 
 // ---------------------------------------------------------------------------
 // Cast, availability, gallery, appearances
 
-function CastSection({ groups }: { readonly groups: readonly CastGroupView[]; }): JSX.Element {
+function CastSection({ groups }: { readonly groups: readonly CastGroupView[]; }): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -1017,7 +1026,7 @@ function CastSection({ groups }: { readonly groups: readonly CastGroupView[]; })
 
 function AvailabilitySection(
   { items }: { readonly items: readonly AvailabilityItemView[]; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -1029,7 +1038,7 @@ function AvailabilitySection(
   );
 }
 
-function AvailabilityItem({ item }: { readonly item: AvailabilityItemView; }): JSX.Element {
+function AvailabilityItem({ item }: { readonly item: AvailabilityItemView; }): ReactElement {
   if (item.url === null) {
     return (
       <li className='rounded-md px-3 py-1.5 text-[13px] font-medium text-muted ring-1 ring-line'>
@@ -1043,7 +1052,7 @@ function AvailabilityItem({ item }: { readonly item: AvailabilityItemView; }): J
         href={item.url}
         target='_blank'
         rel='noreferrer'
-        className='block rounded-md px-3 py-1.5 text-[13px] font-medium text-accent ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-accent-hover hover:ring-line-strong'
+        className='block rounded-md px-3 py-1.5 text-[13px] font-medium text-link ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-link-hover hover:ring-line-strong'
       >
         {item.platform.name} ↗
       </a>
@@ -1062,7 +1071,7 @@ function GallerySection(
     readonly type: string;
     readonly slug: string;
   },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -1097,38 +1106,38 @@ function GallerySection(
  */
 function AppearancesSection(
   { groups }: { readonly groups: readonly AppearanceGroupView[]; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   return (
     <section>
       <SectionHead>{t(locale, 'appearances')}</SectionHead>
-      <div className='space-y-6'>
-        {groups.map((group) => (
-          <div key={group.key}>
-            <p className='flex items-baseline gap-2'>
-              <span className='display text-[19px] font-extrabold tabular-nums text-gold'>
-                {group.count}
-              </span>
-              <span className='text-xs text-faint'>
-                {t(locale, 'outOf')} <span className='tabular-nums'>{group.total}</span>{' '}
-                {group.typeLabel.toLowerCase()}
-              </span>
-            </p>
-            <div className='mt-2'>
-              <ShowMoreList
-                limit={NUMBER_LIMIT}
-                listClassName='flex flex-wrap gap-1.5'
-                items={group.items.map((item) => (
-                  <SourceNumberCell
-                    key={item.chip.id}
-                    item={item}
-                  />
-                ))}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+      <SourceTabs
+        groups={groups.map((group) => ({
+          key: group.key,
+          label: group.typeLabel,
+          count: group.count,
+          content: (
+            <>
+              <p className='text-xs text-faint'>
+                <span className='tabular-nums'>{group.count}</span> {t(locale, 'outOf')}{' '}
+                <span className='tabular-nums'>{group.total}</span> {group.typeLabel.toLowerCase()}
+              </p>
+              <div className='mt-2.5'>
+                <ShowMoreList
+                  limit={NUMBER_LIMIT}
+                  listClassName='flex flex-wrap gap-1.5'
+                  items={group.items.map((item) => (
+                    <SourceNumberCell
+                      key={item.chip.id}
+                      item={item}
+                    />
+                  ))}
+                />
+              </div>
+            </>
+          ),
+        }))}
+      />
     </section>
   );
 }
@@ -1138,7 +1147,7 @@ function AppearancesSection(
 
 function QualifierList(
   { qualifiers }: { readonly qualifiers: readonly LabelledValue[]; },
-): JSX.Element | null {
+): ReactElement | null {
   if (qualifiers.length === 0) return null;
   return (
     <span className='text-xs text-faint'>
@@ -1158,7 +1167,7 @@ function QualifierList(
 
 function EpistemicBadge(
   { epistemic }: { readonly epistemic: { readonly label: string; } | null; },
-): JSX.Element | null {
+): ReactElement | null {
   if (epistemic === null) return null;
   return (
     <span className='rounded-sm bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted'>
@@ -1173,7 +1182,7 @@ function EpistemicBadge(
  */
 function PropertyEntry(
   { entry, past = false }: { readonly entry: PropertyEntryView; readonly past?: boolean; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const details: ReactNode[] = [];
   if (entry.since !== null) {

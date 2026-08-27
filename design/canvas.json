@@ -1,0 +1,60 @@
+{
+  "artboards": [
+    { "file": "Main.dc.html", "title": "A — Dossier", "x": 0, "y": 0, "w": 1440, "h": 1220 },
+    { "file": "Galerie.dc.html", "title": "B — Galerie", "x": 1560, "y": 0, "w": 1440, "h": 1300 },
+    {
+      "file": "Chronologie.dc.html",
+      "title": "C — Chronologie",
+      "x": 0,
+      "y": 1460,
+      "w": 1440,
+      "h": 1240
+    },
+    {
+      "file": "Console.dc.html",
+      "title": "D — Console",
+      "x": 1560,
+      "y": 1460,
+      "w": 1440,
+      "h": 1220
+    }
+  ],
+  "annotations": [
+    {
+      "id": "brief",
+      "x": -420,
+      "y": 0,
+      "w": 340,
+      "text": "4 directions, meme page (Luffy), memes donnees. Archivo partout — c'est la seule chose que tu as validee. Les variables sont la couleur et le layout."
+    },
+    {
+      "id": "note-a",
+      "x": -420,
+      "y": 220,
+      "w": 340,
+      "text": "A — DOSSIER. Encre ardoise + un seul accent vermillon. Rail d'identite fixe a gauche, tableaux regles a droite. Le plus 'ouvrage de reference'. Risque : sobre au point d'etre froid."
+    },
+    {
+      "id": "note-b",
+      "x": -420,
+      "y": 500,
+      "w": 340,
+      "text": "B — GALERIE. Noir quasi pur, toute la couleur vient de l'illustration en bandeau pleine largeur. Grands portraits d'equipage. Le plus spectaculaire. Risque : depend d'images qu'on n'a pas encore."
+    },
+    {
+      "id": "note-c",
+      "x": -420,
+      "y": 800,
+      "w": 340,
+      "text": "C — CHRONOLOGIE. L'axe du temps EST le layout : chaque donnee est accrochee au chapitre ou elle devient vraie. Bleu ocean + jaune paille. C'est le seul qui montre notre vrai differenciateur."
+    },
+    {
+      "id": "note-d",
+      "x": -420,
+      "y": 1120,
+      "w": 340,
+      "text": "D — CONSOLE. Grille de panneaux dense, tout au-dessus de la ligne de flottaison, prev/next ordinal dans l'en-tete. Cyan + vermillon. Le plus 'wiki d'expert'. Risque : peut faire outil, pas univers."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

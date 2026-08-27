@@ -10,7 +10,7 @@
  */
 import {
   createContext,
-  type JSX,
+  type ReactElement,
   type ReactNode,
   useCallback,
   useContext,
@@ -66,7 +66,7 @@ const LocaleContext = createContext<LocaleContextValue>({
 
 export function LocaleProvider(
   { children, initial }: { children: ReactNode; initial?: Locale | undefined; },
-): JSX.Element {
+): ReactElement {
   // HYDRATION: the first client render MUST match the server-rendered
   // HTML. The root loader reads the locale COOKIE server-side (plus
   // Accept-Language for cookie-less first visits) and passes it as

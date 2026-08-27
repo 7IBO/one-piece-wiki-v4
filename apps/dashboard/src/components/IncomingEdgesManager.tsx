@@ -28,7 +28,7 @@ import type {
 } from '@onepiece-wiki/schemas';
 import { Link } from '@tanstack/react-router';
 import { Pencil, RotateCcw, X } from 'lucide-react';
-import { type JSX, useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import {
   api,
@@ -92,7 +92,7 @@ function seedRows(data: IncomingEdgesResponse): Map<string, RowState> {
   return map;
 }
 
-export function IncomingEdgesManager(p: IncomingEdgesManagerProps): JSX.Element {
+export function IncomingEdgesManager(p: IncomingEdgesManagerProps): ReactElement {
   const t = useT();
   const locale = useLocale();
   const qualifierLabel = useQualifierLabel();

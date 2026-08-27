@@ -15,7 +15,85 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-27 (six mappers Fandom ADR-109 ; corpus à 61 entités)
+**Last updated**: 2026-08-27 (refonte design v12 : quatre tranches
+livrées sur `claude/test-atopl8` ; ADR-112)
+
+## 2026-08-27 — refonte design v12, et le vrai goulot d'étranglement
+
+Après **onze rejets** du design, la méthode a changé : plus de v12
+livrée à l'aveugle, mais un **canevas de maquettes** validé avant
+d'écrire du code (`design/v2`, dix planches, PR #127). Le mainteneur a
+tranché — châssis en grille de panneaux, chronologie en type de
+panneau, onglets à vraies URLs — puis a dit « tu peux commencer à
+implémenter ».
+
+**Quatre tranches livrées**, chacune avec typecheck + lint + 158 tests
+
+- build de l'app :
+
+| Commit    | Tranche                                                 |
+| --------- | ------------------------------------------------------- |
+| `e8c6f9e` | Trois rôles de couleur disjoints, l'or au premier plan  |
+| `7a22474` | Les modules d'entité deviennent des panneaux            |
+| `80f9a96` | L'historique se lit sur un axe, valeur courante en tête |
+| `faef5ed` | Un onglet par type de source dans les apparitions       |
+
+**ADR-112** consigne la cause des onze rejets : ADR-111 avait retravaillé
+la palette sans toucher à la sémantique, or le défaut était là — une
+même couleur disait trois choses et changeait de valeur d'une page à
+l'autre.
+
+### Le goulot d'étranglement n'est plus le design, c'est la donnée
+
+**Constat qui a arrêté la cinquième tranche.** Le dialogue de
+progression retenu se règle **par arc**. Le corpus contient :
+
+|                 |                |
+| --------------- | -------------- |
+| arcs            | **3**          |
+| sagas           | **0**          |
+| personnages     | 10             |
+| équipages       | 1              |
+| fruits du démon | 1              |
+| chapitres       | 34             |
+| **total**       | **61 entités** |
+
+Un sélecteur d'arcs listerait trois arcs sans aucun regroupement par
+saga. Les pages de liste montreraient dix personnages. Le module « ce
+que tu viens de croiser » de l'accueil n'aurait rien à montrer.
+
+**Le design est en avance sur les données.** Continuer à coder des
+surfaces qui n'ont rien à afficher produit du travail invérifiable :
+on ne peut ni juger le rendu, ni détecter les cas limites que seul un
+corpus réel fait apparaître.
+
+**Prochaine action recommandée** : lancer le premier import Fandom
+**réel** sur une seule catégorie. Les six mappers d'ADR-109 n'ont
+jamais tourné que sur des fixtures synthétiques — le premier passage
+live est leur véritable test. Le workflow `fandom-import`
+(`workflow_dispatch`, entrée `category`) ouvre une PR de données, donc
+l'opération est relisible et réversible.
+
+### Vérifié au passage : la règle anti-spoil tient déjà côté serveur
+
+Audit du code existant, pas une supposition : les comptes affichés sont
+**tous** bornés à la progression (`isSourceVisible`, `visiblePopulation`
+dans `server/views.ts`). « 342 sur 1044 » signifie 342 apparitions sur
+les 1044 chapitres **lus**, pas sur le total paru. Aucun compteur
+d'absence nulle part. Rien à corriger.
+
+### Trois arbitrages en attente du mainteneur
+
+1. **Balayage `JSX.Element`.** react-doctor remonte 39 erreurs sur ce
+   seul motif, préexistant et répandu (~200 occurrences sur les deux
+   apps). Attention : **le correctif proposé par l'outil est mauvais
+   ici** — il suggère `ReactNode`, qui est _plus large_ et ferait
+   perdre la garantie de type de retour exigée par `CLAUDE.md`. Le bon
+   balayage est `ReactElement`.
+2. **Précision de `since`** (le cas Rocks) — parqué dans `IDEAS.md`,
+   demande un ADR.
+3. **Marqueur « cette information n'existe pas dans l'œuvre »** — parqué
+   dans `IDEAS.md`, demande un ADR.
 
 **2026-08-27 — remontée et tri de toutes les PR ouvertes.**
 `main` = `f0101b7`.
@@ -81,6 +159,57 @@ images). 4 valeurs de vocabulaire **additives** (`ship-types.unknown`,
 complet) — le relevé structurel est l'entrée obligée de la refonte de
 schéma, et le runner GitHub a l'egress que la sandbox n'a pas. Le
 rapport est commité sur une branche `audit/`.
+
+**Livré (2026-08-27) — v11 « Deep Water » : la palette re-fondée**
+(ADR-111, supersede ADR-104). Verdict mainteneur sur la v10 :
+« l'ui du site me convient pas du tout. j'ai bien le font du texte mais
+c'est tout » + « analyse les couleurs de One Piece, différents
+supports. Ça ne doit être exactement ces couleurs car trop kitsch mais
+quelques touches par ci par là ». **Archivo reste** ; tout le reste de
+la couleur a changé.
+
+_Le diagnostic_ : « j'aime bien le gold » avait été transformé par
+ADR-104 en contrainte sur TOUTE la palette (dix accords dans la bande
+12°–100°, plus un fond brun chaud, plus un test bloquant). L'or devait
+être un **accent d'identité** ; il est devenu le spectre entier — et
+or/parchemin/trésor est précisément le cliché pirate kitsch, pas le
+langage chromatique de l'œuvre.
+
+_Ce qui remplace_ :
+
+- **Fond = nuit océanique** `oklch(0.165 0.03 250)`. La mer et le ciel
+  sont la constante environnementale de l'anime. Le chrome (barre,
+  pied) descend d'un cran, `--color-abyss`, pour ne pas être un
+  n-ième panneau plat sombre.
+- **Deux accents, parcimonieux** : `--color-gold` ré-écrit en **jaune
+  chapeau de paille** (wordmark, primes, focus, sélection — rien
+  d'autre) et `--color-accent` en **vermillon du gilet de Luffy**
+  (couleur interactive du chrome neutre).
+- **Douze accords qui parcourent la roue une fois**, dans l'ordre du
+  spectre — la logique réelle d'une étagère de tankôbon. Ce n'est pas
+  une roue libre : liste d'ancres fermée, ≤ 40° d'écart interne par
+  accord, et surtout **tous les fonds d'illustration dans la même
+  famille sombre peu chromatique**. C'est ce fond partagé qui empêche
+  la lecture « couleurs aléatoires » qui avait fait échouer la roue
+  libre avant ADR-104.
+- **La garantie de contraste survit et compte davantage** : chaque
+  accent est remonté en clarté jusqu'à ≥ 4.5:1 mesuré contre le
+  canvas (5.6 → 12.4 selon l'accord). Un bleu à la clarté d'un jaune
+  est bien plus sombre.
+- **Les jetons `--art-*` neutres de `styles.css` ne sont plus tapés à
+  la main** : ils SONT l'accord `outremer`, comparés valeur par valeur
+  par un test.
+- **Héros calmé** (0.62 / 0.30 + scrims des deux côtés) : à douze
+  teintes, un fond de héros à l'opacité v8 transformait tout le
+  viewport en cette teinte — le même échec que la palette chaude, dans
+  une autre couleur.
+- **Zéro poids ajouté** : édition de palette + deux opacités. Aucune
+  dépendance, aucun script, aucun calcul couleur au runtime.
+
+Tests : la bande chaude est supprimée, **trois tests structurels** la
+remplacent (ancres fermées, cohérence interne d'un accord, famille de
+fonds) plus un quatrième qui épingle `styles.css` sur un accord
+authentifié. 667 tests verts.
 
 **Livré (2026-08-27) — quatre chantiers UI du wiki public**
 (`apps/web` + `docs/`). Détail complet dans `docs/WEB_APP.md` ;

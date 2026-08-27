@@ -28,7 +28,7 @@ import { Label } from '@/components/ui/label';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, GitPullRequest } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, normalizeTranslations, type SourceRef } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
@@ -46,7 +46,7 @@ export const Route = createFileRoute('/types/$type/new')({
   component: EntityCreateComponent,
 });
 
-function EntityCreateComponent(): JSX.Element {
+function EntityCreateComponent(): ReactElement {
   const { type } = Route.useParams() as { type: string; };
   const locale = useLocale();
   const t = useT();

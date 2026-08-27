@@ -10,11 +10,12 @@
  *
  *   bun run -F @onepiece-wiki/web art:preview [out.html]
  *
- * Every tile carries its OWN chord (`lib/entity-tint.ts`, ADR-104) —
- * exactly as the app paints it — so the sheet answers the question
- * the narrow gold-anchored palette raises: does a wall of warm tiles
- * still read as varied? The `:root` fallback is read straight out of
- * `src/styles.css`, so there is no second copy of the tokens.
+ * Every tile carries its OWN chord (`lib/entity-tint.ts`, ADR-111) —
+ * exactly as the app paints it — so the sheet answers the two
+ * questions a WIDE palette raises, and they pull against each other:
+ * is the wall varied, and does it still obviously belong to one site?
+ * The `:root` fallback is read straight out of `src/styles.css`, so
+ * there is no second copy of the tokens.
  */
 import { readdirSync, readFileSync, writeFileSync } from 'node:fs';
 import { join, resolve } from 'node:path';
@@ -138,9 +139,9 @@ const html = `<!doctype html>
 <style>
   :root {
 ${readArtTokens()}
-    --page: oklch(0.179 0.01 68);
-    --fg: oklch(0.938 0.012 85);
-    --faint: oklch(0.6 0.012 78);
+    --page: oklch(0.165 0.03 250);
+    --fg: oklch(0.965 0.008 240);
+    --faint: oklch(0.615 0.02 242);
   }
   * { box-sizing: border-box; }
   body {
@@ -167,9 +168,12 @@ ${readArtTokens()}
 <h1>Entity art — deterministic contact sheet</h1>
 <p class="lede">Every entity of the corpus, composed AND coloured from its
 <code>type:slug</code> id. Each caption names the chord the id landed on
-(<code>lib/entity-tint.ts</code>, ADR-104): ten hand-authored warm chords anchored on
-gold, differentiated by value structure rather than by hue. Judge composition,
-variety and per-type legibility — and check the thumb wall at the bottom.</p>
+(<code>lib/entity-tint.ts</code>, ADR-111): twelve hand-authored chords walking the
+wheel once, the way a shelf of tankōbon spines does, all sharing one dark
+low-chroma ground so the shelf reads as curated rather than random. Judge the two
+questions that pull against each other — is the wall VARIED, and does it still
+obviously belong to ONE SITE — and settle them on the 40px thumb wall at the
+bottom, not on any single tile.</p>
 ${sections.join('\n')}
 </body>
 </html>

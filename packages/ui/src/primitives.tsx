@@ -3,12 +3,12 @@
  * pages out of these to avoid scattering Tailwind class strings across
  * route components.
  */
-import type { JSX, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { cn } from './cn.ts';
 
 export function Page(
   { children, className }: { children: ReactNode; className?: string; },
-): JSX.Element {
+): ReactElement {
   return (
     <div
       className={cn(
@@ -23,7 +23,7 @@ export function Page(
 
 export function Header(
   { children, className }: { children: ReactNode; className?: string; },
-): JSX.Element {
+): ReactElement {
   return (
     <header
       className={cn(
@@ -38,13 +38,13 @@ export function Header(
 
 export function Content(
   { children, className }: { children: ReactNode; className?: string; },
-): JSX.Element {
+): ReactElement {
   return <main className={cn('mx-auto w-full max-w-4xl px-6 py-6', className)}>{children}</main>;
 }
 
 export function Card(
   { title, children, className }: { title?: ReactNode; children: ReactNode; className?: string; },
-): JSX.Element {
+): ReactElement {
   return (
     <section
       className={cn(
@@ -65,7 +65,7 @@ export function Badge(
     children: ReactNode;
     kind?: 'neutral' | 'warn' | 'inferred';
   },
-): JSX.Element {
+): ReactElement {
   const palette = kind === 'warn'
     ? 'bg-warn/15 text-warn'
     : kind === 'inferred'

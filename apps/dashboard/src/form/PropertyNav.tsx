@@ -13,7 +13,13 @@
  * `EntityForm` computes.
  */
 import { Check, Circle, Dot } from 'lucide-react';
-import { type JSX, type MouseEvent as ReactMouseEvent, useEffect, useMemo, useState } from 'react';
+import {
+  type MouseEvent as ReactMouseEvent,
+  type ReactElement,
+  useEffect,
+  useMemo,
+  useState,
+} from 'react';
 import { useT } from './locale';
 
 export function propertyAnchorId(propertyId: string): string {
@@ -69,7 +75,7 @@ type Group = {
   readonly requiredMissing: number;
 };
 
-export function PropertyNav(p: PropertyNavProps): JSX.Element {
+export function PropertyNav(p: PropertyNavProps): ReactElement {
   const t = useT();
   const [activeId, setActiveId] = useState<string | null>(null);
 
@@ -278,7 +284,7 @@ function ProgressBar(p: {
   requiredMissing: number;
   filledLabel: string;
   missingLabel: string;
-}): JSX.Element {
+}): ReactElement {
   const pct = Math.round(p.value * 100);
   return (
     <div>
@@ -307,7 +313,7 @@ function ProgressBar(p: {
   );
 }
 
-function StatusIcon({ entry }: { entry: NavEntry; }): JSX.Element {
+function StatusIcon({ entry }: { entry: NavEntry; }): ReactElement {
   if (entry.filled) {
     return <Check className='text-emerald-500 size-3 shrink-0' />;
   }

@@ -1,0 +1,124 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Archivo, system-ui, sans-serif; background: #0a0b0e; }
+    a { color: #c9ae72; text-decoration: none; }
+    .num { font-variant-numeric: tabular-nums; }
+    .btn { font-size: 13.5px; font-weight: 600; padding: 10px 22px; border-radius: 6px; border: 1px solid #2c3038; color: #d6dae0; background: #161a20; }
+    .quiet { font-size: 12px; color: #6a7280; }
+    .tab { font-size: 13px; padding: 0 0 11px; color: #79818d; }
+    .tab.on { color: #eceef2; font-weight: 600; box-shadow: inset 0 -2px 0 #e8c15a; }
+    .chip { font-size: 12px; padding: 7px 13px; border: 1px solid #232833; border-radius: 999px; color: #b3bac4; display: inline-block; }
+    .rule { height: 1px; background: #1e222a; }
+    /* une saga : un intertitre, pas une boite */
+    .saga { font-size: 9px; letter-spacing: 0.18em; color: #6a7280; padding: 14px 0 7px; }
+    .arc { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; padding: 8px 10px; border-radius: 5px; font-size: 13.5px; color: #d6dae0; }
+    .arc.on { background: #1c1a12; color: #e8c15a; font-weight: 600; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 940px; background: #0a0b0e; color: #eceef2; position: relative; overflow: hidden">
+
+  <div style="position: absolute; inset: 0; opacity: 0.28">
+    <div style="display: flex; align-items: stretch; height: 46px; border-bottom: 1px solid #1e222a">
+      <div style="display: flex; align-items: center; padding: 0 18px; font-size: 14px; font-weight: 800; border-right: 1px solid #1e222a">One Piece<span style="color: #e8c15a">.Wiki</span></div>
+      <div style="flex-grow: 1"></div>
+      <div style="display: flex; align-items: center; gap: 6px; padding: 0 14px; border-left: 1px solid #1e222a; font-size: 11.5px; color: #b3bac4">Français<span style="color: #6a7280; font-size: 9px">▾</span></div>
+      <div style="display: flex; align-items: center; gap: 9px; padding: 0 16px; border-left: 1px solid #1e222a; font-size: 11px"><span style="color: #6a7280">MA PROGRESSION</span><span class="num" style="font-weight: 700; color: #e8c15a">CH. 1044</span></div>
+    </div>
+    <div style="height: 292px; background: linear-gradient(105deg, #2a1512, #b8402a 55%, #e8a04f); opacity: 0.3"></div>
+    <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; padding: 58px 40px">
+      <div style="grid-column: span 3; height: 250px; border: 1px solid #1e222a; background: #101217; border-radius: 6px"></div>
+      <div style="grid-column: span 5; height: 250px; border: 1px solid #1e222a; background: #101217; border-radius: 6px"></div>
+      <div style="grid-column: span 4; height: 250px; border: 1px solid #1e222a; background: #101217; border-radius: 6px"></div>
+    </div>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(6,7,9,0.74)"></div>
+
+  <div style="position: absolute; left: 50%; top: 58px; transform: translateX(-50%); width: 640px; border: 1px solid #2c3038; border-radius: 10px; background: #12151a; box-shadow: 0 28px 70px rgba(0,0,0,0.66); overflow: hidden">
+
+    <div style="padding: 26px 28px 0">
+      <div style="display: flex; align-items: flex-start; justify-content: space-between">
+        <div style="font-size: 21px; font-weight: 800; letter-spacing: -0.02em">Où en es-tu ?</div>
+        <div style="font-size: 17px; color: #6a7280">×</div>
+      </div>
+      <div style="font-size: 13px; color: #8b939f; margin-top: 5px">Rien de ce que tu n'as pas encore lu ou vu ne sera affiché.</div>
+      <div style="display: flex; gap: 22px; margin-top: 20px">
+        <span class="tab on">Manga</span><span class="tab">Anime</span>
+      </div>
+    </div>
+    <div class="rule"></div>
+
+    <!-- on demande ce dont les lecteurs se souviennent : un arc, pas un numéro -->
+    <div style="padding: 20px 28px 6px">
+      <div style="font-size: 15px; font-weight: 600">Quel est le dernier arc que tu as terminé ?</div>
+    </div>
+
+    <div style="height: 292px; overflow: hidden; padding: 0 20px; position: relative">
+      <div style="margin-top: -6px">
+        <div class="saga">SAGA DE LA GUERRE AU SOMMET</div>
+        <div class="arc"><span>Archipel Sabaody</span><span class="quiet num">490 – 513</span></div>
+        <div class="arc"><span>Amazon Lily</span><span class="quiet num">514 – 524</span></div>
+        <div class="arc"><span>Impel Down</span><span class="quiet num">525 – 549</span></div>
+        <div class="arc"><span>Marineford</span><span class="quiet num">550 – 580</span></div>
+        <div class="arc"><span>Après-guerre</span><span class="quiet num">581 – 597</span></div>
+
+        <div class="saga">SAGA DU NOUVEAU MONDE</div>
+        <div class="arc"><span>Île des Hommes-Poissons</span><span class="quiet num">598 – 653</span></div>
+        <div class="arc"><span>Punk Hazard</span><span class="quiet num">654 – 699</span></div>
+        <div class="arc"><span>Dressrosa</span><span class="quiet num">700 – 801</span></div>
+        <div class="arc"><span>Zou</span><span class="quiet num">802 – 824</span></div>
+        <div class="arc"><span>Whole Cake Island</span><span class="quiet num">825 – 902</span></div>
+
+        <div class="saga">SAGA DES QUATRE EMPEREURS</div>
+        <div class="arc"><span>Reverie</span><span class="quiet num">903 – 908</span></div>
+        <div class="arc on"><span>Pays de Wano</span><span class="num" style="color: #e8c15a">909 – 1057</span></div>
+      </div>
+      <div style="position: absolute; left: 0; right: 0; bottom: 0; height: 46px; background: linear-gradient(180deg, rgba(18,21,26,0) 0%, #12151a 100%); pointer-events: none"></div>
+    </div>
+    <div class="rule"></div>
+
+    <!-- affiner à l'intérieur de l'arc choisi, pour qui veut être précis -->
+    <div style="display: flex; align-items: center; gap: 16px; padding: 16px 28px">
+      <span style="font-size: 13px; color: #8b939f; flex-shrink: 0">Où dans Wano ?</span>
+      <span class="num" style="font-size: 17px; font-weight: 700; border: 1px solid #2c3038; border-radius: 5px; padding: 6px 14px; background: #161a20; flex-shrink: 0">1044</span>
+      <span style="flex-grow: 1; position: relative; height: 4px; border-radius: 2px; background: #1e222a">
+        <span style="position: absolute; left: 0; top: 0; bottom: 0; width: 91%; background: #e8c15a; border-radius: 2px"></span>
+        <span style="position: absolute; left: 91%; top: -6px; width: 16px; height: 16px; margin-left: -8px; border-radius: 50%; background: #e8c15a; border: 3px solid #12151a"></span>
+      </span>
+      <span class="quiet num" style="flex-shrink: 0">909 – 1057</span>
+    </div>
+    <div class="rule"></div>
+
+    <div style="padding: 16px 28px">
+      <div style="display: flex; flex-wrap: wrap; gap: 8px">
+        <span class="chip">Je débute</span>
+        <span class="chip">J'ai fini l'anime diffusé</span>
+        <span class="chip">Je suis à jour du manga</span>
+        <span class="chip">Tout afficher</span>
+      </div>
+    </div>
+    <div class="rule"></div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; padding: 16px 28px">
+      <span class="quiet">Modifiable à tout moment depuis l'en-tête.</span>
+      <div style="display: flex; gap: 10px; align-items: center">
+        <span style="font-size: 13.5px; color: #8b939f">Annuler</span>
+        <span class="btn" style="border-color: #e8c15a; background: #e8c15a; color: #14171d">Enregistrer</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

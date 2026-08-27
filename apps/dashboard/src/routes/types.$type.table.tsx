@@ -33,7 +33,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import type { PropertyTypeSchema } from '@onepiece-wiki/schemas';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowUpRight, ChevronLeft, Columns3, RotateCcw, Save, Search } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type TableEntity, type Translations } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
@@ -207,7 +207,7 @@ function writeCell(
   };
 }
 
-function TableComponent(): JSX.Element {
+function TableComponent(): ReactElement {
   const { type } = Route.useParams() as { type: string; };
   const locale = useLocale();
   const t = useT();
@@ -574,7 +574,7 @@ function ColumnPicker(p: {
   onChange: (next: readonly string[]) => void;
   locale: Locale;
   t: ReturnType<typeof useT>;
-}): JSX.Element {
+}): ReactElement {
   function toggle(id: string): void {
     if (p.selected.includes(id)) p.onChange(p.selected.filter((s) => s !== id));
     else p.onChange([...p.selected, id]);
@@ -630,7 +630,7 @@ function EditableCell(p: {
   t: ReturnType<typeof useT>;
   onCommit: (next: unknown) => void;
   onOpenDrawer: (() => void) | undefined;
-}): JSX.Element {
+}): ReactElement {
   const [editing, setEditing] = useState(false);
   const { text, raw } = readCell(p.entity, p.propertyType, p.locale, p.draft);
   const inlineEditable = INLINE_EDITABLE.has(p.propertyType.value_type);
@@ -703,7 +703,7 @@ function CellEditor(p: {
   initial: unknown;
   onCommit: (next: unknown) => void;
   onCancel: () => void;
-}): JSX.Element {
+}): ReactElement {
   const valueType = p.propertyType.value_type;
 
   if (valueType === 'boolean') {
@@ -776,7 +776,7 @@ function TextCellEditor(p: {
   onCommit: (value: string) => void;
   onCancel: () => void;
   type?: 'text' | 'number' | 'date';
-}): JSX.Element {
+}): ReactElement {
   const ref = useRef<HTMLInputElement>(null);
   useEffect(() => {
     ref.current?.focus();

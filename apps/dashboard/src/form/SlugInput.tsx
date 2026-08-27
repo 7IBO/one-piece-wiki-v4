@@ -22,7 +22,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { SLUG_PATTERN } from '@onepiece-wiki/schemas';
 import { CircleAlertIcon, CircleCheckIcon } from 'lucide-react';
-import { type JSX, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { api } from '../api';
 import { useT } from './locale';
 
@@ -52,7 +52,7 @@ type ValidityState =
 
 export function SlugInput(
   { type, value, onChange, onValidChange, disabled }: SlugInputProps,
-): JSX.Element {
+): ReactElement {
   const t = useT();
   const [state, setState] = useState<ValidityState>(
     value === '' ? { kind: 'empty' } : { kind: 'checking' },

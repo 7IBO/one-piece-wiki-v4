@@ -17,7 +17,7 @@
  * subdued, but fully present and clickable.
  */
 import { Link } from '@tanstack/react-router';
-import type { CSSProperties, JSX, ReactNode } from 'react';
+import type { CSSProperties, ReactElement, ReactNode } from 'react';
 import type { ImageView } from '../api';
 import { entityTint } from '../lib/entity-tint';
 import { useScopeSearch } from './EntityChip';
@@ -27,7 +27,7 @@ import { EntityImage } from './EntityImage';
 export const CARD_GRID_CLASS =
   'grid grid-cols-2 gap-3 min-[520px]:grid-cols-[repeat(auto-fill,minmax(160px,1fr))] min-[520px]:gap-4';
 
-export function CardGrid({ children }: { readonly children: ReactNode; }): JSX.Element {
+export function CardGrid({ children }: { readonly children: ReactNode; }): ReactElement {
   return <ul className={CARD_GRID_CLASS}>{children}</ul>;
 }
 
@@ -58,7 +58,7 @@ export function EntityCard(
     /** Ended state (former member…): subdued, still present. */
     readonly dimmed?: boolean;
   },
-): JSX.Element {
+): ReactElement {
   const search = useScopeSearch();
   const tint = entityTint(`${type}:${slug}`);
   return (

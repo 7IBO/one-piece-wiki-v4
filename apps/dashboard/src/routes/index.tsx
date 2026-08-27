@@ -4,7 +4,7 @@ import { Collapsible, CollapsibleContent, CollapsibleTrigger } from '@/component
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ChevronRight } from 'lucide-react';
-import { type JSX, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { api } from '../api';
 import { useCurrentUser } from '../auth';
 import { LoadFailed } from '../components/LoadFailed';
@@ -31,7 +31,7 @@ function TypeCard(
     readonly singular: string;
     readonly plural: string;
   },
-): JSX.Element {
+): ReactElement {
   return (
     <Link to='/types/$type' params={{ type: item.id }} className='no-underline'>
       <Card bleed className='h-full transition hover:ring-ring/50'>
@@ -48,7 +48,7 @@ function TypeCard(
   );
 }
 
-function IndexComponent(): JSX.Element {
+function IndexComponent(): ReactElement {
   const locale = useLocale();
   const t = useT();
   const { user, loaded: userLoaded } = useCurrentUser();

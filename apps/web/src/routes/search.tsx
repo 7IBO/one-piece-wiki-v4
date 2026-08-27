@@ -15,7 +15,7 @@
  * screen came through the cursor gate.
  */
 import { createFileRoute } from '@tanstack/react-router';
-import { type JSX } from 'react';
+import { type ReactElement } from 'react';
 import { fetchSearch } from '../api';
 import { CardGrid, EntityCard } from '../components/EntityCard';
 import { t } from '../lib/chrome';
@@ -39,7 +39,7 @@ export const Route = createFileRoute('/search')({
   component: SearchPage,
 });
 
-function SearchPage(): JSX.Element {
+function SearchPage(): ReactElement {
   const view = Route.useLoaderData();
   const locale = useLocale();
   const asked = view.query.trim() !== '';

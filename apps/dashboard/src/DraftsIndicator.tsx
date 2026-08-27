@@ -26,7 +26,7 @@ import {
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
 import { Link } from '@tanstack/react-router';
 import { Trash2, Upload } from 'lucide-react';
-import { type JSX, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import { toast } from 'sonner';
 import { api } from './api';
 import { useCurrentUser } from './auth';
@@ -43,7 +43,7 @@ function relativeTime(savedAt: number, locale: 'en' | 'fr'): string {
   return new Date(savedAt).toLocaleDateString(locale);
 }
 
-export function DraftsIndicator(): JSX.Element | null {
+export function DraftsIndicator(): ReactElement | null {
   const { drafts, refresh } = useAllDrafts();
   const locale = useLocale();
   const t = useT();

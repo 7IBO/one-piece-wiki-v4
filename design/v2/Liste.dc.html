@@ -1,0 +1,164 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Archivo, system-ui, sans-serif; background: #0a0b0e; }
+    a { color: #c9ae72; text-decoration: none; }
+    a:hover { color: #e8c15a; }
+    .lbl { font-size: 9px; letter-spacing: 0.18em; color: #6a7280; }
+    .num { font-variant-numeric: tabular-nums; }
+    .chip { font-size: 11.5px; padding: 5px 11px; border: 1px solid #232833; border-radius: 999px; color: #b3bac4; display: inline-block; }
+    .chip.on { border-color: #e8c15a; color: #e8c15a; background: #1c1a12; }
+    .fk { font-size: 9px; letter-spacing: 0.16em; color: #6a7280; margin-bottom: 9px; }
+    .fo { display: flex; justify-content: space-between; font-size: 12.5px; color: #b3bac4; padding: 5px 0; }
+    .tab { font-size: 12.5px; padding: 0 0 11px; color: #79818d; }
+    .tab.on { color: #eceef2; font-weight: 600; box-shadow: inset 0 -2px 0 #e8c15a; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; background: #0a0b0e; color: #eceef2">
+
+  <div style="display: flex; align-items: stretch; height: 46px; border-bottom: 1px solid #1e222a">
+    <div style="display: flex; align-items: center; padding: 0 18px; font-size: 14px; font-weight: 800; border-right: 1px solid #1e222a">One Piece<span style="color: #e8c15a">.Wiki</span></div>
+    <div style="flex-grow: 1; display: flex; align-items: center; padding: 0 16px; font-size: 12px; color: #6a7280">⌕&nbsp;&nbsp;Rechercher — personnages, fruits, chapitres, arcs, épisodes…</div>
+    <div style="display: flex; align-items: center; gap: 6px; padding: 0 14px; border-left: 1px solid #1e222a; font-size: 11.5px; color: #b3bac4">Français<span style="color: #6a7280; font-size: 9px">▾</span></div>
+    <div style="display: flex; align-items: center; gap: 9px; padding: 0 16px; border-left: 1px solid #1e222a; font-size: 11px">
+      <span style="color: #6a7280">MA PROGRESSION</span><span class="num" style="font-weight: 700; color: #e8c15a">CH. 1044</span>
+    </div>
+  </div>
+
+  <!-- un bandeau de liste, pas un bandeau d'entité : plus bas, pas d'illustration -->
+  <div style="padding: 24px 40px 0; border-bottom: 1px solid #1e222a; position: relative; overflow: hidden">
+    <div style="position: absolute; inset: 0; background: linear-gradient(100deg, #17131a, #6b3f5a 70%, #b06a8a); opacity: 0.13"></div>
+    <div style="position: relative; display: flex; align-items: flex-end; justify-content: space-between; gap: 30px">
+      <div>
+        <div class="lbl">TYPE D'ENTITÉ</div>
+        <div style="font-size: 34px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1; margin-top: 4px">Personnages</div>
+        <div style="font-size: 13.5px; color: #a3abb6; margin-top: 6px"><span class="num">412</span> personnages apparus jusqu'au chapitre 1044</div>
+      </div>
+      <div style="display: flex; align-items: center; gap: 9px; padding-bottom: 4px">
+        <span style="font-size: 12px; color: #6a7280">Trier</span>
+        <span class="chip on">Apparitions</span>
+        <span class="chip">Alphabétique</span>
+        <span class="chip">Prime</span>
+        <span class="chip">Première apparition</span>
+      </div>
+    </div>
+    <div style="position: relative; display: flex; gap: 22px; margin-top: 20px">
+      <span class="tab on">Grille</span><span class="tab">Tableau</span><span class="tab">Chronologie</span>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 22px; padding: 20px 40px 44px">
+
+    <!-- les filtres viennent du schéma : une facette par propriété
+         énumérée du type, jamais une liste écrite à la main -->
+    <div style="width: 224px; flex-shrink: 0">
+      <div style="display: flex; align-items: baseline; justify-content: space-between">
+        <div class="lbl">FILTRER</div><a href="#" style="font-size: 10.5px">Réinitialiser</a>
+      </div>
+
+      <div style="margin-top: 16px">
+        <div class="fk">ÉQUIPAGE</div>
+        <div class="fo"><span style="color: #e8c15a">Chapeau de Paille</span><span class="num" style="color: #6a7280">5</span></div>
+        <div class="fo"><span>Marine</span><span class="num" style="color: #6a7280">61</span></div>
+        <div class="fo"><span>Barbe Blanche</span><span class="num" style="color: #6a7280">24</span></div>
+        <div class="fo"><span>Bêtes</span><span class="num" style="color: #6a7280">38</span></div>
+        <div class="fo"><span style="color: #6a7280">+ 42 autres</span></div>
+      </div>
+
+      <div style="margin-top: 20px">
+        <div class="fk">STATUT</div>
+        <div class="fo"><span>Vivant</span><span class="num" style="color: #6a7280">341</span></div>
+        <div class="fo"><span>Décédé</span><span class="num" style="color: #6a7280">58</span></div>
+        <div class="fo"><span>Inconnu</span><span class="num" style="color: #6a7280">13</span></div>
+      </div>
+
+      <div style="margin-top: 20px">
+        <div class="fk">FRUIT DU DÉMON</div>
+        <div class="fo"><span>Utilisateur</span><span class="num" style="color: #6a7280">87</span></div>
+        <div class="fo"><span>Sans fruit</span><span class="num" style="color: #6a7280">325</span></div>
+      </div>
+
+      <div style="margin-top: 20px">
+        <div class="fk">APPARU DANS</div>
+        <div class="fo"><span>East Blue</span><span class="num" style="color: #6a7280">96</span></div>
+        <div class="fo"><span>Alabasta</span><span class="num" style="color: #6a7280">54</span></div>
+        <div class="fo"><span>Wano</span><span class="num" style="color: #6a7280">88</span></div>
+        <div class="fo"><span style="color: #6a7280">+ 29 arcs</span></div>
+      </div>
+
+      <div style="margin-top: 22px; border-top: 1px solid #1e222a; padding-top: 14px; font-size: 11.5px; color: #6a7280; line-height: 1.65">
+        Les comptes sont ceux de ta progression. Un personnage qui apparaît plus tard n'est ni listé, ni compté.
+      </div>
+    </div>
+
+    <div style="flex-grow: 1; min-width: 0">
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap">
+        <span class="chip on">Chapeau de Paille ×</span>
+        <span style="font-size: 12px; color: #6a7280">5 résultats</span>
+      </div>
+
+      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 16px">
+        <a href="#" style="color: inherit">
+          <div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #2a1512, #b8402a)"></div>
+          <div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Monkey D. Luffy</div>
+          <div style="font-size: 11px; color: #6a7280">Capitaine</div>
+          <div class="num" style="font-size: 12px; color: #e8c15a; margin-top: 3px">3 000 000 000</div>
+        </a>
+        <a href="#" style="color: inherit">
+          <div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #16201d, #2f6b5a)"></div>
+          <div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Roronoa Zoro</div>
+          <div style="font-size: 11px; color: #6a7280">Second</div>
+          <div class="num" style="font-size: 12px; color: #e8c15a; margin-top: 3px">1 111 000 000</div>
+        </a>
+        <a href="#" style="color: inherit">
+          <div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #241d12, #b8863a)"></div>
+          <div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Nami</div>
+          <div style="font-size: 11px; color: #6a7280">Navigatrice</div>
+          <div class="num" style="font-size: 12px; color: #e8c15a; margin-top: 3px">366 000 000</div>
+        </a>
+        <a href="#" style="color: inherit">
+          <div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #1e1a12, #8a5a2b)"></div>
+          <div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Usopp</div>
+          <div style="font-size: 11px; color: #6a7280">Tireur d'élite</div>
+          <div class="num" style="font-size: 12px; color: #e8c15a; margin-top: 3px">500 000 000</div>
+        </a>
+        <a href="#" style="color: inherit">
+          <div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #151824, #3b4a6b)"></div>
+          <div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Sanji</div>
+          <div style="font-size: 11px; color: #6a7280">Cuisinier</div>
+          <div class="num" style="font-size: 12px; color: #e8c15a; margin-top: 3px">1 032 000 000</div>
+        </a>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 8px; flex-wrap: wrap; margin-top: 26px; padding-top: 20px; border-top: 1px solid #1e222a">
+        <span class="chip">Marine ×</span>
+        <span style="font-size: 12px; color: #6a7280">61 résultats · les 12 plus présents</span>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(6, 1fr); gap: 12px; margin-top: 16px">
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #131722, #3f5a8f)"></div><div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Monkey D. Garp</div><div style="font-size: 11px; color: #6a7280">Vice-amiral</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #1a1613, #7a6a3f)"></div><div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Sakazuki</div><div style="font-size: 11px; color: #6a7280">Amiral en chef</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #131a1a, #3f6b6b)"></div><div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Kuzan</div><div style="font-size: 11px; color: #6a7280">Ancien amiral</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #1a1a13, #6b6b3f)"></div><div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Borsalino</div><div style="font-size: 11px; color: #6a7280">Amiral</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #17131a, #5a3f6b)"></div><div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Smoker</div><div style="font-size: 11px; color: #6a7280">Vice-amiral</div></a>
+        <a href="#" style="color: inherit"><div style="aspect-ratio: 3 / 4; border-radius: 6px; background: linear-gradient(145deg, #1a1316, #6b3f4a)"></div><div style="font-size: 13.5px; font-weight: 700; margin-top: 7px">Tashigi</div><div style="font-size: 11px; color: #6a7280">Capitaine</div></a>
+      </div>
+
+      <div style="display: flex; justify-content: center; margin-top: 30px">
+        <span style="font-size: 13px; font-weight: 600; padding: 10px 24px; border-radius: 6px; border: 1px solid #2c3038; color: #d6dae0">Charger 24 personnages de plus</span>
+      </div>
+    </div>
+  </div>
+</div>
+</x-dc>
+</body>
+</html>

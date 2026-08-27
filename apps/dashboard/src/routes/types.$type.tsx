@@ -15,12 +15,12 @@
  * behaviour while preserving the URL structure.
  */
 import { createFileRoute, Outlet } from '@tanstack/react-router';
-import type { JSX } from 'react';
+import type { ReactElement } from 'react';
 
 export const Route = createFileRoute('/types/$type')({
   component: TypeLayout,
 });
 
-function TypeLayout(): JSX.Element {
+function TypeLayout(): ReactElement {
   return <Outlet />;
 }

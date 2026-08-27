@@ -12,7 +12,7 @@ import {
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ArrowDown, ArrowUp, Check, Plus, Search, Table2 } from 'lucide-react';
-import { type JSX, useDeferredValue, useMemo, useState } from 'react';
+import { type ReactElement, useDeferredValue, useMemo, useState } from 'react';
 import { api, type Completeness, type EntityRef } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
 import { useEntityTypeLabel, useLocale, useT } from '../form/locale';
@@ -32,7 +32,7 @@ type SortDir = 'asc' | 'desc';
  * are missing, muted count + checkmark once complete. Hidden entirely
  * when the type declares no expected fields (`expected === 0`).
  */
-function RowCompleteness({ value }: { value: Completeness; }): JSX.Element | null {
+function RowCompleteness({ value }: { value: Completeness; }): ReactElement | null {
   const t = useT();
   if (value.expected <= 0) return null;
   const full = value.filled >= value.expected;
@@ -62,7 +62,7 @@ function RowCompleteness({ value }: { value: Completeness; }): JSX.Element | nul
 }
 
 /** Two-line skeleton rows shaped like the real list rows. */
-function ListSkeleton(): JSX.Element {
+function ListSkeleton(): ReactElement {
   return (
     <Card bleed className='gap-0 py-0'>
       <ul className='divide-border divide-y'>
@@ -83,7 +83,7 @@ function ListSkeleton(): JSX.Element {
   );
 }
 
-function TypeListComponent(): JSX.Element {
+function TypeListComponent(): ReactElement {
   const { type } = Route.useParams() as { type: string; };
   const locale = useLocale();
   const t = useT();

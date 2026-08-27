@@ -6,7 +6,7 @@
  * table — no raw HTML is ever interpreted, and no external renderer
  * dependency is pulled in for v1's needs.
  */
-import { Fragment, type JSX, type ReactNode } from 'react';
+import { Fragment, type ReactElement, type ReactNode } from 'react';
 
 const INLINE_PATTERN = /(\*\*[^*]+\*\*|\*[^*]+\*|`[^`]+`|\[[^\]]+\]\([^)\s]+\))/g;
 
@@ -33,7 +33,7 @@ function renderInline(text: string): ReactNode {
           key={i}
           href={link[2]}
           rel='noreferrer'
-          className='text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent'
+          className='text-link underline decoration-link/40 underline-offset-2 hover:decoration-link-hover'
         >
           {link[1]}
         </a>
@@ -115,7 +115,7 @@ export function parseBlocks(markdown: string): Block[] {
   return blocks;
 }
 
-export function Markdown({ markdown }: { readonly markdown: string; }): JSX.Element {
+export function Markdown({ markdown }: { readonly markdown: string; }): ReactElement {
   const blocks = parseBlocks(markdown);
   return (
     <div className='max-w-[68ch] space-y-4 text-[14.5px] leading-[1.7] text-fg/90'>

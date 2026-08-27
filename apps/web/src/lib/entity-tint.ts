@@ -1,5 +1,6 @@
 /**
- * Per-entity colour — the page tint (ADR-103, revised by ADR-104).
+ * Per-entity colour — the page tint (ADR-103; chord set re-authored by
+ * ADR-111, which supersedes ADR-104).
  *
  * The corpus has no photography, so the generative art of
  * `lib/entity-art.ts` IS the imagery. On the reference sites the
@@ -10,20 +11,45 @@
  * Zoro's page are genuinely different colours without anyone
  * authoring a thing per entity.
  *
- * Contract:
- * - **Curated, not generated (ADR-104).** The first version mapped the
- *   hash onto the full 360° wheel; the result read as random noise
- *   (a green character next to a cyan one next to a blue one). The
- *   hash now indexes `TINT_CHORDS` — a hand-authored, ordered list of
- *   warm chords anchored on the site's gold. There is no green, cyan,
- *   blue, violet or magenta anywhere in the palette, and a unit test
- *   enforces that band so nobody can reintroduce one.
- * - **Variety comes from VALUE, not from hue.** With a narrow hue band
- *   the chords differentiate by their light/dark structure: some sit
- *   on a near-black ground with a bone highlight, some on a light
- *   ground with dark forms, some are quiet and low-chroma, some are
- *   punchy. That is what keeps a wall of 40 px thumbs from reading as
- *   one repeated brown tile.
+ * ## What the chords are (ADR-111)
+ *
+ * **A shelf of tankōbon spines.** Line the volumes up and they form a
+ * rainbow: each one takes its own saturated hue, and Oda re-pigments
+ * every colour spread from scratch. That is the real, in-work
+ * justification for a per-entity tint — and it is why the previous
+ * constraint (ADR-104: every chord inside a 12°–100° warm band,
+ * anchored on gold) was wrong. It made every page of the site
+ * brown/ochre/amber, and gold/parchment/treasure is the kitsch pirate
+ * cliché rather than the colour language of the work.
+ *
+ * The twelve chords walk the wheel once — `paille` (the straw hat)
+ * down through orange, vermillion, garnet, the chapter-642 pink,
+ * plum, indigo, the deep sea, sky, lagoon, jade, canopy — in spectral
+ * order, so the list reads as a shelf rather than a bag.
+ *
+ * ## Why it is not "random colours"
+ *
+ * The earlier free-wheel attempt read as noise because nothing tied
+ * the hues together. Three constraints do, and all three are tested:
+ *
+ * 1. **One ground family.** Every chord's artwork ground is a DARK,
+ *    LOW-CHROMA slate ({@link GROUND}); the saturated hue lives in the
+ *    paints and the accent, never in the field. A jade page and a
+ *    vermillion page are the same deep-water dark with a different
+ *    tinge, which is what makes a wall of thumbs cohere.
+ * 2. **Chromatic coherence.** Every colour of a chord lies within
+ *    {@link CHORD_HUE_SPREAD} of the chord's own hue, so no single
+ *    chord is itself a bag of hues.
+ * 3. **A closed list of anchors.** The chord hue must be one of
+ *    {@link PALETTE_ANCHORS}. The palette is a curated shelf, not a
+ *    wheel a hash can land anywhere on.
+ *
+ * ## The rest of the contract
+ *
+ * - **Variety comes from VALUE as much as from hue.** Grounds run
+ *   0.15 → 0.30 in lightness: some chords sit near-black under a bone
+ *   highlight, some on a light ground with dark forms. Two neighbours
+ *   on the shelf differ as pictures, not only as hues.
  * - **Deterministic.** Same id → same chord, forever (same FNV-1a hash
  *   family as the art, so tint and artwork always agree). Pure: no
  *   `Math.random`, no `Date`, identical on server and client.
@@ -31,14 +57,17 @@
  *   clamped by eye: its lightness is RAISED until its measured WCAG
  *   contrast against the page canvas clears `MIN_ACCENT_CONTRAST`.
  *   The search runs in oklch→sRGB space, so what is measured is what
- *   the browser paints. An unreadable page cannot be produced.
+ *   the browser paints. An unreadable page cannot be produced — and
+ *   that matters more now than under ADR-104, since a deep blue at
+ *   the same lightness as a yellow is far darker.
  * - **Scoped.** Emitted as a `style` object of custom properties. The
  *   art tokens (`--art-*`) always apply, so a listing grid is a wall
  *   of individually-coloured artwork; the UI tokens only take effect
  *   inside the `.tinted` scope (see `styles.css`), which the entity
  *   page applies to its body and the chrome never does — navigation
- *   stays stable, and gold stays the site's constant identity
- *   (wordmark, bounty figures, focus ring) whatever chord a page is on.
+ *   stays on the oceanic neutral, and straw-hat yellow stays the
+ *   site's constant identity (wordmark, bounty figures, focus ring)
+ *   whatever chord a page is on.
  */
 import { hashString } from './entity-art';
 
@@ -99,8 +128,18 @@ function css(color: Oklch): string {
 // parses that file and fails if the two ever drift, because every
 // contrast promise below is measured against it.
 
-/** The page background every tinted colour is measured against. */
-export const PAGE_CANVAS: Oklch = { l: 0.179, c: 0.01, h: 68 };
+/**
+ * The page background every tinted colour is measured against — the
+ * OCEANIC NIGHT of v11 (ADR-111). Deep sea navy, not the warm brown
+ * of v8: the ocean and sky are the environmental constant of the work,
+ * and a blue-black ground lets a saturated chord of ANY hue sit on it
+ * without the page turning into that chord.
+ *
+ * Mirrors `--color-canvas` in `styles.css`; a unit test parses that
+ * file and fails if the two ever drift, because every contrast promise
+ * below is measured against it.
+ */
+export const PAGE_CANVAS: Oklch = { l: 0.150, c: 0.007, h: 271 };
 
 /** Body-text floor (WCAG AA) for the interactive/accent colour. */
 export const MIN_ACCENT_CONTRAST = 4.5;
@@ -108,14 +147,55 @@ export const MIN_ACCENT_CONTRAST = 4.5;
 export const MIN_DISPLAY_CONTRAST = 3;
 
 /**
- * The warm band the WHOLE palette is confined to (oklch hue degrees).
- * Gold sits near 86°, the stamp red near 20°. Anything outside this
- * window — green, cyan, blue, violet, magenta — is out of the design
- * and a unit test rejects it (ADR-104). The upper bound is deliberately
- * tight: past ~100° a mid-chroma yellow starts to read olive on a dark
- * ground, which is exactly the "random green" the maintainer rejected.
+ * The closed list of hues a chord may be anchored on (oklch degrees),
+ * in shelf order — the walk round the wheel described at the top of
+ * this file. A chord whose `hue` is not in this list is not part of
+ * the palette, and a unit test rejects it. This is what replaced
+ * ADR-104's warm band: the guarantee is no longer "one narrow family
+ * of hue" but "a curated shelf, closed and ordered".
  */
-export const WARM_BAND = { min: 12, max: 100 } as const;
+export const PALETTE_ANCHORS: readonly number[] = [
+  93,
+  62,
+  30,
+  8,
+  350,
+  320,
+  285,
+  255,
+  228,
+  198,
+  162,
+  135,
+];
+
+/**
+ * How far any colour of a chord may sit from that chord's own hue
+ * (degrees, measured the short way round). A chord is one colour with
+ * its shades, never an assortment.
+ */
+export const CHORD_HUE_SPREAD = 40;
+
+/**
+ * The ground family that binds the twelve chords together. Every
+ * artwork ground is a dark, LOW-CHROMA slate in this window: the
+ * saturated hue belongs to the paints and to the accent, never to the
+ * field. Without this a full-wheel palette reads as the "random green
+ * next to a cyan" the maintainer rejected.
+ */
+export const GROUND = { minL: 0.14, maxL: 0.32, maxChroma: 0.055 } as const;
+
+/**
+ * Shortest angular distance between two hues, in degrees (0 → 180).
+ * Exported because the palette invariants are angular, and a naive
+ * subtraction would call 350° and 8° eighteen degrees apart in one
+ * direction and three hundred and forty-two in the other.
+ */
+export function hueDistance(a: number, b: number): number {
+  const wrap = (value: number): number => ((value % 360) + 360) % 360;
+  const delta = Math.abs(wrap(a) - wrap(b)) % 360;
+  return delta > 180 ? 360 - delta : delta;
+}
 
 /**
  * Raise lightness until the colour clears `target` against the canvas.
@@ -135,7 +215,7 @@ function liftToContrast(seed: Oklch, target: number): Oklch {
 }
 
 // ---------------------------------------------------------------------------
-// The authored chords (ADR-104)
+// The authored chords (ADR-111)
 
 /** Terse constructor — the table below is read as a swatch book. */
 function ok(l: number, c: number, h: number): Oklch {
@@ -146,7 +226,8 @@ function ok(l: number, c: number, h: number): Oklch {
 export type TintChord = {
   /** Art-direction name. Never shown to a reader; it labels the table. */
   readonly name: string;
-  /** Identity hue in degrees — the chord's place in the warm band. */
+  /** Identity hue in degrees — the chord's place on the shelf. Must
+   *  be one of {@link PALETTE_ANCHORS}. */
   readonly hue: number;
   /** Interactive colour SEED; lifted to AA before it is emitted. */
   readonly accent: Oklch;
@@ -165,220 +246,280 @@ export type TintChord = {
 };
 
 /**
- * The palette of the site — ten chords, gold first, all harmonious
- * with each other because they never leave the warm band.
+ * The palette of the site — TWELVE chords walking the wheel once, in
+ * shelf order, the way a row of tankōbon spines does (ADR-111).
  *
  * Read the `bg`/`ink`/`glow` triple of each entry as its VALUE
- * STRUCTURE: `ocre` is a near-black ground under a bone highlight,
- * `ambre` is a light ground with dark forms, `terre` is a close-valued
- * whisper, `vermillon` is a mid ground with maximum chroma. Two
- * entities on neighbouring hues still read as different pictures
- * because their light and dark masses are distributed differently.
+ * STRUCTURE, which is half of what separates two chords: `grenat` and
+ * `indigo` are near-black grounds under a bone highlight, `feuille`
+ * and `mandarine` are light grounds with dark forms cut into them,
+ * `vermillon` and `jade` sit between. Two entities on neighbouring
+ * hues still read as different pictures because their light and dark
+ * masses are distributed differently.
  *
- * Appending a chord is a pure art-direction act: it must stay inside
- * `WARM_BAND` and keep `ink.l < bg.l < 0.32`, both enforced by tests.
+ * Every ground obeys {@link GROUND} — dark and barely chromatic — so
+ * the twelve share one deep-water field and the saturation lives in
+ * the paints. That is the whole difference between a curated shelf
+ * and a random wheel.
+ *
+ * Appending a chord is a pure art-direction act, and three tests fence
+ * it: its hue must be one of {@link PALETTE_ANCHORS}, every colour it
+ * declares must sit within {@link CHORD_HUE_SPREAD} of that hue, and
+ * its ground must stay inside {@link GROUND}.
  */
 export const TINT_CHORDS: readonly [TintChord, ...TintChord[]] = [
   {
-    // The anchor. The site's gold, made into a whole atmosphere.
-    name: 'or',
-    hue: 86,
-    accent: ok(0.78, 0.135, 86),
-    wash: ok(0.252, 0.055, 84),
-    surface: ok(0.222, 0.03, 84),
-    bg: ok(0.238, 0.034, 80),
-    ink: ok(0.14, 0.026, 70),
-    glow: ok(0.962, 0.038, 92),
+    // straw-hat yellow — the identity chord
+    name: 'paille',
+    hue: 93,
+    accent: ok(0.855, 0.15, 93),
+    wash: ok(0.2365, 0.062, 93),
+    surface: ok(0.222, 0.034, 93),
+    bg: ok(0.225, 0.042, 93),
+    ink: ok(0.147, 0.0286, 93),
+    glow: ok(0.968, 0.036, 99),
     stops: [
-      ok(0.83, 0.14, 88),
-      ok(0.63, 0.128, 68),
-      ok(0.905, 0.078, 95),
-      ok(0.46, 0.1, 52),
-      ok(0.72, 0.135, 78),
-      ok(0.335, 0.062, 44),
+      ok(0.89, 0.15, 93),
+      ok(0.69, 0.15, 77),
+      ok(0.905, 0.072, 107),
+      ok(0.425, 0.117, 67),
+      ok(0.78, 0.156, 101),
+      ok(0.298, 0.069, 60),
     ],
   },
   {
-    // Brass: the top of the band. Held at 90° — tarnished brass, and
-    // deliberately no higher: at hero scale a large flat field past
-    // ~95° starts to look olive. It separates from `or` by VALUE
-    // (denser ground, darker paints), not by hue.
-    name: 'laiton',
-    hue: 90,
-    accent: ok(0.765, 0.13, 90),
-    wash: ok(0.245, 0.05, 88),
-    surface: ok(0.218, 0.028, 88),
-    bg: ok(0.222, 0.034, 86),
-    ink: ok(0.128, 0.024, 76),
-    glow: ok(0.945, 0.045, 92),
+    // Nami's orange / a Grand Line sunset
+    name: 'mandarine',
+    hue: 62,
+    accent: ok(0.8, 0.16, 62),
+    wash: ok(0.272, 0.062, 62),
+    surface: ok(0.222, 0.034, 62),
+    bg: ok(0.272, 0.044, 62),
+    ink: ok(0.194, 0.0299, 62),
+    glow: ok(0.972, 0.03, 68),
     stops: [
-      ok(0.8, 0.13, 90),
-      ok(0.6, 0.12, 76),
-      ok(0.875, 0.09, 94),
-      ok(0.44, 0.09, 64),
-      ok(0.685, 0.112, 84),
-      ok(0.3, 0.054, 56),
+      ok(0.835, 0.16, 62),
+      ok(0.635, 0.16, 46),
+      ok(0.905, 0.072, 76),
+      ok(0.425, 0.1248, 36),
+      ok(0.725, 0.1664, 70),
+      ok(0.298, 0.0736, 29),
     ],
   },
   {
-    // Ochre: the highest value contrast of the set — near-black
-    // ground, bone highlight. The chord that carves.
-    name: 'ocre',
-    hue: 72,
-    accent: ok(0.735, 0.125, 72),
-    wash: ok(0.238, 0.052, 70),
-    surface: ok(0.208, 0.028, 70),
-    bg: ok(0.196, 0.03, 66),
-    ink: ok(0.108, 0.02, 58),
-    glow: ok(0.968, 0.03, 86),
-    stops: [
-      ok(0.78, 0.125, 72),
-      ok(0.585, 0.115, 56),
-      ok(0.925, 0.062, 84),
-      ok(0.415, 0.085, 44),
-      ok(0.665, 0.13, 64),
-      ok(0.285, 0.055, 38),
-    ],
-  },
-  {
-    name: 'cuivre',
-    hue: 54,
-    accent: ok(0.715, 0.145, 54),
-    wash: ok(0.252, 0.062, 52),
-    surface: ok(0.222, 0.034, 52),
-    bg: ok(0.232, 0.04, 48),
-    ink: ok(0.138, 0.028, 38),
-    glow: ok(0.95, 0.038, 80),
-    stops: [
-      ok(0.755, 0.148, 54),
-      ok(0.585, 0.145, 38),
-      ok(0.885, 0.088, 72),
-      ok(0.425, 0.105, 30),
-      ok(0.665, 0.155, 46),
-      ok(0.315, 0.07, 26),
-    ],
-  },
-  {
-    // Saffron: high chroma on a LIGHT ground — reads as a bright tile
-    // in a wall of dark ones.
-    name: 'safran',
-    hue: 66,
-    accent: ok(0.755, 0.155, 66),
-    wash: ok(0.268, 0.068, 64),
-    surface: ok(0.235, 0.036, 64),
-    bg: ok(0.282, 0.05, 62),
-    ink: ok(0.148, 0.032, 50),
-    glow: ok(0.958, 0.048, 84),
-    stops: [
-      ok(0.795, 0.152, 66),
-      ok(0.625, 0.155, 48),
-      ok(0.9, 0.095, 80),
-      ok(0.455, 0.115, 36),
-      ok(0.705, 0.165, 58),
-      ok(0.325, 0.075, 30),
-    ],
-  },
-  {
-    name: 'orange-brule',
-    hue: 44,
-    accent: ok(0.695, 0.165, 44),
-    wash: ok(0.248, 0.07, 42),
-    surface: ok(0.218, 0.038, 42),
-    bg: ok(0.208, 0.042, 38),
-    ink: ok(0.118, 0.03, 30),
-    glow: ok(0.955, 0.042, 76),
-    stops: [
-      ok(0.735, 0.168, 44),
-      ok(0.565, 0.165, 30),
-      ok(0.865, 0.1, 64),
-      ok(0.4, 0.12, 22),
-      ok(0.645, 0.175, 38),
-      ok(0.295, 0.075, 20),
-    ],
-  },
-  {
-    // Vermillion — the hanko / wanted-poster red, on a mid-light
-    // ground so its forms read dark against it.
+    // Luffy's vest
     name: 'vermillon',
     hue: 30,
-    accent: ok(0.665, 0.185, 30),
-    wash: ok(0.262, 0.075, 30),
-    surface: ok(0.232, 0.042, 30),
-    bg: ok(0.292, 0.052, 34),
-    ink: ok(0.152, 0.036, 22),
-    glow: ok(0.94, 0.048, 68),
+    accent: ok(0.69, 0.19, 30),
+    wash: ok(0.2037, 0.062, 30),
+    surface: ok(0.222, 0.034, 30),
+    bg: ok(0.185, 0.044, 30),
+    ink: ok(0.107, 0.0299, 30),
+    glow: ok(0.955, 0.034, 36),
     stops: [
-      ok(0.7, 0.19, 30),
-      ok(0.545, 0.185, 20),
-      ok(0.845, 0.105, 54),
-      ok(0.395, 0.13, 16),
-      ok(0.615, 0.19, 26),
-      ok(0.275, 0.08, 14),
+      ok(0.725, 0.19, 30),
+      ok(0.525, 0.19, 14),
+      ok(0.905, 0.072, 44),
+      ok(0.425, 0.1482, 4),
+      ok(0.615, 0.1976, 38),
+      ok(0.298, 0.0874, 357),
     ],
   },
   {
-    // Oxblood: the darkest ground of the set. Deep wine, restrained
-    // highlight — the chord that broods.
-    name: 'sang-de-boeuf',
-    hue: 20,
-    accent: ok(0.635, 0.185, 20),
-    wash: ok(0.235, 0.072, 20),
-    surface: ok(0.205, 0.04, 20),
-    bg: ok(0.172, 0.038, 18),
-    ink: ok(0.094, 0.026, 14),
-    glow: ok(0.93, 0.052, 60),
+    // Shanks' coat — the darkest ground of the set
+    name: 'grenat',
+    hue: 8,
+    accent: ok(0.66, 0.185, 8),
+    wash: ok(0.1766, 0.062, 8),
+    surface: ok(0.222, 0.034, 8),
+    bg: ok(0.152, 0.04, 8),
+    ink: ok(0.074, 0.0272, 8),
+    glow: ok(0.948, 0.032, 14),
     stops: [
-      ok(0.665, 0.19, 20),
-      ok(0.52, 0.185, 14),
-      ok(0.82, 0.115, 44),
-      ok(0.375, 0.135, 12),
-      ok(0.585, 0.2, 24),
-      ok(0.255, 0.085, 16),
+      ok(0.695, 0.185, 8),
+      ok(0.495, 0.185, 352),
+      ok(0.905, 0.072, 22),
+      ok(0.425, 0.1443, 342),
+      ok(0.585, 0.1924, 16),
+      ok(0.298, 0.0851, 335),
     ],
   },
   {
-    // Terre: the quiet chord — the lowest chroma of the set and its
-    // closest values, but still unmistakably SEPIA. A desaturated
-    // warm is a risk (v5/v7 were called muddy), so it keeps enough
-    // chroma to stay a colour and the brightest bone highlight here.
-    name: 'terre',
-    hue: 40,
-    accent: ok(0.725, 0.098, 50),
-    wash: ok(0.242, 0.036, 44),
-    surface: ok(0.215, 0.024, 44),
-    bg: ok(0.215, 0.032, 42),
-    ink: ok(0.125, 0.022, 34),
-    glow: ok(0.972, 0.026, 84),
+    // the chapter-642 colour spread
+    name: 'rose',
+    hue: 350,
+    accent: ok(0.72, 0.165, 350),
+    wash: ok(0.2586, 0.062, 350),
+    surface: ok(0.222, 0.034, 350),
+    bg: ok(0.252, 0.042, 350),
+    ink: ok(0.174, 0.0286, 350),
+    glow: ok(0.968, 0.028, 356),
     stops: [
-      ok(0.755, 0.1, 50),
-      ok(0.6, 0.092, 34),
-      ok(0.9, 0.062, 72),
-      ok(0.445, 0.075, 28),
-      ok(0.685, 0.108, 56),
-      ok(0.315, 0.052, 24),
+      ok(0.755, 0.165, 350),
+      ok(0.555, 0.165, 334),
+      ok(0.905, 0.072, 4),
+      ok(0.425, 0.1287, 324),
+      ok(0.645, 0.1716, 358),
+      ok(0.298, 0.0759, 317),
     ],
   },
   {
-    // Amber: the inverted value structure — the lightest ground of
-    // the set, its forms cut dark into it.
-    name: 'ambre',
-    hue: 80,
-    accent: ok(0.795, 0.115, 80),
-    wash: ok(0.265, 0.05, 78),
-    surface: ok(0.232, 0.028, 78),
-    bg: ok(0.305, 0.038, 80),
-    ink: ok(0.158, 0.024, 64),
-    glow: ok(0.975, 0.03, 88),
+    // dusk over the sea
+    name: 'prune',
+    hue: 320,
+    accent: ok(0.7, 0.165, 320),
+    wash: ok(0.2365, 0.062, 320),
+    surface: ok(0.222, 0.034, 320),
+    bg: ok(0.225, 0.042, 320),
+    ink: ok(0.147, 0.0286, 320),
+    glow: ok(0.96, 0.03, 326),
     stops: [
-      ok(0.86, 0.108, 84),
-      ok(0.635, 0.1, 66),
-      ok(0.935, 0.055, 90),
-      ok(0.475, 0.075, 52),
-      ok(0.745, 0.115, 76),
-      ok(0.345, 0.048, 44),
+      ok(0.735, 0.165, 320),
+      ok(0.535, 0.165, 304),
+      ok(0.905, 0.072, 334),
+      ok(0.425, 0.1287, 294),
+      ok(0.625, 0.1716, 328),
+      ok(0.298, 0.0759, 287),
+    ],
+  },
+  {
+    // the night watch
+    name: 'indigo',
+    hue: 285,
+    accent: ok(0.7, 0.165, 285),
+    wash: ok(0.1766, 0.062, 285),
+    surface: ok(0.222, 0.034, 285),
+    bg: ok(0.152, 0.046, 285),
+    ink: ok(0.074, 0.0313, 285),
+    glow: ok(0.952, 0.032, 291),
+    stops: [
+      ok(0.735, 0.165, 285),
+      ok(0.535, 0.165, 269),
+      ok(0.905, 0.072, 299),
+      ok(0.425, 0.1287, 259),
+      ok(0.625, 0.1716, 293),
+      ok(0.298, 0.0759, 252),
+    ],
+  },
+  {
+    // the deep sea — the chord the chrome itself is on
+    name: 'outremer',
+    hue: 255,
+    accent: ok(0.72, 0.155, 255),
+    wash: ok(0.2078, 0.062, 255),
+    surface: ok(0.222, 0.034, 255),
+    bg: ok(0.19, 0.048, 255),
+    ink: ok(0.112, 0.0326, 255),
+    glow: ok(0.958, 0.03, 261),
+    stops: [
+      ok(0.755, 0.155, 255),
+      ok(0.555, 0.155, 239),
+      ok(0.905, 0.072, 269),
+      ok(0.425, 0.1209, 229),
+      ok(0.645, 0.1612, 263),
+      ok(0.298, 0.0713, 222),
+    ],
+  },
+  {
+    // sky over the Grand Line
+    name: 'azur',
+    hue: 228,
+    accent: ok(0.76, 0.145, 228),
+    wash: ok(0.2611, 0.062, 228),
+    surface: ok(0.222, 0.034, 228),
+    bg: ok(0.255, 0.044, 228),
+    ink: ok(0.177, 0.0299, 228),
+    glow: ok(0.972, 0.028, 234),
+    stops: [
+      ok(0.795, 0.145, 228),
+      ok(0.595, 0.145, 212),
+      ok(0.905, 0.072, 242),
+      ok(0.425, 0.1131, 202),
+      ok(0.685, 0.1508, 236),
+      ok(0.298, 0.0667, 195),
+    ],
+  },
+  {
+    // turquoise shallows
+    name: 'lagon',
+    hue: 198,
+    accent: ok(0.8, 0.13, 198),
+    wash: ok(0.2447, 0.062, 198),
+    surface: ok(0.222, 0.034, 198),
+    bg: ok(0.235, 0.044, 198),
+    ink: ok(0.157, 0.0299, 198),
+    glow: ok(0.97, 0.03, 204),
+    stops: [
+      ok(0.835, 0.13, 198),
+      ok(0.635, 0.13, 182),
+      ok(0.905, 0.072, 212),
+      ok(0.425, 0.1014, 172),
+      ok(0.725, 0.1352, 206),
+      ok(0.298, 0.0598, 165),
+    ],
+  },
+  {
+    // Zoro's haramaki / palm shade
+    name: 'jade',
+    hue: 162,
+    accent: ok(0.8, 0.135, 162),
+    wash: ok(0.2078, 0.062, 162),
+    surface: ok(0.222, 0.034, 162),
+    bg: ok(0.19, 0.042, 162),
+    ink: ok(0.112, 0.0286, 162),
+    glow: ok(0.962, 0.032, 168),
+    stops: [
+      ok(0.835, 0.135, 162),
+      ok(0.635, 0.135, 146),
+      ok(0.905, 0.072, 176),
+      ok(0.425, 0.1053, 136),
+      ok(0.725, 0.1404, 170),
+      ok(0.298, 0.0621, 129),
+    ],
+  },
+  {
+    // island canopy — the lightest ground of the set
+    name: 'feuille',
+    hue: 135,
+    accent: ok(0.82, 0.14, 135),
+    wash: ok(0.2718, 0.062, 135),
+    surface: ok(0.222, 0.034, 135),
+    bg: ok(0.268, 0.042, 135),
+    ink: ok(0.19, 0.0286, 135),
+    glow: ok(0.975, 0.03, 141),
+    stops: [
+      ok(0.855, 0.14, 135),
+      ok(0.655, 0.14, 119),
+      ok(0.905, 0.072, 149),
+      ok(0.425, 0.1092, 109),
+      ok(0.745, 0.1456, 143),
+      ok(0.298, 0.0644, 102),
     ],
   },
 ];
+
+/**
+ * The chord the NEUTRAL chrome is painted with: the deep sea. It is
+ * what `styles.css` declares as the default `--art-*` tokens, so an
+ * untinted surface still belongs to the palette instead of being an
+ * eleventh, unauthored colour. A unit test parses the stylesheet and
+ * fails if the two drift.
+ */
+export const CHROME_CHORD_NAME = 'outremer';
+
+/** The `--art-*` values `styles.css` must declare, as CSS text. */
+export function chromeArtTokens(): Readonly<Record<string, string>> {
+  const chord = TINT_CHORDS.find((entry) => entry.name === CHROME_CHORD_NAME) ?? TINT_CHORDS[0];
+  const tokens: Record<string, string> = {
+    '--art-bg': css(chord.bg),
+    '--art-ink': css(chord.ink),
+    '--art-glow': css(chord.glow),
+  };
+  chord.stops.forEach((stop, index) => {
+    tokens[`--art-${index + 1}`] = css(stop);
+  });
+  return tokens;
+}
 
 export type EntityTint = {
   /** The chord's art-direction name — the palette entry that was picked. */
@@ -400,10 +541,10 @@ export function entityTint(entityId: string): EntityTint {
   // A second hash generation, so an entity's chord and the composition
   // seeded on the same string do not move in lockstep. The salt is not
   // arbitrary: it was chosen among candidates for the flattest spread
-  // over the ten chords, and verified against the real corpus — all
-  // ten chords are in use across the 37 entities, and the Straw Hats
-  // land on four different ones.
-  const index = hashString(`tint|gold|${entityId}`) % TINT_CHORDS.length;
+  // over the twelve chords against the real corpus — all twelve are in
+  // use across the 61 entities (7 max, 3 min), and the five Straw Hats
+  // on screen together land on five DIFFERENT chords.
+  const index = hashString(`tint|ocean|${entityId}`) % TINT_CHORDS.length;
   const chord = TINT_CHORDS[index] ?? TINT_CHORDS[0];
   const accent = liftToContrast(chord.accent, MIN_ACCENT_CONTRAST);
   const accentHover = liftToContrast(
@@ -420,7 +561,8 @@ export function entityTint(entityId: string): EntityTint {
     '--tint-line': `oklch(${accent.l} ${accent.c} ${accent.h} / 0.22)`,
     '--tint-line-strong': `oklch(${accent.l} ${accent.c} ${accent.h} / 0.45)`,
     // The artwork's own ground, mass and highlight — the chord's
-    // value structure, which is what makes two warm entities differ.
+    // value structure, which is half of what makes two entities differ
+    // (hue is the other half, ADR-111).
     '--art-bg': css(chord.bg),
     '--art-ink': css(chord.ink),
     '--art-glow': css(chord.glow),

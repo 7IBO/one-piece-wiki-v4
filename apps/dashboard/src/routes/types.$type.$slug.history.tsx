@@ -17,7 +17,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { resolveDisplayName } from '@onepiece-wiki/schemas';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, Info } from 'lucide-react';
-import { type JSX, useMemo } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { api, type HistoryCommit } from '../api';
 import { HistoryChangeGroups, HistoryCommitHeader } from '../components/HistoryChangeGroups';
 import { LoadFailed } from '../components/LoadFailed';
@@ -45,7 +45,7 @@ function entityHistoryUrl(type: string, entityId: string): string {
   return `${DATA_REPO_URL}/commits/main/data/universes/${UNIVERSE_ID}/entities/${type}/${idSlugPart}.json`;
 }
 
-function EntityHistoryComponent(): JSX.Element {
+function EntityHistoryComponent(): ReactElement {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
   const t = useT();

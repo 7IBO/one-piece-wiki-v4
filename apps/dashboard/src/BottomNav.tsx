@@ -26,13 +26,13 @@ import { Button } from '@/components/ui/button';
 import { MobileSheet, MobileSheetContent, MobileSheetTrigger } from '@/components/ui/mobile-sheet';
 import { Link, useLocation } from '@tanstack/react-router';
 import { Home, LogIn, LogOut, Menu, Plus, User2 } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { AppSidebar } from './AppSidebar';
 import { useCurrentUser, useSignOut } from './auth';
 import { useLocale } from './form/locale';
 import { useSchemaCatalogue } from './hooks/use-schema-catalogue';
 
-export function BottomNav(): JSX.Element | null {
+export function BottomNav(): ReactElement | null {
   const location = useLocation();
   const { user, loaded } = useCurrentUser();
   const locale = useLocale();

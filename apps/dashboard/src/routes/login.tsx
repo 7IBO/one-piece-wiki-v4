@@ -22,7 +22,7 @@
 import { Banner } from '@/components/ui/banner';
 import { Button } from '@/components/ui/button';
 import { createFileRoute, useNavigate, useSearch } from '@tanstack/react-router';
-import { type JSX, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import { toast } from 'sonner';
 import { z } from 'zod';
 import { auth } from '../auth';
@@ -37,7 +37,7 @@ export const Route = createFileRoute('/login')({
   component: LoginPage,
 });
 
-function LoginPage(): JSX.Element {
+function LoginPage(): ReactElement {
   const locale = useLocale();
   const t = useT();
   const navigate = useNavigate();

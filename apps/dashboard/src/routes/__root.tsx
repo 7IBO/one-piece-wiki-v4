@@ -4,7 +4,7 @@ import { Toaster } from '@/components/ui/sonner';
 import { createRootRoute, HeadContent, Link, Scripts } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getCookie, getRequestHeader } from '@tanstack/react-start/server';
-import { type JSX, type ReactNode } from 'react';
+import { type ReactElement, type ReactNode } from 'react';
 import { AppSidebar } from '../AppSidebar';
 import { useCurrentUser, useSignOut } from '../auth';
 import { BottomNav } from '../BottomNav';
@@ -81,7 +81,7 @@ export const Route = createRootRoute({
  * from every matched route's `head()` return. `Scripts` emits the
  * hydration bootstrap + module preloads.
  */
-function RootDocument({ children }: { children: ReactNode; }): JSX.Element {
+function RootDocument({ children }: { children: ReactNode; }): ReactElement {
   // Cookie/Accept-Language-derived locale from the root loader — the
   // shell may render before the loader resolves on the client, so
   // fall back to 'en' defensively.
@@ -102,7 +102,7 @@ function RootDocument({ children }: { children: ReactNode; }): JSX.Element {
 
 function AppChrome(
   { children, initialLocale }: { children: ReactNode; initialLocale: 'en' | 'fr'; },
-): JSX.Element {
+): ReactElement {
   const { user, loaded } = useCurrentUser();
   const { signOut, pending: signOutPending } = useSignOut();
 

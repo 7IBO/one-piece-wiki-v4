@@ -55,7 +55,7 @@ import {
 } from '@onepiece-wiki/schemas';
 import { Link } from '@tanstack/react-router';
 import { ChevronRight, Info, Pencil, TriangleAlert, X } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import {
   api,
   type EntityRef,
@@ -317,7 +317,7 @@ export function summariseEdge(
   return { text: parts.join(' · '), since };
 }
 
-export function RelationsEditor(p: RelationsEditorProps): JSX.Element {
+export function RelationsEditor(p: RelationsEditorProps): ReactElement {
   const locale = useLocale();
   const t = useT();
   const qualifierLabel = useQualifierLabel();
@@ -669,7 +669,7 @@ function RelationEdgeFields(p: {
   vocabularies: Record<string, VocabularySchema>;
   onTargetChange: (target: string) => void;
   onSetQualifier: (qid: string, value: unknown) => void;
-}): JSX.Element {
+}): ReactElement {
   const qLabel = useQualifierLabel();
   const qualifiers = p.edge.qualifiers ?? {};
 
@@ -828,7 +828,7 @@ export function RelationQualifierField(
     vocabularies: Record<string, VocabularySchema>;
     onChange: (next: unknown) => void;
   },
-): JSX.Element {
+): ReactElement {
   const qLabel = useQualifierLabel();
   const enumValues = useMemo<readonly EnumValue[]>(() => {
     if (p.valueType !== 'enum' && p.valueType !== 'multi_enum') return [];
@@ -937,7 +937,7 @@ export type InferredRelationsProps = {
     readonly managing: string | null;
     readonly onManage: (relationTypeId: string | null) => void;
     readonly castRelationIds: readonly string[];
-    readonly renderManager: (relationTypeId: string, onClose: () => void) => JSX.Element;
+    readonly renderManager: (relationTypeId: string, onClose: () => void) => ReactElement;
   };
 };
 
@@ -953,7 +953,7 @@ const CONFLICT_KIND_LABEL_KEY = {
 function ConflictList(p: {
   readonly conflicts: readonly LinkConflict[];
   readonly relationTypes: Record<string, RelationTypeSchema>;
-}): JSX.Element {
+}): ReactElement {
   const t = useT();
   const locale = useLocale();
   return (
@@ -984,7 +984,7 @@ function IncomingEdgeDetail(p: {
   readonly shapes: readonly QualifierShape[];
   readonly vocabularies: Record<string, VocabularySchema>;
   readonly sources: readonly SourceRef[];
-}): JSX.Element {
+}): ReactElement {
   const t = useT();
   const locale = useLocale();
   const qualifierLabel = useQualifierLabel();
@@ -1063,7 +1063,7 @@ function IncomingEdgeDetail(p: {
  * is neither an incoming edge nor a finding — no layout shift for the
  * common case.
  */
-export function InferredRelations(p: InferredRelationsProps): JSX.Element | null {
+export function InferredRelations(p: InferredRelationsProps): ReactElement | null {
   const t = useT();
   const locale = useLocale();
   const qualifierLabel = useQualifierLabel();

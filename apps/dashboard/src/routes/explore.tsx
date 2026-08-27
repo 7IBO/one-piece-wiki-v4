@@ -49,7 +49,14 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useWindowVirtualizer } from '@tanstack/react-virtual';
 import { Check, ChevronsUpDown, Columns3, ListFilter, Search } from 'lucide-react';
-import { type JSX, type ReactNode, useDeferredValue, useMemo, useRef, useState } from 'react';
+import {
+  type ReactElement,
+  type ReactNode,
+  useDeferredValue,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { api, type AuditRow, type Completeness, type SchemaCatalogue } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
 import { type Locale, useLocale, useT } from '../form/locale';
@@ -131,7 +138,7 @@ function declOf(
   };
 }
 
-function RowMeter({ value }: { value: Completeness; }): JSX.Element | null {
+function RowMeter({ value }: { value: Completeness; }): ReactElement | null {
   const t = useT();
   if (value.expected <= 0) return null;
   const full = value.filled >= value.expected;
@@ -176,7 +183,7 @@ function MultiPick(p: {
   selected: readonly string[];
   onChange: (next: readonly string[]) => void;
   clearLabel?: string | undefined;
-}): JSX.Element {
+}): ReactElement {
   const t = useT();
   const [open, setOpenState] = useState(false);
   // Same defensive scroll-restore as the form pickers — Base UI's
@@ -269,7 +276,7 @@ function FilterToggle(p: {
   active: boolean;
   label: string;
   onToggle: () => void;
-}): JSX.Element {
+}): ReactElement {
   return (
     <Button
       type='button'
@@ -297,7 +304,7 @@ function ValueCell(p: {
   propertyId: string;
   schemas: SchemaCatalogue;
   locale: Locale;
-}): JSX.Element {
+}): ReactElement {
   const t = useT();
   const declared = declOf(p.schemas, p.row.type, p.propertyId) !== undefined;
   const pv = p.row.values.find((v) => v.property === p.propertyId);
@@ -353,7 +360,7 @@ function ExploreRow(p: {
   schemas: SchemaCatalogue | null;
   locale: Locale;
   chosenProps: readonly string[];
-}): JSX.Element {
+}): ReactElement {
   const t = useT();
   const { row } = p;
   const name = row.displayName[p.locale] ?? row.displayName.en ?? row.slug;
@@ -472,7 +479,7 @@ function ExploreRow(p: {
 }
 
 /** Skeleton shaped like the real rows. */
-function ExploreSkeleton(): JSX.Element {
+function ExploreSkeleton(): ReactElement {
   return (
     <Card bleed className='gap-0 py-0'>
       <ul className='divide-border divide-y'>
@@ -493,7 +500,7 @@ function ExploreSkeleton(): JSX.Element {
   );
 }
 
-function ExploreComponent(): JSX.Element {
+function ExploreComponent(): ReactElement {
   const locale = useLocale();
   const t = useT();
   // Locale is a fetch dependency: value displays (translations,
@@ -620,7 +627,7 @@ function ExploreComponent(): JSX.Element {
     return <LoadFailed message={error} onRetry={reload} />;
   }
 
-  const renderRow = (row: AuditRow): JSX.Element => (
+  const renderRow = (row: AuditRow): ReactElement => (
     <ExploreRow
       row={row}
       schemas={schemas}

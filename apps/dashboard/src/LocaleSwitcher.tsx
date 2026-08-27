@@ -15,7 +15,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select';
-import { type JSX } from 'react';
+import { type ReactElement } from 'react';
 import { type Locale, SUPPORTED_LOCALES, useLocale, useSetLocale, useT } from './form/locale';
 
 const LABELS: Record<Locale, string> = {
@@ -23,7 +23,7 @@ const LABELS: Record<Locale, string> = {
   fr: 'FR',
 };
 
-export function LocaleSwitcher(): JSX.Element {
+export function LocaleSwitcher(): ReactElement {
   const current = useLocale();
   const setLocale = useSetLocale();
   const t = useT();

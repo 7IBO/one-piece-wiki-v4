@@ -28,7 +28,7 @@
  */
 import { Button } from '@/components/ui/button';
 import { Settings2, X } from 'lucide-react';
-import type { JSX, ReactElement, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import { cloneElement, useEffect, useRef, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { useT } from './locale';
@@ -69,7 +69,7 @@ export type SideSheetProps = {
  * only `transform` (GPU-friendly) and skips a backdrop so the page
  * stays clickable and scroll-smooth behind.
  */
-export function SideSheet(p: SideSheetProps): JSX.Element | null {
+export function SideSheet(p: SideSheetProps): ReactElement | null {
   const t = useT();
 
   // ESC closes the sheet — cheap to wire up and matches every other
@@ -177,7 +177,7 @@ export type QualifierRowListProps = {
  * rest show a "label — —" line that expands on tap. No separate
  * add-picker: what exists is always visible.
  */
-export function QualifierRowList(p: QualifierRowListProps): JSX.Element {
+export function QualifierRowList(p: QualifierRowListProps): ReactElement {
   // Track qualifiers the user opened during this session but hasn't
   // populated yet. Without this, adding "Source" would render the
   // row briefly, then the value-empty test would hide it on next
@@ -285,7 +285,7 @@ export type QualifierSheetProps = {
 
 /** Trigger-owned composition of SideSheet + QualifierRowList — the
  *  relations editor's "More options" entry point. */
-export function QualifierSheet(p: QualifierSheetProps): JSX.Element {
+export function QualifierSheet(p: QualifierSheetProps): ReactElement {
   const t = useT();
   const [open, setOpen] = useState(false);
 

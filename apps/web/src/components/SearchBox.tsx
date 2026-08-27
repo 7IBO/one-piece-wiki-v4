@@ -12,7 +12,7 @@
  * cursor, the locale and the ranking.
  */
 import { useNavigate, useRouterState } from '@tanstack/react-router';
-import { type JSX, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { t } from '../lib/chrome';
 import { useLocale } from '../routes/__root';
 
@@ -22,7 +22,7 @@ function queryFromLocation(search: unknown): string {
   return typeof q === 'string' ? q : '';
 }
 
-export function SearchBox(): JSX.Element {
+export function SearchBox(): ReactElement {
   const locale = useLocale();
   const navigate = useNavigate();
   const urlQuery = useRouterState({

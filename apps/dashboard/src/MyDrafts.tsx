@@ -17,7 +17,7 @@
  */
 import { Link } from '@tanstack/react-router';
 import { Trash2 } from 'lucide-react';
-import type { JSX } from 'react';
+import type { ReactElement } from 'react';
 import { toast } from 'sonner';
 import { Button } from './components/ui/button';
 import { useLocale, useT } from './form/locale';
@@ -33,7 +33,7 @@ function relativeTime(savedAt: number, locale: 'en' | 'fr'): string {
   return new Date(savedAt).toLocaleDateString(locale);
 }
 
-export function MyDrafts(): JSX.Element | null {
+export function MyDrafts(): ReactElement | null {
   const { drafts, refresh } = useAllDrafts();
   const t = useT();
   const locale = useLocale();

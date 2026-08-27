@@ -1,24 +1,42 @@
 /**
- * The per-entity tint (ADR-103, curated by ADR-104). The point of
- * these tests is the PROMISE, not the individual swatches: whichever
- * chord an id lands on, the page it produces must be readable,
- * deterministic, and painted only through custom properties — and the
- * palette must never leave the warm band, so nobody can slip a green
- * back into the design.
+ * The per-entity tint (ADR-103, chord set re-authored by ADR-111). The
+ * point of these tests is the PROMISE, not the individual swatches:
+ * whichever chord an id lands on, the page it produces must be
+ * readable, deterministic, and painted only through custom properties.
+ *
+ * ADR-111 replaced ADR-104's warm band (12°–100°, everything anchored
+ * on gold) with a twelve-chord shelf that walks the whole wheel. The
+ * band test went with it, and THREE structural tests took its place —
+ * they are what stops the shelf from decaying back into the random
+ * wheel that failed before:
+ *
+ *  - every chord's hue is one of the closed `PALETTE_ANCHORS`;
+ *  - every colour of a chord sits within `CHORD_HUE_SPREAD` of it;
+ *  - every artwork ground obeys `GROUND` — dark and barely chromatic,
+ *    so the twelve share one deep-water field.
+ *
+ * Plus a fourth: the neutral chrome art tokens in `styles.css` ARE one
+ * of the authored chords, byte for byte, so an untinted surface can
+ * never become an unauthored thirteenth colour.
  */
 import { describe, expect, test } from 'bun:test';
 import { readFileSync } from 'node:fs';
 import { resolve } from 'node:path';
 import {
+  CHORD_HUE_SPREAD,
+  CHROME_CHORD_NAME,
+  chromeArtTokens,
   contrastRatio,
   entityTint,
+  GROUND,
+  hueDistance,
   MIN_ACCENT_CONTRAST,
   MIN_DISPLAY_CONTRAST,
   type Oklch,
   PAGE_CANVAS,
+  PALETTE_ANCHORS,
   relativeLuminance,
   TINT_CHORDS,
-  WARM_BAND,
 } from '../entity-tint.ts';
 
 const IDS: readonly string[] = [
@@ -79,10 +97,10 @@ describe('the canvas constant tracks styles.css', () => {
 });
 
 // ---------------------------------------------------------------------------
-// ADR-104 — the palette is one family, anchored on gold. These are the
-// tests that stop a green from ever coming back.
+// ADR-111 — the palette is a curated SHELF, not a wheel. These are the
+// tests that stop it from decaying back into random colours.
 
-describe('the authored palette stays in the warm band', () => {
+describe('the authored palette is a closed, coherent shelf', () => {
   const every = (chord: (typeof TINT_CHORDS)[number]): readonly Oklch[] => [
     chord.accent,
     chord.wash,
@@ -93,41 +111,65 @@ describe('the authored palette stays in the warm band', () => {
     ...chord.stops,
   ];
 
-  test('no chord declares a hue outside 12°–104° (no green, cyan, blue, violet)', () => {
+  test('every chord is anchored on one of the authored hues', () => {
+    for (const chord of TINT_CHORDS) {
+      expect(PALETTE_ANCHORS, chord.name).toContain(chord.hue);
+    }
+    // …and the shelf uses each anchor exactly once, so the walk round
+    // the wheel has no gap and no doubled rung.
+    expect(TINT_CHORDS.map((chord) => chord.hue).sort((a, b) => a - b))
+      .toEqual([...PALETTE_ANCHORS].sort((a, b) => a - b));
+  });
+
+  test('a chord is ONE colour with its shades, not an assortment', () => {
     for (const chord of TINT_CHORDS) {
       for (const color of every(chord)) {
-        expect(color.h).toBeGreaterThanOrEqual(WARM_BAND.min);
-        expect(color.h).toBeLessThanOrEqual(WARM_BAND.max);
+        expect(hueDistance(color.h, chord.hue), `${chord.name} @ ${color.h}`)
+          .toBeLessThanOrEqual(CHORD_HUE_SPREAD);
       }
-      expect(chord.hue).toBeGreaterThanOrEqual(WARM_BAND.min);
-      expect(chord.hue).toBeLessThanOrEqual(WARM_BAND.max);
     }
   });
 
-  test('the same band holds for the neutral chrome art tokens in styles.css', () => {
+  test('every ground is a dark, barely chromatic slate — the one shared field', () => {
+    for (const chord of TINT_CHORDS) {
+      expect(chord.bg.l, chord.name).toBeGreaterThanOrEqual(GROUND.minL);
+      expect(chord.bg.l, chord.name).toBeLessThanOrEqual(GROUND.maxL);
+      expect(chord.bg.c, chord.name).toBeLessThanOrEqual(GROUND.maxChroma);
+      expect(chord.ink.c, chord.name).toBeLessThanOrEqual(GROUND.maxChroma);
+    }
+  });
+
+  test('the neutral chrome art tokens in styles.css ARE an authored chord', () => {
     const css = readFileSync(resolve(import.meta.dirname, '..', '..', 'styles.css'), 'utf8');
-    const tokens = [...css.matchAll(/--art-[a-z0-9-]+:\s*(oklch\([^)]+\))/g)];
-    expect(tokens.length).toBeGreaterThanOrEqual(9);
-    for (const token of tokens) {
-      const { h } = parseOklch(token[1] ?? '');
-      expect(h).toBeGreaterThanOrEqual(WARM_BAND.min);
-      expect(h).toBeLessThanOrEqual(WARM_BAND.max);
+    const declared = new Map(
+      [...css.matchAll(/(--art-[a-z0-9-]+):\s*(oklch\([^)]+\))/g)]
+        .map((match) => [match[1] ?? '', match[2] ?? ''] as const),
+    );
+    const expected = chromeArtTokens();
+    expect(Object.keys(expected)).toHaveLength(9);
+    for (const [token, value] of Object.entries(expected)) {
+      expect(declared.get(token), token).toBe(value);
     }
+    expect(TINT_CHORDS.some((chord) => chord.name === CHROME_CHORD_NAME)).toBe(true);
   });
 
-  test('gold anchors the list: the first chord is the site gold', () => {
-    const anchor = TINT_CHORDS[0];
-    expect(anchor.name).toBe('or');
-    expect(anchor.hue).toBeGreaterThanOrEqual(80);
-    expect(anchor.hue).toBeLessThanOrEqual(95);
+  test('straw-hat yellow opens the shelf, and the ocean carries the chrome', () => {
+    const first = TINT_CHORDS[0];
+    expect(first.name).toBe('paille');
+    expect(first.hue).toBeGreaterThanOrEqual(85);
+    expect(first.hue).toBeLessThanOrEqual(100);
+    // The chrome chord is a blue: the site's resting state is the sea.
+    const chrome = TINT_CHORDS.find((chord) => chord.name === CHROME_CHORD_NAME);
+    expect(chrome?.hue).toBeGreaterThanOrEqual(200);
+    expect(chrome?.hue).toBeLessThanOrEqual(280);
   });
 
   test('names are unique and the list is big enough to differentiate entities', () => {
-    expect(TINT_CHORDS.length).toBeGreaterThanOrEqual(8);
+    expect(TINT_CHORDS.length).toBeGreaterThanOrEqual(10);
     expect(new Set(TINT_CHORDS.map((chord) => chord.name)).size).toBe(TINT_CHORDS.length);
   });
 
-  test('every chord carries real value structure — a narrow band is not a flat one', () => {
+  test('every chord carries real value structure — the shelf is not flat', () => {
     for (const chord of TINT_CHORDS) {
       // Ground below the highlight, mass below the ground.
       expect(chord.ink.l).toBeLessThan(chord.bg.l);
@@ -143,6 +185,18 @@ describe('the authored palette stays in the warm band', () => {
   test('the chords differ from each other in value, not only in hue', () => {
     const grounds = TINT_CHORDS.map((chord) => chord.bg.l);
     expect(Math.max(...grounds) - Math.min(...grounds)).toBeGreaterThanOrEqual(0.1);
+  });
+
+  test('the shelf really spans the wheel — a wall of pages is not monotone', () => {
+    // The failure ADR-111 exists to fix: ten chords inside 88° of hue.
+    const hues = TINT_CHORDS.map((chord) => chord.hue).sort((a, b) => a - b);
+    const gaps = hues.map((hue, index) =>
+      index === 0 ? hue + 360 - (hues[hues.length - 1] ?? hue) : hue - (hues[index - 1] ?? hue)
+    );
+    // No two neighbours closer than 15°, none further than 60°: the
+    // walk is even, which is what "curated" means here.
+    expect(Math.min(...gaps)).toBeGreaterThanOrEqual(15);
+    expect(Math.max(...gaps)).toBeLessThanOrEqual(60);
   });
 });
 
@@ -193,7 +247,7 @@ describe('entityTint — readability is guaranteed, not hoped for', () => {
   });
 
   test('the hero wash stays dark enough for display type to sit on it', () => {
-    const bone: Oklch = { l: 0.938, c: 0.012, h: 85 };
+    const bone: Oklch = { l: 0.965, c: 0.008, h: 240 };
     for (const id of PROBES) {
       const wash = parseOklch(entityTint(id).vars['--tint-wash'] ?? '');
       expect(contrastRatio(bone, wash)).toBeGreaterThanOrEqual(MIN_ACCENT_CONTRAST);
@@ -206,7 +260,7 @@ describe('entityTint — readability is guaranteed, not hoped for', () => {
   test('the art ground never drifts light enough to grey out the artwork', () => {
     for (const id of PROBES) {
       const bg = parseOklch(entityTint(id).vars['--art-bg'] ?? '');
-      expect(bg.l).toBeLessThan(0.32);
+      expect(bg.l).toBeLessThan(GROUND.maxL + 0.001);
       const ink = parseOklch(entityTint(id).vars['--art-ink'] ?? '');
       expect(ink.l).toBeLessThan(bg.l);
     }
@@ -233,12 +287,11 @@ describe('entityTint — output shape', () => {
     }
   });
 
-  test('hue is a plain integer degree inside the band', () => {
+  test('hue is a plain integer degree from the authored shelf', () => {
     for (const id of PROBES) {
       const { hue } = entityTint(id);
       expect(Number.isInteger(hue)).toBe(true);
-      expect(hue).toBeGreaterThanOrEqual(WARM_BAND.min);
-      expect(hue).toBeLessThanOrEqual(WARM_BAND.max);
+      expect(PALETTE_ANCHORS).toContain(hue);
     }
   });
 });

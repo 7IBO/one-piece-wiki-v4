@@ -93,25 +93,60 @@ générée. D'où ADR-102.
 
 ### Acquis, à ne pas défaire sans raison explicite
 
-- L'**or** est la couleur d'identité (validée explicitement).
-- Palette de **dix accords chauds ancrés sur l'or** (ADR-104) — aucun vert,
-  cyan, bleu, violet ni magenta, ni dans les pages ni dans l'art génératif.
-  Un test bloque le build si une teinte sort de la bande.
-- **Teinte dérivée par entité** (ADR-103), contraste WCAG garanti.
+- ~~Palette de **dix accords chauds ancrés sur l'or** (ADR-104) — aucun
+  vert, cyan, bleu, violet ni magenta.~~ → **périmé, ADR-111
+  (2026-08-27)**. La contrainte de bande chaude était l'erreur : l'or
+  devait être un **accent d'identité**, elle en a fait tout le spectre,
+  et or/parchemin/trésor est justement le cliché pirate kitsch. Le fond
+  est désormais une **nuit océanique** (le bleu profond de la mer et du
+  ciel, la constante environnementale de l'œuvre) ; l'or redevient un
+  accent, ré-écrit en **jaune chapeau de paille**, réservé au wordmark,
+  aux chiffres-titres (primes), au focus et à la sélection ; le
+  **vermillon du gilet de Luffy** est la couleur interactive du chrome
+  neutre. « Quelques touches par ci par là. »
+- **Douze accords qui parcourent la roue une fois** (ADR-111), dans
+  l'ordre du spectre — la logique réelle d'une **étagère de tankōbon**,
+  dont les tranches alignées forment un arc-en-ciel. Ce n'est pas une
+  roue libre : chaque accord est ancré sur une teinte d'une liste
+  fermée, toutes ses couleurs restent à moins de 40° de cette teinte, et
+  **tous les fonds d'illustration appartiennent à la même famille
+  sombre et peu chromatique** — c'est ce partage du fond qui empêche la
+  lecture « couleurs aléatoires ». Trois tests tiennent la barrière, un
+  quatrième épingle les jetons neutres de `styles.css` sur un accord
+  authentifié.
+- **Teinte dérivée par entité** (ADR-103), contraste WCAG garanti — et
+  la garantie compte davantage depuis ADR-111 : un bleu à la même
+  clarté qu'un jaune est bien plus sombre, c'est la remontée de clarté
+  mesurée qui rend les douze accords également lisibles.
 - **Hero** : fond large en faible opacité pleine largeur + plaque arrondie
   format affiche par-dessus.
 - **Layouts par type d'entité** (ADR-106), avec dégradation générique
   imposée par le moteur de rendu, pas par la discipline.
 - **Art génératif déterministe** par entité (ADR-102), couleurs pilotées
-  uniquement par variables CSS.
+  uniquement par variables CSS — inchangé par ADR-111, qui n'a touché
+  qu'aux valeurs des neuf jetons.
 - **Pas de barre de progression dans le header** (rejetée explicitement).
 - Mode **sombre uniquement** pour l'instant.
 
-### Couleurs One Piece
+### Couleurs One Piece — analysé, tranché (ADR-111)
 
 Analyser les couleurs de l'œuvre sur ses différents supports (manga couleur,
 anime, jaquettes, jeux) — mais **ne pas les reprendre telles quelles, c'est
-kitsch**. Quelques touches seulement, par-dessus la palette or existante.
+kitsch**. Quelques touches seulement.
+
+Ce que l'analyse a donné, et ce qui est maintenant dans le code :
+
+- **L'océan et le ciel dominent l'anime** — bleu marine profond jusqu'au
+  cyan clair. C'est une histoire en mer : c'est la constante
+  environnementale, donc le **fond** du site au repos.
+- **Le jaune du chapeau de paille** et le **vermillon du gilet de Luffy**
+  sont les accents iconiques — un jaune solaire, _pas_ un or métallique.
+- **Les tranches de tankôbon alignées forment un arc-en-ciel** : chaque
+  volume prend sa propre teinte saturée, et Oda re-pigmente entièrement
+  chaque planche couleur (le chapitre 642, rose et doux, sans traits
+  noirs). C'est la justification réelle, dans l'œuvre, du mécanisme de
+  teinte par entité — et l'ordre de l'étagère est celui des douze
+  accords d'ADR-111.
 
 ## 5. Chantiers produit
 

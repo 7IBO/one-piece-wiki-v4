@@ -18,12 +18,12 @@
  */
 import { Dialog as DialogPrimitive } from '@base-ui/react/dialog';
 import { XIcon } from 'lucide-react';
-import { type ComponentProps, type JSX, type ReactNode, useEffect, useState } from 'react';
+import { type ComponentProps, type ReactElement, type ReactNode, useEffect, useState } from 'react';
 import { Button } from './button';
 
 export function MobileSheet(
   { ...props }: ComponentProps<typeof DialogPrimitive.Root>,
-): JSX.Element {
+): ReactElement {
   return <DialogPrimitive.Root {...props} />;
 }
 
@@ -45,7 +45,7 @@ export function MobileSheetContent({
   description?: string;
   children: ReactNode;
   className?: string;
-}): JSX.Element {
+}): ReactElement {
   return (
     <DialogPrimitive.Portal>
       {

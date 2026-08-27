@@ -15,7 +15,7 @@
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
 import { ExternalLink } from 'lucide-react';
-import { type JSX, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import type { HistoryChangeGroup, HistoryChangeLine } from '../api';
 import { useT } from '../form/locale';
 
@@ -61,7 +61,7 @@ export function HistoryCommitHeader(
     readonly commit: CommitHeaderData;
     readonly locale: 'en' | 'fr';
   },
-): JSX.Element {
+): ReactElement {
   const t = useT();
   return (
     <div className='flex items-start gap-3'>
@@ -115,7 +115,7 @@ function ChangeLine(
     readonly line: HistoryChangeLine;
     readonly kind: 'added' | 'removed';
   },
-): JSX.Element {
+): ReactElement {
   const t = useT();
   const [open, setOpen] = useState(false);
   return (
@@ -164,7 +164,7 @@ export function HistoryChangeGroups(
     /** Change lines beyond the server's per-commit budget. */
     readonly truncated?: number;
   },
-): JSX.Element | null {
+): ReactElement | null {
   const t = useT();
   if (groups.length === 0 && (truncated ?? 0) === 0) return null;
   return (

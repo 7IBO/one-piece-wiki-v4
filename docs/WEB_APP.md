@@ -9,50 +9,80 @@ presentation-layer contract is ADR-091, and the spoiler semantics are
 ## Identity
 
 - **Name**: One Piece Wiki (header wordmark; `<title>` suffix).
-- **Style** (v8.1 "Grand Line", 2026-08-09 — an official franchise
+- **Style** (v11 "Deep Water", 2026-08-27 — an official franchise
   universe database: immersive, cinematic, branded. The reference
   register is `starwars.com/databank` and the LoL champions page, NOT
-  a neutral reference work, an editorial layout or an arty minimal
-  page — all three were explicitly rejected.)
+  a neutral reference work, an editorial layout, an arty minimal
+  page — nor a parchment-and-treasure pirate prop. All four were
+  explicitly rejected.)
+  - **The ground is the ocean** (ADR-111). One Piece is a story at
+    sea: across the anime, the colour spreads and the games the
+    environmental constant is deep navy through bright cyan. The
+    canvas is `oklch(0.165 0.03 250)`, an oceanic night, sober at
+    rest; the chrome sits one step deeper (`--color-abyss`) so the
+    sticky bar reads as the surface above the page instead of one more
+    flat dark panel. v8's warm-brown ground is gone — it made the
+    whole site one colour, and that colour was the kitsch one.
+  - **Two accents, sparingly.** `--color-gold` is **straw-hat
+    yellow** (a sunny yellow, not a metallic gold) and appears only at
+    identity moments: wordmark, headline figures (bounty), focus ring,
+    selection. `--color-accent` is **Luffy-vest vermillion**, the
+    interactive colour of the untinted chrome. « Quelques touches par
+    ci par là » — neither is ever a surface or a wash.
   - **The artwork is the interface.** Every entity carries a
     deterministic generated composition (ADR-102). Entity pages open
     on a **full-bleed hero** built at the wide `hero` frame and a
     raised detail level, stacked three deep — a blurred over-scaled
-    copy for atmosphere, the composition itself barely defocused so
-    its hard tile-scale edges melt instead of reading as seams at
-    1440 px, then two scrims (vertical, dissolving the stage into the
-    canvas; horizontal, weighting only the type side). EVERY entity
-    gets a hero, picture or not. Listings are walls of full-tile art
-    with the name over the composition.
+    copy for atmosphere at 0.62 opacity, the composition itself barely
+    defocused at 0.30 so its hard tile-scale edges melt instead of
+    reading as seams at 1440 px, then two scrims that dissolve the
+    stage into the canvas at BOTH ends (vertical) and weight only the
+    type side (horizontal). Those opacities are v11's: with a
+    twelve-chord wheel, a backdrop at v8's strength turned the whole
+    viewport into that chord — the same failure as the warm palette, in
+    a new hue. EVERY entity gets a hero, picture or not. Listings are
+    walls of full-tile art with the name over the composition.
   - **Colour comes from the entity, not the chrome** (ADR-103), out of
-    a **curated gold-anchored palette** (ADR-104).
-    `lib/entity-tint.ts` hashes the id into one of TEN hand-authored
-    chords — `or` (the anchor), `laiton`, `ocre`, `cuivre`, `safran`,
-    `orange-brule`, `vermillon`, `sang-de-boeuf`, `terre`, `ambre` —
-    and emits them as CSS custom properties; `.tinted` re-points the
-    theme tokens so every Tailwind utility inside an entity page is
-    already that entity's colour, and the `--art-*` tokens are
-    re-pointed on every tile so a grid is individually coloured.
-    **The whole palette lives in one warm band (12°–100° oklch)**:
-    no green, no cyan, no blue, no violet, anywhere — a free hue wheel
-    was tried first and read as random noise. Because the chords
-    cannot separate by hue they separate by **value structure**: each
-    authors its own ground / dark mass / highlight (grounds run
-    0.17 → 0.31 in lightness, paints span ≥ 0.4 within a chord), which
-    is what keeps a wall of thumbs varied. The accent's lightness is
+    a **curated shelf of twelve chords** (ADR-111, superseding
+    ADR-104). `lib/entity-tint.ts` hashes the id into one of
+    `paille` · `mandarine` · `vermillon` · `grenat` · `rose` ·
+    `prune` · `indigo` · `outremer` · `azur` · `lagon` · `jade` ·
+    `feuille` — a walk round the wheel in spectral order, the way a
+    shelf of tankōbon spines is a rainbow — and emits them as CSS
+    custom properties; `.tinted` re-points the theme tokens so every
+    Tailwind utility inside an entity page is already that entity's
+    colour, and the `--art-*` tokens are re-pointed on every tile so a
+    grid is individually coloured.
+
+    **Why twelve hues do not read as random**, which is the trap an
+    earlier free-wheel version fell into: (1) every chord's artwork
+    GROUND is a dark, low-chroma slate (`GROUND`), so the saturation
+    lives in the paints and the twelve share one deep-water field;
+    (2) every colour of a chord sits within 40° of that chord's hue, so
+    a chord is one colour with its shades; (3) the chord hue must come
+    from a CLOSED list of anchors, each used exactly once. Three tests
+    hold the fence, and a fourth pins the neutral `--art-*` tokens of
+    `styles.css` to the `outremer` chord value by value.
+
+    Variety still comes from VALUE as well as hue: grounds run
+    0.152 → 0.272 in lightness, so `grenat` and `indigo` are near-black
+    under a bone highlight while `mandarine` and `feuille` are light
+    grounds with dark forms cut into them. The accent's lightness is
     raised until its measured WCAG contrast against the canvas clears
-    4.5. Chrome, footer and listings keep the neutral tokens so
-    navigation never wobbles — and **gold is the constant identity**
-    (wordmark, bounty figures, focus ring) whatever chord a page is on.
+    4.5 — which matters more than it did under a warm band, since a
+    blue at the same lightness as a yellow is far darker. Chrome,
+    footer and listings keep the neutral oceanic tokens so navigation
+    never wobbles.
   - **Facet-filtered collections.** Type listings derive their filters
     from the SCHEMA (`buildFacets`, `server/views.ts`): any declared
     enum property that actually splits the population becomes a facet,
     labelled through its vocabulary, counted server-side against the
     reader's cursor. No facet list exists to maintain; a type with no
     enum property renders no filter bar (ADR-091 degradation).
-  - **v9 (2026-08-09) — each type is its own page.** The colours
-    (ADR-104) and the chrome above are unchanged and accepted; what
-    changed is the entity page's LAYOUT: a per-type band registry
+  - **v9 (2026-08-09) — each type is its own page.** The chrome and
+    the layout described here survived v11's re-grounding untouched
+    (ADR-111 changed colour values, not structure); what v9 changed is
+    the entity page's LAYOUT: a per-type band registry
     (ADR-106), a backdrop + poster hero, prev/next for sequential
     entities, and every property's history inline in the data sheet.
     See § Per-type layouts below.
@@ -708,7 +738,8 @@ renders it as inline SVG.
   (`--art-bg`, `--art-ink`, `--art-glow`, `--art-1..6`) and are roles,
   not hues — ink is the dark mass, glow the light one, 1..6 an
   interchangeable wheel compositions draw a chord from. Changing the
-  site palette means changing those nine values, nothing else.
+  site palette means changing those nine values, nothing else: v11's
+  re-grounding (ADR-111) touched no generator code at all.
 - **Frames**: `portrait` (3:4), `square`, `wide`, and `hero`
   (1440x560, the page stage) — composed for the frame (the ratio joins
   the seed), never stretched. `hero` also raises the **detail level**:
@@ -717,18 +748,22 @@ renders it as inline SVG.
   (they read through the translucent ground as depth) and
   `atmosphereFront` lays dust, rays and a glint OVER it. Tiles are
   unaffected: detail is 1 for every other frame.
-- **Per-entity colour** (ADR-103/104): `lib/entity-tint.ts` re-points
+- **Per-entity colour** (ADR-103/111): `lib/entity-tint.ts` re-points
   all nine `--art-*` tokens per tile from the entity's own chord, so
-  the values in `styles.css` are only the neutral chrome default. Those
-  defaults sit in the same warm band as the chords, and a unit test
-  parses `styles.css` to prove it — the art tokens can never drift out
-  of the palette.
+  the values in `styles.css` are only the neutral chrome default —
+  and those defaults are not hand-typed: they ARE the `outremer`
+  chord, compared value by value against `chromeArtTokens()` by a unit
+  test, so an untinted surface can never become an unauthored
+  thirteenth colour.
 - **Review**: `bun run -F @onepiece-wiki/web art:preview [out.html]`
   writes a contact sheet of the whole corpus at every frame, plus an
   unknown-type degradation strip and a 40 px thumb wall. Every tile
-  carries its own chord (and names it in the caption), so the sheet
-  answers the question a narrow palette raises: is the wall still
-  varied? Judge value structure and composition there, not hue.
+  carries its own chord (and names it in the caption). It answers the
+  two questions a palette change has to answer honestly, and they pull
+  against each other: is the wall VARIED (the failure ADR-111 fixed),
+  and does it still obviously belong to ONE SITE (the failure a free
+  hue wheel produced before ADR-104)? Judge both there, at 40 px,
+  before judging any single page.
 
 ## i18n
 

@@ -19,7 +19,7 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getCookie, getRequestHeader } from '@tanstack/react-start/server';
-import { type JSX, type ReactNode } from 'react';
+import { type ReactElement, type ReactNode } from 'react';
 import { type ProgressCursor } from '../api';
 import { BANNER_COOKIE, FirstRunBanner } from '../components/FirstRunBanner';
 import { LocaleSwitcher } from '../components/LocaleSwitcher';
@@ -110,7 +110,7 @@ export function useLocale(): Locale {
   return Route.useLoaderData()?.chrome.locale ?? 'en';
 }
 
-function RootDocument({ children }: { readonly children: ReactNode; }): JSX.Element {
+function RootDocument({ children }: { readonly children: ReactNode; }): ReactElement {
   const locale = Route.useLoaderData()?.chrome.locale ?? 'en';
   return (
     <html lang={locale}>
@@ -125,7 +125,7 @@ function RootDocument({ children }: { readonly children: ReactNode; }): JSX.Elem
   );
 }
 
-function RootLayout(): JSX.Element {
+function RootLayout(): ReactElement {
   const locale = useLocale();
   const chrome = Route.useLoaderData()?.chrome;
   const progress: ProgressCursor = chrome?.progress ?? { manga: null, anime: null };
@@ -135,7 +135,14 @@ function RootLayout(): JSX.Element {
   const cursorKey = `${progress.manga ?? ''}:${progress.anime ?? ''}`;
   return (
     <div className='flex min-h-dvh flex-col'>
-      <header className='sticky top-0 z-20 border-b border-line bg-canvas'>
+      {
+        /* The chrome sits in DEEPER water than the page (v11, ADR-111):
+          `bg-abyss` under a hairline, so the bar reads as the surface
+          above the content rather than as one more flat dark panel —
+          the tell of the generic dark-SaaS register VISION.md § 4
+          rejects. No blur, no translucency: one opaque colour. */
+      }
+      <header className='sticky top-0 z-20 border-b border-line bg-abyss'>
         {
           /* Still ONE bar (WEB_APP.md § Identity) — the search field
             joins the wordmark and the two controls rather than adding
@@ -168,7 +175,7 @@ function RootLayout(): JSX.Element {
       <main className='w-full flex-1 pb-16'>
         <Outlet />
       </main>
-      <footer className='border-t border-line'>
+      <footer className='border-t border-line bg-abyss'>
         <div className='mx-auto flex w-full max-w-[1200px] flex-wrap items-baseline gap-x-6 gap-y-2 px-4 py-5 text-xs sm:px-6'>
           <a
             href={GITHUB_URL}
@@ -195,7 +202,7 @@ function RootLayout(): JSX.Element {
   );
 }
 
-function NotFound(): JSX.Element {
+function NotFound(): ReactElement {
   const locale = useLocale();
   return (
     <div className='page-column mx-auto max-w-md py-24 text-center'>
@@ -206,7 +213,7 @@ function NotFound(): JSX.Element {
       <p className='mt-3 text-[15px] text-muted'>{t(locale, 'notFoundBody')}</p>
       <Link
         to='/'
-        className='mt-8 inline-block rounded-md bg-accent px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+        className='mt-8 inline-block rounded-md bg-gold px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
       >
         {t(locale, 'backHome')}
       </Link>

@@ -17,7 +17,7 @@ import { Card } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { Info } from 'lucide-react';
-import type { JSX } from 'react';
+import type { ReactElement } from 'react';
 import { api, type GlobalHistoryCommit, type GlobalHistoryEntity } from '../api';
 import { HistoryChangeGroups, HistoryCommitHeader } from '../components/HistoryChangeGroups';
 import { LoadFailed } from '../components/LoadFailed';
@@ -35,7 +35,7 @@ function CommitEntity(
     readonly entity: GlobalHistoryEntity;
     readonly locale: 'en' | 'fr';
   },
-): JSX.Element {
+): ReactElement {
   const name = entity.displayName[locale] ?? entity.displayName.en ?? entity.entityId;
   return (
     <div className='mt-2'>
@@ -58,7 +58,7 @@ function CommitEntity(
   );
 }
 
-function GlobalHistoryComponent(): JSX.Element {
+function GlobalHistoryComponent(): ReactElement {
   const locale = useLocale();
   const t = useT();
   // Locale is a fetch dependency: change labels/values are resolved
