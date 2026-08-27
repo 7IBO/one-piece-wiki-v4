@@ -155,6 +155,8 @@ const STRINGS = {
   // v7 "Vignette" additions (append-only). `#` is replaced by a count.
   formerTag: { en: 'Former', fr: 'Ancien' },
   showNMore: { en: 'Show # more', fr: 'Voir les # autres' },
+  // `design/v2` hero chip: « 342 apparitions lues sur 1044 ».
+  appearancesRead: { en: '# of @ appearances read', fr: '# apparitions lues sur @' },
   showLess: { en: 'Show less', fr: 'Réduire' },
 
   // v9 per-type layouts (append-only).

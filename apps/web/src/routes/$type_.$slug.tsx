@@ -58,6 +58,8 @@ import { CARD_GRID_CLASS, EntityCard } from '../components/EntityCard';
 import { EntityChipLink, ScopeContext, useScopeSearch } from '../components/EntityChip';
 import { EntityHero } from '../components/EntityHero';
 import { EntityImage } from '../components/EntityImage';
+import { HeroChips } from '../components/HeroChips';
+import { heroStatRows, HeroStats } from '../components/HeroStats';
 import { HoverPreview } from '../components/HoverPreview';
 import { ShowMoreList } from '../components/ShowMoreList';
 import { SourceTabs } from '../components/SourceTabs';
@@ -66,6 +68,7 @@ import { bandsFor, type LayoutBand, layoutFor, type SlotKey } from '../lib/entit
 import {
   type EntitySection,
   restrictBands,
+  sectionCount,
   slotHasContent,
   slotsForSection,
   visibleSections,
@@ -243,9 +246,11 @@ function SectionNav(
   const search = useScopeSearch();
   const sections = visibleSections(view);
   if (sections.length === 0) return null;
-  const item =
-    'block border-b-2 px-0.5 pb-2 pt-3 text-[12px] font-bold uppercase tracking-[0.08em] transition-colors duration-150';
-  const active = 'border-gold text-fg';
+  // `design/v2`: 12.5px in SENTENCE case, not 12px uppercase with
+  // letter-spacing. The count sits beside the label in a dimmer ink —
+  // the plates print `Apparitions 342`, never `APPARITIONS`.
+  const item = 'block border-b-2 px-0.5 py-3 text-[12.5px] transition-colors duration-150';
+  const active = 'border-gold font-semibold text-fg';
   const idle = 'border-transparent text-muted hover:text-fg';
   return (
     <nav className='page-column border-b border-line'>
@@ -261,19 +266,25 @@ function SectionNav(
             {t(locale, 'sectionOverview')}
           </Link>
         </li>
-        {sections.map((section) => (
-          <li key={section.id}>
-            <Link
-              to='/$type/$slug/$section'
-              params={{ type: view.type, slug: view.slug, section: section.id }}
-              search={search}
-              aria-current={current?.id === section.id ? 'page' : undefined}
-              className={`${item} ${current?.id === section.id ? active : idle}`}
-            >
-              {t(locale, section.labelKey)}
-            </Link>
-          </li>
-        ))}
+        {sections.map((section) => {
+          const count = sectionCount(section, view);
+          return (
+            <li key={section.id}>
+              <Link
+                to='/$type/$slug/$section'
+                params={{ type: view.type, slug: view.slug, section: section.id }}
+                search={search}
+                aria-current={current?.id === section.id ? 'page' : undefined}
+                className={`${item} ${current?.id === section.id ? active : idle}`}
+              >
+                {t(locale, section.labelKey)}
+                {count === null
+                  ? null
+                  : <span className='ml-1.5 tabular-nums text-faint'>{count}</span>}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
@@ -286,48 +297,68 @@ function EmptySection(): ReactElement {
 }
 
 /** Overline, name, identity line and the ONE headline figure. */
+/**
+ * The identity block of the hero, laid out as `design/v2` lays it:
+ * a small-caps KICKER of dotted segments, the name at 42px in its own
+ * case, a subtitle of resolved facts, a row of chips, and the stat
+ * strip pushed to the right edge of the band.
+ *
+ * Three things changed from v9 and each was visible in the plates:
+ * the title is NOT uppercased (`Monkey D. Luffy`, not
+ * `MONKEY D. LUFFY`), the kicker carries the entity's own
+ * classification rather than only its type, and the single floating
+ * gold figure became the bordered multi-cell strip.
+ */
 function Identity({ view }: { readonly view: EntityView; }): ReactElement {
   const locale = useLocale();
-  // The bounty (or a crew's derived total) is the ONE gold figure of
-  // the header (ADR-091 binding, degrades to nothing when absent).
-  const headline =
-    view.infobox.find((row) => row.id === 'bounty' || row.id === 'derived:total_bounty') ?? null;
+  const stats = heroStatRows(view.type, view.infobox);
+  // The kicker's extra segments come from the relations the infobox
+  // already resolved — a crew, a role, a classification. Capped so a
+  // richly-linked entity cannot wrap the line (ADR-091: absent =
+  // simply not rendered).
+  const kickerChips = view.infoboxRelations
+    .flatMap((relation) => relation.chips.slice(0, 1))
+    .slice(0, 2);
   return (
-    <div className='flex flex-wrap items-end justify-between gap-x-8 gap-y-4'>
+    <div className='flex flex-wrap items-start justify-between gap-x-8 gap-y-5'>
       <div className='min-w-0'>
         <p className='label-xs'>
           <Link
             to='/$type'
             params={{ type: view.type }}
-            className='text-fg/70 transition-colors duration-150 hover:text-link-hover'
+            className='transition-colors duration-150 hover:text-link-hover'
           >
             {view.typeLabel}
           </Link>
+          {kickerChips.map((chip) => (
+            <span key={chip.id}>
+              <span className='mx-1.5 text-faint'>·</span>
+              <Link
+                to='/$type/$slug'
+                params={{ type: chip.type, slug: chip.slug }}
+                className='transition-colors duration-150 hover:text-link-hover'
+              >
+                {chip.name}
+              </Link>
+            </span>
+          ))}
           {view.sequence !== null
             ? <span className='ml-2 tabular-nums text-gold/85'>№ {view.sequence.number}</span>
             : null}
         </p>
-        <h1 className='display mt-1.5 text-[clamp(2rem,5.6vw,4rem)] font-extrabold uppercase leading-[0.95] text-fg'>
+        <h1 className='display mt-1.5 text-[clamp(1.75rem,3.6vw,2.625rem)] font-extrabold leading-[1.06] tracking-[-0.03em] text-fg'>
           {view.name}
         </h1>
         {view.firstAppearance !== null
           ? (
-            <p className='mt-2.5 text-[13px] text-muted'>
+            <p className='mt-1.5 text-sm text-muted'>
               {t(locale, 'firstAppearance')} · <EntityChipLink chip={view.firstAppearance} />
             </p>
           )
           : null}
+        <HeroChips appearances={view.appearances} locale={locale} />
       </div>
-      {headline !== null
-        ? (
-          <div className='shrink-0'>
-            <p className='label-xs text-gold/80'>{headline.label}</p>
-            <p className='display text-[clamp(1.5rem,3.2vw,2.3rem)] font-extrabold leading-none tabular-nums text-gold'>
-              {headline.entry.display}
-            </p>
-          </div>
-        )
-        : null}
+      <HeroStats rows={stats} />
     </div>
   );
 }

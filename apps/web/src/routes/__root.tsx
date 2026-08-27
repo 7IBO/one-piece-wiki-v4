@@ -43,9 +43,27 @@ type Chrome = {
   /** No progress cookie at all — candidates for the first-run banner. */
   readonly progressUnset: boolean;
   readonly bannerDismissed: boolean;
+  /**
+   * The highest ordinal the CORPUS holds per axis — the denominator of
+   * the header gauge (`design/v2`: a 90px rail filled to the reader's
+   * position). Read from the data, never hardcoded: the bar says how
+   * far you are through what this wiki HAS, which is the only fraction
+   * it can honestly draw.
+   */
+  readonly extent: ProgressCursor;
 };
 
-const readServerChrome = createServerFn({ method: 'GET' }).handler((): Chrome => {
+/**
+ * The corpus extent, read inside the handler through a DYNAMIC import
+ * so `bun:sqlite` never enters the browser graph — the same care the
+ * plain-module note above takes, made explicit rather than assumed.
+ */
+async function readCorpusExtent(): Promise<ProgressCursor> {
+  const { maxOrdinal } = await import('../../server/db');
+  return { manga: maxOrdinal('manga-chapter'), anime: maxOrdinal('anime-episode') };
+}
+
+const readServerChrome = createServerFn({ method: 'GET' }).handler(async (): Promise<Chrome> => {
   const cookie = getCookie(LOCALE_COOKIE);
   const acceptLanguage = (getRequestHeader('accept-language') ?? '').toLowerCase();
   const locale: Locale = cookie === 'en' || cookie === 'fr'
@@ -59,8 +77,19 @@ const readServerChrome = createServerFn({ method: 'GET' }).handler((): Chrome =>
     progress: parseProgressCookie(rawProgress),
     progressUnset: rawProgress === undefined || rawProgress === '',
     bannerDismissed: getCookie(BANNER_COOKIE) === '1',
+    extent: await readCorpusExtent(),
   };
 });
+
+/**
+ * Last extent seen from the server, kept for the CLIENT branch of
+ * `resolveChrome`: a client-side navigation re-runs `beforeLoad` with
+ * only cookies to read, and the corpus is not in a cookie. Seeded by
+ * the first (server-rendered) pass, so it is present from the first
+ * client navigation onwards; before that it is the empty cursor and
+ * the gauge simply renders without its bar.
+ */
+let lastExtent: ProgressCursor = { manga: null, anime: null };
 
 function readClientCookie(name: string): string | undefined {
   return new RegExp(`(?:^|;\\s*)${name}=([^;]*)`).exec(document.cookie)?.[1];
@@ -80,12 +109,14 @@ async function resolveChrome(): Promise<Chrome> {
     progress: parseProgressCookie(rawProgress),
     progressUnset: rawProgress === undefined || rawProgress === '',
     bannerDismissed: readClientCookie(BANNER_COOKIE) === '1',
+    extent: lastExtent,
   };
 }
 
 export const Route = createRootRoute({
   beforeLoad: async () => {
     const chrome = await resolveChrome();
+    lastExtent = chrome.extent;
     return { locale: chrome.locale, chrome };
   },
   loader: ({ context }) => ({ chrome: context.chrome }),
@@ -170,7 +201,7 @@ function RootLayout(): ReactElement {
             <LocaleSwitcher />
           </div>
           <div className='flex items-center px-4 sm:border-l sm:border-line'>
-            <ProgressControl key={cursorKey} progress={progress} />
+            <ProgressControl key={cursorKey} progress={progress} extent={chrome.extent} />
           </div>
         </div>
         {showBanner ? <FirstRunBanner /> : null}

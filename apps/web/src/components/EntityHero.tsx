@@ -77,9 +77,18 @@ export function EntityHero(
         <div aria-hidden className='hero-scrim-y absolute inset-0' />
       </div>
 
-      <div className='page-column relative flex min-h-[17rem] flex-col justify-end pb-8 pt-14 sm:min-h-[24rem] sm:pb-11 sm:pt-20'>
+      <div className='page-column relative flex min-h-[15rem] flex-col pb-7 pt-6 lg:min-h-[18.25rem] lg:pb-8'>
         {nav}
-        <div className='mt-6 flex flex-col gap-5 sm:flex-row sm:items-end sm:gap-7'>
+        {
+          /*
+           * TOP-ALIGNED, not bottom-aligned. The plate lays the figure
+           * and the identity from `top: 34px` and lets the band end
+           * where it ends; bottom-aligning them made a short identity
+           * float in the middle of a tall band, which is what stopped
+           * this reading like `design/v2`.
+           */
+        }
+        <div className='mt-5 flex flex-col gap-5 lg:flex-row lg:items-start lg:gap-[22px]'>
           <EntityImage
             image={image}
             type={type}
@@ -87,13 +96,11 @@ export function EntityHero(
             name={name}
             ratio={figure === 'plate' ? 'wide' : 'portrait'}
             fit='native'
-            className={`hero-figure rounded-xl ring-1 ring-line-strong ${
-              figure === 'plate'
-                ? 'w-40 sm:w-64 lg:w-80'
-                : 'w-28 sm:w-40 lg:w-48'
+            className={`hero-figure shrink-0 rounded-[10px] ring-1 ring-line-strong ${
+              figure === 'plate' ? 'w-40 sm:w-56 lg:w-[15rem]' : 'w-28 sm:w-36 lg:w-[10.5rem]'
             }`}
           />
-          <div className='min-w-0 flex-1'>{children}</div>
+          <div className='min-w-0 flex-1 lg:pt-1.5'>{children}</div>
         </div>
       </div>
     </div>

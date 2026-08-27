@@ -166,6 +166,57 @@ export function slotHasContent(slot: SlotKey, view: EntityView): boolean {
 }
 
 /**
+ * How many things a slot holds — the number `design/v2` prints beside
+ * a tab (`Apparitions 342`, `Techniques 61`, `Galerie 18`).
+ *
+ * A slot whose content is not a countable list returns null and the
+ * tab renders bare, which is what the plates do for `Vue d'ensemble`,
+ * `Chronologie` and `Sources`. Counting is deliberately the SAME
+ * predicate as `slotHasContent`, one case per slot, so a slot cannot
+ * be shown by one and ignored by the other.
+ */
+export function slotCount(slot: SlotKey, view: EntityView): number | null {
+  switch (slot) {
+    case 'gallery':
+      return view.gallery.length;
+    case 'appearances':
+      return view.appearances.reduce((total, group) => total + group.items.length, 0);
+    case 'connections':
+      return view.relations.reduce((total, group) => total + group.items.length, 0);
+    case 'cast':
+      return view.cast.reduce((total, group) => total + group.items.length, 0);
+    case 'members':
+      if (view.template.kind === 'crew') return view.template.members.length;
+      if (view.template.kind === 'devil-fruit') return view.template.users.length;
+      return null;
+    case 'former':
+      if (view.template.kind === 'crew') return view.template.former.length;
+      if (view.template.kind === 'devil-fruit') return view.template.former.length;
+      return null;
+    case 'contents':
+      if (view.template.kind !== 'container') return null;
+      return view.template.groups.reduce((total, group) => total + group.items.length, 0);
+    case 'availability':
+      return view.availability.length;
+    case 'sheet':
+    case 'narrative':
+    case 'affiliations':
+    case 'position':
+      return null;
+  }
+}
+
+/** The count beside a section's tab: its slots' counts, summed. */
+export function sectionCount(section: EntitySection, view: EntityView): number | null {
+  let total: number | null = null;
+  for (const slot of section.slots) {
+    const count = slotCount(slot, view);
+    if (count !== null) total = (total ?? 0) + count;
+  }
+  return total;
+}
+
+/**
  * The sub-pages worth linking for THIS entity: those with something to
  * show. Empty when the type authors none, or when everything it could
  * split is empty — and the page then renders no navigation at all.

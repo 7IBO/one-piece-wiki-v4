@@ -110,6 +110,7 @@ function resolveDbPath(): string {
 
 type Statements = {
   readonly typeCounts: Statement;
+  readonly axisMax: Statement;
   readonly entitiesByType: Statement;
   readonly entityBySlug: Statement;
   readonly entityById: Statement;
@@ -139,6 +140,16 @@ function getStatements(): Statements {
   statements = {
     typeCounts: db.prepare(
       'SELECT type, COUNT(*) AS count FROM entities GROUP BY type ORDER BY type',
+    ),
+    // The highest ordinal the corpus holds on one source type — the
+    // DENOMINATOR of the header's progression gauge. Read from the
+    // corpus rather than hardcoded, so the bar tells the truth about
+    // what this wiki actually has rather than about the real-world
+    // publication, which it does not know.
+    axisMax: db.prepare(
+      `SELECT MAX(CAST(json_extract(p.value, '$.value') AS INTEGER)) AS n
+         FROM properties p JOIN entities e ON e.id = p.entity_id
+        WHERE e.type = ? AND p.property_id = 'number'`,
     ),
     entitiesByType: db.prepare(
       `SELECT ${entityColumns} FROM entities WHERE type = ? ORDER BY slug`,
@@ -186,6 +197,17 @@ function toEntityRow(row: Record<string, unknown>): EntityRow {
 
 export function listTypeCounts(): readonly TypeCountRow[] {
   return getStatements().typeCounts.all() as TypeCountRow[];
+}
+
+/**
+ * The highest `number` the corpus holds for a source type, or null
+ * when it holds none. Used by the progression gauge; null makes the
+ * gauge render as a plain position with no bar, which is the honest
+ * shape when there is nothing to be a fraction of.
+ */
+export function maxOrdinal(type: string): number | null {
+  const row = getStatements().axisMax.get(type) as { n: number | null; } | null;
+  return row?.n ?? null;
 }
 
 export function listEntitiesByType(type: string): readonly EntityRow[] {
