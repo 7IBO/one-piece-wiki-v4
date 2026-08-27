@@ -139,6 +139,44 @@ Deux leçons opérationnelles :
    relecture de la page après migration : ruban à 3 cases. Après
    redémarrage : 149. Toujours redémarrer avant de conclure.
 
+## 2026-08-27 — la limitation v1 du curseur a un coût, et le voici
+
+`progress.ts` le dit depuis le début, noir sur blanc :
+
+> « Anchors with no cursor on their axis […] stay visible — **a
+> documented v1 limitation, not an accident**. »
+
+Ce n'est donc pas un défaut découvert, c'est une décision déjà prise.
+Mais elle n'avait jamais d'instance concrète. En voici une, sortie de
+l'import des épisodes 595-1176 :
+
+Un lecteur qui déclare **manga : chapitre 100** et **rien sur l'anime**
+cherche « nika ». La recherche lui rend :
+
+> **anime-episode:1152 — « Her Father and Mother's Legacy! Bonney's
+> Nika Punch »**
+
+Soit, en une ligne : que Nika existe, et que Bonney a un pouvoir lié à
+Nika. C'est la révélation centrale de l'arc Egghead, ~1000 chapitres
+devant lui.
+
+`isSourceVisible` rend `true` dès que l'axe n'a pas de curseur. Donc
+**déclarer sa progression manga n'achète aucune protection sur l'axe
+anime.** Les deux lectures possibles d'un axe vide sont « je n'ai rien
+vu » et « je me fiche des spoilers anime » ; le code choisit la
+seconde, en silence.
+
+**Pas corrigé ici** : c'est une décision produit écrite, pas un bug, et
+la changer touche toutes les pages, pas seulement la recherche.
+**Question** : un axe laissé vide alors qu'un autre est renseigné
+devrait-il valoir 0 plutôt que ∞ ?
+
+Le test qui l'a révélé affirmait « le résultat est vide » — vrai
+seulement tant qu'aucune autre entité ne pouvait matcher « nika ». Il
+affirme maintenant ce qu'il voulait dire : `event:nika-reveal` est
+introuvable. Même correction, même fichier, que celle déjà appliquée
+au test des chapitres.
+
 ## 2026-08-27 — l'arc EN COURS ne pouvait structurellement pas être placé
 
 Trouvé en cherchant pourquoi 6 arcs n'avaient aucune arête. Cinq sont
