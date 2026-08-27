@@ -108,6 +108,7 @@
       "version": "0.0.0",
       "dependencies": {
         "@onepiece-wiki/schema-engine": "workspace:*",
+        "@onepiece-wiki/schemas": "workspace:*",
       },
       "devDependencies": {
         "@onepiece-wiki/tsconfig": "workspace:*",

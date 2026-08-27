@@ -260,7 +260,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(ch1044.sequence?.prev?.number).toBe(1043);
     expect(ch1044.sequence?.next).toBeNull(); // no chapter-1045 in corpus
     // `total` counts the population the reader may see.
-    expect(ch1044.sequence?.total).toBe(10);
+    expect(ch1044.sequence?.total).toBe(34);
     const ch1 = await entity('manga-chapter', 'chapter-1');
     expect(ch1.sequence?.prev).toBeNull();
   });
@@ -271,7 +271,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(ch1043.sequence?.next).toBeNull();
     expect(ch1043.sequence?.prev).toBeNull(); // 1042 is not in the corpus
     expect(ch1043.sequence?.number).toBe(1043);
-    expect(ch1043.sequence?.total).toBe(8); // 1044 and 1053 are beyond
+    expect(ch1043.sequence?.total).toBe(32); // 1044 and 1053 are beyond
     const siblings = ch1043.template.kind === 'source' ? ch1043.template.arc?.items ?? [] : [];
     expect(siblings.map((s) => s.number)).toEqual([1043]);
   });

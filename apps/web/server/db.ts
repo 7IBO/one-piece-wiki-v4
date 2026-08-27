@@ -13,9 +13,35 @@
  * rows (`is_inferred = 1`, per-direction `label` column) and the
  * `translations` / `narratives` tables.
  */
+import type { SearchDocKind } from '@onepiece-wiki/schemas';
 import { Database, type Statement } from 'bun:sqlite';
 import { existsSync } from 'node:fs';
 import { resolve } from 'node:path';
+import type { ProgressCursor } from './progress.ts';
+import {
+  gateParams,
+  SEARCH_DISPLAY_NAME_SQL,
+  SEARCH_FUZZY_SQL,
+  SEARCH_LEXICAL_SQL,
+} from './search-sql.ts';
+
+/**
+ * One hit from either search pass (ADR-108). `bm25_score` is set by
+ * the lexical pass (negative; more negative = better), `dice` by the
+ * fuzzy one (0..1). Exactly one of the two is present.
+ */
+export type SearchHitRow = {
+  readonly doc_id: number;
+  readonly entity_id: string;
+  readonly entity_type: string;
+  readonly slug: string;
+  readonly locale: string;
+  readonly field: string;
+  readonly kind: SearchDocKind;
+  readonly text: string;
+  readonly bm25_score: number | null;
+  readonly dice: number | null;
+};
 
 export type TypeCountRow = {
   readonly type: string;
@@ -90,6 +116,9 @@ type Statements = {
   readonly relationsFrom: Statement;
   readonly translation: Statement;
   readonly narrative: Statement;
+  readonly searchLexical: Statement;
+  readonly searchFuzzy: Statement;
+  readonly searchDisplayName: Statement;
 };
 
 let statements: Statements | null = null;
@@ -130,6 +159,9 @@ function getStatements(): Statements {
     ),
     translation: db.prepare('SELECT value FROM translations WHERE locale = ? AND key = ?'),
     narrative: db.prepare('SELECT markdown FROM narratives WHERE entity_id = ? AND locale = ?'),
+    searchLexical: db.prepare(SEARCH_LEXICAL_SQL),
+    searchFuzzy: db.prepare(SEARCH_FUZZY_SQL),
+    searchDisplayName: db.prepare(SEARCH_DISPLAY_NAME_SQL),
   };
   return statements;
 }
@@ -194,6 +226,80 @@ export function listRelationsFrom(entityId: string): readonly RelationRow[] {
     label: row['label'] === null ? null : parseJson<Record<string, string>>(row['label']),
     is_inferred: Number(row['is_inferred']) === 1,
   }));
+}
+
+function toSearchHitRow(row: Record<string, unknown>): SearchHitRow {
+  return {
+    doc_id: row['doc_id'] as number,
+    entity_id: row['entity_id'] as string,
+    entity_type: row['entity_type'] as string,
+    slug: row['slug'] as string,
+    locale: row['locale'] as string,
+    field: row['field'] as string,
+    kind: row['kind'] as SearchDocKind,
+    text: row['text'] as string,
+    bm25_score: (row['bm25_score'] as number | undefined) ?? null,
+    dice: (row['dice'] as number | undefined) ?? null,
+  };
+}
+
+/**
+ * Lexical search pass: FTS5 term/prefix matching, bm25-ordered, with
+ * the reader's progression cursor applied IN SQL (before the LIMIT).
+ * `match` must come from `ftsMatchExpression`.
+ */
+export function searchLexical(
+  match: string,
+  cursor: ProgressCursor,
+  limit: number,
+): readonly SearchHitRow[] {
+  const rows = getStatements().searchLexical.all(
+    match,
+    ...gateParams(cursor),
+    limit,
+  ) as Record<string, unknown>[];
+  return rows.map(toSearchHitRow);
+}
+
+/**
+ * Fuzzy (typo-tolerant) pass for ONE query term: trigram overlap
+ * against each document's best-matching word, cursor-filtered in SQL
+ * exactly like the lexical pass.
+ */
+export function searchFuzzy(
+  trigrams: readonly string[],
+  threshold: number,
+  cursor: ProgressCursor,
+  limit: number,
+): readonly SearchHitRow[] {
+  if (trigrams.length === 0) return [];
+  const rows = getStatements().searchFuzzy.all(
+    trigrams.length,
+    JSON.stringify(trigrams),
+    threshold,
+    ...gateParams(cursor),
+    limit,
+  ) as Record<string, unknown>[];
+  return rows.map(toSearchHitRow);
+}
+
+/**
+ * The name to label a search result with: the entity's most canonical
+ * name that the reader's cursor allows. Null when every name-bearing
+ * string of that entity is still gated — the caller then falls back to
+ * the slug, as the rest of the app does.
+ */
+export function searchDisplayName(
+  entityId: string,
+  cursor: ProgressCursor,
+  locale: string,
+): string | null {
+  const row = getStatements().searchDisplayName.get(
+    entityId,
+    ...gateParams(cursor),
+    locale,
+  ) as { text: string; } | null;
+  return row === null ? null : row.text;
 }
 
 /** Resolve one i18n key for a locale, falling back to `en`. */

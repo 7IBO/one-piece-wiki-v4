@@ -138,7 +138,8 @@ and the tooling to validate them.
      - Public events reveal facts to all participants
      - Death events transitively update status
    - SQLite writer (`better-sqlite3`), denormalized for read
-   - Pagefind static search index generation
+   - Search index generation (FTS5 + trigrams, ADR-108 — replaced the
+     planned Pagefind sidecar)
    - Build manifest with build metadata
 
 2. **`packages/sdk`**
@@ -186,7 +187,7 @@ acts as a development sandbox for the dashboard.
 - Route `/preview/[type]/[slug]` displays an entity with all its data
 - A user-progression input (chapter number) filters spoilers
 - A locale switcher swaps EN/FR labels
-- Search via Pagefind works for entity names
+- Search over the artifact's FTS5 index works for entity names (ADR-108)
 
 ### Tasks
 
@@ -199,7 +200,7 @@ acts as a development sandbox for the dashboard.
      - `/preview/[type]/[slug]` — entity detail
    - Spoiler progression UI (in-page input or local-storage persisted)
    - Locale switcher
-   - Pagefind integration
+   - Search index integration (ADR-108)
 
 2. **`packages/ui`**
    - Base UI + Tailwind theme primitives
@@ -699,14 +700,25 @@ cursor for a friend.
 
 #### Phase 6.3 — Search, ⌘K, facets
 
-- Pagefind indexes the SSG output at build.
-- ⌘K palette (reuse the dashboard implementation from Phase 4.3).
-- Dedicated `/search` route with facets: entity type, arc, saga,
-  crew, fruit, status, canon scope, bounty range, has-devil-fruit.
-- Search itself spoiler-aware (results filtered by cursor).
+- ~~Pagefind indexes the SSG output at build.~~ **Shipped differently
+  (ADR-108)**: an FTS5 + trigram index built INTO `dist/onepiece.db` by
+  `packages/db-builder`. Pagefind was rejected because its index is
+  client-side, so the browser would receive every string the reader's
+  cursor forbids.
+- ~~Dedicated `/search` route~~ **shipped** — `apps/web/src/routes/search.tsx`,
+  plus a field in the top bar. Full-text, prefix, accent-insensitive,
+  typo-tolerant (Dice trigram fallback), cross-locale EN/FR.
+- ~~Search itself spoiler-aware (results filtered by cursor).~~
+  **Shipped** — anchors are materialized per indexed string and applied
+  in SQL before the LIMIT; both "the entity's existence is a spoiler"
+  and "a later name is a spoiler" are covered and tested.
+- **Still open**: ⌘K palette (reuse the dashboard implementation from
+  Phase 4.3) and result facets (entity type, arc, saga, crew, fruit,
+  status, canon scope, bounty range, has-devil-fruit).
 
 **Exit**: typing a generic query returns relevant entities,
-filterable by facet; results respect the cursor.
+filterable by facet; results respect the cursor. _(Second half met;
+the facet bar remains.)_
 
 #### Phase 6.4 — Visual polish + internal links
 

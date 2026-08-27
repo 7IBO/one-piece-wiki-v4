@@ -86,6 +86,7 @@ function buildDatabase(): Database {
         markdown: 'The future Pirate King.\n',
       },
     ],
+    search: { docs: [], gates: [], trigrams: [] },
   });
   return db;
 }
@@ -147,7 +148,12 @@ describe('populateDatabase (in-memory)', () => {
   it('reports counts including the inferred split', () => {
     const db2 = new Database(':memory:');
     const rows = extract(new Map([[luffy.id, luffy]]), testCatalogue);
-    const counts = populateDatabase(db2, { ...rows, translations: [], narratives: [] });
+    const counts = populateDatabase(db2, {
+      ...rows,
+      translations: [],
+      narratives: [],
+      search: { docs: [], gates: [], trigrams: [] },
+    });
     expect(counts.relations).toBe(2);
     expect(counts.relations_inferred).toBe(1);
     expect(counts.entities).toBe(1);

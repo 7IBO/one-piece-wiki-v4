@@ -14,10 +14,12 @@
 import { createServerFn } from '@tanstack/react-start';
 import { getCookie } from '@tanstack/react-start/server';
 import { parseProgressCookie, type ProgressCursor } from '../server/progress';
+import { buildSearchView } from '../server/search';
 import { buildEntityView, buildHomeView, buildTypeListView } from '../server/views';
 import type { Locale } from './lib/chrome';
 import { SCOPE_PATTERN } from './lib/scope';
 
+export type { SearchResultView, SearchView } from '../server/search';
 export type {
   AppearanceGroupView,
   AvailabilityItemView,
@@ -56,6 +58,13 @@ export const PROGRESS_COOKIE = 'web_progress';
 
 const SLUG_PATTERN = /^[a-z0-9][a-z0-9-]*$/;
 
+/**
+ * Longest query the server will look at. The index is prefix- and
+ * trigram-based, so a very long string costs real work for no useful
+ * answer; truncating is friendlier than rejecting.
+ */
+const MAX_QUERY_LENGTH = 120;
+
 function asLocale(value: unknown): Locale {
   return value === 'fr' ? 'fr' : 'en';
 }
@@ -87,6 +96,18 @@ export const fetchTypeList = createServerFn({ method: 'GET' })
   // The cursor matters here too: listing cards now carry epithets /
   // status tags, which are spoiler-gated like everything else.
   .handler(({ data }) => buildTypeListView(data.type, data.locale, readProgress()));
+
+export const fetchSearch = createServerFn({ method: 'GET' })
+  .inputValidator((input: { locale: Locale; q: string; }) => ({
+    locale: asLocale(input.locale),
+    // Free text by design: it is never interpolated into SQL (the FTS5
+    // expression is built from quoted, normalized terms — see
+    // `server/search-sql.ts`), only bound as a parameter.
+    q: typeof input.q === 'string' ? input.q.slice(0, MAX_QUERY_LENGTH) : '',
+  }))
+  // The cursor is the whole point: a reader must never match a string
+  // that only exists beyond their progression.
+  .handler(({ data }) => buildSearchView(data.q, data.locale, readProgress()));
 
 export const fetchEntity = createServerFn({ method: 'GET' })
   .inputValidator((input: { locale: Locale; type: string; slug: string; scope?: string; }) => ({

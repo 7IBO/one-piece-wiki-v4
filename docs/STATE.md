@@ -52,9 +52,39 @@ complet) — le relevé structurel est l'entrée obligée de la refonte de
 schéma, et le runner GitHub a l'egress que la sandbox n'a pas. Le
 rapport est commité sur une branche `audit/`.
 
-**En cours** : recherche du wiki public (plein texte, tolérante aux
-fautes, multilingue, filtrée par le curseur anti-spoil) — `apps/web`
-n'en avait **aucune**.
+**Livré (2026-08-27) — recherche du wiki public** (ADR-108). `apps/web`
+n'en avait **aucune** ; il y a maintenant un index FTS5 + trigrammes
+construit DANS `dist/onepiece.db` par `packages/db-builder`, une route
+`/search` et un champ dans la barre du haut.
+
+- **Plein texte** : FTS5 `unicode61 remove_diacritics 2` (préfixes,
+  multi-mots, insensible aux accents — « equipage » trouve « Équipage
+  du Chapeau de Paille »), classé par `bm25`.
+- **Fautes** : recouvrement de trigrammes (Sørensen–Dice) par MOT du
+  document, en **repli strict** — il ne se déclenche que si la passe
+  lexicale n'a rien trouvé. « zorro » → Roronoa Zoro, « nammi » → Nami,
+  « marinford » → Marineford.
+- **Multilingue** : une ligne par locale d'INTERFACE (`en`, `fr`) ;
+  `ja` / `ja-latn` restent des locales de DONNÉES (ADR-095) et ne sont
+  **pas** indexées — un résultat de recherche est une exposition. Le
+  match est inter-locale, l'affichage est dans la locale du lecteur.
+- **Anti-spoil** : chaque chaîne indexée porte ses ancres de
+  progression (`search_gates`) ; le curseur filtre **en SQL, avant le
+  LIMIT**. Les deux cas sont couverts et testés : une entité dont
+  l'_existence_ est un spoiler (`event:nika-reveal`, ch. 1044) ne
+  renvoie **rien** — jamais une ligne « résultat masqué », qui serait
+  elle-même un spoiler ; et une entité qui existe mais dont le _nom
+  tardif_ est un spoiler reste trouvable sous le nom qu'elle porte au
+  curseur (Luffy au ch. 50 : « Luffy » oui, « Straw Hat » non).
+- **Ce qui reste ouvert** (Phase 6.3) : la palette ⌘K et les facettes
+  de résultats. Les narratifs ne sont pas indexés tant que les marqueurs
+  `:::spoiler:::` ne sont pas analysés (voir ADR-108).
+
+**Note de dette repérée en passant** : `resolveEntityName`
+(`server/views.ts`) résout `canonical_name_key` **sans** le curseur, si
+bien qu'une page d'entité peut afficher un nom postérieur au curseur là
+où la recherche, elle, filtre. Aligner la page d'entité est un
+changement séparé, volontairement hors périmètre ici.
 
 > **LIRE `/docs/VISION.md` AVANT TOUT TRAVAIL SUR `apps/web`, LES
 > IMPORTEURS OU L'ACQUISITION.** Il porte l'intention produit, les publics

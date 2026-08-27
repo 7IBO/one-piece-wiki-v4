@@ -1066,6 +1066,51 @@ function resolveEntityImage(
   return resolveEntityImages(row, edges, cursor, scope, locale, name)[0] ?? null;
 }
 
+/**
+ * Everything a RESULT CARD needs about one entity, resolved exactly
+ * like a listing card is (same image ranking, same `spoiler_since`
+ * check, same schema-driven identity line, same status tag) —
+ * exported so `server/search.ts` composes the existing view model
+ * instead of growing a second, divergent copy of card enrichment.
+ *
+ * The chip's `name` is the site-wide display name; search overrides it
+ * with a CURSOR-CHECKED one (`db.searchDisplayName`), because a
+ * result label must never be a name the reader has not reached.
+ */
+export type EntityCardView = {
+  readonly chip: EntityChip;
+  readonly image: ImageView | null;
+  readonly secondary: string | null;
+  readonly tag: string | null;
+};
+
+export function buildEntityCardView(
+  entityId: string,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): EntityCardView | null {
+  const row = db.getEntityById(entityId);
+  if (row === null) return null;
+  const chip = chipForRow(row, cat, locale);
+  return {
+    chip,
+    image: resolveEntityImage(row, db.listRelationsFrom(row.id), cursor, null, locale, chip.name),
+    secondary: cardSecondary(row, cat, locale, cursor),
+    tag: cardStatusTag(row, cat, locale, cursor),
+  };
+}
+
+/** Localized label of a property id (or of the pseudo-field `slug`). */
+export function propertyLabel(
+  cat: ValidatedCatalogue,
+  propertyId: string,
+  locale: Locale,
+): string {
+  const schema = cat.propertyTypes.get(propertyId);
+  return schema === undefined ? humanize(propertyId) : pickLabel(schema.labels, locale);
+}
+
 // ---------------------------------------------------------------------------
 // Views
 

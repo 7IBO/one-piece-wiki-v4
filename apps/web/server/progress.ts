@@ -21,11 +21,28 @@ export type ProgressCursor = {
 
 export const EMPTY_CURSOR: ProgressCursor = { manga: null, anime: null };
 
+/**
+ * The cursor axes, each bound to the SOURCE ENTITY TYPE whose ordinals
+ * it counts (a presentation binding, ADR-091 — a source type absent
+ * from this list is simply unfilterable, hence visible).
+ *
+ * This is the single declaration of the binding: the lookup below is
+ * derived from it, and so is the search index's SQL gate predicate
+ * (`server/search-sql.ts`), so adding an axis never means editing a
+ * hand-written SQL string.
+ */
+export const CURSOR_AXES: readonly {
+  readonly axis: keyof ProgressCursor;
+  readonly sourceType: string;
+}[] = [
+  { axis: 'manga', sourceType: 'manga-chapter' },
+  { axis: 'anime', sourceType: 'anime-episode' },
+];
+
 /** Source entity types bound to cursor axes (presentation binding). */
-const AXIS_BY_SOURCE_TYPE: Readonly<Record<string, keyof ProgressCursor>> = {
-  'manga-chapter': 'manga',
-  'anime-episode': 'anime',
-};
+const AXIS_BY_SOURCE_TYPE: Readonly<Record<string, keyof ProgressCursor>> = Object.fromEntries(
+  CURSOR_AXES.map((entry) => [entry.sourceType, entry.axis]),
+);
 
 function toChapterNumber(value: unknown): number | null {
   if (typeof value !== 'number' || !Number.isFinite(value)) return null;
