@@ -1,11 +1,20 @@
 /**
  * The header search field, and the trigger for the palette.
  *
- * It is STILL a plain `<form>` posting to `/search?q=…`. That is the
- * path a reader gets before hydration, with JavaScript off, and from a
- * shared URL — ADR-108's page never went away. What the canvas added
- * on top is a summoned overlay (`SearchPalette`): focusing the field,
- * or pressing ⌘K / Ctrl-K, opens it with whatever is already typed.
+ * It is STILL a plain `<form>` GETting `/search?q=…`. That is the path
+ * a reader gets before hydration and with JavaScript off — ADR-108's
+ * page never went away. The `action` is load-bearing and was missing
+ * at first: without it the form posts to the CURRENT url, so from `/`
+ * a no-JS reader landed on `/?q=nami` and nothing happened. The
+ * claim "it works without JavaScript" was false until the attribute
+ * existed; it is true now, and `method='get'` keeps the query in the
+ * URL where `/search` reads it.
+ *
+ * What the canvas added on top is a summoned overlay
+ * (`SearchPalette`): clicking the field, typing in it, or pressing ⌘K
+ * / Ctrl-K opens it with whatever is already there. NOT on focus —
+ * closing the palette returns focus to this input, and an
+ * open-on-focus would reopen it forever.
  *
  * The field mirrors the URL rather than owning state: landing on
  * `/search?q=nami`, or navigating back to it, refills the input.
@@ -52,14 +61,21 @@ export function SearchBox(
 
   return (
     <>
-      <SearchPalette
-        open={palette}
-        onOpenChange={setPalette}
-        initialQuery={value}
-        cursorSet={progress.manga !== null || progress.anime !== null}
-      />
+      {
+        /* Mounted only while open: the palette seeds its query once,
+        from `value`, with no effect syncing a prop into state. */
+      }
+      {palette && (
+        <SearchPalette
+          onClose={() => setPalette(false)}
+          initialQuery={value}
+          cursorSet={progress.manga !== null || progress.anime !== null}
+        />
+      )}
       <form
         role='search'
+        action='/search'
+        method='get'
         className='min-w-0 flex-1 basis-full order-last sm:order-none sm:basis-auto'
         onSubmit={(event) => {
           event.preventDefault();
@@ -78,7 +94,15 @@ export function SearchBox(
           spellCheck={false}
           placeholder={t(locale, 'searchPlaceholder')}
           onChange={(event) => setValue(event.target.value)}
-          onFocus={() => setPalette(true)}
+          onClick={() => setPalette(true)}
+          onKeyDown={(event) => {
+            // Any character the reader types goes into the palette,
+            // where the results are. Modifier combinations and
+            // navigation keys are left to the field and the browser.
+            if (event.key.length === 1 && !event.metaKey && !event.ctrlKey && !event.altKey) {
+              setPalette(true);
+            }
+          }}
           className='w-full rounded-md border border-line-strong bg-canvas px-3 py-1.5 text-sm text-fg outline-none transition-colors duration-150 placeholder:text-faint hover:border-gold/45 focus:border-gold sm:max-w-80'
         />
       </form>

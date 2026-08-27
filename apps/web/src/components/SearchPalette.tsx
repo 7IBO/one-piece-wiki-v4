@@ -1,17 +1,28 @@
 /**
- * The search palette (`Recherche.dc.html`, validated canvas v2).
+ * The search palette (`Recherche.dc.html`, validated canvas v2; ADR-118).
  *
  * ## Why an overlay when ADR-108 rejected one
  *
  * ADR-108 shipped `/search` as a PAGE and said, in as many words, that
  * a floating suggestion card is the "modern web app" register the
  * project rejects. The maintainer then validated a canvas whose search
- * plate IS an overlay — so the reversal is theirs, and ADR-117bis
- * records it. What survives from ADR-108 is the reasoning that made it
- * right: a result is an ENTITY, the ranking is the server's, and
- * nothing floats that the reader did not summon. The palette is
- * summoned (⌘K, or the field) and dismissed (Échap); `/search` remains
- * the page, the shareable URL, and the no-JS path.
+ * plate IS an overlay — so the reversal is theirs, and ADR-118 records
+ * it. What survives from ADR-108 is the reasoning that made it right:
+ * a result is an ENTITY, the ranking is the server's, and nothing
+ * floats that the reader did not summon. The palette is summoned (⌘K,
+ * or the field) and dismissed (Échap); `/search` remains the page, the
+ * shareable URL, and the no-JS path.
+ *
+ * ## Mounted only while open
+ *
+ * The component does not take an `open` prop: the caller mounts it or
+ * does not. That is what makes `useState(initialQuery)` correct —
+ * the query is seeded once, at the moment of opening, with no effect
+ * syncing a prop into state afterwards. The earlier version DID have
+ * that effect, keyed on `[open, initialQuery]`, and it had a real bug:
+ * any later change to `initialQuery` (the header field mirrors the
+ * URL, so a route change rewrites it) overwrote whatever the reader
+ * was typing.
  *
  * ## The counting rule
  *
@@ -29,7 +40,7 @@
  */
 import { Dialog } from '@base-ui/react/dialog';
 import { useNavigate } from '@tanstack/react-router';
-import { type ReactElement, useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchSearch, type SearchResultView, type SearchView } from '../api';
 import { type Locale, t } from '../lib/chrome';
 import { groupByType, visibleResults } from '../lib/search-groups';
@@ -42,11 +53,27 @@ const DEBOUNCE_MS = 160;
 /** Results rendered at once — the server already caps its own list. */
 const VISIBLE_LIMIT = 24;
 
+/**
+ * The answer to the CURRENT query, as one value.
+ *
+ * These four move together — a new answer arrives, the chip filter
+ * resets and the cursor returns to the first row — so they are one
+ * state, not four. Four `useState` calls would let a render observe a
+ * new result list beside the previous query's active index.
+ */
+type Answer = {
+  readonly view: SearchView | null;
+  readonly loading: boolean;
+  readonly typeFilter: string | null;
+  readonly active: number;
+};
+
+const IDLE: Answer = { view: null, loading: false, typeFilter: null, active: 0 };
+
 export function SearchPalette(
-  { open, onOpenChange, initialQuery, cursorSet }: {
-    readonly open: boolean;
-    readonly onOpenChange: (open: boolean) => void;
-    /** Whatever was already typed in the header field. */
+  { onClose, initialQuery, cursorSet }: {
+    readonly onClose: () => void;
+    /** Whatever was already typed in the header field, seeded once. */
     readonly initialQuery: string;
     /** A progression is declared — changes what an empty result MEANS. */
     readonly cursorSet: boolean;
@@ -55,83 +82,78 @@ export function SearchPalette(
   const locale = useLocale();
   const navigate = useNavigate();
   const [query, setQuery] = useState(initialQuery);
-  const [view, setView] = useState<SearchView | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [typeFilter, setTypeFilter] = useState<string | null>(null);
-  const [active, setActive] = useState(0);
+  const [answer, setAnswer] = useState<Answer>(IDLE);
   const listRef = useRef<HTMLDivElement | null>(null);
 
-  // Opening carries the header field's text in, so the reader never
-  // retypes what they already typed.
+  // One request per pause; a stale answer is dropped rather than
+  // rendered over a newer one.
   useEffect(() => {
-    if (open) setQuery(initialQuery);
-  }, [open, initialQuery]);
-
-  // One request per pause, and the answer to a stale request is
-  // dropped rather than rendered over a newer one.
-  useEffect(() => {
-    if (!open) return;
     const asked = query.trim();
     if (asked === '') {
-      setView(null);
-      setLoading(false);
+      setAnswer(IDLE);
       return;
     }
     let live = true;
-    setLoading(true);
+    setAnswer((prev) => ({ ...prev, loading: true }));
     const timer = setTimeout(() => {
       fetchSearch({ data: { locale, q: asked } })
         .then((next: SearchView) => {
-          if (!live) return;
-          setView(next);
-          setTypeFilter(null);
-          setActive(0);
+          if (live) setAnswer({ view: next, loading: false, typeFilter: null, active: 0 });
         })
         .catch(() => {
-          if (live) setView(null);
-        })
-        .finally(() => {
-          if (live) setLoading(false);
+          if (live) setAnswer(IDLE);
         });
     }, DEBOUNCE_MS);
     return () => {
       live = false;
       clearTimeout(timer);
     };
-  }, [open, query, locale]);
+  }, [query, locale]);
 
-  const all = view?.results ?? [];
+  // Memoize on the VIEW, not on a `results ?? []` fallback: that
+  // fallback is a fresh array every render, so it defeated every memo
+  // below while looking like it worked.
+  const all = useMemo<readonly SearchResultView[]>(
+    () => answer.view?.results ?? [],
+    [answer.view],
+  );
   const groups = useMemo(() => groupByType(all), [all]);
   const shown = useMemo(
-    () => visibleResults(all, typeFilter, VISIBLE_LIMIT),
-    [all, typeFilter],
+    () => visibleResults(all, answer.typeFilter, VISIBLE_LIMIT),
+    [all, answer.typeFilter],
   );
   const shownGroups = useMemo(() => groupByType(shown), [shown]);
 
-  const go = useCallback(
-    (result: SearchResultView): void => {
-      onOpenChange(false);
-      void navigate({
-        to: '/$type/$slug',
-        params: { type: result.type, slug: result.slug },
-      });
-    },
-    [navigate, onOpenChange],
-  );
+  const go = (result: SearchResultView): void => {
+    onClose();
+    void navigate({
+      to: '/$type/$slug',
+      params: { type: result.type, slug: result.slug },
+    });
+  };
+
+  const move = (delta: number): void =>
+    setAnswer((prev) => ({
+      ...prev,
+      active: shown.length === 0 ? 0 : (prev.active + delta + shown.length) % shown.length,
+    }));
+
+  const pick = (typeFilter: string | null): void =>
+    setAnswer((prev) => ({ ...prev, typeFilter, active: 0 }));
 
   const onKeyDown = (event: React.KeyboardEvent): void => {
     if (event.key === 'ArrowDown') {
       event.preventDefault();
-      setActive((i) => (shown.length === 0 ? 0 : (i + 1) % shown.length));
+      move(1);
     } else if (event.key === 'ArrowUp') {
       event.preventDefault();
-      setActive((i) => (shown.length === 0 ? 0 : (i - 1 + shown.length) % shown.length));
+      move(-1);
     } else if (event.key === 'Enter') {
       event.preventDefault();
-      const picked = shown[active];
+      const picked = shown[answer.active];
       if (picked !== undefined) go(picked);
       else if (query.trim() !== '') {
-        onOpenChange(false);
+        onClose();
         void navigate({ to: '/search', search: { q: query.trim() } });
       }
     }
@@ -141,13 +163,18 @@ export function SearchPalette(
   useEffect(() => {
     const row = listRef.current?.querySelector('[data-active="true"]');
     if (row instanceof HTMLElement) row.scrollIntoView({ block: 'nearest' });
-  }, [active]);
+  }, [answer.active]);
 
   const asked = query.trim() !== '';
   let flat = -1;
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+    <Dialog.Root
+      open
+      onOpenChange={(next: boolean) => {
+        if (!next) onClose();
+      }}
+    >
       <Dialog.Portal>
         <Dialog.Backdrop className='fixed inset-0 z-40 bg-canvas/80 backdrop-blur-[2px]' />
         <Dialog.Popup
@@ -159,7 +186,15 @@ export function SearchPalette(
           {/* The input IS the header — no title bar, per the plate. */}
           <div className='flex items-center gap-3 px-5 py-4'>
             <span aria-hidden className='text-[17px] text-muted'>⌕</span>
+            {
+              /* `autoFocus` is the WAI-ARIA dialog pattern here, not a
+                stolen focus: a modal the reader just summoned to type in
+                is broken if the caret is anywhere else, and focus is
+                trapped inside and restored on close. Linters flag the
+                attribute generically; this is the case it exempts. */
+            }
             <input
+              // oxlint-disable-next-line jsx-a11y/no-autofocus
               autoFocus
               type='search'
               value={query}
@@ -170,7 +205,7 @@ export function SearchPalette(
               aria-label={t(locale, 'searchLabel')}
               className='min-w-0 flex-1 bg-transparent text-[19px] font-medium text-fg outline-none placeholder:text-faint'
             />
-            {asked && !loading && (
+            {asked && !answer.loading && (
               <span className='shrink-0 text-xs tabular-nums text-muted'>
                 {all.length} {t(locale, all.length === 1 ? 'searchResult' : 'searchResults')}
               </span>
@@ -184,22 +219,16 @@ export function SearchPalette(
             <div className='flex flex-wrap gap-1.5 border-t border-line px-5 py-3'>
               <Chip
                 label={t(locale, 'paletteAll')}
-                on={typeFilter === null}
-                onClick={() => {
-                  setTypeFilter(null);
-                  setActive(0);
-                }}
+                on={answer.typeFilter === null}
+                onClick={() => pick(null)}
               />
               {groups.map((group) => (
                 <Chip
                   key={group.type}
                   label={group.label}
                   count={group.results.length}
-                  on={typeFilter === group.type}
-                  onClick={() => {
-                    setTypeFilter(group.type);
-                    setActive(0);
-                  }}
+                  on={answer.typeFilter === group.type}
+                  onClick={() => pick(group.type)}
                 />
               ))}
             </div>
@@ -211,7 +240,7 @@ export function SearchPalette(
               : shown.length === 0
               ? (
                 <Note>
-                  {loading
+                  {answer.loading
                     ? t(locale, 'paletteSearching')
                     : cursorSet
                     ? t(locale, 'paletteEmptyGated')
@@ -230,8 +259,8 @@ export function SearchPalette(
                           key={result.id}
                           result={result}
                           locale={locale}
-                          active={index === active}
-                          onHover={() => setActive(index)}
+                          active={index === answer.active}
+                          onHover={() => setAnswer((prev) => ({ ...prev, active: index }))}
                           onPick={() => go(result)}
                         />
                       );
@@ -241,7 +270,7 @@ export function SearchPalette(
               )}
           </div>
 
-          {view?.approximate === true && shown.length > 0 && (
+          {answer.view?.approximate === true && shown.length > 0 && (
             <p className='border-t border-line px-5 py-2.5 text-[12.5px] text-gold'>
               {t(locale, 'searchApproximate')}
             </p>

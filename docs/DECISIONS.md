@@ -48,6 +48,15 @@ côté serveur, et fonctionne avant hydratation comme sans JavaScript.
 Le `<form>` de l'en-tête reste donc un vrai formulaire ; la palette se
 greffe dessus.
 
+> **Correction (même jour).** La première version de cet ADR affirmait
+> ce dernier point alors qu'il était faux : le `<form>` n'avait pas
+> d'`action`, donc sans JavaScript il se soumettait à l'URL COURANTE —
+> depuis `/`, un lecteur atterrissait sur `/?q=nami` et il ne se
+> passait rien. `react-doctor` a signalé le `preventDefault` sur la PR
+> #138 et j'ai mergé avant de lire sa revue. `action='/search'
+> method='get'` a été ajouté ensuite : la phrase est vraie
+> maintenant, elle ne l'était pas quand je l'ai écrite.
+
 **Conséquences**:
 
 - `SearchPalette` interroge `fetchSearch`, exactement la même fonction
@@ -64,6 +73,16 @@ greffe dessus.
   l'en-tête de `routes/index.tsx` depuis la refonte de l'accueil : ne
   jamais compter ni expliquer ce qui est retenu.
 - Le pied « Limité à ta progression » suit la même condition.
+- **La palette n'est montée que pendant qu'elle est ouverte.** Elle ne
+  prend pas de prop `open` : l'appelant la monte ou non. C'est ce qui
+  rend `useState(initialQuery)` correct. La première version
+  synchronisait la prop dans l'état via un effet keyé
+  `[open, initialQuery]`, et ça avait un vrai bug : le champ d'en-tête
+  reflète l'URL, donc un changement de route pendant que la palette
+  était ouverte écrasait ce que le lecteur était en train de taper.
+- Le champ s'ouvre au clic et à la frappe, **jamais au focus** :
+  fermer la palette rend le focus au champ, et un ouvre-au-focus la
+  rouvrirait indéfiniment.
 - La palette n'invente rien que le serveur ne fournisse : la maquette
   montrait « résultats pour _gomu gomu_ » sur une faute de frappe, mais
   `buildSearchView` renvoie `approximate: boolean` sans terme corrigé.
