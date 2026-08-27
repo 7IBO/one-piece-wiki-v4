@@ -150,17 +150,27 @@ function RootLayout(): ReactElement {
             line, because a field squeezed between the wordmark and the
             progression label is a field nobody can type in. */
         }
-        <div className='mx-auto flex w-full max-w-[1200px] flex-wrap items-center justify-between gap-x-4 gap-y-2 px-4 py-2.5 sm:h-13 sm:flex-nowrap sm:py-0 sm:px-6'>
+        {
+          /* The plate's bar: 46px, segments separated by hairlines
+            rather than by whitespace, the search field taking every
+            pixel between the wordmark and the two controls. Below `sm`
+            the field wraps to its own line — a field squeezed between
+            a wordmark and a progression label is a field nobody can
+            type in. */
+        }
+        <div className='mx-auto flex w-full max-w-[1440px] flex-wrap items-stretch gap-y-2 py-2 sm:h-11.5 sm:flex-nowrap sm:gap-y-0 sm:py-0'>
           <Link
             to='/'
-            className='display whitespace-nowrap text-[17px] font-extrabold tracking-tight text-fg transition-colors duration-150 hover:text-gold'
+            className='display flex items-center whitespace-nowrap px-4.5 text-sm font-extrabold tracking-tight text-fg no-underline transition-colors duration-150 hover:text-gold sm:border-r sm:border-line'
           >
-            One Piece <span className='text-gold'>Wiki</span>
+            One Piece<span className='text-gold'>.Wiki</span>
           </Link>
           <SearchBox progress={progress} />
-          <div className='flex items-center gap-2.5'>
-            <ProgressControl key={cursorKey} progress={progress} />
+          <div className='flex items-center px-3.5 sm:border-l sm:border-line'>
             <LocaleSwitcher />
+          </div>
+          <div className='flex items-center px-4 sm:border-l sm:border-line'>
+            <ProgressControl key={cursorKey} progress={progress} />
           </div>
         </div>
         {showBanner ? <FirstRunBanner /> : null}

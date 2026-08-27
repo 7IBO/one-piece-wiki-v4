@@ -127,7 +127,11 @@ export function ProgressPanel(
  * Unset: the invitation to set one.
  */
 export function ProgressControl(
-  { progress }: { readonly progress: ProgressCursor; },
+  { progress, variant = 'header' }: {
+    readonly progress: ProgressCursor;
+    /** `header`: the plate's bar segment. `button`: the hero's outlined action. */
+    readonly variant?: 'header' | 'button';
+  },
 ): ReactElement {
   const locale = useLocale();
   const [open, setOpen] = useState(false);
@@ -144,15 +148,36 @@ export function ProgressControl(
     <Popover.Root open={open} onOpenChange={setOpen} modal={false}>
       <Popover.Trigger
         aria-label={t(locale, 'progressTitle')}
-        className={`cursor-pointer rounded-md px-2.5 py-1.5 text-xs font-semibold transition-colors duration-150 hover:bg-surface ${
-          active
-            ? 'text-gold ring-1 ring-gold/35 hover:ring-gold/60'
-            : 'text-fg/85 ring-1 ring-line-strong hover:text-fg hover:ring-gold/45'
-        }`}
+        className={variant === 'header'
+          ? 'flex cursor-pointer items-center gap-2.25 rounded-md px-2.5 py-1.5 text-[11px] transition-colors duration-150 hover:bg-surface'
+          : 'flex cursor-pointer items-center rounded-md border border-line-strong px-5 py-2.5 text-[13.5px] font-semibold text-fg transition-colors duration-150 hover:border-gold/45'}
       >
-        <span className={`block max-w-56 truncate sm:max-w-64 ${active ? 'tabular-nums' : ''}`}>
-          {summary}
-        </span>
+        {
+          /* Two shapes, one control. In the HEADER the plate reads
+            « MA PROGRESSION  CH. 1044 »: a muted label beside the
+            position in gold, no border — the segment hairlines are the
+            frame. In the HERO it is an outlined button beside the gold
+            "continue" one, and it says what pressing it does rather
+            than restating the position the card already shows. The
+            label hides on narrow screens, where the position alone has
+            to carry the meaning. */
+        }
+        {variant === 'header'
+          ? (
+            <>
+              <span className='hidden uppercase tracking-[0.14em] text-muted sm:inline'>
+                {t(locale, 'myProgress')}
+              </span>
+              <span
+                className={`block max-w-40 truncate font-bold sm:max-w-64 ${
+                  active ? 'tabular-nums text-gold' : 'text-fg/85'
+                }`}
+              >
+                {summary}
+              </span>
+            </>
+          )
+          : t(locale, active ? 'progressChange' : 'progressSet')}
       </Popover.Trigger>
       <Popover.Portal>
         <Popover.Positioner
