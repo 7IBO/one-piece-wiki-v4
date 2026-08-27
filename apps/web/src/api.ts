@@ -32,6 +32,7 @@ export type {
   CastGroupView,
   ContainerGroupView,
   CrewSectionView,
+  CrossedView,
   EntityChip,
   EntityListItem,
   EntityPageView,

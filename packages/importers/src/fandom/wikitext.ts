@@ -195,6 +195,13 @@ export function cleanValue(value: string): string {
     .replace(/\[\[([^\]|]*)\|([^\]]*)\]\]/g, '$2')
     .replace(/\[\[([^\]]*)\]\]/g, '$1')
     .replace(/<br\s*\/?>/gi, ' ')
+    // Inline PRESENTATION tags around text that is otherwise content:
+    // `<s>3D</s>2Y` is chapter 597's real title, struck-through in the
+    // magazine, and it reached readers as literal angle brackets on the
+    // home page. Same family as the `<nowiki>` leak above — drop the
+    // tag, keep what it wraps. Only this closed set, so an unexpected
+    // tag still shows up rather than being silently swallowed.
+    .replace(/<\/?(?:s|u|i|b|em|strong|small|sub|sup|span|div)\b[^>]*>/gi, '')
     .replace(/'{2,}/g, '')
     .replace(/\s+/g, ' ')
     .trim();

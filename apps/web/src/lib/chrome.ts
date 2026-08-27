@@ -178,6 +178,16 @@ const STRINGS = {
     fr: 'Tape un nom pour chercher dans le wiki.',
   },
   searchResults: { en: 'results', fr: 'résultats' },
+  homeAt: { en: 'You are at', fr: 'Tu en es au' },
+  homeReading: { en: 'Your reading', fr: 'Ta lecture' },
+  homeCrossed: { en: 'What you just crossed', fr: 'Ce que tu viens de croiser' },
+  homeContribute: { en: 'This wiki is built with you', fr: 'Ce wiki se construit avec toi' },
+  homeContributeBody: {
+    en:
+      'Every fact carries the chapter where it becomes true, its status and its source. A contribution goes out as a pull request and is reviewed before publication.',
+    fr:
+      'Chaque donnée porte le chapitre où elle devient vraie, son statut et sa source. Une contribution part en pull request et passe en relecture avant publication.',
+  },
   paletteAll: { en: 'All', fr: 'Tout' },
   paletteEsc: { en: 'Esc', fr: 'Échap' },
   paletteBrowse: { en: 'browse', fr: 'parcourir' },

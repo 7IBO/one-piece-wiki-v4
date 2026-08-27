@@ -201,3 +201,21 @@ describe('FandomClient', () => {
     await expect(client.fetchParse('Nope')).rejects.toThrow(/missingtitle/);
   });
 });
+
+describe('cleanValue strips inline presentation tags (2026-08-27)', () => {
+  it('keeps the text a <s> struck it through', () => {
+    // Chapter 597's real title. It reached the home page as literal
+    // angle brackets, exactly like the `<nowiki>!!</nowiki>` leak.
+    expect(cleanValue('<s>3D</s>2Y')).toBe('3D2Y');
+  });
+
+  it('handles attributes and the other inline tags', () => {
+    expect(cleanValue('<span class="x">A</span> <b>B</b> <sup>2</sup>')).toBe('A B 2');
+  });
+
+  it('leaves an UNEXPECTED tag visible rather than swallowing it', () => {
+    // The list is closed on purpose: a tag nobody anticipated should
+    // surface in review, not disappear into a plausible-looking title.
+    expect(cleanValue('<blink>A</blink>')).toContain('blink');
+  });
+});
