@@ -174,6 +174,27 @@ export function findTemplate(
  * bodies, <br/> → space, and nested templates (dropped — a value that
  * *is* a template must be handled by the caller before cleaning).
  */
+/**
+ * Unwrap `{{Ruby|base|reading}}` to its BASE text.
+ *
+ * Fandom writes Japanese chapter titles inside this template — the
+ * survey shows `jname` filled at 100% and shaped `template`, e.g.
+ * `{{Ruby|MONSTER TIME|モンスター タイム}}`. `cleanValue` drops
+ * templates wholesale, so without this the field reads as empty and a
+ * 100%-filled column looks like a 0%-filled one.
+ *
+ * The first argument is the text that DISPLAYS; the second is the
+ * furigana printed above it. We keep the first and drop the reading:
+ * a reading is a pronunciation aid, not the title. Anything that is
+ * not a two-argument Ruby is left alone for the caller to warn about
+ * rather than being guessed at.
+ */
+export function unwrapRuby(value: string): string | null {
+  const match = /^\s*\{\{\s*Ruby\s*\|([^|}]*)\|([^|}]*)\}\}\s*$/i.exec(value);
+  const base = match?.[1]?.trim();
+  return base === undefined || base === '' ? null : base;
+}
+
 export function cleanValue(value: string): string {
   return value
     // `<nowiki>` is an ESCAPE, not content: editors wrap punctuation in
