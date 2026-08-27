@@ -8,6 +8,156 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-107 — Licensing posture: structured facts only, never prose, and an assumed-risk image policy
+
+**Date**: 2026-08-27
+
+**Context**: `VISION.md` §7 flagged an unresolved tension that blocks the
+whole data programme: "storing all of Fandom's data" collides with
+Fandom's CC BY-SA licence. ADR-079 §5 stated a position in passing —
+facts yes, prose no, images no — but as a parenthesis inside an ingest
+decision, not as a decision of its own, and it conflated three legal
+layers that behave differently. Mass ingest is about to start (the
+`Episodes` category alone is 1231 pages), so the position has to be
+explicit, bounded, and written down before the first large crawl rather
+than reconstructed after a complaint.
+
+The three layers, kept separate on purpose:
+
+1. **Copyright.** Protects expression, not facts. "Luffy's bounty is
+   3,000,000,000 berries" is not protectable by anyone. The sentence a
+   Fandom editor wrote around it is. This is the layer ADR-079 §5
+   addressed.
+2. **The EU sui generis database right** (Directive 96/9/EC, transposed
+   in France at Art. L341-1 CPI). This one is routinely missed because
+   it has no US equivalent: it protects the _investment_ in obtaining,
+   verifying and presenting a database's contents, and it is infringed
+   by extracting a **substantial part** of that database _even when
+   every individual item is an unprotectable fact_. A project whose
+   maintainer and audience are both in France cannot reason as if only
+   copyright existed.
+3. **Fandom's Terms of Use**, a contract layer independent of both —
+   it restricts automated access regardless of what the licence on the
+   content says.
+
+Images are a fourth, separate problem that no licensing posture on text
+can solve: the images on Fandom are overwhelmingly Toei/Shueisha
+property, hosted there under a US fair-use rationale that has no
+equivalent in French law (`courte citation` does not cover whole
+images). No import — AI-mediated or not — makes them free.
+
+This ADR is an engineering position taken by the maintainer to bound a
+known risk. It is not legal advice, and it does not pretend the residual
+risk is zero.
+
+**Options** (text):
+
+- A — Facts only, claim no obligation, credit nothing. Defensible under
+  copyright alone; ignores layers 2 and 3 entirely.
+- B — Facts only, per-value provenance recorded and publicly credited,
+  our own corpus published under a free copyleft licence.
+- C — Full copyleft: copy prose, attribute, relicense CC BY-SA.
+
+**Options** (images):
+
+- 1 — No third-party images at all; generative art (ADR-102) only.
+- 2 — TMDB only (the one source with API terms we can actually comply
+  with), everything else generative.
+- 3 — TMDB plus re-hosted third-party visuals, credited to the rights
+  holder, with a public takedown process.
+
+**Choice**: **B** for text. **3** for images (maintainer arbitration,
+2026-08-27).
+
+**Rationale**:
+
+- C is excluded on product grounds before legal ones. Republishing
+  Fandom's prose — even reworded — puts us in a duplicate-content race
+  against the original, which has fifteen years of authority. The
+  `visiteur Google` audience in VISION §3 is precisely the one we would
+  lose. Legal caution and SEO point the same way here, which is the
+  rare case where the cautious option is also the ambitious one.
+- **Running text through an LLM changes nothing legally.** A paraphrase
+  of a protected expression is a derivative work; the model is not a
+  laundering step. This is stated in the ADR because it is the exact
+  mistake the "AI writes the prose" plan invites. The AI's job in this
+  pipeline is _extraction into structured fields_ and _generating
+  no-spoil variants of text we own_, never restating Fandom sentences.
+- A is cheap but leaves layer 2 unanswered, and layer 2 is the one that
+  actually bites a bulk extractor. B answers it at almost no cost: the
+  four historisation axes already carry `source` per value, so
+  attribution is a rendering decision on data we are storing anyway.
+- Publishing our own corpus under CC BY-SA 4.0 is the wiki norm, costs
+  nothing while we do not sell data, and makes the project a credible
+  place to contribute to. It also makes our position coherent rather
+  than opportunistic: we ask of others what we accept for ourselves.
+- On images, option 3 carries real, non-zero exposure and the maintainer
+  takes it knowingly. The honest framing: this is what every fan wiki
+  does and what rights holders in this space have tolerated for two
+  decades, not something the law permits. Option 2 was recommended and
+  declined because VISION §4 makes the image the interface — a wiki
+  where Luffy has no portrait fails its own design brief. The ADR
+  therefore bounds the risk instead of denying it.
+
+**Decision — the operating rules**:
+
+_Text and structured data_
+
+1. From Fandom we ingest **structured facts only**: numbers, dates,
+   names, enumerated values, typed relations. Never sentences.
+2. **No prose is copied, paraphrased, translated or LLM-rewritten from
+   Fandom.** Narratives (`/data/universes/<u>/narratives/`) are written
+   fresh, and are the only place prose lives.
+3. **Primary sources win** wherever they cover the ground: the works
+   themselves, official databooks, api-onepiece, TMDB. Fandom is used
+   as a _checklist of what exists_ in preference to a corpus of record.
+4. **Extraction stays non-substantial and polite**: the 1 req/s rate
+   limit in `FandomClient` is a licensing control, not just courtesy;
+   crawls are bounded and resumable; we never mirror or republish a
+   Fandom dump as-is.
+5. **Provenance is recorded per value** (`source`, plus `assisted_by` /
+   `review_status` from ADR-010) and surfaced publicly on a credits
+   page listing Fandom, api-onepiece and TMDB.
+6. **Our corpus is published under CC BY-SA 4.0.** This licenses our
+   own compilation and does not purport to sublicense anyone else's.
+
+_Images_
+
+7. TMDB is the **preferred** image source wherever it covers (episode
+   stills, film posters); its attribution requirement is honoured.
+8. Third-party visuals may be re-hosted **only** with: a licence value
+   from `image-licenses` that is not `unverified-external`, a named
+   rights holder, and a source URL.
+9. `unverified-external` is a **staging value only** — a build guard
+   rejects it on `main`, in the same spirit as the existing
+   `staging://` guard in `schema-engine/src/cli/validate.ts`.
+10. A public **takedown page** names a contact and commits to removal
+    within 48 h, with no argument. A rights holder asking is the end of
+    the conversation, not the start of one.
+11. Fandom's own CDN is **never hotlinked** — that is both a ToU breach
+    and someone else's bandwidth.
+
+**Consequences**:
+
+- `VISION.md` §7 is resolved and points here; `IMAGES.md` gains the
+  rights-holder and takedown rules; ADR-079 §5 is superseded by this
+  ADR on the licensing question (its ingest decisions stand).
+- **Follow-ups this ADR mandates before the first image import** (not in
+  this PR, and deliberately deferred to the schema-v2 work so the image
+  axis is redesigned once rather than twice): a required `rights_holder`
+  property on `image`, the `unverified-external` build guard, the
+  `/credits` and `/takedown` pages in `apps/web`, and a `LICENSE-DATA`
+  file at the repo root carrying CC BY-SA 4.0 for `/data`.
+- The 3 existing `image` entities point at a fictional domain and carry
+  no rights holder; they are placeholders and must not survive the
+  first real image import.
+- The AI pipeline's scope is now fixed by rule 2: structured extraction
+  and no-spoil variants of our own prose. Any future proposal to have a
+  model summarise a Fandom article is refused by this ADR without
+  further discussion.
+
+---
+
 ## ADR-106 — Per-entity-type page layouts, with mandatory generic degradation
 
 **Date**: 2026-08-09

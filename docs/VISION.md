@@ -185,13 +185,33 @@ d'images maison, TCG des personnages et concepts.
 - Le projet est en **bêta, zéro utilisateur** : casser et migrer d'un coup
   est le mode normal (cf. l'en-tête de `STATE.md`).
 
-## 7. Tension juridique à trancher avant tout import massif
+## 7. Position juridique — tranchée (ADR-107)
 
-« Stocker toutes les données du Fandom » se heurte à sa licence CC-BY-SA, et
-`ADR-079 §5` + `IMAGES.md` interdisent déjà d'y stocker prose et images.
+La tension ouverte ici a été tranchée le 2026-08-27. Le détail, les
+options écartées et les règles opérationnelles sont dans **ADR-107** ;
+en résumé :
 
-Les **faits structurés** ne sont pas protégeables ; la **prose** et les
-**images** le sont. Les faire passer par une IA ne change rien
-juridiquement. Une position explicite est nécessaire — faits structurés
-seulement, attribution CC-BY-SA assumée, ou autre — et doit être consignée
-en ADR avant de lancer un import de masse.
+- **Faits structurés uniquement** depuis Fandom — nombres, dates, noms,
+  valeurs énumérées, relations typées. Jamais de phrases.
+- **Aucune prose copiée, paraphrasée, traduite ou réécrite par IA.** Le
+  passage par un modèle ne blanchit rien : une paraphrase d'une
+  expression protégée reste une œuvre dérivée. Le rôle de l'IA est
+  l'extraction structurée et les variantes no-spoil de notre propre
+  texte, pas la reformulation d'articles Fandom.
+- **Trois couches distinctes**, à ne pas confondre : le droit d'auteur
+  (protège l'expression, pas les faits), le **droit sui generis des
+  bases de données** (dir. 96/9/CE, art. L341-1 CPI — il protège
+  l'investissement et se déclenche sur l'extraction d'une part
+  substantielle même de faits libres, et il n'a pas d'équivalent
+  américain), et les CGU de Fandom. Nos garde-fous : 1 req/s, crawls
+  bornés et reprenables, aucune republication d'un dump tel quel.
+- **Sources primaires préférées** (l'œuvre, databooks, api-onepiece,
+  TMDB) ; Fandom sert d'inventaire de ce qui existe plus que de corpus
+  de référence.
+- **Notre corpus est publié en CC BY-SA 4.0.**
+- **Images** : arbitrage mainteneur, risque assumé. TMDB en source
+  privilégiée là où elle couvre ; visuels tiers ré-hébergés avec
+  ayant-droit nommé, licence explicite et URL source ; page de retrait
+  publique avec suppression sous 48 h ; jamais de hotlink vers le CDN
+  Fandom. Ce n'est pas licite, c'est toléré — l'ADR le dit au lieu de
+  le maquiller.
