@@ -15,7 +15,15 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (v9 — layouts par type d'entité, ADR-105/106)
+**Last updated**: 2026-08-09 (v9 livré ; `docs/VISION.md` créé)
+
+> **LIRE `/docs/VISION.md` AVANT TOUT TRAVAIL SUR `apps/web`, LES
+> IMPORTEURS OU L'ACQUISITION.** Il porte l'intention produit, les publics
+> visés, la lecture du concurrent (onenoobiece.fr), la **calibration du
+> goût du mainteneur** (9 itérations de design, 7 rejetées — références
+> aimées et rejetées, registres qui échouent et pourquoi), les acquis à ne
+> pas défaire, et la tension de licence CC-BY-SA à trancher avant tout
+> import massif depuis Fandom.
 
 **2026-08-09 — v9 : layouts par type + apparitions au grain unité.**
 Demande mainteneur : trous à droite sur la page personnage, layouts
