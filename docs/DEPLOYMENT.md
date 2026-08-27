@@ -59,6 +59,25 @@ lecture, et l'abstraction Node envisagée par ADR-012 reste au placard.
 
 Deux défauts se cachaient l'un derrière l'autre. Les deux sont corrigés.
 
+### 3.0 La base n'était même pas construite
+
+Le premier `buildCommand` posé dans `vercel.json` était
+`bun run -F @onepiece-wiki/web build`. **`bun run -F` court-circuite
+turbo** : il exécute le script du paquet et ignore le graphe de tâches,
+donc la dépendance déclarée
+(`@onepiece-wiki/web#build` → `@onepiece-wiki/db-builder#build:db`)
+ne s'exécutait jamais. Sur Vercel, `dist/onepiece.db` n'était pas
+seulement mal embarqué : **il n'existait pas**.
+
+En local le défaut était invisible, la base traînant d'un
+`bun run build:db` antérieur.
+
+Le `buildCommand` passe donc par turbo, qui honore la dépendance :
+
+```
+cd ../.. && bunx turbo run build --filter=@onepiece-wiki/web
+```
+
 ### 3.1 L'artefact n'était pas embarqué
 
 Nitro trace les `import`. `server/db.ts` localise la base par une
