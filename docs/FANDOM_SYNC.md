@@ -51,10 +51,18 @@ admin-queue path (ADR-079 §4).
 
 ```sh
 bun run -F @onepiece-wiki/importers fandom:analyze \
+  [--full]             # schema-campaign preset: 40 samples, no cap
   [--samples N]        # pages sampled per infobox (default 5)
   [--max-infoboxes N]  # cap for bounded/partial runs
   [--out DIR]          # default packages/importers/reports/
 ```
+
+**Two depths, two purposes.** The default (5 samples) answers _does
+this field still exist_ — enough to diff run-to-run and catch
+Fandom-side drift. `--full` answers _what should the schema look like_:
+40 samples per infobox, no template cap, which is what makes the value
+profiles below statistically worth anything. Run `--full` once per
+schema campaign, not on a schedule.
 
 What it does, all through the polite rate-limited `FandomClient`
 (1 req/s, UA-identified, response cache in `.cache/fandom/`):
@@ -70,9 +78,25 @@ What it does, all through the polite rate-limited `FandomClient`
    subpages are skipped.
 3. Per infobox: one `list=embeddedin` batch (≤500 titles) as a capped
    popularity signal, then `action=parse` on the first N titles to
-   inventory the infobox's field names with the existing wikitext
-   parser.
-4. Catalogue diff: entity types are loaded from
+   inventory the infobox's fields with the existing wikitext parser —
+   both their NAMES and their **value shapes** (`src/fandom/
+   field-shape.ts`): fill rate, cardinality, max length, whether values
+   are lists, and up to five real examples. The inferred shape
+   (`number` / `date` / `wikilink` / `wikilink_list` / `template` /
+   `enum_like` / `prose` / `text`) is what decides whether a field
+   wants a property, a vocabulary or a relation — a name-only
+   inventory cannot tell those apart. **Structure is read from the raw
+   wikitext**, because `cleanValue` strips exactly the three signals
+   that matter: `[[links]]`, `{{templates}}` and `<br>` separators.
+4. Per infobox, the same sampled pages are surveyed OUTSIDE the
+   infobox (`src/fandom/page-structure.ts`): section headings by
+   frequency, **wikitable column signatures with row counts**, and
+   `{{Qref}}` citation density. This is where most of the wiki's data
+   actually lives — chapter and episode lists, cast tables,
+   anime/manga differences, and the per-source anchors that fill the
+   `since` axis and the appearance edges. An infobox-only inventory
+   reports none of it.
+5. Catalogue diff: entity types are loaded from
    `data/schemas/entity-types` + `data/universes/one-piece/schemas/
    entity-types`; each infobox field is marked `mapped` / `ignored` /
    `unmapped` against the mapper's exported handled-param list
@@ -83,8 +107,9 @@ What it does, all through the polite rate-limited `FandomClient`
    `src/fandom/analyze.ts`) with a singularised-slug fallback.
 
 Output: `fandom-analyze.json` (machine-readable, diffable) and
-`fandom-analyze.md` (summary), each ending in an explicit **gaps**
-section:
+`fandom-analyze.md` (summary — overview, field inventory with shapes
+and examples, page structure, then gaps), each ending in an explicit
+**gaps** section:
 
 - unmapped infobox fields, sorted by occurrence (→ mapper backlog);
 - categories with no entity type (→ modelling backlog / noise);
@@ -94,6 +119,18 @@ section:
 
 Exit codes: `0` on success, `1` on bad flags or any error (including
 "Fandom unreachable").
+
+### Running it from CI (the report loop)
+
+The report is a gitignored build artifact, so a CI run would produce it
+and throw it away — and a cloud Claude session cannot reach Fandom at
+all (the sandbox proxy answers 403 CONNECT; CI runners have normal
+egress). `.github/workflows/fandom-analyze.yml` closes that loop: on
+`workflow_dispatch` it runs the `--full` sweep, writes into
+`docs/audits/`, and **commits the report to an `audit/fandom-structure-
+<run>` branch**. The runner does the looking; the commit is how it
+reports back. Nothing is merged, and the workflow never touches
+`/data`.
 
 ## `fandom:updates`
 
