@@ -783,3 +783,26 @@ surfaces it). True per-item provenance (each believer cites its own
 chapter) would need qualifier-on-qualifier structures — a data-model
 extension (e.g. `believed_by: [{ target, source }]`). Park until a real
 editorial need shows up; needs its own ADR + migration if promoted.
+
+## Retirer `JSX.Element` du code React (2026-08-27)
+
+Signalé par react-doctor sur la PR #127 (règle `no-jsx-element-type`),
+mais **rien à voir avec cette PR** : c'est la convention du dépôt depuis
+le début. ~200 occurrences de `): JSX.Element` réparties sur `apps/web`
+et `apps/dashboard`, toutes déjà sur `main`.
+
+Le fond est réel : React 19 a retiré le namespace **global** `JSX`, qui
+n'est plus qu'un alias de compatibilité résolu par le runtime JSX. La
+forme durable est `React.JSX.Element`, ou mieux `ReactElement` importé
+depuis `react`. Le code compile aujourd'hui, donc c'est une
+modernisation, pas un bug.
+
+Ne pas corriger les 4 occurrences signalées isolément : ça créerait deux
+conventions dans le même dépôt pour un gain nul. Soit on balaye tout
+d'un coup (codemod + `tsc --noEmit` + build des deux apps), soit on ne
+touche à rien. Un balayage de cette taille est un refactor, donc il
+demande l'accord du mainteneur et une entrée dans DECISIONS.md.
+
+Note au passage : `no-multi-comp` sur `apps/web/src/routes/__root.tsx`
+est un faux positif. Un fichier de route TanStack Start regroupe
+légitimement le document racine, la mise en page et le 404.
