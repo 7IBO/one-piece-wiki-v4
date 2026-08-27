@@ -54,6 +54,10 @@ jobs:
           base="docs/audits/fandom-structure-${stamp}"
           mv docs/audits/fandom-analyze.json "${base}.json"
           mv docs/audits/fandom-analyze.md "${base}.md"
+          # The report is generated, and CI runs `format:check` over the
+          # whole tree — an unformatted table alignment fails the branch
+          # before anyone reads it (run 2 died exactly there).
+          bun run format >/dev/null
           branch="audit/fandom-structure-${{ github.run_id }}"
           git config user.name "fandom-importer[bot]"
           git config user.email "noreply@one-piece.wiki"
