@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:294",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-294",
+  "properties": {
+    "number": {
+      "value": 294
+    },
+    "title_key": {
+      "value_key": "manga-chapter.294.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

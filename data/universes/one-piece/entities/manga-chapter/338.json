@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:338",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-338",
+  "properties": {
+    "number": {
+      "value": 338
+    },
+    "title_key": {
+      "value_key": "manga-chapter.338.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

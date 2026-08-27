@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:380",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-380",
+  "properties": {
+    "number": {
+      "value": 380
+    },
+    "title_key": {
+      "value_key": "manga-chapter.380.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

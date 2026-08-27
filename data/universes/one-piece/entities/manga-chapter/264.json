@@ -1,0 +1,15 @@
+{
+  "id": "manga-chapter:264",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-264",
+  "properties": {
+    "number": {
+      "value": 264
+    },
+    "title_key": {
+      "value_key": "manga-chapter.264.title"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:382",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-382",
+  "properties": {
+    "number": {
+      "value": 382
+    },
+    "title_key": {
+      "value_key": "manga-chapter.382.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

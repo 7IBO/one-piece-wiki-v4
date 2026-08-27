@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:378",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-378",
+  "properties": {
+    "number": {
+      "value": 378
+    },
+    "title_key": {
+      "value_key": "manga-chapter.378.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

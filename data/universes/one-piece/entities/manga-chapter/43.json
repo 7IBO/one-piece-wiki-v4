@@ -1,0 +1,15 @@
+{
+  "id": "manga-chapter:43",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-43",
+  "properties": {
+    "number": {
+      "value": 43
+    },
+    "title_key": {
+      "value_key": "manga-chapter.43.title"
+    }
+  },
+  "relations": []
+}

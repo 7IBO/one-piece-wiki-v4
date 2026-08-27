@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:328",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-328",
+  "properties": {
+    "number": {
+      "value": 328
+    },
+    "title_key": {
+      "value_key": "manga-chapter.328.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

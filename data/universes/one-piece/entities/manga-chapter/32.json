@@ -1,0 +1,15 @@
+{
+  "id": "manga-chapter:32",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-32",
+  "properties": {
+    "number": {
+      "value": 32
+    },
+    "title_key": {
+      "value_key": "manga-chapter.32.title"
+    }
+  },
+  "relations": []
+}

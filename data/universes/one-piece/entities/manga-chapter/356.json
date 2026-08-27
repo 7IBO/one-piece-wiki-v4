@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:356",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-356",
+  "properties": {
+    "number": {
+      "value": 356
+    },
+    "title_key": {
+      "value_key": "manga-chapter.356.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "manga-chapter:138",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-138",
+  "properties": {
+    "number": {
+      "value": 138
+    },
+    "title_key": {
+      "value_key": "manga-chapter.138.title"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:334",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-334",
+  "properties": {
+    "number": {
+      "value": 334
+    },
+    "title_key": {
+      "value_key": "manga-chapter.334.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

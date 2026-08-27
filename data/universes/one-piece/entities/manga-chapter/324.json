@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:324",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-324",
+  "properties": {
+    "number": {
+      "value": 324
+    },
+    "title_key": {
+      "value_key": "manga-chapter.324.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:296",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-296",
+  "properties": {
+    "number": {
+      "value": 296
+    },
+    "title_key": {
+      "value_key": "manga-chapter.296.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

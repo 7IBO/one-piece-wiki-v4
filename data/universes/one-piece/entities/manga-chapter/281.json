@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:281",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-281",
+  "properties": {
+    "number": {
+      "value": 281
+    },
+    "title_key": {
+      "value_key": "manga-chapter.281.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:285",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-285",
+  "properties": {
+    "number": {
+      "value": 285
+    },
+    "title_key": {
+      "value_key": "manga-chapter.285.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}
