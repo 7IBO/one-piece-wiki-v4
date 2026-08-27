@@ -138,9 +138,35 @@ export type ReleaseView = {
   readonly beyondCursor: boolean;
 };
 
+/**
+ * One work the reader has just crossed — the band the canvas plate
+ * calls « Ce que tu viens de croiser ».
+ *
+ * The plate showed ENTITIES there (Luffy, Kaido, Onigashima…), which
+ * needs an entity↔chapter edge the corpus does not carry: the arc
+ * ranges that would build it are computed by a Lua module at template
+ * expansion and are absent from the wikitext (see FANDOM_SYNC.md).
+ * What IS available, and honestly the same idea, is the last SOURCES
+ * the reader passed — derived from the cursor alone, no relation
+ * needed, and every one of them is at or before the cursor so every
+ * title may be shown.
+ */
+export type CrossedView = {
+  readonly sourceType: string;
+  readonly typeLabel: string;
+  readonly slug: string;
+  readonly number: number;
+  readonly title: string | null;
+  readonly image: ImageView | null;
+};
+
 export type HomeView = {
   readonly groups: readonly TypeGroup[];
   readonly totalEntities: number;
+  /** The works just behind the cursor; empty when none is declared. */
+  readonly crossed: readonly CrossedView[];
+  /** Inclusive ordinal span of `crossed`, for the section's overline. */
+  readonly crossedSpan: { readonly from: number; readonly to: number; } | null;
   /** Null when the reader has declared no progression at all. */
   readonly reading: ReadingView | null;
   readonly releases: readonly ReleaseView[];
@@ -1262,6 +1288,46 @@ export function propertyLabel(
 /** How many recent releases the home page shows. */
 const HOME_RELEASES = 6;
 
+/** Tiles in the « Ce que tu viens de croiser » band — six, per the plate. */
+const HOME_CROSSED = 6;
+
+/**
+ * The last works the reader passed, newest first, on the axis they
+ * have gone furthest along.
+ *
+ * Every one sits AT OR BEFORE the cursor by construction, so titles
+ * and artwork are shown in full: this band is the one place on the
+ * page where nothing has to be withheld, which is exactly why the
+ * plate leads the column with it.
+ */
+function buildCrossed(
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  primary: AxisView | null,
+): readonly CrossedView[] {
+  if (primary === null) return [];
+  const propertyId = ordinalPropertyOf(cat, primary.sourceType);
+  if (propertyId === null) return [];
+  const index = ordinalIndexFor(primary.sourceType, propertyId);
+  const typeLabel = entityTypeLabel(cat, primary.sourceType, locale);
+  const out: CrossedView[] = [];
+  for (let n = primary.at; n >= 0 && out.length < HOME_CROSSED; n -= 1) {
+    const row = index.get(n);
+    if (row === undefined) continue;
+    if (!isSourceVisible(row.id, cursor)) continue;
+    out.push({
+      sourceType: primary.sourceType,
+      typeLabel,
+      slug: row.slug,
+      number: n,
+      title: db.displayNameAtCursor(row.id, cursor, locale),
+      image: buildEntityCardView(row.id, cat, locale, cursor)?.image ?? null,
+    });
+  }
+  return out;
+}
+
 /**
  * The reader's position on every declared axis, plus the axis to lead
  * with. Built from `CURSOR_AXES`, so a third axis (live action, films)
@@ -1321,7 +1387,12 @@ function buildReleases(
   locale: Locale,
   cursor: ProgressCursor,
 ): readonly ReleaseView[] {
-  const out: ReleaseView[] = [];
+  // One bucket per axis, INTERLEAVED at the end. Sorting the union by
+  // `number` looked right and was not: chapter ordinals run past 1100
+  // while episodes trail behind, so a global sort handed all six rows
+  // to the manga and the page never showed a single episode — the one
+  // thing the plate's release panel exists to show side by side.
+  const byAxis = new Map<string, ReleaseView[]>();
   const named = cursorActive(cursor);
   for (const { sourceType } of CURSOR_AXES) {
     const propertyId = ordinalPropertyOf(cat, sourceType);
@@ -1338,7 +1409,8 @@ function buildReleases(
       // are. The home page states what EXISTS (a number, a date) and
       // withholds what it MEANS (the title) until the reader opts in.
       const visible = named && isSourceVisible(row.id, cursor);
-      out.push({
+      const bucket = byAxis.get(sourceType) ?? [];
+      bucket.push({
         sourceType,
         typeLabel: entityTypeLabel(cat, sourceType, locale),
         slug: row.slug,
@@ -1347,11 +1419,20 @@ function buildReleases(
         title: visible ? db.displayNameAtCursor(row.id, cursor, locale) : null,
         beyondCursor: !visible,
       });
+      byAxis.set(sourceType, bucket);
     }
   }
-  return out
-    .sort((a, b) => (b.number ?? 0) - (a.number ?? 0))
-    .slice(0, HOME_RELEASES);
+  const buckets = [...byAxis.values()];
+  const out: ReleaseView[] = [];
+  for (let rank = 0; out.length < HOME_RELEASES; rank += 1) {
+    const before = out.length;
+    for (const bucket of buckets) {
+      const row = bucket[rank];
+      if (row !== undefined && out.length < HOME_RELEASES) out.push(row);
+    }
+    if (out.length === before) break; // every bucket exhausted
+  }
+  return out;
 }
 
 export async function buildHomeView(locale: Locale, cursor: ProgressCursor): Promise<HomeView> {
@@ -1371,6 +1452,8 @@ export async function buildHomeView(locale: Locale, cursor: ProgressCursor): Pro
     if (bucket === undefined) grouped.set(group, [summary]);
     else bucket.push(summary);
   }
+  const reading = buildReading(cat, locale, cursor);
+  const crossed = buildCrossed(cat, locale, cursor, reading?.primary ?? null);
   const groups: TypeGroup[] = [...grouped.entries()]
     .map(([id, types]) => ({
       id,
@@ -1383,7 +1466,11 @@ export async function buildHomeView(locale: Locale, cursor: ProgressCursor): Pro
   return {
     groups,
     totalEntities: total,
-    reading: buildReading(cat, locale, cursor),
+    crossed,
+    crossedSpan: crossed.length === 0
+      ? null
+      : { from: crossed[crossed.length - 1]!.number, to: crossed[0]!.number },
+    reading,
     releases: buildReleases(cat, locale, cursor),
     cursor,
   };

@@ -1,41 +1,52 @@
 /**
- * Home — the entry to the universe, in TWO states.
+ * Home — `design/v2/Accueil.dc.html`, reproduced.
  *
- * ## Without a declared progression: protect first, invite second
+ * The earlier version of this file was NOT that plate. It respected
+ * the spoiler rules and invented its own layout: a bordered panel
+ * inside the 1200px reading column, all-caps display headings, two
+ * full-width axis bars, a five-column plate wall. The plate is a
+ * FULL-BLEED 380px hero over a layered colour field, a 320px reading
+ * card floating at its right, then a 12-column grid — 8/4 for
+ * « ce que tu viens de croiser » beside the releases, 12 for the
+ * explore row, 5/7 for the community and the contribution panel.
+ * Every measure below comes from the plate.
  *
- * A reader who has told this wiki nothing is PROTECTED, not exposed.
- * That is not how the gate behaves by default: `isSourceVisible`
- * answers true for an axis with no cursor, which is right for "this
- * value carries no `since`" and wrong for a landing page, where it
- * would hand out every chapter title to someone who never said where
- * they are.
+ * ## Two states
  *
- * So the unset state states only what a bookshop shelf states — the
- * newest chapter and episode EXIST, and their numbers — withholds
- * every title, offers the wiki by type, and asks for the progression.
- * The ask is the point of the page in that state.
+ * A reader who has declared nothing is PROTECTED, not exposed:
+ * `isSourceVisible` answers true for an axis with no cursor, which is
+ * right for "this value carries no `since`" and wrong for a landing
+ * page. The unset hero keeps the plate's geometry exactly and swaps
+ * its content for the ask; the release rows keep their dates and
+ * withhold every title.
  *
- * ## With one: lead with the reader
+ * ## The counting rule
  *
- * Where they are, how far the axis runs, and the way back in. Release
- * titles appear up to their position and stop there.
+ * "5 members hidden by your progression" is itself a spoiler. Never
+ * count what is withheld. But "chapter 1044 of 1145" is not — the
+ * existence and numbering of published works is public. Counting
+ * WORKS is safe; counting FACTS ABOUT THEM is not.
  *
- * ## The counting rule, which is subtler than it looks
+ * ## Where this plate is not followed, and why
  *
- * "5 members hidden by your progression" is itself a spoiler: it
- * reveals that five more members exist. Never count what is withheld.
- * But "chapter 1044 of 1145" is not a spoiler — the existence and
- * numbering of published chapters is public, and the denominator is
- * the corpus, not a tally of secrets. The distinction is between
- * counting WORKS (public) and counting FACTS ABOUT THEM (not).
- *
- * Nothing here hardcodes an axis: `reading.axes` comes from
- * `CURSOR_AXES`, so a third one appears the day it is declared.
+ * The community panel's three forum rows are absent. Forum and quiz
+ * exist in the plate and in nothing else — no entity type, no schema,
+ * no ADR — and putting invented thread titles on screen is the one
+ * thing this project cannot afford. The block keeps its column span,
+ * its panel, its "Bientôt" chip and its footnote; only fabricated
+ * rows are missing.
  */
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { type CSSProperties, type ReactElement } from 'react';
-import { type AxisView, fetchHome, type ReleaseView, type TypeGroup } from '../api';
-import { EntityArt } from '../components/EntityArt';
+import {
+  type AxisView,
+  type CrossedView,
+  fetchHome,
+  type ProgressCursor,
+  type ReleaseView,
+  type TypeGroup,
+} from '../api';
+import { EntityImage } from '../components/EntityImage';
 import { ProgressControl } from '../components/ProgressControl';
 import { t } from '../lib/chrome';
 import { entityTint } from '../lib/entity-tint';
@@ -50,223 +61,278 @@ function HomePage(): ReactElement {
   const view = Route.useLoaderData();
   const reading = view.reading;
   return (
-    <div className='page-column pt-8 sm:pt-10'>
-      {reading === null
-        ? <UnsetHero cursor={view.cursor} />
-        : <ReadingHero axes={reading.axes} primary={reading.primary} cursor={view.cursor} />}
-      {view.releases.length > 0 && <Releases items={view.releases} />}
-      <ExploreWall groups={view.groups} total={view.totalEntities} />
-      <Community />
-    </div>
+    <>
+      <Hero
+        axes={reading?.axes ?? []}
+        primary={reading?.primary ?? null}
+        cursor={view.cursor}
+      />
+      {/* The plate's body: 12 columns, 12px gutters, 26/40/44 padding. */}
+      <div className='mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-3 px-5 pb-11 pt-6.5 md:grid-cols-12 md:px-10'>
+        <Crossed items={view.crossed} span={view.crossedSpan} />
+        <Releases items={view.releases} />
+        <Explore groups={view.groups} />
+        <Community />
+        <Contribute total={view.totalEntities} groups={view.groups} />
+      </div>
+    </>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Hero — the two states
+// Hero — full bleed, 380px, a layered colour field under a scrim
 
 /**
- * No progression declared. The page's job here is the ASK, so it leads
- * with the promise rather than with a wall of types.
+ * The plate's background is four stacked layers, not one gradient:
+ * a warm diagonal at 30%, a teal disc bleeding off the top-left, a
+ * soft gold rectangle right of centre, then a vertical scrim that
+ * lands the whole thing on the canvas colour. Reproduced exactly —
+ * this field is what makes the page read as a cover rather than as a
+ * dark admin panel, and it was the single biggest thing the earlier
+ * version dropped.
  */
-function UnsetHero(
-  { cursor }: { readonly cursor: { manga: number | null; anime: number | null; }; },
-): ReactElement {
-  const locale = useLocale();
+function HeroField(): ReactElement {
   return (
-    <header className='panel mb-8 p-6 sm:p-8'>
-      <p className='label-xs text-gold'>{t(locale, 'tagline')}</p>
-      <h1 className='display mt-2 max-w-[18ch] text-[clamp(1.9rem,5.2vw,3.2rem)] font-extrabold uppercase leading-[0.98] text-fg'>
-        {t(locale, 'homeNoProgressTitle')}
-      </h1>
-      <p className='mt-4 max-w-[62ch] text-[15px] leading-relaxed text-muted'>
-        {t(locale, 'homeNoProgressBody')}
-      </p>
-      <div className='mt-5'>
-        <ProgressControl progress={cursor} />
-      </div>
-    </header>
+    <div aria-hidden className='absolute inset-0 overflow-hidden'>
+      <div
+        className='absolute inset-0 opacity-30'
+        style={{
+          background:
+            'linear-gradient(100deg, #101a2e 0%, #1d3a5c 34%, #3f6f8f 62%, #c98a4a 88%, #e8b45c 100%)',
+        }}
+      />
+      <div
+        className='absolute left-30 -top-15 size-115 rounded-full opacity-28'
+        style={{ background: '#2f6b7a' }}
+      />
+      <div
+        className='absolute right-55 top-10 h-75 w-65 opacity-13'
+        style={{ background: '#e8b45c' }}
+      />
+      <div
+        className='absolute inset-0'
+        style={{
+          background:
+            'linear-gradient(180deg, rgba(10,11,14,0.5) 0%, rgba(10,11,14,0.18) 40%, #0a0b0e 100%)',
+        }}
+      />
+    </div>
   );
 }
 
-/** A progression is set: lead with the reader's own position. */
-function ReadingHero(
+function Hero(
   { axes, primary, cursor }: {
     readonly axes: readonly AxisView[];
     readonly primary: AxisView | null;
-    readonly cursor: { manga: number | null; anime: number | null; };
+    readonly cursor: ProgressCursor;
   },
 ): ReactElement {
   const locale = useLocale();
+  const reading = axes.length > 0;
   return (
-    <header className='panel mb-8 p-6 sm:p-8'>
-      <p className='label-xs text-gold'>
-        {axes.map((a) => `${a.label} ${a.at}`).join(' · ')}
-      </p>
-      <h1 className='display mt-2 max-w-[18ch] text-[clamp(1.9rem,5.2vw,3.2rem)] font-extrabold uppercase leading-[0.98] text-fg'>
-        {t(locale, 'homeResumeTitle')}
-      </h1>
-      <p className='mt-4 max-w-[62ch] text-[15px] leading-relaxed text-muted'>
-        {t(locale, 'homeResumeBody')}
-      </p>
-      <div className='mt-5 flex flex-wrap items-center gap-3'>
-        {primary?.next !== null && primary?.next !== undefined && (
-          <Link
-            to='/$type/$slug'
-            params={{ type: primary.sourceType, slug: primary.next.slug }}
-            className='rounded-md bg-gold px-3.5 py-2 text-[13px] font-semibold text-canvas transition-opacity duration-150 hover:opacity-90'
-          >
-            {t(locale, 'homeContinue')} — {primary.label} {primary.next.number}
-          </Link>
-        )}
-        <ProgressControl progress={cursor} />
+    <section className='relative overflow-hidden border-b border-line md:h-95'>
+      <HeroField />
+      <div className='relative mx-auto flex h-full w-full max-w-[1440px] flex-col items-start justify-end gap-10 px-5 pb-14 pt-10 md:flex-row md:items-end md:justify-between md:px-10'>
+        <div className='max-w-160'>
+          <p className='label-xs text-muted'>
+            {reading && primary !== null
+              ? `${t(locale, 'homeAt')} ${primary.label} ${primary.at}`
+              : t(locale, 'tagline')}
+          </p>
+          <h1 className='display mt-2.5 text-[clamp(1.9rem,3.6vw,2.875rem)] font-black leading-[1.04] tracking-[-0.035em] text-fg'>
+            {t(locale, reading ? 'homeResumeTitle' : 'homeNoProgressTitle')}
+          </h1>
+          <p className='mt-3 max-w-160 text-[15px] leading-relaxed text-[color:var(--color-muted)]'>
+            {t(locale, reading ? 'homeResumeBody' : 'homeNoProgressBody')}
+          </p>
+          <div className='mt-5 flex flex-wrap items-center gap-2.5'>
+            {primary?.next !== null && primary?.next !== undefined && (
+              <Link
+                to='/$type/$slug'
+                params={{ type: primary.sourceType, slug: primary.next.slug }}
+                className='rounded-md bg-gold px-5 py-2.5 text-[13.5px] font-semibold text-canvas no-underline transition-opacity duration-150 hover:opacity-90'
+              >
+                {t(locale, 'homeContinue')} {primary.label.toLowerCase()} {primary.next.number}
+              </Link>
+            )}
+            <ProgressControl progress={cursor} variant='button' />
+          </div>
+        </div>
+        {reading && <ReadingCard axes={axes} primary={primary} />}
       </div>
-      <dl className='mt-6 grid gap-3 sm:grid-cols-2'>
-        {axes.map((axis) => <AxisBar key={axis.sourceType} axis={axis} />)}
-      </dl>
-    </header>
+    </section>
   );
 }
 
-/**
- * One axis as a bar. The denominator counts WORKS THAT EXIST, which is
- * public knowledge — never a count of facts withheld from this reader.
- */
-function AxisBar({ axis }: { readonly axis: AxisView; }): ReactElement {
-  const pct = axis.total === 0 ? 0 : Math.min(100, Math.round((axis.at / axis.total) * 100));
+/** « Ta lecture » — 320px, one row per axis, one bar for the primary. */
+function ReadingCard(
+  { axes, primary }: { readonly axes: readonly AxisView[]; readonly primary: AxisView | null; },
+): ReactElement {
+  const locale = useLocale();
+  const pct = primary === null || primary.total === 0
+    ? 0
+    : Math.min(100, Math.round((primary.at / Math.max(primary.total, primary.at)) * 100));
   return (
-    <div className='rounded-md border border-line px-3.5 py-3'>
-      <div className='flex items-baseline justify-between gap-3'>
-        <dt className='label-xs text-muted'>{axis.label}</dt>
-        <dd className='m-0 text-[13.5px] font-semibold tabular-nums text-fg'>
-          <span className='text-gold'>{axis.at}</span>
-          <span className='text-muted'>{' / '}{axis.total}</span>
-        </dd>
-      </div>
-      <div className='mt-2 h-1 overflow-hidden rounded-full bg-surface'>
-        <div className='h-full rounded-full bg-gold' style={{ width: `${pct}%` }} />
+    <div className='w-full shrink-0 rounded-md border border-line bg-surface/85 px-4 py-3.5 backdrop-blur-sm md:w-80'>
+      <p className='label-xs text-muted'>{t(locale, 'homeReading')}</p>
+      <dl className='mt-2.5'>
+        {axes.map((axis, i) => (
+          <div
+            key={axis.sourceType}
+            className={`flex items-baseline justify-between gap-3 py-2 text-[13px] ${
+              i === axes.length - 1 ? '' : 'border-b border-[color:#191c23]'
+            }`}
+          >
+            <dt className='text-[color:var(--color-muted)]'>{axis.label}</dt>
+            <dd className='m-0 tabular-nums text-fg'>
+              {axis.at}
+              {
+                /* The denominator is the CORPUS, and the corpus can lag
+                behind a reader who has read further than we have
+                imported. `1044 / 602` is nonsense on screen, so the
+                floor is the reader's own position. */
+              }
+              <span className='text-muted'>{' / '}{Math.max(axis.total, axis.at)}</span>
+            </dd>
+          </div>
+        ))}
+      </dl>
+      <div className='mt-3 h-1 overflow-hidden rounded-sm bg-line'>
+        <div className='h-full rounded-sm bg-gold' style={{ width: `${pct}%` }} />
       </div>
     </div>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Releases
+// « Ce que tu viens de croiser » — span 8, six 3:4 tiles
 
-/**
- * The newest works. Ordered by ordinal, which for a serialised work IS
- * release order — and unlike the date it is always known (only 10 of
- * 406 chapters and none of the episodes carry `released_at`).
- */
-function Releases({ items }: { readonly items: readonly ReleaseView[]; }): ReactElement {
-  const locale = useLocale();
+function SectionTitle({ children }: { readonly children: React.ReactNode; }): ReactElement {
   return (
-    <section className='panel mb-8 p-5 sm:p-6'>
-      <h2 className='label-xs text-muted'>{t(locale, 'homeReleases')}</h2>
-      <ul className='mt-3 space-y-0.5'>
+    <h2 className='display text-[18px] font-extrabold tracking-[-0.02em] text-fg'>{children}</h2>
+  );
+}
+
+function Crossed(
+  { items, span }: {
+    readonly items: readonly CrossedView[];
+    readonly span: { readonly from: number; readonly to: number; } | null;
+  },
+): ReactElement | null {
+  const locale = useLocale();
+  if (items.length === 0) return null;
+  return (
+    <section className='md:col-span-8'>
+      <div className='flex items-baseline justify-between gap-4'>
+        <SectionTitle>{t(locale, 'homeCrossed')}</SectionTitle>
+        {span !== null && (
+          <span className='text-[11.5px] tabular-nums text-muted'>
+            {items[0]?.typeLabel.toLowerCase()} {span.from}–{span.to}
+          </span>
+        )}
+      </div>
+      <ul className='mt-3.5 grid grid-cols-3 gap-2.5 sm:grid-cols-6'>
         {items.map((item) => (
           <li key={`${item.sourceType}/${item.slug}`}>
             <Link
               to='/$type/$slug'
               params={{ type: item.sourceType, slug: item.slug }}
-              className='flex items-baseline gap-3 rounded-md px-2 py-2 no-underline transition-colors duration-150 hover:bg-surface'
+              className='group block no-underline'
             >
-              <span className='shrink-0 text-[13.5px] font-semibold tabular-nums text-gold'>
-                {item.typeLabel} {item.number}
+              <span className='block overflow-hidden rounded-[5px]'>
+                <EntityImage
+                  image={item.image}
+                  type={item.sourceType}
+                  slug={item.slug}
+                  name={item.title ?? String(item.number)}
+                  ratio='portrait'
+                  className='w-full transition-transform duration-500 ease-out group-hover:scale-[1.05]'
+                />
               </span>
-              {item.releasedAt !== null && (
-                <span className='shrink-0 text-[12.5px] tabular-nums text-muted'>
-                  · {item.releasedAt}
-                </span>
-              )}
-              <span
-                className={`truncate text-[13.5px] ${
-                  item.title === null ? 'italic text-muted/70' : 'text-fg'
-                }`}
-              >
-                {item.title ?? t(locale, 'homeTitleHidden')}
+              <span className='mt-1.5 block truncate text-[12.5px] font-semibold text-fg'>
+                {item.title ?? `${item.typeLabel} ${item.number}`}
+              </span>
+              <span className='block truncate text-[10.5px] text-muted'>
+                {item.typeLabel} {item.number}
               </span>
             </Link>
           </li>
         ))}
       </ul>
-      <p className='mt-3 border-t border-line pt-3 text-[12.5px] leading-relaxed text-muted'>
-        {t(locale, 'homeReleasesNote')}
-      </p>
     </section>
   );
 }
 
 // ---------------------------------------------------------------------------
-// Explore — the wall that used to be the whole page
+// « Dernières sorties » — span 4, a panel of rows with a title switch
 
-/**
- * Every entity type as an art plate carrying its own generated
- * composition (the type id seeds both the grammar and the colour
- * chord), the schema group as its overline, and its population.
- *
- * ONE dense wall rather than a section per group: the groups come from
- * the schema (`ui_hint.group`) and most hold a single type, so a grid
- * per group would leave three quarters of every row empty. Nothing
- * here knows a type id.
- */
-function ExploreWall(
-  { groups, total }: { readonly groups: readonly TypeGroup[]; readonly total: number; },
-): ReactElement {
+function Releases({ items }: { readonly items: readonly ReleaseView[]; }): ReactElement | null {
   const locale = useLocale();
-  const plates = groups.flatMap((group) => group.types.map((type) => ({ group: group.id, type })));
+  if (items.length === 0) return null;
   return (
-    <section className='mb-8'>
-      <div className='mb-4 flex items-baseline justify-between gap-4'>
-        <h2 className='display text-[clamp(1.2rem,2.6vw,1.6rem)] font-extrabold uppercase leading-none text-fg'>
-          {t(locale, 'homeExplore')}
-        </h2>
-        <p className='text-[12.5px] text-muted'>
-          <span className='font-semibold tabular-nums text-gold'>{total}</span>{' '}
-          {t(locale, 'entitiesIndexed')}
+    <section className='md:col-span-4'>
+      <div className='flex items-baseline justify-between gap-4'>
+        <SectionTitle>{t(locale, 'homeReleases')}</SectionTitle>
+      </div>
+      <div className='mt-3.5 rounded-md border border-line bg-surface px-4 py-3.5'>
+        {items.map((item, i) => (
+          <div
+            key={`${item.sourceType}/${item.slug}`}
+            className={`flex items-baseline justify-between gap-3 py-2 text-[13px] ${
+              i === items.length - 1 ? '' : 'border-b border-[color:#191c23]'
+            }`}
+          >
+            <Link
+              to='/$type/$slug'
+              params={{ type: item.sourceType, slug: item.slug }}
+              className='min-w-0 truncate no-underline'
+            >
+              <span className='font-semibold tabular-nums text-fg'>
+                {item.typeLabel} {item.number}
+              </span>
+              {item.releasedAt !== null && (
+                <span className='text-[color:var(--color-muted)]'>{' · '}{item.releasedAt}</span>
+              )}
+            </Link>
+            {item.title === null
+              ? (
+                <span className='shrink-0 rounded-[3px] border border-line-strong px-2.5 py-1 text-[11px] text-[color:var(--color-muted)]'>
+                  {t(locale, 'homeTitleHidden')}
+                </span>
+              )
+              : <span className='min-w-0 shrink truncate text-right text-fg'>{item.title}</span>}
+          </div>
+        ))}
+        <p className='mt-3 border-t border-[color:#191c23] pt-2.75 text-[11.5px] leading-relaxed text-muted'>
+          {t(locale, 'homeReleasesNote')}
         </p>
       </div>
-      <ul className='grid grid-cols-2 gap-3 min-[560px]:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5'>
-        {plates.map(({ group, type }) => <TypePlate key={type.id} group={group} type={type} />)}
+    </section>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// « Explorer l'univers » — span 12, one row of 4:3 tiles, count BELOW
+
+function Explore({ groups }: { readonly groups: readonly TypeGroup[]; }): ReactElement {
+  const locale = useLocale();
+  const types = groups.flatMap((g) => g.types);
+  return (
+    <section className='mt-3.5 md:col-span-12'>
+      <SectionTitle>{t(locale, 'homeExplore')}</SectionTitle>
+      <ul className='mt-3.5 grid grid-cols-2 gap-2.5 sm:grid-cols-4 lg:grid-cols-8'>
+        {types.map((type) => <TypeTile key={type.id} type={type} />)}
       </ul>
     </section>
   );
 }
 
-// ---------------------------------------------------------------------------
-// Community
-
 /**
- * A reserved place, not invented content. Forum and news exist in the
- * maquettes and in nothing else — no entity type, no schema, no ADR —
- * so this block says what it will be and shows no fabricated threads.
- * Inventing them here would be the one thing this project cannot
- * afford: data on screen that no source backs.
+ * The label sits INSIDE the tile, bottom-left; the count sits BELOW
+ * it, outside, in muted tabular figures. The earlier version put both
+ * inside under a gradient scrim, which is a different object.
  */
-function Community(): ReactElement {
-  const locale = useLocale();
-  return (
-    <section className='panel mb-10 p-5 sm:p-6'>
-      <div className='flex items-baseline justify-between gap-4'>
-        <h2 className='label-xs text-muted'>{t(locale, 'homeCommunity')}</h2>
-        <span className='rounded-full border border-line-strong px-2 py-0.5 text-[11px] font-semibold uppercase tracking-wide text-muted'>
-          {t(locale, 'homeSoon')}
-        </span>
-      </div>
-      <p className='mt-3 max-w-[62ch] text-[12.5px] leading-relaxed text-muted'>
-        {t(locale, 'homeCommunityNote')}
-      </p>
-    </section>
-  );
-}
-
-function TypePlate(
-  { group, type }: {
-    readonly group: string;
-    readonly type: TypeGroup['types'][number];
-  },
-): ReactElement {
-  // The type's OWN id seeds its plate, so every plate on the page is a
-  // different colour and a different visual family.
+function TypeTile({ type }: { readonly type: TypeGroup['types'][number]; }): ReactElement {
   const seed = `${type.id}:index`;
   const tint = entityTint(seed);
   return (
@@ -274,31 +340,127 @@ function TypePlate(
       <Link
         to='/$type'
         params={{ type: type.id }}
-        className='motion-lift group relative block aspect-4/3 overflow-hidden rounded-lg ring-1 ring-line-strong transition-shadow hover:ring-2 hover:ring-[color:var(--tint-accent)]'
+        className='group block no-underline'
       >
-        <EntityArt
-          entityId={seed}
-          entityType={type.id}
-          ratio='wide'
-          initial={type.label.slice(0, 1).toUpperCase()}
-          className='absolute inset-0 size-full transition-transform duration-500 ease-out group-hover:scale-[1.07]'
-        />
-        <span
-          aria-hidden
-          className='absolute inset-x-0 bottom-0 h-3/5 bg-gradient-to-t from-canvas via-canvas/70 to-transparent'
-        />
-        <span className='absolute inset-x-0 bottom-0 block p-3'>
-          <span className='label-xs block truncate text-fg/55'>{group.replace(/-/g, ' ')}</span>
-          <span className='flex items-end justify-between gap-2'>
-            <span className='display min-w-0 truncate text-[15px] font-extrabold uppercase leading-tight text-fg transition-colors duration-150 group-hover:text-[color:var(--tint-accent)]'>
-              {type.label}
-            </span>
-            <span className='display shrink-0 text-[13px] font-extrabold tabular-nums text-gold'>
-              {type.count}
-            </span>
+        <span className='motion-lift relative block overflow-hidden rounded-md ring-1 ring-line transition-shadow hover:ring-[color:var(--tint-accent)]'>
+          <EntityImage
+            image={null}
+            type={type.id}
+            slug='index'
+            name={type.label}
+            ratio='wide'
+            className='w-full transition-transform duration-500 ease-out group-hover:scale-[1.06]'
+          />
+          <span
+            aria-hidden
+            className='absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/70 to-transparent'
+          />
+          <span className='absolute bottom-2.5 left-2.75 right-2.5 truncate text-[13.5px] font-bold text-white'>
+            {type.label}
           </span>
         </span>
+        <span className='mt-1.25 block text-[11px] tabular-nums text-muted'>{type.count}</span>
       </Link>
     </li>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// Bottom row — community (span 5) beside the contribution panel (span 7)
+
+function Community(): ReactElement {
+  const locale = useLocale();
+  return (
+    <section className='mt-3.5 md:col-span-5'>
+      <div className='flex items-baseline justify-between gap-4'>
+        <SectionTitle>{t(locale, 'homeCommunity')}</SectionTitle>
+        <span className='rounded-[3px] border border-line-strong px-2.5 py-1 text-[11px] text-[color:var(--color-muted)]'>
+          {t(locale, 'homeSoon')}
+        </span>
+      </div>
+      <div className='mt-3.5 rounded-md border border-line bg-surface px-4 py-3.5'>
+        {
+          /* The plate lists three forum threads here. They do not exist
+          — no entity type, no schema, no ADR — and rendering invented
+          titles is the one thing this project cannot afford. The block
+          keeps its geometry; the fabricated rows are what is missing. */
+        }
+        <p className='text-[11.5px] leading-relaxed text-muted'>
+          {t(locale, 'homeCommunityNote')}
+        </p>
+      </div>
+    </section>
+  );
+}
+
+function Contribute(
+  { total, groups }: { readonly total: number; readonly groups: readonly TypeGroup[]; },
+): ReactElement {
+  const locale = useLocale();
+  // Real counts only. The plate showed « Sources citées 9 411 » and
+  // « À compléter 318 »; neither is computed anywhere yet, so the two
+  // largest populations take those rows rather than a made-up figure.
+  const biggest = groups
+    .flatMap((g) => g.types)
+    .sort((a, b) => b.count - a.count)
+    .slice(0, 2);
+  return (
+    <section className='mt-3.5 md:col-span-7'>
+      <SectionTitle>{t(locale, 'homeContribute')}</SectionTitle>
+      <div className='mt-3.5 rounded-md border border-line bg-surface px-4 py-3.5'>
+        <div className='flex flex-col gap-6.5 sm:flex-row'>
+          <div className='min-w-0 flex-1'>
+            <p className='text-[13.5px] leading-[1.7] text-[color:var(--color-muted)]'>
+              {t(locale, 'homeContributeBody')}
+            </p>
+            <div className='mt-3.75 flex flex-wrap gap-2.25'>
+              <a
+                href='https://github.com/7IBO/one-piece-wiki-v4'
+                className='rounded-[5px] bg-gold px-4.25 py-2.25 text-[13px] font-semibold text-canvas no-underline transition-opacity duration-150 hover:opacity-90'
+              >
+                {t(locale, 'contributeEdit')}
+              </a>
+              <Link
+                to='/search'
+                search={{ q: '' }}
+                className='rounded-[5px] border border-line-strong px-4.25 py-2.25 text-[13px] font-semibold text-fg no-underline transition-colors duration-150 hover:border-gold/45'
+              >
+                {t(locale, 'searchLabel')}
+              </Link>
+            </div>
+          </div>
+          <dl className='w-full shrink-0 sm:w-47.5'>
+            <Stat label={t(locale, 'entitiesIndexed')} value={total} last={biggest.length === 0} />
+            {biggest.map((type, i) => (
+              <Stat
+                key={type.id}
+                label={type.label}
+                value={type.count}
+                last={i === biggest.length - 1}
+              />
+            ))}
+          </dl>
+        </div>
+      </div>
+    </section>
+  );
+}
+
+function Stat(
+  { label, value, last }: {
+    readonly label: string;
+    readonly value: number;
+    readonly last: boolean;
+  },
+): ReactElement {
+  return (
+    <div
+      className={`flex items-baseline justify-between gap-3 py-2 text-[13px] ${
+        last ? '' : 'border-b border-[color:#191c23]'
+      }`}
+    >
+      <dt className='truncate text-[color:var(--color-muted)]'>{label}</dt>
+      <dd className='m-0 tabular-nums text-fg'>{value}</dd>
+    </div>
   );
 }

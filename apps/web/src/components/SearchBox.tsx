@@ -72,11 +72,19 @@ export function SearchBox(
           cursorSet={progress.manga !== null || progress.anime !== null}
         />
       )}
+      {
+        /* The plate gives the field the WHOLE segment between the
+        wordmark and the controls, with no box of its own — the
+        hairlines around it are the affordance. Boxed and capped at
+        320px, it read as one control among three instead of as the
+        page's dominant element. Below `sm` it keeps its box, because
+        there are no segments to sit between. */
+      }
       <form
         role='search'
         action='/search'
         method='get'
-        className='min-w-0 flex-1 basis-full order-last sm:order-none sm:basis-auto'
+        className='order-last flex min-w-0 flex-1 basis-full items-center sm:order-none sm:basis-auto'
         onSubmit={(event) => {
           event.preventDefault();
           const q = value.trim();
@@ -85,6 +93,7 @@ export function SearchBox(
         }}
       >
         <label className='sr-only' htmlFor='wiki-search'>{t(locale, 'searchLabel')}</label>
+        <span aria-hidden className='hidden shrink-0 pl-4 text-[13px] text-muted sm:block'>⌕</span>
         <input
           id='wiki-search'
           type='search'
@@ -103,7 +112,7 @@ export function SearchBox(
               setPalette(true);
             }
           }}
-          className='w-full rounded-md border border-line-strong bg-canvas px-3 py-1.5 text-sm text-fg outline-none transition-colors duration-150 placeholder:text-faint hover:border-gold/45 focus:border-gold sm:max-w-80'
+          className='w-full rounded-md border border-line-strong bg-canvas px-3 py-1.5 text-sm text-fg outline-none transition-colors duration-150 placeholder:text-faint hover:border-gold/45 focus:border-gold sm:rounded-none sm:border-0 sm:bg-transparent sm:pl-2.5 sm:pr-4 sm:text-[12.5px] sm:hover:border-0 sm:focus:border-0 [&::-webkit-search-cancel-button]:hidden'
         />
       </form>
     </>

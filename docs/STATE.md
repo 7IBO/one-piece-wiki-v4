@@ -15,8 +15,62 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-27 (palette de recherche ADR-118 ; frontière
-d'import réparée)
+**Last updated**: 2026-08-27 (pont arc→chapitres : décision en attente ;
+palette de recherche ADR-118 ; frontière d'import réparée)
+
+## 2026-08-27 — pourquoi l'import des arcs n'a rien donné
+
+**Décision en attente du mainteneur**, en bas de section.
+
+J'avais lancé l'import des arcs en annonçant qu'il débloquerait le
+dialogue de progression. Il ne l'a pas fait : 5 `since` sur 51, 0
+`arc_number`, 0 relation. Le relevé de structure Fandom du 2026-08-27
+dit pourquoi, et ce n'est pas un défaut du mapper.
+
+`Arc Box` porte `chapter`, `episode` et `vol`. Mais sur 25 pages
+d'arcs, ces champs prennent **3 ou 4 valeurs distinctes** en tout, dont
+`auto` — alors que `Volume Box.chapters` en prend **25 sur 25**
+(`100 - 108`, `109 - 117`). La comparaison tranche : quand une plage
+est vraiment écrite dans le wikitext, chaque page a la sienne. Les
+plages d'arcs sont **calculées par un module Lua à l'expansion**, donc
+absentes du wikitext brut. Aucun mapper lisant
+`action=parse&prop=wikitext` ne les verra jamais.
+
+Les deux autres portes sont fermées : **ni `Chapter Box` ni
+`Episode Box` n'ont de champ d'arc**, et les pages d'arc **n'ont
+aucune wikitable** (`structure.tables` vide sur 25 pages).
+
+C'est le pont qui manque au dialogue de progression ET à la dérivation
+anime→manga que tu as choisie. Détail complet dans `FANDOM_SYNC.md`.
+
+### Ce qui est disponible sans rien changer
+
+- **L'ordre des arcs** : `prev`/`next` sont des wikiliens littéraux
+  (18-19 distincts sur 25), et `prev anime`/`next anime` donnent la
+  chaîne côté anime, filler compris. De quoi remplir `arc_number`.
+- **Le pont volume → chapitres**, littéral et complet à 100 %
+  (`Volume Box.chapters`, 115 volumes).
+- `Episode Box.chapter` (`Chapter 432 (p. 2-19)`) — le pont
+  épisode → chapitre, mais rempli à 0,16 seulement.
+
+### La décision
+
+`action=parse&prop=text` renvoie le gabarit **expansé** : les plages y
+sont. Techniquement direct. Mais ça fait lire de l'**HTML rendu** là où
+tout l'importeur lit du wikitext, et ADR-079 a bâti l'extraction sur ce
+substrat-là. Je ne l'ouvre pas sans toi — c'est un changement de
+contrat d'extraction, pas un réglage.
+
+Trois options, si tu veux trancher :
+
+1. **HTML rendu pour ce seul mapper.** Les plages tout de suite, au
+   prix d'un second substrat à maintenir.
+2. **Ordre des arcs seulement** (`prev`/`next`), sans plages. Sûr,
+   suffisant pour ordonner et naviguer, insuffisant pour dériver
+   l'anime du manga.
+3. **Passer par les volumes** : `Volume Box.chapters` est complet, donc
+   volume → chapitres est acquis. Reste à relier volume → arc, ce que
+   le relevé ne montre nulle part.
 
 ## 2026-08-27 — la palette de recherche (ADR-118)
 

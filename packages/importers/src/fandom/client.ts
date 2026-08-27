@@ -151,6 +151,53 @@ export class FandomClient {
     };
   }
 
+  /** `action=parse&prop=text` — the page with every template EXPANDED. */
+  renderUrl(page: string): string {
+    const params = new URLSearchParams({
+      action: 'parse',
+      page,
+      prop: 'text',
+      format: 'json',
+      formatversion: '2',
+    });
+    return `${this.baseUrl}/api.php?${params.toString()}`;
+  }
+
+  /**
+   * Fetch a page's RENDERED HTML (ADR-119).
+   *
+   * The second extraction substrate, and deliberately narrow. Some
+   * infobox values do not exist in the wikitext at all: an arc page
+   * writes `chapter = auto` and a Lua module computes "106-114, 9
+   * chapters" at expansion time. `prop=wikitext` can never see that
+   * number, whatever the mapper does; `prop=text` can.
+   *
+   * Everything else keeps reading wikitext. This is a fallback for
+   * computed values, not a migration of the importer.
+   */
+  async fetchRendered(page: string): Promise<{ title: string; html: string; }> {
+    const cached = await this.readCache(page, 'html');
+    const raw = cached ?? (await this.fetchRaw(this.renderUrl(page)));
+    if (cached === null || cached === undefined) await this.writeCache(page, raw, 'html');
+
+    const envelope = JSON.parse(raw) as {
+      error?: { code?: string; info?: string; };
+      parse?: { title?: string; text?: string; };
+    };
+    if (envelope.error !== undefined) {
+      throw new Error(
+        `MediaWiki error rendering "${page}": ${envelope.error.code ?? '?'} — ${
+          envelope.error.info ?? 'no info'
+        }`,
+      );
+    }
+    const parse = envelope.parse;
+    if (parse?.text === undefined || parse.title === undefined) {
+      throw new Error(`Malformed render response for "${page}".`);
+    }
+    return { title: parse.title, html: parse.text };
+  }
+
   /**
    * Live revision + redirect info for up to 50 titles in one call
    * (`action=query&prop=info|redirects&redirects=1`). Returns, per
@@ -592,14 +639,16 @@ export class FandomClient {
     return await res.text();
   }
 
-  private cachePath(page: string): string | null {
+  private cachePath(page: string, variant = ''): string | null {
     if (this.cacheDir === undefined) return null;
     const safe = page.replace(/[^A-Za-z0-9._-]/g, '_');
-    return `${this.cacheDir}/${safe}.json`;
+    // The rendered HTML of a page is a DIFFERENT document from its
+    // wikitext; they must not share a cache entry.
+    return `${this.cacheDir}/${safe}${variant === '' ? '' : `.${variant}`}.json`;
   }
 
-  private async readCache(page: string): Promise<string | null> {
-    const path = this.cachePath(page);
+  private async readCache(page: string, variant = ''): Promise<string | null> {
+    const path = this.cachePath(page, variant);
     if (path === null) return null;
     try {
       const file = Bun.file(path);
@@ -610,8 +659,8 @@ export class FandomClient {
     }
   }
 
-  private async writeCache(page: string, raw: string): Promise<void> {
-    const path = this.cachePath(page);
+  private async writeCache(page: string, raw: string, variant = ''): Promise<void> {
+    const path = this.cachePath(page, variant);
     if (path === null) return;
     try {
       await Bun.write(path, raw);

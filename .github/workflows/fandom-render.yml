@@ -1,0 +1,66 @@
+# Capture RENDERED Fandom pages as fixtures (ADR-119) — MANUAL trigger.
+#
+# Why this exists: some infobox values are computed by a Lua module at
+# template-expansion time and are simply absent from the wikitext. An
+# arc page writes `chapter = auto`; "106-114, 9 chapters" only appears
+# once the template runs. `action=parse&prop=text` returns that.
+#
+# The parser for that html must be written against the REAL html. The
+# arc mapper's earlier fixture was synthetic, and a synthetic fixture
+# only ever proves the parser agrees with whatever was invented for it
+# — which is how the arc import came back with 0 relations and looked
+# fine. So: the runner captures, commits to a branch, and the session
+# reads the repository (cloud sessions get 403 at the proxy).
+#
+# This writes NO wiki data. It only ever touches docs/audits/rendered/.
+name: fandom-render
+on:
+  workflow_dispatch:
+    inputs:
+      pages:
+        description: >-
+          Page titles to capture, separated by | — e.g.
+          Alabasta Arc|Romance Dawn Arc|Enies Lobby Arc
+        required: true
+        default: 'Alabasta Arc|Romance Dawn Arc|Enies Lobby Arc'
+
+permissions:
+  contents: write
+
+jobs:
+  render:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+
+      - name: Capture the rendered pages
+        run: |
+          IFS='|' read -ra TITLES <<< "${{ github.event.inputs.pages }}"
+          bun run import:fandom render "${TITLES[@]}" --out docs/audits/rendered
+
+      - name: Commit the fixtures to a branch
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Nothing captured." >> "$GITHUB_STEP_SUMMARY"
+            exit 0
+          fi
+          branch="audit/fandom-render-${{ github.run_id }}"
+          git config user.name "fandom-importer[bot]"
+          git config user.email "noreply@one-piece.wiki"
+          git checkout -b "$branch"
+          # Committed verbatim. dprint carries only the typescript,
+          # json and markdown plugins, so .html passes through
+          # untouched — which is required: a reformatted fixture stops
+          # being the real thing, and being the real thing is the
+          # entire point of capturing it.
+          git add docs/audits/rendered/
+          git commit -m "data(audit): capture rendered Fandom pages (run ${{ github.run_id }})"
+          git push -u origin "$branch"
+          {
+            echo "### Rendered fixtures on \`$branch\`"
+            echo ""
+            git show --stat --oneline HEAD | tail -n +2
+          } >> "$GITHUB_STEP_SUMMARY"
