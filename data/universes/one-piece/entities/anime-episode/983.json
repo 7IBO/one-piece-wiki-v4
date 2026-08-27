@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:983",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-983",
+  "properties": {
+    "number": {
+      "value": 983
+    },
+    "title_key": {
+      "value_key": "anime-episode.983.title"
+    }
+  },
+  "relations": []
+}

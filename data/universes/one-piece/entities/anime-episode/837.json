@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:837",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-837",
+  "properties": {
+    "number": {
+      "value": 837
+    },
+    "title_key": {
+      "value_key": "anime-episode.837.title"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:848",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-848",
+  "properties": {
+    "number": {
+      "value": 848
+    },
+    "title_key": {
+      "value_key": "anime-episode.848.title"
+    }
+  },
+  "relations": []
+}

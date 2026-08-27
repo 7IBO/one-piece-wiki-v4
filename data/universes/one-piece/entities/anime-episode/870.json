@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:870",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-870",
+  "properties": {
+    "number": {
+      "value": 870
+    },
+    "title_key": {
+      "value_key": "anime-episode.870.title"
+    }
+  },
+  "relations": []
+}
