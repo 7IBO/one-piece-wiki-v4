@@ -104,7 +104,7 @@
       },
       "allowed_relations": [
         "depicted-by",
-        "features-characters",
+        "features",
         "part-of-saga",
         "set-in"
       ]
@@ -2055,6 +2055,7 @@
       "valid_from_types": [
         "anime-episode",
         "anime-special",
+        "arc",
         "databook",
         "film",
         "live-action-episode",
@@ -2085,23 +2086,12 @@
         "appearance_type": {
           "value_type": "enum",
           "enum_ref": "appearance-types",
-          "required": true
-        }
-      }
-    },
-    "features-characters": {
-      "valid_from_types": [
-        "arc"
-      ],
-      "valid_to_types": [
-        "character"
-      ],
-      "inverse_inferred": true,
-      "qualifiers": {
+          "required": false
+        },
         "role": {
           "value_type": "enum",
-          "enum_ref": "arc-roles",
-          "required": true
+          "enum_ref": "narrative-roles",
+          "required": false
         }
       }
     },
@@ -2934,21 +2924,6 @@
       "vision",
       "wanted_poster"
     ],
-    "arc-roles": [
-      "ally",
-      "antagonist",
-      "background",
-      "cameo",
-      "deuteragonist",
-      "henchman",
-      "mentor",
-      "narrator",
-      "protagonist",
-      "rival",
-      "supporting",
-      "victim",
-      "villain"
-    ],
     "arc-subtypes": [
       "cover_story",
       "exploration",
@@ -3441,6 +3416,21 @@
       "nickname",
       "romanized",
       "true_name"
+    ],
+    "narrative-roles": [
+      "ally",
+      "antagonist",
+      "background",
+      "cameo",
+      "deuteragonist",
+      "henchman",
+      "mentor",
+      "narrator",
+      "protagonist",
+      "rival",
+      "supporting",
+      "victim",
+      "villain"
     ],
     "occupations": [
       "archaeologist",

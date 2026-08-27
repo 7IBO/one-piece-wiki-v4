@@ -21,6 +21,7 @@
  * (the direction the corpus uses; cf. the chapter mapper).
  */
 import type { ParsedPage } from './client.ts';
+import { readOrdinalTitle } from './ordinal-title.ts';
 import { cleanValue, findTemplate, parseLooseDate, parseLooseNumber } from './wikitext.ts';
 
 export type VolumeEntity = {
@@ -96,8 +97,12 @@ export function mapVolume(page: ParsedPage): VolumeMapResult | null {
   // Like the Chapter Box, the ordinal is expected in the page title
   // ("Volume 12"); the infobox params are kept as fallback for
   // oddly-titled pages.
-  const fromTitle = /^Volume\s+(\d+)$/i.exec(page.title.trim());
-  const numberRaw = fromTitle?.[1] ?? get('volume', 'number');
+  const titleVerdict = readOrdinalTitle('Volume', page.title);
+  // See chapter.ts — a parenthesised variant must not claim the ordinal.
+  if (titleVerdict.kind === 'variant') return null;
+  const numberRaw = titleVerdict.kind === 'canonical'
+    ? String(titleVerdict.ordinal)
+    : get('volume', 'number');
   const number = numberRaw === undefined ? null : parseLooseNumber(numberRaw);
   if (number === null) {
     // Without the ordinal there is no id/slug — not mappable.

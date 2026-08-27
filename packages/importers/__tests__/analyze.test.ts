@@ -10,6 +10,7 @@ import {
   analyzeWiki,
   categoryEntityType,
   type EntityTypeCatalogueEntry,
+  FULL_SWEEP_SAMPLES,
   isInfoboxTemplate,
   loadEntityTypeCatalogue,
   parseAnalyzeArgs,
@@ -211,12 +212,45 @@ describe('loadEntityTypeCatalogue', () => {
   });
 });
 
+describe('field value shapes', () => {
+  it("profiles each field's values, not just its name", async () => {
+    const report = await analyzedFixtures();
+    const crew = report.infoboxes.find((b) => b.template === 'Crew Box');
+    const captain = crew?.fields.find((f) => f.name === 'captain');
+    // A bare [[wikilink]] is a relation candidate, and the report has
+    // to say so — a field inventory that only counted names would show
+    // `captain` and `total bounty` as indistinguishable strings.
+    expect(captain?.shape.kind).toBe('wikilink');
+    expect(captain?.shape.examples).toEqual(['Monkey D. Luffy']);
+    expect(crew?.fields.find((f) => f.name === 'total bounty')?.shape.kind).toBe('number');
+  });
+
+  it('carries the shape into the unmapped-field gap table', async () => {
+    const report = await analyzedFixtures();
+    const md = renderMarkdownSummary(report);
+    expect(md).toContain('## Field inventory');
+    expect(md).toContain('wikilink');
+  });
+});
+
 describe('parseAnalyzeArgs', () => {
   it('applies defaults and parses every flag', () => {
     expect(parseAnalyzeArgs([])).toEqual({ samples: 5, out: null, maxInfoboxes: null });
     expect(
       parseAnalyzeArgs(['--samples', '3', '--out', '/tmp/x', '--max-infoboxes', '10']),
     ).toEqual({ samples: 3, out: '/tmp/x', maxInfoboxes: 10 });
+  });
+
+  it('--full deepens the sample and lifts the infobox cap', () => {
+    expect(parseAnalyzeArgs(['--full'])).toEqual({
+      samples: FULL_SWEEP_SAMPLES,
+      out: null,
+      maxInfoboxes: null,
+    });
+    // An explicit --samples still wins; --full is a preset, not a lock.
+    expect(parseAnalyzeArgs(['--full', '--samples', '7']).samples).toBe(7);
+    // …and --full lifts a cap set before it on the same line.
+    expect(parseAnalyzeArgs(['--max-infoboxes', '3', '--full']).maxInfoboxes).toBeNull();
   });
 
   it('rejects malformed values and unknown flags', () => {

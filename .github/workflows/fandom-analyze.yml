@@ -1,0 +1,75 @@
+# Fandom structural survey (ADR-092) — MANUAL trigger.
+#
+# Runs `fandom:analyze` at schema-campaign depth and COMMITS the report
+# to a branch, which is the whole point of the workflow: the report is
+# normally a gitignored build artifact, so a CI run would produce it and
+# then throw it away. A cloud Claude session cannot reach Fandom (the
+# sandbox proxy answers 403 CONNECT) but can read this repository — so
+# the runner does the looking and the commit is how it reports back.
+#
+# The report is the input for schema work: infobox fields WITH their
+# value shapes (fill rate, cardinality, examples), plus what the pages
+# carry outside the infobox — section headings, wikitable column
+# signatures with row counts, and Qref citation density.
+#
+# This writes NO wiki data. It only ever touches docs/audits/.
+name: fandom-analyze
+on:
+  workflow_dispatch:
+    inputs:
+      samples:
+        description: 'Pages sampled per infobox (blank = 40, the --full preset)'
+        required: false
+        default: ''
+      max_infoboxes:
+        description: 'Cap on infobox templates (blank = no cap). Use for a quick smoke run.'
+        required: false
+        default: ''
+
+permissions:
+  contents: write
+
+jobs:
+  analyze:
+    runs-on: ubuntu-latest
+    # A full sweep is ~1 req/s across every infobox template on the
+    # wiki. Deliberately generous: this runs once per schema campaign.
+    timeout-minutes: 180
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+
+      - name: Survey the wiki
+        run: >
+          bun run -F @onepiece-wiki/importers fandom:analyze
+          --full
+          --out docs/audits
+          ${{ github.event.inputs.samples != '' && format('--samples {0}', github.event.inputs.samples) || '' }}
+          ${{ github.event.inputs.max_infoboxes != '' && format('--max-infoboxes {0}', github.event.inputs.max_infoboxes) || '' }}
+
+      - name: Commit the report to a branch
+        run: |
+          stamp="$(date -u +%Y-%m-%d)"
+          base="docs/audits/fandom-structure-${stamp}"
+          mv docs/audits/fandom-analyze.json "${base}.json"
+          mv docs/audits/fandom-analyze.md "${base}.md"
+          branch="audit/fandom-structure-${{ github.run_id }}"
+          git config user.name "fandom-importer[bot]"
+          git config user.email "noreply@one-piece.wiki"
+          git checkout -b "$branch"
+          # -f: docs/audits is not gitignored, but the CLI's default
+          # output dir is — belt and braces if --out ever moves back.
+          git add -f "${base}.json" "${base}.md"
+          git commit -m "docs(audit): Fandom structural survey ${stamp} (run ${{ github.run_id }})"
+          git push -u origin "$branch"
+          {
+            echo "### Fandom survey committed"
+            echo ""
+            echo "Branch: \`$branch\`"
+            echo ""
+            echo "- \`${base}.md\` — readable summary"
+            echo "- \`${base}.json\` — machine-readable report"
+            echo ""
+            echo "Nothing is merged. Review the Markdown, then the schema work reads the JSON."
+          } >> "$GITHUB_STEP_SUMMARY"

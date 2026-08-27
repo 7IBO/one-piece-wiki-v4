@@ -1,10 +1,13 @@
 /**
- * bun run fandom:analyze [--samples N] [--out DIR] [--max-infoboxes N]
+ * bun run fandom:analyze [--full] [--samples N] [--out DIR] [--max-infoboxes N]
  *
  * Full-wiki STRUCTURAL sweep (ADR-092): enumerate every category
  * (member counts) and every infobox template of onepiece.fandom.com,
- * sample N pages per infobox (default 5), build the field inventory,
- * and diff it all against our schema catalogue + mappers. Writes:
+ * sample N pages per infobox (default 5), build the field inventory —
+ * names AND value shapes (fill rate, cardinality, examples; see
+ * field-shape.ts) — and diff it all against our schema catalogue +
+ * mappers. `--full` is the schema-campaign preset: 40 samples per
+ * infobox, no template cap. Writes:
  *
  *   <out>/fandom-analyze.json  — machine-readable report
  *   <out>/fandom-analyze.md    — Markdown summary (gaps first)
@@ -30,7 +33,8 @@ import {
 import { FandomClient } from '../fandom/client.ts';
 
 const DEFAULT_OUT = join(REPO_ROOT, 'packages', 'importers', 'reports');
-const USAGE = 'Usage: bun run fandom:analyze [--samples N] [--out DIR] [--max-infoboxes N]\n';
+const USAGE =
+  'Usage: bun run fandom:analyze [--full] [--samples N] [--out DIR] [--max-infoboxes N]\n';
 
 async function main(): Promise<number> {
   let args: AnalyzeCliArgs;

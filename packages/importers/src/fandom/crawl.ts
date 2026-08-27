@@ -19,6 +19,7 @@ import { mapChapter } from './chapter.ts';
 import { type CharacterMapContext, mapCharacter } from './character.ts';
 import type { FandomClient, ParsedPage } from './client.ts';
 import { mapEpisode } from './episode.ts';
+import { orderCrawlQueue, readOrdinalTitle } from './ordinal-title.ts';
 import type { FandomRegistry } from './registry.ts';
 import { buildTitleIndex, detectEntityLinks, normalizeTitle } from './registry.ts';
 import { mapVolume } from './volume.ts';
@@ -80,7 +81,34 @@ export type CrawlReport = {
   /** Unmapped infobox kinds, most-seen first — next mappers to build. */
   readonly unknownBoxes: readonly { readonly box: string; readonly count: number; }[];
   readonly failures: readonly { readonly page: string; readonly reason: string; }[];
+  /** Pages already in the registry, skipped because `skipKnown`. */
+  readonly skippedKnown: number;
 };
+
+/** Ordinal nouns per mapper kind, for the skip reason below. */
+const ORDINAL_NOUN: Partial<Record<MapperKind, string>> = {
+  chapter: 'Chapter',
+  episode: 'Episode',
+  volume: 'Volume',
+};
+
+/**
+ * Why a mapper declined a page. "mapper returned null" was useless in
+ * a 25-page run log; the dominant case is now the deliberate refusal
+ * of a parenthesised ordinal variant, and saying so is the difference
+ * between "the importer is broken" and "the importer did its job".
+ */
+function nullReason(kind: MapperKind, title: string): string {
+  const noun = ORDINAL_NOUN[kind];
+  if (noun !== undefined) {
+    const verdict = readOrdinalTitle(noun, title);
+    if (verdict.kind === 'variant') {
+      return `skipped: variant of ${noun} ${verdict.ordinal} ("${verdict.qualifier}") — `
+        + 'only the canonical page may claim the ordinal';
+    }
+  }
+  return `${kind} mapper returned null (infobox present but unmappable)`;
+}
 
 export async function crawl(
   client: FandomClient,
@@ -100,6 +128,13 @@ export async function crawl(
     /** Lowercased occupation label/id → occupations vocabulary id —
      *  enables the character mapper's occupation matching. */
     readonly occupations?: ReadonlyMap<string, string>;
+    /**
+     * Skip pages the registry already tracks, so successive bounded
+     * runs ADVANCE through a category instead of re-fetching the same
+     * first `limit` pages. Off by default (a re-import of known pages
+     * is exactly what the sync flow wants).
+     */
+    readonly skipKnown?: boolean;
     readonly log?: (line: string) => void;
   },
 ): Promise<CrawlReport> {
@@ -111,8 +146,13 @@ export async function crawl(
       depth: options.categoryDepth ?? 0,
       log,
     });
-    queue.push(...members);
-    log(`category "${category}": ${members.length} page(s)`);
+    // The API returns members in ITS order and `limit` truncates —
+    // without a deterministic sort, "the first 25 episodes" means 25
+    // arbitrary pages, and the parenthesised variants outrank the real
+    // ones. See orderCrawlQueue in ordinal-title.ts.
+    const ordered = orderCrawlQueue(members);
+    queue.push(...ordered);
+    log(`category "${category}": ${ordered.length} page(s)`);
   }
 
   const results: CrawlResult[] = [];
@@ -126,11 +166,22 @@ export async function crawl(
     ...(options.occupations !== undefined ? { occupations: options.occupations } : {}),
   });
 
+  const known = options.skipKnown === true
+    ? new Set(
+      registry.pages.flatMap((p) => [p.page, ...p.redirects].map((t) => normalizeTitle(t))),
+    )
+    : null;
+  let skippedKnown = 0;
+
   let fetched = 0;
   for (const title of queue) {
     const key = normalizeTitle(title);
     if (seen.has(key)) continue;
     seen.add(key);
+    if (known !== null && known.has(key)) {
+      skippedKnown += 1;
+      continue;
+    }
     if (fetched >= options.limit) break;
     fetched += 1;
 
@@ -179,7 +230,7 @@ export async function crawl(
 
     const mapped = mappers[detected.kind](page);
     if (mapped === null) {
-      failures.push({ page: page.title, reason: `${detected.kind} mapper returned null` });
+      failures.push({ page: page.title, reason: nullReason(detected.kind, page.title) });
       continue;
     }
 
@@ -202,5 +253,6 @@ export async function crawl(
       .map(([box, count]) => ({ box, count }))
       .sort(byCount),
     failures,
+    skippedKnown,
   };
 }

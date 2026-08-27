@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
-  "id": "arc-roles",
-  "schema_version": 1,
+  "id": "narrative-roles",
+  "schema_version": 2,
   "values": {
     "protagonist": { "labels": { "en": "Protagonist", "fr": "Protagoniste" } },
     "antagonist": { "labels": { "en": "Antagonist", "fr": "Antagoniste" } },

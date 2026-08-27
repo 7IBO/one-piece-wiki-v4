@@ -15,7 +15,190 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-09 (PR #120 : ADR-099/100/101 livrés + design v5 « Le Log »)
+**Last updated**: 2026-08-09 (v9 livré ; `docs/VISION.md` créé)
+
+> **LIRE `/docs/VISION.md` AVANT TOUT TRAVAIL SUR `apps/web`, LES
+> IMPORTEURS OU L'ACQUISITION.** Il porte l'intention produit, les publics
+> visés, la lecture du concurrent (onenoobiece.fr), la **calibration du
+> goût du mainteneur** (9 itérations de design, 7 rejetées — références
+> aimées et rejetées, registres qui échouent et pourquoi), les acquis à ne
+> pas défaire, et la tension de licence CC-BY-SA à trancher avant tout
+> import massif depuis Fandom.
+
+**2026-08-27 — ADR-107 (licence) + le pipeline d'import débloqué et
+instrumenté.** Brief mainteneur : données d'abord, comptes plus tard,
+refonte complète du schéma pilotée par une analyse Fandom réelle,
+images « TMDB + visuels tiers avec politique de retrait ».
+
+_Ce que l'inspection a trouvé_ — le récit « 37 entités parce que
+l'egress est bloqué » était faux. Le pipeline existe, tourne en CI (les
+runners ont l'egress), et il échouait pour trois raisons opérationnelles,
+toutes visibles dans le log du run 5 de `fandom-import` (2026-08-07) :
+(a) `gh pr create` interdit — _GitHub Actions is not permitted to create
+or approve pull requests_ ; la branche `import/fandom-31224649430` était
+poussée avec 8 épisodes, seule la PR manquait, et le job mourait en
+exit 1 (3 runs sur 5 morts là) ; (b) le crawl prenait les 25 premières
+pages retournées par l'API sur une catégorie de 1231, soit les
+« Episode N (Special Edited Version) » — des remontages récapitulatifs
+dont l'Episode Box porte `#=N`, donc écrits comme `anime-episode:1..8` :
+**des données fausses aux bons identifiants**, que la validation ne peut
+pas voir puisque la forme est parfaite ; (c) 17 échecs sur 25 sans
+aucune raison affichée, alors que `crawl()` les collectait déjà.
+
+_Livré._ **ADR-107** — faits structurés seulement, jamais de prose (y
+compris paraphrasée par IA : le modèle n'est pas une étape de
+blanchiment), les trois couches juridiques distinguées (droit d'auteur /
+droit sui generis des bases art. L341-1 CPI / CGU), corpus en
+CC BY-SA 4.0, et la posture images assumée par le mainteneur avec ses
+garde-fous (ayant-droit nommé, `unverified-external` interdit sur `main`,
+page de retrait 48 h, jamais de hotlink Fandom). `VISION.md` §7 est
+tranché, `IMAGES.md` porte les règles. **Garde des ordinaux**
+(`fandom/ordinal-title.ts`) : seule la page au titre canonique peut
+réclamer l'ordinal, appliquée aux trois mappers chapitre/épisode/volume ;
+plus l'ordre de file déterministe (`orderCrawlQueue`) qui fait que
+`--limit N` veut enfin dire « les N premiers ». **Reprise** :
+`--skip-known` saute les pages déjà au registre, pour que deux runs
+successifs avancent. **Échecs imprimés** groupés par raison.
+**`fandom:analyze` devient un instrument de conception** : profil de
+valeurs par champ (`field-shape.ts` — taux de remplissage, cardinalité,
+exemples réels, forme inférée number/date/wikilink/template/enum_like/
+prose) lu sur le wikitext BRUT, car `cleanValue` détruit précisément les
+trois signaux utiles ; et surtout **survol hors infobox**
+(`page-structure.ts`) : titres de section, **signatures de colonnes des
+wikitables avec compte de lignes**, densité de `{{Qref}}`. C'est là que
+vit le gros de la donnée — listes de chapitres et d'épisodes, tableaux de
+casting, apparitions par source — et un inventaire limité aux infobox
+n'en voyait rien. Preset `--full` (40 échantillons, sans plafond).
+**Workflow `fandom-analyze.yml`** qui lance le relevé et **commite le
+rapport** sur une branche `audit/` : le CI voit Fandom, la session le lit
+par l'API GitHub. 147 tests importers verts, typecheck vert.
+
+_Ce qui attend le mainteneur._ (1) **Réglage dépôt** : Settings →
+Actions → General → Workflow permissions → _Allow GitHub Actions to
+create and approve pull requests_. Sans lui l'import pousse des branches
+sans jamais ouvrir de PR (le workflow ne meurt plus, il imprime l'URL de
+comparaison, et accepte un secret `IMPORT_PR_TOKEN` en contournement).
+(2) **Décision de déploiement d'`apps/web`** — voir le fil ouvert
+ci-dessous. (3) Lancer `fandom-analyze` une fois le lot mergé : c'est
+l'entrée obligée de la refonte de schéma.
+
+**2026-08-09 — v9 : layouts par type + apparitions au grain unité.**
+Demande mainteneur : trous à droite sur la page personnage, layouts
+distincts par type, toutes les données avec leur historique,
+apparitions sur total de chapitres/épisodes, hero « version large
+faible opacité en pleine largeur + rectangle arrondi format affiche
+par-dessus », prev/next dans le hero pour les entités numérotées.
+(a) **ADR-105** : `features-characters` fusionnée dans `features` —
+le grain (arc / chapitre / épisode) est porté par le type de la
+source, pas par le nom de la relation ; `arc-roles` →
+`narrative-roles` ; `role` et `appearance_type` deviennent
+optionnels ; 63 relations, 10 règles ; 3 changements cassants
+assumés, aucune migration (0 arête concernée). (b) **ADR-106** :
+registre de layouts par type — 12 modules, bandes `full`/`split`/
+`pack`, 16 types écrits, dégradation imposée par le _renderer_
+(`bandsFor` ajoute une bande finale contenant tout slot omis, type
+inconnu → `GENERIC_LAYOUT`), testée sur les 16 types + 3 inconnus.
+Historique affiché en ligne sous chaque propriété. prev/next dérivé
+de la propriété ordinale déclarée par le type (aucune liste en dur),
+voisin au-delà du curseur supprimé (le titre fuiterait). Module
+apparitions livré mais invisible : 0 arête `features` unité→personnage
+dans le corpus, il s'allumera sans changement de code. 520 tests.
+**Ne pas merger avant validation du rendu par le mainteneur.**
+
+**2026-08-09 — v8.1, révision ciblée du v8.** Retour mainteneur :
+« j'aime pas le header au niveau de la progress bar et les couleurs
+un peu aléatoires vertes et bleu. j'aime bien le gold par contre. »
+Direction v8 conservée, deux corrections. (a) **ADR-104** : la teinte
+par entité ne parcourt plus les 360° — elle indexe une liste de dix
+accords écrits à la main dans la bande chaude 12–100° (or, laiton,
+ocre, cuivre, safran, orange brûlé, vermillon, sang-de-bœuf, terre,
+ambre). Plus aucun vert/cyan/bleu/violet, y compris dans les tokens
+`--art-*`. L'or reste l'identité constante (wordmark, primes, focus).
+La variété passe par la structure de valeurs (fonds 0.17→0.31, ≥0.4
+d'amplitude par accord), pas par la teinte ; vérifié sur le mur de
+vignettes 40 px. Tests : bande chaude imposée sur les couleurs
+écrites ET sur les `--art-*` extraits de `styles.css`. (b) **LogRail
+supprimé** du header avec sa queue morte serveur (`logAnchors`,
+`collectLogAnchors`) ; la progression tient dans le `ProgressControl`
+compact. Sémantique du cookie `web_progress`, filtrage anti-spoil et
+`isDepartureVisible` inchangés. 511 tests verts. **Ne pas merger
+avant validation explicite du rendu.**
+
+**2026-08-09 — design v8 « Grand Line ».** v7 rejeté (« hyper IA,
+même les couleurs vont pas »). Premier retour de goût exploitable du
+mainteneur sur des sites de référence : **aime** starwars.com/databank
+et la page champions de League of Legends ; **tiède** letterboxd
+(« pas assez unique ») ; **rejette** pokedex (« moche »), mubi et
+criterion (« bof »). Motif extrait : l'image EST l'interface, sombre
+atmosphérique mais la couleur vient de l'œuvre, typo display brandée,
+grilles filtrables par facette, mouvement au survol, sensation de
+produit officiel de franchise — l'inverse du minimalisme arty et de
+l'éditorial imprimé, ce qui explique rétrospectivement l'échec de v6
+et v7 qui visaient précisément ce registre. Livré : héros plein cadre
+pour toutes les entités (art génératif poussé à l'échelle 1440×560,
+passes d'atmosphère), rosters filtrés par facettes dérivées du schéma,
+**teinte par entité** (ADR-103) — le hash de l'id donne une teinte qui
+repointe les tokens de thème, donc chaque page a sa couleur sans rien
+à saisir, contraste WCAG garanti par boucle de remontée de luminance
+et testé sur les 360 teintes. Bug corrigé au passage : `Math.hypot`
+diverge entre JSC (SSR Bun) et V8 sur ~11 % des entrées → mismatch
+d'hydratation sur toute page portant de l'art ; routé via `Math.sqrt`.
+507 tests verts. **Ne pas merger avant validation explicite du rendu
+par le mainteneur.**
+
+**2026-08-09 — art génératif d'entité (ADR-102).** Le corpus n'a
+aucune image utilisable (3 entités `image`, domaine factice, 0
+fichier) : la tuile monogramme « lettre dans un carré gris » — le
+tell « maquette IA » le plus visible — est remplacée par une
+composition abstraite déterministe par entité
+(`apps/web/src/lib/entity-art.ts` + `components/EntityArt.tsx`).
+Hash FNV-1a de l'id → PRNG mulberry32 → mêmes paramètres pour
+toujours, SSR/client identiques, aucun JS client. **Grammaire par
+type** : character→figure, crew→ensign, arc→horizon, event→impact,
+devil-fruit→spiral, manga-chapter→panels, volume→stack,
+document/reference→folio ; **tout type non mappé dégrade vers la
+famille générique `field`** (variante dérivée du hash du TYPE) —
+règle ADR-091. **Zéro littéral de couleur** : le générateur n'émet
+que `var(--art-*)`, les 9 tokens vivent dans `src/styles.css`
+(`--art-bg/ink/glow` + `--art-1..6`, des RÔLES pas des teintes) →
+le re-skin v8 = éditer ces 9 valeurs. Planche de contrôle :
+`bun run -F @onepiece-wiki/web art:preview`. 489 tests verts,
+lint/typecheck/knip/build OK.
+
+**2026-08-09 — design v7 « Vignette » (7e itération, remplace v6).**
+v6 rejeté (« unique mais dégueulasse, ça fait pas moderne du
+tout »). Lecture du pendule : v2–v5 modernes-mais-génériques, v6
+unique-mais-daté → la cible est les deux (finition Letterboxd/A24,
+identité propre). v7 : Archivo Variable semi-étendue en display +
+Inter data, charbon chaud/os, or = identité/chiffres, vermillon =
+interactif, petits rayons 2–6px, connexions en modules-liens
+image + nom + sous-label groupés par type avec compteurs et
+repli « Voir les N autres » (`ShowMoreList`), ordre d'importance
+ADR-091 avec dégradation. Nouveautés fonctionnelles demandées :
+**anciens membres visibles** (grille « Anciens membres » atténuée,
+période affichée) avec règle anti-spoil testée — un départ au-delà
+du curseur rend le membre ACTUEL (`isDepartureVisible` dans
+`server/progress.ts`, 5 tests) ; **design prévu pour beaucoup de
+relations** (budgets de repli 8/12/28 par type de groupe). 472
+tests verts. NB : le corpus n'a aucune arête `until` → pas
+d'ancien membre visible en captures ; chemin testé unitairement.
+
+**2026-08-09 — design v6 « La Gazette » (après merge PR #120).** Le
+v5 « Le Log » a été rejeté par le mainteneur (« trop IA », 6e rejet).
+Diagnostic : les 5 itérations partageaient l'ADN « web app moderne à
+composants » (cards arrondies, pills, grilles uniformes, accents
+lumineux) — c'est cet ADN qui lit « IA ». v6 l'abandonne : **objet
+imprimé sombre** (almanach/gazette) — Fraunces (display) +
+Newsreader (texte) auto-hébergées, encre chaude
+`oklch(0.168 0.009 65)` + texte os, filets hairline 1px + doubles
+filets + points de conduite, zéro border-radius/ombre/dégradé/pill,
+accent unique vermillon sceau (or réservé à la plaque prime),
+LogRail restylée en règle imprimée, membres en blocs photo de
+journal (treillis 1px, légende sérif + petites capitales). 467 tests
+verts, lint/typecheck/build OK, fonctionnel inchangé
+(`server/views.ts` intact). **Ne pas merger sur main avant
+validation explicite du rendu par le mainteneur** (engagement pris
+après le 6e rejet).
 
 **2026-08-09 — lot PR #120 livré.** (a) **ADR-099** implémenté :
 `led-by`/`captains`/`introduces-character`/`awakening-of`/`total_bounty`
@@ -646,6 +829,47 @@ exists — `bun run migrate:all` (+ `--dry-run`/`--check`) with a committed
 allowed-relations in INVENTORY only.
 
 ## Open / blocked threads — resume here
+
+### 0. `apps/web` n'est déployé nulle part — DÉCISION MAINTENEUR REQUISE
+
+Le wiki public **n'est en ligne sur aucun domaine**. `vercel.json`
+construit le _dashboard_ (`apps/dashboard/.output`) ; rien ne construit
+`apps/web`. Conséquence directe sur le brief : les chantiers UI (§5.1)
+et SEO (§5.4 / priorité 4) ne valent rien tant que ça dure — on ne peut
+pas acquérir de visiteurs Google sur un site qui n'existe pas.
+
+Ce n'est pas un oubli de configuration, c'est un choix d'exécution que
+la pile impose et que je n'ai pas tranché seul (règle CLAUDE.md « ask
+before refactoring » + « deploy config jamais mergée à l'aveugle »,
+leçon #23) :
+
+`apps/web/server/db.ts` lit l'artefact via **`bun:sqlite`**, un builtin
+du runtime Bun sans équivalent npm. `vite.config.ts` le déclare externe
+et note explicitement que le serveur de production doit tourner sous
+Bun. Or **Vercel exécute du Node**. Et la dépendance n'est pas locale à
+`apps/web` : `packages/sdk/src/open.ts` et
+`packages/db-builder/src/writer.ts` importent le même builtin.
+
+Deux issues réelles :
+
+- **A — héberger sous Bun** (Fly.io, Railway, un conteneur). Zéro
+  changement de code : `bun run start` exécute déjà `.output/server/
+  index.mjs`, le preset nitro `node-server` est le défaut hors Vercel.
+  Coût : une plateforme de plus à opérer, et on quitte Vercel pour le
+  wiki alors que le dashboard y reste.
+- **B — rester sur Vercel** et introduire une couche d'accès SQLite
+  choisie au runtime (`bun:sqlite` en dev sous Bun, `better-sqlite3`
+  sous Node) — ce qu'ADR-012 avait explicitement anticipé (« read-side
+  under Node if/when a serverless target requires it »). Coût : la
+  couche touche `apps/web` ET `packages/sdk`, et l'artefact `.db` doit
+  être embarqué dans la fonction selon le motif ADR-019. Ça mérite son
+  ADR.
+
+Ma recommandation : **B**, parce que garder une seule plateforme vaut
+la couche d'abstraction, que l'ADR-012 la prévoit déjà, et que le
+motif d'embarquement de l'artefact est éprouvé sur le dashboard. Mais
+c'est un arbitrage d'infrastructure — dis-moi lequel et j'écris l'ADR
+et le code. Rien ne part sur `main` avant.
 
 ### 1. Production dashboard `/api/*` 404 — ROOT CAUSE FOUND + FIXED (code)
 

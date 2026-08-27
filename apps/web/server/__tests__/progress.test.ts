@@ -5,7 +5,12 @@
  */
 import { describe, expect, test } from 'bun:test';
 import { resolveAvailabilityUrl } from '../links.ts';
-import { EMPTY_CURSOR, isSourceVisible, parseProgressCookie } from '../progress.ts';
+import {
+  EMPTY_CURSOR,
+  isDepartureVisible,
+  isSourceVisible,
+  parseProgressCookie,
+} from '../progress.ts';
 
 describe('parseProgressCookie', () => {
   test('parses plain and URI-encoded JSON', () => {
@@ -47,6 +52,34 @@ describe('isSourceVisible', () => {
     expect(isSourceVisible('sbs:volume-105', cursor)).toBe(true);
     // Non-numeric slug on a bound axis stays visible (documented v1).
     expect(isSourceVisible('manga-chapter:special', cursor)).toBe(true);
+  });
+});
+
+describe('isDepartureVisible (former-member spoiler rule)', () => {
+  // Membership ended at Ch. 500 — e.g. a member who left the crew.
+  const departure = 'manga-chapter:500';
+
+  test('cursor BEFORE the departure: renders as current (no spoiler)', () => {
+    expect(isDepartureVisible(departure, { manga: 400, anime: null })).toBe(false);
+    expect(isDepartureVisible(departure, { manga: 499, anime: null })).toBe(false);
+  });
+
+  test('cursor AT or AFTER the departure: the end is known', () => {
+    expect(isDepartureVisible(departure, { manga: 500, anime: null })).toBe(true);
+    expect(isDepartureVisible(departure, { manga: 600, anime: null })).toBe(true);
+  });
+
+  test('no cursor (wiki default): departures are visible', () => {
+    expect(isDepartureVisible(departure, EMPTY_CURSOR)).toBe(true);
+  });
+
+  test('never-ended relations have no visible departure', () => {
+    expect(isDepartureVisible(null, EMPTY_CURSOR)).toBe(false);
+    expect(isDepartureVisible(null, { manga: 9999, anime: null })).toBe(false);
+  });
+
+  test('non-axis departure anchors (film, sbs) stay visible (v1 rule)', () => {
+    expect(isDepartureVisible('film:red', { manga: 1, anime: null })).toBe(true);
   });
 });
 

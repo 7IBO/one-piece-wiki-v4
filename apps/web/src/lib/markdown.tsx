@@ -21,7 +21,7 @@ function renderInline(text: string): ReactNode {
     }
     if (part.startsWith('`') && part.endsWith('`') && part.length > 2) {
       return (
-        <code key={i} className='rounded bg-surface-2 px-1 py-0.5 font-mono text-[0.85em]'>
+        <code key={i} className='rounded-sm bg-surface-2 px-1 py-0.5 font-mono text-[0.85em]'>
           {part.slice(1, -1)}
         </code>
       );
@@ -118,17 +118,24 @@ export function parseBlocks(markdown: string): Block[] {
 export function Markdown({ markdown }: { readonly markdown: string; }): JSX.Element {
   const blocks = parseBlocks(markdown);
   return (
-    <div className='space-y-4 leading-relaxed text-fg/90'>
+    <div className='max-w-[68ch] space-y-4 text-[14.5px] leading-[1.7] text-fg/90'>
       {blocks.map((block, i) => {
         switch (block.kind) {
           case 'heading': {
-            const sizes = ['text-2xl', 'text-xl', 'text-lg', 'text-base', 'text-base', 'text-base'];
+            const sizes = [
+              'text-xl',
+              'text-lg',
+              'text-base',
+              'text-base',
+              'text-base',
+              'text-base',
+            ];
             return (
               <h3
                 key={i}
-                className={`font-display font-semibold tracking-[-0.01em] text-fg ${
+                className={`display mt-7 font-bold text-fg ${
                   sizes[block.level - 1] ?? 'text-base'
-                } mt-8`}
+                }`}
               >
                 {renderInline(block.text)}
               </h3>

@@ -32,6 +32,13 @@ import {
   EPISODE_IGNORED_PARAMS,
   EPISODE_INFOBOX_NAMES,
 } from './episode.ts';
+import { describeShape, type FieldShape, profileField } from './field-shape.ts';
+import {
+  aggregateStructures,
+  type PageStructure,
+  type StructureAggregate,
+  surveyPage,
+} from './page-structure.ts';
 import { VOLUME_HANDLED_PARAMS, VOLUME_INFOBOX_NAMES } from './volume.ts';
 import { parseTemplates, type WikiTemplate } from './wikitext.ts';
 
@@ -58,6 +65,11 @@ export type InfoboxFieldReport = {
   readonly handling: FieldHandling;
   /** Same-named property on the matched entity type, when one exists. */
   readonly catalogueProperty: string | null;
+  /**
+   * What the VALUES look like across the sample — the half of the
+   * report a schema redesign is actually built from (field-shape.ts).
+   */
+  readonly shape: FieldShape;
 };
 
 export type InfoboxReport = {
@@ -70,6 +82,14 @@ export type InfoboxReport = {
   readonly transclusionsSampled: number;
   readonly samplePages: readonly string[];
   readonly fields: readonly InfoboxFieldReport[];
+  /**
+   * What the sampled pages carry OUTSIDE the infobox: section
+   * headings, wikitables (headers + row counts) and `{{Qref}}`
+   * citations. Most of the wiki's data lives here — appearances per
+   * source, chapter/episode lists, cast tables — and an infobox-only
+   * inventory reports none of it (page-structure.ts).
+   */
+  readonly structure: StructureAggregate;
 };
 
 export type AnalyzeGaps = {
@@ -321,7 +341,9 @@ export async function analyzeWiki(
       continue;
     }
     const samplePages = transcluders.slice(0, samples);
-    const occurrences = new Map<string, { name: string; count: number; }>();
+    const occurrences = new Map<string, { name: string; count: number; values: string[]; }>();
+    let pagesWithBox = 0;
+    const structures: PageStructure[] = [];
     for (const title of samplePages) {
       let wikitext: string;
       try {
@@ -336,11 +358,17 @@ export async function analyzeWiki(
         log(`sample "${title}": template "${template}" not found top-level — skipped`);
         continue;
       }
-      for (const name of Object.keys(box.named)) {
+      pagesWithBox += 1;
+      structures.push(surveyPage(wikitext));
+      for (const [name, raw] of Object.entries(box.named)) {
         const key = name.trim().toLowerCase();
         const existing = occurrences.get(key);
-        if (existing === undefined) occurrences.set(key, { name: name.trim(), count: 1 });
-        else existing.count += 1;
+        if (existing === undefined) {
+          occurrences.set(key, { name: name.trim(), count: 1, values: [raw] });
+        } else {
+          existing.count += 1;
+          existing.values.push(raw);
+        }
       }
     }
 
@@ -350,7 +378,7 @@ export async function analyzeWiki(
     const ignored = new Set((mapper?.ignored ?? []).map((p) => p.trim().toLowerCase()));
     const propertyKeys = entityType !== null ? propertyKeysByType.get(entityType) : undefined;
     const fields: InfoboxFieldReport[] = [...occurrences.entries()]
-      .map(([key, { name, count }]) => ({
+      .map(([key, { name, count, values }]) => ({
         name,
         occurrences: count,
         handling: handled.has(key)
@@ -359,6 +387,7 @@ export async function analyzeWiki(
           ? ('ignored' as const)
           : ('unmapped' as const),
         catalogueProperty: propertyKeys?.get(fieldToPropertyKey(name)) ?? null,
+        shape: profileField(values, pagesWithBox),
       }))
       .sort((a, b) => b.occurrences - a.occurrences || a.name.localeCompare(b.name));
 
@@ -369,6 +398,7 @@ export async function analyzeWiki(
       transclusionsSampled: transcluders.length,
       samplePages,
       fields,
+      structure: aggregateStructures(structures),
     });
     log(
       `infobox "${template}": ${transcluders.length} transclusion(s) sampled, `
@@ -441,6 +471,7 @@ export async function loadEntityTypeCatalogue(
 
 const MD_FIELD_GAP_LIMIT = 40;
 const MD_CATEGORY_GAP_LIMIT = 30;
+const MD_STRUCTURE_LIMIT = 20;
 
 /** Human-readable Markdown twin of the JSON report. */
 export function renderMarkdownSummary(report: AnalyzeReport): string {
@@ -475,16 +506,86 @@ export function renderMarkdownSummary(report: AnalyzeReport): string {
     );
   }
   lines.push('');
+  lines.push('## Field inventory');
+  lines.push('');
+  lines.push(
+    'Value shapes across the sampled pages — the input for schema work. '
+      + '`enum_like` means few distinct values over many pages (a vocabulary candidate); '
+      + '`wikilink` / `wikilink_list` mean the field points at other entities (a relation '
+      + 'candidate, not a string property); `template` means the value needs its own parser.',
+  );
+  for (const box of report.infoboxes) {
+    if (box.fields.length === 0) continue;
+    lines.push('');
+    lines.push(`### ${box.template}${box.entityType === null ? '' : ` → \`${box.entityType}\``}`);
+    lines.push('');
+    lines.push('| Field | Handling | Shape | Examples |');
+    lines.push('| --- | --- | --- | --- |');
+    for (const f of box.fields) {
+      const examples = f.shape.examples
+        .map((e) => `\`${e.replace(/\|/g, '\\|').replace(/`/g, "'")}\``)
+        .join('<br>');
+      lines.push(
+        `| ${f.name} | ${f.handling} | ${describeShape(f.shape)} | ${examples} |`,
+      );
+    }
+  }
+  lines.push('');
+  lines.push('## Page structure (outside the infobox)');
+  lines.push('');
+  lines.push(
+    'Where the bulk of the data actually lives: recurring section headings, '
+      + 'wikitable column signatures (rows are entities or edges, not fields) '
+      + 'and `{{Qref}}` citation density (the per-source anchors that fill the '
+      + '`since` axis and the appearance edges).',
+  );
+  for (const box of report.infoboxes) {
+    const st = box.structure;
+    if (st.pages === 0) continue;
+    lines.push('');
+    lines.push(`### ${box.template} — ${st.pages} page(s) surveyed`);
+    lines.push('');
+    lines.push(
+      `${st.qrefsPerPage.toFixed(1)} Qref citation(s) and `
+        + `${st.wikilinksPerPage.toFixed(0)} wikilink(s) per page.`,
+    );
+    if (st.headings.length > 0) {
+      lines.push('');
+      lines.push('| Section heading | Pages |');
+      lines.push('| --- | ---: |');
+      for (const h of st.headings.slice(0, MD_STRUCTURE_LIMIT)) {
+        lines.push(`| ${h.text} | ${h.pages} |`);
+      }
+    }
+    if (st.tables.length > 0) {
+      lines.push('');
+      lines.push('| Table columns | Tables | Rows |');
+      lines.push('| --- | ---: | ---: |');
+      for (const t of st.tables.slice(0, MD_STRUCTURE_LIMIT)) {
+        const cols = t.headers.length === 0
+          ? '(no header row)'
+          : t.headers.join(' · ').replace(/\|/g, '\\|');
+        lines.push(`| ${cols} | ${t.tables} | ${t.rows} |`);
+      }
+    }
+  }
+  lines.push('');
   lines.push('## Gaps');
   lines.push('');
   lines.push(`### Unmapped infobox fields (top ${MD_FIELD_GAP_LIMIT} by occurrence)`);
   lines.push('');
   if (report.gaps.unmappedInfoboxFields.length === 0) lines.push('None.');
   else {
-    lines.push('| Template | Field | Occurrences |');
-    lines.push('| --- | --- | ---: |');
+    lines.push('| Template | Field | Occurrences | Shape |');
+    lines.push('| --- | --- | ---: | --- |');
     for (const gap of report.gaps.unmappedInfoboxFields.slice(0, MD_FIELD_GAP_LIMIT)) {
-      lines.push(`| ${gap.template} | ${gap.field} | ${gap.occurrences} |`);
+      const shape = report.infoboxes
+        .find((b) => b.template === gap.template)
+        ?.fields.find((f) => f.name === gap.field)?.shape;
+      lines.push(
+        `| ${gap.template} | ${gap.field} | ${gap.occurrences} | `
+          + `${shape === undefined ? '—' : describeShape(shape)} |`,
+      );
     }
   }
   lines.push('');
@@ -516,11 +617,21 @@ export type AnalyzeCliArgs = {
   readonly maxInfoboxes: number | null;
 };
 
+/**
+ * Samples per infobox under `--full`. Five pages tell you a field
+ * exists; forty tell you what its values look like, which is what
+ * designing a property needs. At 1 req/s this is the cost of a real
+ * survey, and it is meant to be paid once per schema campaign.
+ */
+export const FULL_SWEEP_SAMPLES = 40;
+
 /** Parse `fandom:analyze` CLI flags; throws on anything malformed. */
 export function parseAnalyzeArgs(argv: readonly string[]): AnalyzeCliArgs {
   let samples = 5;
+  let samplesExplicit = false;
   let out: string | null = null;
   let maxInfoboxes: number | null = null;
+  let full = false;
   for (let i = 0; i < argv.length; i += 1) {
     const arg = argv[i]!;
     const next = (): string => {
@@ -531,9 +642,12 @@ export function parseAnalyzeArgs(argv: readonly string[]): AnalyzeCliArgs {
     };
     if (arg === '--samples') {
       samples = Number(next());
+      samplesExplicit = true;
       if (!Number.isInteger(samples) || samples < 1) {
         throw new Error('--samples expects a positive integer');
       }
+    } else if (arg === '--full') {
+      full = true;
     } else if (arg === '--out') {
       out = next();
     } else if (arg === '--max-infoboxes') {
@@ -544,6 +658,12 @@ export function parseAnalyzeArgs(argv: readonly string[]): AnalyzeCliArgs {
     } else {
       throw new Error(`unknown flag: ${arg}`);
     }
+  }
+  // `--full` raises the sample depth and lifts the infobox cap, but an
+  // explicit --samples still wins — the flag is a preset, not a lock.
+  if (full) {
+    if (!samplesExplicit) samples = FULL_SWEEP_SAMPLES;
+    maxInfoboxes = null;
   }
   return { samples, out, maxInfoboxes };
 }

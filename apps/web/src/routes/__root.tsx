@@ -7,22 +7,22 @@
  * context and the first paint is already localized AND filtered —
  * same first-paint recipe as the dashboard's `__root.tsx`, distinct
  * chrome (this is the public site, not the editing tool).
+ *
+ * Chrome register (v8.1, WEB_APP.md § Identity): ONE slim sticky top
+ * bar — wordmark, the compact progression control, the locale
+ * switcher. Nothing else. The graduated progression rail that used to
+ * span the header was removed in v8.1: a permanent full-width chart
+ * of the whole manga above every page was chrome shouting over
+ * content. The reader's position is still always on screen and one
+ * click away from being changed — it is the label of the control.
  */
-import {
-  createRootRoute,
-  HeadContent,
-  Link,
-  Outlet,
-  Scripts,
-  useMatches,
-} from '@tanstack/react-router';
+import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getCookie, getRequestHeader } from '@tanstack/react-start/server';
 import { type JSX, type ReactNode } from 'react';
-import { type LogAnchorView, type ProgressCursor } from '../api';
+import { type ProgressCursor } from '../api';
 import { BANNER_COOKIE, FirstRunBanner } from '../components/FirstRunBanner';
 import { LocaleSwitcher } from '../components/LocaleSwitcher';
-import { LogRail } from '../components/LogRail';
 import { ProgressControl } from '../components/ProgressControl';
 import { type Locale, t } from '../lib/chrome';
 // Plain (non bun:sqlite) server module — safe for a mixed import; the
@@ -124,91 +124,43 @@ function RootDocument({ children }: { readonly children: ReactNode; }): JSX.Elem
   );
 }
 
-/**
- * Deepest matched route's contribution to the shell: the Log Rail
- * anchors of an entity page, and the current type label for the spine
- * glyph. Duck-typed guards — loader data shapes are owned by the leaf
- * routes.
- */
-function useRouteShellContext(): {
-  readonly anchors: readonly LogAnchorView[];
-  readonly typeGlyph: string | null;
-} {
-  const matches = useMatches();
-  let anchors: readonly LogAnchorView[] = [];
-  let typeGlyph: string | null = null;
-  for (const match of matches) {
-    const data: unknown = match.loaderData;
-    if (data === null || typeof data !== 'object') continue;
-    const record = data as Record<string, unknown>;
-    if (record['kind'] === 'entity' && Array.isArray(record['logAnchors'])) {
-      anchors = record['logAnchors'] as readonly LogAnchorView[];
-    }
-    const label = record['typeLabel'] ?? record['label'];
-    if (typeof label === 'string' && label !== '') {
-      typeGlyph = ([...label][0] ?? '').toUpperCase();
-    }
-  }
-  return { anchors, typeGlyph };
-}
-
 function RootLayout(): JSX.Element {
   const locale = useLocale();
   const chrome = Route.useLoaderData()?.chrome;
   const progress: ProgressCursor = chrome?.progress ?? { manga: null, anime: null };
   const showBanner = chrome !== undefined && chrome.progressUnset && !chrome.bannerDismissed;
-  const { anchors, typeGlyph } = useRouteShellContext();
-  const railKey = `${progress.manga ?? ''}:${progress.anime ?? ''}`;
+  // Remount the control when the cursor changes so its form fields
+  // restart from the persisted value rather than from stale state.
+  const cursorKey = `${progress.manga ?? ''}:${progress.anime ?? ''}`;
   return (
-    <div className='flex min-h-dvh flex-col min-[900px]:pl-[68px]'>
-      {
-        /* The spine — fixed narrow left rail, the signature frame of the
-          site. Vertical wordmark (gold-accented), current-type glyph,
-          locale at the bottom. Becomes a normal top bar on mobile. */
-      }
-      <aside className='fixed inset-y-0 left-0 z-20 hidden w-[68px] flex-col items-center justify-between border-r border-line bg-canvas py-5 min-[900px]:flex'>
-        <Link
-          to='/'
-          className='flex rotate-180 items-center gap-1.5 font-display text-[13px] font-bold uppercase tracking-[0.22em] text-fg transition-colors duration-150 [writing-mode:vertical-rl] hover:text-gold'
-        >
-          <span aria-hidden className='h-5 w-px bg-gold' />
-          {t(locale, 'siteName')}
-        </Link>
-        <span
-          aria-hidden
-          className='select-none font-display text-2xl font-bold leading-none text-gold/35'
-        >
-          {typeGlyph ?? ''}
-        </span>
-        <LocaleSwitcher vertical />
-      </aside>
-
-      <header className='sticky top-0 z-10 border-b border-line bg-canvas'>
-        <div className='flex h-12 w-full max-w-[1280px] items-center justify-between gap-3 px-4 sm:px-8'>
+    <div className='flex min-h-dvh flex-col'>
+      <header className='sticky top-0 z-20 border-b border-line bg-canvas'>
+        <div className='mx-auto flex h-13 w-full max-w-[1200px] items-center justify-between gap-4 px-4 sm:px-6'>
           <Link
             to='/'
-            className='whitespace-nowrap font-display text-[1.05rem] font-bold tracking-[-0.02em] text-fg transition-colors duration-150 hover:text-gold min-[900px]:hidden'
+            className='display whitespace-nowrap text-[17px] font-extrabold tracking-tight text-fg transition-colors duration-150 hover:text-gold'
           >
-            {t(locale, 'siteName')}
+            One Piece <span className='text-gold'>Wiki</span>
           </Link>
-          <span className='hidden text-[11px] font-semibold uppercase tracking-[0.18em] text-faint min-[900px]:block'>
-            {t(locale, 'tagline')}
-          </span>
-          <div className='flex items-center gap-3'>
-            <ProgressControl key={railKey} progress={progress} />
-            <span className='min-[900px]:hidden'>
-              <LocaleSwitcher />
-            </span>
+          <div className='flex items-center gap-2.5'>
+            <ProgressControl key={cursorKey} progress={progress} />
+            <LocaleSwitcher />
           </div>
         </div>
-        <LogRail key={`rail:${railKey}`} progress={progress} anchors={anchors} />
         {showBanner ? <FirstRunBanner /> : null}
       </header>
-      <main className='w-full max-w-[1280px] flex-1 px-4 py-8 sm:px-8 sm:py-9'>
+      {
+        /* Full-bleed on purpose: an entity page opens on a hero that
+          spans the viewport. Pages own their own reading column
+          (`.page-column`), so nothing here constrains the hero — and
+          no `100vw` breakout is needed, which would overflow by the
+          width of the scrollbar. */
+      }
+      <main className='w-full flex-1 pb-16'>
         <Outlet />
       </main>
       <footer className='border-t border-line'>
-        <div className='flex w-full max-w-[1280px] flex-wrap items-center gap-x-6 gap-y-2 px-4 py-6 text-xs text-faint sm:px-8'>
+        <div className='mx-auto flex w-full max-w-[1200px] flex-wrap items-baseline gap-x-6 gap-y-2 px-4 py-5 text-xs sm:px-6'>
           <a
             href={GITHUB_URL}
             target='_blank'
@@ -225,7 +177,9 @@ function RootLayout(): JSX.Element {
           >
             {t(locale, 'footerSupport')}
           </a>
-          <span className='min-w-56 flex-1 sm:text-right'>{t(locale, 'footerNote')}</span>
+          <span className='min-w-56 flex-1 text-faint sm:text-right'>
+            {t(locale, 'footerNote')}
+          </span>
         </div>
       </footer>
     </div>
@@ -235,14 +189,15 @@ function RootLayout(): JSX.Element {
 function NotFound(): JSX.Element {
   const locale = useLocale();
   return (
-    <div className='py-28 text-center'>
-      <p className='font-display text-4xl font-bold tracking-[-0.02em] text-fg'>
+    <div className='page-column mx-auto max-w-md py-24 text-center'>
+      <p className='display text-5xl font-extrabold text-gold/50'>404</p>
+      <p className='display mt-3 text-3xl font-bold text-fg'>
         {t(locale, 'notFoundTitle')}
       </p>
-      <p className='mx-auto mt-4 max-w-md text-muted'>{t(locale, 'notFoundBody')}</p>
+      <p className='mt-3 text-[15px] text-muted'>{t(locale, 'notFoundBody')}</p>
       <Link
         to='/'
-        className='mt-10 inline-block rounded-md bg-accent px-5 py-2.5 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+        className='mt-8 inline-block rounded-md bg-accent px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
       >
         {t(locale, 'backHome')}
       </Link>

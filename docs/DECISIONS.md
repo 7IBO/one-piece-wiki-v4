@@ -8,6 +8,599 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-107 — Licensing posture: structured facts only, never prose, and an assumed-risk image policy
+
+**Date**: 2026-08-27
+
+**Context**: `VISION.md` §7 flagged an unresolved tension that blocks the
+whole data programme: "storing all of Fandom's data" collides with
+Fandom's CC BY-SA licence. ADR-079 §5 stated a position in passing —
+facts yes, prose no, images no — but as a parenthesis inside an ingest
+decision, not as a decision of its own, and it conflated three legal
+layers that behave differently. Mass ingest is about to start (the
+`Episodes` category alone is 1231 pages), so the position has to be
+explicit, bounded, and written down before the first large crawl rather
+than reconstructed after a complaint.
+
+The three layers, kept separate on purpose:
+
+1. **Copyright.** Protects expression, not facts. "Luffy's bounty is
+   3,000,000,000 berries" is not protectable by anyone. The sentence a
+   Fandom editor wrote around it is. This is the layer ADR-079 §5
+   addressed.
+2. **The EU sui generis database right** (Directive 96/9/EC, transposed
+   in France at Art. L341-1 CPI). This one is routinely missed because
+   it has no US equivalent: it protects the _investment_ in obtaining,
+   verifying and presenting a database's contents, and it is infringed
+   by extracting a **substantial part** of that database _even when
+   every individual item is an unprotectable fact_. A project whose
+   maintainer and audience are both in France cannot reason as if only
+   copyright existed.
+3. **Fandom's Terms of Use**, a contract layer independent of both —
+   it restricts automated access regardless of what the licence on the
+   content says.
+
+Images are a fourth, separate problem that no licensing posture on text
+can solve: the images on Fandom are overwhelmingly Toei/Shueisha
+property, hosted there under a US fair-use rationale that has no
+equivalent in French law (`courte citation` does not cover whole
+images). No import — AI-mediated or not — makes them free.
+
+This ADR is an engineering position taken by the maintainer to bound a
+known risk. It is not legal advice, and it does not pretend the residual
+risk is zero.
+
+**Options** (text):
+
+- A — Facts only, claim no obligation, credit nothing. Defensible under
+  copyright alone; ignores layers 2 and 3 entirely.
+- B — Facts only, per-value provenance recorded and publicly credited,
+  our own corpus published under a free copyleft licence.
+- C — Full copyleft: copy prose, attribute, relicense CC BY-SA.
+
+**Options** (images):
+
+- 1 — No third-party images at all; generative art (ADR-102) only.
+- 2 — TMDB only (the one source with API terms we can actually comply
+  with), everything else generative.
+- 3 — TMDB plus re-hosted third-party visuals, credited to the rights
+  holder, with a public takedown process.
+
+**Choice**: **B** for text. **3** for images (maintainer arbitration,
+2026-08-27).
+
+**Rationale**:
+
+- C is excluded on product grounds before legal ones. Republishing
+  Fandom's prose — even reworded — puts us in a duplicate-content race
+  against the original, which has fifteen years of authority. The
+  `visiteur Google` audience in VISION §3 is precisely the one we would
+  lose. Legal caution and SEO point the same way here, which is the
+  rare case where the cautious option is also the ambitious one.
+- **Running text through an LLM changes nothing legally.** A paraphrase
+  of a protected expression is a derivative work; the model is not a
+  laundering step. This is stated in the ADR because it is the exact
+  mistake the "AI writes the prose" plan invites. The AI's job in this
+  pipeline is _extraction into structured fields_ and _generating
+  no-spoil variants of text we own_, never restating Fandom sentences.
+- A is cheap but leaves layer 2 unanswered, and layer 2 is the one that
+  actually bites a bulk extractor. B answers it at almost no cost: the
+  four historisation axes already carry `source` per value, so
+  attribution is a rendering decision on data we are storing anyway.
+- Publishing our own corpus under CC BY-SA 4.0 is the wiki norm, costs
+  nothing while we do not sell data, and makes the project a credible
+  place to contribute to. It also makes our position coherent rather
+  than opportunistic: we ask of others what we accept for ourselves.
+- On images, option 3 carries real, non-zero exposure and the maintainer
+  takes it knowingly. The honest framing: this is what every fan wiki
+  does and what rights holders in this space have tolerated for two
+  decades, not something the law permits. Option 2 was recommended and
+  declined because VISION §4 makes the image the interface — a wiki
+  where Luffy has no portrait fails its own design brief. The ADR
+  therefore bounds the risk instead of denying it.
+
+**Decision — the operating rules**:
+
+_Text and structured data_
+
+1. From Fandom we ingest **structured facts only**: numbers, dates,
+   names, enumerated values, typed relations. Never sentences.
+2. **No prose is copied, paraphrased, translated or LLM-rewritten from
+   Fandom.** Narratives (`/data/universes/<u>/narratives/`) are written
+   fresh, and are the only place prose lives.
+3. **Primary sources win** wherever they cover the ground: the works
+   themselves, official databooks, api-onepiece, TMDB. Fandom is used
+   as a _checklist of what exists_ in preference to a corpus of record.
+4. **Extraction stays non-substantial and polite**: the 1 req/s rate
+   limit in `FandomClient` is a licensing control, not just courtesy;
+   crawls are bounded and resumable; we never mirror or republish a
+   Fandom dump as-is.
+5. **Provenance is recorded per value** (`source`, plus `assisted_by` /
+   `review_status` from ADR-010) and surfaced publicly on a credits
+   page listing Fandom, api-onepiece and TMDB.
+6. **Our corpus is published under CC BY-SA 4.0.** This licenses our
+   own compilation and does not purport to sublicense anyone else's.
+
+_Images_
+
+7. TMDB is the **preferred** image source wherever it covers (episode
+   stills, film posters); its attribution requirement is honoured.
+8. Third-party visuals may be re-hosted **only** with: a licence value
+   from `image-licenses` that is not `unverified-external`, a named
+   rights holder, and a source URL.
+9. `unverified-external` is a **staging value only** — a build guard
+   rejects it on `main`, in the same spirit as the existing
+   `staging://` guard in `schema-engine/src/cli/validate.ts`.
+10. A public **takedown page** names a contact and commits to removal
+    within 48 h, with no argument. A rights holder asking is the end of
+    the conversation, not the start of one.
+11. Fandom's own CDN is **never hotlinked** — that is both a ToU breach
+    and someone else's bandwidth.
+
+**Consequences**:
+
+- `VISION.md` §7 is resolved and points here; `IMAGES.md` gains the
+  rights-holder and takedown rules; ADR-079 §5 is superseded by this
+  ADR on the licensing question (its ingest decisions stand).
+- **Follow-ups this ADR mandates before the first image import** (not in
+  this PR, and deliberately deferred to the schema-v2 work so the image
+  axis is redesigned once rather than twice): a required `rights_holder`
+  property on `image`, the `unverified-external` build guard, the
+  `/credits` and `/takedown` pages in `apps/web`, and a `LICENSE-DATA`
+  file at the repo root carrying CC BY-SA 4.0 for `/data`.
+- The 3 existing `image` entities point at a fictional domain and carry
+  no rights holder; they are placeholders and must not survive the
+  first real image import.
+- The AI pipeline's scope is now fixed by rule 2: structured extraction
+  and no-spoil variants of our own prose. Any future proposal to have a
+  model summarise a Fandom article is refused by this ADR without
+  further discussion.
+
+---
+
+## ADR-106 — Per-entity-type page layouts, with mandatory generic degradation
+
+**Date**: 2026-08-09
+
+**Context**: Since v7 every entity page of `apps/web` has rendered the
+same stack of sections — a single column of modules down the left of a
+1200 px column — with only the per-type template (character / crew /
+source / arc / devil-fruit) changing which sections existed. The
+maintainer's verdict on the Luffy page: « sur page personnage, on a
+quand même bcp de trou sur layout à droite. C'est pas mieux de prévoir
+un layout différent pour les types d'entité ? ça serait mieux pour que
+chaque page soit unique ». Three one-item sections stacked down the
+left ("Family of 1", "Relatives 1", "Profiled by 1") left roughly 60 %
+of each row empty, and a chapter page and a crew page differed only by
+the words in their headings.
+
+The tension is with ADR-091: `apps/web` may bind to well-known ids, but
+**every binding must degrade to the generic schema-driven rendering**.
+A hardcoded per-type list of sections is exactly the failure mode that
+rule exists to prevent — an entity type nobody thought about would
+silently lose properties and relations.
+
+**Options considered**:
+
+1. **One template, smarter CSS.** Keep the single stack and let a
+   masonry pack the small sections. Fixes the holes, does nothing for
+   "chaque page doit être unique" — a crew still reads like a chapter.
+2. **A layout per type, authored as JSX per type.** Maximum control,
+   but every new entity type needs code before it renders at all, and
+   nothing structurally prevents an authored template from dropping a
+   property. Violates ADR-091.
+3. **A layout REGISTRY over a fixed module vocabulary, with the
+   renderer guaranteeing completeness.** Chosen.
+
+**Decision**:
+
+- An entity page is a fixed set of MODULES ("slots"): `sheet`,
+  `narrative`, `affiliations`, `members`, `former`, `contents`,
+  `position`, `cast`, `availability`, `gallery`, `appearances`,
+  `connections`. `connections` is the catch-all: it renders every
+  relation group no other module consumed, so an unknown relation type
+  always has a home.
+- `apps/web/src/lib/entity-layout.ts` maps a **well-known entity type
+  id** to an ordered list of BANDS — `full` (a lead module at the full
+  width), `split` (a wide main column beside a 19 rem aside, on either
+  edge) and `pack` (a balanced masonry). This is what makes a crew open
+  on its roster, an arc on its chapter ledger, a chapter on its
+  position in the arc and a devil fruit on its classification history.
+- **Degradation is enforced by the renderer, not by discipline.**
+  `bandsFor(type)` returns the authored bands PLUS a trailing masonry
+  band containing every slot the layout did not mention, and a type
+  with no authored layout gets `GENERIC_LAYOUT`, which names all
+  twelve. A layout can therefore reorder and re-weight a page; it can
+  never hide data. A unit test asserts the invariant for every
+  registered type and for unknown ones.
+- **Packing is content-derived, not fixed.** A band that renders a
+  single module gives it the full width and lets it use its own
+  columns; a row list derives its column count from its item count
+  (one row spans, two rows make two columns). No fixed N-column grid
+  may hold a single item — that is the hole being removed.
+- The **data sheet carries each property's history inline**, under the
+  property it belongs to, instead of a global "History" section at the
+  foot of the page.
+
+**Consequences**:
+
+- Adding a type-specific layout is a data edit in one file, reviewable
+  at a glance, with no risk of data loss.
+- The generic path stays the reference implementation: it is what every
+  unauthored type gets, so it cannot rot.
+- Per-type layouts are a PRESENTATION binding only. `server/views.ts`
+  stays type-agnostic apart from the template builders already covered
+  by ADR-091, and the ordinal/appearance derivations added alongside
+  this ADR are discovered from the schema (see WEB_APP.md § sequential
+  entities), not from a per-type list.
+
+---
+
+## ADR-105 — One appearance relation: `features-characters` folds into `features`, granularity comes from the source type
+
+**Date**: 2026-08-09
+
+**Context**: The maintainer asked the character page to show « les
+apparitions sur total d'épisode ou chapitre » and « la liste de toutes
+les apparitions ». That needs appearance edges at chapter/episode
+granularity. The brief assumed the only appearance relation was
+`features-characters` (`arc` → `character`, `role` required since
+ADR-098) and that "Luffy appears in chapter 1044" was inexpressible.
+**It already is**: `features` (ADR-069, which absorbed
+`references`/`mentions`) is declared from `manga-chapter`,
+`anime-episode`, `film`, `video-game`, `live-action-series`,
+`live-action-episode`, `anime-special`, `live-performance`, `sbs`,
+`sbs-qa` and `databook` to `character` and 12 other target types, and
+`manga-chapter`/`anime-episode` list it in both `allowed_relations` and
+`recommended_relations`. DATA_MODEL's chapter 1044 example has shipped a
+`features → character:luffy` edge since the first draft.
+
+So the real finding is not a missing relation — it is a **dual home**:
+two relations record "this work features this character", one per unit
+source and one per arc. The 2026-08-09 catalogue audit saw it (R9) and
+kept `features-characters` because its `role` payload is not derivable;
+ADR-099 then laid down the maintainer's rule — « une seule
+propriété/relation pour gérer une donnée » — and R9 was never re-judged
+under it.
+
+**Options considered**:
+
+1. **Widen `features-characters`** to the unit source types (the brief's
+   option (a)). Rejected: it would make chapter → character appearances
+   expressible **twice**, via `features` and via `features-characters`,
+   which is precisely the dual home ADR-099 forbids. The option is only
+   coherent if `features` loses `character` as a target — but `features`
+   is the general source→entity relation (13 target types); carving
+   characters out of it would split one concept along a target axis and
+   leave `features` and `features-characters` differing by nothing a
+   reader could name.
+2. **A third, finer relation** alongside the arc one (option (b)).
+   Rejected for the same reason, twice over.
+3. **Fold `features-characters` into `features`** — one relation for the
+   appearance concept, granularity carried by the **source type of the
+   edge**. Chosen.
+
+**Decision**:
+
+1. **`features-characters` is REMOVED.** `features` gains `arc` in
+   `valid_from_types` (v2) and `arc.allowed_relations` swaps
+   `features-characters` for `features` (v5). One relation, one concept:
+   `<source> --features--> <entity>`.
+2. **`role` moves onto `features`, OPTIONAL**, bound to the vocabulary
+   formerly named `arc-roles`, **renamed `narrative-roles`** (same 13
+   values, v2) — it is now reachable from every source type, not just
+   arcs. This is the `role` question resolved: a narrative function
+   (protagonist, antagonist, mentor…) is a property of a character in a
+   **work or an arc**, never of a character in chapter 1044. Forcing
+   `arc-roles` onto per-chapter edges (required, as it was on
+   `features-characters`) would have fabricated a value on every one of
+   ~1000 edges per character. Optional means chapter and episode edges
+   simply omit it, films and games may carry it, arcs are expected to.
+3. **`appearance_type` becomes OPTIONAL** (it was required on
+   `features`). An importer that knows only a chapter's character list —
+   the shape every source of dense appearance data has — must not be
+   forced to invent `full`. Absent now means "appears, manner not
+   recorded"; the vocabulary stays for when the manner is known
+   (`silhouette`, `mentioned`, `flashback`, `revelation`…). A bare edge
+   from a unit source is therefore legal, and is exactly the datum the
+   maintainer asked for.
+4. **New advisory rule `arc-appearance-needs-role`** (relation scope,
+   `applies_to_entity_types: [arc]`, `relation_when: target_type_is
+   character`, `relation_expect: qualifier_present role`). With both
+   qualifiers optional, a bare `arc → character` edge would be pure
+   duplication of its chapters — the rule says so instead of the schema
+   forbidding it, keeping ADR-085's advisory default and ADR-098's R9
+   reasoning intact without a second relation to carry it.
+5. **`saga` and `volume` are deliberately NOT valid sources.** They are
+   pure unions of their members; an appearance edge there records
+   nothing a chapter edge does not.
+
+**Position on derivation (stated, not implemented)**: yes, arc-level
+_presence_ is derivable — a character appearing in a chapter of an arc
+appears in that arc, so the set of `arc → character` presence edges is
+the union of the unit edges over the arc's `part-of-arc` members. Only
+`role` is not derivable. Once per-unit coverage is dense, presence should
+be **derived by the build inference engine** (the ADR-034 backlog; same
+move ADR-099 §3 made for first appearance) and the authored arc edge
+reserved for `role`. **This ADR implements no derivation and deletes no
+data** — flipping presence to derived is a separate change and needs the
+maintainer's approval.
+
+**Consequences**:
+
+- Relations 64 → **63**; vocabularies stay 64 (rename); rules 9 → **10**.
+- `check:compat` reports **3 breaking / 4 additive**: relation-type
+  `features-characters` removed, vocabulary `arc-roles` removed, `arc`
+  loses it from `allowed_relations`; `features` gains the `arc` source,
+  the `role` qualifier, `narrative-roles` is added, `arc` gains
+  `features`. Snapshot regenerated per the beta directive (0 users,
+  breaking-and-migrating is the normal mode).
+- **No migration.** The corpus holds **zero** `features-characters` edges
+  (the three arc files have `"relations": []`) and zero `arc-roles`
+  values, and no value shape changes — nothing to rewrite. ADR-042's
+  "breaking ⇒ migration" note and the 0008/0009 assert-only precedent
+  would suggest an invariant-asserting migration; it is deliberately not
+  added here because it would rewrite nothing. If the maintainer prefers
+  the invariant asserted, `0011-merge-features-characters-into-features`
+  is a five-line `up` that rewrites any surviving `features-characters`
+  edge into `features` (the `role` qualifier carries over unchanged).
+- **What an importer must now produce** for per-chapter appearances: on
+  the **source** entity file (chapters own their edges; the character
+  page reads them through the ADR-086 materialized inverse), one entry
+  per character in `relations`:
+  `{ "type": "features", "target": "character:luffy" }`, plus
+  `"qualifiers": { "appearance_type": "…" }` only when the manner is
+  actually known. Counting « apparitions sur total » is then
+  `count(features edges from manga-chapter → X)` over `count(manga-chapter)`,
+  both cut at the reader's progression cursor.
+- The public layer keeps binding to well-known ids under ADR-091: the
+  appearance list and counter degrade to the generic incoming-relations
+  rendering when `features` is absent.
+
+---
+
+## ADR-104 — The per-entity tint is a curated gold-anchored palette, not a hue wheel
+
+**Date**: 2026-08-09
+
+**Context**: ADR-103 derived each entity's colour as `hash % 360` — the
+whole hue wheel. Mechanically it worked (deterministic, provably
+readable, zero runtime cost) but the maintainer's verdict on the result
+was precise and damning: _"les couleurs un peu aléatoires vertes et
+bleu. j'aime bien le gold par contre"_. A wheel gives every hue equal
+weight, so neighbouring entities landed on a green, a cyan and an
+arbitrary blue. That does not read as a colour system; it reads as
+noise. The same wheel had been copied into the neutral art tokens of
+`styles.css` (`--art-4` teal, `--art-5` blue, `--art-6` magenta), so
+even the untinted chrome carried the problem.
+
+Note what was NOT rejected: the _mechanic_ — an entity's id colouring
+its own page — survived four rounds of feedback intact. Only the
+sampling was wrong.
+
+**Options considered**:
+
+1. Keep the wheel, restrict it to an arc (e.g. `20 + hash % 80`). One
+   line, but an arithmetic arc is still a machine sweeping a range: the
+   dull middle of the band gets as many entities as the good edges, and
+   there is no place to say "this chord is dark and quiet, that one is
+   bright and loud".
+2. Keep the wheel, drop the chroma. Warm-neutral everything. This is
+   exactly the v5/v7 failure mode ("muddy", "trop terne") — the
+   maintainer wants _belles couleurs dark_, not brown.
+3. **Hand-author a small ordered set of chords in the warm band and
+   index it with the hash.** (chosen)
+
+**Choice**: `TINT_CHORDS` in `apps/web/src/lib/entity-tint.ts` is a
+hand-authored list of ten chords — `or` (the anchor, the site's gold),
+`laiton`, `ocre`, `cuivre`, `safran`, `orange-brule`, `vermillon`,
+`sang-de-boeuf`, `terre`, `ambre`. `entityTint()` hashes the id to an
+INDEX into that list instead of to a hue. Each chord authors its own
+accent, hero wash, surface, and the full nine-token art palette
+(ground, dark mass, highlight, six paints). The neutral `--art-*`
+defaults in `styles.css` were re-authored from the same family.
+
+**Rationale**:
+
+- **A palette is a design decision, so a human makes it.** Ten
+  named chords are a swatch book someone can look at, argue with and
+  extend. `hash % 360` is a machine choosing 360 colours nobody
+  approved — and it is the single most reliable "AI-generated" tell in
+  a UI.
+- **Gold anchors the family, and stays the brand.** The chord modulates
+  a page's atmosphere and its interactive accent; the wordmark, the
+  bounty figures and the focus ring stay `--color-gold` on every page.
+  The reader always knows which site they are on.
+- **Variety migrates from hue to VALUE.** A narrow band cannot
+  differentiate ten entities by hue, so each chord authors its own
+  light/dark structure instead: `ocre` is a near-black ground under a
+  bone highlight, `ambre` is a light ground with dark forms cut into
+  it, `sang-de-boeuf` is the darkest, `terre` the quietest. Grounds
+  span 0.17 → 0.31 in lightness and each chord's six paints span at
+  least 0.4, so whichever triad a composition draws it still has light
+  and dark. This is the honest risk of the decision — a narrow warm
+  band CAN collapse into monochrome brown, which is precisely what was
+  called "muddy" before — and value contrast plus real chroma inside
+  the family is the mitigation. The 40 px thumb wall of
+  `art:preview` is the check.
+- **The band is enforced, not merely intended.** `WARM_BAND` is
+  12°–100° and the unit tests reject any authored colour outside it —
+  including the tokens _parsed out of `styles.css`_, so nobody can
+  reintroduce a teal in the stylesheet either. The upper bound is
+  deliberately tight: past ~100° a large flat mid-chroma field reads
+  olive at hero scale.
+- **Every ADR-103 guarantee is kept.** Same hash family, same
+  determinism, same lightness-raising loop against the same measured
+  canvas, same "custom properties only" output. The 360-hue sweep in
+  the tests became a sweep over the authored list plus 400 probes that
+  must reach every chord.
+- **The salt is not arbitrary.** `tint|gold|<id>` was chosen among
+  candidates for the flattest spread over ten chords and verified
+  against the real corpus: all ten chords are in use across the 37
+  entities. With a list this short, collisions are expected and fine —
+  two entities sharing a chord still get different compositions,
+  because the composition is seeded separately.
+
+**Consequence**: `art:preview` now paints each tile with its own chord
+and names it in the caption, because with a narrow palette the contact
+sheet is the only honest way to answer "is this still varied?".
+
+---
+
+## ADR-103 — The entity colours its own page
+
+**Date**: 2026-08-09
+
+**Amended by ADR-104 (2026-08-09)**: the mechanic below stands, but the
+hue is no longer sampled from the full 360° wheel — the hash indexes a
+hand-authored set of warm chords anchored on gold. Read every mention
+of "hue" below as "chord".
+
+**Context**: Five design iterations were rejected. The taste signal we
+finally have is concrete: the maintainer likes `starwars.com/databank`
+and the League of Legends champions page, is lukewarm on Letterboxd,
+and dislikes the Pokédex ("moche"), Mubi and Criterion ("bof"). What
+the liked pages share is that **the artwork is the interface** and that
+**the chroma of a page comes from its art**, not from a UI accent — the
+chrome is nearly neutral and the picture supplies the colour. Our
+corpus has no pictures at all (3 image entities on a domain that does
+not resolve, and image egress is blocked), which is why ADR-102 made
+the placeholder generative. But a global palette applied to every page
+left the standing complaint that "même au niveau des couleurs ça va
+pas": one dull palette, every page identical.
+
+**Options considered**:
+
+1. Hand-author a colour per entity type. Ten types, one colour each —
+   every character page still looks like every other character page,
+   and it is a table to maintain forever.
+2. Let editors set an accent per entity. Real art direction, but it is
+   data we do not have, cannot backfill for thousands of entities, and
+   would have to be modelled, validated and translated.
+3. Extract the colour from the entity's image. The obvious solution
+   for a site with photography — and we have none.
+4. **Derive the colour from the entity id, deterministically, and let
+   the page inherit it.** (chosen)
+
+**Choice**: `apps/web/src/lib/entity-tint.ts` hashes the canonical id
+into a hue, builds a chord around it, and emits it as CSS custom
+properties. The `.tinted` scope in `styles.css` re-points the theme
+tokens (`--color-accent`, `--color-line`, `--color-surface`) to that
+chord, and the art tokens (`--art-*`) are re-pointed on every art tile.
+The entity page applies the scope to its article; chrome, footer and
+listings keep the neutral defaults.
+
+**Rationale**:
+
+- **The constraint becomes the identity.** Having no artwork was the
+  problem; deriving both the composition and the colour from the id
+  turns it into the one thing no other wiki has — Luffy's page and
+  Zoro's page are genuinely different colours, forever, with nobody
+  authoring anything.
+- **It costs nothing at runtime.** A hash and a few `oklch()` strings,
+  server-rendered into a `style` attribute. No request, no client JS,
+  no image bytes, no build step.
+- **Readability is proven, not hoped for.** The accent's lightness is
+  RAISED in a loop until its measured WCAG contrast against the page
+  canvas clears 4.5 — the measurement runs in oklch → sRGB, so it is
+  the pixels the browser paints that are checked. A unit test sweeps
+  all 360 hues, and a second test parses `styles.css` so the canvas
+  constant can never drift from the stylesheet it mirrors. An
+  unreadable page is not expressible.
+- **Nothing in a component changed.** Tailwind v4 compiles utilities to
+  `var(--color-accent)`, so re-pointing the property inside a scope
+  re-colours every existing `text-accent`/`ring-line`/`bg-accent` with
+  no per-page stylesheet and no prop threading.
+- **Navigation stays stable** because only the article inherits the
+  chord; the top bar, the progression control and the footer are
+  outside the scope. Listings stay neutral so their grid of
+  individually-coloured tiles reads as one collection.
+
+**Consequences**:
+
+- The hero needed art at 1440x560, where compositions tuned for 150 px
+  tiles read thin. `ART_RATIOS` gains a `hero` frame and the generator
+  gains a `detail` level: grammars scale their repeated elements by it,
+  and two generic passes (`atmosphereBack`/`atmosphereFront`) wrap the
+  grammar with large sweeping masses and fine texture. Tiles are
+  untouched — `detail` is 1 everywhere else.
+- Real pictures, when an importer finally runs, still win: `EntityImage`
+  paints them over the art exactly as before. The tint stays, which is
+  what the reference sites do anyway.
+- **A latent SSR bug surfaced and was fixed.** `Math.hypot` is
+  implementation-defined to the last ULP and Bun (JavaScriptCore) and
+  V8 disagree on ~11% of inputs; the screentone used distance as a
+  threshold, so the two engines emitted a different number of subpaths
+  and React logged a hydration mismatch on every page with artwork.
+  Distance now goes through `Math.sqrt`, which IEEE-754 requires to be
+  correctly rounded, and coordinate rounding biases ties consistently.
+  A source-level test guards it, because one engine can never observe
+  the divergence.
+
+---
+
+## ADR-102 — Generative entity art replaces the monogram placeholder
+
+**Date**: 2026-08-09
+
+**Context**: The corpus holds 3 image entities, all pointing at a
+placeholder domain that does not resolve, and zero image files. Every
+visual slot in `apps/web` therefore renders its fallback — a grey
+tile with the entity's initial. A wall of those is the single loudest
+"AI mockup" tell in the app, and the image situation will not change
+for a long time: the placeholder IS the picture, so it has to be
+artwork rather than an empty state.
+
+**Options considered**:
+
+1. Keep the monogram tile, improve its typography. Cheap, but a grid
+   of lettered squares reads as generated filler however it is set.
+2. Ship a handful of hand-drawn SVG placeholders per type. Nice at
+   first sight, but every entity of a type looks identical, and the
+   set has to be redrawn on each palette change.
+3. Identicon-style hashing (pixel grids, gradient blobs). Instantly
+   recognisable as machine output — the exact register to avoid.
+4. **A deterministic generative composition per entity, with a
+   per-type visual grammar and colours bound to CSS custom
+   properties.** (chosen)
+
+**Choice**: option 4. `apps/web/src/lib/entity-art.ts` hashes the
+entity id (FNV-1a) into a seeded PRNG (mulberry32) and returns a pure
+scene description; `components/EntityArt.tsx` renders it as inline
+SVG. Nine art tokens in `src/styles.css` carry every colour.
+
+**Rationale**:
+
+- **Determinism** is what makes it feel authored rather than random:
+  an entity's tile never changes, so readers learn it. Pure function,
+  no `Math.random`/`Date`, identical SSR and client output, no
+  hydration mismatch, no request, no client JS, no layout shift.
+- **Per-type grammars** carry information: a chapter looks like a
+  comic page, a volume like a cover, an arc like a landscape, a crew
+  like a flag. The mapping is a table, and **any unmapped type
+  degrades to the generic `field` family** (seeded by the type name so
+  it stays self-consistent) — the ADR-091 degradation rule, so adding
+  an entity type can never break rendering.
+- **Colour lives only in `styles.css`.** The generator emits
+  `var(--art-*)` and nothing else; a unit test fails on any hex,
+  `oklch(`, `rgb(` or named colour reaching the output. The v8
+  redesign re-skins the whole art system by editing nine values.
+- Tokens are **roles, not hues** (`--art-ink` dark mass, `--art-glow`
+  light mass, `--art-1..6` an interchangeable wheel), so the contrast
+  structure of a composition survives any palette swap.
+- The initial may appear as an oversized, cropped compositional mark
+  at ~12% opacity; it is never a letter centred in a box, and the
+  families that would look worse with it simply omit it.
+
+**Consequences**: `EntityImage` gains `type`/`slug` props (the
+`type:slug` seed) and loses `monogramClassName`; a real image URL still
+wins whenever one loads. Each tile costs ~10–16 `<path>` elements
+(~2–4 KB of markup, highly compressible) — accepted, it replaces
+network image requests that do not exist. Review tooling:
+`bun run -F @onepiece-wiki/web art:preview`.
+
+---
+
 ## ADR-101 — api-onepiece.com ingest: full-corpus candidate import, URL-only images
 
 **Date**: 2026-08-09

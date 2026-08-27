@@ -73,6 +73,38 @@ If a licence isn't on this list, the image MUST NOT be uploaded.
 External hot-linking is forbidden — every served image lives in our R2
 bucket so we control availability and SLA.
 
+### Rights holders and takedown (ADR-107)
+
+ADR-107 settled the posture on third-party visuals, and it is an
+assumed-risk position rather than a claim of legality: re-hosting a
+Toei/Shueisha still is what every fan wiki does and what rights holders
+in this space have tolerated for decades, not something French law
+permits (there is no `fair use`, and the `courte citation` exception
+does not extend to whole images). The rules that bound the risk:
+
+- **TMDB is the preferred source wherever it covers** — episode stills
+  and film posters. Its API terms are the only ones in this space we can
+  actually comply with, and its attribution requirement is honoured on
+  every page that displays one.
+- **Every re-hosted third-party image names its rights holder**, carries
+  a licence value that is not `unverified-external`, and records the
+  source URL it came from.
+- **`unverified-external` is a staging value only.** It exists for
+  candidate imports (ADR-101) and a build guard rejects it on `main`,
+  in the same spirit as the existing `staging://` guard in
+  `packages/schema-engine/src/cli/validate.ts`.
+- **Fandom's CDN is never hot-linked**, which the rule above already
+  covers, and never mirrored either — its image files are outside the
+  facts-only ingest boundary set by ADR-107.
+- **A public takedown page** names a contact and commits to removal
+  within 48 hours, without argument. A rights holder asking is the end
+  of the conversation, not the start of one.
+
+The `rights_holder` property, the `unverified-external` build guard and
+the `/takedown` + `/credits` pages are follow-ups mandated by ADR-107
+and land with the schema-v2 image axis, before the first bulk image
+import — not after.
+
 ## Upload workflow
 
 Phase 4 dashboard (Phase 1 has no UI; images entered by hand).

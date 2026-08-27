@@ -1,62 +1,77 @@
 /**
  * The ONE image surface of the app — every place a picture of an
- * entity can appear (infobox portrait, member rows, cast/crew thumbs)
- * renders through this component, so a broken file can never leave a
- * raw `<img>` frame anywhere.
+ * entity can appear (page portrait, poster cards, connection-row
+ * thumbs) renders through this component, so a broken file can never
+ * leave a raw `<img>` frame anywhere.
  *
  * Contract:
- * - The designed ground (a monogram tile: the entity's initial set in
- *   the display face on a quiet duotone of the surface tokens) renders
- *   FIRST and stays underneath until a real image is CONFIRMED loaded
- *   (`complete && naturalWidth > 0`).
- * - The `<img>` sits on top at opacity 0 and blur-fades in (~200ms)
- *   only once loaded; on failure it unmounts entirely. Load state is
+ * - The designed ground renders FIRST and stays underneath until a real
+ *   image is CONFIRMED loaded (`complete && naturalWidth > 0`). That
+ *   ground is `EntityArt`: a deterministic generative composition keyed
+ *   on the entity id (see `lib/entity-art.ts`). The corpus has almost
+ *   no pictures, so this is the artwork on screen, not an empty state.
+ * - The `<img>` sits on top at opacity 0 and fades in (~200ms) only
+ *   once loaded; on failure it unmounts entirely. Load state is
  *   probed on mount too, so errors/loads that fire before hydration
  *   are never missed.
  * - Aspect ratio is reserved up front (3:4 portrait, 1:1 thumb) so
- *   layout never jumps between fallback and photo.
+ *   layout never jumps between art and photo. Radius comes from the
+ *   caller's className (`rounded-md`…) via `rounded-[inherit]`.
+ * - The tile carries the entity's own colour chord (ADR-103): the
+ *   `--art-*` custom properties are set per tile, so a listing grid is
+ *   a wall of individually-coloured artwork rather than one palette
+ *   repeated. Only the art tokens are scoped here — the UI tokens are
+ *   the entity page's business (`.tinted`), so chrome stays neutral.
  *
  * Callers that want NO block at all when no image entity exists
- * (e.g. the infobox) simply don't render the component.
+ * simply don't render the component.
  */
-import { type JSX, useState } from 'react';
+import { type CSSProperties, type JSX, useState } from 'react';
 import type { ImageView } from '../api';
+import { entityTint } from '../lib/entity-tint';
+import { EntityArt } from './EntityArt';
 
-/** First grapheme of the entity name, uppercased — the monogram. */
+/** First grapheme of the entity name, uppercased — the artwork's mark. */
 export function initialOf(name: string): string {
   const first = [...name.trim()][0];
   return (first ?? '·').toUpperCase();
 }
 
-export type ImageRatio = 'portrait' | 'square';
+export type ImageRatio = 'portrait' | 'square' | 'wide';
+
+const ASPECT: Readonly<Record<ImageRatio, string>> = {
+  portrait: 'aspect-3/4',
+  square: 'aspect-square',
+  wide: 'aspect-video',
+};
 
 export function EntityImage(
-  { image, name, ratio = 'square', className = '', monogramClassName = 'text-xl' }: {
+  { image, type, slug, name, ratio = 'square', className = '' }: {
     readonly image: ImageView | null;
+    /** Entity type id — selects the artwork's visual family. */
+    readonly type: string;
+    /** Entity slug — with the type, the `type:slug` art seed. */
+    readonly slug: string;
     readonly name: string;
-    /** Reserved aspect: `portrait` = 3:4 (infobox), `square` = 1:1 (thumbs). */
+    /** Reserved aspect: `portrait` 3:4 (posters), `square` 1:1 (thumbs),
+     *  `wide` 16:9 (plates, stills). */
     readonly ratio?: ImageRatio;
     readonly className?: string;
-    /** Type scale of the monogram initial, matched to the tile size. */
-    readonly monogramClassName?: string;
   },
 ): JSX.Element {
+  const entityId = `${type}:${slug}`;
   return (
     <div
-      className={`relative isolate shrink-0 overflow-hidden ${
-        ratio === 'portrait' ? 'aspect-[3/4]' : 'aspect-square'
-      } ${className}`}
+      style={entityTint(entityId).vars as CSSProperties}
+      className={`relative isolate shrink-0 overflow-hidden ${ASPECT[ratio]} ${className}`}
     >
-      <div
-        aria-hidden
-        className='absolute inset-0 grid select-none place-items-center rounded-[inherit] bg-surface-2 ring-1 ring-inset ring-line'
-      >
-        <span
-          className={`font-display font-semibold leading-none tracking-[-0.02em] text-gold/40 ${monogramClassName}`}
-        >
-          {initialOf(name)}
-        </span>
-      </div>
+      <EntityArt
+        entityId={entityId}
+        entityType={type}
+        ratio={ratio}
+        initial={initialOf(name)}
+        className='absolute inset-0 size-full rounded-[inherit]'
+      />
       {image !== null ? <Photo key={image.url} image={image} /> : null}
     </div>
   );
@@ -85,8 +100,8 @@ function Photo({ image }: { readonly image: ImageView; }): JSX.Element | null {
       decoding='async'
       onLoad={() => setState('loaded')}
       onError={() => setState('failed')}
-      className={`absolute inset-0 size-full rounded-[inherit] object-cover transition-[opacity,filter] duration-200 ease-out ${
-        state === 'loaded' ? 'opacity-100 blur-0' : 'opacity-0 blur-xs'
+      className={`absolute inset-0 size-full rounded-[inherit] object-cover transition-opacity duration-200 ease-out ${
+        state === 'loaded' ? 'opacity-100' : 'opacity-0'
       }`}
     />
   );

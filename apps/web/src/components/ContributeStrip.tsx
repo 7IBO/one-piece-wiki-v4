@@ -1,8 +1,8 @@
 /**
- * Quiet full-width strip at the bottom of every entity page linking
- * to the dashboard (view/edit + history) for the same entity —
- * WEB_APP.md § contribute strip. `VITE_DASHBOARD_URL` is a build-time
- * env override; default is the production dashboard.
+ * Quiet strip at the bottom of every entity page linking to the
+ * dashboard (view/edit + history) for the same entity — WEB_APP.md
+ * § contribute strip. `VITE_DASHBOARD_URL` is a build-time env
+ * override; default is the production dashboard.
  */
 import { type JSX } from 'react';
 import { t } from '../lib/chrome';
@@ -19,7 +19,7 @@ export function ContributeStrip(
   const locale = useLocale();
   const base = `${DASHBOARD_URL}/types/${type}/${slug}`;
   return (
-    <div className='mt-10 flex flex-wrap items-center gap-x-4 gap-y-2.5 rounded-lg bg-surface px-5 py-4 text-sm text-muted'>
+    <div className='mt-14 flex flex-wrap items-center gap-x-4 gap-y-2.5 border-t border-line pt-5 text-[13px] text-muted'>
       <span>{t(locale, 'contributeLead')}</span>
       <a
         href={base}
@@ -33,7 +33,7 @@ export function ContributeStrip(
         href={`${base}/history`}
         target='_blank'
         rel='noreferrer'
-        className='rounded-md bg-surface-2 px-3.5 py-1.5 text-xs font-medium text-muted transition-colors duration-150 hover:text-fg'
+        className='rounded-md px-3.5 py-1.5 text-xs font-medium text-muted ring-1 ring-line transition-colors duration-150 hover:text-fg hover:ring-line-strong'
       >
         {t(locale, 'contributeHistory')}
       </a>

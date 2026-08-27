@@ -11,9 +11,7 @@ import { type JSX } from 'react';
 import { type Locale, SUPPORTED_LOCALES, t } from '../lib/chrome';
 import { LOCALE_COOKIE, useLocale } from '../routes/__root';
 
-export function LocaleSwitcher(
-  { vertical = false }: { readonly vertical?: boolean; } = {},
-): JSX.Element {
+export function LocaleSwitcher(): JSX.Element {
   const router = useRouter();
   const locale = useLocale();
 
@@ -34,16 +32,14 @@ export function LocaleSwitcher(
         if (next === 'en' || next === 'fr') apply(next);
       }}
       aria-label={t(locale, 'languageLabel')}
-      className={`flex items-center gap-0.5 rounded-md bg-surface p-0.5 text-xs font-medium uppercase ${
-        vertical ? 'flex-col' : ''
-      }`}
+      className='flex items-center gap-0.5 rounded-md p-0.5 text-xs font-semibold uppercase ring-1 ring-line'
     >
       {SUPPORTED_LOCALES.map((value) => (
         <Toggle
           key={value}
           value={value}
           aria-label={value === 'en' ? 'English' : 'Français'}
-          className='rounded-[5px] px-2 py-1 text-faint transition-colors duration-150 hover:text-fg data-[pressed]:bg-surface-2 data-[pressed]:text-fg'
+          className='cursor-pointer rounded-[5px] px-1.5 py-1 text-faint transition-colors duration-150 hover:text-fg data-[pressed]:bg-surface-2 data-[pressed]:text-fg'
         >
           {value}
         </Toggle>

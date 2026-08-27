@@ -139,6 +139,90 @@ describe('crawl', () => {
     expect(report.frontier.some((f) => f.title === 'Going Merry')).toBe(true);
   });
 
+  it('orders category members so `limit` takes the real pages, not the variants', async () => {
+    // The 2026-08-07 regression in miniature: the API hands back the
+    // recap variants first, and a limit of 2 used to swallow them.
+    const category = JSON.stringify({
+      query: {
+        categorymembers: [
+          { title: 'Chapter 1044 (Digital Colored)' },
+          { title: 'Chapter 1044' },
+        ],
+      },
+    });
+    const client = stubClient({
+      'list=categorymembers': category,
+      'page=Chapter 1044': await fixtureRaw('chapter-1044'),
+    });
+
+    const report = await crawl(client, { categories: ['Test'] }, { limit: 1 });
+    expect(report.results.map((r) => r.mapped.entity.id)).toEqual(['manga-chapter:1044']);
+  });
+
+  it('names the reason when a variant page is refused', async () => {
+    const client = stubClient({
+      'page=Chapter 1044 (Digital Colored)': JSON.stringify({
+        parse: {
+          title: 'Chapter 1044 (Digital Colored)',
+          pageid: 3,
+          wikitext: '{{Chapter Box|chapter=1044}}',
+        },
+      }),
+    });
+    const report = await crawl(client, { pages: ['Chapter 1044 (Digital Colored)'] }, { limit: 5 });
+    expect(report.results).toEqual([]);
+    expect(report.failures[0]?.reason).toContain('variant of Chapter 1044');
+    expect(report.failures[0]?.reason).toContain('Digital Colored');
+  });
+
+  it('skipKnown advances past pages the registry already tracks', async () => {
+    const client = stubClient({
+      'page=Chapter 1044': await fixtureRaw('chapter-1044'),
+      'page=Hyougoro': await fixtureRaw('hyougoro'),
+    });
+    const registry = {
+      pages: [
+        { entityId: 'manga-chapter:1044', page: 'Chapter 1044', pageId: 1, redirects: [] },
+      ],
+    };
+
+    const report = await crawl(
+      client,
+      { pages: ['Chapter 1044', 'Hyougoro'] },
+      { limit: 1, registry, skipKnown: true },
+    );
+    // Without the skip, `limit: 1` would have burned its single fetch
+    // re-importing Chapter 1044 for the Nth time.
+    expect(report.skippedKnown).toBe(1);
+    expect(report.results.map((r) => r.mapped.entity.id)).toEqual(['character:hyogoro']);
+  });
+
+  it('skipKnown honours redirect aliases, and stays off by default', async () => {
+    const client = stubClient({ 'page=Chapter 1044': await fixtureRaw('chapter-1044') });
+    const registry = {
+      pages: [
+        {
+          entityId: 'manga-chapter:1044',
+          page: 'Ch. 1044',
+          pageId: 1,
+          redirects: ['Chapter 1044'],
+        },
+      ],
+    };
+
+    const skipped = await crawl(client, { pages: ['Chapter 1044'] }, {
+      limit: 5,
+      registry,
+      skipKnown: true,
+    });
+    expect(skipped.skippedKnown).toBe(1);
+    expect(skipped.results).toEqual([]);
+
+    const included = await crawl(client, { pages: ['Chapter 1044'] }, { limit: 5, registry });
+    expect(included.skippedKnown).toBe(0);
+    expect(included.results.length).toBe(1);
+  });
+
   it('respects the fetch limit', async () => {
     const client = stubClient({ 'page=Chapter 1044': await fixtureRaw('chapter-1044') });
     const report = await crawl(
@@ -170,7 +254,7 @@ describe('buildImportPRPlan', () => {
   it('returns null on an empty report', () => {
     expect(
       buildImportPRPlan(
-        { results: [], frontier: [], unknownBoxes: [], failures: [] },
+        { results: [], frontier: [], unknownBoxes: [], failures: [], skippedKnown: 0 },
         { runId: 'x' },
       ),
     ).toBeNull();
