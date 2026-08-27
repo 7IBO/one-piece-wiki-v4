@@ -1,38 +1,50 @@
 /**
- * `/<type>` — the collection view (the entity TYPE ID is the URL
- * segment: `/character`, `/crew`, …). A wall of artwork in the manner
- * of a franchise databank roster: every entity is a full art tile with
- * its name over the composition, each tile in its own colour (ADR-103),
- * filtered by facets DERIVED FROM THE SCHEMA.
+ * `/<type>` — the collection view, rebuilt to `design/v2/Liste.dc.html`.
  *
- * The facets come from the view model (`buildFacets`, `server/views.ts`)
- * — any declared enum property that actually splits the population — so
- * nothing here knows a property id and a type with no enum property
- * simply renders no filter bar. Filtering is client-side over an
- * already spoiler-checked list: no refetch, no flash, and the counts
- * stay honest because they were computed server-side against the same
- * cursor.
+ * The plate's chassis: a tinted header band (overline, 34px title, a
+ * count line that says whose count it is, sort chips, view tabs), a
+ * 224px filter rail on the left, and the results beside it under the
+ * chips of whatever is filtered.
+ *
+ * ## The filters come from the schema
+ *
+ * The plate carries that as a comment on itself — « une facette par
+ * propriété énumérée du type, jamais une liste écrite à la main » —
+ * and it is already true of the data: `buildFacets` derives them from
+ * any declared enum property that actually splits the population. So
+ * nothing here knows a property id, and a type with no enum property
+ * renders no rail.
+ *
+ * ## The counts are the reader's
+ *
+ * Filtering is client-side over an already spoiler-checked list — no
+ * refetch, no flash — and every count was computed server-side against
+ * the same cursor. An entity appearing later is neither listed nor
+ * counted, and the rail's footnote says so: a reader who sees "96"
+ * must know whose 96 it is.
  *
  * ## Ordered types read in their order
  *
- * A type that declares an ordinal (`number`, `arc_number`, …) arrives
- * sorted by it, and the listing offers A–Z as the ALTERNATIVE rather
- * than the default. Alphabetical was the only order until the corpus
- * grew: with 400 episodes it put "A Man's Oath Never Dies" first and
- * left no way to reach episode 250.
+ * A type that declares an ordinal arrives sorted by it, and A–Z is the
+ * ALTERNATIVE. Alphabetical was the only order until the corpus grew:
+ * with 400 episodes it put "A Man's Oath Never Dies" first and left no
+ * way to reach episode 250.
  *
- * ## Long lists are paged, and say so
+ * ## Two views, not three
  *
- * Four hundred art tiles is not a page, it is a download. The listing
- * renders a window and grows it on demand — and the count above always
- * describes the WHOLE filtered set, never the window, so the number
- * never contradicts what "load more" implies.
+ * The plate offers Grille, Tableau and Chronologie. The first two are
+ * honest with the data the corpus has. Chronologie needs an ordinal
+ * AND dates, and dates exist on ten chapters out of twelve hundred —
+ * a tab rendering an empty axis is worse than a tab that is not there.
  */
 import { createFileRoute, notFound } from '@tanstack/react-router';
 import { type ReactElement, useMemo, useState } from 'react';
-import { type EntityListItem, type FacetView, fetchTypeList } from '../api';
+import { type EntityListItem, fetchTypeList } from '../api';
 import { CardGrid, EntityCard } from '../components/EntityCard';
 import { ScopeContext } from '../components/EntityChip';
+import { FacetSidebar } from '../components/list/FacetSidebar';
+import { Chip, ListBand, type SortOption } from '../components/list/ListBand';
+import { ListTable } from '../components/list/ListTable';
 import { t } from '../lib/chrome';
 import { validateScopeSearch } from '../lib/scope';
 import { useLocale } from './__root';
@@ -67,23 +79,26 @@ function TypeListPage(): ReactElement {
   const { scope } = Route.useSearch();
   const locale = useLocale();
   const [selection, setSelection] = useState<Selection>({});
-  const [alphabetical, setAlphabetical] = useState(false);
+  const [sort, setSort] = useState('ordinal');
+  const [tab, setTab] = useState('grid');
   const [shown, setShown] = useState(PAGE);
 
   // Does this type HAVE an order? Asked of the data, not of a list of
   // type ids — so the control appears for any ordered type and never
   // for a character.
   const ordered = view.items.some((item) => item.ordinal !== null);
+  const alphabetical = sort === 'name' || !ordered;
 
   const items = useMemo(() => {
     const filtered = view.items.filter((item) => matches(item, selection));
     if (!alphabetical) return filtered;
-    // `filter` already returned a fresh array; copying it again to
-    // sort was pure waste (react-doctor, js-tosorted-immutable).
     return filtered.toSorted((a, b) => a.name.localeCompare(b.name));
   }, [view.items, selection, alphabetical]);
 
   const visible = items.slice(0, shown);
+  // The chip row exists to say what is filtered and how much it left.
+  // With nothing filtered it would only repeat the band's own count.
+  const filtered = Object.keys(selection).length > 0;
 
   const toggle = (facetId: string, value: string): void => {
     setSelection((current) => {
@@ -97,154 +112,127 @@ function TypeListPage(): ReactElement {
     setShown(PAGE);
   };
 
+  const sorts: readonly SortOption[] = ordered
+    ? [
+      { id: 'ordinal', label: t(locale, 'listSortOrdinal') },
+      { id: 'name', label: t(locale, 'listSortName') },
+    ]
+    : [];
+  const tabs: readonly SortOption[] = [
+    { id: 'grid', label: t(locale, 'listViewGrid') },
+    { id: 'table', label: t(locale, 'listViewTable') },
+  ];
+
   return (
-    <div className='page-column pt-8 sm:pt-10'>
-      <header className='mb-6'>
-        <h1 className='display text-[clamp(1.9rem,5vw,3.2rem)] font-extrabold uppercase leading-[0.95] text-fg'>
-          {view.label}
-        </h1>
-        <div className='mt-1.5 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2'>
-          <p className='text-sm text-faint'>
-            {/* Always the WHOLE filtered set, never the window. */}
-            <span className='font-semibold tabular-nums text-fg'>{items.length}</span>{' '}
-            {t(locale, items.length === 1 ? 'entry' : 'entries')}
-            {items.length !== view.items.length ? ` / ${view.items.length}` : ''}
-          </p>
-          {ordered && (
-            <div className='flex items-center gap-1'>
-              <SortButton
-                active={!alphabetical}
-                label={t(locale, 'listSortOrdinal')}
-                onClick={() => setAlphabetical(false)}
-              />
-              <SortButton
-                active={alphabetical}
-                label={t(locale, 'listSortName')}
-                onClick={() => setAlphabetical(true)}
-              />
-            </div>
-          )}
-        </div>
-        {
-          /* The anti-spoiler rule, stated rather than left to be
-            inferred: a reader who counts 96 characters must know the
-            number is THEIRS, not the wiki's. */
-        }
-        <p className='mt-2 text-[12.5px] leading-relaxed text-muted'>
-          {t(locale, 'listProgressNote')}
-        </p>
-      </header>
-
-      {view.facets.length > 0
-        ? (
-          <div className='mb-7 space-y-2.5 border-y border-line py-3.5'>
-            {view.facets.map((facet) => (
-              <FacetRow
-                key={facet.id}
-                facet={facet}
-                selected={selection[facet.id] ?? null}
-                onToggle={(value) => toggle(facet.id, value)}
-              />
-            ))}
-          </div>
-        )
-        : null}
-
-      {items.length === 0
-        ? (
-          <p className='rounded-md px-4 py-3 text-muted ring-1 ring-line'>
-            {t(locale, 'emptyType')}
-          </p>
-        )
-        : (
-          <ScopeContext.Provider value={scope ?? null}>
-            <CardGrid>
-              {visible.map((item) => (
-                <EntityCard
-                  key={item.slug}
-                  type={view.type}
-                  slug={item.slug}
-                  image={item.image}
-                  name={item.name}
-                  secondary={item.secondary}
-                  meta={item.subtitle !== null ? `${t(locale, 'since')} ${item.subtitle}` : null}
-                  tag={item.tag}
-                  stat={item.ordinal === null ? null : String(item.ordinal)}
-                />
-              ))}
-            </CardGrid>
-            {visible.length < items.length && (
-              <div className='mt-6 flex justify-center'>
-                <button
-                  type='button'
-                  onClick={() => setShown((n) => n + PAGE)}
-                  className='cursor-pointer rounded-md px-4 py-2 text-[13px] font-semibold text-fg ring-1 ring-line-strong transition-colors duration-150 hover:bg-surface hover:ring-gold/45'
-                >
-                  {t(locale, 'listLoadMore')}
-                  <span className='ml-2 tabular-nums text-muted'>
-                    {items.length - visible.length}
-                  </span>
-                </button>
-              </div>
-            )}
-          </ScopeContext.Provider>
-        )}
-    </div>
-  );
-}
-
-function FacetRow(
-  { facet, selected, onToggle }: {
-    readonly facet: FacetView;
-    readonly selected: string | null;
-    readonly onToggle: (value: string) => void;
-  },
-): ReactElement {
-  return (
-    <div className='flex flex-wrap items-center gap-x-2 gap-y-1.5'>
-      <span className='label-xs w-full min-[560px]:w-24 min-[560px]:shrink-0'>{facet.label}</span>
-      {facet.options.map((option) => {
-        const active = selected === option.value;
-        return (
-          <button
-            key={option.value}
-            type='button'
-            aria-pressed={active}
-            onClick={() => onToggle(option.value)}
-            className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-semibold transition-colors duration-150 ${
-              active
-                ? 'bg-gold text-canvas'
-                : 'text-muted ring-1 ring-line hover:bg-surface hover:text-fg'
-            }`}
+    <>
+      {
+        /* The plate's lead reads « 412 personnages » — the type name,
+          pluralised. A schema label carries no plural form to derive
+          (« 10 character » is what lowercasing it gives), and
+          inventing one per locale is a grammar engine nobody asked
+          for. The countable noun stays generic; the type name is the
+          title right above it. */
+      }
+      <ListBand
+        type={view.type}
+        overline={t(locale, 'listEntityType')}
+        title={view.label}
+        lead={`${items.length} ${t(locale, items.length === 1 ? 'entry' : 'entries')}${
+          items.length === view.items.length ? '' : ` / ${view.items.length}`
+        }`}
+        sorts={sorts}
+        sort={sort}
+        onSort={setSort}
+        tabs={tabs}
+        tab={tab}
+        onTab={setTab}
+      />
+      <div className='mx-auto flex w-full max-w-[1440px] flex-col gap-5.5 px-5 pb-11 pt-5 lg:flex-row lg:px-10'>
+        <FacetSidebar
+          facets={view.facets}
+          selection={selection}
+          onToggle={toggle}
+          onReset={() => {
+            setSelection({});
+            setShown(PAGE);
+          }}
+        />
+        <div className='min-w-0 flex-1'>
+          {
+            /* What is filtered, said as removable chips — the plate's
+            own affordance, and the only way to lift a filter chosen
+            in a rail that has scrolled away. */
+          }
+          <div
+            className={`flex-wrap items-center gap-2 ${filtered ? 'flex' : 'hidden'}`}
           >
-            {option.label}
-            <span className='ml-1.5 tabular-nums opacity-60'>{option.count}</span>
-          </button>
-        );
-      })}
-    </div>
-  );
-}
+            {view.facets.flatMap((facet) => {
+              const value = selection[facet.id];
+              if (value === undefined) return [];
+              const option = facet.options.find((o) => o.value === value);
+              return [
+                <Chip
+                  key={facet.id}
+                  label={`${option?.label ?? value} ×`}
+                  on
+                  onClick={() => toggle(facet.id, value)}
+                />,
+              ];
+            })}
+            <span className='text-xs text-muted'>
+              {items.length} {t(locale, items.length === 1 ? 'listResult' : 'listResults')}
+            </span>
+          </div>
 
-function SortButton(
-  { active, label, onClick }: {
-    readonly active: boolean;
-    readonly label: string;
-    readonly onClick: () => void;
-  },
-): ReactElement {
-  return (
-    <button
-      type='button'
-      aria-pressed={active}
-      onClick={onClick}
-      className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-semibold transition-colors duration-150 ${
-        active
-          ? 'bg-gold text-canvas'
-          : 'text-muted ring-1 ring-line hover:bg-surface hover:text-fg'
-      }`}
-    >
-      {label}
-    </button>
+          {items.length === 0
+            ? (
+              <p className='mt-4 rounded-md px-4 py-3 text-muted ring-1 ring-line'>
+                {t(locale, 'emptyType')}
+              </p>
+            )
+            : (
+              <ScopeContext.Provider value={scope ?? null}>
+                <div className='mt-4'>
+                  {tab === 'table'
+                    ? <ListTable type={view.type} items={visible} facets={view.facets} />
+                    : (
+                      <CardGrid>
+                        {visible.map((item) => (
+                          <EntityCard
+                            key={item.slug}
+                            type={view.type}
+                            slug={item.slug}
+                            image={item.image}
+                            name={item.name}
+                            secondary={item.secondary}
+                            meta={item.subtitle === null
+                              ? null
+                              : `${t(locale, 'since')} ${item.subtitle}`}
+                            tag={item.tag}
+                            stat={item.ordinal === null ? null : String(item.ordinal)}
+                          />
+                        ))}
+                      </CardGrid>
+                    )}
+                </div>
+                {visible.length < items.length && (
+                  <div className='mt-7 flex justify-center'>
+                    <button
+                      type='button'
+                      onClick={() => setShown((n) => n + PAGE)}
+                      className='cursor-pointer rounded-md border border-line-strong px-6 py-2.5 text-[13px] font-semibold text-fg transition-colors duration-150 hover:border-gold/45 hover:bg-surface'
+                    >
+                      {t(locale, 'listLoadMore')}
+                      <span className='ml-2 tabular-nums text-muted'>
+                        {items.length - visible.length}
+                      </span>
+                    </button>
+                  </div>
+                )}
+              </ScopeContext.Provider>
+            )}
+        </div>
+      </div>
+    </>
   );
 }

@@ -173,6 +173,13 @@ const STRINGS = {
   /** Short form for the narrow header, where the long one cannot fit. */
   searchPlaceholderShort: { en: 'Search…', fr: 'Rechercher…' },
   myProgress: { en: 'My progress', fr: 'Ma progression' },
+  listFilter: { en: 'Filter', fr: 'Filtrer' },
+  listMoreOptions: { en: 'others', fr: 'autres' },
+  listEntityType: { en: 'Entity type', fr: 'Type d’entité' },
+  listViewGrid: { en: 'Grid', fr: 'Grille' },
+  listViewTable: { en: 'Table', fr: 'Tableau' },
+  listResults: { en: 'results', fr: 'résultats' },
+  listResult: { en: 'result', fr: 'résultat' },
   progressChange: { en: 'Change my progress', fr: 'Changer ma progression' },
   progressSet: { en: 'Set my progress', fr: 'Définir ma progression' },
   searchSubmit: { en: 'Search', fr: 'Rechercher' },

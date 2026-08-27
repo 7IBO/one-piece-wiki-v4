@@ -108,7 +108,12 @@ export function EntityCard(
               : null}
             <span
               title={name}
-              className='display block truncate text-[15px] font-extrabold leading-tight text-fg transition-colors duration-150 group-hover:text-[color:var(--tint-accent)]'
+              // A NAME clipped mid-word stops identifying its entity:
+              // « They Call Him "Straw Hat… » names nothing. Two lines
+              // instead of an ellipsis — 18 of 60 chapter titles were
+              // losing their end on the listing wall. The line above,
+              // the ordinal, keeps its ellipsis: a number cannot wrap.
+              className='display line-clamp-2 block text-[15px] font-extrabold leading-tight text-fg transition-colors duration-150 group-hover:text-[color:var(--tint-accent)]'
             >
               {name}
             </span>
