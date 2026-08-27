@@ -70,12 +70,25 @@ jobs:
       - name: Compatibility check
         run: bun run check:compat
 
+      # MUST run before `test`. Several suites read `dist/onepiece.db`
+      # and SKIP THEMSELVES when the artifact is absent — on a fresh
+      # runner that silently turns them into no-ops. This gap let the
+      # chapter-import merge (#94) land with two red data-count tests
+      # while CI reported success.
+      - name: Build the SQLite artifact
+        run: bun run build:db
+
       - name: Test
         run: bun run test
 
-      # Catches dashboard build regressions (e.g. a removed dep, a bad
-      # import) that typecheck alone misses. NOTE: this does NOT run
-      # vercel.json's `buildCommand` — deploy-config changes still only
+      # Catches build regressions (a removed dep, a bad import) that
+      # typecheck alone misses. NOTE: neither of these runs a
+      # `vercel.json` buildCommand — deploy-config changes still only
       # prove out on Vercel itself (see CLAUDE.md Definition of done #7).
       - name: Build dashboard
         run: bun run -F @onepiece-wiki/dashboard build
+
+      # The public wiki was NOT built by CI until 2026-08-27, so nothing
+      # caught a broken web build before deployment.
+      - name: Build web
+        run: bun run -F @onepiece-wiki/web build
