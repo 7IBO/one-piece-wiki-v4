@@ -60,6 +60,7 @@ import { EntityHero } from '../components/EntityHero';
 import { EntityImage } from '../components/EntityImage';
 import { HoverPreview } from '../components/HoverPreview';
 import { ShowMoreList } from '../components/ShowMoreList';
+import { SourceTabs } from '../components/SourceTabs';
 import { type ChromeKey, t } from '../lib/chrome';
 import { bandsFor, type LayoutBand, layoutFor, type SlotKey } from '../lib/entity-layout';
 import {
@@ -1110,33 +1111,33 @@ function AppearancesSection(
   return (
     <section>
       <SectionHead>{t(locale, 'appearances')}</SectionHead>
-      <div className='space-y-6'>
-        {groups.map((group) => (
-          <div key={group.key}>
-            <p className='flex items-baseline gap-2'>
-              <span className='display text-[19px] font-extrabold tabular-nums text-gold'>
-                {group.count}
-              </span>
-              <span className='text-xs text-faint'>
-                {t(locale, 'outOf')} <span className='tabular-nums'>{group.total}</span>{' '}
-                {group.typeLabel.toLowerCase()}
-              </span>
-            </p>
-            <div className='mt-2'>
-              <ShowMoreList
-                limit={NUMBER_LIMIT}
-                listClassName='flex flex-wrap gap-1.5'
-                items={group.items.map((item) => (
-                  <SourceNumberCell
-                    key={item.chip.id}
-                    item={item}
-                  />
-                ))}
-              />
-            </div>
-          </div>
-        ))}
-      </div>
+      <SourceTabs
+        groups={groups.map((group) => ({
+          key: group.key,
+          label: group.typeLabel,
+          count: group.count,
+          content: (
+            <>
+              <p className='text-xs text-faint'>
+                <span className='tabular-nums'>{group.count}</span> {t(locale, 'outOf')}{' '}
+                <span className='tabular-nums'>{group.total}</span> {group.typeLabel.toLowerCase()}
+              </p>
+              <div className='mt-2.5'>
+                <ShowMoreList
+                  limit={NUMBER_LIMIT}
+                  listClassName='flex flex-wrap gap-1.5'
+                  items={group.items.map((item) => (
+                    <SourceNumberCell
+                      key={item.chip.id}
+                      item={item}
+                    />
+                  ))}
+                />
+              </div>
+            </>
+          ),
+        }))}
+      />
     </section>
   );
 }
