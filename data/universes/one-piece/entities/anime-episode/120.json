@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:120",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-120",
+  "properties": {
+    "number": {
+      "value": 120
+    },
+    "title_key": {
+      "value_key": "anime-episode.120.title"
+    }
+  },
+  "relations": []
+}

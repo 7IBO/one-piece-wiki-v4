@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:174",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-174",
+  "properties": {
+    "number": {
+      "value": 174
+    },
+    "title_key": {
+      "value_key": "anime-episode.174.title"
+    }
+  },
+  "relations": []
+}

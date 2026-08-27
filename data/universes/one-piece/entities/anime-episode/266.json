@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:266",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-266",
+  "properties": {
+    "number": {
+      "value": 266
+    },
+    "title_key": {
+      "value_key": "anime-episode.266.title"
+    }
+  },
+  "relations": []
+}

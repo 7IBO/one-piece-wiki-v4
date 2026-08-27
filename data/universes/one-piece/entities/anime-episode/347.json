@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:347",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-347",
+  "properties": {
+    "number": {
+      "value": 347
+    },
+    "title_key": {
+      "value_key": "anime-episode.347.title"
+    }
+  },
+  "relations": []
+}

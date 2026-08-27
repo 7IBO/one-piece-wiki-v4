@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:3",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-3",
+  "properties": {
+    "number": {
+      "value": 3
+    },
+    "title_key": {
+      "value_key": "anime-episode.3.title"
+    }
+  },
+  "relations": []
+}

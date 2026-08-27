@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:360",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-360",
+  "properties": {
+    "number": {
+      "value": 360
+    },
+    "title_key": {
+      "value_key": "anime-episode.360.title"
+    }
+  },
+  "relations": []
+}

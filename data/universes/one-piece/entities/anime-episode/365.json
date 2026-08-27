@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:365",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-365",
+  "properties": {
+    "number": {
+      "value": 365
+    },
+    "title_key": {
+      "value_key": "anime-episode.365.title"
+    }
+  },
+  "relations": []
+}

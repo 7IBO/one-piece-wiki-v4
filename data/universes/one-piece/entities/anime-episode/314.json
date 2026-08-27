@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:314",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-314",
+  "properties": {
+    "number": {
+      "value": 314
+    },
+    "title_key": {
+      "value_key": "anime-episode.314.title"
+    }
+  },
+  "relations": []
+}

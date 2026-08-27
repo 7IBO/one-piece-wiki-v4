@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:43",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-43",
+  "properties": {
+    "number": {
+      "value": 43
+    },
+    "title_key": {
+      "value_key": "anime-episode.43.title"
+    }
+  },
+  "relations": []
+}

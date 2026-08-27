@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:188",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-188",
+  "properties": {
+    "number": {
+      "value": 188
+    },
+    "title_key": {
+      "value_key": "anime-episode.188.title"
+    }
+  },
+  "relations": []
+}

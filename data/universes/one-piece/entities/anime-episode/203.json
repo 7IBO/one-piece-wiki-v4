@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:203",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-203",
+  "properties": {
+    "number": {
+      "value": 203
+    },
+    "title_key": {
+      "value_key": "anime-episode.203.title"
+    }
+  },
+  "relations": []
+}
