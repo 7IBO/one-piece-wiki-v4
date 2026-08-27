@@ -22,6 +22,12 @@ on:
         description: 'Subcategory levels to descend (Fandom nests articles under e.g. Volume N)'
         required: true
         default: '2'
+      skip_known:
+        description: 'Skip pages already in data/import/fandom-pages.json so successive runs advance'
+        required: true
+        default: 'true'
+        type: choice
+        options: ['true', 'false']
 
 permissions:
   contents: write
@@ -42,12 +48,22 @@ jobs:
           --category "${{ github.event.inputs.category }}"
           --depth "${{ github.event.inputs.depth }}"
           --limit "${{ github.event.inputs.limit }}"
+          ${{ github.event.inputs.skip_known == 'true' && '--skip-known' || '' }}
           --stage
       - name: Validate the staged corpus
         run: bun run schema:check && bun run validate && bun run check:references
       - name: Open the import PR
         env:
-          GH_TOKEN: ${{ github.token }}
+          # Runs 3-5 all died here with "GitHub Actions is not permitted
+          # to create or approve pull requests" — a repo setting
+          # (Settings -> Actions -> General -> Workflow permissions).
+          # The branch had already been pushed, so a whole crawl was
+          # thrown away over a permission the job did not need to hold.
+          # Two mitigations: an optional PAT in IMPORT_PR_TOKEN opens the
+          # PR even while the setting is off, and a failure to open the
+          # PR no longer fails the job — the branch is the deliverable,
+          # the PR is a convenience.
+          GH_TOKEN: ${{ secrets.IMPORT_PR_TOKEN || github.token }}
         run: |
           if git diff --quiet && [ -z "$(git status --porcelain)" ]; then
             echo "Nothing staged — no PR."
@@ -60,11 +76,24 @@ jobs:
           git add data/
           git commit -m "data(import): crawl '${{ github.event.inputs.category }}' (run ${{ github.run_id }})"
           git push -u origin "$branch"
+          compare="${{ github.server_url }}/${{ github.repository }}/compare/${branch}?expand=1"
           # Labels must exist before `gh pr create --label` (run 4 died on
           # a missing `import` label) — create them idempotently.
           gh label create via-dashboard --color 5319E7 --description "Opened through the dashboard PR flow" --force || true
           gh label create import --color 0E8A16 --description "Automated Fandom import (ADR-079)" --force || true
-          gh pr create --draft \
+          if gh pr create --draft \
             --title "[DATA] Import from Fandom: ${{ github.event.inputs.category }} (run ${{ github.run_id }})" \
             --body "Automated crawl of category **${{ github.event.inputs.category }}** (limit ${{ github.event.inputs.limit }}). Deterministic infobox extraction only — review in the dashboard admin queue. See the run log for warnings, the import frontier, and unmapped infobox kinds." \
             --label via-dashboard --label import
+          then
+            echo "### Import PR opened" >> "$GITHUB_STEP_SUMMARY"
+          else
+            echo "::warning::Could not open the PR. The branch $branch is pushed and holds the crawl — open the PR by hand, or enable Settings -> Actions -> General -> Workflow permissions -> 'Allow GitHub Actions to create and approve pull requests' (or set an IMPORT_PR_TOKEN secret)."
+            {
+              echo "### Branch pushed, PR not opened"
+              echo ""
+              echo "The crawl is safe on \`$branch\`. Open it here: $compare"
+              echo ""
+              echo "To let the workflow do this itself, enable **Settings -> Actions -> General -> Workflow permissions -> Allow GitHub Actions to create and approve pull requests**, or add an \`IMPORT_PR_TOKEN\` secret."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

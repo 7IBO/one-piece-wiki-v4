@@ -25,6 +25,63 @@ this file is the current status + the open threads.
 > pas défaire, et la tension de licence CC-BY-SA à trancher avant tout
 > import massif depuis Fandom.
 
+**2026-08-27 — ADR-107 (licence) + le pipeline d'import débloqué et
+instrumenté.** Brief mainteneur : données d'abord, comptes plus tard,
+refonte complète du schéma pilotée par une analyse Fandom réelle,
+images « TMDB + visuels tiers avec politique de retrait ».
+
+_Ce que l'inspection a trouvé_ — le récit « 37 entités parce que
+l'egress est bloqué » était faux. Le pipeline existe, tourne en CI (les
+runners ont l'egress), et il échouait pour trois raisons opérationnelles,
+toutes visibles dans le log du run 5 de `fandom-import` (2026-08-07) :
+(a) `gh pr create` interdit — _GitHub Actions is not permitted to create
+or approve pull requests_ ; la branche `import/fandom-31224649430` était
+poussée avec 8 épisodes, seule la PR manquait, et le job mourait en
+exit 1 (3 runs sur 5 morts là) ; (b) le crawl prenait les 25 premières
+pages retournées par l'API sur une catégorie de 1231, soit les
+« Episode N (Special Edited Version) » — des remontages récapitulatifs
+dont l'Episode Box porte `#=N`, donc écrits comme `anime-episode:1..8` :
+**des données fausses aux bons identifiants**, que la validation ne peut
+pas voir puisque la forme est parfaite ; (c) 17 échecs sur 25 sans
+aucune raison affichée, alors que `crawl()` les collectait déjà.
+
+_Livré._ **ADR-107** — faits structurés seulement, jamais de prose (y
+compris paraphrasée par IA : le modèle n'est pas une étape de
+blanchiment), les trois couches juridiques distinguées (droit d'auteur /
+droit sui generis des bases art. L341-1 CPI / CGU), corpus en
+CC BY-SA 4.0, et la posture images assumée par le mainteneur avec ses
+garde-fous (ayant-droit nommé, `unverified-external` interdit sur `main`,
+page de retrait 48 h, jamais de hotlink Fandom). `VISION.md` §7 est
+tranché, `IMAGES.md` porte les règles. **Garde des ordinaux**
+(`fandom/ordinal-title.ts`) : seule la page au titre canonique peut
+réclamer l'ordinal, appliquée aux trois mappers chapitre/épisode/volume ;
+plus l'ordre de file déterministe (`orderCrawlQueue`) qui fait que
+`--limit N` veut enfin dire « les N premiers ». **Reprise** :
+`--skip-known` saute les pages déjà au registre, pour que deux runs
+successifs avancent. **Échecs imprimés** groupés par raison.
+**`fandom:analyze` devient un instrument de conception** : profil de
+valeurs par champ (`field-shape.ts` — taux de remplissage, cardinalité,
+exemples réels, forme inférée number/date/wikilink/template/enum_like/
+prose) lu sur le wikitext BRUT, car `cleanValue` détruit précisément les
+trois signaux utiles ; et surtout **survol hors infobox**
+(`page-structure.ts`) : titres de section, **signatures de colonnes des
+wikitables avec compte de lignes**, densité de `{{Qref}}`. C'est là que
+vit le gros de la donnée — listes de chapitres et d'épisodes, tableaux de
+casting, apparitions par source — et un inventaire limité aux infobox
+n'en voyait rien. Preset `--full` (40 échantillons, sans plafond).
+**Workflow `fandom-analyze.yml`** qui lance le relevé et **commite le
+rapport** sur une branche `audit/` : le CI voit Fandom, la session le lit
+par l'API GitHub. 147 tests importers verts, typecheck vert.
+
+_Ce qui attend le mainteneur._ (1) **Réglage dépôt** : Settings →
+Actions → General → Workflow permissions → _Allow GitHub Actions to
+create and approve pull requests_. Sans lui l'import pousse des branches
+sans jamais ouvrir de PR (le workflow ne meurt plus, il imprime l'URL de
+comparaison, et accepte un secret `IMPORT_PR_TOKEN` en contournement).
+(2) **Décision de déploiement d'`apps/web`** — voir le fil ouvert
+ci-dessous. (3) Lancer `fandom-analyze` une fois le lot mergé : c'est
+l'entrée obligée de la refonte de schéma.
+
 **2026-08-09 — v9 : layouts par type + apparitions au grain unité.**
 Demande mainteneur : trous à droite sur la page personnage, layouts
 distincts par type, toutes les données avec leur historique,
@@ -772,6 +829,47 @@ exists — `bun run migrate:all` (+ `--dry-run`/`--check`) with a committed
 allowed-relations in INVENTORY only.
 
 ## Open / blocked threads — resume here
+
+### 0. `apps/web` n'est déployé nulle part — DÉCISION MAINTENEUR REQUISE
+
+Le wiki public **n'est en ligne sur aucun domaine**. `vercel.json`
+construit le _dashboard_ (`apps/dashboard/.output`) ; rien ne construit
+`apps/web`. Conséquence directe sur le brief : les chantiers UI (§5.1)
+et SEO (§5.4 / priorité 4) ne valent rien tant que ça dure — on ne peut
+pas acquérir de visiteurs Google sur un site qui n'existe pas.
+
+Ce n'est pas un oubli de configuration, c'est un choix d'exécution que
+la pile impose et que je n'ai pas tranché seul (règle CLAUDE.md « ask
+before refactoring » + « deploy config jamais mergée à l'aveugle »,
+leçon #23) :
+
+`apps/web/server/db.ts` lit l'artefact via **`bun:sqlite`**, un builtin
+du runtime Bun sans équivalent npm. `vite.config.ts` le déclare externe
+et note explicitement que le serveur de production doit tourner sous
+Bun. Or **Vercel exécute du Node**. Et la dépendance n'est pas locale à
+`apps/web` : `packages/sdk/src/open.ts` et
+`packages/db-builder/src/writer.ts` importent le même builtin.
+
+Deux issues réelles :
+
+- **A — héberger sous Bun** (Fly.io, Railway, un conteneur). Zéro
+  changement de code : `bun run start` exécute déjà `.output/server/
+  index.mjs`, le preset nitro `node-server` est le défaut hors Vercel.
+  Coût : une plateforme de plus à opérer, et on quitte Vercel pour le
+  wiki alors que le dashboard y reste.
+- **B — rester sur Vercel** et introduire une couche d'accès SQLite
+  choisie au runtime (`bun:sqlite` en dev sous Bun, `better-sqlite3`
+  sous Node) — ce qu'ADR-012 avait explicitement anticipé (« read-side
+  under Node if/when a serverless target requires it »). Coût : la
+  couche touche `apps/web` ET `packages/sdk`, et l'artefact `.db` doit
+  être embarqué dans la fonction selon le motif ADR-019. Ça mérite son
+  ADR.
+
+Ma recommandation : **B**, parce que garder une seule plateforme vaut
+la couche d'abstraction, que l'ADR-012 la prévoit déjà, et que le
+motif d'embarquement de l'artefact est éprouvé sur le dashboard. Mais
+c'est un arbitrage d'infrastructure — dis-moi lequel et j'écris l'ADR
+et le code. Rien ne part sur `main` avant.
 
 ### 1. Production dashboard `/api/*` 404 — ROOT CAUSE FOUND + FIXED (code)
 
