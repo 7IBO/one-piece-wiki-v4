@@ -166,7 +166,15 @@ const STRINGS = {
 
   // Search (ADR-108, append-only).
   searchLabel: { en: 'Search the wiki', fr: 'Rechercher dans le wiki' },
-  searchPlaceholder: { en: 'Search…', fr: 'Rechercher…' },
+  searchPlaceholder: {
+    en: 'Search — characters, fruits, chapters, arcs, episodes…',
+    fr: 'Rechercher — personnages, fruits, chapitres, arcs, épisodes…',
+  },
+  /** Short form for the narrow header, where the long one cannot fit. */
+  searchPlaceholderShort: { en: 'Search…', fr: 'Rechercher…' },
+  myProgress: { en: 'My progress', fr: 'Ma progression' },
+  progressChange: { en: 'Change my progress', fr: 'Changer ma progression' },
+  progressSet: { en: 'Set my progress', fr: 'Définir ma progression' },
   searchSubmit: { en: 'Search', fr: 'Rechercher' },
   searchTitle: { en: 'Search', fr: 'Recherche' },
   searchLead: {

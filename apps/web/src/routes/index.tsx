@@ -155,7 +155,7 @@ function Hero(
                 {t(locale, 'homeContinue')} {primary.label.toLowerCase()} {primary.next.number}
               </Link>
             )}
-            <ProgressControl progress={cursor} />
+            <ProgressControl progress={cursor} variant='button' />
           </div>
         </div>
         {reading && <ReadingCard axes={axes} primary={primary} />}
