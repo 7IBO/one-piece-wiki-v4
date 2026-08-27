@@ -188,6 +188,65 @@ body {
   }
 
   /*
+   * L'axe chronologique. C'est le panneau qui porte le differenciateur
+   * du projet : une propriete historisee ne se lit pas comme une
+   * valeur avec une note de bas de page, mais comme une SUITE de
+   * valeurs dont une seule est vraie a la position du lecteur.
+   *
+   * La valeur courante vient EN TETE avec un point plein en or —
+   * c'est la reponse a la question posee ; l'historique descend
+   * ensuite, points creux, pour l'expliquer. L'ordre inverse (le plus
+   * ancien d'abord) obligeait a lire jusqu'en bas pour savoir ou on en
+   * est.
+   *
+   * Une seule regle sert fiche d'identite, primes, noms de fruits et
+   * adhesions d'equipage : partout ou `since` empile des valeurs.
+   */
+  .timeline {
+    position: relative;
+    margin: 0;
+    padding-left: 1.125rem;
+    list-style: none;
+  }
+
+  .timeline::before {
+    content: '';
+    position: absolute;
+    left: 3px;
+    top: 0.5rem;
+    bottom: 0.5rem;
+    width: 1px;
+    background-color: var(--color-line);
+  }
+
+  .timeline > li {
+    position: relative;
+    padding-bottom: 0.5rem;
+  }
+
+  .timeline > li:last-child {
+    padding-bottom: 0;
+  }
+
+  .timeline > li::before {
+    content: '';
+    position: absolute;
+    left: -1.125rem;
+    top: 0.42rem;
+    width: 7px;
+    height: 7px;
+    border-radius: 50%;
+    background-color: var(--color-canvas);
+    border: 1.5px solid var(--color-line-strong);
+  }
+
+  /* La valeur vraie a ta position : le seul point plein. */
+  .timeline > li:first-child::before {
+    background-color: var(--color-gold);
+    border-color: var(--color-gold);
+  }
+
+  /*
    * The tint scope (ADR-103). An element carrying BOTH the inline
    * custom properties from `entityTint()` and this class re-points the
    * theme tokens every Tailwind utility already reads — so `text-accent`,

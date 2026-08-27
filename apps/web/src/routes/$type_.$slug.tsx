@@ -587,23 +587,30 @@ function DataSheet(
 function SheetRow({ property }: { readonly property: PropertyView; }): JSX.Element {
   const entries = property.entries;
   const latest = entries[entries.length - 1];
-  const earlier = entries.slice(0, -1);
+  // Du plus recent au plus ancien : la valeur vraie a la position du
+  // lecteur est la reponse, l'historique l'explique. Dans l'autre sens
+  // il fallait lire jusqu'en bas pour savoir ou on en est.
+  const older = entries.slice(0, -1).reverse();
   return (
     <div className='border-t border-line py-2.5'>
       <dt className='label-xs'>{property.label}</dt>
       <dd className='m-0 mt-1 text-[13.5px] text-fg'>
-        {latest === undefined ? null : <PropertyEntry entry={latest} />}
-        {earlier.length > 0
-          ? (
-            <ol className='m-0 mt-2 list-none space-y-1 border-l border-line py-0.5 pl-3'>
-              {earlier.map((entry, index) => (
+        {older.length === 0
+          ? (latest === undefined ? null : <PropertyEntry entry={latest} />)
+          : (
+            <ol className='timeline mt-1.5'>
+              {latest === undefined ? null : (
+                <li>
+                  <PropertyEntry entry={latest} />
+                </li>
+              )}
+              {older.map((entry, index) => (
                 <li key={index} className='text-[12.5px] text-muted'>
                   <PropertyEntry entry={entry} past />
                 </li>
               ))}
             </ol>
-          )
-          : null}
+          )}
       </dd>
     </div>
   );
