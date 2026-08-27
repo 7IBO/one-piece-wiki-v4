@@ -33,10 +33,32 @@ contrainte qui refusait une œuvre réelle.
 
 **Décision**. `value_constraints.min` passe de 1 à 0 sur `number`
 (partagé par `manga-chapter`, `anime-episode`, `live-action-episode`,
-`volume`). Élargir une contrainte est additif : `check:compat` passe sans
-régénérer le snapshot, et `schema:generate` produit un diff vide — la
-contrainte numérique est appliquée à la validation par
-`entity-schema.ts`, pas gravée dans le Zod généré.
+`volume`).
+
+**Correction d'une erreur commise en écrivant cette ADR.** J'avais noté
+que « `schema:generate` produit un diff vide, la contrainte n'étant pas
+gravée dans le Zod généré ». C'est faux deux fois.
+`packages/schemas/generated/` est **gitignoré** (`.gitignore:25`), donc
+un `git diff` dessus est toujours vide et ne prouve rien ; et la
+contrainte **est** gravée dans le Zod généré :
+
+```ts
+export const NumberEntry = z.object({ …, value: z.number().min(0).step(1) })
+```
+
+Le typage est appliqué à deux endroits volontairement synchronisés — le
+Zod généré (`validate`, CI) et `valueSchemaFor` à l'exécution (formulaire
+du dashboard) — pour qu'« une édition acceptée par le dashboard soit la
+même que celle acceptée par la CI » (`entity-schema.ts`). Vérifié par
+sondes sur le corpus réel : `-1` rejeté (min), `3.5` rejeté (step),
+`"12"` rejeté (type), `0` accepté.
+
+**Et le point qui compte vraiment** : `check:compat` est passé sans
+régénérer le snapshot non pas parce que le changement est _additif_, mais
+parce qu'il est **invisible** au lockfile. Le snapshot n'enregistre que
+`value_type`, `enum_ref`, `historical`, `localizable` — jamais
+`value_constraints`. Le TYPE est verrouillé, la CONTRAINTE ne l'est pas.
+N'importe quelle borne peut donc dériver sans que la CI le remarque.
 
 Option écartée : filtrer l'ordinal 0 dans le mapper, comme on filtre déjà
 les variantes « Digital Colored ». Ce n'est pas le même geste — une
@@ -114,10 +136,16 @@ sur la valeur :
 | `EntityForm`                            | recopie l'enveloppe telle quelle                                         |
 | `coherence.ts`                          | `ENTITY_SCHEMA_VERSION_AHEAD` : entité ≤ type                            |
 
-Deux confirmations empiriques valent mieux que la lecture du code :
-après le reset, `bun run schema:generate` produit un diff **vide** (la
-version n'entre jamais comme littéral dans le Zod généré) et
+La version n'entre jamais comme littéral dans le Zod généré : le
+printeur émet une ligne fixe, `schema_version: z.number().int().positive()`
+(`printers/entities.ts`), identique pour les 38 types. Et
 `bun run check:compat` passe **sans régénérer le snapshot**.
+
+_(Note : j'avais d'abord étayé ce point par « `schema:generate` produit un
+diff vide ». Cette observation ne vaut rien —
+`packages/schemas/generated/` est gitignoré, donc un `git diff` dessus est
+toujours vide. La conclusion tient, la preuve avancée était mauvaise ;
+voir ADR-116.)_
 
 **Décision**. Tous les `schema_version` passent à 1 :
 
