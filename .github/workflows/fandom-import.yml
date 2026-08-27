@@ -36,6 +36,18 @@ on:
         default: 'true'
         type: choice
         options: ['true', 'false']
+      overwrite:
+        description: >-
+          REWRITE entity files that already exist. Off by default because
+          it DISCARDS whatever the file holds — a hand-authored value, a
+          reviewed correction — and replaces it with what the mapper
+          produces from the infobox today. Turn it on only to re-run a
+          category after the mapper learned to read MORE fields, which is
+          what it is for; the PR diff is the review.
+        required: true
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
 
 permissions:
   contents: write
@@ -57,6 +69,7 @@ jobs:
           --depth "${{ github.event.inputs.depth }}"
           --limit "${{ github.event.inputs.limit }}"
           ${{ github.event.inputs.skip_known == 'true' && '--skip-known' || '' }}
+          ${{ github.event.inputs.overwrite == 'true' && '--overwrite' || '' }}
           --stage
       # The CRAWL is the expensive, unrepeatable artifact: ten
       # rate-limited minutes that cannot be replayed cheaply. So it
