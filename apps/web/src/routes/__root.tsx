@@ -135,7 +135,14 @@ function RootLayout(): JSX.Element {
   const cursorKey = `${progress.manga ?? ''}:${progress.anime ?? ''}`;
   return (
     <div className='flex min-h-dvh flex-col'>
-      <header className='sticky top-0 z-20 border-b border-line bg-canvas'>
+      {
+        /* The chrome sits in DEEPER water than the page (v11, ADR-111):
+          `bg-abyss` under a hairline, so the bar reads as the surface
+          above the content rather than as one more flat dark panel —
+          the tell of the generic dark-SaaS register VISION.md § 4
+          rejects. No blur, no translucency: one opaque colour. */
+      }
+      <header className='sticky top-0 z-20 border-b border-line bg-abyss'>
         {
           /* Still ONE bar (WEB_APP.md § Identity) — the search field
             joins the wordmark and the two controls rather than adding
@@ -168,7 +175,7 @@ function RootLayout(): JSX.Element {
       <main className='w-full flex-1 pb-16'>
         <Outlet />
       </main>
-      <footer className='border-t border-line'>
+      <footer className='border-t border-line bg-abyss'>
         <div className='mx-auto flex w-full max-w-[1200px] flex-wrap items-baseline gap-x-6 gap-y-2 px-4 py-5 text-xs sm:px-6'>
           <a
             href={GITHUB_URL}

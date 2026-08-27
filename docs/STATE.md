@@ -82,6 +82,57 @@ complet) — le relevé structurel est l'entrée obligée de la refonte de
 schéma, et le runner GitHub a l'egress que la sandbox n'a pas. Le
 rapport est commité sur une branche `audit/`.
 
+**Livré (2026-08-27) — v11 « Deep Water » : la palette re-fondée**
+(ADR-111, supersede ADR-104). Verdict mainteneur sur la v10 :
+« l'ui du site me convient pas du tout. j'ai bien le font du texte mais
+c'est tout » + « analyse les couleurs de One Piece, différents
+supports. Ça ne doit être exactement ces couleurs car trop kitsch mais
+quelques touches par ci par là ». **Archivo reste** ; tout le reste de
+la couleur a changé.
+
+_Le diagnostic_ : « j'aime bien le gold » avait été transformé par
+ADR-104 en contrainte sur TOUTE la palette (dix accords dans la bande
+12°–100°, plus un fond brun chaud, plus un test bloquant). L'or devait
+être un **accent d'identité** ; il est devenu le spectre entier — et
+or/parchemin/trésor est précisément le cliché pirate kitsch, pas le
+langage chromatique de l'œuvre.
+
+_Ce qui remplace_ :
+
+- **Fond = nuit océanique** `oklch(0.165 0.03 250)`. La mer et le ciel
+  sont la constante environnementale de l'anime. Le chrome (barre,
+  pied) descend d'un cran, `--color-abyss`, pour ne pas être un
+  n-ième panneau plat sombre.
+- **Deux accents, parcimonieux** : `--color-gold` ré-écrit en **jaune
+  chapeau de paille** (wordmark, primes, focus, sélection — rien
+  d'autre) et `--color-accent` en **vermillon du gilet de Luffy**
+  (couleur interactive du chrome neutre).
+- **Douze accords qui parcourent la roue une fois**, dans l'ordre du
+  spectre — la logique réelle d'une étagère de tankôbon. Ce n'est pas
+  une roue libre : liste d'ancres fermée, ≤ 40° d'écart interne par
+  accord, et surtout **tous les fonds d'illustration dans la même
+  famille sombre peu chromatique**. C'est ce fond partagé qui empêche
+  la lecture « couleurs aléatoires » qui avait fait échouer la roue
+  libre avant ADR-104.
+- **La garantie de contraste survit et compte davantage** : chaque
+  accent est remonté en clarté jusqu'à ≥ 4.5:1 mesuré contre le
+  canvas (5.6 → 12.4 selon l'accord). Un bleu à la clarté d'un jaune
+  est bien plus sombre.
+- **Les jetons `--art-*` neutres de `styles.css` ne sont plus tapés à
+  la main** : ils SONT l'accord `outremer`, comparés valeur par valeur
+  par un test.
+- **Héros calmé** (0.62 / 0.30 + scrims des deux côtés) : à douze
+  teintes, un fond de héros à l'opacité v8 transformait tout le
+  viewport en cette teinte — le même échec que la palette chaude, dans
+  une autre couleur.
+- **Zéro poids ajouté** : édition de palette + deux opacités. Aucune
+  dépendance, aucun script, aucun calcul couleur au runtime.
+
+Tests : la bande chaude est supprimée, **trois tests structurels** la
+remplacent (ancres fermées, cohérence interne d'un accord, famille de
+fonds) plus un quatrième qui épingle `styles.css` sur un accord
+authentifié. 667 tests verts.
+
 **Livré (2026-08-27) — quatre chantiers UI du wiki public**
 (`apps/web` + `docs/`). Détail complet dans `docs/WEB_APP.md` ;
 la décision tabs/sous-pages est **ADR-110**.

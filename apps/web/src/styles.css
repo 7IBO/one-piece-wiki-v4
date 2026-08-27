@@ -3,26 +3,35 @@
 @import '@fontsource-variable/archivo/wdth.css';
 
 /*
- * Public reader theme — v8 "Grand Line" (see WEB_APP.md § Identity):
- * an official franchise universe database. Immersive, cinematic,
- * branded — the register of a databank, not of a reference work.
+ * Public reader theme — v11 "Deep Water" (see WEB_APP.md § Identity,
+ * ADR-111). An official franchise universe database: immersive,
+ * cinematic, branded — the register of a databank, not of a reference
+ * work, and NOT the parchment-and-treasure pirate cliché.
  *
  * Principles:
+ * - **The ground is the ocean.** One Piece is a story at sea; across
+ *   the anime, the colour spreads and the games the environmental
+ *   constant is deep navy through bright cyan. The canvas is
+ *   therefore a deep oceanic night, sober at rest, and every page sits
+ *   in it. v8's warm brown ground (ADR-104) is gone: it made the whole
+ *   site one colour, and that colour was the kitsch one.
  * - **The artwork is the interface.** Every entity carries a
  *   generated composition (`lib/entity-art.ts`); pages open on it at
  *   full bleed and listings are walls of it. Nothing is a thumbnail
  *   beside text.
  * - **Colour comes from the entity, not from the chrome** (ADR-103).
- *   `lib/entity-tint.ts` hashes an id into one of ten HAND-AUTHORED
- *   warm chords (ADR-104) and emits it as custom properties; the
+ *   `lib/entity-tint.ts` hashes an id into one of TWELVE hand-authored
+ *   chords that walk the wheel once, the way a shelf of tankōbon
+ *   spines does (ADR-111), and emits it as custom properties; the
  *   `.tinted` scope below re-points the UI tokens to it, so every
  *   Tailwind utility inside an entity page is already that entity's
  *   colour. The tokens declared here are the NEUTRAL chrome default —
  *   top bar, footer and listings keep them so navigation never wobbles.
- * - **Gold is the constant identity.** Whatever chord a page is on,
- *   the wordmark, the headline figures (bounty) and the focus ring
- *   stay `--color-gold`. The chord modulates atmosphere and the
- *   interactive accent; it never replaces the brand colour.
+ * - **Two accents, used sparingly.** Straw-hat yellow (`--color-gold`)
+ *   is the identity: wordmark, headline figures, focus ring — and
+ *   nothing else. Luffy-vest vermillion (`--color-accent`) is the
+ *   interactive colour of the untinted chrome. « Quelques touches par
+ *   ci par là » — neither is ever a full-page wash.
  * - Motion is part of the finish: tiles lift and reveal on hover,
  *   always under `prefers-reduced-motion`.
  * - Type: Archivo Variable, expanded and heavy, is the branded
@@ -32,19 +41,27 @@
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
 
-  --color-canvas: oklch(0.179 0.01 68);
-  --color-surface: oklch(0.212 0.011 70);
-  --color-surface-2: oklch(0.252 0.012 72);
-  --color-line: oklch(0.93 0.015 85 / 0.09);
-  --color-line-strong: oklch(0.93 0.015 85 / 0.19);
+  /* The oceanic night. `abyss` is the deeper water the chrome sits in,
+   * so the header and footer read as the surface above the page rather
+   * than as two more panels of the same flat dark. */
+  --color-canvas: oklch(0.165 0.03 250);
+  --color-abyss: oklch(0.128 0.028 252);
+  --color-surface: oklch(0.215 0.032 248);
+  --color-surface-2: oklch(0.262 0.034 246);
+  --color-line: oklch(0.82 0.05 235 / 0.12);
+  --color-line-strong: oklch(0.82 0.05 235 / 0.24);
 
-  --color-fg: oklch(0.938 0.012 85);
-  --color-muted: oklch(0.74 0.014 80);
-  --color-faint: oklch(0.575 0.012 78);
+  --color-fg: oklch(0.965 0.008 240);
+  --color-muted: oklch(0.775 0.018 240);
+  --color-faint: oklch(0.615 0.02 242);
 
-  --color-accent: oklch(0.645 0.165 30);
-  --color-accent-hover: oklch(0.715 0.15 32);
-  --color-gold: oklch(0.8 0.108 88);
+  /* Vermillion — Luffy's vest. The interactive colour of the chrome
+   * (an entity page re-points it to its own chord). 6.0:1 on canvas. */
+  --color-accent: oklch(0.675 0.19 30);
+  --color-accent-hover: oklch(0.745 0.17 34);
+  /* Straw-hat yellow. A sunny yellow, deliberately NOT metallic gold:
+   * the identity mark, never a surface. 12.6:1 on canvas. */
+  --color-gold: oklch(0.86 0.15 93);
 }
 
 /*
@@ -60,25 +77,22 @@
  * Kept out of `@theme` on purpose: they are art paints, not UI colours,
  * and must never become Tailwind utilities.
  *
- * ADR-104: all six live in the SAME warm band as `lib/entity-tint.ts`
- * (roughly 12°–104° in oklch) — gold, brass, copper, burnt orange,
- * vermillion, oxblood. No green, no cyan, no blue, no violet: a single
- * family anchored on the site's gold. Because they cannot separate by
- * hue, they separate by VALUE — the spread below runs 0.43 → 0.885, so
- * whichever triad a composition draws it still has light and dark.
- * These are the NEUTRAL chrome defaults; every entity overrides all
- * nine with its own chord.
+ * ADR-111: these are not a hand-typed eleventh palette. They ARE the
+ * `outremer` chord of `lib/entity-tint.ts` — the deep sea — so an
+ * untinted surface still belongs to the authored set, and a unit test
+ * (`chromeArtTokens()`) fails the build if the two ever drift. Every
+ * entity overrides all nine with its own chord.
  */
 :root {
-  --art-bg: oklch(0.232 0.026 62);
-  --art-ink: oklch(0.142 0.02 48);
-  --art-glow: oklch(0.955 0.03 92);
-  --art-1: oklch(0.66 0.175 40);
-  --art-2: oklch(0.79 0.128 86);
-  --art-3: oklch(0.54 0.155 28);
-  --art-4: oklch(0.885 0.075 95);
-  --art-5: oklch(0.43 0.105 34);
-  --art-6: oklch(0.715 0.128 62);
+  --art-bg: oklch(0.19 0.048 255);
+  --art-ink: oklch(0.112 0.0326 255);
+  --art-glow: oklch(0.958 0.03 261);
+  --art-1: oklch(0.755 0.155 255);
+  --art-2: oklch(0.555 0.155 239);
+  --art-3: oklch(0.905 0.072 269);
+  --art-4: oklch(0.425 0.1209 229);
+  --art-5: oklch(0.645 0.1612 263);
+  --art-6: oklch(0.298 0.0713 222);
 }
 
 html {
@@ -141,11 +155,11 @@ body {
    * its colours.
    */
   .tinted {
-    --color-accent: var(--tint-accent, oklch(0.645 0.165 30));
-    --color-accent-hover: var(--tint-accent-hover, oklch(0.715 0.15 32));
-    --color-line: var(--tint-line, oklch(0.93 0.015 85 / 0.09));
-    --color-line-strong: var(--tint-line-strong, oklch(0.93 0.015 85 / 0.19));
-    --color-surface: var(--tint-surface, oklch(0.212 0.011 70));
+    --color-accent: var(--tint-accent, oklch(0.675 0.19 30));
+    --color-accent-hover: var(--tint-accent-hover, oklch(0.745 0.17 34));
+    --color-line: var(--tint-line, oklch(0.82 0.05 235 / 0.12));
+    --color-line-strong: var(--tint-line-strong, oklch(0.82 0.05 235 / 0.24));
+    --color-surface: var(--tint-surface, oklch(0.215 0.032 248));
   }
 
   /*
@@ -168,21 +182,28 @@ body {
 
   /*
    * Hero scrims. Two gradients, each with one job: the vertical one
-   * dissolves the stage into the canvas at its foot (so there is never
-   * a seam where the artwork stops), the horizontal one only weights
-   * the side the display type sits on. Deliberately gentler than a
-   * full blackout — the artwork is the point, and the type's contrast
-   * is already guaranteed by the tint's lightness search.
+   * dissolves the stage into the canvas at BOTH ends (so there is
+   * never a seam where the artwork stops, and the sticky bar never
+   * sits on a slab of flat chord colour), the horizontal one only
+   * weights the side the display type sits on.
+   *
+   * v11 (ADR-111) deepened both. With a twelve-chord wheel a hero
+   * backdrop at v8's opacity turned the whole viewport into that
+   * chord — the exact failure the warm palette had, in a new hue. The
+   * page must be OCEANIC at rest with the entity's colour glowing
+   * through it; « quelques touches par ci par là », not a wash. The
+   * artwork is still the point, and the type's contrast is guaranteed
+   * by the tint's lightness search either way.
    */
   .hero-scrim-y {
     background: linear-gradient(
       to bottom,
-      color-mix(in oklab, var(--color-canvas) 46%, transparent) 0%,
-      color-mix(in oklab, var(--color-canvas) 22%, transparent) 26%,
-      color-mix(in oklab, var(--color-canvas) 30%, transparent) 50%,
-      color-mix(in oklab, var(--color-canvas) 52%, transparent) 68%,
-      color-mix(in oklab, var(--color-canvas) 78%, transparent) 84%,
-      color-mix(in oklab, var(--color-canvas) 94%, transparent) 94%,
+      var(--color-canvas) 0%,
+      color-mix(in oklab, var(--color-canvas) 74%, transparent) 12%,
+      color-mix(in oklab, var(--color-canvas) 40%, transparent) 34%,
+      color-mix(in oklab, var(--color-canvas) 34%, transparent) 54%,
+      color-mix(in oklab, var(--color-canvas) 60%, transparent) 74%,
+      color-mix(in oklab, var(--color-canvas) 88%, transparent) 90%,
       var(--color-canvas) 100%
     );
   }
@@ -190,9 +211,9 @@ body {
   .hero-scrim-x {
     background: linear-gradient(
       to right,
-      color-mix(in oklab, var(--color-canvas) 88%, transparent) 0%,
-      color-mix(in oklab, var(--color-canvas) 58%, transparent) 38%,
-      color-mix(in oklab, var(--color-canvas) 10%, transparent) 72%,
+      color-mix(in oklab, var(--color-canvas) 90%, transparent) 0%,
+      color-mix(in oklab, var(--color-canvas) 64%, transparent) 40%,
+      color-mix(in oklab, var(--color-canvas) 16%, transparent) 76%,
       transparent 100%
     );
   }
@@ -203,12 +224,13 @@ body {
    * (pure colour bleed), the near one just enough to melt its edges
    * while its masses stay legible. */
   .hero-depth {
-    filter: blur(34px) saturate(1.3);
+    filter: blur(34px) saturate(1.12);
     transform: scale(1.2);
+    opacity: 0.62;
   }
 
   .hero-front {
-    filter: blur(2.5px) saturate(1.08);
+    filter: blur(2.5px) saturate(1.02);
     transform: scale(1.02);
   }
 

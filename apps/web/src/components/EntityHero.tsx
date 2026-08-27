@@ -71,7 +71,7 @@ export function EntityHero(
           entityType={entityType}
           ratio='hero'
           initial={initialOf(name)}
-          className='hero-front absolute inset-0 size-full opacity-45'
+          className='hero-front absolute inset-0 size-full opacity-30'
         />
         <div aria-hidden className='hero-scrim-x absolute inset-0' />
         <div aria-hidden className='hero-scrim-y absolute inset-0' />

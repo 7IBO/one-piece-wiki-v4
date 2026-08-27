@@ -8,6 +8,176 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-111 — The palette is a shelf of tankōbon spines on an oceanic ground; ADR-104's warm band is withdrawn
+
+**Date**: 2026-08-27
+
+**Status**: Accepted
+
+**Supersedes ADR-104** (ten gold-anchored chords confined to a 12°–100°
+warm band). **Keeps ADR-103** (colour is derived per entity) and
+**ADR-102** (generative art) intact: what changes is the palette, not
+the mechanism.
+
+### Context
+
+The maintainer rejected the v10 UI outright: « l'ui du site me convient
+pas du tout. j'ai bien le font du texte mais c'est tout », with the
+brief « Je veux qu'on ai une ui incroyable, moderne mais pas trop
+lourde pour les users. Analyse les couleurs de One Piece, différents
+supports. Ça ne doit être exactement ces couleurs car trop kitsch mais
+quelques touches par ci par là. »
+
+**What went wrong, stated plainly.** He had said « j'aime bien le
+gold ». ADR-104 turned that into a constraint on the WHOLE palette:
+ten chords, all inside 12°–100° oklch, plus a warm-brown canvas, plus
+a unit test that failed the build if any colour left the band. Two
+compounding mistakes:
+
+1. **Gold was meant to be an identity accent and became the entire
+   spectrum.** Every page — chrome, canvas, hero, artwork, thumbnails
+   — was brown/ochre/amber. A wall of pages was one page. The band
+   test, written to stop a random green coming back, is what mechanised
+   the monotony.
+2. **Gold/parchment/treasure IS the kitsch pirate cliché** he warned
+   against in the same breath as « pas trop kitsch ». It is the colour
+   language of a pirate-themed prop, not of the work.
+
+**What One Piece actually looks like, across supports:**
+
+- The **ocean and sky dominate the anime** — deep navy through bright
+  cyan. It is a story at sea; that is the environmental constant, and
+  it is what a resting page should be.
+- **Straw-hat yellow** and **Luffy's vest vermillion** are the iconic
+  accents — a sunny yellow, _not_ a metallic gold.
+- **A shelf of tankōbon spines is a rainbow.** Each volume takes its
+  own saturated hue, and Oda re-pigments every colour spread from
+  scratch (chapter 642 is famously pink and soft, with no black
+  outlines).
+
+That last observation is the useful one: it is the real, in-work
+justification for the per-entity tint mechanic. Not ten arbitrary
+browns — the actual logic of the collection.
+
+### The tension to resolve
+
+An earlier iteration DID map the hash onto the free 360° wheel and was
+rejected: « les couleurs un peu aléatoires vertes et bleu ». ADR-104
+read that as "no green, no blue" and banned the hues. That was the
+wrong reading. **The complaint was arbitrariness, not chroma.** A hash
+landing anywhere on a wheel, with no shared ground and no ordering,
+produces noise whatever the hues are. So the question this ADR has to
+answer is not "which hues are allowed" but "what makes a wide palette
+read as CURATED".
+
+### Options considered
+
+**A. Keep the warm band, change the ground.** A navy canvas under warm
+chords. Cheap, and it fixes the cliché — but the site is still
+monotone, which is half the complaint. **Rejected.**
+
+**B. One accent hue, chrome-driven, per-entity tint dropped.** The
+honest "modern dark UI" answer, and precisely the register VISION.md
+§ 4 rejects as « hyper IA ». It also throws away ADR-103, which is not
+what was criticised. **Rejected.**
+
+**C. Free 360° wheel, re-attempted.** Already failed once. Nothing in
+the brief says the earlier verdict was wrong. **Rejected.**
+
+**D. A curated shelf on a shared oceanic ground.** Twelve chords
+walking the wheel ONCE in spectral order; a deep-sea canvas under all
+of them; every artwork ground constrained to a dark, low-chroma slate
+so the saturation lives in the paints, never in the field.
+**Chosen.**
+
+### Decision
+
+**Ground.** The canvas is `oklch(0.165 0.03 250)` — an oceanic night.
+The chrome (top bar, footer) sits one step deeper,
+`--color-abyss oklch(0.128 0.028 252)`, so the bar reads as the surface
+above the page rather than as one more flat dark panel — the tell of
+the generic dark-SaaS register.
+
+**Two accents, sparingly.** `--color-gold` is re-authored from metallic
+gold to **straw-hat yellow** `oklch(0.86 0.15 93)` (12.6:1 on canvas)
+and stays confined to identity moments: wordmark, headline figures
+(bounty), focus ring, selection. `--color-accent` is **Luffy-vest
+vermillion** `oklch(0.675 0.19 30)` (6.0:1), the interactive colour of
+the untinted chrome. Neither is ever a surface.
+
+**Twelve chords, in shelf order** (`lib/entity-tint.ts`): `paille` 93°
+· `mandarine` 62° · `vermillon` 30° · `grenat` 8° · `rose` 350° (the
+chapter-642 spread) · `prune` 320° · `indigo` 285° · `outremer` 255° ·
+`azur` 228° · `lagon` 198° · `jade` 162° · `feuille` 135°. The walk is
+even — no two anchors closer than 15° or further than 60°.
+
+**What makes it curated rather than random** — three constraints, each
+a test:
+
+1. **One ground family.** Every chord's `--art-bg` obeys `GROUND`:
+   lightness 0.14–0.32, chroma ≤ 0.055. A jade page and a vermillion
+   page are the same deep-water dark with a different tinge. This is
+   the constraint that does the work the warm band was wrongly asked
+   to do.
+2. **Chromatic coherence.** Every colour a chord declares sits within
+   `CHORD_HUE_SPREAD` (40°) of the chord's own hue: a chord is one
+   colour with its shades, never an assortment.
+3. **A closed list.** A chord's hue must be one of `PALETTE_ANCHORS`,
+   and the twelve use each anchor exactly once. The palette is a shelf,
+   not a wheel a hash can land anywhere on.
+
+**Value structure survives from ADR-104** and is now the second axis
+rather than the only one: grounds run 0.152 → 0.272, so `grenat` and
+`indigo` are near-black under a bone highlight while `mandarine` and
+`feuille` are light grounds with dark forms cut into them. Two
+neighbours on the shelf differ as pictures, not only as hues.
+
+**The contrast guarantee is unchanged and matters more.** The accent's
+lightness is still RAISED until its measured WCAG ratio against the
+canvas clears 4.5 (`liftToContrast`, measured on clamped sRGB). Under a
+warm band this was near-decorative; with blues and violets in the set,
+a chord at the same lightness as a yellow is far darker, and the lift
+is what makes twelve hues uniformly readable. Measured: every chord
+lands between 5.6:1 and 12.4:1, bone-on-wash between 13.3:1 and
+17.3:1, accent-on-wash never below 5.6:1.
+
+**The neutral chrome art tokens are no longer hand-typed.** `:root`'s
+nine `--art-*` values ARE the `outremer` chord, and a test compares
+`styles.css` against `chromeArtTokens()` value by value, so an untinted
+surface can never become an unauthored thirteenth colour.
+
+**The hero was calmed.** With a twelve-chord wheel, a backdrop at v8's
+opacity turned the whole viewport into that chord — the same failure as
+the warm palette, in a new hue. The blurred plane drops to 0.62 opacity
+and the crisp one to 0.30, and both scrims now dissolve the stage into
+the canvas at BOTH ends. The page is oceanic at rest with the entity's
+colour glowing through it: « quelques touches par ci par là ».
+
+### Consequences
+
+- Nothing was added to the client: this is a palette edit plus two
+  opacity values. No new dependency, no new script, no runtime colour
+  computation — the tint is derived during SSR from a pure hash and
+  emitted as custom properties. « Moderne mais pas trop lourde » is
+  respected by not spending anything.
+- The mechanism is untouched, so ADR-102/103 hold and the art
+  generator needed no change: it only ever emitted `var(--art-*)`.
+- The old band test is gone and three stronger structural tests
+  replace it, plus a fourth pinning the stylesheet to the chord set.
+  `WARM_BAND` is deleted, not deprecated (beta, zero users — the
+  standing maintainer directive).
+- The registers already rejected in VISION.md § 4 remain rejected: this
+  is not a SaaS dark theme with one accent (there are twelve, derived
+  from content), not print pastiche, not arty minimalism, not flat toy
+  colour.
+- Risk acknowledged: a wide palette is easier to get wrong than a
+  narrow one. The three invariants are the fence, and the honest test
+  is the wall of pages, which is why `art:preview` and a nine-page
+  contact sheet are part of the verification for any future palette
+  change.
+
+---
+
 ## ADR-110 — Entity sections are SUB-PAGES at real URLs, not client-side tabs
 
 **Date**: 2026-08-27
@@ -830,6 +1000,15 @@ maintainer's approval.
 ## ADR-104 — The per-entity tint is a curated gold-anchored palette, not a hue wheel
 
 **Date**: 2026-08-09
+
+**Status**: **Superseded by ADR-111** (2026-08-27). The curation was
+right; the WARM BAND was the mistake. Confining every chord to 12°–100°
+turned an identity accent into the whole spectrum — every page of the
+site brown/ochre/amber — and gold/parchment is the kitsch pirate
+cliché rather than the colour language of the work. ADR-111 keeps the
+"curated, not a wheel" principle and rebuilds it on a shared oceanic
+ground with twelve chords walking the wheel once. Read it before
+touching the palette.
 
 **Context**: ADR-103 derived each entity's colour as `hash % 360` — the
 whole hue wheel. Mechanically it worked (deterministic, provably
