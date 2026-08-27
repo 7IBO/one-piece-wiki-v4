@@ -41,8 +41,8 @@ export const CREW_HANDLED_FIELDS: readonly string[] = [
   'is_yonko',
 ];
 
-/** Current crew schema_version — keep in sync with the type. */
-export const CREW_SCHEMA_VERSION = 5;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const CREW_SCHEMA_VERSION = 1;
 
 export function mapCrew(
   pair: LocalizedRecordPair,

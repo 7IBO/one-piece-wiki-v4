@@ -6,8 +6,14 @@
  * The model is migrate-forward (ADR-003/029): there is one current schema and
  * data is rewritten to match it. An entity's `schema_version` records which
  * shape its data is at — this report surfaces who is behind, so you can see at
- * a glance what a pending migration would touch (and confirm a reset before a
- * release). Entities AHEAD of their type are a hard error (see `checkEntityVersions`).
+ * a glance what a pending migration would touch. Entities AHEAD of their type
+ * are a hard error (see `checkEntityVersions`).
+ *
+ * Since the v1 reset (ADR-115) every version is 1, so this report is expected
+ * to read `0 behind` throughout the pre-launch phase. That is the point: it is
+ * now a TRIPWIRE rather than a running tally — any non-1 version it surfaces
+ * means an importer constant was missed or a pre-reset crawl landed after the
+ * reset, both of which are worth knowing.
  */
 import { loadEntities } from '../entity-loader.ts';
 import { loadSchemas } from '../loader.ts';

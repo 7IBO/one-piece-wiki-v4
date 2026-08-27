@@ -36,8 +36,8 @@ export const CHAPTER_HANDLED_FIELDS: readonly string[] = [
   'pages',
 ];
 
-/** Current manga-chapter schema_version — keep in sync with the type. */
-export const MANGA_CHAPTER_SCHEMA_VERSION = 9;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const MANGA_CHAPTER_SCHEMA_VERSION = 1;
 
 export function mapChapter(
   pair: LocalizedRecordPair,

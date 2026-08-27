@@ -82,8 +82,8 @@ export const ARC_IGNORED_PARAMS: readonly string[] = [
   ...IMAGE_PARAMS,
 ];
 
-/** Current arc schema_version — keep in sync with the type. */
-export const ARC_SCHEMA_VERSION = 5;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const ARC_SCHEMA_VERSION = 1;
 
 /**
  * Fandom's `type` shorthand → `arc-subtypes` value id. The survey

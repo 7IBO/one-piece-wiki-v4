@@ -1,7 +1,7 @@
 {
   "id": "volume:1",
   "type": "volume",
-  "schema_version": 2,
+  "schema_version": 1,
   "slug": "volume-1",
   "properties": {
     "number": {

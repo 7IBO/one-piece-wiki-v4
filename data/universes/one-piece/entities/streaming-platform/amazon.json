@@ -1,7 +1,7 @@
 {
   "id": "streaming-platform:amazon",
   "type": "streaming-platform",
-  "schema_version": 3,
+  "schema_version": 1,
   "slug": "amazon",
   "canonical_name_key": "streaming-platform.amazon.name",
   "properties": {

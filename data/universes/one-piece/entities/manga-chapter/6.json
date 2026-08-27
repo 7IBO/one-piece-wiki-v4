@@ -1,7 +1,7 @@
 {
   "id": "manga-chapter:6",
   "type": "manga-chapter",
-  "schema_version": 6,
+  "schema_version": 1,
   "slug": "chapter-6",
   "properties": {
     "number": {

@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
   "id": "appearance-types",
-  "schema_version": 2,
+  "schema_version": 1,
   "values": {
     "full": { "labels": { "en": "Full appearance", "fr": "Apparition complète" } },
     "silhouette": { "labels": { "en": "Silhouette", "fr": "Silhouette" } },

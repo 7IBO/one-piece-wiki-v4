@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "databook",
-  "schema_version": 3,
+  "schema_version": 1,
   "labels": { "en": "Databook", "fr": "Databook" },
   "url_segment": "databooks",
   "properties": [

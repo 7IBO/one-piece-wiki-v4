@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "location",
-  "schema_version": 4,
+  "schema_version": 1,
   "labels": {
     "en": "Location",
     "fr": "Lieu"

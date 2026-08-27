@@ -76,8 +76,8 @@ export const WEAPON_IGNORED_PARAMS: readonly string[] = [
   ...IMAGE_PARAMS,
 ];
 
-/** Current weapon schema_version — keep in sync with the type. */
-export const WEAPON_SCHEMA_VERSION = 3;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const WEAPON_SCHEMA_VERSION = 1;
 
 export function mapWeapon(page: ParsedPage, ctx: BoxMapContext = {}): WeaponMapResult | null {
   const box = findTemplate(page.wikitext, ...WEAPON_INFOBOX_NAMES);

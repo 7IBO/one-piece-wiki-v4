@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
   "id": "crew-roles",
-  "schema_version": 2,
+  "schema_version": 1,
   "values": {
     "captain": { "labels": { "en": "Captain", "fr": "Capitaine" } },
     "leader": { "labels": { "en": "Leader", "fr": "Chef" } },

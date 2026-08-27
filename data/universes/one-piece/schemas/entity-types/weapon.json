@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "weapon",
-  "schema_version": 3,
+  "schema_version": 1,
   "labels": { "en": "Weapon", "fr": "Arme" },
   "url_segment": "weapons",
   "properties": [

@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "film",
-  "schema_version": 5,
+  "schema_version": 1,
   "labels": { "en": "Film", "fr": "Film" },
   "url_segment": "films",
   "properties": [

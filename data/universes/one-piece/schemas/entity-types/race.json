@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "race",
-  "schema_version": 3,
+  "schema_version": 1,
   "labels": {
     "en": "Race",
     "fr": "Race"

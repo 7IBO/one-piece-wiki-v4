@@ -83,8 +83,8 @@ export const CHARACTER_HANDLED_PARAMS: readonly string[] = [
   'Funi eva',
 ];
 
-/** Current character schema_version — keep in sync with the type. */
-export const CHARACTER_SCHEMA_VERSION = 5;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const CHARACTER_SCHEMA_VERSION = 1;
 
 /**
  * Optional resolution context. Both members come from COMMITTED

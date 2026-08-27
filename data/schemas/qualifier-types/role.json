@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
   "id": "role",
-  "schema_version": 3,
+  "schema_version": 1,
   "kind": "common",
   "order": 50,
   "labels": {

@@ -1,7 +1,7 @@
 {
   "$schema": "../../../packages/schema-engine/meta-schemas/relation-type.schema.json",
   "id": "available-on",
-  "schema_version": 3,
+  "schema_version": 1,
   "labels": {
     "en": {
       "active": "Available on",

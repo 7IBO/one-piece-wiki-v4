@@ -8,6 +8,84 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-115 — Reset de tous les `schema_version` à 1
+
+**Date**: 2026-08-27
+
+**Contexte**. ADR-059 avait posé le modèle _migrate-forward_ et annoncé,
+en toutes lettres, ce reset comme prévu et sain : « the planned v1 reset
+of all `schema_version` to 1 […] pre-v1 is the volatile phase, so the
+dev-time version churn is discarded and real migration history starts at
+launch ». Cette ADR ne décide donc rien de neuf — elle exécute une
+décision déjà consignée, et enregistre ce que l'exécution a appris.
+
+Le déclencheur est un constat du mainteneur : rien ne dépend de la
+valeur. Vérification faite, c'est exact, et le rapport `schema:versions`
+le montrait déjà crûment :
+
+```
+manga-chapter   type v9   v1×10  v6×24   ⚠ 34 behind
+character       type v8   v1×10          ⚠ 10 behind
+38 entity types, 61 entities; 54 behind their type's current version.
+```
+
+**54 entités sur 61 étaient « en retard ».** Le champ n'a jamais
+déclenché une seule migration : il n'enregistrait que le fait que
+personne n'avait jamais migré, parce que tous les changements de schéma
+avaient été additifs. Un champ qui ne dit rien d'autre que « rien ne
+s'est passé » est du bruit, et pire, un bruit qui se lit comme une
+alerte.
+
+**Ce dont on a vérifié l'indépendance** — aucun consommateur ne branche
+sur la valeur :
+
+| Consommateur                            | Dépendance réelle                                                        |
+| --------------------------------------- | ------------------------------------------------------------------------ |
+| Zod généré (×38)                        | `z.number().int().positive()` — 1 passe                                  |
+| `validate`                              | valide contre le schéma **courant**, quelle que soit la version déclarée |
+| `check:compat` / `schema-snapshot.json` | **zéro occurrence** : le contrat de compat ignore le champ               |
+| `db-builder` → SQLite                   | colonne stockée, jamais lue pour brancher                                |
+| `sdk/client.ts`                         | exposée dans `RecordRecord`, cosmétique                                  |
+| `EntityForm`                            | recopie l'enveloppe telle quelle                                         |
+| `coherence.ts`                          | `ENTITY_SCHEMA_VERSION_AHEAD` : entité ≤ type                            |
+
+Deux confirmations empiriques valent mieux que la lecture du code :
+après le reset, `bun run schema:generate` produit un diff **vide** (la
+version n'entre jamais comme littéral dans le Zod généré) et
+`bun run check:compat` passe **sans régénérer le snapshot**.
+
+**Décision**. Tous les `schema_version` passent à 1 :
+
+- 372 occurrences dans `data/` — `data/schemas/**` et
+  `data/universes/one-piece/schemas/**` (schémas propres à l'univers,
+  facilement oubliés) et `data/universes/**/entities/**` ;
+- 21 constantes `*_SCHEMA_VERSION` dans `packages/importers/**`.
+
+**Le champ est conservé, pas supprimé.** C'est le choix du mainteneur, et
+il a une raison : `ENTITY_SCHEMA_VERSION_AHEAD` et `schema:versions`
+restent en place et redeviennent utiles le jour où de vraies migrations
+démarreront après le lancement. L'alternative — supprimer le champ — est
+plus propre sur le papier (un champ figé à 1 pour toujours ment lui
+aussi) mais jetterait l'outillage de migration avec.
+
+**Conséquences**.
+
+- `schema:versions` rapporte désormais `0 behind` sur 61 entités.
+- Aucune migration de données : la forme des entités est inchangée, seul
+  l'entier d'enveloppe bouge.
+- Les fixtures de test qui portent une version ≠ 1
+  (`onepiece-api-import.test.ts`, `emit.test.ts`) sont **laissées
+  telles quelles** : elles n'assertent pas la valeur, ce sont des
+  entrées synthétiques pour un test de layout de fichiers. Le reset
+  porte sur le corpus et le catalogue, pas sur l'interdiction d'un
+  entier dans une fixture.
+- **Un import en vol réintroduira d'anciennes versions.** Tout crawl
+  lancé avant ce reset porte les constantes d'avant ; sa PR, si elle est
+  mergée après, réinjecte des entités ≠ 1. Le reset est idempotent —
+  le rejouer suffit.
+
+---
+
 ## ADR-114 — `absent_properties` : distinguer « pas encore renseigné » de « n'existe pas dans l'œuvre »
 
 **Date**: 2026-08-27

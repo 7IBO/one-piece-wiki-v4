@@ -1,7 +1,7 @@
 {
   "$schema": "../../../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
   "id": "ship-types",
-  "schema_version": 2,
+  "schema_version": 1,
   "values": {
     "caravel": {
       "labels": {

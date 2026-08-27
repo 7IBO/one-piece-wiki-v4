@@ -82,8 +82,8 @@ export const ORGANIZATION_IGNORED_PARAMS: readonly string[] = [
   ...IMAGE_PARAMS,
 ];
 
-/** Current organization schema_version — keep in sync with the type. */
-export const ORGANIZATION_SCHEMA_VERSION = 4;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const ORGANIZATION_SCHEMA_VERSION = 1;
 
 export function mapOrganization(
   page: ParsedPage,

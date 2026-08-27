@@ -81,8 +81,8 @@ export const SHIP_IGNORED_PARAMS: readonly string[] = [
   'status',
 ];
 
-/** Current ship schema_version — keep in sync with the type. */
-export const SHIP_SCHEMA_VERSION = 4;
+/** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
+export const SHIP_SCHEMA_VERSION = 1;
 
 export function mapShip(page: ParsedPage, ctx: BoxMapContext = {}): ShipMapResult | null {
   const box = findTemplate(page.wikitext, ...SHIP_INFOBOX_NAMES);
