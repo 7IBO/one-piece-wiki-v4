@@ -3,8 +3,13 @@ name: CI
 on:
   push:
     branches: [main]
+  # No `branches:` filter on pull_request — CI must run on EVERY pull
+  # request, not only those targeting main. With the filter, a stacked
+  # PR (B based on A, C based on B) and an import PR based on a feature
+  # branch got no lint/typecheck/validate/test at all: they showed a
+  # green tick built entirely from advisory checks. A PR that cannot
+  # fail is not a reviewed PR.
   pull_request:
-    branches: [main]
 
 permissions:
   contents: read

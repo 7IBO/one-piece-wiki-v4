@@ -941,625 +941,1249 @@
       "value_type": "date",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "age": {
       "value_type": "number",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "album_kind": {
       "value_type": "enum",
       "enum_ref": "album-kinds",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "alt_text_key": {
       "value_type": "i18n_key",
       "enum_ref": null,
       "historical": false,
-      "localizable": true
+      "localizable": true,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "anime_original": {
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "answer_key": {
       "value_type": "i18n_key",
       "enum_ref": null,
       "historical": false,
-      "localizable": true
+      "localizable": true,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "arc_number": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 1,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "arc_subtype": {
       "value_type": "enum",
       "enum_ref": "arc-subtypes",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "asker_pen_name": {
       "value_type": "string",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "attribution": {
       "value_type": "string",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "average_height": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "awakened": {
       "value_type": "boolean",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "awakening_outcome": {
       "value_type": "enum",
       "enum_ref": "awakening-outcomes",
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "birthday": {
       "value_type": "string",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": "^[0-9]{2}-[0-9]{2}$"
+      }
     },
     "blood_type": {
       "value_type": "enum",
       "enum_ref": "blood-types",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "bounty": {
       "value_type": "number",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 100000,
+        "pattern": null
+      }
     },
     "built_at": {
       "value_type": "source_ref",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "canon_scope": {
       "value_type": "enum",
       "enum_ref": "canon-scopes",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "caption_key": {
       "value_type": "i18n_key",
       "enum_ref": null,
       "historical": true,
-      "localizable": true
+      "localizable": true,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "card_kind": {
       "value_type": "enum",
       "enum_ref": "card-kinds",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "card_number": {
       "value_type": "string",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "catalog_number": {
       "value_type": "string",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "classification": {
       "value_type": "enum",
       "enum_ref": "devil-fruit-classifications",
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "climate": {
       "value_type": "i18n_key",
       "enum_ref": null,
       "historical": false,
-      "localizable": true
+      "localizable": true,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "company_kind": {
       "value_type": "enum",
       "enum_ref": "company-roles",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "concept_subtype": {
       "value_type": "enum",
       "enum_ref": "concept-subtypes",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "crew_capacity": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "danger_classification": {
       "value_type": "enum",
       "enum_ref": "danger-classifications",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "databook_subtype": {
       "value_type": "enum",
       "enum_ref": "databook-subtypes",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "description_key": {
       "value_type": "i18n_key",
       "enum_ref": null,
       "historical": true,
-      "localizable": true
+      "localizable": true,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "destroyed_at": {
       "value_type": "source_ref",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "disbanded_at": {
       "value_type": "source_ref",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "disc_count": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 1,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "document_kind": {
       "value_type": "enum",
       "enum_ref": "document-kinds",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "epithet": {
       "value_type": "i18n_key",
       "enum_ref": null,
       "historical": true,
-      "localizable": true
+      "localizable": true,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "event_subtype": {
       "value_type": "enum",
       "enum_ref": "event-subtypes",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "figurehead": {
       "value_type": "string",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "film_number": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 1,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "first_source": {
       "value_type": "source_ref",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "format": {
       "value_type": "enum",
       "enum_ref": "image-formats",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "founded_at": {
       "value_type": "source_ref",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "game_genre": {
       "value_type": "enum",
       "enum_ref": "game-genres",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "game_platforms": {
       "value_type": "multi_enum",
       "enum_ref": "game-platforms",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "gender": {
       "value_type": "enum",
       "enum_ref": "genders",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "haki_types": {
       "value_type": "multi_enum",
       "enum_ref": "haki-types",
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "height": {
       "value_type": "number",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "homepage_url": {
       "value_type": "string",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "image_height": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 1,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "image_width": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 1,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "is_black_blade": {
       "value_type": "boolean",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "is_color_spread": {
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "is_cursed": {
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "is_public": {
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "is_secret": {
       "value_type": "boolean",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "last_source": {
       "value_type": "source_ref",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "license": {
       "value_type": "enum",
       "enum_ref": "image-licenses",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "lifespan": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "link_template": {
       "value_type": "string",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "location_status": {
       "value_type": "enum",
       "enum_ref": "location-statuses",
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "location_subtype": {
       "value_type": "enum",
       "enum_ref": "location-subtypes",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "log_pose_time": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "material_subtype": {
       "value_type": "enum",
       "enum_ref": "material-subtypes",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "merch_type": {
       "value_type": "enum",
       "enum_ref": "merch-types",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "name": {
       "value_type": "i18n_key",
       "enum_ref": null,
       "historical": true,
-      "localizable": true
+      "localizable": true,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "narrative_key": {
       "value_type": "i18n_key",
       "enum_ref": null,
       "historical": true,
-      "localizable": true
+      "localizable": true,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "nullifies_devil_fruits": {
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "number": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "occupation": {
       "value_type": "multi_enum",
       "enum_ref": "occupations",
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "oda_supervised": {
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "organization_type": {
       "value_type": "enum",
       "enum_ref": "org-types",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "page": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 1,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "page_count": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 1,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "performance_kind": {
       "value_type": "enum",
       "enum_ref": "performance-kinds",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "person_roles": {
       "value_type": "multi_enum",
       "enum_ref": "person-roles",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "platform_kind": {
       "value_type": "enum",
       "enum_ref": "platform-kinds",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "population": {
       "value_type": "number",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "publications": {
       "value_type": "date",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "question_key": {
       "value_type": "i18n_key",
       "enum_ref": null,
       "historical": false,
-      "localizable": true
+      "localizable": true,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "record_label": {
       "value_type": "string",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "reference_kind": {
       "value_type": "enum",
       "enum_ref": "reference-kinds",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "region": {
       "value_type": "enum",
       "enum_ref": "location-regions",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "released_at": {
       "value_type": "date",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "requires_haki": {
       "value_type": "multi_enum",
       "enum_ref": "haki-types",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "runtime_minutes": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "saga_number": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 1,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "season_number": {
       "value_type": "number",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 1,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "ship_type": {
       "value_type": "enum",
       "enum_ref": "ship-types",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "single_holder": {
       "value_type": "boolean",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "slave_price": {
       "value_type": "number",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 1000,
+        "pattern": null
+      }
     },
     "source_origin": {
       "value_type": "enum",
       "enum_ref": "source-origins",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "special_kind": {
       "value_type": "enum",
       "enum_ref": "special-kinds",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "spoiler_since": {
       "value_type": "source_ref",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "status": {
       "value_type": "enum",
       "enum_ref": "character-statuses",
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "system_status": {
       "value_type": "enum",
       "enum_ref": "system-statuses",
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "technique_type": {
       "value_type": "enum",
       "enum_ref": "technique-types",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "title_key": {
       "value_type": "i18n_key",
       "enum_ref": null,
       "historical": false,
-      "localizable": true
+      "localizable": true,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "track_length": {
       "value_type": "string",
       "enum_ref": null,
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "transformation_kind": {
       "value_type": "enum",
       "enum_ref": "transformation-kinds",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "url": {
       "value_type": "string",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "weakness": {
       "value_type": "multi_enum",
       "enum_ref": "devil-fruit-drawback-kinds",
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "weapon_grade": {
       "value_type": "enum",
       "enum_ref": "weapon-grades",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "weapon_type": {
       "value_type": "enum",
       "enum_ref": "weapon-types",
       "historical": false,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     },
     "weight": {
       "value_type": "number",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": 0,
+        "max": null,
+        "step": 1,
+        "pattern": null
+      }
     },
     "zoan_model": {
       "value_type": "string",
       "enum_ref": null,
       "historical": true,
-      "localizable": false
+      "localizable": false,
+      "constraints": {
+        "min": null,
+        "max": null,
+        "step": null,
+        "pattern": null
+      }
     }
   },
   "relationTypes": {

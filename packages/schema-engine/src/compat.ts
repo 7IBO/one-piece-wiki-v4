@@ -21,6 +21,16 @@ export type SchemaContract = {
     readonly enum_ref: string | null;
     readonly historical: boolean;
     readonly localizable: boolean;
+    /**
+     * Numeric/string bounds (ADR-117). `enum_ref` is deliberately NOT
+     * repeated here — it has its own contract field above.
+     */
+    readonly constraints?: {
+      readonly min: number | null;
+      readonly max: number | null;
+      readonly step: number | null;
+      readonly pattern: string | null;
+    };
   }>;
   readonly relationTypes: Record<string, {
     readonly valid_from_types: readonly string[];
@@ -54,11 +64,18 @@ export function buildContract(catalogue: ValidatedCatalogue): SchemaContract {
 
   const propertyTypes: Record<string, SchemaContract['propertyTypes'][string]> = {};
   for (const [id, pt] of byKey(catalogue.propertyTypes)) {
+    const c = pt.value_constraints;
     propertyTypes[id] = {
       value_type: pt.value_type,
-      enum_ref: pt.value_constraints?.enum_ref ?? null,
+      enum_ref: c?.enum_ref ?? null,
       historical: pt.historical === true,
       localizable: pt.localizable === true,
+      constraints: {
+        min: c?.min ?? null,
+        max: c?.max ?? null,
+        step: c?.step ?? null,
+        pattern: c?.pattern ?? null,
+      },
     };
   }
 
@@ -163,6 +180,7 @@ export function diffContract(prev: SchemaContract, next: SchemaContract): Compat
     if (pp.localizable !== np.localizable) {
       add('breaking', `property-type ${id}: localizable ${pp.localizable} -> ${np.localizable}`);
     }
+    diffConstraints(id, pp.constraints, np.constraints ?? EMPTY_BOUNDS, add);
   }
 
   // Relation types
@@ -235,4 +253,90 @@ export function diffContract(prev: SchemaContract, next: SchemaContract): Compat
   }
 
   return out;
+}
+
+/**
+ * Classify a change to a property's numeric/string bounds (ADR-117).
+ *
+ * The rule is the one `check:compat` already applies everywhere else,
+ * read through the lens of "what data used to validate and no longer
+ * does": **tightening is breaking, widening is additive**. Raising a
+ * `min` can invalidate rows that were legal yesterday; lowering it
+ * cannot. Removing a bound only ever admits more.
+ *
+ * `step` and `pattern` get the conservative treatment. A step is only
+ * a proven widening when the new one divides the old (step 2 -> 1
+ * admits every value step 2 did, and more); anything else is reported
+ * breaking rather than guessed at. For `pattern` there is no cheap
+ * regex-subsumption test at all, so any change to a live pattern is
+ * breaking — only dropping it outright is additive.
+ *
+ * This exists because the bound used to sit OUTSIDE the lockfile: the
+ * snapshot recorded `value_type` but never `value_constraints`, so
+ * `number`'s min could go 1 -> 0 and CI would report "matches the
+ * snapshot". The type was locked; the bound was not.
+ */
+const EMPTY_BOUNDS: Bounds = { min: null, max: null, step: null, pattern: null };
+
+type Bounds = {
+  min: number | null;
+  max: number | null;
+  step: number | null;
+  pattern: string | null;
+};
+
+function diffConstraints(
+  id: string,
+  prev: Bounds | undefined,
+  next: Bounds,
+  add: (kind: 'breaking' | 'additive', message: string) => void,
+): void {
+  // A snapshot written before ADR-117 carries no `constraints` at all.
+  // There is nothing to compare against, and inventing "none -> 0" for
+  // every bounded property would report the migration itself as a wall
+  // of breaking changes. Stay silent; `compat:snapshot` establishes the
+  // baseline, and the very next run compares for real.
+  if (prev === undefined) return;
+
+  const label = (v: number | string | null): string => v === null ? 'none' : String(v);
+
+  // min: higher is stricter.
+  if (prev.min !== next.min) {
+    const kind = next.min === null
+      ? 'additive'
+      : prev.min === null
+      ? 'breaking'
+      : next.min > prev.min
+      ? 'breaking'
+      : 'additive';
+    add(kind, `property-type ${id}: min ${label(prev.min)} -> ${label(next.min)}`);
+  }
+
+  // max: lower is stricter.
+  if (prev.max !== next.max) {
+    const kind = next.max === null
+      ? 'additive'
+      : prev.max === null
+      ? 'breaking'
+      : next.max < prev.max
+      ? 'breaking'
+      : 'additive';
+    add(kind, `property-type ${id}: max ${label(prev.max)} -> ${label(next.max)}`);
+  }
+
+  // step: only a divisor of the old step is a proven widening.
+  if (prev.step !== next.step) {
+    const kind = next.step === null
+      ? 'additive'
+      : prev.step !== null && next.step < prev.step && prev.step % next.step === 0
+      ? 'additive'
+      : 'breaking';
+    add(kind, `property-type ${id}: step ${label(prev.step)} -> ${label(next.step)}`);
+  }
+
+  // pattern: no subsumption test, so only removal is provably additive.
+  if (prev.pattern !== next.pattern) {
+    const kind = next.pattern === null ? 'additive' : 'breaking';
+    add(kind, `property-type ${id}: pattern ${label(prev.pattern)} -> ${label(next.pattern)}`);
+  }
 }
