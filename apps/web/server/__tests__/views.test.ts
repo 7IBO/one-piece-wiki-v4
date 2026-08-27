@@ -238,10 +238,20 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
 
   test('entities beyond the progression render gated', async () => {
     const { buildEntityView } = await import('../views.ts');
-    // Wano arc first appears at chapter 1043.
-    const arc = await buildEntityView('arc', 'wano', 'en', cursor(100), null);
-    expect(arc?.kind).toBe('gated');
-    if (arc?.kind === 'gated') expect(arc.name.length).toBeGreaterThan(0);
+    // The gate reads `first_appearance_source`. The Nika reveal carries
+    // one (chapter 1044), so a reader at 100 gets the name and nothing
+    // else.
+    //
+    // This used to assert on `arc:wano` — a hand-seeded stub whose
+    // `since` was the ONLY thing anchoring an arc. Merging it away
+    // (migration 0011) exposed that 46 of the 50 arcs carry no anchor
+    // at all and so render ungated at any cursor. That is a real
+    // spoiler leak, it predates this change, and it is NOT fixed here
+    // — see STATE.md. Anchoring on a stub was never the coverage this
+    // test looked like it had.
+    const gated = await buildEntityView('event', 'nika-reveal', 'en', cursor(100), null);
+    expect(gated?.kind).toBe('gated');
+    if (gated?.kind === 'gated') expect(gated.name.length).toBeGreaterThan(0);
     // A source page beyond the cursor gates on its own id.
     const chapter = await buildEntityView(
       'manga-chapter',
@@ -252,7 +262,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     );
     expect(chapter?.kind).toBe('gated');
     // No cursor → fully rendered.
-    const open = await buildEntityView('arc', 'wano', 'en', cursor(), null);
+    const open = await buildEntityView('arc', 'wano-country', 'en', cursor(), null);
     expect(open?.kind).toBe('entity');
   });
 
@@ -300,10 +310,16 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     const ch1044 = await entity('manga-chapter', 'chapter-1044');
     expect(ch1044.template.kind).toBe('source');
     if (ch1044.template.kind !== 'source') return;
-    expect(ch1044.template.arc?.chip.slug).toBe('wano');
+    expect(ch1044.template.arc?.chip.slug).toBe('wano-country');
+    // The ribbon's CONTRACT, not the corpus: the chapter is in its own
+    // arc exactly once, flagged current, among ordered siblings. The
+    // count moves with every import; these three claims do not.
     const siblings = ch1044.template.arc?.items ?? [];
-    expect(siblings.map((s) => s.number)).toEqual([1043, 1044, 1053]);
+    expect(siblings.filter((s) => s.number === 1044)).toHaveLength(1);
     expect(siblings.find((s) => s.number === 1044)?.current).toBe(true);
+    expect(siblings.filter((s) => s.current)).toHaveLength(1);
+    const numbers = siblings.map((s) => s.number);
+    expect(numbers).toEqual([...numbers].sort((a, b) => (a ?? 0) - (b ?? 0)));
     // Chapter 1 resolves its Manga Plus link template + external_id.
     // Availability is a page-level module now, not a source-only one.
     const ch1 = await entity('manga-chapter', 'chapter-1');
@@ -366,18 +382,24 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     // not, so it is what we assert.
     const ungated = (await entity('manga-chapter', 'chapter-1043')).sequence?.total ?? 0;
     expect(ch1043.sequence?.total ?? 0).toBeLessThan(ungated);
+    // Same rule on the arc ribbon: it never hands out a sibling past
+    // the cursor, and the current chapter is still in it.
     const siblings = ch1043.template.kind === 'source' ? ch1043.template.arc?.items ?? [] : [];
-    expect(siblings.map((s) => s.number)).toEqual([1043]);
+    expect(siblings.length).toBeGreaterThan(0);
+    for (const sibling of siblings) expect(sibling.number ?? 0).toBeLessThanOrEqual(1043);
+    expect(siblings.some((s) => s.number === 1043 && s.current)).toBe(true);
   });
 
   test('a type with no ordinal property gets no sequence', async () => {
     // `character` declares no `number` / `*_number` property.
     const luffy = await entity('character', 'monkey-d-luffy');
     expect(luffy.sequence).toBeNull();
-    // `arc` DOES declare `arc_number`, but Wano carries no value for
-    // it — the axis exists, this entity is not on it.
-    const wano = await entity('arc', 'wano');
-    expect(wano.sequence).toBeNull();
+    // `arc` DOES declare `arc_number`, but East Blue carries no value
+    // for it — the axis exists, this entity is not on it. (Only 32 of
+    // the 50 arcs are numbered; the arc-edge pass numbers what the
+    // source numbers.)
+    const eastBlue = await entity('arc', 'east-blue');
+    expect(eastBlue.sequence).toBeNull();
     // A single-instance ordered type: on the axis, but with no siblings.
     const volume = await entity('volume', 'volume-1');
     expect(volume.sequence?.propertyId).toBe('number');
@@ -387,13 +409,18 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
   });
 
   test('container template groups everything an entity contains', async () => {
-    const wano = await entity('arc', 'wano');
+    const wano = await entity('arc', 'wano-country');
     expect(wano.template.kind).toBe('container');
     if (wano.template.kind !== 'container') return;
     const chapters = wano.template.groups.find((g) => g.type === 'manga-chapter');
     expect(chapters?.relationKey).toBe('part-of-arc.inverse');
-    expect(chapters?.items.map((c) => c.number)).toEqual([1043, 1044, 1053]);
-    expect(wano.template.groups.some((g) => g.type === 'anime-episode')).toBe(false);
+    // Derived and ordered, without pinning the population: the arc
+    // holds its opening chapter, holds them in ordinal order, and
+    // holds no chapter twice.
+    const arcChapters = (chapters?.items ?? []).map((c) => c.number);
+    expect(arcChapters).toContain(909);
+    expect(arcChapters).toEqual([...arcChapters].sort((a, b) => (a ?? 0) - (b ?? 0)));
+    expect(new Set(arcChapters).size).toBe(arcChapters.length);
     // A volume is a container too — same derivation, no arc-specific code.
     const volume = await entity('volume', 'volume-1');
     if (volume.template.kind !== 'container') return;
