@@ -3,14 +3,38 @@
   "id": "bears-title",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Bears title", "inverse": "Borne by" },
-    "fr": { "active": "Porte le titre", "inverse": "Porté par" }
+    "en": {
+      "active": "Bears title",
+      "inverse": "Borne by"
+    },
+    "fr": {
+      "active": "Porte le titre",
+      "inverse": "Porté par"
+    }
   },
-  "valid_from_types": ["character"],
-  "valid_to_types": ["title"],
+  "valid_from_types": [
+    "character"
+  ],
+  "valid_to_types": [
+    "title"
+  ],
   "qualifiers": [
-    { "id": "since", "value_type": "source_ref", "required": false },
-    { "id": "until", "value_type": "source_ref", "required": false },
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    },
+    {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    },
+    {
+      "id": "until",
+      "value_type": "source_ref",
+      "required": false
+    },
     {
       "id": "during_period",
       "value_type": "enum",

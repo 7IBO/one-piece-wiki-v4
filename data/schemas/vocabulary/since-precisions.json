@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "since-precisions",
+  "schema_version": 1,
+  "values": {
+    "exact": {
+      "labels": { "en": "Exact", "fr": "Exacte" },
+      "descriptions": {
+        "en": "The value starts applying at this source. This is the default when the qualifier is absent.",
+        "fr": "La valeur commence à s'appliquer à cette source. C'est la valeur par défaut en l'absence du qualificateur."
+      }
+    },
+    "at_latest": {
+      "labels": { "en": "At the latest", "fr": "Au plus tard" },
+      "descriptions": {
+        "en": "The value ALREADY applied at this source; when it started is not shown in the work. Use this rather than asserting a start that the work never depicts.",
+        "fr": "La valeur s'appliquait DÉJÀ à cette source ; le moment où elle a commencé n'est pas montré dans l'œuvre. À utiliser plutôt que d'affirmer un début que l'œuvre ne montre jamais."
+      }
+    }
+  }
+}

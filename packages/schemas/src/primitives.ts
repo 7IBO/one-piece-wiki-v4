@@ -102,6 +102,21 @@ export const EpistemicStatus = z.enum([
 export type EpistemicStatus = z.infer<typeof EpistemicStatus>;
 
 /**
+ * ADR-113 — comment lire `since`.
+ *
+ * `since` affirme « à partir de cette source ». Quand l'œuvre montre
+ * seulement qu'une valeur s'appliquait DÉJÀ à un moment donné — un
+ * personnage présent à bord sans que son arrivée soit jamais dessinée —
+ * écrire `since` seul affirme une date d'arrivée qui n'existe pas.
+ * `at_latest` dit « au plus tard ici, début inconnu ».
+ *
+ * Absent = `exact`, ce qui préserve la lecture de tout le corpus
+ * antérieur.
+ */
+export const SincePrecision = z.enum(['exact', 'at_latest']);
+export type SincePrecision = z.infer<typeof SincePrecision>;
+
+/**
  * Qualifiers implicit on every relation's `qualifiers` object (ADR-037),
  * mirroring the historisable-property base qualifiers. A relation type
  * MUST NOT declare these — the schema engine provides them and

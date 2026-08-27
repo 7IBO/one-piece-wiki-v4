@@ -41,6 +41,8 @@ function printPropertySchema(property: PropertyType): string {
   const body = [
     '  // Universal qualifiers — flattened on the entry, optional.',
     '  since: SourceRefOrList.optional(),',
+    '  // ADR-113 — comment lire `since` ; absent vaut `exact`.',
+    '  since_precision: SincePrecision.optional(),',
     '  until: SourceRefOrList.optional(),',
     '  source: SourceRefOrList.optional(),',
     '  event: EntityRef.optional(),',
@@ -99,6 +101,7 @@ export function printPropertyValuesFile(catalogue: ValidatedCatalogue): string {
     '  I18nKey,',
     '  IsoDate,',
     '  ReviewStatus,',
+    '  SincePrecision,',
     '  SourceRef,',
     "} from '@onepiece-wiki/schemas';",
   ];

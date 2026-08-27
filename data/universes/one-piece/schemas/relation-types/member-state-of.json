@@ -3,14 +3,38 @@
   "id": "member-state-of",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Member state of", "inverse": "Member states" },
-    "fr": { "active": "État membre de", "inverse": "États membres" }
+    "en": {
+      "active": "Member state of",
+      "inverse": "Member states"
+    },
+    "fr": {
+      "active": "État membre de",
+      "inverse": "États membres"
+    }
   },
-  "valid_from_types": ["location"],
-  "valid_to_types": ["organization"],
+  "valid_from_types": [
+    "location"
+  ],
+  "valid_to_types": [
+    "organization"
+  ],
   "qualifiers": [
-    { "id": "since", "value_type": "source_ref", "required": false },
-    { "id": "until", "value_type": "source_ref", "required": false },
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    },
+    {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    },
+    {
+      "id": "until",
+      "value_type": "source_ref",
+      "required": false
+    },
     {
       "id": "membership_status",
       "value_type": "enum",

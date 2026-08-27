@@ -28,6 +28,12 @@
       "required": false
     },
     {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    },
+    {
       "id": "until",
       "value_type": "source_ref",
       "required": false

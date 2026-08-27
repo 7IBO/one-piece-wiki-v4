@@ -3,8 +3,14 @@
   "id": "staffed-by",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Staffed by", "inverse": "Worked on" },
-    "fr": { "active": "Crédité à", "inverse": "A travaillé sur" }
+    "en": {
+      "active": "Staffed by",
+      "inverse": "Worked on"
+    },
+    "fr": {
+      "active": "Crédité à",
+      "inverse": "A travaillé sur"
+    }
   },
   "valid_from_types": [
     "anime-episode",
@@ -17,11 +23,32 @@
     "anime-special",
     "live-performance"
   ],
-  "valid_to_types": ["person"],
+  "valid_to_types": [
+    "person"
+  ],
   "qualifiers": [
-    { "id": "role", "value_type": "enum", "enum_ref": "person-roles", "required": true },
-    { "id": "since", "value_type": "source_ref", "required": false },
-    { "id": "note", "value_type": "string", "required": false }
+    {
+      "id": "role",
+      "value_type": "enum",
+      "enum_ref": "person-roles",
+      "required": true
+    },
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    },
+    {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    },
+    {
+      "id": "note",
+      "value_type": "string",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,

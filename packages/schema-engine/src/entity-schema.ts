@@ -11,6 +11,7 @@ import {
   I18N_KEY_PATTERN,
   IsoDate,
   ReviewStatus,
+  SincePrecision,
   Slug,
   type ValueType,
 } from '@onepiece-wiki/schemas';
@@ -41,6 +42,8 @@ const EntityRefItem = z.union([
 export const BaseQualifierBag = z
   .object({
     since: SourceRefOrList.optional(),
+    // ADR-113 — comment lire `since` ; absent vaut `exact`.
+    since_precision: SincePrecision.optional(),
     until: SourceRefOrList.optional(),
     source: SourceRefOrList.optional(),
     epistemic_status: EpistemicStatus.optional(),

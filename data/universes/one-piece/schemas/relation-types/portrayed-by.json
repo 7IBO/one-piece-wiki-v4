@@ -3,15 +3,43 @@
   "id": "portrayed-by",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Portrayed by", "inverse": "Portrays" },
-    "fr": { "active": "Interprété par", "inverse": "Interprète" }
+    "en": {
+      "active": "Portrayed by",
+      "inverse": "Portrays"
+    },
+    "fr": {
+      "active": "Interprété par",
+      "inverse": "Interprète"
+    }
   },
-  "valid_from_types": ["character"],
-  "valid_to_types": ["person"],
+  "valid_from_types": [
+    "character"
+  ],
+  "valid_to_types": [
+    "person"
+  ],
   "qualifiers": [
-    { "id": "since", "value_type": "source_ref", "required": false },
-    { "id": "production", "value_type": "string", "required": false },
-    { "id": "context", "value_type": "string", "required": false }
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    },
+    {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    },
+    {
+      "id": "production",
+      "value_type": "string",
+      "required": false
+    },
+    {
+      "id": "context",
+      "value_type": "string",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,

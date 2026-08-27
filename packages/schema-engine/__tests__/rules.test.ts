@@ -13,6 +13,40 @@ async function loadRule(id: string): Promise<RuleSchema> {
   return RuleSchema.parse(raw);
 }
 
+describe('evaluateRules — since_precision (ADR-113)', () => {
+  it('flags a precision with no `since` to qualify, and stays silent otherwise', async () => {
+    const rule = await loadRule('since-precision-needs-since');
+
+    // Le cas fautif : on dit comment lire `since` sans donner de `since`.
+    const orphan = {
+      type: 'character',
+      properties: { status: [{ value: 'alive', since_precision: 'at_latest' }] },
+    };
+    expect(evaluateRules(orphan, [rule])).toHaveLength(1);
+    expect(evaluateRules(orphan, [rule])[0]!.property).toBe('status');
+
+    // Le cas Rocks, bien écrit : présent au plus tard à ce chapitre.
+    const attested = {
+      type: 'character',
+      properties: {
+        status: [{
+          value: 'alive',
+          since: 'manga-chapter:130',
+          since_precision: 'at_latest',
+        }],
+      },
+    };
+    expect(evaluateRules(attested, [rule])).toHaveLength(0);
+
+    // Absence de précision : c'est `exact`, et la règle ne dit rien.
+    const plain = {
+      type: 'character',
+      properties: { status: [{ value: 'alive', since: 'manga-chapter:1' }] },
+    };
+    expect(evaluateRules(plain, [rule])).toHaveLength(0);
+  });
+});
+
 describe('evaluateRules — entity scope', () => {
   it('flags a bounty on an ACTIVE Marine, silent when membership ended', async () => {
     const rule = await loadRule('active-marine-with-bounty');

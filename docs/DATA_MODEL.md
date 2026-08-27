@@ -122,6 +122,42 @@ query date.
 Whether a property is historisable is declared in its property type definition
 (`historical: true`).
 
+#### La précision de `since` (ADR-113)
+
+`since` affirme « à partir de cette source ». L'œuvre ne le montre pas
+toujours : elle peut établir qu'une valeur **s'appliquait déjà** sans
+jamais montrer son début. L'équipage de Rocks en est le cas d'école — on
+sait qui en faisait partie, jamais quand chacun l'a rejoint.
+
+Écrire `since` seul dans ce cas **affirme une date d'arrivée qui n'existe
+pas dans l'œuvre**. Le qualificateur `since_precision` lève l'ambiguïté :
+
+| Valeur                   | Lecture                                                          |
+| ------------------------ | ---------------------------------------------------------------- |
+| `exact` (défaut, absent) | la valeur **commence** à cette source                            |
+| `at_latest`              | la valeur **s'appliquait déjà** ici ; son début n'est pas montré |
+
+```json
+"member-of": {
+  "target": "crew:rocks-pirates",
+  "qualifiers": {
+    "since": "manga-chapter:957",
+    "since_precision": "at_latest"
+  }
+}
+```
+
+Deux conséquences directes :
+
+- **L'absence vaut `exact`**, donc tout le corpus antérieur garde sa
+  lecture — la précision est additive, jamais rétroactive.
+- **L'affichage doit distinguer les deux.** « À bord depuis le chapitre
+  6 » et « présent au chapitre 130, arrivée inconnue » ne sont pas la
+  même information, et les présenter pareil est une affirmation fausse.
+
+La règle `since-precision-needs-since` refuse une précision orpheline :
+elle qualifie `since`, elle n'a aucun sens sans lui.
+
 ### Epistemic status
 
 Every value can be qualified by **what kind of truth it is** at the moment it

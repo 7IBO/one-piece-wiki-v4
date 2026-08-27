@@ -302,13 +302,14 @@ Ids referenced in `default_qualifiers` (or in `allowed_qualifiers`
 without richer metadata) resolve against the registry's `common`
 entries. Common property-declared qualifiers across the model:
 
-| Qualifier          | Type                | Meaning                                           |
-| ------------------ | ------------------- | ------------------------------------------------- |
-| `since`            | source_ref          | First source where this value applies             |
-| `until`            | source_ref          | Last source where this value applies (optional)   |
-| `source`           | source_ref          | Source proving the value                          |
-| `canon_scope`      | enum (canon-scopes) | Restricts the value to a specific canon           |
-| `in_universe_date` | string              | In-universe date (e.g. `"12_years_before_story"`) |
+| Qualifier          | Type                    | Meaning                                                |
+| ------------------ | ----------------------- | ------------------------------------------------------ |
+| `since`            | source_ref              | First source where this value applies                  |
+| `since_precision`  | enum (since-precisions) | How to read `since` — `exact` (default) or `at_latest` |
+| `until`            | source_ref              | Last source where this value applies (optional)        |
+| `source`           | source_ref              | Source proving the value                               |
+| `canon_scope`      | enum (canon-scopes)     | Restricts the value to a specific canon                |
+| `in_universe_date` | string                  | In-universe date (e.g. `"12_years_before_story"`)      |
 
 A property type may also declare bespoke qualifiers in
 `allowed_qualifiers` (e.g. `issued_by` on `bounty`).
