@@ -43,7 +43,7 @@ import {
   Plus,
   X,
 } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { ruleBlockedFindings, type SourceRef, type Translations, validationIssues } from '../api';
 import { useCurrentUser } from '../auth';
 import { DiffPopover } from './DiffPopover';
@@ -446,7 +446,7 @@ function makeI18nKey(
   return `${base}.${i}`;
 }
 
-export function EntityForm(props: EntityFormProps): JSX.Element {
+export function EntityForm(props: EntityFormProps): ReactElement {
   const locale = useLocale();
   const t = useT();
   const [data, setData] = useState<EntityData>(props.initialData);
@@ -1170,7 +1170,7 @@ export function EntityForm(props: EntityFormProps): JSX.Element {
   // case we want a smarter suggestion later, but no fallback today.
   const fallbackName: string | undefined = undefined;
 
-  function renderRow(decl: Decl, _idx: number): JSX.Element {
+  function renderRow(decl: Decl, _idx: number): ReactElement {
     const propertyType = props.propertyTypes[decl.id];
     if (propertyType === undefined) {
       return (
@@ -1693,7 +1693,7 @@ type PropertyRowProps = {
  * label + Add affordance (amber-tinted when required or recommended
  * is missing). Server/Zod errors force the row open.
  */
-function PropertyRow(p: PropertyRowProps): JSX.Element {
+function PropertyRow(p: PropertyRowProps): ReactElement {
   const t = useT();
   const isHistorical = p.propertyType.historical;
   const isLocalizable = p.propertyType.localizable;
@@ -1975,7 +1975,9 @@ type EntryEditorProps = {
 /** Shared body of the entry editor: value input on top, the `since`
  *  anchor for historicals, then EVERY remaining qualifier in the
  *  list-all pattern — no separate "More options" hop. */
-function EntryEditorFields(p: Omit<EntryEditorProps, 'open' | 'onClose' | 'asPanel'>): JSX.Element {
+function EntryEditorFields(
+  p: Omit<EntryEditorProps, 'open' | 'onClose' | 'asPanel'>,
+): ReactElement {
   const locale = useLocale();
   const qLabel = useQualifierLabel();
   const { primary, secondary } = useMemo(
@@ -2103,7 +2105,7 @@ function EntryEditorFields(p: Omit<EntryEditorProps, 'open' | 'onClose' | 'asPan
  *    slot to the RIGHT of the property list — a slot, not a popover,
  *    so the page keeps scrolling naturally while editing.
  */
-function EntryEditor(p: EntryEditorProps): JSX.Element {
+function EntryEditor(p: EntryEditorProps): ReactElement {
   const t = useT();
   const removeButton = p.canRemove
     ? (
@@ -2261,7 +2263,7 @@ type EntryValueProps = {
   setEmptyProperty: (propertyId: string, value: unknown) => void;
 };
 
-function EntryValue(p: EntryValueProps): JSX.Element {
+function EntryValue(p: EntryValueProps): ReactElement {
   // Special-case the image entity-type's `url` property: instead of a
   // plain string input, render the drag-drop uploader that goes
   // straight to R2 via a presigned PUT. The property type is
@@ -2331,7 +2333,7 @@ function LocalizedValueField(p: {
   translations: Translations;
   fallbackName?: string | undefined;
   onTranslate: (locale: DataLocale, key: string, value: string) => void;
-}): JSX.Element {
+}): ReactElement {
   const locale = useLocale();
   const t = useT();
   const i18nKey = String(p.entry[p.valueField] ?? '');
@@ -2485,10 +2487,10 @@ type QualifierFieldProps = {
   /** The host property's value_type — used by `actual_value` to mirror it. */
   propertyValueType: ValueType;
   onChange: (next: unknown) => void;
-  trailing?: JSX.Element | null;
+  trailing?: ReactElement | null;
 };
 
-function QualifierField(p: QualifierFieldProps): JSX.Element {
+function QualifierField(p: QualifierFieldProps): ReactElement {
   const qLabel = useQualifierLabel();
   // Mirror the host property's value type, except for `i18n_key`. An
   // "actual value" stored as another translation key would force the
@@ -2602,7 +2604,7 @@ function QualifierField(p: QualifierFieldProps): JSX.Element {
  */
 function MobileSectionsTrigger(
   { entries, onReveal }: { entries: readonly NavEntry[]; onReveal: (id: string) => void; },
-): JSX.Element {
+): ReactElement {
   const t = useT();
   const [open, setOpen] = useState(false);
   const filled = entries.filter((e) => e.filled).length;

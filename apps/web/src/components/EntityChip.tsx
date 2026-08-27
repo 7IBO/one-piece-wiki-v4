@@ -13,7 +13,7 @@
  * the link a reader cannot judge without opening it.
  */
 import { Link } from '@tanstack/react-router';
-import { createContext, type JSX, useContext } from 'react';
+import { createContext, type ReactElement, useContext } from 'react';
 import type { EntityChip } from '../api';
 import { HoverPreview } from './HoverPreview';
 
@@ -34,7 +34,7 @@ export function EntityChipLink(
      *  (a page's own hero, a self-reference). */
     readonly preview?: boolean;
   },
-): JSX.Element {
+): ReactElement {
   const search = useScopeSearch();
   const link = (
     <Link

@@ -48,7 +48,14 @@
  * Presentation only: every string arrives resolved and spoiler-checked
  * from `server/views.ts`.
  */
-import { type CSSProperties, type JSX, type ReactNode, useEffect, useRef, useState } from 'react';
+import {
+  type CSSProperties,
+  type ReactElement,
+  type ReactNode,
+  useEffect,
+  useRef,
+  useState,
+} from 'react';
 import { createPortal } from 'react-dom';
 import { type EntityPreviewView, fetchPreview } from '../api';
 import { type Locale, t } from '../lib/chrome';
@@ -134,7 +141,7 @@ export function HoverPreview(
     readonly slug: string;
     readonly children: ReactNode;
   },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const fine = useFinePointer();
   const scopeSearch = useScopeSearch();
@@ -250,7 +257,7 @@ function PreviewCard(
     readonly placement: Placement;
     readonly locale: Locale;
   },
-): JSX.Element {
+): ReactElement {
   const tint = entityTint(view.chip.id);
   return (
     <span

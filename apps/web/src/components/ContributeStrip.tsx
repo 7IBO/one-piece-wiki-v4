@@ -4,7 +4,7 @@
  * § contribute strip. `VITE_DASHBOARD_URL` is a build-time env
  * override; default is the production dashboard.
  */
-import { type JSX } from 'react';
+import { type ReactElement } from 'react';
 import { t } from '../lib/chrome';
 import { useLocale } from '../routes/__root';
 
@@ -15,7 +15,7 @@ const DASHBOARD_URL: string = typeof envUrl === 'string' && envUrl !== ''
 
 export function ContributeStrip(
   { type, slug }: { readonly type: string; readonly slug: string; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const base = `${DASHBOARD_URL}/types/${type}/${slug}`;
   return (

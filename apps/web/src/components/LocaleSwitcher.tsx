@@ -7,11 +7,11 @@
 import { Toggle } from '@base-ui/react/toggle';
 import { ToggleGroup } from '@base-ui/react/toggle-group';
 import { useRouter } from '@tanstack/react-router';
-import { type JSX } from 'react';
+import { type ReactElement } from 'react';
 import { type Locale, SUPPORTED_LOCALES, t } from '../lib/chrome';
 import { LOCALE_COOKIE, useLocale } from '../routes/__root';
 
-export function LocaleSwitcher(): JSX.Element {
+export function LocaleSwitcher(): ReactElement {
   const router = useRouter();
   const locale = useLocale();
 

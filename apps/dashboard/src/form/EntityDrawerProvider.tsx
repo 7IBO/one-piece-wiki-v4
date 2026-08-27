@@ -7,7 +7,14 @@
  * is mounted, so leaf components can render a fallback (e.g. just a
  * link to the full page) when the drawer isn't available.
  */
-import { createContext, type JSX, type ReactNode, useCallback, useContext, useState } from 'react';
+import {
+  createContext,
+  type ReactElement,
+  type ReactNode,
+  useCallback,
+  useContext,
+  useState,
+} from 'react';
 import { EntityEditDrawer } from './EntityEditDrawer';
 
 type DrawerTarget = { readonly type: string; readonly slug: string; };
@@ -20,7 +27,7 @@ const DrawerContext = createContext<DrawerApi | null>(null);
 
 export function EntityDrawerProvider(
   { children }: { children: ReactNode; },
-): JSX.Element {
+): ReactElement {
   // A STACK of targets, not a single one. Opening a linked entity from
   // inside an already-open drawer pushes a new level on top, so editing
   // A → B → C never discards the level beneath: every drawer stays

@@ -5,19 +5,19 @@
  * is already built (and spoiler-checked) by the server view models;
  * this only controls how many are painted.
  */
-import { type JSX, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import { t } from '../lib/chrome';
 import { useLocale } from '../routes/__root';
 
 export function ShowMoreList(
   { items, limit, listClassName }: {
-    readonly items: readonly JSX.Element[];
+    readonly items: readonly ReactElement[];
     /** Items shown while collapsed; the toggle appears beyond it. */
     readonly limit: number;
     /** Class of the `<ul>` wrapping the items (grid or rows). */
     readonly listClassName: string;
   },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const [expanded, setExpanded] = useState(false);
   const overflow = items.length - limit;

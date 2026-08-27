@@ -22,7 +22,7 @@
  */
 import { useNavigate } from '@tanstack/react-router';
 import { ClockIcon, FileQuestionIcon, SearchIcon } from 'lucide-react';
-import { type JSX, useCallback, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useMemo, useState } from 'react';
 import { api, type EntityRef, type SchemaCatalogue } from './api';
 import {
   Command,
@@ -81,7 +81,7 @@ function pickDisplayName(
     ?? ref.slug;
 }
 
-export function GlobalCommandPalette(): JSX.Element {
+export function GlobalCommandPalette(): ReactElement {
   const navigate = useNavigate();
   const locale = useLocale();
   const [open, setOpen] = useState(false);
@@ -343,7 +343,7 @@ export function GlobalCommandPalette(): JSX.Element {
  * dispatching a synthesised ⌘K keydown so the toggle logic lives in
  * one place inside `GlobalCommandPalette`.
  */
-export function CommandPaletteTrigger(): JSX.Element {
+export function CommandPaletteTrigger(): ReactElement {
   const dispatch = (): void => {
     globalThis.dispatchEvent(
       new KeyboardEvent('keydown', { key: 'k', metaKey: true, bubbles: true }),

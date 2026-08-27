@@ -4,13 +4,13 @@
  * filtering + prominent banner). Dismissal is remembered in its own
  * cookie so SSR renders the right state with no flash.
  */
-import { type JSX, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import { t } from '../lib/chrome';
 import { useLocale } from '../routes/__root';
 
 export const BANNER_COOKIE = 'web_progress_seen';
 
-export function FirstRunBanner(): JSX.Element | null {
+export function FirstRunBanner(): ReactElement | null {
   const locale = useLocale();
   const [dismissed, setDismissed] = useState(false);
   if (dismissed) return null;

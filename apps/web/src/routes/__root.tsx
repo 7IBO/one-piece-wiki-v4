@@ -19,7 +19,7 @@
 import { createRootRoute, HeadContent, Link, Outlet, Scripts } from '@tanstack/react-router';
 import { createServerFn } from '@tanstack/react-start';
 import { getCookie, getRequestHeader } from '@tanstack/react-start/server';
-import { type JSX, type ReactNode } from 'react';
+import { type ReactElement, type ReactNode } from 'react';
 import { type ProgressCursor } from '../api';
 import { BANNER_COOKIE, FirstRunBanner } from '../components/FirstRunBanner';
 import { LocaleSwitcher } from '../components/LocaleSwitcher';
@@ -110,7 +110,7 @@ export function useLocale(): Locale {
   return Route.useLoaderData()?.chrome.locale ?? 'en';
 }
 
-function RootDocument({ children }: { readonly children: ReactNode; }): JSX.Element {
+function RootDocument({ children }: { readonly children: ReactNode; }): ReactElement {
   const locale = Route.useLoaderData()?.chrome.locale ?? 'en';
   return (
     <html lang={locale}>
@@ -125,7 +125,7 @@ function RootDocument({ children }: { readonly children: ReactNode; }): JSX.Elem
   );
 }
 
-function RootLayout(): JSX.Element {
+function RootLayout(): ReactElement {
   const locale = useLocale();
   const chrome = Route.useLoaderData()?.chrome;
   const progress: ProgressCursor = chrome?.progress ?? { manga: null, anime: null };
@@ -202,7 +202,7 @@ function RootLayout(): JSX.Element {
   );
 }
 
-function NotFound(): JSX.Element {
+function NotFound(): ReactElement {
   const locale = useLocale();
   return (
     <div className='page-column mx-auto max-w-md py-24 text-center'>

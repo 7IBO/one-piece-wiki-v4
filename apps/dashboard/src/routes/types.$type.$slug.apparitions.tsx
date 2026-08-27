@@ -35,7 +35,7 @@ import {
   Undo2,
   X,
 } from 'lucide-react';
-import { type JSX, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useMemo, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type EntityDetail, type SourceRef } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
@@ -221,7 +221,7 @@ function buildInitial(apparitions: readonly Apparition[]): WorkingState {
   return { initial: ids, current: new Set(ids), qualifiers: q };
 }
 
-function ApparitionsComponent(): JSX.Element {
+function ApparitionsComponent(): ReactElement {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
   const t = useT();
@@ -596,7 +596,7 @@ type ApparitionGroupProps = {
  * confirm step. The bulk-add picker stays accessible whether the
  * list is collapsed or expanded.
  */
-function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
+function ApparitionGroup(p: ApparitionGroupProps): ReactElement {
   const t = useT();
   const isLong = p.targets.length > COLLAPSE_THRESHOLD;
   // Default-collapsed for long lists; user choice is preserved within
@@ -659,7 +659,7 @@ function ApparitionGroup(p: ApparitionGroupProps): JSX.Element {
     overscan: 8,
   });
 
-  function renderRow(target: string): JSX.Element {
+  function renderRow(target: string): ReactElement {
     // Per-target type/slug rather than p.sourceType so rows in the
     // fallback "Other" group (mixed types) still link correctly.
     const rowType = sourceTypeOf(target);

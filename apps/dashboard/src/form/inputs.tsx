@@ -41,7 +41,7 @@ import {
 } from '@onepiece-wiki/schemas';
 import { useVirtualizer } from '@tanstack/react-virtual';
 import { Anchor, Check, ChevronsUpDown, Pencil, X } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useRef, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { api, type EntityRef, type SourceRef } from '../api';
 import { useEntityDrawer } from './EntityDrawerProvider';
 import { type Locale, useLocale, useT } from './locale';
@@ -66,7 +66,7 @@ function pickName(
   return displayName[locale] ?? displayName.en ?? displayName.fr ?? fallback;
 }
 
-export function StringInput({ value, onChange, disabled }: InputProps<string>): JSX.Element {
+export function StringInput({ value, onChange, disabled }: InputProps<string>): ReactElement {
   return (
     <Input
       type='text'
@@ -82,7 +82,7 @@ export function StringInput({ value, onChange, disabled }: InputProps<string>): 
  * the one-line <Input>, which made any long-form markdown property
  * unusable.
  */
-export function MarkdownInput({ value, onChange, disabled }: InputProps<string>): JSX.Element {
+export function MarkdownInput({ value, onChange, disabled }: InputProps<string>): ReactElement {
   return (
     <Textarea
       value={value ?? ''}
@@ -93,7 +93,7 @@ export function MarkdownInput({ value, onChange, disabled }: InputProps<string>)
   );
 }
 
-export function DateInput({ value, onChange, disabled }: InputProps<string>): JSX.Element {
+export function DateInput({ value, onChange, disabled }: InputProps<string>): ReactElement {
   return (
     <Input
       type='date'
@@ -105,7 +105,7 @@ export function DateInput({ value, onChange, disabled }: InputProps<string>): JS
   );
 }
 
-export function NumberInput({ value, onChange, disabled }: InputProps<number>): JSX.Element {
+export function NumberInput({ value, onChange, disabled }: InputProps<number>): ReactElement {
   return (
     <Input
       type='number'
@@ -119,7 +119,7 @@ export function NumberInput({ value, onChange, disabled }: InputProps<number>): 
   );
 }
 
-export function BooleanInput({ value, onChange, disabled }: InputProps<boolean>): JSX.Element {
+export function BooleanInput({ value, onChange, disabled }: InputProps<boolean>): ReactElement {
   return (
     <Checkbox.Root
       checked={value === true}
@@ -149,7 +149,7 @@ export function EnumInput(
   { value, onChange, enumValues, disabled }: InputProps<string> & {
     enumValues: readonly EnumValue[];
   },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const t = useT();
   const items = useMemo(
@@ -224,7 +224,7 @@ export function MultiEnumInput(
   { value, onChange, enumValues, disabled }: InputProps<readonly string[]> & {
     enumValues: readonly EnumValue[];
   },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const t = useT();
   const [open, setOpenState] = useState(false);
@@ -335,7 +335,7 @@ export function EntityRefInput(
     /** Restrict pickable types (e.g. `event` qualifier → ['event']). */
     restrictTo?: readonly string[] | undefined;
   },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const t = useT();
   const drawer = useEntityDrawer();
@@ -478,7 +478,7 @@ export function MultiEntityRefInput(
       onItemSourceChange?: ((target: string, source: string | undefined) => void) | undefined;
       sources?: readonly SourceRef[] | undefined;
     },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const t = useT();
   // Per-session "show this item's source picker" reveal state — items
@@ -782,7 +782,7 @@ export function EntityRefItemsInput(
     disabled?: boolean | undefined;
     sources: readonly SourceRef[];
   },
-): JSX.Element {
+): ReactElement {
   const items = useMemo(() => entityRefItems(value), [value]);
   const itemSources = useMemo(() => {
     const m = new Map<string, string | readonly string[]>();
@@ -842,7 +842,7 @@ function MultiEntityList(p: {
   loadingText: string;
   searchPlaceholder: string;
   onToggle: (id: string) => void;
-}): JSX.Element {
+}): ReactElement {
   const [query, setQuery] = useState('');
   const scrollRef = useRef<HTMLDivElement>(null);
 
@@ -997,7 +997,7 @@ function TypedSourcePicker(
      *  inside an outer chip group. */
     bare?: boolean;
   },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const t = useT();
   const items = useMemo(
@@ -1057,7 +1057,7 @@ export function MultiSourceRefInput(
     /** Source types to show out-of-the-box. */
     initialTypes?: readonly string[];
   },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   // Per-session "I want to see this type's picker" reveal state.
   // Independent of the actual value so clicking "+ Film" shows an
@@ -1173,7 +1173,7 @@ export function SourceRefInput(
   { value, onChange, sources, disabled }: InputProps<string> & {
     sources: readonly SourceRef[];
   },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const currentType = value !== undefined && value.includes(':') ? value.split(':')[0]! : '';
   const types = useMemo(() => {
@@ -1230,7 +1230,7 @@ export function I18nKeyInput(
   { value, onChange, suggestions, disabled }: InputProps<string> & {
     suggestions: readonly string[];
   },
-): JSX.Element {
+): ReactElement {
   const items = suggestions.map((s) => ({
     value: s,
     label: s,
@@ -1279,7 +1279,7 @@ export function ValueInput(
     /** Only meaningful for `entity_ref` — see EntityRefInput.restrictTo. */
     restrictTo?: readonly string[] | undefined;
   },
-): JSX.Element {
+): ReactElement {
   switch (valueType) {
     case 'string':
       return (

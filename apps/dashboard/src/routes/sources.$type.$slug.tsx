@@ -28,7 +28,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { createFileRoute, Link, useNavigate } from '@tanstack/react-router';
 import { ChevronLeft, ExternalLink, GitPullRequest, Pencil, X } from 'lucide-react';
-import { type JSX, useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type CastEntry, type CastResponse } from '../api';
 import { LoadFailed } from '../components/LoadFailed';
@@ -68,7 +68,7 @@ function buildInitialState(cast: CastResponse['cast']): WorkingState {
   return { initial: ids, current: new Set(ids), meta };
 }
 
-function SourceCastComponent(): JSX.Element {
+function SourceCastComponent(): ReactElement {
   const { type, slug } = Route.useParams() as { type: string; slug: string; };
   const locale = useLocale();
   const t = useT();

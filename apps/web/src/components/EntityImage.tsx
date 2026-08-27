@@ -40,7 +40,7 @@
  * Callers that want NO block at all when no image entity exists
  * simply don't render the component.
  */
-import { type CSSProperties, type JSX, useState } from 'react';
+import { type CSSProperties, type ReactElement, useState } from 'react';
 import type { ImageView } from '../api';
 import { entityTint } from '../lib/entity-tint';
 import {
@@ -102,7 +102,7 @@ export function EntityImage(
     readonly fit?: 'frame' | 'native';
     readonly className?: string;
   },
-): JSX.Element {
+): ReactElement {
   const entityId = `${type}:${slug}`;
   const own = imageAspect(image);
   const native = fit === 'native' && own !== null;
@@ -142,7 +142,7 @@ function Photo(
     readonly image: ImageView;
     readonly objectFit: 'cover' | 'contain';
   },
-): JSX.Element | null {
+): ReactElement | null {
   const [state, setState] = useState<LoadState>('pending');
   if (state === 'failed') return null;
   const probe = (el: HTMLImageElement | null): void => {

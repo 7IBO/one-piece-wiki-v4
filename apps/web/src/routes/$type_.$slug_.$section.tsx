@@ -28,7 +28,7 @@
  * is `/$type/$slug/$section`.
  */
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import type { JSX } from 'react';
+import type { ReactElement } from 'react';
 import { fetchEntity } from '../api';
 import { ScopeContext } from '../components/EntityChip';
 import { t } from '../lib/chrome';
@@ -75,7 +75,7 @@ export const Route = createFileRoute('/$type_/$slug_/$section')({
   component: EntitySectionPage,
 });
 
-function EntitySectionPage(): JSX.Element {
+function EntitySectionPage(): ReactElement {
   const { view, sectionId } = Route.useLoaderData();
   // A gated entity withholds everything, sub-page or not: the reader
   // gets the same "not yet in your progression" screen as on the

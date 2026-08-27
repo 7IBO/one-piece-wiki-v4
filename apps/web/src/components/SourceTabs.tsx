@@ -25,7 +25,7 @@
  * Purement présentationnel : le contenu de chaque groupe arrive déjà
  * rendu, ce composant ne décide que de ce qui est visible.
  */
-import { type JSX, type ReactNode, useState } from 'react';
+import { type ReactElement, type ReactNode, useState } from 'react';
 
 export type SourceTabGroup = {
   /** Clé stable du groupe — l'id du type de source. */
@@ -39,7 +39,7 @@ export type SourceTabGroup = {
 
 export function SourceTabs(
   { groups }: { readonly groups: readonly SourceTabGroup[]; },
-): JSX.Element | null {
+): ReactElement | null {
   const first = groups[0];
   const [active, setActive] = useState(first?.key ?? '');
   if (first === undefined) return null;

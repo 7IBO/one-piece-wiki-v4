@@ -13,7 +13,7 @@
  */
 import { Popover } from '@base-ui/react/popover';
 import { useRouter } from '@tanstack/react-router';
-import { type JSX, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import { PROGRESS_COOKIE, type ProgressCursor } from '../api';
 import { t } from '../lib/chrome';
 import { useLocale } from '../routes/__root';
@@ -45,7 +45,7 @@ export function ProgressPanel(
     /** Called after a cursor write (close the owning popover). */
     readonly onDone: () => void;
   },
-): JSX.Element {
+): ReactElement {
   const router = useRouter();
   const locale = useLocale();
   const [manga, setManga] = useState(progress.manga === null ? '' : String(progress.manga));
@@ -128,7 +128,7 @@ export function ProgressPanel(
  */
 export function ProgressControl(
   { progress }: { readonly progress: ProgressCursor; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const [open, setOpen] = useState(false);
 

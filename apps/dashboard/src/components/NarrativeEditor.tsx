@@ -22,7 +22,7 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Textarea } from '@/components/ui/textarea';
 import { cn } from '@/lib/utils';
 import { BookOpen, ChevronDown } from 'lucide-react';
-import { type JSX, useEffect, useState } from 'react';
+import { type ReactElement, useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { api, type NarrativeContent, type NarrativeSaveBody } from '../api';
 import { useCurrentUser } from '../auth';
@@ -44,7 +44,7 @@ function wordCount(text: string): number {
   return trimmed.split(/\s+/).length;
 }
 
-export function NarrativeEditor({ type, slug }: Props): JSX.Element {
+export function NarrativeEditor({ type, slug }: Props): ReactElement {
   const t = useT();
   const uiLocale = useLocale();
   const { user, loaded: userLoaded } = useCurrentUser();

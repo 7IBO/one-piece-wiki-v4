@@ -9,7 +9,7 @@ import { Button } from '@/components/ui/button';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Link, useLocation } from '@tanstack/react-router';
 import { LogIn, LogOut } from 'lucide-react';
-import { type JSX, useMemo } from 'react';
+import { type ReactElement, useMemo } from 'react';
 import { useCurrentUser, useSignOut } from './auth';
 import { useLocale, useT } from './form/locale';
 import { useSchemaCatalogue } from './hooks/use-schema-catalogue';
@@ -17,7 +17,7 @@ import { groupTypesByUiHint, type TypeGroup } from './lib/type-groups';
 
 type SidebarItem = { id: string; label: string; group: string | undefined; };
 
-export function AppSidebar(): JSX.Element {
+export function AppSidebar(): ReactElement {
   const locale = useLocale();
   const t = useT();
   const location = useLocation();

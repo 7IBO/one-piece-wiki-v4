@@ -17,7 +17,7 @@
 import { Button } from '@/components/ui/button';
 import { Link } from '@tanstack/react-router';
 import { ExternalLink, RotateCw } from 'lucide-react';
-import { type JSX, useCallback, useEffect, useState } from 'react';
+import { type ReactElement, useCallback, useEffect, useState } from 'react';
 import { api } from './api';
 import { useLocale, useT } from './form/locale';
 
@@ -56,7 +56,7 @@ function useRelativeTime(): (iso: string) => string {
   }, [locale]);
 }
 
-export function MyContributions(): JSX.Element {
+export function MyContributions(): ReactElement {
   const t = useT();
   const rel = useRelativeTime();
   const [items, setItems] = useState<readonly Contribution[] | null>(null);

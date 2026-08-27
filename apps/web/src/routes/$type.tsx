@@ -14,7 +14,7 @@
  * cursor.
  */
 import { createFileRoute, notFound } from '@tanstack/react-router';
-import { type JSX, useMemo, useState } from 'react';
+import { type ReactElement, useMemo, useState } from 'react';
 import { type EntityListItem, type FacetView, fetchTypeList } from '../api';
 import { CardGrid, EntityCard } from '../components/EntityCard';
 import { ScopeContext } from '../components/EntityChip';
@@ -44,7 +44,7 @@ function matches(item: EntityListItem, selection: Selection): boolean {
   return Object.entries(selection).every(([facetId, value]) => item.facets[facetId] === value);
 }
 
-function TypeListPage(): JSX.Element {
+function TypeListPage(): ReactElement {
   const view = Route.useLoaderData();
   const { scope } = Route.useSearch();
   const locale = useLocale();
@@ -126,7 +126,7 @@ function FacetRow(
     readonly selected: string | null;
     readonly onToggle: (value: string) => void;
   },
-): JSX.Element {
+): ReactElement {
   return (
     <div className='flex flex-wrap items-center gap-x-2 gap-y-1.5'>
       <span className='label-xs w-full min-[560px]:w-24 min-[560px]:shrink-0'>{facet.label}</span>

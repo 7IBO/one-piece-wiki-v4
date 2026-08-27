@@ -30,7 +30,7 @@
  * back into the reading column. Presentation only — every string and
  * every visibility decision arrived resolved from the view model.
  */
-import type { JSX, ReactNode } from 'react';
+import type { ReactElement, ReactNode } from 'react';
 import type { ImageView } from '../api';
 import { EntityArt } from './EntityArt';
 import { EntityImage, initialOf } from './EntityImage';
@@ -52,7 +52,7 @@ export function EntityHero(
     /** Identity block laid beside the figure. */
     readonly children: ReactNode;
   },
-): JSX.Element {
+): ReactElement {
   const [type = '', slug = ''] = entityId.includes(':')
     ? entityId.split(':', 2)
     : [entityType, entityId];

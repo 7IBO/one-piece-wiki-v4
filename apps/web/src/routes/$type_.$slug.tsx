@@ -32,7 +32,7 @@
  * the resolved path is still `/$type/$slug`.
  */
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
-import { type CSSProperties, Fragment, type JSX, type ReactNode } from 'react';
+import { type CSSProperties, Fragment, type ReactElement, type ReactNode } from 'react';
 import {
   type AppearanceGroupView,
   type AvailabilityItemView,
@@ -149,7 +149,7 @@ function rowColumns(count: number): string {
   return 'grid-cols-1 sm:grid-cols-2 xl:grid-cols-3';
 }
 
-function EntityPage(): JSX.Element {
+function EntityPage(): ReactElement {
   const view = Route.useLoaderData();
   if (view.kind === 'gated') return <GatedScreen view={view} />;
   return (
@@ -162,7 +162,7 @@ function EntityPage(): JSX.Element {
 // ---------------------------------------------------------------------------
 // Gated ("not yet in your progression")
 
-export function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.Element {
+export function GatedScreen({ view }: { readonly view: GatedEntityView; }): ReactElement {
   const locale = useLocale();
   return (
     <div className='page-column mx-auto max-w-md py-20 text-center'>
@@ -199,7 +199,7 @@ export function EntityArticle(
     readonly view: EntityView;
     readonly section: EntitySection | null;
   },
-): JSX.Element {
+): ReactElement {
   const tint = entityTint(view.id);
   const layout = layoutFor(view.type);
   const bands = restrictBands(bandsFor(view.type), slotsForSection(view.type, section));
@@ -238,7 +238,7 @@ function SectionNav(
     readonly view: EntityView;
     readonly current: EntitySection | null;
   },
-): JSX.Element | null {
+): ReactElement | null {
   const locale = useLocale();
   const search = useScopeSearch();
   const sections = visibleSections(view);
@@ -280,13 +280,13 @@ function SectionNav(
 }
 
 /** A sub-page URL that resolves but has nothing in it (yet). */
-function EmptySection(): JSX.Element {
+function EmptySection(): ReactElement {
   const locale = useLocale();
   return <p className='py-10 text-sm text-muted'>{t(locale, 'emptySection')}</p>;
 }
 
 /** Overline, name, identity line and the ONE headline figure. */
-function Identity({ view }: { readonly view: EntityView; }): JSX.Element {
+function Identity({ view }: { readonly view: EntityView; }): ReactElement {
   const locale = useLocale();
   // The bounty (or a crew's derived total) is the ONE gold figure of
   // the header (ADR-091 binding, degrades to nothing when absent).
@@ -337,7 +337,7 @@ function Identity({ view }: { readonly view: EntityView; }): JSX.Element {
  * the right edge. The view model already withheld any neighbour
  * beyond the reader's cursor, so nothing here can leak a title.
  */
-function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): JSX.Element | null {
+function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): ReactElement | null {
   const locale = useLocale();
   const search = useScopeSearch();
   if (sequence.prev === null && sequence.next === null) return null;
@@ -410,7 +410,7 @@ function packed(
   slots: readonly SlotKey[],
   view: EntityView,
   packClass: string,
-): JSX.Element | null {
+): ReactElement | null {
   const count = renderSlots(slots, view, false).length;
   if (count === 0) return null;
   const nodes = renderSlots(slots, view, count === 1);
@@ -419,7 +419,7 @@ function packed(
 
 function Band(
   { band, view }: { readonly band: LayoutBand; readonly view: EntityView; },
-): JSX.Element | null {
+): ReactElement | null {
   if (band.kind === 'full') {
     const nodes = renderSlots(band.slots, view, true);
     return nodes.length === 0 ? null : <div className='space-y-12'>{nodes}</div>;
@@ -452,8 +452,8 @@ function renderSlots(
   slots: readonly SlotKey[],
   view: EntityView,
   wide: boolean,
-): readonly JSX.Element[] {
-  const nodes: JSX.Element[] = [];
+): readonly ReactElement[] {
+  const nodes: ReactElement[] = [];
   for (const slot of slots) {
     const node = renderSlot(slot, view, wide);
     if (node !== null) nodes.push(<div key={slot} className='panel'>{node}</div>);
@@ -533,7 +533,7 @@ function renderSlot(slot: SlotKey, view: EntityView, wide: boolean): ReactNode {
 /** Section head: display title + count, over a hairline. */
 function SectionHead(
   { children, count }: { readonly children: string; readonly count?: number; },
-): JSX.Element {
+): ReactElement {
   return (
     <h2 className='display mb-3.5 flex items-baseline gap-2 border-b border-line pb-2 text-[15px] font-bold uppercase tracking-[0.04em] text-fg'>
       {children}
@@ -544,7 +544,7 @@ function SectionHead(
   );
 }
 
-function NarrativeSection({ markdown }: { readonly markdown: string; }): JSX.Element {
+function NarrativeSection({ markdown }: { readonly markdown: string; }): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -561,7 +561,7 @@ function NarrativeSection({ markdown }: { readonly markdown: string; }): JSX.Ele
 
 function DataSheet(
   { view, wide }: { readonly view: EntityView; readonly wide: boolean; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -585,7 +585,7 @@ function DataSheet(
  * changed over the story — the earlier states listed under it. The
  * history lives HERE, next to the property it belongs to.
  */
-function SheetRow({ property }: { readonly property: PropertyView; }): JSX.Element {
+function SheetRow({ property }: { readonly property: PropertyView; }): ReactElement {
   const entries = property.entries;
   const latest = entries[entries.length - 1];
   // Du plus recent au plus ancien : la valeur vraie a la position du
@@ -617,7 +617,7 @@ function SheetRow({ property }: { readonly property: PropertyView; }): JSX.Eleme
   );
 }
 
-function SheetRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): JSX.Element {
+function SheetRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): ReactElement {
   return (
     <div className='border-t border-line py-2.5'>
       <dt className='label-xs'>{row.label}</dt>
@@ -637,7 +637,7 @@ function SheetRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): J
 
 function Connections(
   { view, wide }: { readonly view: EntityView; readonly wide: boolean; },
-): JSX.Element {
+): ReactElement {
   const groups = [...view.relations].sort((a, b) =>
     relationRank(a.key) - relationRank(b.key)
     || Number(a.inverse) - Number(b.inverse)
@@ -660,7 +660,7 @@ function Connections(
 
 function ConnectionGroup(
   { group, columns }: { readonly group: RelationGroupView; readonly columns: boolean; },
-): JSX.Element {
+): ReactElement {
   return (
     <>
       <SectionHead count={group.items.length}>{group.label}</SectionHead>
@@ -677,7 +677,7 @@ function ConnectionGroup(
  * One connection module: thumb + name + precise sub-label (identity
  * line or type, qualifiers, period). The whole row is the link.
  */
-function ConnectionRow({ item }: { readonly item: RelationItemView; }): JSX.Element {
+function ConnectionRow({ item }: { readonly item: RelationItemView; }): ReactElement {
   const locale = useLocale();
   const search = useScopeSearch();
   const subParts: string[] = [item.secondary ?? item.target.typeLabel];
@@ -723,7 +723,7 @@ function ConnectionRow({ item }: { readonly item: RelationItemView; }): JSX.Elem
 
 function CrewSections(
   { crews }: { readonly crews: readonly CrewSectionView[]; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -783,7 +783,7 @@ function MemberGrid({ titleKey, members, former = false }: {
   readonly titleKey: ChromeKey;
   readonly members: readonly MemberRowView[];
   readonly former?: boolean;
-}): JSX.Element {
+}): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -801,7 +801,7 @@ function MemberGrid({ titleKey, members, former = false }: {
 
 function MemberCard(
   { member, former }: { readonly member: MemberRowView; readonly former: boolean; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const metaParts = [
     [member.role, member.rank].filter((part) => part !== null).join(' · '),
@@ -832,7 +832,7 @@ function ContentsSections(
     readonly groups: readonly ContainerGroupView[];
     readonly wide: boolean;
   },
-): JSX.Element {
+): ReactElement {
   return (
     <div className={wide && groups.length > 1 ? 'grid gap-9 xl:grid-cols-2' : 'space-y-9'}>
       {groups.map((group) => (
@@ -854,7 +854,7 @@ function ContentsList(
     readonly items: readonly SourceItemView[];
     readonly columns: boolean;
   },
-): JSX.Element {
+): ReactElement {
   const search = useScopeSearch();
   if (items.length > LEDGER_THRESHOLD) return <NumberGrid items={items} />;
   return (
@@ -897,7 +897,7 @@ function PositionSection(
       readonly items: readonly SourceItemView[];
     };
   },
-): JSX.Element {
+): ReactElement {
   return (
     <section>
       <div className='mb-3 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 border-b border-line pb-2'>
@@ -925,7 +925,7 @@ function PositionSection(
   );
 }
 
-function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Element {
+function SourceNumberCell({ item }: { readonly item: SourceItemView; }): ReactElement {
   const search = useScopeSearch();
   const label = item.number === null ? item.chip.name : String(item.number);
   if (item.current) {
@@ -956,7 +956,7 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Ele
 }
 
 /** Ordered instalments as a dense plate grid — number over title. */
-function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): JSX.Element {
+function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): ReactElement {
   const search = useScopeSearch();
   return (
     <ShowMoreList
@@ -991,7 +991,7 @@ function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): 
 // ---------------------------------------------------------------------------
 // Cast, availability, gallery, appearances
 
-function CastSection({ groups }: { readonly groups: readonly CastGroupView[]; }): JSX.Element {
+function CastSection({ groups }: { readonly groups: readonly CastGroupView[]; }): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -1026,7 +1026,7 @@ function CastSection({ groups }: { readonly groups: readonly CastGroupView[]; })
 
 function AvailabilitySection(
   { items }: { readonly items: readonly AvailabilityItemView[]; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -1038,7 +1038,7 @@ function AvailabilitySection(
   );
 }
 
-function AvailabilityItem({ item }: { readonly item: AvailabilityItemView; }): JSX.Element {
+function AvailabilityItem({ item }: { readonly item: AvailabilityItemView; }): ReactElement {
   if (item.url === null) {
     return (
       <li className='rounded-md px-3 py-1.5 text-[13px] font-medium text-muted ring-1 ring-line'>
@@ -1071,7 +1071,7 @@ function GallerySection(
     readonly type: string;
     readonly slug: string;
   },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -1106,7 +1106,7 @@ function GallerySection(
  */
 function AppearancesSection(
   { groups }: { readonly groups: readonly AppearanceGroupView[]; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   return (
     <section>
@@ -1147,7 +1147,7 @@ function AppearancesSection(
 
 function QualifierList(
   { qualifiers }: { readonly qualifiers: readonly LabelledValue[]; },
-): JSX.Element | null {
+): ReactElement | null {
   if (qualifiers.length === 0) return null;
   return (
     <span className='text-xs text-faint'>
@@ -1167,7 +1167,7 @@ function QualifierList(
 
 function EpistemicBadge(
   { epistemic }: { readonly epistemic: { readonly label: string; } | null; },
-): JSX.Element | null {
+): ReactElement | null {
   if (epistemic === null) return null;
   return (
     <span className='rounded-sm bg-surface-2 px-1.5 py-0.5 text-[10px] font-semibold uppercase tracking-[0.06em] text-muted'>
@@ -1182,7 +1182,7 @@ function EpistemicBadge(
  */
 function PropertyEntry(
   { entry, past = false }: { readonly entry: PropertyEntryView; readonly past?: boolean; },
-): JSX.Element {
+): ReactElement {
   const locale = useLocale();
   const details: ReactNode[] = [];
   if (entry.since !== null) {

@@ -23,7 +23,7 @@
 import { Button } from '@/components/ui/button';
 import { resolveDisplayName } from '@onepiece-wiki/schemas';
 import { ExternalLink, X } from 'lucide-react';
-import { type JSX, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { api, type EntityDetail, type SchemaCatalogue, type SourceRef } from '../api';
@@ -52,7 +52,7 @@ function prettifySlug(slug: string): string {
     .join(' ');
 }
 
-export function EntityEditDrawer(p: EntityEditDrawerProps): JSX.Element {
+export function EntityEditDrawer(p: EntityEditDrawerProps): ReactElement {
   const locale = useLocale();
   const t = useT();
   const depth = p.depth ?? 0;

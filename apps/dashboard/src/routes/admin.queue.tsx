@@ -44,7 +44,7 @@ import {
   RefreshCw,
   X,
 } from 'lucide-react';
-import { type JSX, useState } from 'react';
+import { type ReactElement, useState } from 'react';
 import { toast } from 'sonner';
 import { api, ApiError, type QueueItem } from '../api';
 import { useCurrentUser } from '../auth';
@@ -66,7 +66,7 @@ type PendingAction = {
   readonly pr: QueueItem;
 };
 
-function AdminQueueComponent(): JSX.Element {
+function AdminQueueComponent(): ReactElement {
   const t = useT();
   const { user, loaded } = useCurrentUser();
   const isAdmin = user?.kind === 'github' && user.admin === true;
@@ -324,7 +324,7 @@ function AdminQueueComponent(): JSX.Element {
 }
 
 /** Server-computed structured diff for one queue PR (W-B slice 2). */
-function PullDetailPanel({ prNumber }: { readonly prNumber: number; }): JSX.Element {
+function PullDetailPanel({ prNumber }: { readonly prNumber: number; }): ReactElement {
   const t = useT();
   const { data, error, reload } = useApiResource(() => api.adminPullDetail(prNumber), [prNumber]);
   if (error !== null) return <LoadFailed message={error} onRetry={reload} />;
@@ -376,7 +376,7 @@ function DiffRow(
     readonly before: string | null;
     readonly after: string | null;
   },
-): JSX.Element {
+): ReactElement {
   return (
     <p className='break-all'>
       <span className='font-medium'>{label}</span>

@@ -13,7 +13,7 @@
  */
 import { Button } from '@/components/ui/button';
 import { ImagePlus, Loader2, Trash2, Upload } from 'lucide-react';
-import { type JSX, useRef, useState } from 'react';
+import { type ReactElement, useRef, useState } from 'react';
 import { api, resolveImageUrl } from '../api';
 
 /**
@@ -88,7 +88,7 @@ export type ImageUploadProps = {
 
 export function ImageUpload(
   { value, onChange, onUploaded, disabled }: ImageUploadProps,
-): JSX.Element {
+): ReactElement {
   const inputRef = useRef<HTMLInputElement>(null);
   const [busy, setBusy] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -244,7 +244,7 @@ export function ImageUpload(
  * a muted placeholder + the host name so the maintainer knows what's
  * up at a glance.
  */
-function ImagePreview({ src }: { src: string; }): JSX.Element {
+function ImagePreview({ src }: { src: string; }): ReactElement {
   const [broken, setBroken] = useState(false);
   // Reset the broken flag when the URL changes so swapping in a new
   // image gives it a fresh chance to load.
