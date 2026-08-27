@@ -64,7 +64,13 @@ import { HoverPreview } from '../components/HoverPreview';
 import { ShowMoreList } from '../components/ShowMoreList';
 import { SourceTabs } from '../components/SourceTabs';
 import { type ChromeKey, t } from '../lib/chrome';
-import { bandsFor, type LayoutBand, layoutFor, type SlotKey } from '../lib/entity-layout';
+import {
+  bandsFor,
+  type GridCell,
+  type LayoutBand,
+  layoutFor,
+  type SlotKey,
+} from '../lib/entity-layout';
 import {
   type EntitySection,
   restrictBands,
@@ -456,6 +462,7 @@ function Band(
     return nodes.length === 0 ? null : <div className='space-y-12'>{nodes}</div>;
   }
   if (band.kind === 'pack') return packed(band.slots, view, PACK_CLASS);
+  if (band.kind === 'grid') return <GridBand cells={band.cells} view={view} />;
   const main = renderSlots(band.main, view, true);
   const aside = renderSlots(band.aside, view, false);
   if (main.length === 0 && aside.length === 0) return null;
@@ -478,6 +485,65 @@ function Band(
     </div>
   );
 }
+
+/**
+ * A `grid` band: the twelve-column plate of `design/v2`, panels
+ * declaring their own span.
+ *
+ * Empty cells are dropped BEFORE the widths are applied, and the
+ * remaining spans are then stretched to fill the row rather than
+ * leaving a gap where the missing panel was — a sparse entity reads
+ * as a shorter page of wider cards, never as a page with holes.
+ * Below `lg` everything is one column: twelve columns of 100px are
+ * not a layout.
+ */
+function GridBand(
+  { cells, view }: { readonly cells: readonly GridCell[]; readonly view: EntityView; },
+): ReactElement | null {
+  const filled = cells
+    .map((cell) => ({ cell, node: renderSlot(cell.slot, view, cell.span >= 6) }))
+    .filter((entry): entry is { cell: GridCell; node: ReactElement; } => entry.node !== null);
+  if (filled.length === 0) return null;
+  const total = filled.reduce((sum, entry) => sum + entry.cell.span, 0);
+  return (
+    <div className='grid grid-cols-1 items-start gap-3 lg:grid-cols-12'>
+      {filled.map(({ cell, node }) => {
+        // One row's worth or less: stretch the SURVIVING spans back up
+        // to twelve, so a dropped panel widens its neighbours instead
+        // of leaving a hole. More than one row: keep what was authored
+        // and let the grid wrap.
+        const span = total > 0 && total <= 12
+          ? Math.min(12, Math.max(2, Math.round((cell.span / total) * 12)))
+          : cell.span;
+        return (
+          <div key={cell.slot} className={`panel min-w-0 ${SPAN_CLASS[span] ?? 'lg:col-span-12'}`}>
+            {node}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * Column spans as literal class names. Tailwind scans source text, so
+ * a computed `lg:col-span-${n}` would never be generated — the
+ * lookup is what makes the spans real.
+ */
+const SPAN_CLASS: Readonly<Record<number, string>> = {
+  1: 'lg:col-span-1',
+  2: 'lg:col-span-2',
+  3: 'lg:col-span-3',
+  4: 'lg:col-span-4',
+  5: 'lg:col-span-5',
+  6: 'lg:col-span-6',
+  7: 'lg:col-span-7',
+  8: 'lg:col-span-8',
+  9: 'lg:col-span-9',
+  10: 'lg:col-span-10',
+  11: 'lg:col-span-11',
+  12: 'lg:col-span-12',
+};
 
 function renderSlots(
   slots: readonly SlotKey[],

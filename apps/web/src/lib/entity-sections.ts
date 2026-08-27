@@ -122,6 +122,11 @@ export function restrictBands(
       }
       continue;
     }
+    if (band.kind === 'grid') {
+      const cells = band.cells.filter((cell) => keep.has(cell.slot));
+      if (cells.length > 0) out.push({ kind: 'grid', cells });
+      continue;
+    }
     const slots = filter(band.slots);
     if (slots.length > 0) out.push({ kind: band.kind, slots });
   }
