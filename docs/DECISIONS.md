@@ -8,6 +8,66 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-121 — La plage ouverte : l'arc en cours doit pouvoir être placé
+
+**Date**: 2026-08-27
+
+**Contexte**: `parseOrdinalRange` (ADR-119) rendait `null` pour toute
+valeur sans plage complète, sous la règle « jamais une plage
+fabriquée ». Cette règle est juste pour `-, chapters`, ce qu'affiche un
+arc sans chapitres.
+
+Elle était fausse pour un cas que je n'avais pas vu, et la mesure l'a
+sorti : `arc:elbaph` avait 0 arête, et les chapitres 1126 à 1131
+n'avaient **aucun arc**. Capture de la page rendue :
+
+| arc        | `chapter` rendu          | parsé (avant) |
+| ---------- | ------------------------ | ------------- |
+| Egghead    | `1058-1125, 68 chapters` | 1058…1125     |
+| **Elbaph** | **`1126-`**              | **null**      |
+
+Elbaph est l'arc **en cours de sérialisation** : il n'a pas de dernier
+chapitre, donc Fandom affiche une plage ouverte. `1126-` ne fabrique
+rien — il nomme un début réel, seule la fin est inconnue.
+
+Le coût était exact et invisible : **l'arc que le lecteur est en train
+de lire était le seul que le wiki ne pouvait jamais placer.** Et il le
+resterait à chaque nouvel arc, indéfiniment.
+
+**Options**:
+
+- A — `to: number | null` sur `OrdinalRange`, la plage ouverte
+  réclamant tout ce que le corpus détient à partir de `from`.
+- B — Borner une plage ouverte au dernier chapitre importé.
+- C — Ne rien faire et placer l'arc en cours à la main.
+
+**Choix**: A.
+
+**Rationale**: B écrit un nombre que la source ne dit pas — c'est
+exactement la fabrication que la règle interdit, déplacée d'un cran.
+C reproduit à la main un défaut structurel, à chaque arc, pour
+toujours.
+
+A ne fabrique rien : une plage fermée parcourt son propre intervalle,
+une plage ouverte est pilotée par le corpus (tout ce qui existe à
+partir de `from`). Une lacune du corpus reste une lacune.
+
+**Conséquences**:
+
+- **Les plages fermées sont planifiées AVANT les ouvertes.** Une
+  réclamation non bornée passée en premier avalerait les chapitres
+  d'un arc fermé sur la règle « le premier arc gagne ». Une
+  réclamation bornée est plus spécifique qu'une non bornée, donc elle
+  passe d'abord. Testé dans les deux ordres d'arrivée.
+- `findOverlaps` traite les plages ouvertes de la même façon : un
+  chevauchement réel est signalé, pas caché.
+- Écrit contre `Elbaph_Arc.infobox.html` et `Egghead_Arc.infobox.html`,
+  découpés dans des captures réelles.
+- Une règle qui exclut silencieusement le présent est pire qu'une
+  règle qui sur-réclame parfois. C'est la leçon à retenir de celle-ci.
+
+---
+
 ## ADR-120 — Le chapitre lit l'HTML rendu, mesuré et non supposé
 
 **Date**: 2026-08-27
