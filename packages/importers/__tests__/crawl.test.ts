@@ -251,8 +251,20 @@ describe('buildImportPRPlan', () => {
     expect(plan?.title).toContain('Import 2 entities');
     expect(plan?.body).toContain('`manga-chapter:1044`');
     expect(plan?.body).toContain('**Warnings (review before merge):**');
-    // Entity + translation files for both results.
-    expect(plan?.files.length).toBe(4);
+    // One entity file per result, plus one translation file per locale
+    // the mapper actually filled. Asserted as a RELATION rather than
+    // as 4: the chapter mapper gained `ja` and `ja-latn` sidecars
+    // (2026-08-27) and a pinned count made that enrichment look like a
+    // regression.
+    const entityFiles = plan?.files.filter((f) => f.kind === 'entity') ?? [];
+    expect(entityFiles.length).toBe(report.results.length);
+    expect(plan?.files.length).toBeGreaterThan(entityFiles.length);
+    // Every file belongs to one of the mapped entities — nothing is
+    // emitted for an entity the crawl did not produce.
+    const slugs = report.results.map((r) => r.mapped.entity.id.split(':')[1]);
+    for (const file of plan?.files ?? []) {
+      expect(slugs.some((slug) => file.path.endsWith(`/${slug}.json`))).toBe(true);
+    }
   });
 
   it('returns null on an empty report', () => {

@@ -17,7 +17,13 @@
  */
 import type { ParsedPage } from './client.ts';
 import { readOrdinalTitle } from './ordinal-title.ts';
-import { cleanValue, findTemplate, parseLooseDate, parseLooseNumber } from './wikitext.ts';
+import {
+  cleanValue,
+  findTemplate,
+  parseLooseDate,
+  parseLooseNumber,
+  unwrapRuby,
+} from './wikitext.ts';
 
 export type ChapterEntity = {
   readonly id: string;
@@ -30,8 +36,18 @@ export type ChapterEntity = {
 
 export type ChapterMapResult = {
   readonly entity: ChapterEntity;
-  /** i18n sidecar — merged into the EN translation file on emit. */
-  readonly translations: { readonly en: Record<string, string>; };
+  /**
+   * i18n sidecars — merged into the matching translation files on
+   * emit. `ja` and `ja-latn` are DATA locales (ADR-095): they are
+   * never rendered as UI text, but the fiche shows them and the
+   * search index carries them, so a reader can find a chapter by its
+   * Japanese title and still read the page in their own language.
+   */
+  readonly translations: {
+    readonly en: Record<string, string>;
+    readonly ja?: Record<string, string>;
+    readonly 'ja-latn'?: Record<string, string>;
+  };
   /** Fields the parser saw but could not map deterministically. */
   readonly warnings: readonly string[];
 };
@@ -59,12 +75,15 @@ export const CHAPTER_HANDLED_PARAMS: readonly string[] = [
   'rname',
   'romanji',
   'romaji',
+  'jname',
   'date',
   'reldate',
   'release',
   'pages',
   'page',
   'volume',
+  'vol',
+  'anime',
 ];
 
 /** Every entity is at schema_version 1 since the v1 reset (ADR-115). */
@@ -107,13 +126,30 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
   };
   const translations: Record<string, string> = {};
 
+  const key = `manga-chapter.${number}.title`;
   const enTitle = get('ename', 'title', 'extitle', 'etitle');
+  if (enTitle !== undefined) translations[key] = cleanValue(enTitle);
+  else warnings.push('no English title in infobox — title translation missing');
+
+  // A ROMANISATION IS NOT AN ENGLISH TITLE. `rname` used to be the
+  // fallback for the `en` file, which put « Furisosogu Tsuisō no
+  // Awayuki » where readers expect « A Light Snow of Reminiscence
+  // Falls ». It has its own locale now (ADR-095) and the survey shows
+  // it filled at 100%, so nothing is lost by keeping the two apart.
   const romaji = get('rname', 'romanji', 'romaji');
-  const title = enTitle ?? romaji;
-  if (title !== undefined) {
-    translations[`manga-chapter.${number}.title`] = cleanValue(title);
-  } else {
-    warnings.push('no English/romaji title in infobox — title translation missing');
+  const jaLatn: Record<string, string> = {};
+  if (romaji !== undefined) jaLatn[key] = cleanValue(romaji);
+
+  // `jname` is filled at 100% too, but shaped as a template:
+  // `{{Ruby|MONSTER TIME|モンスター タイム}}`. `cleanValue` drops
+  // templates wholesale, so reading it naively turns a full column
+  // into an empty one.
+  const ja: Record<string, string> = {};
+  const jnameRaw = get('jname');
+  if (jnameRaw !== undefined) {
+    const plain = jnameRaw.includes('{{') ? unwrapRuby(jnameRaw) : cleanValue(jnameRaw);
+    if (plain !== null && plain !== '') ja[key] = plain;
+    else warnings.push(`unreadable Japanese title: "${jnameRaw.slice(0, 60)}"`);
   }
 
   // The real Chapter Box carries no release date/pages/volume — those
@@ -139,15 +175,33 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
   }
 
   const relations: Record<string, unknown>[] = [];
-  const volumeRaw = get('volume');
+  // `vol`, not `volume`: the real param is the short one, so the long
+  // spelling read nothing and 1193 imported chapters carried exactly
+  // one `part-of-volume`. Both are accepted now.
+  const volumeRaw = get('vol', 'volume');
   if (volumeRaw !== undefined) {
-    const volume = parseLooseNumber(volumeRaw);
+    const volume = parseLooseNumber(cleanValue(volumeRaw));
     if (volume !== null) {
       relations.push({ type: 'part-of-volume', target: `volume:${volume}` });
       warnings.push(
         `part-of-volume targets volume:${volume} — the volume entity must exist before merge`,
       );
     } else warnings.push(`unparseable volume: "${cleanValue(volumeRaw)}"`);
+  }
+
+  // `anime` reads "Episode 280" — the adaptation edge, and the only
+  // manga→anime link the corpus can get from an infobox. The arc
+  // ranges that would give the rest are computed at template
+  // expansion and absent from the wikitext (ADR-119).
+  const animeRaw = get('anime');
+  if (animeRaw !== undefined) {
+    const episode = parseLooseNumber(cleanValue(animeRaw).replace(/^\s*Episodes?\s*/i, ''));
+    if (episode !== null) {
+      relations.push({ type: 'adapted-by', target: `anime-episode:${episode}` });
+      warnings.push(
+        `adapted-by targets anime-episode:${episode} — the episode entity must exist before merge`,
+      );
+    } else warnings.push(`unparseable anime episode: "${cleanValue(animeRaw)}"`);
   }
 
   return {
@@ -159,7 +213,11 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
       properties,
       relations,
     },
-    translations: { en: translations },
+    translations: {
+      en: translations,
+      ...(Object.keys(ja).length > 0 ? { ja } : {}),
+      ...(Object.keys(jaLatn).length > 0 ? { 'ja-latn': jaLatn } : {}),
+    },
     warnings,
   };
 }

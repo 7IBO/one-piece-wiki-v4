@@ -219,3 +219,59 @@ describe('cleanValue strips inline presentation tags (2026-08-27)', () => {
     expect(cleanValue('<blink>A</blink>')).toContain('blink');
   });
 });
+
+describe('chapter mapper: the fields it was leaving on the table (2026-08-27)', () => {
+  const page = (wikitext: string) => ({
+    title: 'Chapter 1044',
+    pageId: 1,
+    wikitext,
+    url: 'https://onepiece.fandom.com/wiki/Chapter_1044',
+  });
+
+  it('keeps the romanisation OUT of the English file', () => {
+    // `rname` used to be the fallback for `en`, which put
+    // "Furisosogu Tsuisō no Awayuki" where readers expect the English
+    // title. It has its own data locale now (ADR-095).
+    const r = mapChapter(page(
+      '{{Chapter Box|title=A Light Snow|rname=Furisosogu Tsuisō no Awayuki}}',
+    ));
+    expect(r?.translations.en['manga-chapter.1044.title']).toBe('A Light Snow');
+    expect(r?.translations['ja-latn']?.['manga-chapter.1044.title'])
+      .toBe('Furisosogu Tsuisō no Awayuki');
+  });
+
+  it('reads a Japanese title out of its Ruby template', () => {
+    // The survey shows `jname` filled at 100% and shaped `template`.
+    // `cleanValue` drops templates wholesale, so reading it naively
+    // turned a full column into an empty one.
+    const r = mapChapter(page(
+      '{{Chapter Box|title=Monster Time|jname={{Ruby|MONSTER TIME|モンスター タイム}}}}',
+    ));
+    expect(r?.translations.ja?.['manga-chapter.1044.title']).toBe('MONSTER TIME');
+  });
+
+  it('reads `vol`, not only the long spelling that never existed', () => {
+    // The mapper asked for `volume`; the real param is `vol`. That is
+    // why 1193 imported chapters carried exactly one part-of-volume.
+    const r = mapChapter(page('{{Chapter Box|title=X|vol=103}}'));
+    expect(r?.entity.relations).toContainEqual({
+      type: 'part-of-volume',
+      target: 'volume:103',
+    });
+  });
+
+  it('turns "Episode 280" into the adaptation edge', () => {
+    const r = mapChapter(page('{{Chapter Box|title=X|anime=Episode 280}}'));
+    expect(r?.entity.relations).toContainEqual({
+      type: 'adapted-by',
+      target: 'anime-episode:280',
+    });
+  });
+
+  it('warns rather than guessing when a field will not parse', () => {
+    const r = mapChapter(page('{{Chapter Box|title=X|vol=Straw Hat Theater|anime=none}}'));
+    expect(r?.entity.relations).toEqual([]);
+    expect(r?.warnings.join(' ')).toContain('unparseable volume');
+    expect(r?.warnings.join(' ')).toContain('unparseable anime episode');
+  });
+});
