@@ -1,0 +1,81 @@
+{
+  "artboards": [
+    {
+      "file": "Main.dc.html",
+      "title": "Personnage — Monkey D. Luffy",
+      "x": 0,
+      "y": 0,
+      "w": 1440,
+      "h": 1450
+    },
+    {
+      "file": "Chapitre.dc.html",
+      "title": "Chapitre 1044 — entité ordinale",
+      "x": 1560,
+      "y": 0,
+      "w": 1440,
+      "h": 1260
+    },
+    {
+      "file": "Fruit.dc.html",
+      "title": "Fruit du démon — rétroactivité",
+      "x": 0,
+      "y": 1610,
+      "w": 1440,
+      "h": 1300
+    },
+    {
+      "file": "Equipage.dc.html",
+      "title": "Équipage — anciens membres",
+      "x": 1560,
+      "y": 1610,
+      "w": 1440,
+      "h": 1290
+    }
+  ],
+  "annotations": [
+    {
+      "id": "principe",
+      "x": -430,
+      "y": 0,
+      "w": 350,
+      "text": "UNE direction, QUATRE types d'entites. Chassis D (grille 12 colonnes) + la chronologie de C devenue un TYPE DE PANNEAU, pas une page. Bandeau de B a hauteur reduite. Meme grammaire partout, jeu de panneaux different par type."
+    },
+    {
+      "id": "couleurs",
+      "x": -430,
+      "y": 250,
+      "w": 350,
+      "text": "COULEURS. Fond #0a0b0e, panneaux #101217. Liens en bleu-gris froid #9fb8d0 : il y en a partout, ils doivent etre calmes. Vermillon #e0553f UNIQUEMENT sur la valeur actuelle et l'onglet actif. Or #e8c15a UNIQUEMENT sur ta position de lecture. Trois roles, jamais melanges."
+    },
+    {
+      "id": "chrono",
+      "x": -430,
+      "y": 540,
+      "w": 350,
+      "text": "LA CHRONOLOGIE EST UN PANNEAU. Personnage : l'historique de la prime. Fruit : le nom qui change retroactivement. Equipage : les arrivees. Chapitre : elle s'inverse — ce point du temps liste ce qui bascule. Le differenciateur du projet devient visible sur toutes les pages."
+    },
+    {
+      "id": "types",
+      "x": -430,
+      "y": 850,
+      "w": 350,
+      "text": "PAR TYPE. Chapitre : prev/next encadrent le bandeau, position dans le volume, adaptation anime. Fruit : porteurs successifs, ce que chaque personnage croit. Equipage : anciens membres, et la distinction date connue / simplement presente (le cas Rocks)."
+    },
+    {
+      "id": "remplir",
+      "x": -430,
+      "y": 1160,
+      "w": 350,
+      "text": "PAGE PLEINE SANS MEUBLER. Ce qui remplit, ce sont des vues DERIVEES des memes donnees : densite d'apparitions, aretes entrantes, chronologies, adaptations manga/anime, ce qui est masque. Un panneau sans donnees disparait, il ne s'affiche jamais vide."
+    },
+    {
+      "id": "onglets",
+      "x": -430,
+      "y": 1470,
+      "w": 350,
+      "text": "ONGLETS = VRAIES URLS. /character/luffy/apparitions rendu cote serveur, presente comme un onglet. Meme ergonomie, mais quatre fois plus de surface indexable par Google. Des onglets cote client couteraient le referencement."
+    }
+  ],
+  "launch": { "view": "canvas" }
+}

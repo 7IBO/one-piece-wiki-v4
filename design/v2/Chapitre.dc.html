@@ -1,0 +1,197 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Archivo, system-ui, sans-serif; background: #0a0b0e; }
+    a { color: #9fb8d0; text-decoration: none; }
+    a:hover { color: #c5d6e6; }
+    .panel { border: 1px solid #1e222a; background: #101217; border-radius: 6px; padding: 14px 16px; }
+    .lbl { font-size: 9px; letter-spacing: 0.18em; color: #6a7280; }
+    .row { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; padding: 7px 0; border-bottom: 1px solid #191c23; font-size: 13px; }
+    .last { border-bottom: none; }
+    .k { color: #8b939f; }
+    .num { font-variant-numeric: tabular-nums; }
+    .tab { font-size: 12.5px; padding: 13px 0; color: #79818d; }
+    .on { color: #eceef2; font-weight: 600; border-bottom: 2px solid #e0553f; margin-bottom: -1px; }
+    .chip { font-size: 11px; padding: 4px 9px; border: 1px solid #232833; border-radius: 3px; color: #b3bac4; display: inline-block; }
+    .nav { width: 52px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 6px; color: #79818d; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; background: #0a0b0e; color: #eceef2">
+
+  <div style="display: flex; align-items: stretch; height: 46px; border-bottom: 1px solid #1e222a">
+    <div style="display: flex; align-items: center; padding: 0 18px; font-size: 14px; font-weight: 800; border-right: 1px solid #1e222a">OP<span style="color: #e0553f">/</span>WIKI</div>
+    <div style="flex-grow: 1; display: flex; align-items: center; padding: 0 16px; font-size: 12px; color: #6a7280">⌕&nbsp;&nbsp;Rechercher — personnages, fruits, chapitres, arcs, épisodes…</div>
+    <div style="display: flex; align-items: center; gap: 9px; padding: 0 16px; border-left: 1px solid #1e222a; font-size: 11px">
+      <span style="color: #6a7280">MA PROGRESSION</span>
+      <span style="width: 90px; height: 3px; border-radius: 2px; background: #1e222a; position: relative"><span style="position: absolute; left: 0; top: 0; bottom: 0; width: 84%; background: #e8c15a; border-radius: 2px"></span></span>
+      <span class="num" style="font-weight: 700; color: #e8c15a">CH. 1044</span>
+    </div>
+  </div>
+
+  <!-- entité ordinale : prev/next encadrent le bandeau -->
+  <div style="position: relative; height: 258px; overflow: hidden; border-bottom: 1px solid #1e222a; display: flex">
+    <div style="position: absolute; inset: 0; background: linear-gradient(105deg, #141b2a 0%, #2c3f6b 46%, #5a4f8f 76%, #9d6fa8 100%); opacity: 0.26"></div>
+    <div style="position: absolute; inset: 0; background: linear-gradient(180deg, rgba(10,11,14,0.55) 0%, rgba(10,11,14,0.2) 45%, #0a0b0e 100%)"></div>
+
+    <div class="nav" style="position: relative; border-right: 1px solid #1e222a">
+      <span style="font-size: 20px">‹</span><span class="num" style="font-size: 10px">1043</span>
+    </div>
+
+    <div style="position: relative; flex-grow: 1; padding: 34px 30px; display: flex; gap: 22px; align-items: flex-start">
+      <div style="width: 122px; height: 178px; border-radius: 8px; flex-shrink: 0; background: linear-gradient(150deg, #1c2340, #6b5a9f); border: 1px solid #2c3038; position: relative; overflow: hidden">
+        <div style="position: absolute; right: -22px; top: 40px; width: 120px; height: 120px; border-radius: 50%; background: #c98fb4; opacity: 0.32"></div>
+        <div style="position: absolute; left: 9px; bottom: 9px; font-size: 9px; letter-spacing: 0.12em; color: rgba(255,255,255,0.65)">COUVERTURE</div>
+      </div>
+      <div style="padding-top: 4px; min-width: 0">
+        <div class="lbl">CHAPITRE DE MANGA · <a href="#" style="color: #6a7280">VOLUME 103</a> · <a href="#" style="color: #6a7280">ARC WANO</a></div>
+        <div style="display: flex; align-items: baseline; gap: 14px; margin-top: 5px">
+          <span class="num" style="font-size: 42px; font-weight: 800; letter-spacing: -0.03em; color: #6a7280">1044</span>
+          <span style="font-size: 34px; font-weight: 800; letter-spacing: -0.03em; line-height: 1.1">Le Guerrier de la Libération</span>
+        </div>
+        <div style="font-size: 14px; color: #a3abb6; margin-top: 7px">Paru le 25 avril 2022 · 17 pages · histoire de couverture <a href="#">« Le voyage de Germa 66 »</a></div>
+        <div style="display: flex; gap: 7px; margin-top: 13px">
+          <span class="chip" style="border-color: #3a2a1a; color: #e8c15a">C'est ta position de lecture</span>
+          <span class="chip">Pages couleur</span>
+          <span class="chip">Adapté en <a href="#" style="color: #b3bac4">épisode 1071</a></span>
+        </div>
+      </div>
+      <div style="flex-grow: 1"></div>
+      <div style="display: flex; border: 1px solid #232833; border-radius: 6px; background: rgba(16,18,23,0.72); flex-shrink: 0">
+        <div style="padding: 11px 17px; border-right: 1px solid #232833"><div class="lbl">PERSONNAGES</div><div class="num" style="font-size: 20px; font-weight: 700; margin-top: 2px">14</div><div style="font-size: 10px; color: #6a7280">dont 1 nouveau</div></div>
+        <div style="padding: 11px 17px; border-right: 1px solid #232833"><div class="lbl">CHANGEMENTS</div><div class="num" style="font-size: 20px; font-weight: 700; color: #e0553f; margin-top: 2px">6</div><div style="font-size: 10px; color: #6a7280">valeurs qui basculent ici</div></div>
+        <div style="padding: 11px 17px"><div class="lbl">RÉVÉLATIONS</div><div class="num" style="font-size: 20px; font-weight: 700; margin-top: 2px">2</div><div style="font-size: 10px; color: #6a7280">dont 1 rétroactive</div></div>
+      </div>
+    </div>
+
+    <div class="nav" style="position: relative; border-left: 1px solid #1e222a; color: #3a4048">
+      <span style="font-size: 20px">›</span><span class="num" style="font-size: 10px">1045</span><span style="font-size: 9px; text-align: center; line-height: 1.3; color: #565e69">au-delà de<br>ta lecture</span>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 24px; padding: 0 40px; border-bottom: 1px solid #1e222a">
+    <span class="tab on">Vue d'ensemble</span>
+    <span class="tab">Résumé</span>
+    <span class="tab">Personnages <span style="color: #565e69">14</span></span>
+    <span class="tab">Ce qui change ici <span style="color: #565e69">6</span></span>
+    <span class="tab">Adaptation</span>
+    <span class="tab">Sources</span>
+  </div>
+
+  <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; padding: 14px 40px 40px">
+
+    <div class="panel" style="grid-column: span 3">
+      <div class="lbl">FICHE</div>
+      <div style="margin-top: 9px">
+        <div class="row"><span class="k">Volume</span><a href="#">103</a></div>
+        <div class="row"><span class="k">Arc</span><a href="#">Wano</a></div>
+        <div class="row"><span class="k">Saga</span><a href="#">Yonkô</a></div>
+        <div class="row"><span class="k">Parution</span><span class="num">25 avril 2022</span></div>
+        <div class="row"><span class="k">Pages</span><span class="num">17</span></div>
+        <div class="row"><span class="k">Titre japonais</span><span>解放の戦士</span></div>
+        <div class="row last"><span class="k">Épisode adapté</span><a href="#">1071</a></div>
+      </div>
+    </div>
+
+    <!-- pour un chapitre, la chronologie s'inverse : ce point du temps liste ce qui bascule -->
+    <div class="panel" style="grid-column: span 5">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <div class="lbl">CE QUI DEVIENT VRAI DANS CE CHAPITRE</div><span style="font-size: 10px; color: #6a7280">6 changements</span>
+      </div>
+      <div style="margin-top: 11px">
+        <div class="row"><span><a href="#">Monkey D. Luffy</a> <span class="k">· technique</span></span><span style="font-size: 12px; color: #e0553f">Gear Fifth · débloquée</span></div>
+        <div class="row"><span><a href="#">Gomu Gomu no Mi</a> <span class="k">· vrai nom</span></span><span style="font-size: 12px; color: #e0553f">Hito Hito no Mi, modèle Nika</span></div>
+        <div class="row"><span><a href="#">Gomu Gomu no Mi</a> <span class="k">· type</span></span><span style="font-size: 12px; color: #e0553f">Paramecia → Zoan mythique</span></div>
+        <div class="row"><span><a href="#">Gouvernement Mondial</a> <span class="k">· acte</span></span><span style="font-size: 12px; color: #a3abb6">Renommage du fruit révélé</span></div>
+        <div class="row"><span><a href="#">Nika</a> <span class="k">· existence</span></span><span style="font-size: 12px; color: #a3abb6">Attestée</span></div>
+        <div class="row last"><span><a href="#">Kaido</a> <span class="k">· croyance</span></span><span style="font-size: 12px; color: #a3abb6">Reconnaît Joy Boy</span></div>
+      </div>
+      <div style="font-size: 11px; color: #6a7280; margin-top: 11px; line-height: 1.6; border-top: 1px solid #191c23; padding-top: 10px">
+        Deux de ces changements sont <span style="color: #b3bac4">rétroactifs</span> : ils modifient ce qui était vrai avant, sans modifier ce que les personnages croyaient à l'époque.
+      </div>
+    </div>
+
+    <div class="panel" style="grid-column: span 4">
+      <div class="lbl">POSITION DANS LE VOLUME 103</div>
+      <div style="display: flex; gap: 4px; margin-top: 14px">
+        <a href="#" style="flex: 1"><div style="height: 54px; border-radius: 3px; background: #1e2230"></div><div class="num" style="font-size: 10px; color: #6a7280; text-align: center; margin-top: 4px">1039</div></a>
+        <a href="#" style="flex: 1"><div style="height: 54px; border-radius: 3px; background: #1e2230"></div><div class="num" style="font-size: 10px; color: #6a7280; text-align: center; margin-top: 4px">1040</div></a>
+        <a href="#" style="flex: 1"><div style="height: 54px; border-radius: 3px; background: #1e2230"></div><div class="num" style="font-size: 10px; color: #6a7280; text-align: center; margin-top: 4px">1041</div></a>
+        <a href="#" style="flex: 1"><div style="height: 54px; border-radius: 3px; background: #1e2230"></div><div class="num" style="font-size: 10px; color: #6a7280; text-align: center; margin-top: 4px">1042</div></a>
+        <a href="#" style="flex: 1"><div style="height: 54px; border-radius: 3px; background: #1e2230"></div><div class="num" style="font-size: 10px; color: #6a7280; text-align: center; margin-top: 4px">1043</div></a>
+        <span style="flex: 1"><div style="height: 54px; border-radius: 3px; background: linear-gradient(150deg, #1c2340, #6b5a9f); border: 1px solid #e8c15a"></div><div class="num" style="font-size: 10px; color: #e8c15a; text-align: center; margin-top: 4px; font-weight: 700">1044</div></span>
+        <span style="flex: 1"><div style="height: 54px; border-radius: 3px; background: #131519; border: 1px dashed #232833"></div><div class="num" style="font-size: 10px; color: #3a4048; text-align: center; margin-top: 4px">1045</div></span>
+      </div>
+      <div style="margin-top: 15px">
+        <div class="row"><span class="k">Chapitre du volume</span><span class="num">6 sur 11</span></div>
+        <div class="row"><span class="k">Chapitre de l'arc Wano</span><span class="num">146 sur 149</span></div>
+        <div class="row last"><span class="k">Chapitre de la série</span><span class="num">1044 sur 1044 lus</span></div>
+      </div>
+    </div>
+
+    <div class="panel" style="grid-column: span 8">
+      <div style="display: flex; justify-content: space-between; align-items: baseline">
+        <div class="lbl">PERSONNAGES PRÉSENTS — 14</div><a href="#" style="font-size: 10px">Tout voir</a>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(7, 1fr); gap: 9px; margin-top: 12px">
+        <a href="#" style="color: inherit"><div style="height: 82px; border-radius: 4px; background: linear-gradient(145deg, #2a1512, #b8402a)"></div><div style="font-size: 11.5px; font-weight: 600; margin-top: 5px">Luffy</div><div style="font-size: 10px; color: #6a7280">Central</div></a>
+        <a href="#" style="color: inherit"><div style="height: 82px; border-radius: 4px; background: linear-gradient(145deg, #1a1620, #6b3f7a)"></div><div style="font-size: 11.5px; font-weight: 600; margin-top: 5px">Kaido</div><div style="font-size: 10px; color: #6a7280">Central</div></a>
+        <a href="#" style="color: inherit"><div style="height: 82px; border-radius: 4px; background: linear-gradient(145deg, #201a16, #7a5a3f)"></div><div style="font-size: 11.5px; font-weight: 600; margin-top: 5px">Zoro</div><div style="font-size: 10px; color: #6a7280">Mentionné</div></a>
+        <a href="#" style="color: inherit"><div style="height: 82px; border-radius: 4px; background: linear-gradient(145deg, #16201d, #2f6b5a)"></div><div style="font-size: 11.5px; font-weight: 600; margin-top: 5px">Momonosuke</div><div style="font-size: 10px; color: #6a7280">Présent</div></a>
+        <a href="#" style="color: inherit"><div style="height: 82px; border-radius: 4px; background: linear-gradient(145deg, #1a1c24, #3f4d7a)"></div><div style="font-size: 11.5px; font-weight: 600; margin-top: 5px">Yamato</div><div style="font-size: 10px; color: #6a7280">Présent</div></a>
+        <a href="#" style="color: inherit"><div style="height: 82px; border-radius: 4px; background: linear-gradient(145deg, #241d12, #b8863a)"></div><div style="font-size: 11.5px; font-weight: 600; margin-top: 5px">CP0</div><div style="font-size: 10px; color: #6a7280">Présent</div></a>
+        <a href="#" style="color: inherit"><div style="height: 82px; border-radius: 4px; border: 1px solid #4a2620; background: linear-gradient(145deg, #1e1214, #7a2f3f)"></div><div style="font-size: 11.5px; font-weight: 600; margin-top: 5px">Nika</div><div style="font-size: 10px; color: #e0553f">1<sup>re</sup> apparition</div></a>
+      </div>
+    </div>
+
+    <div class="panel" style="grid-column: span 4">
+      <div class="lbl">ADAPTATION ANIME</div>
+      <div style="display: flex; gap: 12px; margin-top: 12px">
+        <div style="width: 132px; height: 74px; border-radius: 4px; flex-shrink: 0; background: linear-gradient(150deg, #1c2340, #8f6fa8); position: relative">
+          <div style="position: absolute; right: 6px; bottom: 5px; font-size: 9px; color: rgba(255,255,255,0.7)">TMDB</div>
+        </div>
+        <div style="min-width: 0">
+          <a href="#" style="font-size: 13px; font-weight: 600; display: block">Épisode 1071</a>
+          <div style="font-size: 11px; color: #8b939f; margin-top: 3px; line-height: 1.5">« L'aube du Guerrier de la Libération »<br>Diffusé le 6 août 2023</div>
+        </div>
+      </div>
+      <div style="margin-top: 13px">
+        <div class="row"><span class="k">Écart manga → anime</span><span class="num">15 mois</span></div>
+        <div class="row last"><span class="k">Contenu ajouté par l'anime</span><span>Oui · 3 scènes</span></div>
+      </div>
+    </div>
+
+    <div class="panel" style="grid-column: span 6">
+      <div class="lbl">RÉSUMÉ SANS SPOIL</div>
+      <div style="font-size: 13.5px; color: #b3bac4; margin-top: 11px; line-height: 1.75">
+        Sur le toit d'Onigashima, l'affrontement bascule. Ce que le Gouvernement Mondial cachait depuis huit cents ans à propos du fruit du démon de Luffy est enfin dit à voix haute, et Kaido est le premier à comprendre ce qu'il a en face de lui.
+      </div>
+      <div style="font-size: 11px; color: #6a7280; margin-top: 12px; border-top: 1px solid #191c23; padding-top: 10px; line-height: 1.6">
+        Version <span style="color: #b3bac4">sans spoil</span> : elle décrit ce qui se passe sans nommer les révélations. Une version complète existe et s'affiche une fois ce chapitre dépassé.
+      </div>
+    </div>
+
+    <div class="panel" style="grid-column: span 6">
+      <div class="lbl">PREMIÈRES APPARITIONS DANS CE CHAPITRE</div>
+      <div style="margin-top: 9px">
+        <div class="row"><a href="#">Nika</a><span style="font-size: 11px; color: #8b939f">Personnage · dieu du soleil</span></div>
+        <div class="row"><a href="#">Gear Fifth</a><span style="font-size: 11px; color: #8b939f">Technique</span></div>
+        <div class="row"><a href="#">Hito Hito no Mi, modèle Nika</a><span style="font-size: 11px; color: #8b939f">Fruit · renomme un fruit existant</span></div>
+        <div class="row last"><a href="#">Tambour de la libération</a><span style="font-size: 11px; color: #8b939f">Concept</span></div>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
