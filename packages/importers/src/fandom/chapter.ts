@@ -181,12 +181,23 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
   const volumeRaw = get('vol', 'volume');
   if (volumeRaw !== undefined) {
     const volume = parseLooseNumber(cleanValue(volumeRaw));
-    if (volume !== null) {
+    // A TANKŌBON IS NUMBERED FROM 1. A parsed 0 is a placeholder or a
+    // failed parse wearing a number, not a volume — and it produced
+    // `manga-chapter:0 → volume:0` on the Strong World prologue, a
+    // one-shot that belongs to no volume at all. Note the asymmetry
+    // with `number`: chapter 0 IS legitimate (ADR-116), which is why
+    // the property accepts it. The guard belongs to the volume
+    // ordinal, not to zeros in general.
+    if (volume !== null && volume >= 1) {
       relations.push({ type: 'part-of-volume', target: `volume:${volume}` });
       warnings.push(
         `part-of-volume targets volume:${volume} — the volume entity must exist before merge`,
       );
-    } else warnings.push(`unparseable volume: "${cleanValue(volumeRaw)}"`);
+    } else {
+      warnings.push(
+        `no usable volume in "${cleanValue(volumeRaw)}" — part-of-volume not emitted`,
+      );
+    }
   }
 
   // `anime` reads "Episode 280" — the adaptation edge, and the only
@@ -196,12 +207,17 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
   const animeRaw = get('anime');
   if (animeRaw !== undefined) {
     const episode = parseLooseNumber(cleanValue(animeRaw).replace(/^\s*Episodes?\s*/i, ''));
-    if (episode !== null) {
+    // Episodes are numbered from 1 too — same guard, same reason.
+    if (episode !== null && episode >= 1) {
       relations.push({ type: 'adapted-by', target: `anime-episode:${episode}` });
       warnings.push(
         `adapted-by targets anime-episode:${episode} — the episode entity must exist before merge`,
       );
-    } else warnings.push(`unparseable anime episode: "${cleanValue(animeRaw)}"`);
+    } else {
+      warnings.push(
+        `no usable episode in "${cleanValue(animeRaw)}" — adapted-by not emitted`,
+      );
+    }
   }
 
   return {
