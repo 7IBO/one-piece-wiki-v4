@@ -8,6 +8,129 @@ Format: append new entries at the top.
 
 ---
 
+## ADR-114 — `absent_properties` : distinguer « pas encore renseigné » de « n'existe pas dans l'œuvre »
+
+**Date**: 2026-08-27
+
+**Contexte**. Les maquettes `design/v2` prévoient, sur une page pauvre en
+données, un panneau qui **nomme les propriétés attendues sans valeur**
+pour guider la contribution. Le panneau est inutilisable sans marqueur
+d'absence délibérée : il réclamerait éternellement la date de naissance
+d'un personnage qu'Oda n'a jamais datée, et un contributeur finirait par
+inventer une valeur pour faire taire l'alerte.
+
+C'est le scénario le plus dommageable pour ce projet en particulier :
+toute sa promesse est que chaque donnée porte sa source.
+
+**Options considérées**.
+
+1. _Un `epistemic_status` supplémentaire._ Rejeté : `epistemic_status`
+   qualifie une valeur **présente** — sa nature de vérité. Il n'a rien à
+   dire sur une valeur absente.
+2. _Une entrée de propriété sans valeur_ (`{ "no_value": "not_in_work" }`).
+   Rejeté pour deux raisons. D'abord la forme : une absence est une
+   affirmation sur l'œuvre entière, pas sur un point du temps — elle n'a
+   ni `since` ni historique, donc le conteneur historisé est le mauvais.
+   Ensuite le rayon d'explosion : rendre `value` optionnel obligerait
+   chaque consommateur d'entrées — validateur, printeurs, dashboard,
+   pipeline, web — à gérer un cas dégénéré.
+3. _Un champ à la racine de l'entité._ Retenu.
+
+**Décision**. `absent_properties`, à la racine, à côté de `properties` :
+
+```json
+"absent_properties": {
+  "birth_date": { "reason": "not_in_work" },
+  "bounty": { "reason": "not_applicable", "source": "manga-chapter:1" }
+}
+```
+
+Vocabulaire `absence-reasons` : `not_in_work` (la question a un sens,
+l'œuvre n'y répond jamais) et `not_applicable` (la question ne se pose
+pas). Champs optionnels `source` — une question posée en SBS à laquelle
+l'auteur a refusé de répondre en est une — et `note`.
+
+**Conséquences**.
+
+- **Rayon d'explosion minimal.** Le champ est additif à la racine : rien
+  de ce qui lit `properties` n'en est affecté. Un consommateur qui
+  l'ignore continue de fonctionner exactement comme avant.
+- **Deux invariants tenus par `check:coherence`**, sans quoi le marqueur
+  deviendrait un fourre-tout : `ABSENT_PROPERTY_HAS_VALUE` interdit
+  d'affirmer à la fois une valeur et son absence ;
+  `ABSENT_PROPERTY_UNKNOWN` interdit de déclarer absente une propriété
+  que le type ne déclare pas.
+- **Le calcul de complétude devient honnête** : attendues − renseignées −
+  déclarées absentes. C'est ce que le panneau de contribution affichera.
+- **Les importeurs ne le remplissent pas.** Fandom laisse un champ vide
+  sans jamais dire pourquoi ; seul un humain peut affirmer une absence.
+  L'écrire depuis un mapper serait fabriquer de la donnée.
+
+---
+
+## ADR-113 — `since_precision` : distinguer « à partir de » de « au plus tard à »
+
+**Date**: 2026-08-27
+
+**Contexte**. `since` est obligatoire sur beaucoup de relations et
+affirme « la valeur commence à s'appliquer à cette source ». L'œuvre ne
+le montre pas toujours : elle établit régulièrement qu'une valeur
+**s'appliquait déjà** sans jamais montrer son début.
+
+Le cas d'école est l'équipage de Rocks, soulevé dans le brief d'origine
+du mainteneur : on sait qui en faisait partie, jamais quand chacun l'a
+rejoint. Karoo chez les Chapeaux de Paille est le même cas. Écrire
+`since: manga-chapter:957` **affirme alors une date d'arrivée qui
+n'existe nulle part dans l'œuvre** — exactement ce qu'un wiki dont la
+promesse est la traçabilité ne doit pas faire.
+
+Aucun qualificateur existant ne couvre le cas. `attested_by` (ADR-093)
+désigne une référence **externe** — interview, site officiel — pas une
+borne temporelle floue. `epistemic_status` qualifie la nature d'une
+vérité, pas la précision de sa date.
+
+**Options considérées**.
+
+1. _Un champ propre à `member-of`_ (`present_at`). Rejeté : le problème
+   n'a rien de spécifique à l'appartenance à un équipage — toute
+   propriété historisée peut le rencontrer. Un champ par relation aurait
+   multiplié les formes pour un seul concept.
+2. _Rendre `since` optionnel sur `member-of`._ Rejeté : on perdrait
+   l'information « présent au chapitre N », qui est justement ce que
+   l'œuvre donne.
+3. _Un qualificateur de précision sur `since` lui-même._ Retenu.
+
+**Décision**. Un qualificateur commun `since_precision`, vocabulaire
+`since-precisions` :
+
+| Valeur                   | Lecture                                                          |
+| ------------------------ | ---------------------------------------------------------------- |
+| `exact` (défaut, absent) | la valeur **commence** à cette source                            |
+| `at_latest`              | la valeur **s'appliquait déjà** ici ; son début n'est pas montré |
+
+Il est ajouté aux qualificateurs universels des entrées de propriété et
+déclaré sur les **38 types de relation** qui déclarent `since`.
+
+**Conséquences**.
+
+- **Additif, jamais rétroactif.** L'absence vaut `exact`, donc les 61
+  entités du corpus gardent leur lecture inchangée. `check:compat`
+  classe les 39 changements comme additifs.
+- **Une règle garde le sens** : `since-precision-needs-since` refuse une
+  précision orpheline — elle qualifie `since`, elle n'a aucun sens sans
+  lui.
+- **L'affichage doit distinguer les deux cas.** « À bord depuis le
+  chapitre 6 » et « présent au chapitre 130, arrivée inconnue » ne sont
+  pas la même information ; les rendre identiques serait réintroduire
+  l'affirmation fausse par l'interface après l'avoir évitée dans la
+  donnée. La maquette `design/v2/Equipage.dc.html` montre les deux
+  formes.
+- Trois endroits miroirs restent à tenir synchronisés, comme pour les
+  autres qualificateurs de base : le fichier de schéma, `BaseQualifierBag`
+  dans `entity-schema.ts`, et le printeur `printers/property-values.ts`.
+
+---
+
 ## ADR-112 — Trois rôles de couleur disjoints ; la teinte d'entité colore l'ambiance, jamais la sémantique
 
 **Date**: 2026-08-27

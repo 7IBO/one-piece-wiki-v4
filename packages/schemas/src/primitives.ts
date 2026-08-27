@@ -102,6 +102,51 @@ export const EpistemicStatus = z.enum([
 export type EpistemicStatus = z.infer<typeof EpistemicStatus>;
 
 /**
+ * ADR-113 — comment lire `since`.
+ *
+ * `since` affirme « à partir de cette source ». Quand l'œuvre montre
+ * seulement qu'une valeur s'appliquait DÉJÀ à un moment donné — un
+ * personnage présent à bord sans que son arrivée soit jamais dessinée —
+ * écrire `since` seul affirme une date d'arrivée qui n'existe pas.
+ * `at_latest` dit « au plus tard ici, début inconnu ».
+ *
+ * Absent = `exact`, ce qui préserve la lecture de tout le corpus
+ * antérieur.
+ */
+export const SincePrecision = z.enum(['exact', 'at_latest']);
+export type SincePrecision = z.infer<typeof SincePrecision>;
+
+/**
+ * ADR-114 — pourquoi une propriété attendue n'a pas de valeur.
+ *
+ * Sans ce marqueur, une page incomplète réclame éternellement les mêmes
+ * champs, et un contributeur finit par en inventer un pour faire taire
+ * l'alerte : le pire résultat possible pour un wiki dont la promesse
+ * est la traçabilité.
+ *
+ * Ce n'est PAS un `epistemic_status` : celui-ci qualifie une valeur
+ * présente, pas son absence.
+ */
+export const AbsenceReason = z.enum(['not_in_work', 'not_applicable']);
+export type AbsenceReason = z.infer<typeof AbsenceReason>;
+
+/**
+ * Les propriétés dont on sait qu'elles n'auront pas de valeur, avec la
+ * raison et, si on l'a, la source qui l'établit — une question posée en
+ * SBS à laquelle l'auteur a refusé de répondre en est une.
+ */
+export const AbsentProperty = z
+  .object({
+    reason: AbsenceReason,
+    /** Source établissant l'absence, quand elle existe. */
+    source: z.string().optional(),
+    /** Note libre du contributeur, jamais affichée telle quelle. */
+    note: z.string().optional(),
+  })
+  .passthrough();
+export type AbsentProperty = z.infer<typeof AbsentProperty>;
+
+/**
  * Qualifiers implicit on every relation's `qualifiers` object (ADR-037),
  * mirroring the historisable-property base qualifiers. A relation type
  * MUST NOT declare these — the schema engine provides them and

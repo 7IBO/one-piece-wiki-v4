@@ -3,13 +3,33 @@
   "id": "uses-technique",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Uses technique", "inverse": "Used by" },
-    "fr": { "active": "Utilise la technique", "inverse": "Utilisée par" }
+    "en": {
+      "active": "Uses technique",
+      "inverse": "Used by"
+    },
+    "fr": {
+      "active": "Utilise la technique",
+      "inverse": "Utilisée par"
+    }
   },
-  "valid_from_types": ["character"],
-  "valid_to_types": ["technique"],
+  "valid_from_types": [
+    "character"
+  ],
+  "valid_to_types": [
+    "technique"
+  ],
   "qualifiers": [
-    { "id": "since", "value_type": "source_ref", "required": false }
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    },
+    {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,

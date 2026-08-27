@@ -1,0 +1,21 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/vocabulary.schema.json",
+  "id": "absence-reasons",
+  "schema_version": 1,
+  "values": {
+    "not_in_work": {
+      "labels": { "en": "Not given in the work", "fr": "Non donné dans l'œuvre" },
+      "descriptions": {
+        "en": "The question makes sense for this entity, but the work never answers it. A birth date the author never gave.",
+        "fr": "La question a un sens pour cette entité, mais l'œuvre n'y répond jamais. Une date de naissance que l'auteur n'a jamais donnée."
+      }
+    },
+    "not_applicable": {
+      "labels": { "en": "Not applicable", "fr": "Sans objet" },
+      "descriptions": {
+        "en": "The question does not arise for this entity. A bounty on someone who was never wanted; an awakening on a fruit nobody has eaten.",
+        "fr": "La question ne se pose pas pour cette entité. Une prime sur quelqu'un qui n'a jamais été recherché ; un réveil sur un fruit que personne n'a mangé."
+      }
+    }
+  }
+}

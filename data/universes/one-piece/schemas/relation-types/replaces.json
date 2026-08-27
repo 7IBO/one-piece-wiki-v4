@@ -3,13 +3,33 @@
   "id": "replaces",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Replaces", "inverse": "Replaced by" },
-    "fr": { "active": "Remplace", "inverse": "Remplacé par" }
+    "en": {
+      "active": "Replaces",
+      "inverse": "Replaced by"
+    },
+    "fr": {
+      "active": "Remplace",
+      "inverse": "Remplacé par"
+    }
   },
-  "valid_from_types": ["ship"],
-  "valid_to_types": ["ship"],
+  "valid_from_types": [
+    "ship"
+  ],
+  "valid_to_types": [
+    "ship"
+  ],
   "qualifiers": [
-    { "id": "since", "value_type": "source_ref", "required": false }
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    },
+    {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": false,
   "inverse_inferred": true

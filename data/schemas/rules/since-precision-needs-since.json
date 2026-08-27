@@ -1,0 +1,31 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/rule.schema.json",
+  "id": "since-precision-needs-since",
+  "schema_version": 1,
+  "severity": "warning",
+  "enforcement": "blocking",
+  "labels": {
+    "en": "since_precision without since",
+    "fr": "since_precision sans since"
+  },
+  "messages": {
+    "en": "`since_precision` qualifies `since`, so it is meaningless without one. Either add the source, or drop the precision.",
+    "fr": "`since_precision` qualifie `since` : il n'a aucun sens sans lui. Ajoutez la source, ou retirez la précision."
+  },
+  "scope": "entry",
+  "entry_property": "*",
+  "entry_when": [
+    {
+      "qualifier_equals": {
+        "qualifier": "since_precision"
+      }
+    }
+  ],
+  "entry_expect": [
+    {
+      "qualifier_present": {
+        "qualifier": "since"
+      }
+    }
+  ]
+}

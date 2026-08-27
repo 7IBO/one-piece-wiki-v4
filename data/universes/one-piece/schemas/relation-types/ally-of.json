@@ -3,14 +3,42 @@
   "id": "ally-of",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Ally of", "inverse": "Allies" },
-    "fr": { "active": "Allié de", "inverse": "Alliés" }
+    "en": {
+      "active": "Ally of",
+      "inverse": "Allies"
+    },
+    "fr": {
+      "active": "Allié de",
+      "inverse": "Alliés"
+    }
   },
-  "valid_from_types": ["character", "crew", "organization"],
-  "valid_to_types": ["character", "crew", "organization"],
+  "valid_from_types": [
+    "character",
+    "crew",
+    "organization"
+  ],
+  "valid_to_types": [
+    "character",
+    "crew",
+    "organization"
+  ],
   "qualifiers": [
-    { "id": "since", "value_type": "source_ref", "required": false },
-    { "id": "until", "value_type": "source_ref", "required": false }
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    },
+    {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    },
+    {
+      "id": "until",
+      "value_type": "source_ref",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,

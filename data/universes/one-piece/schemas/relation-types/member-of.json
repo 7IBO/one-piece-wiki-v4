@@ -3,15 +3,45 @@
   "id": "member-of",
   "schema_version": 2,
   "labels": {
-    "en": { "active": "Member of", "inverse": "Members" },
-    "fr": { "active": "Membre de", "inverse": "Membres" }
+    "en": {
+      "active": "Member of",
+      "inverse": "Members"
+    },
+    "fr": {
+      "active": "Membre de",
+      "inverse": "Membres"
+    }
   },
-  "valid_from_types": ["character"],
-  "valid_to_types": ["crew", "organization"],
+  "valid_from_types": [
+    "character"
+  ],
+  "valid_to_types": [
+    "crew",
+    "organization"
+  ],
   "qualifiers": [
-    { "id": "role", "value_type": "enum", "enum_ref": "crew-roles", "required": false },
-    { "id": "since", "value_type": "source_ref", "required": true },
-    { "id": "until", "value_type": "source_ref", "required": false },
+    {
+      "id": "role",
+      "value_type": "enum",
+      "enum_ref": "crew-roles",
+      "required": false
+    },
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": true
+    },
+    {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    },
+    {
+      "id": "until",
+      "value_type": "source_ref",
+      "required": false
+    },
     {
       "id": "loyalty_status",
       "value_type": "enum",

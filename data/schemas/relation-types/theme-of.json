@@ -3,18 +3,63 @@
   "id": "theme-of",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Theme of", "inverse": "Has theme" },
-    "fr": { "active": "Thème de", "inverse": "A pour thème" }
+    "en": {
+      "active": "Theme of",
+      "inverse": "Has theme"
+    },
+    "fr": {
+      "active": "Thème de",
+      "inverse": "A pour thème"
+    }
   },
-  "valid_from_types": ["theme-song"],
-  "valid_to_types": ["anime-episode", "film", "arc", "live-action-series", "anime-special"],
+  "valid_from_types": [
+    "theme-song"
+  ],
+  "valid_to_types": [
+    "anime-episode",
+    "film",
+    "arc",
+    "live-action-series",
+    "anime-special"
+  ],
   "qualifiers": [
-    { "id": "usage", "value_type": "enum", "enum_ref": "theme-song-usage", "required": true },
-    { "id": "sequence", "value_type": "number", "required": false },
-    { "id": "episode_from", "value_type": "number", "required": false },
-    { "id": "episode_to", "value_type": "number", "required": false },
-    { "id": "broadcast_version", "value_type": "string", "required": false },
-    { "id": "since", "value_type": "source_ref", "required": false }
+    {
+      "id": "usage",
+      "value_type": "enum",
+      "enum_ref": "theme-song-usage",
+      "required": true
+    },
+    {
+      "id": "sequence",
+      "value_type": "number",
+      "required": false
+    },
+    {
+      "id": "episode_from",
+      "value_type": "number",
+      "required": false
+    },
+    {
+      "id": "episode_to",
+      "value_type": "number",
+      "required": false
+    },
+    {
+      "id": "broadcast_version",
+      "value_type": "string",
+      "required": false
+    },
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    },
+    {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    }
   ],
   "allow_multiple_concurrent": true,
   "inverse_inferred": true,

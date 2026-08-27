@@ -3,14 +3,38 @@
   "id": "ate-fruit",
   "schema_version": 1,
   "labels": {
-    "en": { "active": "Ate fruit", "inverse": "Eaten by" },
-    "fr": { "active": "A mangé le fruit", "inverse": "Mangé par" }
+    "en": {
+      "active": "Ate fruit",
+      "inverse": "Eaten by"
+    },
+    "fr": {
+      "active": "A mangé le fruit",
+      "inverse": "Mangé par"
+    }
   },
-  "valid_from_types": ["character"],
-  "valid_to_types": ["devil-fruit"],
+  "valid_from_types": [
+    "character"
+  ],
+  "valid_to_types": [
+    "devil-fruit"
+  ],
   "qualifiers": [
-    { "id": "since", "value_type": "source_ref", "required": false },
-    { "id": "until", "value_type": "source_ref", "required": false },
+    {
+      "id": "since",
+      "value_type": "source_ref",
+      "required": false
+    },
+    {
+      "id": "since_precision",
+      "value_type": "enum",
+      "enum_ref": "since-precisions",
+      "required": false
+    },
+    {
+      "id": "until",
+      "value_type": "source_ref",
+      "required": false
+    },
     {
       "id": "succession_reason",
       "value_type": "enum",

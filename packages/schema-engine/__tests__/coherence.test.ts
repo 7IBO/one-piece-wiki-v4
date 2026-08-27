@@ -499,3 +499,53 @@ describe('checkCoherence — declarative rule findings (ADR-085/088)', () => {
     expect(findings[0]!.path).toBe('properties.epithet[0]');
   });
 });
+
+/** Une entite `character` minimale, avec ce qu'on veut a sa racine. */
+function withAbsent(id: string, data: Record<string, unknown>): LoadedEntity {
+  return {
+    id,
+    type: 'character',
+    path: `${id}.json`,
+    data: { id, type: 'character', relations: [], ...data },
+  };
+}
+
+describe('checkCoherence — absent_properties (ADR-114)', () => {
+  // Le catalogue minimal : un type `character` qui declare deux proprietes.
+  const cat = {
+    ...catalogue({ character: { allowed_relations: [] } }, {}),
+    entityTypes: new Map([[
+      'character',
+      { allowed_relations: [], properties: [{ id: 'bounty' }, { id: 'birth_date' }] },
+    ]]),
+  } as unknown as ValidatedCatalogue;
+
+  function codes(entities: readonly LoadedEntity[]): readonly string[] {
+    return checkCoherence(entities, cat).map((f) => f.code);
+  }
+
+  it('accepts an absence on a declared property with no value', () => {
+    const clean = withAbsent('character:x', {
+      properties: {},
+      absent_properties: { birth_date: { reason: 'not_in_work' } },
+    });
+    expect(codes([clean])).not.toContain('ABSENT_PROPERTY_HAS_VALUE');
+    expect(codes([clean])).not.toContain('ABSENT_PROPERTY_UNKNOWN');
+  });
+
+  it('rejects asserting a value AND its absence', () => {
+    const both = withAbsent('character:y', {
+      properties: { bounty: [{ value: 100, since: 'manga-chapter:1' }] },
+      absent_properties: { bounty: { reason: 'not_in_work' } },
+    });
+    expect(codes([both])).toContain('ABSENT_PROPERTY_HAS_VALUE');
+  });
+
+  it('rejects an absence on a property the type does not declare', () => {
+    const unknown = withAbsent('character:z', {
+      properties: {},
+      absent_properties: { favourite_colour: { reason: 'not_in_work' } },
+    });
+    expect(codes([unknown])).toContain('ABSENT_PROPERTY_UNKNOWN');
+  });
+});

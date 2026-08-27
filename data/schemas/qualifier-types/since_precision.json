@@ -1,0 +1,17 @@
+{
+  "$schema": "../../../packages/schema-engine/meta-schemas/qualifier-type.schema.json",
+  "id": "since_precision",
+  "schema_version": 1,
+  "kind": "common",
+  "order": 3,
+  "labels": {
+    "en": "Precision of \"since\"",
+    "fr": "Précision de « depuis »"
+  },
+  "descriptions": {
+    "en": "How to read `since`. \"exact\" (the default) means the value starts there; \"at_latest\" means it already applied there and the work never shows when it started.",
+    "fr": "Comment lire `since`. « exact » (par défaut) signifie que la valeur commence à cette source ; « au plus tard » signifie qu'elle s'appliquait déjà et que l'œuvre ne montre jamais son début."
+  },
+  "value_type": "enum",
+  "enum_ref": "since-precisions"
+}

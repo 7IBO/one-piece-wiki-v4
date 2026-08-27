@@ -6,11 +6,13 @@
  * disk: one Zod, three boundaries.
  */
 import {
+  AbsentProperty,
   EntityId,
   EpistemicStatus,
   I18N_KEY_PATTERN,
   IsoDate,
   ReviewStatus,
+  SincePrecision,
   Slug,
   type ValueType,
 } from '@onepiece-wiki/schemas';
@@ -41,6 +43,8 @@ const EntityRefItem = z.union([
 export const BaseQualifierBag = z
   .object({
     since: SourceRefOrList.optional(),
+    // ADR-113 — comment lire `since` ; absent vaut `exact`.
+    since_precision: SincePrecision.optional(),
     until: SourceRefOrList.optional(),
     source: SourceRefOrList.optional(),
     epistemic_status: EpistemicStatus.optional(),
@@ -211,6 +215,9 @@ export function buildEntitySchema(
     slug_history: z.array(Slug).default([]),
     canonical_name_key: I18nKeyString.optional(),
     properties: z.object(propertyShape),
+    // ADR-114 — les proprietes connues comme sans valeur. Additif a la
+    // racine : rien de ce qui lit `properties` n'en est affecte.
+    absent_properties: z.record(z.string(), AbsentProperty).optional(),
     relations: z.array(relationSchema).default([]),
   }).passthrough();
 }
