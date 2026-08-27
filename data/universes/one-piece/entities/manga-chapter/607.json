@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:607",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-607",
+  "properties": {
+    "number": {
+      "value": 607
+    },
+    "title_key": {
+      "value_key": "manga-chapter.607.title"
+    },
+    "page_count": {
+      "value": 17
+    }
+  },
+  "relations": []
+}

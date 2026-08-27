@@ -1,0 +1,15 @@
+{
+  "id": "manga-chapter:667",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-667",
+  "properties": {
+    "number": {
+      "value": 667
+    },
+    "title_key": {
+      "value_key": "manga-chapter.667.title"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:627",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-627",
+  "properties": {
+    "number": {
+      "value": 627
+    },
+    "title_key": {
+      "value_key": "manga-chapter.627.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,15 @@
+{
+  "id": "manga-chapter:784",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-784",
+  "properties": {
+    "number": {
+      "value": 784
+    },
+    "title_key": {
+      "value_key": "manga-chapter.784.title"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:614",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-614",
+  "properties": {
+    "number": {
+      "value": 614
+    },
+    "title_key": {
+      "value_key": "manga-chapter.614.title"
+    },
+    "page_count": {
+      "value": 17
+    }
+  },
+  "relations": []
+}

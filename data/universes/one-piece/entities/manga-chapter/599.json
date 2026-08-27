@@ -1,0 +1,18 @@
+{
+  "id": "manga-chapter:599",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-599",
+  "properties": {
+    "number": {
+      "value": 599
+    },
+    "title_key": {
+      "value_key": "manga-chapter.599.title"
+    },
+    "page_count": {
+      "value": 19
+    }
+  },
+  "relations": []
+}

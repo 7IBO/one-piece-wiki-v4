@@ -1,0 +1,15 @@
+{
+  "id": "manga-chapter:822",
+  "type": "manga-chapter",
+  "schema_version": 1,
+  "slug": "chapter-822",
+  "properties": {
+    "number": {
+      "value": 822
+    },
+    "title_key": {
+      "value_key": "manga-chapter.822.title"
+    }
+  },
+  "relations": []
+}

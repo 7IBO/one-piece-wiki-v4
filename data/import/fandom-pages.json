@@ -48,12 +48,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1000",
+      "page": "Chapter 1000",
+      "pageId": 326688,
+      "redirects": [],
+      "lastRevId": 2123770,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1001",
+      "page": "Chapter 1001",
+      "pageId": 327201,
+      "redirects": [],
+      "lastRevId": 2021251,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1002",
+      "page": "Chapter 1002",
+      "pageId": 327386,
+      "redirects": [],
+      "lastRevId": 2018364,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1003",
+      "page": "Chapter 1003",
+      "pageId": 327667,
+      "redirects": [],
+      "lastRevId": 2071056,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1004",
+      "page": "Chapter 1004",
+      "pageId": 327765,
+      "redirects": [],
+      "lastRevId": 2026796,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1005",
+      "page": "Chapter 1005",
+      "pageId": 327822,
+      "redirects": [],
+      "lastRevId": 2123771,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1006",
+      "page": "Chapter 1006",
+      "pageId": 328055,
+      "redirects": [],
+      "lastRevId": 2123772,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1007",
+      "page": "Chapter 1007",
+      "pageId": 328198,
+      "redirects": [],
+      "lastRevId": 2123773,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1008",
+      "page": "Chapter 1008",
+      "pageId": 328236,
+      "redirects": [],
+      "lastRevId": 2018370,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1009",
+      "page": "Chapter 1009",
+      "pageId": 328543,
+      "redirects": [],
+      "lastRevId": 2021253,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:101",
       "page": "Chapter 101",
       "pageId": 2913,
       "redirects": [],
       "lastRevId": 2062729,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:1010",
+      "page": "Chapter 1010",
+      "pageId": 328579,
+      "redirects": [],
+      "lastRevId": 2021254,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1011",
+      "page": "Chapter 1011",
+      "pageId": 328607,
+      "redirects": [],
+      "lastRevId": 2021897,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1012",
+      "page": "Chapter 1012",
+      "pageId": 328789,
+      "redirects": [],
+      "lastRevId": 2018373,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1013",
+      "page": "Chapter 1013",
+      "pageId": 328883,
+      "redirects": [],
+      "lastRevId": 1946763,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1014",
+      "page": "Chapter 1014",
+      "pageId": 328995,
+      "redirects": [],
+      "lastRevId": 2123774,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1015",
+      "page": "Chapter 1015",
+      "pageId": 329125,
+      "redirects": [],
+      "lastRevId": 2123775,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1016",
+      "page": "Chapter 1016",
+      "pageId": 329167,
+      "redirects": [],
+      "lastRevId": 2025318,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1017",
+      "page": "Chapter 1017",
+      "pageId": 329243,
+      "redirects": [],
+      "lastRevId": 2112473,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1018",
+      "page": "Chapter 1018",
+      "pageId": 329339,
+      "redirects": [],
+      "lastRevId": 2101492,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1019",
+      "page": "Chapter 1019",
+      "pageId": 329433,
+      "redirects": [],
+      "lastRevId": 2108807,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:102",
@@ -64,12 +224,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1020",
+      "page": "Chapter 1020",
+      "pageId": 329747,
+      "redirects": [],
+      "lastRevId": 2026804,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1021",
+      "page": "Chapter 1021",
+      "pageId": 329835,
+      "redirects": [],
+      "lastRevId": 2026801,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1022",
+      "page": "Chapter 1022",
+      "pageId": 329983,
+      "redirects": [],
+      "lastRevId": 2123776,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1023",
+      "page": "Chapter 1023",
+      "pageId": 330084,
+      "redirects": [],
+      "lastRevId": 2123777,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1024",
+      "page": "Chapter 1024",
+      "pageId": 330250,
+      "redirects": [],
+      "lastRevId": 2108811,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1025",
+      "page": "Chapter 1025",
+      "pageId": 330444,
+      "redirects": [],
+      "lastRevId": 2123778,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1026",
+      "page": "Chapter 1026",
+      "pageId": 330529,
+      "redirects": [],
+      "lastRevId": 2021905,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1027",
+      "page": "Chapter 1027",
+      "pageId": 330681,
+      "redirects": [],
+      "lastRevId": 2018386,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1028",
+      "page": "Chapter 1028",
+      "pageId": 330721,
+      "redirects": [],
+      "lastRevId": 2123779,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1029",
+      "page": "Chapter 1029",
+      "pageId": 330790,
+      "redirects": [],
+      "lastRevId": 2021258,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:103",
       "page": "Chapter 103",
       "pageId": 18334,
       "redirects": [],
       "lastRevId": 1946782,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:1030",
+      "page": "Chapter 1030",
+      "pageId": 330969,
+      "redirects": [],
+      "lastRevId": 2123780,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1031",
+      "page": "Chapter 1031",
+      "pageId": 331042,
+      "redirects": [],
+      "lastRevId": 2123781,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1032",
+      "page": "Chapter 1032",
+      "pageId": 331121,
+      "redirects": [],
+      "lastRevId": 2123782,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1033",
+      "page": "Chapter 1033",
+      "pageId": 331428,
+      "redirects": [],
+      "lastRevId": 2124813,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1034",
+      "page": "Chapter 1034",
+      "pageId": 331518,
+      "redirects": [],
+      "lastRevId": 2021261,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1035",
+      "page": "Chapter 1035",
+      "pageId": 331635,
+      "redirects": [],
+      "lastRevId": 2046853,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1036",
+      "page": "Chapter 1036",
+      "pageId": 331875,
+      "redirects": [],
+      "lastRevId": 2024850,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1037",
+      "page": "Chapter 1037",
+      "pageId": 332022,
+      "redirects": [],
+      "lastRevId": 2072683,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1038",
+      "page": "Chapter 1038",
+      "pageId": 332198,
+      "redirects": [],
+      "lastRevId": 2024851,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1039",
+      "page": "Chapter 1039",
+      "pageId": 332466,
+      "redirects": [],
+      "lastRevId": 2018394,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:104",
@@ -80,10 +400,82 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1040",
+      "page": "Chapter 1040",
+      "pageId": 332577,
+      "redirects": [],
+      "lastRevId": 2108827,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1041",
+      "page": "Chapter 1041",
+      "pageId": 332705,
+      "redirects": [],
+      "lastRevId": 2123783,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1042",
+      "page": "Chapter 1042",
+      "pageId": 332883,
+      "redirects": [],
+      "lastRevId": 2101270,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1043",
+      "page": "Chapter 1043",
+      "pageId": 333010,
+      "redirects": [],
+      "lastRevId": 2123784,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:1044",
       "page": "Chapter 1044",
       "pageId": 333114,
       "redirects": []
+    },
+    {
+      "entityId": "manga-chapter:1045",
+      "page": "Chapter 1045",
+      "pageId": 333256,
+      "redirects": [],
+      "lastRevId": 2018400,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1046",
+      "page": "Chapter 1046",
+      "pageId": 333397,
+      "redirects": [],
+      "lastRevId": 2039486,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1047",
+      "page": "Chapter 1047",
+      "pageId": 333607,
+      "redirects": [],
+      "lastRevId": 2042753,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1048",
+      "page": "Chapter 1048",
+      "pageId": 333829,
+      "redirects": [],
+      "lastRevId": 2041277,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1049",
+      "page": "Chapter 1049",
+      "pageId": 333959,
+      "redirects": [],
+      "lastRevId": 2092517,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:105",
@@ -94,12 +486,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1050",
+      "page": "Chapter 1050",
+      "pageId": 334033,
+      "redirects": [],
+      "lastRevId": 2123786,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1051",
+      "page": "Chapter 1051",
+      "pageId": 334237,
+      "redirects": [],
+      "lastRevId": 2026836,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1052",
+      "page": "Chapter 1052",
+      "pageId": 334319,
+      "redirects": [],
+      "lastRevId": 2123787,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1053",
+      "page": "Chapter 1053",
+      "pageId": 334493,
+      "redirects": [],
+      "lastRevId": 2112644,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1054",
+      "page": "Chapter 1054",
+      "pageId": 334560,
+      "redirects": [],
+      "lastRevId": 2083009,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1055",
+      "page": "Chapter 1055",
+      "pageId": 335298,
+      "redirects": [],
+      "lastRevId": 2021921,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1056",
+      "page": "Chapter 1056",
+      "pageId": 335460,
+      "redirects": [],
+      "lastRevId": 2083012,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1057",
+      "page": "Chapter 1057",
+      "pageId": 335583,
+      "redirects": [],
+      "lastRevId": 2018411,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1058",
+      "page": "Chapter 1058",
+      "pageId": 336029,
+      "redirects": [],
+      "lastRevId": 2123493,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1059",
+      "page": "Chapter 1059",
+      "pageId": 336351,
+      "redirects": [],
+      "lastRevId": 2123788,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:106",
       "page": "Chapter 106",
       "pageId": 2918,
       "redirects": [],
       "lastRevId": 2062732,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:1060",
+      "page": "Chapter 1060",
+      "pageId": 336604,
+      "redirects": [],
+      "lastRevId": 2110628,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1061",
+      "page": "Chapter 1061",
+      "pageId": 336792,
+      "redirects": [],
+      "lastRevId": 2033098,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1062",
+      "page": "Chapter 1062",
+      "pageId": 336994,
+      "redirects": [],
+      "lastRevId": 1984471,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1063",
+      "page": "Chapter 1063",
+      "pageId": 337362,
+      "redirects": [],
+      "lastRevId": 2033099,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1064",
+      "page": "Chapter 1064",
+      "pageId": 337480,
+      "redirects": [],
+      "lastRevId": 2117536,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1065",
+      "page": "Chapter 1065",
+      "pageId": 337574,
+      "redirects": [],
+      "lastRevId": 2033189,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1066",
+      "page": "Chapter 1066",
+      "pageId": 337926,
+      "redirects": [],
+      "lastRevId": 2034141,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1067",
+      "page": "Chapter 1067",
+      "pageId": 338037,
+      "redirects": [],
+      "lastRevId": 2030881,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1068",
+      "page": "Chapter 1068",
+      "pageId": 338183,
+      "redirects": [],
+      "lastRevId": 2101271,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1069",
+      "page": "Chapter 1069",
+      "pageId": 338484,
+      "redirects": [],
+      "lastRevId": 2090362,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:107",
@@ -110,6 +662,86 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1070",
+      "page": "Chapter 1070",
+      "pageId": 338543,
+      "redirects": [],
+      "lastRevId": 2099472,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1071",
+      "page": "Chapter 1071",
+      "pageId": 338709,
+      "redirects": [],
+      "lastRevId": 2034142,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1072",
+      "page": "Chapter 1072",
+      "pageId": 338875,
+      "redirects": [],
+      "lastRevId": 2030975,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1073",
+      "page": "Chapter 1073",
+      "pageId": 339169,
+      "redirects": [],
+      "lastRevId": 2123789,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1074",
+      "page": "Chapter 1074",
+      "pageId": 339397,
+      "redirects": [],
+      "lastRevId": 2028746,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1075",
+      "page": "Chapter 1075",
+      "pageId": 339681,
+      "redirects": [],
+      "lastRevId": 1946833,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1076",
+      "page": "Chapter 1076",
+      "pageId": 339757,
+      "redirects": [],
+      "lastRevId": 2099069,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1077",
+      "page": "Chapter 1077",
+      "pageId": 340008,
+      "redirects": [],
+      "lastRevId": 2049646,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1078",
+      "page": "Chapter 1078",
+      "pageId": 340302,
+      "redirects": [],
+      "lastRevId": 2099464,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1079",
+      "page": "Chapter 1079",
+      "pageId": 340384,
+      "redirects": [],
+      "lastRevId": 2040040,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:108",
       "page": "Chapter 108",
       "pageId": 2920,
@@ -118,12 +750,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1080",
+      "page": "Chapter 1080",
+      "pageId": 340461,
+      "redirects": [],
+      "lastRevId": 2021937,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1081",
+      "page": "Chapter 1081",
+      "pageId": 340649,
+      "redirects": [],
+      "lastRevId": 1953875,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1082",
+      "page": "Chapter 1082",
+      "pageId": 341002,
+      "redirects": [],
+      "lastRevId": 2088433,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1083",
+      "page": "Chapter 1083",
+      "pageId": 341101,
+      "redirects": [],
+      "lastRevId": 2113153,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1084",
+      "page": "Chapter 1084",
+      "pageId": 341173,
+      "redirects": [],
+      "lastRevId": 2113149,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1085",
+      "page": "Chapter 1085",
+      "pageId": 341248,
+      "redirects": [],
+      "lastRevId": 2110630,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1086",
+      "page": "Chapter 1086",
+      "pageId": 341401,
+      "redirects": [],
+      "lastRevId": 2112788,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1087",
+      "page": "Chapter 1087",
+      "pageId": 341418,
+      "redirects": [],
+      "lastRevId": 2031106,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1088",
+      "page": "Chapter 1088",
+      "pageId": 341908,
+      "redirects": [],
+      "lastRevId": 1991181,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1089",
+      "page": "Chapter 1089",
+      "pageId": 342054,
+      "redirects": [],
+      "lastRevId": 2095486,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:109",
       "page": "Chapter 109",
       "pageId": 2921,
       "redirects": [],
       "lastRevId": 2063417,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:1090",
+      "page": "Chapter 1090",
+      "pageId": 342301,
+      "redirects": [],
+      "lastRevId": 2111670,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1091",
+      "page": "Chapter 1091",
+      "pageId": 342505,
+      "redirects": [],
+      "lastRevId": 2111671,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1092",
+      "page": "Chapter 1092",
+      "pageId": 342825,
+      "redirects": [],
+      "lastRevId": 2111672,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1093",
+      "page": "Chapter 1093",
+      "pageId": 343114,
+      "redirects": [],
+      "lastRevId": 2114003,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1094",
+      "page": "Chapter 1094",
+      "pageId": 343256,
+      "redirects": [],
+      "lastRevId": 2111673,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1095",
+      "page": "Chapter 1095",
+      "pageId": 343428,
+      "redirects": [],
+      "lastRevId": 2111674,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1096",
+      "page": "Chapter 1096",
+      "pageId": 343553,
+      "redirects": [],
+      "lastRevId": 2108843,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1097",
+      "page": "Chapter 1097",
+      "pageId": 343943,
+      "redirects": [],
+      "lastRevId": 2066567,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1098",
+      "page": "Chapter 1098",
+      "pageId": 344076,
+      "redirects": [],
+      "lastRevId": 2108845,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1099",
+      "page": "Chapter 1099",
+      "pageId": 344194,
+      "redirects": [],
+      "lastRevId": 2111675,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:11",
@@ -142,12 +934,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1100",
+      "page": "Chapter 1100",
+      "pageId": 344325,
+      "redirects": [],
+      "lastRevId": 2123790,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1101",
+      "page": "Chapter 1101",
+      "pageId": 344441,
+      "redirects": [],
+      "lastRevId": 2031353,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1102",
+      "page": "Chapter 1102",
+      "pageId": 344507,
+      "redirects": [],
+      "lastRevId": 2111677,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1103",
+      "page": "Chapter 1103",
+      "pageId": 344671,
+      "redirects": [],
+      "lastRevId": 2021268,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1104",
+      "page": "Chapter 1104",
+      "pageId": 344787,
+      "redirects": [],
+      "lastRevId": 2031355,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1105",
+      "page": "Chapter 1105",
+      "pageId": 344961,
+      "redirects": [],
+      "lastRevId": 2090363,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1106",
+      "page": "Chapter 1106",
+      "pageId": 345029,
+      "redirects": [],
+      "lastRevId": 2031970,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1107",
+      "page": "Chapter 1107",
+      "pageId": 345083,
+      "redirects": [],
+      "lastRevId": 2090364,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1108",
+      "page": "Chapter 1108",
+      "pageId": 345179,
+      "redirects": [],
+      "lastRevId": 2080050,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1109",
+      "page": "Chapter 1109",
+      "pageId": 345284,
+      "redirects": [],
+      "lastRevId": 2052564,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:111",
       "page": "Chapter 111",
       "pageId": 2923,
       "redirects": [],
       "lastRevId": 2108472,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:1110",
+      "page": "Chapter 1110",
+      "pageId": 345402,
+      "redirects": [],
+      "lastRevId": 2034165,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1111",
+      "page": "Chapter 1111",
+      "pageId": 345536,
+      "redirects": [],
+      "lastRevId": 2111678,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1112",
+      "page": "Chapter 1112",
+      "pageId": 345595,
+      "redirects": [],
+      "lastRevId": 2111679,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1113",
+      "page": "Chapter 1113",
+      "pageId": 345876,
+      "redirects": [],
+      "lastRevId": 2111680,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1114",
+      "page": "Chapter 1114",
+      "pageId": 346048,
+      "redirects": [],
+      "lastRevId": 2113155,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1115",
+      "page": "Chapter 1115",
+      "pageId": 346237,
+      "redirects": [],
+      "lastRevId": 2111682,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1116",
+      "page": "Chapter 1116",
+      "pageId": 346397,
+      "redirects": [],
+      "lastRevId": 2111683,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1117",
+      "page": "Chapter 1117",
+      "pageId": 346489,
+      "redirects": [],
+      "lastRevId": 2130563,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1118",
+      "page": "Chapter 1118",
+      "pageId": 346714,
+      "redirects": [],
+      "lastRevId": 2111685,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1119",
+      "page": "Chapter 1119",
+      "pageId": 346807,
+      "redirects": [],
+      "lastRevId": 2111686,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:112",
@@ -158,12 +1110,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1120",
+      "page": "Chapter 1120",
+      "pageId": 346940,
+      "redirects": [],
+      "lastRevId": 2130643,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1121",
+      "page": "Chapter 1121",
+      "pageId": 347132,
+      "redirects": [],
+      "lastRevId": 2123791,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1122",
+      "page": "Chapter 1122",
+      "pageId": 347249,
+      "redirects": [],
+      "lastRevId": 2130260,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1123",
+      "page": "Chapter 1123",
+      "pageId": 347438,
+      "redirects": [],
+      "lastRevId": 2130564,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1124",
+      "page": "Chapter 1124",
+      "pageId": 347655,
+      "redirects": [],
+      "lastRevId": 2129052,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1125",
+      "page": "Chapter 1125",
+      "pageId": 347720,
+      "redirects": [],
+      "lastRevId": 2111691,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1126",
+      "page": "Chapter 1126",
+      "pageId": 348015,
+      "redirects": [],
+      "lastRevId": 2130566,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1127",
+      "page": "Chapter 1127",
+      "pageId": 348145,
+      "redirects": [],
+      "lastRevId": 2111820,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1128",
+      "page": "Chapter 1128",
+      "pageId": 348235,
+      "redirects": [],
+      "lastRevId": 2034282,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1129",
+      "page": "Chapter 1129",
+      "pageId": 348497,
+      "redirects": [],
+      "lastRevId": 2034961,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:113",
       "page": "Chapter 113",
       "pageId": 2925,
       "redirects": [],
       "lastRevId": 2108999,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:1130",
+      "page": "Chapter 1130",
+      "pageId": 348601,
+      "redirects": [],
+      "lastRevId": 2130568,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1131",
+      "page": "Chapter 1131",
+      "pageId": 348709,
+      "redirects": [],
+      "lastRevId": 2092520,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1132",
+      "page": "Chapter 1132",
+      "pageId": 349095,
+      "redirects": [],
+      "lastRevId": 2113135,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1133",
+      "page": "Chapter 1133",
+      "pageId": 349437,
+      "redirects": [],
+      "lastRevId": 2130570,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1134",
+      "page": "Chapter 1134",
+      "pageId": 349600,
+      "redirects": [],
+      "lastRevId": 2119609,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1135",
+      "page": "Chapter 1135",
+      "pageId": 349709,
+      "redirects": [],
+      "lastRevId": 2130572,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1136",
+      "page": "Chapter 1136",
+      "pageId": 349761,
+      "redirects": [],
+      "lastRevId": 2122799,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1137",
+      "page": "Chapter 1137",
+      "pageId": 349882,
+      "redirects": [],
+      "lastRevId": 2083022,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1138",
+      "page": "Chapter 1138",
+      "pageId": 349975,
+      "redirects": [],
+      "lastRevId": 2128184,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1139",
+      "page": "Chapter 1139",
+      "pageId": 350052,
+      "redirects": [],
+      "lastRevId": 2052785,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:114",
@@ -174,12 +1286,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1140",
+      "page": "Chapter 1140",
+      "pageId": 350126,
+      "redirects": [],
+      "lastRevId": 2083026,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1141",
+      "page": "Chapter 1141",
+      "pageId": 350397,
+      "redirects": [],
+      "lastRevId": 2059280,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1142",
+      "page": "Chapter 1142",
+      "pageId": 350490,
+      "redirects": [],
+      "lastRevId": 2128185,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1143",
+      "page": "Chapter 1143",
+      "pageId": 350577,
+      "redirects": [],
+      "lastRevId": 2129124,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1144",
+      "page": "Chapter 1144",
+      "pageId": 350906,
+      "redirects": [],
+      "lastRevId": 2116377,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1145",
+      "page": "Chapter 1145",
+      "pageId": 350960,
+      "redirects": [],
+      "lastRevId": 2130594,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1146",
+      "page": "Chapter 1146",
+      "pageId": 351100,
+      "redirects": [],
+      "lastRevId": 2130574,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1147",
+      "page": "Chapter 1147",
+      "pageId": 351245,
+      "redirects": [],
+      "lastRevId": 2130575,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1148",
+      "page": "Chapter 1148",
+      "pageId": 351293,
+      "redirects": [],
+      "lastRevId": 2102636,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1149",
+      "page": "Chapter 1149",
+      "pageId": 351405,
+      "redirects": [],
+      "lastRevId": 2119657,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:115",
       "page": "Chapter 115",
       "pageId": 2927,
       "redirects": [],
       "lastRevId": 2063422,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:1150",
+      "page": "Chapter 1150",
+      "pageId": 351583,
+      "redirects": [],
+      "lastRevId": 2130576,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1151",
+      "page": "Chapter 1151",
+      "pageId": 351692,
+      "redirects": [],
+      "lastRevId": 2110648,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1152",
+      "page": "Chapter 1152",
+      "pageId": 351788,
+      "redirects": [],
+      "lastRevId": 2120179,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1153",
+      "page": "Chapter 1153",
+      "pageId": 351868,
+      "redirects": [],
+      "lastRevId": 2116132,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1154",
+      "page": "Chapter 1154",
+      "pageId": 351912,
+      "redirects": [],
+      "lastRevId": 2110955,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1155",
+      "page": "Chapter 1155",
+      "pageId": 352064,
+      "redirects": [],
+      "lastRevId": 2111016,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1156",
+      "page": "Chapter 1156",
+      "pageId": 352132,
+      "redirects": [],
+      "lastRevId": 2076395,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1157",
+      "page": "Chapter 1157",
+      "pageId": 352230,
+      "redirects": [],
+      "lastRevId": 2126738,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1158",
+      "page": "Chapter 1158",
+      "pageId": 352397,
+      "redirects": [],
+      "lastRevId": 2104530,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1159",
+      "page": "Chapter 1159",
+      "pageId": 352563,
+      "redirects": [],
+      "lastRevId": 2104531,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:116",
@@ -190,12 +1462,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1160",
+      "page": "Chapter 1160",
+      "pageId": 352617,
+      "redirects": [],
+      "lastRevId": 2104532,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1161",
+      "page": "Chapter 1161",
+      "pageId": 352690,
+      "redirects": [],
+      "lastRevId": 2082461,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1162",
+      "page": "Chapter 1162",
+      "pageId": 352795,
+      "redirects": [],
+      "lastRevId": 2117082,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1163",
+      "page": "Chapter 1163",
+      "pageId": 352896,
+      "redirects": [],
+      "lastRevId": 2110653,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1164",
+      "page": "Chapter 1164",
+      "pageId": 353009,
+      "redirects": [],
+      "lastRevId": 2120555,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1165",
+      "page": "Chapter 1165",
+      "pageId": 353112,
+      "redirects": [],
+      "lastRevId": 2123792,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1166",
+      "page": "Chapter 1166",
+      "pageId": 353178,
+      "redirects": [],
+      "lastRevId": 2110659,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1167",
+      "page": "Chapter 1167",
+      "pageId": 353286,
+      "redirects": [],
+      "lastRevId": 2110662,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1168",
+      "page": "Chapter 1168",
+      "pageId": 353339,
+      "redirects": [],
+      "lastRevId": 2126737,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1169",
+      "page": "Chapter 1169",
+      "pageId": 353424,
+      "redirects": [],
+      "lastRevId": 2110668,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:117",
       "page": "Chapter 117",
       "pageId": 2929,
       "redirects": [],
       "lastRevId": 2034036,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:1170",
+      "page": "Chapter 1170",
+      "pageId": 353565,
+      "redirects": [],
+      "lastRevId": 2105185,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1171",
+      "page": "Chapter 1171",
+      "pageId": 353634,
+      "redirects": [],
+      "lastRevId": 2110672,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1172",
+      "page": "Chapter 1172",
+      "pageId": 353738,
+      "redirects": [],
+      "lastRevId": 2130577,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1173",
+      "page": "Chapter 1173",
+      "pageId": 353952,
+      "redirects": [],
+      "lastRevId": 2110674,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1174",
+      "page": "Chapter 1174",
+      "pageId": 353973,
+      "redirects": [],
+      "lastRevId": 2126466,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1175",
+      "page": "Chapter 1175",
+      "pageId": 354038,
+      "redirects": [],
+      "lastRevId": 2110679,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1176",
+      "page": "Chapter 1176",
+      "pageId": 354143,
+      "redirects": [],
+      "lastRevId": 2110681,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1177",
+      "page": "Chapter 1177",
+      "pageId": 354281,
+      "redirects": [],
+      "lastRevId": 2129062,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1178",
+      "page": "Chapter 1178",
+      "pageId": 354606,
+      "redirects": [],
+      "lastRevId": 2110683,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1179",
+      "page": "Chapter 1179",
+      "pageId": 354673,
+      "redirects": [],
+      "lastRevId": 2112261,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:118",
@@ -206,12 +1638,116 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:1180",
+      "page": "Chapter 1180",
+      "pageId": 354770,
+      "redirects": [],
+      "lastRevId": 2117981,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1181",
+      "page": "Chapter 1181",
+      "pageId": 354945,
+      "redirects": [],
+      "lastRevId": 2114129,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1182",
+      "page": "Chapter 1182",
+      "pageId": 355039,
+      "redirects": [],
+      "lastRevId": 2117013,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1183",
+      "page": "Chapter 1183",
+      "pageId": 355462,
+      "redirects": [],
+      "lastRevId": 2124536,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1184",
+      "page": "Chapter 1184",
+      "pageId": 355595,
+      "redirects": [],
+      "lastRevId": 2121298,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1185",
+      "page": "Chapter 1185",
+      "pageId": 355680,
+      "redirects": [],
+      "lastRevId": 2123257,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1186",
+      "page": "Chapter 1186",
+      "pageId": 355839,
+      "redirects": [],
+      "lastRevId": 2124538,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1187",
+      "page": "Chapter 1187",
+      "pageId": 356000,
+      "redirects": [],
+      "lastRevId": 2128748,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1188",
+      "page": "Chapter 1188",
+      "pageId": 356084,
+      "redirects": [],
+      "lastRevId": 2127219,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1189",
+      "page": "Chapter 1189",
+      "pageId": 356133,
+      "redirects": [],
+      "lastRevId": 2128558,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:119",
       "page": "Chapter 119",
       "pageId": 2938,
       "redirects": [],
       "lastRevId": 2034037,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:1190",
+      "page": "Chapter 1190",
+      "pageId": 356313,
+      "redirects": [],
+      "lastRevId": 2130465,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1191",
+      "page": "Chapter 1191",
+      "pageId": 356450,
+      "redirects": [],
+      "lastRevId": 2130672,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:1192",
+      "page": "Chapter 1192",
+      "pageId": 356618,
+      "redirects": [],
+      "lastRevId": 2130264,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:12",
@@ -4454,6 +5990,22 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:598",
+      "page": "Chapter 598",
+      "pageId": 42709,
+      "redirects": [],
+      "lastRevId": 2108480,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:599",
+      "page": "Chapter 599",
+      "pageId": 47939,
+      "redirects": [],
+      "lastRevId": 2103680,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:6",
       "page": "Chapter 6",
       "pageId": 2819,
@@ -4470,12 +6022,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:600",
+      "page": "Chapter 600",
+      "pageId": 49091,
+      "redirects": [],
+      "lastRevId": 2092535,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:601",
+      "page": "Chapter 601",
+      "pageId": 49954,
+      "redirects": [],
+      "lastRevId": 2070369,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:602",
+      "page": "Chapter 602",
+      "pageId": 50582,
+      "redirects": [],
+      "lastRevId": 1947397,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:603",
+      "page": "Chapter 603",
+      "pageId": 51111,
+      "redirects": [],
+      "lastRevId": 2070501,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:604",
+      "page": "Chapter 604",
+      "pageId": 51936,
+      "redirects": [],
+      "lastRevId": 1947399,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:605",
+      "page": "Chapter 605",
+      "pageId": 52108,
+      "redirects": [],
+      "lastRevId": 2101287,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:606",
+      "page": "Chapter 606",
+      "pageId": 54087,
+      "redirects": [],
+      "lastRevId": 1947401,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:607",
+      "page": "Chapter 607",
+      "pageId": 54652,
+      "redirects": [],
+      "lastRevId": 2110050,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:608",
+      "page": "Chapter 608",
+      "pageId": 55252,
+      "redirects": [],
+      "lastRevId": 1947403,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:609",
+      "page": "Chapter 609",
+      "pageId": 56117,
+      "redirects": [],
+      "lastRevId": 1947404,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:61",
       "page": "Chapter 61",
       "pageId": 2873,
       "redirects": [],
       "lastRevId": 2108465,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:610",
+      "page": "Chapter 610",
+      "pageId": 56571,
+      "redirects": [],
+      "lastRevId": 1947406,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:611",
+      "page": "Chapter 611",
+      "pageId": 58837,
+      "redirects": [],
+      "lastRevId": 1947407,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:612",
+      "page": "Chapter 612",
+      "pageId": 60079,
+      "redirects": [],
+      "lastRevId": 2111489,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:613",
+      "page": "Chapter 613",
+      "pageId": 60951,
+      "redirects": [],
+      "lastRevId": 1947409,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:614",
+      "page": "Chapter 614",
+      "pageId": 62064,
+      "redirects": [],
+      "lastRevId": 2093644,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:615",
+      "page": "Chapter 615",
+      "pageId": 63893,
+      "redirects": [],
+      "lastRevId": 1947411,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:616",
+      "page": "Chapter 616",
+      "pageId": 65560,
+      "redirects": [],
+      "lastRevId": 2125524,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:617",
+      "page": "Chapter 617",
+      "pageId": 67966,
+      "redirects": [],
+      "lastRevId": 2048976,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:618",
+      "page": "Chapter 618",
+      "pageId": 69131,
+      "redirects": [],
+      "lastRevId": 1947414,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:619",
+      "page": "Chapter 619",
+      "pageId": 69886,
+      "redirects": [],
+      "lastRevId": 2088776,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:62",
@@ -4486,12 +6198,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:620",
+      "page": "Chapter 620",
+      "pageId": 71846,
+      "redirects": [],
+      "lastRevId": 2070819,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:621",
+      "page": "Chapter 621",
+      "pageId": 72937,
+      "redirects": [],
+      "lastRevId": 2113251,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:622",
+      "page": "Chapter 622",
+      "pageId": 73889,
+      "redirects": [],
+      "lastRevId": 1947419,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:623",
+      "page": "Chapter 623",
+      "pageId": 75434,
+      "redirects": [],
+      "lastRevId": 2036720,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:624",
+      "page": "Chapter 624",
+      "pageId": 77597,
+      "redirects": [],
+      "lastRevId": 1947421,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:625",
+      "page": "Chapter 625",
+      "pageId": 78770,
+      "redirects": [],
+      "lastRevId": 2050702,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:626",
+      "page": "Chapter 626",
+      "pageId": 80834,
+      "redirects": [],
+      "lastRevId": 2051004,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:627",
+      "page": "Chapter 627",
+      "pageId": 82137,
+      "redirects": [],
+      "lastRevId": 1947424,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:628",
+      "page": "Chapter 628",
+      "pageId": 84630,
+      "redirects": [],
+      "lastRevId": 2107937,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:629",
+      "page": "Chapter 629",
+      "pageId": 86375,
+      "redirects": [],
+      "lastRevId": 2110052,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:63",
       "page": "Chapter 63",
       "pageId": 2875,
       "redirects": [],
       "lastRevId": 1947427,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:630",
+      "page": "Chapter 630",
+      "pageId": 88691,
+      "redirects": [],
+      "lastRevId": 1947428,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:631",
+      "page": "Chapter 631",
+      "pageId": 89938,
+      "redirects": [],
+      "lastRevId": 2052544,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:632",
+      "page": "Chapter 632",
+      "pageId": 91219,
+      "redirects": [],
+      "lastRevId": 2102258,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:633",
+      "page": "Chapter 633",
+      "pageId": 94448,
+      "redirects": [],
+      "lastRevId": 1947431,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:634",
+      "page": "Chapter 634",
+      "pageId": 95951,
+      "redirects": [],
+      "lastRevId": 2021963,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:635",
+      "page": "Chapter 635",
+      "pageId": 97978,
+      "redirects": [],
+      "lastRevId": 2038324,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:636",
+      "page": "Chapter 636",
+      "pageId": 99347,
+      "redirects": [],
+      "lastRevId": 2093645,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:637",
+      "page": "Chapter 637",
+      "pageId": 100413,
+      "redirects": [],
+      "lastRevId": 2021275,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:638",
+      "page": "Chapter 638",
+      "pageId": 101510,
+      "redirects": [],
+      "lastRevId": 2110053,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:639",
+      "page": "Chapter 639",
+      "pageId": 102458,
+      "redirects": [],
+      "lastRevId": 1947437,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:64",
@@ -4502,12 +6374,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:640",
+      "page": "Chapter 640",
+      "pageId": 103604,
+      "redirects": [],
+      "lastRevId": 1947439,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:641",
+      "page": "Chapter 641",
+      "pageId": 105241,
+      "redirects": [],
+      "lastRevId": 1947440,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:642",
+      "page": "Chapter 642",
+      "pageId": 106833,
+      "redirects": [],
+      "lastRevId": 1947441,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:643",
+      "page": "Chapter 643",
+      "pageId": 108535,
+      "redirects": [],
+      "lastRevId": 1947442,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:644",
+      "page": "Chapter 644",
+      "pageId": 110069,
+      "redirects": [],
+      "lastRevId": 1947443,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:645",
+      "page": "Chapter 645",
+      "pageId": 111459,
+      "redirects": [],
+      "lastRevId": 2123830,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:646",
+      "page": "Chapter 646",
+      "pageId": 114778,
+      "redirects": [],
+      "lastRevId": 1947445,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:647",
+      "page": "Chapter 647",
+      "pageId": 116089,
+      "redirects": [],
+      "lastRevId": 2050699,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:648",
+      "page": "Chapter 648",
+      "pageId": 117818,
+      "redirects": [],
+      "lastRevId": 2111490,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:649",
+      "page": "Chapter 649",
+      "pageId": 119097,
+      "redirects": [],
+      "lastRevId": 2111487,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:65",
       "page": "Chapter 65",
       "pageId": 2877,
       "redirects": [],
       "lastRevId": 1947449,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:650",
+      "page": "Chapter 650",
+      "pageId": 120580,
+      "redirects": [],
+      "lastRevId": 2036750,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:651",
+      "page": "Chapter 651",
+      "pageId": 123142,
+      "redirects": [],
+      "lastRevId": 2015332,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:652",
+      "page": "Chapter 652",
+      "pageId": 127225,
+      "redirects": [],
+      "lastRevId": 2108725,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:653",
+      "page": "Chapter 653",
+      "pageId": 129175,
+      "redirects": [],
+      "lastRevId": 2111488,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:654",
+      "page": "Chapter 654",
+      "pageId": 131051,
+      "redirects": [],
+      "lastRevId": 1947454,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:655",
+      "page": "Chapter 655",
+      "pageId": 133255,
+      "redirects": [],
+      "lastRevId": 2016316,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:656",
+      "page": "Chapter 656",
+      "pageId": 135659,
+      "redirects": [],
+      "lastRevId": 2016318,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:657",
+      "page": "Chapter 657",
+      "pageId": 137447,
+      "redirects": [],
+      "lastRevId": 1947457,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:658",
+      "page": "Chapter 658",
+      "pageId": 139907,
+      "redirects": [],
+      "lastRevId": 2018422,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:659",
+      "page": "Chapter 659",
+      "pageId": 141387,
+      "redirects": [],
+      "lastRevId": 2085961,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:66",
@@ -4518,12 +6550,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:660",
+      "page": "Chapter 660",
+      "pageId": 142786,
+      "redirects": [],
+      "lastRevId": 2094082,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:661",
+      "page": "Chapter 661",
+      "pageId": 145381,
+      "redirects": [],
+      "lastRevId": 1947462,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:662",
+      "page": "Chapter 662",
+      "pageId": 146902,
+      "redirects": [],
+      "lastRevId": 2102579,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:663",
+      "page": "Chapter 663",
+      "pageId": 149288,
+      "redirects": [],
+      "lastRevId": 2085962,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:664",
+      "page": "Chapter 664",
+      "pageId": 150638,
+      "redirects": [],
+      "lastRevId": 2108727,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:665",
+      "page": "Chapter 665",
+      "pageId": 151961,
+      "redirects": [],
+      "lastRevId": 1947466,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:666",
+      "page": "Chapter 666",
+      "pageId": 153804,
+      "redirects": [],
+      "lastRevId": 1947467,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:667",
+      "page": "Chapter 667",
+      "pageId": 154830,
+      "redirects": [],
+      "lastRevId": 2021277,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:668",
+      "page": "Chapter 668",
+      "pageId": 155889,
+      "redirects": [],
+      "lastRevId": 2021278,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:669",
+      "page": "Chapter 669",
+      "pageId": 157180,
+      "redirects": [],
+      "lastRevId": 1947470,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:67",
       "page": "Chapter 67",
       "pageId": 2879,
       "redirects": [],
       "lastRevId": 1988072,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:670",
+      "page": "Chapter 670",
+      "pageId": 158699,
+      "redirects": [],
+      "lastRevId": 2049303,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:671",
+      "page": "Chapter 671",
+      "pageId": 159735,
+      "redirects": [],
+      "lastRevId": 2049301,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:672",
+      "page": "Chapter 672",
+      "pageId": 161459,
+      "redirects": [],
+      "lastRevId": 2049302,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:673",
+      "page": "Chapter 673",
+      "pageId": 162345,
+      "redirects": [],
+      "lastRevId": 1947475,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:674",
+      "page": "Chapter 674",
+      "pageId": 162917,
+      "redirects": [],
+      "lastRevId": 1947476,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:675",
+      "page": "Chapter 675",
+      "pageId": 164077,
+      "redirects": [],
+      "lastRevId": 2102614,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:676",
+      "page": "Chapter 676",
+      "pageId": 164723,
+      "redirects": [],
+      "lastRevId": 2129703,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:677",
+      "page": "Chapter 677",
+      "pageId": 166866,
+      "redirects": [],
+      "lastRevId": 2092537,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:678",
+      "page": "Chapter 678",
+      "pageId": 168609,
+      "redirects": [],
+      "lastRevId": 2018425,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:679",
+      "page": "Chapter 679",
+      "pageId": 169461,
+      "redirects": [],
+      "lastRevId": 2036902,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:68",
@@ -4534,12 +6726,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:680",
+      "page": "Chapter 680",
+      "pageId": 170146,
+      "redirects": [],
+      "lastRevId": 2101512,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:681",
+      "page": "Chapter 681",
+      "pageId": 170840,
+      "redirects": [],
+      "lastRevId": 1947484,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:682",
+      "page": "Chapter 682",
+      "pageId": 171845,
+      "redirects": [],
+      "lastRevId": 2101513,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:683",
+      "page": "Chapter 683",
+      "pageId": 173312,
+      "redirects": [],
+      "lastRevId": 2085966,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:684",
+      "page": "Chapter 684",
+      "pageId": 174331,
+      "redirects": [],
+      "lastRevId": 2018428,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:685",
+      "page": "Chapter 685",
+      "pageId": 175050,
+      "redirects": [],
+      "lastRevId": 2018429,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:686",
+      "page": "Chapter 686",
+      "pageId": 175961,
+      "redirects": [],
+      "lastRevId": 1947489,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:687",
+      "page": "Chapter 687",
+      "pageId": 176708,
+      "redirects": [],
+      "lastRevId": 2101514,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:688",
+      "page": "Chapter 688",
+      "pageId": 177527,
+      "redirects": [],
+      "lastRevId": 2018430,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:689",
+      "page": "Chapter 689",
+      "pageId": 178911,
+      "redirects": [],
+      "lastRevId": 2021281,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:69",
       "page": "Chapter 69",
       "pageId": 2881,
       "redirects": [],
       "lastRevId": 2108466,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:690",
+      "page": "Chapter 690",
+      "pageId": 179730,
+      "redirects": [],
+      "lastRevId": 2036497,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:691",
+      "page": "Chapter 691",
+      "pageId": 180549,
+      "redirects": [],
+      "lastRevId": 2108728,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:692",
+      "page": "Chapter 692",
+      "pageId": 181604,
+      "redirects": [],
+      "lastRevId": 2018434,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:693",
+      "page": "Chapter 693",
+      "pageId": 182460,
+      "redirects": [],
+      "lastRevId": 2018435,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:694",
+      "page": "Chapter 694",
+      "pageId": 183534,
+      "redirects": [],
+      "lastRevId": 2036498,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:695",
+      "page": "Chapter 695",
+      "pageId": 185916,
+      "redirects": [],
+      "lastRevId": 2036499,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:696",
+      "page": "Chapter 696",
+      "pageId": 187664,
+      "redirects": [],
+      "lastRevId": 2115021,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:697",
+      "page": "Chapter 697",
+      "pageId": 188915,
+      "redirects": [],
+      "lastRevId": 2036500,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:698",
+      "page": "Chapter 698",
+      "pageId": 189704,
+      "redirects": [],
+      "lastRevId": 2036502,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:699",
+      "page": "Chapter 699",
+      "pageId": 192588,
+      "redirects": [],
+      "lastRevId": 2018440,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:7",
@@ -4558,12 +6910,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:700",
+      "page": "Chapter 700",
+      "pageId": 193958,
+      "redirects": [],
+      "lastRevId": 2125551,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:701",
+      "page": "Chapter 701",
+      "pageId": 195312,
+      "redirects": [],
+      "lastRevId": 2103156,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:702",
+      "page": "Chapter 702",
+      "pageId": 197512,
+      "redirects": [],
+      "lastRevId": 2051471,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:703",
+      "page": "Chapter 703",
+      "pageId": 198818,
+      "redirects": [],
+      "lastRevId": 2012253,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:704",
+      "page": "Chapter 704",
+      "pageId": 199909,
+      "redirects": [],
+      "lastRevId": 1947509,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:705",
+      "page": "Chapter 705",
+      "pageId": 201870,
+      "redirects": [],
+      "lastRevId": 2024856,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:706",
+      "page": "Chapter 706",
+      "pageId": 203367,
+      "redirects": [],
+      "lastRevId": 2036503,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:707",
+      "page": "Chapter 707",
+      "pageId": 204342,
+      "redirects": [],
+      "lastRevId": 1947512,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:708",
+      "page": "Chapter 708",
+      "pageId": 206844,
+      "redirects": [],
+      "lastRevId": 2036504,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:709",
+      "page": "Chapter 709",
+      "pageId": 208134,
+      "redirects": [],
+      "lastRevId": 2036505,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:71",
       "page": "Chapter 71",
       "pageId": 2883,
       "redirects": [],
       "lastRevId": 2062720,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:710",
+      "page": "Chapter 710",
+      "pageId": 211576,
+      "redirects": [],
+      "lastRevId": 1947516,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:711",
+      "page": "Chapter 711",
+      "pageId": 212481,
+      "redirects": [],
+      "lastRevId": 2093040,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:712",
+      "page": "Chapter 712",
+      "pageId": 214521,
+      "redirects": [],
+      "lastRevId": 2041598,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:713",
+      "page": "Chapter 713",
+      "pageId": 215579,
+      "redirects": [],
+      "lastRevId": 2110352,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:714",
+      "page": "Chapter 714",
+      "pageId": 216403,
+      "redirects": [],
+      "lastRevId": 2108416,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:715",
+      "page": "Chapter 715",
+      "pageId": 218134,
+      "redirects": [],
+      "lastRevId": 2051550,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:716",
+      "page": "Chapter 716",
+      "pageId": 220408,
+      "redirects": [],
+      "lastRevId": 2036510,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:717",
+      "page": "Chapter 717",
+      "pageId": 221384,
+      "redirects": [],
+      "lastRevId": 2021973,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:718",
+      "page": "Chapter 718",
+      "pageId": 223216,
+      "redirects": [],
+      "lastRevId": 2036512,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:719",
+      "page": "Chapter 719",
+      "pageId": 223910,
+      "redirects": [],
+      "lastRevId": 2036513,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:72",
@@ -4574,12 +7086,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:720",
+      "page": "Chapter 720",
+      "pageId": 224869,
+      "redirects": [],
+      "lastRevId": 2036514,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:721",
+      "page": "Chapter 721",
+      "pageId": 225530,
+      "redirects": [],
+      "lastRevId": 1947528,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:722",
+      "page": "Chapter 722",
+      "pageId": 228185,
+      "redirects": [],
+      "lastRevId": 2036515,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:723",
+      "page": "Chapter 723",
+      "pageId": 228910,
+      "redirects": [],
+      "lastRevId": 2018449,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:724",
+      "page": "Chapter 724",
+      "pageId": 229236,
+      "redirects": [],
+      "lastRevId": 2018450,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:725",
+      "page": "Chapter 725",
+      "pageId": 229910,
+      "redirects": [],
+      "lastRevId": 2128768,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:726",
+      "page": "Chapter 726",
+      "pageId": 230794,
+      "redirects": [],
+      "lastRevId": 2128760,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:727",
+      "page": "Chapter 727",
+      "pageId": 231422,
+      "redirects": [],
+      "lastRevId": 2093548,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:728",
+      "page": "Chapter 728",
+      "pageId": 231742,
+      "redirects": [],
+      "lastRevId": 2110090,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:729",
+      "page": "Chapter 729",
+      "pageId": 232279,
+      "redirects": [],
+      "lastRevId": 2036521,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:73",
       "page": "Chapter 73",
       "pageId": 2885,
       "redirects": [],
       "lastRevId": 2054040,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:730",
+      "page": "Chapter 730",
+      "pageId": 234134,
+      "redirects": [],
+      "lastRevId": 2128763,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:731",
+      "page": "Chapter 731",
+      "pageId": 234796,
+      "redirects": [],
+      "lastRevId": 2103667,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:732",
+      "page": "Chapter 732",
+      "pageId": 235855,
+      "redirects": [],
+      "lastRevId": 1947540,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:733",
+      "page": "Chapter 733",
+      "pageId": 236482,
+      "redirects": [],
+      "lastRevId": 2027190,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:734",
+      "page": "Chapter 734",
+      "pageId": 238069,
+      "redirects": [],
+      "lastRevId": 2027191,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:735",
+      "page": "Chapter 735",
+      "pageId": 238817,
+      "redirects": [],
+      "lastRevId": 2027193,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:736",
+      "page": "Chapter 736",
+      "pageId": 239551,
+      "redirects": [],
+      "lastRevId": 2027195,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:737",
+      "page": "Chapter 737",
+      "pageId": 240122,
+      "redirects": [],
+      "lastRevId": 2027196,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:738",
+      "page": "Chapter 738",
+      "pageId": 241387,
+      "redirects": [],
+      "lastRevId": 1947546,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:739",
+      "page": "Chapter 739",
+      "pageId": 241873,
+      "redirects": [],
+      "lastRevId": 2027197,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:74",
@@ -4590,12 +7262,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:740",
+      "page": "Chapter 740",
+      "pageId": 242715,
+      "redirects": [],
+      "lastRevId": 2102198,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:741",
+      "page": "Chapter 741",
+      "pageId": 243441,
+      "redirects": [],
+      "lastRevId": 1947550,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:742",
+      "page": "Chapter 742",
+      "pageId": 244228,
+      "redirects": [],
+      "lastRevId": 2039288,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:743",
+      "page": "Chapter 743",
+      "pageId": 244841,
+      "redirects": [],
+      "lastRevId": 2027199,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:744",
+      "page": "Chapter 744",
+      "pageId": 245398,
+      "redirects": [],
+      "lastRevId": 1947553,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:745",
+      "page": "Chapter 745",
+      "pageId": 246375,
+      "redirects": [],
+      "lastRevId": 2021287,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:746",
+      "page": "Chapter 746",
+      "pageId": 247260,
+      "redirects": [],
+      "lastRevId": 1947555,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:747",
+      "page": "Chapter 747",
+      "pageId": 247730,
+      "redirects": [],
+      "lastRevId": 2021975,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:748",
+      "page": "Chapter 748",
+      "pageId": 248202,
+      "redirects": [],
+      "lastRevId": 1947557,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:749",
+      "page": "Chapter 749",
+      "pageId": 248534,
+      "redirects": [],
+      "lastRevId": 1947558,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:75",
       "page": "Chapter 75",
       "pageId": 2887,
       "redirects": [],
       "lastRevId": 2060589,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:750",
+      "page": "Chapter 750",
+      "pageId": 249560,
+      "redirects": [],
+      "lastRevId": 1947560,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:751",
+      "page": "Chapter 751",
+      "pageId": 249863,
+      "redirects": [],
+      "lastRevId": 1947561,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:752",
+      "page": "Chapter 752",
+      "pageId": 250138,
+      "redirects": [],
+      "lastRevId": 1947562,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:753",
+      "page": "Chapter 753",
+      "pageId": 250653,
+      "redirects": [],
+      "lastRevId": 1947563,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:754",
+      "page": "Chapter 754",
+      "pageId": 252021,
+      "redirects": [],
+      "lastRevId": 1953967,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:755",
+      "page": "Chapter 755",
+      "pageId": 252337,
+      "redirects": [],
+      "lastRevId": 2099851,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:756",
+      "page": "Chapter 756",
+      "pageId": 252705,
+      "redirects": [],
+      "lastRevId": 1947566,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:757",
+      "page": "Chapter 757",
+      "pageId": 253137,
+      "redirects": [],
+      "lastRevId": 1947567,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:758",
+      "page": "Chapter 758",
+      "pageId": 253456,
+      "redirects": [],
+      "lastRevId": 2021182,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:759",
+      "page": "Chapter 759",
+      "pageId": 253783,
+      "redirects": [],
+      "lastRevId": 1947569,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:76",
@@ -4606,12 +7438,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:760",
+      "page": "Chapter 760",
+      "pageId": 254079,
+      "redirects": [],
+      "lastRevId": 1947571,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:761",
+      "page": "Chapter 761",
+      "pageId": 254796,
+      "redirects": [],
+      "lastRevId": 1947572,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:762",
+      "page": "Chapter 762",
+      "pageId": 255658,
+      "redirects": [],
+      "lastRevId": 1947573,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:763",
+      "page": "Chapter 763",
+      "pageId": 255920,
+      "redirects": [],
+      "lastRevId": 1947574,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:764",
+      "page": "Chapter 764",
+      "pageId": 256320,
+      "redirects": [],
+      "lastRevId": 1947575,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:765",
+      "page": "Chapter 765",
+      "pageId": 256592,
+      "redirects": [],
+      "lastRevId": 1947576,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:766",
+      "page": "Chapter 766",
+      "pageId": 256969,
+      "redirects": [],
+      "lastRevId": 2108747,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:767",
+      "page": "Chapter 767",
+      "pageId": 257214,
+      "redirects": [],
+      "lastRevId": 1947578,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:768",
+      "page": "Chapter 768",
+      "pageId": 257468,
+      "redirects": [],
+      "lastRevId": 2021290,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:769",
+      "page": "Chapter 769",
+      "pageId": 257708,
+      "redirects": [],
+      "lastRevId": 1947580,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:77",
       "page": "Chapter 77",
       "pageId": 2889,
       "redirects": [],
       "lastRevId": 2054045,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:770",
+      "page": "Chapter 770",
+      "pageId": 258272,
+      "redirects": [],
+      "lastRevId": 2045821,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:771",
+      "page": "Chapter 771",
+      "pageId": 258446,
+      "redirects": [],
+      "lastRevId": 2021292,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:772",
+      "page": "Chapter 772",
+      "pageId": 258695,
+      "redirects": [],
+      "lastRevId": 1947584,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:773",
+      "page": "Chapter 773",
+      "pageId": 259259,
+      "redirects": [],
+      "lastRevId": 2063505,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:774",
+      "page": "Chapter 774",
+      "pageId": 259499,
+      "redirects": [],
+      "lastRevId": 1947586,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:775",
+      "page": "Chapter 775",
+      "pageId": 259903,
+      "redirects": [],
+      "lastRevId": 1947587,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:776",
+      "page": "Chapter 776",
+      "pageId": 260637,
+      "redirects": [],
+      "lastRevId": 2095703,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:777",
+      "page": "Chapter 777",
+      "pageId": 260954,
+      "redirects": [],
+      "lastRevId": 2021293,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:778",
+      "page": "Chapter 778",
+      "pageId": 261250,
+      "redirects": [],
+      "lastRevId": 2021294,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:779",
+      "page": "Chapter 779",
+      "pageId": 261713,
+      "redirects": [],
+      "lastRevId": 2021295,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:78",
@@ -4622,12 +7614,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:780",
+      "page": "Chapter 780",
+      "pageId": 262898,
+      "redirects": [],
+      "lastRevId": 1947593,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:781",
+      "page": "Chapter 781",
+      "pageId": 263248,
+      "redirects": [],
+      "lastRevId": 1984876,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:782",
+      "page": "Chapter 782",
+      "pageId": 263767,
+      "redirects": [],
+      "lastRevId": 2021794,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:783",
+      "page": "Chapter 783",
+      "pageId": 264177,
+      "redirects": [],
+      "lastRevId": 2021297,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:784",
+      "page": "Chapter 784",
+      "pageId": 265000,
+      "redirects": [],
+      "lastRevId": 2021298,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:785",
+      "page": "Chapter 785",
+      "pageId": 265881,
+      "redirects": [],
+      "lastRevId": 2096060,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:786",
+      "page": "Chapter 786",
+      "pageId": 266218,
+      "redirects": [],
+      "lastRevId": 2021299,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:787",
+      "page": "Chapter 787",
+      "pageId": 268759,
+      "redirects": [],
+      "lastRevId": 2021300,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:788",
+      "page": "Chapter 788",
+      "pageId": 269172,
+      "redirects": [],
+      "lastRevId": 2021301,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:789",
+      "page": "Chapter 789",
+      "pageId": 269606,
+      "redirects": [],
+      "lastRevId": 2021302,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:79",
       "page": "Chapter 79",
       "pageId": 2891,
       "redirects": [],
       "lastRevId": 2108468,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:790",
+      "page": "Chapter 790",
+      "pageId": 270327,
+      "redirects": [],
+      "lastRevId": 1947604,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:791",
+      "page": "Chapter 791",
+      "pageId": 270737,
+      "redirects": [],
+      "lastRevId": 1947605,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:792",
+      "page": "Chapter 792",
+      "pageId": 271106,
+      "redirects": [],
+      "lastRevId": 1947606,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:793",
+      "page": "Chapter 793",
+      "pageId": 271568,
+      "redirects": [],
+      "lastRevId": 2117521,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:794",
+      "page": "Chapter 794",
+      "pageId": 271996,
+      "redirects": [],
+      "lastRevId": 1947608,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:795",
+      "page": "Chapter 795",
+      "pageId": 272849,
+      "redirects": [],
+      "lastRevId": 2116684,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:796",
+      "page": "Chapter 796",
+      "pageId": 273427,
+      "redirects": [],
+      "lastRevId": 1991174,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:797",
+      "page": "Chapter 797",
+      "pageId": 274095,
+      "redirects": [],
+      "lastRevId": 2021796,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:798",
+      "page": "Chapter 798",
+      "pageId": 274449,
+      "redirects": [],
+      "lastRevId": 1991176,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:799",
+      "page": "Chapter 799",
+      "pageId": 274819,
+      "redirects": [],
+      "lastRevId": 2034089,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:8",
@@ -4646,12 +7798,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:800",
+      "page": "Chapter 800",
+      "pageId": 275574,
+      "redirects": [],
+      "lastRevId": 2051551,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:801",
+      "page": "Chapter 801",
+      "pageId": 276015,
+      "redirects": [],
+      "lastRevId": 2103658,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:802",
+      "page": "Chapter 802",
+      "pageId": 276580,
+      "redirects": [],
+      "lastRevId": 2123832,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:803",
+      "page": "Chapter 803",
+      "pageId": 277085,
+      "redirects": [],
+      "lastRevId": 2099738,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:804",
+      "page": "Chapter 804",
+      "pageId": 277651,
+      "redirects": [],
+      "lastRevId": 1947620,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:805",
+      "page": "Chapter 805",
+      "pageId": 278008,
+      "redirects": [],
+      "lastRevId": 1972539,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:806",
+      "page": "Chapter 806",
+      "pageId": 278399,
+      "redirects": [],
+      "lastRevId": 2096069,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:807",
+      "page": "Chapter 807",
+      "pageId": 279061,
+      "redirects": [],
+      "lastRevId": 2096070,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:808",
+      "page": "Chapter 808",
+      "pageId": 279358,
+      "redirects": [],
+      "lastRevId": 2113259,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:809",
+      "page": "Chapter 809",
+      "pageId": 279699,
+      "redirects": [],
+      "lastRevId": 2092540,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:81",
       "page": "Chapter 81",
       "pageId": 2893,
       "redirects": [],
       "lastRevId": 2062726,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:810",
+      "page": "Chapter 810",
+      "pageId": 280294,
+      "redirects": [],
+      "lastRevId": 2018458,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:811",
+      "page": "Chapter 811",
+      "pageId": 280736,
+      "redirects": [],
+      "lastRevId": 2018459,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:812",
+      "page": "Chapter 812",
+      "pageId": 281279,
+      "redirects": [],
+      "lastRevId": 2018460,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:813",
+      "page": "Chapter 813",
+      "pageId": 281741,
+      "redirects": [],
+      "lastRevId": 2021185,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:814",
+      "page": "Chapter 814",
+      "pageId": 282098,
+      "redirects": [],
+      "lastRevId": 1947631,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:815",
+      "page": "Chapter 815",
+      "pageId": 282422,
+      "redirects": [],
+      "lastRevId": 2095600,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:816",
+      "page": "Chapter 816",
+      "pageId": 282625,
+      "redirects": [],
+      "lastRevId": 2052916,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:817",
+      "page": "Chapter 817",
+      "pageId": 283180,
+      "redirects": [],
+      "lastRevId": 2018462,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:818",
+      "page": "Chapter 818",
+      "pageId": 283347,
+      "redirects": [],
+      "lastRevId": 2018463,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:819",
+      "page": "Chapter 819",
+      "pageId": 283622,
+      "redirects": [],
+      "lastRevId": 2095519,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:82",
@@ -4662,12 +7974,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:820",
+      "page": "Chapter 820",
+      "pageId": 283803,
+      "redirects": [],
+      "lastRevId": 2123833,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:821",
+      "page": "Chapter 821",
+      "pageId": 284174,
+      "redirects": [],
+      "lastRevId": 2018465,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:822",
+      "page": "Chapter 822",
+      "pageId": 284508,
+      "redirects": [],
+      "lastRevId": 2123834,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:823",
+      "page": "Chapter 823",
+      "pageId": 284732,
+      "redirects": [],
+      "lastRevId": 2028736,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:824",
+      "page": "Chapter 824",
+      "pageId": 284995,
+      "redirects": [],
+      "lastRevId": 1947642,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:825",
+      "page": "Chapter 825",
+      "pageId": 285380,
+      "redirects": [],
+      "lastRevId": 1986051,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:826",
+      "page": "Chapter 826",
+      "pageId": 285756,
+      "redirects": [],
+      "lastRevId": 1947644,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:827",
+      "page": "Chapter 827",
+      "pageId": 285947,
+      "redirects": [],
+      "lastRevId": 1947645,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:828",
+      "page": "Chapter 828",
+      "pageId": 286203,
+      "redirects": [],
+      "lastRevId": 1947646,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:829",
+      "page": "Chapter 829",
+      "pageId": 286729,
+      "redirects": [],
+      "lastRevId": 1947647,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:83",
       "page": "Chapter 83",
       "pageId": 2895,
       "redirects": [],
       "lastRevId": 1836888,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:830",
+      "page": "Chapter 830",
+      "pageId": 286978,
+      "redirects": [],
+      "lastRevId": 1848055,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:831",
+      "page": "Chapter 831",
+      "pageId": 287271,
+      "redirects": [],
+      "lastRevId": 1947648,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:832",
+      "page": "Chapter 832",
+      "pageId": 287660,
+      "redirects": [],
+      "lastRevId": 1947649,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:833",
+      "page": "Chapter 833",
+      "pageId": 288091,
+      "redirects": [],
+      "lastRevId": 2107211,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:834",
+      "page": "Chapter 834",
+      "pageId": 288393,
+      "redirects": [],
+      "lastRevId": 1947651,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:835",
+      "page": "Chapter 835",
+      "pageId": 288686,
+      "redirects": [],
+      "lastRevId": 1947652,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:836",
+      "page": "Chapter 836",
+      "pageId": 289158,
+      "redirects": [],
+      "lastRevId": 2033585,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:837",
+      "page": "Chapter 837",
+      "pageId": 289492,
+      "redirects": [],
+      "lastRevId": 2021304,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:838",
+      "page": "Chapter 838",
+      "pageId": 289747,
+      "redirects": [],
+      "lastRevId": 1947655,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:839",
+      "page": "Chapter 839",
+      "pageId": 290251,
+      "redirects": [],
+      "lastRevId": 1947656,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:84",
@@ -4678,12 +8150,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:840",
+      "page": "Chapter 840",
+      "pageId": 290472,
+      "redirects": [],
+      "lastRevId": 2031037,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:841",
+      "page": "Chapter 841",
+      "pageId": 290715,
+      "redirects": [],
+      "lastRevId": 1947659,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:842",
+      "page": "Chapter 842",
+      "pageId": 290860,
+      "redirects": [],
+      "lastRevId": 1947660,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:843",
+      "page": "Chapter 843",
+      "pageId": 291318,
+      "redirects": [],
+      "lastRevId": 2099776,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:844",
+      "page": "Chapter 844",
+      "pageId": 291566,
+      "redirects": [],
+      "lastRevId": 1947662,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:845",
+      "page": "Chapter 845",
+      "pageId": 291742,
+      "redirects": [],
+      "lastRevId": 2074915,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:846",
+      "page": "Chapter 846",
+      "pageId": 292178,
+      "redirects": [],
+      "lastRevId": 2092541,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:847",
+      "page": "Chapter 847",
+      "pageId": 292334,
+      "redirects": [],
+      "lastRevId": 2099736,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:848",
+      "page": "Chapter 848",
+      "pageId": 292523,
+      "redirects": [],
+      "lastRevId": 2049267,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:849",
+      "page": "Chapter 849",
+      "pageId": 292716,
+      "redirects": [],
+      "lastRevId": 1947667,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:85",
       "page": "Chapter 85",
       "pageId": 2897,
       "redirects": [],
       "lastRevId": 1947668,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:850",
+      "page": "Chapter 850",
+      "pageId": 293039,
+      "redirects": [],
+      "lastRevId": 1947669,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:851",
+      "page": "Chapter 851",
+      "pageId": 293322,
+      "redirects": [],
+      "lastRevId": 1947670,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:852",
+      "page": "Chapter 852",
+      "pageId": 293760,
+      "redirects": [],
+      "lastRevId": 1947671,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:853",
+      "page": "Chapter 853",
+      "pageId": 294164,
+      "redirects": [],
+      "lastRevId": 1947672,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:854",
+      "page": "Chapter 854",
+      "pageId": 294322,
+      "redirects": [],
+      "lastRevId": 1947673,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:855",
+      "page": "Chapter 855",
+      "pageId": 294516,
+      "redirects": [],
+      "lastRevId": 1947674,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:856",
+      "page": "Chapter 856",
+      "pageId": 294776,
+      "redirects": [],
+      "lastRevId": 1947675,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:857",
+      "page": "Chapter 857",
+      "pageId": 295098,
+      "redirects": [],
+      "lastRevId": 1947676,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:858",
+      "page": "Chapter 858",
+      "pageId": 295335,
+      "redirects": [],
+      "lastRevId": 2034098,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:859",
+      "page": "Chapter 859",
+      "pageId": 295483,
+      "redirects": [],
+      "lastRevId": 2021819,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:86",
@@ -4694,12 +8326,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:860",
+      "page": "Chapter 860",
+      "pageId": 295720,
+      "redirects": [],
+      "lastRevId": 2020974,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:861",
+      "page": "Chapter 861",
+      "pageId": 295975,
+      "redirects": [],
+      "lastRevId": 2021826,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:862",
+      "page": "Chapter 862",
+      "pageId": 296292,
+      "redirects": [],
+      "lastRevId": 2077281,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:863",
+      "page": "Chapter 863",
+      "pageId": 305596,
+      "redirects": [],
+      "lastRevId": 2077704,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:864",
+      "page": "Chapter 864",
+      "pageId": 297011,
+      "redirects": [],
+      "lastRevId": 2021306,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:865",
+      "page": "Chapter 865",
+      "pageId": 297284,
+      "redirects": [],
+      "lastRevId": 2118910,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:866",
+      "page": "Chapter 866",
+      "pageId": 297681,
+      "redirects": [],
+      "lastRevId": 2100786,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:867",
+      "page": "Chapter 867",
+      "pageId": 298669,
+      "redirects": [],
+      "lastRevId": 2102514,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:868",
+      "page": "Chapter 868",
+      "pageId": 299557,
+      "redirects": [],
+      "lastRevId": 2102515,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:869",
+      "page": "Chapter 869",
+      "pageId": 299940,
+      "redirects": [],
+      "lastRevId": 2000736,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:87",
       "page": "Chapter 87",
       "pageId": 2899,
       "redirects": [],
       "lastRevId": 2054047,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:870",
+      "page": "Chapter 870",
+      "pageId": 300262,
+      "redirects": [],
+      "lastRevId": 2099842,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:871",
+      "page": "Chapter 871",
+      "pageId": 300456,
+      "redirects": [],
+      "lastRevId": 2112149,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:872",
+      "page": "Chapter 872",
+      "pageId": 300959,
+      "redirects": [],
+      "lastRevId": 2108765,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:873",
+      "page": "Chapter 873",
+      "pageId": 301227,
+      "redirects": [],
+      "lastRevId": 2102095,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:874",
+      "page": "Chapter 874",
+      "pageId": 301587,
+      "redirects": [],
+      "lastRevId": 2123835,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:875",
+      "page": "Chapter 875",
+      "pageId": 301851,
+      "redirects": [],
+      "lastRevId": 2021309,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:876",
+      "page": "Chapter 876",
+      "pageId": 302019,
+      "redirects": [],
+      "lastRevId": 1947699,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:877",
+      "page": "Chapter 877",
+      "pageId": 302157,
+      "redirects": [],
+      "lastRevId": 2092543,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:878",
+      "page": "Chapter 878",
+      "pageId": 302438,
+      "redirects": [],
+      "lastRevId": 2102096,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:879",
+      "page": "Chapter 879",
+      "pageId": 302613,
+      "redirects": [],
+      "lastRevId": 1947702,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:88",
@@ -4710,12 +8502,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:880",
+      "page": "Chapter 880",
+      "pageId": 302735,
+      "redirects": [],
+      "lastRevId": 2115180,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:881",
+      "page": "Chapter 881",
+      "pageId": 302925,
+      "redirects": [],
+      "lastRevId": 1947705,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:882",
+      "page": "Chapter 882",
+      "pageId": 303207,
+      "redirects": [],
+      "lastRevId": 1947706,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:883",
+      "page": "Chapter 883",
+      "pageId": 303319,
+      "redirects": [],
+      "lastRevId": 1947707,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:884",
+      "page": "Chapter 884",
+      "pageId": 303541,
+      "redirects": [],
+      "lastRevId": 2049268,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:885",
+      "page": "Chapter 885",
+      "pageId": 303766,
+      "redirects": [],
+      "lastRevId": 1947709,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:886",
+      "page": "Chapter 886",
+      "pageId": 303960,
+      "redirects": [],
+      "lastRevId": 2020977,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:887",
+      "page": "Chapter 887",
+      "pageId": 304050,
+      "redirects": [],
+      "lastRevId": 1947711,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:888",
+      "page": "Chapter 888",
+      "pageId": 304283,
+      "redirects": [],
+      "lastRevId": 1947712,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:889",
+      "page": "Chapter 889",
+      "pageId": 304510,
+      "redirects": [],
+      "lastRevId": 1947713,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:89",
       "page": "Chapter 89",
       "pageId": 2901,
       "redirects": [],
       "lastRevId": 2064792,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:890",
+      "page": "Chapter 890",
+      "pageId": 304623,
+      "redirects": [],
+      "lastRevId": 2123836,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:891",
+      "page": "Chapter 891",
+      "pageId": 304812,
+      "redirects": [],
+      "lastRevId": 2020978,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:892",
+      "page": "Chapter 892",
+      "pageId": 305056,
+      "redirects": [],
+      "lastRevId": 2020979,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:893",
+      "page": "Chapter 893",
+      "pageId": 305192,
+      "redirects": [],
+      "lastRevId": 2021840,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:894",
+      "page": "Chapter 894",
+      "pageId": 305288,
+      "redirects": [],
+      "lastRevId": 2020980,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:895",
+      "page": "Chapter 895",
+      "pageId": 305459,
+      "redirects": [],
+      "lastRevId": 2021312,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:896",
+      "page": "Chapter 896",
+      "pageId": 305661,
+      "redirects": [],
+      "lastRevId": 1947721,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:897",
+      "page": "Chapter 897",
+      "pageId": 305796,
+      "redirects": [],
+      "lastRevId": 2101291,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:898",
+      "page": "Chapter 898",
+      "pageId": 306073,
+      "redirects": [],
+      "lastRevId": 2045843,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:899",
+      "page": "Chapter 899",
+      "pageId": 306190,
+      "redirects": [],
+      "lastRevId": 2059215,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:9",
@@ -4734,12 +8686,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:900",
+      "page": "Chapter 900",
+      "pageId": 306310,
+      "redirects": [],
+      "lastRevId": 2066000,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:901",
+      "page": "Chapter 901",
+      "pageId": 306520,
+      "redirects": [],
+      "lastRevId": 2015669,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:902",
+      "page": "Chapter 902",
+      "pageId": 306689,
+      "redirects": [],
+      "lastRevId": 1947729,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:903",
+      "page": "Chapter 903",
+      "pageId": 306917,
+      "redirects": [],
+      "lastRevId": 2126889,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:904",
+      "page": "Chapter 904",
+      "pageId": 307337,
+      "redirects": [],
+      "lastRevId": 1947731,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:905",
+      "page": "Chapter 905",
+      "pageId": 307628,
+      "redirects": [],
+      "lastRevId": 2090261,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:906",
+      "page": "Chapter 906",
+      "pageId": 307817,
+      "redirects": [],
+      "lastRevId": 2113144,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:907",
+      "page": "Chapter 907",
+      "pageId": 308020,
+      "redirects": [],
+      "lastRevId": 2113146,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:908",
+      "page": "Chapter 908",
+      "pageId": 308205,
+      "redirects": [],
+      "lastRevId": 2110627,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:909",
+      "page": "Chapter 909",
+      "pageId": 308528,
+      "redirects": [],
+      "lastRevId": 2123838,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:91",
       "page": "Chapter 91",
       "pageId": 2903,
       "redirects": [],
       "lastRevId": 2109921,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:910",
+      "page": "Chapter 910",
+      "pageId": 308681,
+      "redirects": [],
+      "lastRevId": 2028744,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:911",
+      "page": "Chapter 911",
+      "pageId": 308829,
+      "redirects": [],
+      "lastRevId": 2108775,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:912",
+      "page": "Chapter 912",
+      "pageId": 308948,
+      "redirects": [],
+      "lastRevId": 2091341,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:913",
+      "page": "Chapter 913",
+      "pageId": 309112,
+      "redirects": [],
+      "lastRevId": 2004013,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:914",
+      "page": "Chapter 914",
+      "pageId": 309329,
+      "redirects": [],
+      "lastRevId": 2018472,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:915",
+      "page": "Chapter 915",
+      "pageId": 309480,
+      "redirects": [],
+      "lastRevId": 2021989,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:916",
+      "page": "Chapter 916",
+      "pageId": 309614,
+      "redirects": [],
+      "lastRevId": 2018473,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:917",
+      "page": "Chapter 917",
+      "pageId": 310199,
+      "redirects": [],
+      "lastRevId": 2003036,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:918",
+      "page": "Chapter 918",
+      "pageId": 310321,
+      "redirects": [],
+      "lastRevId": 2018474,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:919",
+      "page": "Chapter 919",
+      "pageId": 310451,
+      "redirects": [],
+      "lastRevId": 2099289,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:92",
@@ -4750,12 +8862,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:920",
+      "page": "Chapter 920",
+      "pageId": 310609,
+      "redirects": [],
+      "lastRevId": 2018476,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:921",
+      "page": "Chapter 921",
+      "pageId": 310872,
+      "redirects": [],
+      "lastRevId": 2084468,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:922",
+      "page": "Chapter 922",
+      "pageId": 311151,
+      "redirects": [],
+      "lastRevId": 2018478,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:923",
+      "page": "Chapter 923",
+      "pageId": 311442,
+      "redirects": [],
+      "lastRevId": 2095725,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:924",
+      "page": "Chapter 924",
+      "pageId": 311620,
+      "redirects": [],
+      "lastRevId": 2099477,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:925",
+      "page": "Chapter 925",
+      "pageId": 311908,
+      "redirects": [],
+      "lastRevId": 2121187,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:926",
+      "page": "Chapter 926",
+      "pageId": 312131,
+      "redirects": [],
+      "lastRevId": 2018481,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:927",
+      "page": "Chapter 927",
+      "pageId": 312333,
+      "redirects": [],
+      "lastRevId": 2018482,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:928",
+      "page": "Chapter 928",
+      "pageId": 312628,
+      "redirects": [],
+      "lastRevId": 2018483,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:929",
+      "page": "Chapter 929",
+      "pageId": 312790,
+      "redirects": [],
+      "lastRevId": 2024858,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:93",
       "page": "Chapter 93",
       "pageId": 2905,
       "redirects": [],
       "lastRevId": 1947760,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:930",
+      "page": "Chapter 930",
+      "pageId": 313161,
+      "redirects": [],
+      "lastRevId": 1947761,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:931",
+      "page": "Chapter 931",
+      "pageId": 313487,
+      "redirects": [],
+      "lastRevId": 2099460,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:932",
+      "page": "Chapter 932",
+      "pageId": 313614,
+      "redirects": [],
+      "lastRevId": 2099462,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:933",
+      "page": "Chapter 933",
+      "pageId": 313850,
+      "redirects": [],
+      "lastRevId": 2018487,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:934",
+      "page": "Chapter 934",
+      "pageId": 313984,
+      "redirects": [],
+      "lastRevId": 2112291,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:935",
+      "page": "Chapter 935",
+      "pageId": 314210,
+      "redirects": [],
+      "lastRevId": 2018489,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:936",
+      "page": "Chapter 936",
+      "pageId": 314422,
+      "redirects": [],
+      "lastRevId": 2099478,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:937",
+      "page": "Chapter 937",
+      "pageId": 314550,
+      "redirects": [],
+      "lastRevId": 2021314,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:938",
+      "page": "Chapter 938",
+      "pageId": 314678,
+      "redirects": [],
+      "lastRevId": 2125008,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:939",
+      "page": "Chapter 939",
+      "pageId": 314912,
+      "redirects": [],
+      "lastRevId": 2099466,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:94",
@@ -4766,12 +9038,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:940",
+      "page": "Chapter 940",
+      "pageId": 315020,
+      "redirects": [],
+      "lastRevId": 2099479,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:941",
+      "page": "Chapter 941",
+      "pageId": 315143,
+      "redirects": [],
+      "lastRevId": 2018494,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:942",
+      "page": "Chapter 942",
+      "pageId": 315378,
+      "redirects": [],
+      "lastRevId": 2099484,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:943",
+      "page": "Chapter 943",
+      "pageId": 315601,
+      "redirects": [],
+      "lastRevId": 2099487,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:944",
+      "page": "Chapter 944",
+      "pageId": 315753,
+      "redirects": [],
+      "lastRevId": 2112295,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:945",
+      "page": "Chapter 945",
+      "pageId": 315939,
+      "redirects": [],
+      "lastRevId": 2119468,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:946",
+      "page": "Chapter 946",
+      "pageId": 316188,
+      "redirects": [],
+      "lastRevId": 2021317,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:947",
+      "page": "Chapter 947",
+      "pageId": 316361,
+      "redirects": [],
+      "lastRevId": 2021318,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:948",
+      "page": "Chapter 948",
+      "pageId": 316479,
+      "redirects": [],
+      "lastRevId": 2062279,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:949",
+      "page": "Chapter 949",
+      "pageId": 316769,
+      "redirects": [],
+      "lastRevId": 2021050,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:95",
       "page": "Chapter 95",
       "pageId": 2907,
       "redirects": [],
       "lastRevId": 1947782,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:950",
+      "page": "Chapter 950",
+      "pageId": 316945,
+      "redirects": [],
+      "lastRevId": 2018502,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:951",
+      "page": "Chapter 951",
+      "pageId": 317042,
+      "redirects": [],
+      "lastRevId": 2099589,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:952",
+      "page": "Chapter 952",
+      "pageId": 317344,
+      "redirects": [],
+      "lastRevId": 2018504,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:953",
+      "page": "Chapter 953",
+      "pageId": 317466,
+      "redirects": [],
+      "lastRevId": 2091342,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:954",
+      "page": "Chapter 954",
+      "pageId": 317598,
+      "redirects": [],
+      "lastRevId": 2099590,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:955",
+      "page": "Chapter 955",
+      "pageId": 317763,
+      "redirects": [],
+      "lastRevId": 2091343,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:956",
+      "page": "Chapter 956",
+      "pageId": 317883,
+      "redirects": [],
+      "lastRevId": 2082082,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:957",
+      "page": "Chapter 957",
+      "pageId": 318060,
+      "redirects": [],
+      "lastRevId": 2075183,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:958",
+      "page": "Chapter 958",
+      "pageId": 318315,
+      "redirects": [],
+      "lastRevId": 2037217,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:959",
+      "page": "Chapter 959",
+      "pageId": 318506,
+      "redirects": [],
+      "lastRevId": 2024278,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:96",
@@ -4782,12 +9214,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:960",
+      "page": "Chapter 960",
+      "pageId": 318582,
+      "redirects": [],
+      "lastRevId": 2124880,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:961",
+      "page": "Chapter 961",
+      "pageId": 318683,
+      "redirects": [],
+      "lastRevId": 2124884,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:962",
+      "page": "Chapter 962",
+      "pageId": 318864,
+      "redirects": [],
+      "lastRevId": 2108222,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:963",
+      "page": "Chapter 963",
+      "pageId": 318935,
+      "redirects": [],
+      "lastRevId": 2124883,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:964",
+      "page": "Chapter 964",
+      "pageId": 319057,
+      "redirects": [],
+      "lastRevId": 2123840,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:965",
+      "page": "Chapter 965",
+      "pageId": 319268,
+      "redirects": [],
+      "lastRevId": 2123841,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:966",
+      "page": "Chapter 966",
+      "pageId": 319397,
+      "redirects": [],
+      "lastRevId": 2123842,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:967",
+      "page": "Chapter 967",
+      "pageId": 319571,
+      "redirects": [],
+      "lastRevId": 2099595,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:968",
+      "page": "Chapter 968",
+      "pageId": 319937,
+      "redirects": [],
+      "lastRevId": 2099596,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:969",
+      "page": "Chapter 969",
+      "pageId": 320033,
+      "redirects": [],
+      "lastRevId": 2050498,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:97",
       "page": "Chapter 97",
       "pageId": 2909,
       "redirects": [],
       "lastRevId": 2091344,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:970",
+      "page": "Chapter 970",
+      "pageId": 320168,
+      "redirects": [],
+      "lastRevId": 2018520,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:971",
+      "page": "Chapter 971",
+      "pageId": 320294,
+      "redirects": [],
+      "lastRevId": 2091872,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:972",
+      "page": "Chapter 972",
+      "pageId": 320486,
+      "redirects": [],
+      "lastRevId": 2110336,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:973",
+      "page": "Chapter 973",
+      "pageId": 320578,
+      "redirects": [],
+      "lastRevId": 2018249,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:974",
+      "page": "Chapter 974",
+      "pageId": 320782,
+      "redirects": [],
+      "lastRevId": 2018523,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:975",
+      "page": "Chapter 975",
+      "pageId": 320914,
+      "redirects": [],
+      "lastRevId": 2098331,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:976",
+      "page": "Chapter 976",
+      "pageId": 321095,
+      "redirects": [],
+      "lastRevId": 2110892,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:977",
+      "page": "Chapter 977",
+      "pageId": 321371,
+      "redirects": [],
+      "lastRevId": 2112334,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:978",
+      "page": "Chapter 978",
+      "pageId": 321503,
+      "redirects": [],
+      "lastRevId": 2098342,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:979",
+      "page": "Chapter 979",
+      "pageId": 321790,
+      "redirects": [],
+      "lastRevId": 2111708,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
       "entityId": "manga-chapter:98",
@@ -4798,12 +9390,172 @@
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
     },
     {
+      "entityId": "manga-chapter:980",
+      "page": "Chapter 980",
+      "pageId": 322113,
+      "redirects": [],
+      "lastRevId": 2108433,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:981",
+      "page": "Chapter 981",
+      "pageId": 322424,
+      "redirects": [],
+      "lastRevId": 2123843,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:982",
+      "page": "Chapter 982",
+      "pageId": 322690,
+      "redirects": [],
+      "lastRevId": 2123844,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:983",
+      "page": "Chapter 983",
+      "pageId": 322922,
+      "redirects": [],
+      "lastRevId": 2026283,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:984",
+      "page": "Chapter 984",
+      "pageId": 323049,
+      "redirects": [],
+      "lastRevId": 2123845,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:985",
+      "page": "Chapter 985",
+      "pageId": 323428,
+      "redirects": [],
+      "lastRevId": 2018531,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:986",
+      "page": "Chapter 986",
+      "pageId": 323710,
+      "redirects": [],
+      "lastRevId": 2112336,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:987",
+      "page": "Chapter 987",
+      "pageId": 324144,
+      "redirects": [],
+      "lastRevId": 2123846,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:988",
+      "page": "Chapter 988",
+      "pageId": 324417,
+      "redirects": [],
+      "lastRevId": 2098347,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:989",
+      "page": "Chapter 989",
+      "pageId": 324715,
+      "redirects": [],
+      "lastRevId": 2018535,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
       "entityId": "manga-chapter:99",
       "page": "Chapter 99",
       "pageId": 2911,
       "redirects": [],
       "lastRevId": 1947826,
       "lastImportedAt": "2026-08-27T20:24:01.738Z"
+    },
+    {
+      "entityId": "manga-chapter:990",
+      "page": "Chapter 990",
+      "pageId": 325030,
+      "redirects": [],
+      "lastRevId": 2042747,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:991",
+      "page": "Chapter 991",
+      "pageId": 325247,
+      "redirects": [],
+      "lastRevId": 2017805,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:992",
+      "page": "Chapter 992",
+      "pageId": 325627,
+      "redirects": [],
+      "lastRevId": 2123847,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:993",
+      "page": "Chapter 993",
+      "pageId": 325936,
+      "redirects": [],
+      "lastRevId": 2113463,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:994",
+      "page": "Chapter 994",
+      "pageId": 326005,
+      "redirects": [],
+      "lastRevId": 2025109,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:995",
+      "page": "Chapter 995",
+      "pageId": 326173,
+      "redirects": [],
+      "lastRevId": 2123848,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:996",
+      "page": "Chapter 996",
+      "pageId": 326355,
+      "redirects": [],
+      "lastRevId": 2025110,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:997",
+      "page": "Chapter 997",
+      "pageId": 326455,
+      "redirects": [],
+      "lastRevId": 2123849,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:998",
+      "page": "Chapter 998",
+      "pageId": 326590,
+      "redirects": [],
+      "lastRevId": 2123850,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "manga-chapter:999",
+      "page": "Chapter 999",
+      "pageId": 326689,
+      "redirects": [],
+      "lastRevId": 2123851,
+      "lastImportedAt": "2026-08-27T20:43:36.613Z"
     }
   ]
 }
