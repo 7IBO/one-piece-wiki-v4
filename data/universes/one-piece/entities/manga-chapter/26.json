@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.26.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "1998-02-02",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:syrup-village"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:3"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:10"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:11"
     }
   ]
 }

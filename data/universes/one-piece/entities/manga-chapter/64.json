@@ -12,12 +12,24 @@
     },
     "page_count": {
       "value": 18
+    },
+    "released_at": {
+      "value": "1998-11-09",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:baratie"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:8"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:28"
     }
   ]
 }

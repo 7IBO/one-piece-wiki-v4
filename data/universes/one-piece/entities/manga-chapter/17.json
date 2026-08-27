@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.17.title"
+    },
+    "page_count": {
+      "value": 20
+    },
+    "released_at": {
+      "value": "1997-11-17",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:orange-town"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:2"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:7"
     }
   ]
 }

@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.79.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "1999-03-08",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:arlong-park"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:9"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:36"
     }
   ]
 }
