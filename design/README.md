@@ -222,3 +222,61 @@ deux chapitres en 2:3 et deux épisodes en 16:9, alignés en haut, de
 hauteurs différentes. C'est volontaire — recadrer un plan 16:9 en
 portrait n'en fait pas un portrait, ça en fait un plan mutilé, ce que le
 commentaire d'en-tête de `image-ratio.ts` dit déjà mot pour mot.
+
+## Régler sa progression sans rien nommer
+
+`Progression.dc.html`. Demande du mainteneur : « je veux du no spoil mais
+pour autant ne pas avoir à mettre un id ou nom ».
+
+Le problème est plus retors qu'il n'y paraît. Laisser choisir dans une
+**liste de chapitres est déjà un spoiler** : les titres en disent trop,
+et voir la liste renseigne sur ce qui reste. Chercher par personnage ou
+par événement est pire encore.
+
+La réponse retenue est une **recherche dichotomique sur des nombres
+nus** : « As-tu déjà lu le chapitre 512 ? » — Oui / Non / Je ne sais
+plus. Chaque réponse divise l'intervalle par deux ; une dizaine de
+questions couvrent les 1 145 chapitres. **Aucune question ne peut rien
+révéler**, puisque rien n'y est nommé : ni titre, ni image, ni
+personnage. « Je ne sais plus » élargit l'intervalle du bon côté au lieu
+de bloquer.
+
+Le dialogue garde trois entrées, de la plus rapide à la plus sûre :
+
+1. **Le curseur direct**, pour qui connaît son numéro — champ + réglette
+   sur toute la série.
+2. **Les questions guidées**, pour qui ne le connaît pas.
+3. **Les préréglages en un clic** : « Je débute », « J'ai fini l'anime
+   diffusé », « Je suis à jour du manga », « Anime à jour, manga en
+   avance », « Tout afficher — aucun filtre ».
+
+Deux exigences implicites, tenues : le réglage est **réversible depuis
+l'en-tête** à tout moment, et l'intervalle en cours de recherche
+s'affiche (« entre le chapitre 257 et le chapitre 1145 ») pour qu'on
+sache où on en est sans avoir à faire confiance à l'algorithme.
+
+Ce dialogue remplace le panneau à deux champs numériques actuel
+(`apps/web/src/components/ProgressControl.tsx`), qui suppose que le
+lecteur connaît son numéro — c'est-à-dire précisément l'hypothèse que
+cette demande invalide.
+
+## Trois corrections d'affichage
+
+**Les liens rejoignent la famille de l'or** : or atténué `#c9ae72` au
+repos, or plein `#e8c15a` au survol. Le vermillon ne subsiste que sur la
+rupture — retcon, mort, contradiction. Il ne reste que trois occurrences
+sur les sept planches.
+
+**Les portraits d'équipage rétrécissent** à 158 px de large. La grille
+en cinq colonnes pleine largeur donnait des cartes de 256 px, hors de
+proportion avec le reste de la page.
+
+**Les apparitions passent en liste.** En grille, un chapitre en 2:3 et
+un épisode en 16:9 ne peuvent pas avoir la même taille — c'était visible
+et désagréable. En liste, la vignette **garde son ratio d'origine mais
+toutes ont la même hauteur** : un chapitre fait 27 px de large, un
+épisode 78 px, et les lignes s'alignent quand même. Rien n'est déformé,
+rien ne dépasse. C'est aussi la seule forme qui tienne à 342 entrées.
+
+Le sélecteur de **langue** entre dans l'en-tête, en liste maison plutôt
+qu'en `<select>` natif, montré ouvert sur la planche personnage.

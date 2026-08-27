@@ -1,0 +1,132 @@
+<!doctype html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;600;700;800;900&display=swap">
+  <style>
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: Archivo, system-ui, sans-serif; background: #0a0b0e; }
+    a { color: #c9ae72; text-decoration: none; }
+    .lbl { font-size: 9px; letter-spacing: 0.18em; color: #6a7280; }
+    .num { font-variant-numeric: tabular-nums; }
+    .seg { font-size: 12.5px; padding: 7px 16px; color: #8b939f; border-radius: 4px; }
+    .seg.on { background: #232833; color: #eceef2; font-weight: 600; }
+    .btn { font-size: 13px; font-weight: 600; padding: 9px 20px; border-radius: 5px; border: 1px solid #2c3038; color: #d6dae0; }
+    .chip { font-size: 11.5px; padding: 6px 11px; border: 1px solid #232833; border-radius: 999px; color: #b3bac4; display: inline-block; }
+  </style>
+</helmet>
+
+<div style="width: 1440px; height: 940px; background: #0a0b0e; color: #eceef2; position: relative; overflow: hidden">
+
+  <!-- la page derrière, assombrie -->
+  <div style="position: absolute; inset: 0; opacity: 0.30">
+    <div style="display: flex; align-items: stretch; height: 46px; border-bottom: 1px solid #1e222a">
+      <div style="display: flex; align-items: center; padding: 0 18px; font-size: 14px; font-weight: 800; border-right: 1px solid #1e222a">One Piece<span style="color: #e8c15a">.Wiki</span></div>
+      <div style="flex-grow: 1"></div>
+      <div style="display: flex; align-items: center; gap: 6px; padding: 0 14px; border-left: 1px solid #1e222a; font-size: 11.5px; color: #b3bac4">Français<span style="color: #6a7280; font-size: 9px">▾</span></div>
+      <div style="display: flex; align-items: center; gap: 9px; padding: 0 16px; border-left: 1px solid #1e222a; font-size: 11px"><span style="color: #6a7280">MA PROGRESSION</span><span class="num" style="font-weight: 700; color: #e8c15a">CH. 1044</span></div>
+    </div>
+    <div style="height: 292px; background: linear-gradient(105deg, #2a1512, #b8402a 55%, #e8a04f); opacity: 0.3"></div>
+    <div style="display: grid; grid-template-columns: repeat(12, 1fr); gap: 12px; padding: 58px 40px">
+      <div style="grid-column: span 3; height: 250px; border: 1px solid #1e222a; background: #101217; border-radius: 6px"></div>
+      <div style="grid-column: span 5; height: 250px; border: 1px solid #1e222a; background: #101217; border-radius: 6px"></div>
+      <div style="grid-column: span 4; height: 250px; border: 1px solid #1e222a; background: #101217; border-radius: 6px"></div>
+    </div>
+  </div>
+  <div style="position: absolute; inset: 0; background: rgba(6,7,9,0.72)"></div>
+
+  <!-- le dialogue -->
+  <div style="position: absolute; left: 50%; top: 62px; transform: translateX(-50%); width: 668px; border: 1px solid #2c3038; border-radius: 10px; background: #12151a; box-shadow: 0 28px 70px rgba(0,0,0,0.65); overflow: hidden">
+
+    <div style="display: flex; align-items: flex-start; justify-content: space-between; padding: 22px 26px 0">
+      <div>
+        <div style="font-size: 22px; font-weight: 800; letter-spacing: -0.02em">Où en es-tu ?</div>
+        <div style="font-size: 13px; color: #8b939f; margin-top: 5px">Rien de ce que tu n'as pas encore lu ou vu ne sera affiché.</div>
+      </div>
+      <div style="font-size: 18px; color: #6a7280">×</div>
+    </div>
+
+    <div style="display: flex; gap: 4px; margin: 18px 26px 0; padding: 4px; background: #0d1014; border: 1px solid #1e222a; border-radius: 6px; width: fit-content">
+      <span class="seg on">Manga</span><span class="seg">Anime</span><span class="seg">Les deux</span>
+    </div>
+
+    <!-- A. pour qui connaît son numéro -->
+    <div style="margin: 20px 26px 0; padding: 16px 18px; border: 1px solid #1e222a; border-radius: 7px; background: #0f1216">
+      <div class="lbl">JE CONNAIS MA POSITION</div>
+      <div style="display: flex; align-items: center; gap: 16px; margin-top: 13px">
+        <div style="display: flex; align-items: baseline; gap: 8px; border: 1px solid #2c3038; border-radius: 6px; padding: 8px 14px; background: #14171d">
+          <span style="font-size: 12px; color: #8b939f">Chapitre</span>
+          <span class="num" style="font-size: 26px; font-weight: 800; color: #e8c15a; letter-spacing: -0.02em">1044</span>
+        </div>
+        <div style="flex-grow: 1">
+          <div style="position: relative; height: 5px; border-radius: 3px; background: #1e222a">
+            <div style="position: absolute; left: 0; top: 0; bottom: 0; width: 91%; background: #e8c15a; border-radius: 3px"></div>
+            <div style="position: absolute; left: 91%; top: -6px; width: 17px; height: 17px; margin-left: -8px; border-radius: 50%; background: #e8c15a; border: 3px solid #12151a"></div>
+          </div>
+          <div style="display: flex; justify-content: space-between; font-size: 10.5px; color: #6a7280; margin-top: 9px">
+            <span class="num">1</span><span class="num">1 145 parus</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- B. pour qui ne le connaît pas : que des nombres, jamais un titre -->
+    <div style="margin: 12px 26px 0; padding: 18px; border: 1px solid #3a3020; border-radius: 7px; background: #14140f">
+      <div style="display: flex; align-items: baseline; justify-content: space-between">
+        <div class="lbl" style="color: #c9a86f">JE NE LE CONNAIS PAS — ON LE TROUVE ENSEMBLE</div>
+        <span style="font-size: 10.5px; color: #6a7280">environ 3 questions</span>
+      </div>
+
+      <div style="font-size: 19px; font-weight: 600; margin-top: 14px">As-tu déjà lu le <span class="num" style="color: #e8c15a; font-weight: 800">chapitre 512</span> ?</div>
+
+      <div style="display: flex; gap: 9px; margin-top: 14px">
+        <span class="btn" style="border-color: #4a4029; background: #1c1a12; color: #e8c15a">Oui</span>
+        <span class="btn">Non</span>
+        <span class="btn" style="color: #8b939f">Je ne sais plus</span>
+      </div>
+
+      <div style="display: flex; align-items: center; gap: 14px; margin-top: 16px">
+        <div style="display: flex; gap: 5px">
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #e8c15a"></span>
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #e8c15a"></span>
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #4a4029"></span>
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #2a2a22"></span>
+          <span style="width: 7px; height: 7px; border-radius: 50%; background: #2a2a22"></span>
+        </div>
+        <span class="num" style="font-size: 11.5px; color: #8b939f">entre le chapitre 257 et le chapitre 1145</span>
+      </div>
+
+      <div style="font-size: 11.5px; color: #6a7280; margin-top: 14px; border-top: 1px solid #26241a; padding-top: 11px; line-height: 1.6">
+        Seuls des <span style="color: #b3bac4">numéros</span> sont montrés. Jamais un titre, jamais une image, jamais un nom de personnage — répondre ne peut rien te dévoiler.
+      </div>
+    </div>
+
+    <div style="margin: 16px 26px 0">
+      <div class="lbl">OU EN UN CLIC</div>
+      <div style="display: flex; flex-wrap: wrap; gap: 7px; margin-top: 10px">
+        <span class="chip">Je débute</span>
+        <span class="chip">J'ai fini l'anime diffusé</span>
+        <span class="chip">Je suis à jour du manga</span>
+        <span class="chip">Anime à jour, manga en avance</span>
+        <span class="chip" style="border-color: #3a3020; color: #c9a86f">Tout afficher — aucun filtre</span>
+      </div>
+    </div>
+
+    <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 20px; padding: 15px 26px; border-top: 1px solid #1e222a; background: #0f1216">
+      <span style="font-size: 11.5px; color: #6a7280">Modifiable à tout moment depuis l'en-tête.</span>
+      <div style="display: flex; gap: 9px">
+        <span class="btn" style="border-color: transparent; color: #8b939f">Annuler</span>
+        <span class="btn" style="border-color: #e8c15a; background: #e8c15a; color: #14171d">Enregistrer</span>
+      </div>
+    </div>
+
+  </div>
+</div>
+</x-dc>
+</body>
+</html>
