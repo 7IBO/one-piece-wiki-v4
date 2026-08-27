@@ -89,6 +89,30 @@ Deux leçons opérationnelles :
    relecture de la page après migration : ruban à 3 cases. Après
    redémarrage : 149. Toujours redémarrer avant de conclure.
 
+## 2026-08-27 — 9 titres de chapitre sont restés des placeholders
+
+Même famille que le stub `arc:wano` : de la donnée semée à la main que
+l'import ne peut pas corriger.
+
+`stageToLocal` fusionne les traductions avec « les clés existantes
+gagnent », **y compris sous `--overwrite`** — la règle protège une
+traduction humaine d'un écrasement machine, et elle a raison. Mais elle
+ne distingue pas une traduction humaine d'un **placeholder semé**.
+Résultat, 9 chapitres sur 1193 gardent `"Chapter N"` comme titre
+pendant que les 1184 autres ont le vrai :
+
+`96, 432, 550, 574, 585, 731, 1043, 1044, 1053` — exactement les
+chapitres semés à la main avant l'importeur.
+
+Visible sur la page : `manga-chapter/chapter-1044` affiche
+« TITRE : Chapter 1044 » alors que 1045 affiche « Next Level ».
+
+Correction possible en un run CI (supprimer les 9 clés puis
+réimporter ces 9 pages), pas faite ici pour ne pas mélanger une
+correction de données à une correction d'UI. Fandom n'est pas
+joignable depuis cette session (proxy 403), donc ça passe forcément
+par le workflow.
+
 ## 2026-08-27 — pourquoi l'import des arcs n'a rien donné
 
 **Décision en attente du mainteneur**, en bas de section.
