@@ -53,6 +53,38 @@ const STRINGS = {
 
   // Spoiler cursor
   setProgress: { en: 'Set my progress', fr: 'Définir ma progression' },
+  // Home — the two states of the entry page.
+  homeNoProgressTitle: {
+    en: 'Read without being spoiled.',
+    fr: 'Lis sans te faire spoiler.',
+  },
+  homeNoProgressBody: {
+    en:
+      'Tell this wiki where you are and every page, every search and every image stops there. Until you do, titles stay hidden — only what has been released is shown.',
+    fr:
+      'Dis à ce wiki où tu en es : chaque page, chaque recherche et chaque image s’arrêteront là. En attendant, les titres restent masqués — seul ce qui est paru est affiché.',
+  },
+  homeResumeTitle: { en: 'Pick up where you left off.', fr: 'Reprends là où tu t’es arrêté.' },
+  homeResumeBody: {
+    en:
+      'Everything you read here stops at your position. No page, no search, no illustration will show you what comes next.',
+    fr:
+      'Tout ce que tu lis ici s’arrête à ta position. Aucune page, aucune recherche, aucune illustration ne te montrera la suite.',
+  },
+  homeReleases: { en: 'Latest releases', fr: 'Dernières sorties' },
+  homeReleasesNote: {
+    en: 'Release dates are public; titles are not — they tell the story.',
+    fr: 'Les dates de parution sont publiques ; les titres, non — ils racontent.',
+  },
+  homeTitleHidden: { en: 'Title hidden', fr: 'Titre masqué' },
+  homeExplore: { en: 'Explore the universe', fr: 'Explorer l’univers' },
+  homeCommunity: { en: 'The community', fr: 'La communauté' },
+  homeSoon: { en: 'Soon', fr: 'Bientôt' },
+  homeCommunityNote: {
+    en: 'The forum will gate threads beyond your progress, like the rest of the site.',
+    fr: 'Le forum filtrera les fils au-delà de ta progression, comme le reste du site.',
+  },
+  homeContinue: { en: 'Continue', fr: 'Continuer' },
   progressTitle: { en: 'My progress', fr: 'Ma progression' },
   progressHint: {
     en: 'Everything beyond these points is hidden across the wiki.',

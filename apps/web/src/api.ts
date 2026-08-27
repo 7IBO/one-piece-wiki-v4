@@ -28,6 +28,7 @@ export type { SearchResultView, SearchView } from '../server/search';
 export type {
   AppearanceGroupView,
   AvailabilityItemView,
+  AxisView,
   CastGroupView,
   ContainerGroupView,
   CrewSectionView,
@@ -47,8 +48,10 @@ export type {
   MemberThumbView,
   PropertyEntryView,
   PropertyView,
+  ReadingView,
   RelationGroupView,
   RelationItemView,
+  ReleaseView,
   SequenceNeighbourView,
   SequenceView,
   SourceItemView,
@@ -92,7 +95,10 @@ function readProgress(): ProgressCursor {
 
 export const fetchHome = createServerFn({ method: 'GET' })
   .inputValidator((input: { locale: Locale; }) => ({ locale: asLocale(input.locale) }))
-  .handler(({ data }) => buildHomeView(data.locale));
+  // The home page leads with the reader's position and withholds the
+  // titles of releases beyond it, so it needs the cursor like any
+  // other view.
+  .handler(({ data }) => buildHomeView(data.locale, readProgress()));
 
 export const fetchTypeList = createServerFn({ method: 'GET' })
   .inputValidator((input: { locale: Locale; type: string; }) => ({
