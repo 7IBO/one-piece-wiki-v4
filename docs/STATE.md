@@ -1414,6 +1414,28 @@ computed server-side or emitted as generated TS manifests under
 
 ## Gotchas (so they don't bite again)
 
+- **Un crawl Fandom n'est jamais jeté** (ADR-116). L'ordre du workflow
+  est stage → push → validate → PR ; la validation ne fait pas échouer
+  le job. Si elle échoue, **corrige le fichier sur la branche d'import,
+  ne relance pas le crawl** — dix minutes throttlées pour retomber sur
+  le même fichier.
+- **`workflow_dispatch` lit le workflow de la branche par défaut.** Un
+  correctif de workflow qui vit sur une branche n'agit pas tant que la
+  PR n'est pas mergée, sauf à déclencher explicitement sur ce ref.
+- **Les noms de catégories Fandom ne se devinent pas et échouent en
+  silence.** `Chapters` n'existe pas ; MediaWiki renvoie une liste vide
+  pour une catégorie inexistante, donc le run réussit en affichant
+  `0 page(s)`. Le vrai nom est `One Piece Chapters`, 0 page en direct et
+  5 sous-catégories — d'où `depth: 3`. Liste complète :
+  `docs/audits/fandom-structure-*.json` (2641 catégories).
+- **Les sources avant les sujets.** Importer `Devil Fruits` avant les
+  chapitres a produit 138 `ENTITY_REFERENCE_NOT_FOUND` : chaque `since`
+  pointait vers un chapitre absent.
+- **`schema_version` est figé à 1** (ADR-115) et rien ne branche sur sa
+  valeur. `schema:versions` doit lire `0 behind` ; toute version ≠ 1
+  qu'il signale est une constante d'importeur oubliée ou un crawl
+  d'avant le reset arrivé après.
+
 - **Build before committing**, and **deploy config can't be verified
   locally** — CLAUDE.md Definition of done #7. CI now builds the
   dashboard, but `vercel.json` / nitro preset changes only prove out on
