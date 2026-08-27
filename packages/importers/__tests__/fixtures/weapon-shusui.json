@@ -1,0 +1,8 @@
+{
+  "_SYNTHETIC": "HAND-WRITTEN fixture (2026-08-27) — NOT a captured API response. The sandbox network policy denies onepiece.fandom.com (ADR-079 §6), so this wikitext is modelled param-for-param on the field inventory of docs/audits/fandom-structure-2026-08-27.{md,json} (names, fill rates and value shapes of the sampled pages). VALIDATE against a live action=parse response on the first CI run and replace with the capture, as was done for chapter-1044/episode-1071/hyougoro.",
+  "parse": {
+    "title": "Shusui",
+    "pageid": 990005,
+    "wikitext": "{{Weapon Box\n|colorscheme = StrawHatPiratesColors\n|image       = Shusui Infobox.png\n|jname       = {{Ruby|秋水|しゅうすい}}\n|rname       = ''Shūsui''\n|ename       = Autumn Water (VIZ); Shusui (Funimation)\n|meaning     = Autumn Water\n|first       = [[Chapter 449]]; [[Episode 344]]\n|type        = Single-edged greatsword; Black Blade\n|grade       = [[Meito|Great Grade]]\n|owner       = [[Shimotsuki Ryuma]] → [[Roronoa Zoro]] → [[Wano Country]]\n|price       = 10,000,000+\n}}\n\n'''Shusui''' is one of the 21 Great Grade swords."
+  }
+}

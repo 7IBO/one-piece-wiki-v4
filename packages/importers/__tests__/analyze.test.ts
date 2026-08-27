@@ -76,7 +76,17 @@ const crewPage = JSON.stringify({
     title: 'Straw Hat Pirates',
     pageid: 22181,
     wikitext: '{{Crew Box|name=Straw Hat Pirates|captain=[[Monkey D. Luffy]]'
-      + '|total bounty=8,816,001,000}}',
+      + '|colorscheme=StrawHatPiratesColors|total bounty=8,816,001,000}}',
+  },
+});
+
+/** A template with NO mapper — the "which mapper to build next"
+ *  signal has to keep working after ADR-109 mapped six of them. */
+const gamePage = JSON.stringify({
+  parse: {
+    title: 'One Piece: Pirate Warriors 4',
+    pageid: 30001,
+    wikitext: '{{Video Game Box|title_key=One Piece: Pirate Warriors 4}}',
   },
 });
 
@@ -87,9 +97,11 @@ async function analyzedFixtures(): Promise<ReturnType<typeof analyzeWiki>> {
     ['apnamespace=10', await fixtureRaw('allpages-templates')],
     ['eititle=Template:Char Box', await fixtureRaw('embeddedin-char-box')],
     ['eititle=Template:Crew Box', await fixtureRaw('embeddedin-crew-box')],
+    ['eititle=Template:Video Game Box', await fixtureRaw('embeddedin-video-game-box')],
     ['page=Hyougoro', await fixtureRaw('hyougoro')],
     ['page=Monkey D. Luffy', luffyPage],
     ['page=Straw Hat Pirates', crewPage],
+    ['page=One Piece: Pirate Warriors 4', gamePage],
   ]);
   return analyzeWiki(client, catalogue);
 }
@@ -128,9 +140,13 @@ describe('analyzeWiki', () => {
 
   it('inventories infobox fields with occurrence counts and mapper marks', async () => {
     const report = await analyzedFixtures();
-    // Sorted by transclusions (Char Box 2 > Crew Box 1); doc subpage,
-    // Navibox and Qref filtered out.
-    expect(report.infoboxes.map((b) => b.template)).toEqual(['Char Box', 'Crew Box']);
+    // Sorted by transclusions (Char Box 2 > the rest at 1); doc
+    // subpage, Navibox and Qref filtered out.
+    expect(report.infoboxes.map((b) => b.template)).toEqual([
+      'Char Box',
+      'Crew Box',
+      'Video Game Box',
+    ]);
 
     const charBox = report.infoboxes[0]!;
     expect(charBox.mapper).toBe('character');
@@ -151,16 +167,31 @@ describe('analyzeWiki', () => {
     );
   });
 
-  it('infers the entity type of mapper-less infoboxes from their name', async () => {
+  it("marks the ADR-109 crew mapper's params mapped/ignored, gaps unmapped", async () => {
     const report = await analyzedFixtures();
     const crewBox = report.infoboxes[1]!;
-    expect(crewBox.mapper).toBeNull();
+    expect(crewBox.mapper).toBe('crew');
     expect(crewBox.entityType).toBe('crew');
-    expect(crewBox.fields.every((f) => f.handling === 'unmapped')).toBe(true);
-    // Field ↔ catalogue-property hint works without a mapper too.
+    const handling = (name: string): string | undefined =>
+      crewBox.fields.find((f) => f.name === name)?.handling;
+    expect(handling('name')).toBe('mapped');
+    expect(handling('captain')).toBe('mapped');
+    // `colorscheme` is template presentation — deliberately ignored,
+    // so it stops being counted as a gap (ADR-109).
+    expect(handling('colorscheme')).toBe('ignored');
+    // Field ↔ catalogue-property hint is independent of the mapper.
+    expect(handling('total bounty')).toBe('unmapped');
     expect(crewBox.fields.find((f) => f.name === 'total bounty')?.catalogueProperty).toBe(
       'total_bounty',
     );
+  });
+
+  it('infers the entity type of mapper-less infoboxes from their name', async () => {
+    const report = await analyzedFixtures();
+    const gameBox = report.infoboxes[2]!;
+    expect(gameBox.mapper).toBeNull();
+    expect(gameBox.entityType).toBe('video-game');
+    expect(gameBox.fields.every((f) => f.handling === 'unmapped')).toBe(true);
   });
 
   it('reports the three gap sections, sorted', async () => {

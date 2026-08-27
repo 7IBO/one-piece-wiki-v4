@@ -101,14 +101,22 @@ export async function run<TSource, TEntity>(
 export * from './emit-pr.ts';
 export * from './emit.ts';
 export * from './fandom/analyze.ts';
+export * from './fandom/arc.ts';
+export * from './fandom/box.ts';
 export * from './fandom/chapter.ts';
 export * from './fandom/character.ts';
 export * from './fandom/client.ts';
 export * from './fandom/crawl.ts';
+export * from './fandom/crew.ts';
+export * from './fandom/devil-fruit.ts';
 export * from './fandom/episode.ts';
+export * from './fandom/organization.ts';
 export * from './fandom/registry.ts';
+export * from './fandom/ship.ts';
 export * from './fandom/updates.ts';
+export * from './fandom/vocabulary.ts';
 export * from './fandom/volume.ts';
+export * from './fandom/weapon.ts';
 export * from './fandom/wikitext.ts';
 
 // api-onepiece.com ingestion (ADR-101): REST client + per-resource
