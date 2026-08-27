@@ -2,7 +2,7 @@
  * Inline link to another entity — the atom every relation / source /
  * event reference renders through. Purely presentational: the chip
  * arrives fully resolved (localized name + type label) from the
- * server view models. Inline references read as accent links (the
+ * server view models. Inline references read as links in the gold family (the
  * one interactive hue of the app). When the surrounding page carries
  * a canon-scope context (`ScopeContext`, set by the entity page from
  * the server-computed `propagateScope`), every chip link propagates
@@ -43,7 +43,7 @@ export function EntityChipLink(
       search={search}
       className='group inline-flex max-w-full items-baseline gap-1.5'
     >
-      <span className='truncate font-medium text-accent transition-colors duration-150 group-hover:text-accent-hover'>
+      <span className='truncate font-medium text-link transition-colors duration-150 group-hover:text-link-hover'>
         {chip.name}
       </span>
       {showType

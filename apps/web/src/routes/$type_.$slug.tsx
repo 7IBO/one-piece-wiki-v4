@@ -175,7 +175,7 @@ export function GatedScreen({ view }: { readonly view: GatedEntityView; }): JSX.
       </div>
       <Link
         to='/'
-        className='mt-8 inline-block rounded-md bg-accent px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+        className='mt-8 inline-block rounded-md bg-gold px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
       >
         {t(locale, 'backHome')}
       </Link>
@@ -244,7 +244,7 @@ function SectionNav(
   if (sections.length === 0) return null;
   const item =
     'block border-b-2 px-0.5 pb-2 pt-3 text-[12px] font-bold uppercase tracking-[0.08em] transition-colors duration-150';
-  const active = 'border-accent text-fg';
+  const active = 'border-gold text-fg';
   const idle = 'border-transparent text-muted hover:text-fg';
   return (
     <nav className='page-column border-b border-line'>
@@ -298,7 +298,7 @@ function Identity({ view }: { readonly view: EntityView; }): JSX.Element {
           <Link
             to='/$type'
             params={{ type: view.type }}
-            className='text-fg/70 transition-colors duration-150 hover:text-accent'
+            className='text-fg/70 transition-colors duration-150 hover:text-link-hover'
           >
             {view.typeLabel}
           </Link>
@@ -352,7 +352,7 @@ function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): JSX.El
             search={search}
             className={shell}
           >
-            <span aria-hidden className='text-accent'>←</span>
+            <span aria-hidden className='text-faint'>←</span>
             <span className='min-w-0'>
               <span className='label-xs block'>{t(locale, 'previous')}</span>
               <span className='block truncate font-semibold tabular-nums text-fg'>
@@ -382,7 +382,7 @@ function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): JSX.El
                 {sequence.next.number}
               </span>
             </span>
-            <span aria-hidden className='text-accent'>→</span>
+            <span aria-hidden className='text-faint'>→</span>
           </Link>
         )
         : <span />}
@@ -691,12 +691,12 @@ function ConnectionRow({ item }: { readonly item: RelationItemView; }): JSX.Elem
           slug={item.target.slug}
           name={item.target.name}
           ratio='square'
-          className='size-10 rounded-[5px] ring-1 ring-line transition-shadow duration-150 group-hover:ring-accent/70'
+          className='size-10 rounded-[5px] ring-1 ring-line transition-shadow duration-150 group-hover:ring-tint/70'
         />
         <span className='min-w-0 flex-1'>
           <span
             title={item.target.name}
-            className='block truncate text-[13.5px] font-semibold text-fg transition-colors duration-150 group-hover:text-accent'
+            className='block truncate text-[13.5px] font-semibold text-fg transition-colors duration-150 group-hover:text-link-hover'
           >
             {item.target.name}
           </span>
@@ -864,12 +864,12 @@ function ContentsList(
             >
               <span
                 className={`display w-12 shrink-0 text-[15px] font-extrabold tabular-nums ${
-                  item.current ? 'text-accent' : 'text-gold/80'
+                  item.current ? 'text-gold' : 'text-muted'
                 }`}
               >
                 {item.number ?? '·'}
               </span>
-              <span className='min-w-0 flex-1 truncate text-[13.5px] font-medium text-fg transition-colors duration-150 group-hover:text-accent'>
+              <span className='min-w-0 flex-1 truncate text-[13.5px] font-medium text-fg transition-colors duration-150 group-hover:text-link-hover'>
                 {item.chip.name}
               </span>
             </Link>
@@ -897,7 +897,7 @@ function PositionSection(
           <Link
             to='/$type/$slug'
             params={{ type: arc.chip.type, slug: arc.chip.slug }}
-            className='text-accent transition-colors duration-150 hover:text-accent-hover'
+            className='text-link transition-colors duration-150 hover:text-link-hover'
           >
             {arc.chip.name}
           </Link>
@@ -923,7 +923,7 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): JSX.Ele
     return (
       <li
         aria-current='page'
-        className='grid min-w-10 place-items-center rounded-md bg-accent px-2 py-1.5 text-xs font-semibold tabular-nums text-canvas'
+        className='grid min-w-10 place-items-center rounded-md bg-gold px-2 py-1.5 text-xs font-semibold tabular-nums text-canvas'
       >
         {label}
       </li>
@@ -962,10 +962,10 @@ function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): 
               search={search}
               title={item.chip.name}
               className={`group block rounded-md p-2 ring-1 transition-[background-color,box-shadow] duration-150 hover:bg-surface ${
-                item.current ? 'bg-surface ring-accent' : 'ring-line hover:ring-line-strong'
+                item.current ? 'bg-surface ring-gold' : 'ring-line hover:ring-line-strong'
               }`}
             >
-              <span className='display block text-base font-bold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-accent'>
+              <span className='display block text-base font-bold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-link-hover'>
                 {item.number ?? '·'}
               </span>
               <span className='block truncate text-[10.5px] text-faint'>
@@ -1043,7 +1043,7 @@ function AvailabilityItem({ item }: { readonly item: AvailabilityItemView; }): J
         href={item.url}
         target='_blank'
         rel='noreferrer'
-        className='block rounded-md px-3 py-1.5 text-[13px] font-medium text-accent ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-accent-hover hover:ring-line-strong'
+        className='block rounded-md px-3 py-1.5 text-[13px] font-medium text-link ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-link-hover hover:ring-line-strong'
       >
         {item.platform.name} ↗
       </a>

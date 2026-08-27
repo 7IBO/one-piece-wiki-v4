@@ -33,7 +33,7 @@ function renderInline(text: string): ReactNode {
           key={i}
           href={link[2]}
           rel='noreferrer'
-          className='text-accent underline decoration-accent/40 underline-offset-2 hover:decoration-accent'
+          className='text-link underline decoration-link/40 underline-offset-2 hover:decoration-link-hover'
         >
           {link[1]}
         </a>

@@ -27,11 +27,10 @@
  *   Tailwind utility inside an entity page is already that entity's
  *   colour. The tokens declared here are the NEUTRAL chrome default —
  *   top bar, footer and listings keep them so navigation never wobbles.
- * - **Two accents, used sparingly.** Straw-hat yellow (`--color-gold`)
- *   is the identity: wordmark, headline figures, focus ring — and
- *   nothing else. Luffy-vest vermillion (`--color-accent`) is the
- *   interactive colour of the untinted chrome. « Quelques touches par
- *   ci par là » — neither is ever a full-page wash.
+ * - **Trois rôles de couleur, jamais mélangés** (v12) : l'or dit ce
+ *   qui est vrai pour le lecteur maintenant, `link` porte les liens
+ *   dans la même famille mais désaturée, le vermillon est réservé à la
+ *   rupture rétroactive. Détail et justification dans `@theme`.
  * - Motion is part of the finish: tiles lift and reveal on hover,
  *   always under `prefers-reduced-motion`.
  * - Type: Archivo Variable, expanded and heavy, is the branded
@@ -41,27 +40,50 @@
   --font-sans: 'Inter Variable', ui-sans-serif, system-ui, sans-serif;
   --font-display: 'Archivo Variable', ui-sans-serif, system-ui, sans-serif;
 
-  /* The oceanic night. `abyss` is the deeper water the chrome sits in,
-   * so the header and footer read as the surface above the page rather
-   * than as two more panels of the same flat dark. */
-  --color-canvas: oklch(0.165 0.03 250);
-  --color-abyss: oklch(0.128 0.028 252);
-  --color-surface: oklch(0.215 0.032 248);
-  --color-surface-2: oklch(0.262 0.034 246);
-  --color-line: oklch(0.82 0.05 235 / 0.12);
-  --color-line-strong: oklch(0.82 0.05 235 / 0.24);
+  /* Encre neutre. Le fond ne porte plus de teinte : c'est l'illustration
+   * du bandeau qui apporte la couleur, pas le substrat. `abyss` est le
+   * cran en dessous, pour que l'en-tête et le pied lisent comme la
+   * surface au-dessus de la page et non comme deux panneaux de plus. */
+  --color-canvas: oklch(0.150 0.007 271); /* #0a0b0e */
+  --color-abyss: oklch(0.134 0.005 262); /* #07080a */
+  --color-surface: oklch(0.182 0.011 268); /* #101217 — le panneau */
+  --color-surface-2: oklch(0.221 0.015 262); /* #171b22 */
+  --color-line: oklch(0.251 0.016 264); /* #1e222a */
+  --color-line-strong: oklch(0.309 0.015 264); /* #2c3038 */
 
-  --color-fg: oklch(0.965 0.008 240);
-  --color-muted: oklch(0.775 0.018 240);
-  --color-faint: oklch(0.615 0.02 242);
+  --color-fg: oklch(0.949 0.006 265); /* 16.9:1 */
+  --color-muted: oklch(0.661 0.020 258); /* 6.3:1 */
+  --color-faint: oklch(0.550 0.024 262); /* 4.1:1 */
 
-  /* Vermillion — Luffy's vest. The interactive colour of the chrome
-   * (an entity page re-points it to its own chord). 6.0:1 on canvas. */
-  --color-accent: oklch(0.675 0.19 30);
-  --color-accent-hover: oklch(0.745 0.17 34);
-  /* Straw-hat yellow. A sunny yellow, deliberately NOT metallic gold:
-   * the identity mark, never a surface. 12.6:1 on canvas. */
-  --color-gold: oklch(0.86 0.15 93);
+  /*
+   * TROIS RÔLES DE COULEUR, jamais mélangés — c'est la décision de la
+   * refonte, et la raison pour laquelle les itérations précédentes
+   * lisaient comme « des couleurs au hasard ».
+   *
+   * 1. `gold` — CE QUI EST VRAI POUR TOI MAINTENANT : valeur courante,
+   *    onglet actif, position de lecture, mot-symbole, action
+   *    principale. C'est la couleur la plus vue, et c'est la seule que
+   *    le mainteneur ait jamais validée. 11.4:1.
+   * 2. `link` — les liens. Il y en a partout, donc ils doivent être
+   *    CALMES : le même or, désaturé, qui remonte à l'or plein au
+   *    survol. Rester dans la famille évite la bigarrure. 9.2:1.
+   * 3. `accent` — vermillon, réservé à la RUPTURE : valeur corrigée
+   *    rétroactivement, contradiction, mort. Rare par construction —
+   *    trois occurrences sur les sept planches de `design/v2`. Ce
+   *    n'est PAS la couleur interactive : la promouvoir en couleur de
+   *    lien était l'erreur de la v11. 5.2:1.
+   *
+   * `tint` est à part : ce n'est pas un rôle sémantique mais
+   * l'IDENTITÉ de l'entité courante (ADR-103/111), re-pointée par
+   * `.tinted` plus bas. Elle colore l'ambiance — bandeau, anneaux de
+   * survol — jamais le sens.
+   */
+  --color-gold: oklch(0.825 0.129 88); /* #e8c15a */
+  --color-link: oklch(0.761 0.084 86); /* #c9ae72 */
+  --color-link-hover: oklch(0.825 0.129 88); /* #e8c15a */
+  --color-accent: oklch(0.630 0.178 31); /* #e0553f */
+  --color-accent-hover: oklch(0.700 0.160 33);
+  --color-tint: oklch(0.630 0.178 31);
 }
 
 /*
@@ -155,11 +177,19 @@ body {
    * its colours.
    */
   .tinted {
-    --color-accent: var(--tint-accent, oklch(0.675 0.19 30));
-    --color-accent-hover: var(--tint-accent-hover, oklch(0.745 0.17 34));
-    --color-line: var(--tint-line, oklch(0.82 0.05 235 / 0.12));
-    --color-line-strong: var(--tint-line-strong, oklch(0.82 0.05 235 / 0.24));
-    --color-surface: var(--tint-surface, oklch(0.215 0.032 248));
+    /*
+     * La teinte colore l'AMBIANCE, plus jamais la sémantique. Elle ne
+     * re-pointe donc ni `accent` (la rupture, qui doit rester
+     * reconnaissable d'une page à l'autre) ni `link` (les liens, qui
+     * doivent rester calmes) : elle prend `tint`, les filets et la
+     * surface. C'est ce qui permet à une page d'être colorée sans que
+     * la couleur veuille dire quelque chose de différent selon
+     * l'entité.
+     */
+    --color-tint: var(--tint-accent, oklch(0.630 0.178 31));
+    --color-line: var(--tint-line, oklch(0.251 0.016 264));
+    --color-line-strong: var(--tint-line-strong, oklch(0.309 0.015 264));
+    --color-surface: var(--tint-surface, oklch(0.182 0.011 268));
   }
 
   /*

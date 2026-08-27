@@ -25,7 +25,7 @@ export function ContributeStrip(
         href={base}
         target='_blank'
         rel='noreferrer'
-        className='rounded-md bg-accent px-3.5 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+        className='rounded-md bg-gold px-3.5 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
       >
         {t(locale, 'contributeEdit')}
       </a>

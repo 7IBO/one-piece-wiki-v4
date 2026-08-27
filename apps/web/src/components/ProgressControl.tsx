@@ -111,7 +111,7 @@ export function ProgressPanel(
           </button>
           <button
             type='submit'
-            className='cursor-pointer rounded-md bg-accent px-4 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+            className='cursor-pointer rounded-md bg-gold px-4 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
           >
             {t(locale, 'progressSave')}
           </button>

@@ -140,7 +140,7 @@ function FacetRow(
             onClick={() => onToggle(option.value)}
             className={`cursor-pointer rounded-md px-2.5 py-1 text-xs font-semibold transition-colors duration-150 ${
               active
-                ? 'bg-accent text-canvas'
+                ? 'bg-gold text-canvas'
                 : 'text-muted ring-1 ring-line hover:bg-surface hover:text-fg'
             }`}
           >

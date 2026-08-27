@@ -213,7 +213,7 @@ function NotFound(): JSX.Element {
       <p className='mt-3 text-[15px] text-muted'>{t(locale, 'notFoundBody')}</p>
       <Link
         to='/'
-        className='mt-8 inline-block rounded-md bg-accent px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-accent-hover'
+        className='mt-8 inline-block rounded-md bg-gold px-4 py-2 text-sm font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
       >
         {t(locale, 'backHome')}
       </Link>

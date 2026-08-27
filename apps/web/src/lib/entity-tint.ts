@@ -139,7 +139,7 @@ function css(color: Oklch): string {
  * file and fails if the two ever drift, because every contrast promise
  * below is measured against it.
  */
-export const PAGE_CANVAS: Oklch = { l: 0.165, c: 0.03, h: 250 };
+export const PAGE_CANVAS: Oklch = { l: 0.150, c: 0.007, h: 271 };
 
 /** Body-text floor (WCAG AA) for the interactive/accent colour. */
 export const MIN_ACCENT_CONTRAST = 4.5;
