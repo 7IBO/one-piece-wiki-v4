@@ -236,6 +236,62 @@ parce qu'il existait déjà** : c'est exactement ce que ce saut veut dire
 — « cette page est importée » — et le registre est la seule mémoire de
 ce fait (aucun fichier d'entité ne porte sa provenance Fandom).
 
+## Le pont arc → chapitres n'existe pas dans le wikitext
+
+Relevé du 2026-08-27 (`docs/audits/fandom-structure-2026-08-27.json`,
+25 pages échantillonnées par gabarit — la profondeur des formes, pas le
+nombre de transclusions).
+
+J'avais lancé l'import des arcs en annonçant qu'il débloquerait le
+dialogue de progression. Il ne l'a pas fait : 5 `since` sur 51, 0
+`arc_number`, 0 relation. Le relevé dit **pourquoi**, et ce n'est pas
+un défaut du mapper.
+
+`Arc Box` porte bien les trois champs qu'il faudrait :
+
+| champ     | remplissage | valeurs distinctes / 25 |
+| --------- | ----------- | ----------------------- |
+| `episode` | 0,92        | **3**                   |
+| `chapter` | 0,72        | **4**                   |
+| `vol`     | 0,72        | **3**                   |
+
+Trois valeurs distinctes sur vingt-cinq arcs, et les exemples les
+nomment : `64-67, 4 episodes`, `-, episodes`, **`auto`**. Comparaison
+qui tranche : `Volume Box.chapters` affiche **25 distinctes sur 25**
+(`100 - 108`, `109 - 117`). Quand une plage est réellement écrite dans
+le wikitext, chaque page a la sienne.
+
+Autrement dit les plages d'arcs sont **calculées par un module Lua à
+l'expansion du gabarit**. Elles n'existent pas dans le wikitext brut,
+donc `action=parse&prop=wikitext` ne les verra jamais, quel que soit le
+mapper.
+
+Les deux autres portes sont fermées aussi :
+
+- **`Chapter Box` n'a aucun champ d'arc.** Ni `Episode Box`. Le pont
+  n'existe pas non plus du côté source.
+- **Les pages d'arc n'ont aucune wikitable** (`structure.tables` est
+  vide sur les 25 pages) : les titres de section sont `Arc Navigation`,
+  `Summary`, `Story Impact`… Il n'y a pas de liste de chapitres à lire.
+
+### Ce qui EST disponible
+
+- **L'ordre des arcs.** `prev` / `next` sont des wikiliens littéraux
+  (18-19 distincts sur 25), et `prev anime` / `next anime` donnent la
+  chaîne côté anime, filler compris. De quoi établir `arc_number` sans
+  aucune plage.
+- **Le pont volume → chapitres**, littéral et complet
+  (`Volume Box.chapters`, 100 % rempli). 115 volumes.
+- **`Episode Box.chapter`** (`Chapter 432 (p. 2-19)`) : le pont
+  épisode → chapitre, mais rempli à **0,16** seulement.
+
+### La seule voie vers les plages : l'HTML rendu
+
+`action=parse&prop=text` renvoie le gabarit **expansé** — les plages y
+sont écrites. C'est faisable, mais ça change le substrat d'extraction
+(HTML rendu au lieu de wikitext) pour ce mapper. **Décision du
+mainteneur requise** avant de l'ouvrir : cf. `docs/STATE.md`.
+
 ## Mapper coverage (ADR-079 + ADR-109)
 
 `import:fandom <kind> "<Page>" [--stage]` runs one mapper on one page;
