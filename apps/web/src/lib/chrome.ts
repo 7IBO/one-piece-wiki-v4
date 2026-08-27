@@ -53,6 +53,17 @@ const STRINGS = {
 
   // Spoiler cursor
   setProgress: { en: 'Set my progress', fr: 'Définir ma progression' },
+  // Listings
+  listProgressNote: {
+    en:
+      'These counts are yours. Anything that appears later than your position is neither listed nor counted.',
+    fr:
+      'Les comptes sont ceux de ta progression. Ce qui apparaît plus tard n’est ni listé, ni compté.',
+  },
+  listLoadMore: { en: 'Load more', fr: 'Afficher la suite' },
+  listReset: { en: 'Reset', fr: 'Réinitialiser' },
+  listSortOrdinal: { en: 'In order', fr: 'Dans l’ordre' },
+  listSortName: { en: 'A–Z', fr: 'A–Z' },
   // Home — the two states of the entry page.
   homeNoProgressTitle: {
     en: 'Read without being spoiled.',

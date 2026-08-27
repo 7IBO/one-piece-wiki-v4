@@ -154,6 +154,12 @@ export type HomeView = {
 export type EntityListItem = {
   readonly slug: string;
   readonly name: string;
+  /**
+   * The entity's position on the axis its own type declares, when it
+   * declares one (`number`, `arc_number`, …). Null for types with no
+   * ordinal — a character has no rank.
+   */
+  readonly ordinal: number | null;
   /** Raw facet values by property id — the listing filters on these. */
   readonly facets: Readonly<Record<string, string>>;
   /** Display image (spoiler-checked) — listings are image-led. */
@@ -1461,6 +1467,7 @@ export async function buildTypeListView(
       return {
         slug: row.slug,
         name,
+        ordinal: ordinalOf(row, cat),
         facets: byRow.get(row.id) ?? {},
         image: resolveEntityImage(row, db.listRelationsFrom(row.id), cursor, null, locale, name),
         secondary: cardSecondary(row, cat, locale, cursor),
@@ -1470,7 +1477,21 @@ export async function buildTypeListView(
         tag: cardStatusTag(row, cat, locale, cursor),
       };
     })
-    .sort((a, b) => a.name.localeCompare(b.name));
+    // ORDERED TYPES SORT BY THEIR ORDINAL, not by their title. Sorting
+    // 400 episodes alphabetically put "A Man's Oath Never Dies" before
+    // "I'm Luffy!" and left no way at all to reach episode 250 — a
+    // defect that stayed invisible while the corpus held ten
+    // characters and became the whole experience the moment the
+    // chapters and episodes landed.
+    //
+    // Which types are ordered is not a list kept here: it is whatever
+    // `ordinalPropertyOf` finds declared on the type, so a new ordered
+    // type sorts correctly the day it declares its property.
+    .sort((a, b) =>
+      a.ordinal !== null && b.ordinal !== null
+        ? a.ordinal - b.ordinal
+        : a.name.localeCompare(b.name)
+    );
   return { type, label: entityTypeLabel(cat, type, locale), facets, items };
 }
 

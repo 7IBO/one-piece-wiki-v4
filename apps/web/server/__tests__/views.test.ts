@@ -84,6 +84,31 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     }
   });
 
+  test('an ordered type lists in its own order, not alphabetically', async () => {
+    // Alphabetical was the only order until the corpus grew. With 400
+    // episodes it put "A Man's Oath Never Dies" before "I'm Luffy!"
+    // and left no way at all to reach episode 250.
+    const { buildTypeListView } = await import('../views.ts');
+    const list = await buildTypeListView('manga-chapter', 'en', cursor());
+    expect(list).not.toBeNull();
+    const ordinals = (list?.items ?? []).map((i) => i.ordinal);
+    expect(ordinals.length).toBeGreaterThan(50);
+    for (const o of ordinals) expect(o).not.toBeNull();
+    // Monotonic: the list reads 0, 1, 2, … not by title.
+    const sorted = [...ordinals].sort((a, b) => (a ?? 0) - (b ?? 0));
+    expect(ordinals).toEqual(sorted);
+  });
+
+  test('a type with no ordinal still lists alphabetically', async () => {
+    const { buildTypeListView } = await import('../views.ts');
+    const list = await buildTypeListView('character', 'en', cursor());
+    const items = list?.items ?? [];
+    expect(items.length).toBeGreaterThan(0);
+    for (const item of items) expect(item.ordinal).toBeNull();
+    const names = items.map((i) => i.name);
+    expect(names).toEqual([...names].sort((a, b) => a.localeCompare(b)));
+  });
+
   test('type list resolves localized names', async () => {
     const { buildTypeListView } = await import('../views.ts');
     const list = await buildTypeListView('character', 'en');
