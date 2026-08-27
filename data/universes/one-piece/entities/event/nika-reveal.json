@@ -5,15 +5,28 @@
   "slug": "nika-reveal",
   "canonical_name_key": "event.nika-reveal.name",
   "properties": {
-    "event_subtype": { "value": "revelation" },
-    "name": [{ "value_key": "event.nika-reveal.name", "since": "manga-chapter:1044" }]
+    "event_subtype": {
+      "value": "revelation"
+    },
+    "name": [
+      {
+        "value_key": "event.nika-reveal.name",
+        "since": "manga-chapter:1044"
+      }
+    ]
   },
   "relations": [
-    { "type": "occurs-during-arc", "target": "arc:wano" },
+    {
+      "type": "occurs-during-arc",
+      "target": "arc:wano-country"
+    },
     {
       "type": "participant",
       "target": "character:luffy",
-      "qualifiers": { "role": "subject", "outcome": "awakened" }
+      "qualifiers": {
+        "role": "subject",
+        "outcome": "awakened"
+      }
     }
   ]
 }
