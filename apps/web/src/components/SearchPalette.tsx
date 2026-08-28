@@ -364,13 +364,15 @@ function Row(
       </span>
       <span className='min-w-0 flex-1'>
         <span className='block truncate text-sm font-semibold text-fg'>
-          {highlightRuns(result.name, query).map((run, index) => (
+          {highlightRuns(result.name, query).map((run) => (
             run.match
               // The plate emphasises the matched run in gold inside the
               // name, so the reader sees WHY a row is here without
-              // reading the secondary line.
-              ? <mark key={index} className='bg-transparent text-gold'>{run.text}</mark>
-              : <span key={index}>{run.text}</span>
+              // reading the secondary line. Keyed on the run's offset
+              // in the name, not on its rank in the array: when the
+              // query changes the cuts move and a rank means nothing.
+              ? <mark key={run.start} className='bg-transparent text-gold'>{run.text}</mark>
+              : <span key={run.start}>{run.text}</span>
           ))}
         </span>
         {(result.secondary !== null || result.matched !== null) && (

@@ -93,20 +93,44 @@ très différente, et il faut le dire avant de commencer :
    `anime-episode` a reçu la grille miroir de celle du chapitre, parce
    que sur un épisode l'adaptation arrive comme arête ENTRANTE et
    atterrit justement dans `appearances`.
-2. **Équipage** (`Equipage.dc.html`) : adhésions par INTERVALLES
-   (« à bord ch. 8 → 69, puis depuis le ch. 95 »), badges
-   « Dates connues » / « Revenue » / « Présence attestée », chronologie
-   des arrivées avec « Ta position de lecture » en or. Le modèle porte
-   déjà `since`/`until` ; c'est du rendu.
-3. **Épisode** : miroir du chapitre (ruban d'arc, ruban de saison,
-   adaptation inverse manga←anime). La donnée existe depuis ADR-120.
-4. **Volume** : conteneur + ruban ; déjà correct par la grammaire
-   partagée, à vérifier au rendu.
+2. **Équipage** (`Equipage.dc.html`) : **fait pour la partie qui ne
+   dépendait que du rendu.** Le rôle passe en badge sur le portrait, la
+   période d'appartenance garde sa ligne — on empilait les deux dans
+   une ligne tronquée (« Captain · since Romance Da… »), qui ne nomme
+   ni le rôle ni le moment.
+
+   Le reste de la planche **ne dépend pas du layout** :
+
+   - les intervalles multiples (« ch. 8 → 69, puis depuis le ch. 95 »)
+     n'existent pas dans le corpus, et `since` pointe un ARC là où la
+     planche nomme un chapitre ;
+   - le badge « Présence attestée » demande la précision de `since`
+     (le cas Rocks), que le manifeste parque lui-même dans `IDEAS.md`
+     en réclamant un ADR ;
+   - la prime cumulée dans le temps, la chronologie des arrivées, les
+     navires et les alliances sont des agrégats dérivés sur **un** seul
+     équipage.
+
+3. **Épisode** : **fait.** Grille miroir de celle du chapitre. La
+   différence est le SENS de l'adaptation : sur un chapitre
+   `adapted-by` sort, sur un épisode le même fait arrive comme arête
+   ENTRANTE et atterrit dans `appearances` — qui est donc la substance
+   de la page, en `span 8`.
+4. **Volume** : **vérifié au rendu.** Le conteneur, le ruban et le
+   registre à trois colonnes sont corrects par la grammaire partagée ;
+   rien à changer.
 5. **Sélecteur de langue** en liste ouverte. Divergence assumée
    aujourd'hui : à deux langues, une bascule vaut mieux qu'un menu.
    À reprendre quand une troisième arrive.
-6. **Audit anti-spoil** : relire chaque compteur affiché et vérifier
-   qu'aucun ne compte ce qui est caché.
+6. **Audit anti-spoil** : **fait, et il a trouvé quelque chose.** Les
+   compteurs de section sont bons, les titres sont masqués — mais
+   `buildTypeListView` et `buildHomeView` ne filtrent pas du tout, donc
+   un lecteur au chapitre 100 voit 1093 tuiles après sa position. C'est
+   exactement ce que la règle interdit, et c'est un choix produit :
+   trois options chiffrées dans `STATE.md`, aucune tranchée.
+
+**Le plan (A) est donc épuisé**, sauf ce qui est bloqué sur un
+arbitrage ou sur de la donnée. Ce qui reste est le plan (B).
 
 ## 5. Plan (B) — la donnée, qui est le vrai goulot
 
