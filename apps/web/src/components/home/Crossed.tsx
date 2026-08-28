@@ -45,7 +45,7 @@ export function Crossed(
                   slug={item.slug}
                   name={item.title ?? String(item.number)}
                   ratio='portrait'
-                  className='w-full transition-transform duration-500 ease-out group-hover:scale-[1.05]'
+                  className='w-full'
                 />
               </span>
               <span className='mt-1.5 block truncate text-[12.5px] font-semibold text-fg'>

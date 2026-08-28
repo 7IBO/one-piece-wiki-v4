@@ -84,7 +84,7 @@ export function Hero(
               <Link
                 to='/$type/$slug'
                 params={{ type: primary.sourceType, slug: primary.next.slug }}
-                className='rounded-md bg-gold px-5 py-2.5 text-[13.5px] font-semibold text-canvas no-underline transition-opacity duration-150 hover:opacity-90'
+                className='rounded-md bg-gold px-5 py-2.5 text-[13.5px] font-semibold text-canvas no-underline transition-opacity duration-150'
               >
                 {t(locale, 'homeContinue')} {primary.label.toLowerCase()} {primary.next.number}
               </Link>

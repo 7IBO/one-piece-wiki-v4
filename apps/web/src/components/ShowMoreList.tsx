@@ -46,7 +46,7 @@ export function ShowMoreList(
           <button
             type='button'
             onClick={() => setExpanded((value) => !value)}
-            className='mt-2.5 cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-link transition-colors duration-150 hover:bg-surface hover:text-link-hover'
+            className='mt-2.5 cursor-pointer rounded-md px-2 py-1 text-xs font-medium text-link transition-colors duration-150 hover:text-link-hover'
           >
             {expanded
               ? t(locale, 'showLess')

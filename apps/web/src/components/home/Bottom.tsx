@@ -63,14 +63,14 @@ export function Contribute(
             <div className='mt-3.75 flex flex-wrap gap-2.25'>
               <a
                 href='https://github.com/7IBO/one-piece-wiki-v4'
-                className='rounded-[5px] bg-gold px-4.25 py-2.25 text-[13px] font-semibold text-canvas no-underline transition-opacity duration-150 hover:opacity-90'
+                className='rounded-[5px] bg-gold px-4.25 py-2.25 text-[13px] font-semibold text-canvas no-underline transition-opacity duration-150'
               >
                 {t(locale, 'contributeEdit')}
               </a>
               <Link
                 to='/search'
                 search={{ q: '' }}
-                className='rounded-[5px] border border-line-strong px-4.25 py-2.25 text-[13px] font-semibold text-fg no-underline transition-colors duration-150 hover:border-gold/45'
+                className='rounded-[5px] border border-line-strong px-4.25 py-2.25 text-[13px] font-semibold text-fg no-underline transition-colors duration-150'
               >
                 {t(locale, 'searchLabel')}
               </Link>

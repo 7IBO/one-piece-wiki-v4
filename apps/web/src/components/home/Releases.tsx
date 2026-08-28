@@ -11,12 +11,26 @@ import { useLocale } from '../../routes/__root';
 import { SectionTitle } from './SectionTitle';
 
 export function Releases(
-  { items }: { readonly items: readonly ReleaseView[]; },
+  { items, alone }: {
+    readonly items: readonly ReleaseView[];
+    /**
+     * True when « ce que tu viens de croiser » is not on the page —
+     * a reader who has declared no position has crossed nothing.
+     *
+     * The releases then take the WHOLE row instead of keeping the
+     * narrow column meant to sit beside it. Third time this pattern
+     * bites (the entity grid, the appearances slot, here): a panel
+     * that drops out must WIDEN its neighbour, never leave a hole.
+     * A first-time visitor was seeing one narrow card and eight empty
+     * columns.
+     */
+    readonly alone: boolean;
+  },
 ): ReactElement | null {
   const locale = useLocale();
   if (items.length === 0) return null;
   return (
-    <section className='lg:col-span-4'>
+    <section className={alone ? 'lg:col-span-12' : 'lg:col-span-4'}>
       <div className='flex items-baseline justify-between gap-4'>
         <SectionTitle>{t(locale, 'homeReleases')}</SectionTitle>
       </div>

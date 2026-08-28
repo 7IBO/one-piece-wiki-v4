@@ -8,7 +8,7 @@
  * Motion is the finish: the tile lifts, its artwork scales inside the
  * frame, and the ring takes the entity's colour. Everything is CSS on
  * `:hover`, so there is no state, no JS and no behaviour to test — and
- * `.motion-lift` is cancelled wholesale under `prefers-reduced-motion`.
+ * `.` is cancelled wholesale under `prefers-reduced-motion`.
  * Nothing INFORMATIVE is hidden behind hover: role, period and status
  * are always on screen, because a touch reader never hovers.
  *
@@ -67,7 +67,7 @@ export function EntityCard(
         to='/$type/$slug'
         params={{ type, slug }}
         search={search}
-        className='motion-lift group block overflow-hidden rounded-lg ring-1 ring-line-strong transition-shadow hover:ring-2 hover:ring-[color:var(--tint-accent)]'
+        className='group block overflow-hidden rounded-lg ring-1 ring-line-strong'
       >
         <span className='relative block'>
           <EntityImage
@@ -76,9 +76,7 @@ export function EntityCard(
             slug={slug}
             name={name}
             ratio='portrait'
-            className={`w-full transition-transform duration-500 ease-out group-hover:scale-[1.06] ${
-              dimmed ? 'opacity-60 group-hover:opacity-90' : ''
-            }`}
+            className={`w-full ${dimmed ? 'opacity-60' : ''}`}
           />
           {
             /* Scrim: the caption's legibility does not depend on which
@@ -113,7 +111,7 @@ export function EntityCard(
               // instead of an ellipsis — 18 of 60 chapter titles were
               // losing their end on the listing wall. The line above,
               // the ordinal, keeps its ellipsis: a number cannot wrap.
-              className='display line-clamp-2 block text-[15px] font-extrabold leading-tight text-fg transition-colors duration-150 group-hover:text-[color:var(--tint-accent)]'
+              className='display line-clamp-2 block text-[15px] font-extrabold leading-tight text-fg transition-colors duration-150 group-hover:text-gold'
             >
               {name}
             </span>

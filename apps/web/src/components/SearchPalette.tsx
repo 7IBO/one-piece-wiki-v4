@@ -322,7 +322,7 @@ function Chip(
       className={`rounded-full border px-2.5 py-1 text-[11.5px] transition-colors duration-150 ${
         on
           ? 'border-gold bg-gold/10 text-gold'
-          : 'border-line-strong text-muted hover:border-gold/45'
+          : 'border-line-strong text-muted'
       }`}
     >
       {label}

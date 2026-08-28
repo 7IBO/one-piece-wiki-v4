@@ -145,7 +145,7 @@ export function SearchBox(
               setPalette(true);
             }
           }}
-          className='w-full rounded-md border border-line-strong bg-canvas px-3 py-1.5 text-sm text-fg outline-none transition-colors duration-150 placeholder:text-faint hover:border-gold/45 focus:border-gold sm:rounded-none sm:border-0 sm:bg-transparent sm:pl-2.5 sm:pr-4 sm:text-[12.5px] sm:hover:border-0 sm:focus:border-0 [&::-webkit-search-cancel-button]:hidden'
+          className='w-full rounded-md border border-line-strong bg-canvas px-3 py-1.5 text-sm text-fg outline-none transition-colors duration-150 placeholder:text-faint focus:border-gold sm:rounded-none sm:border-0 sm:bg-transparent sm:pl-2.5 sm:pr-4 sm:text-[12.5px] sm:hover:border-0 sm:focus:border-0 [&::-webkit-search-cancel-button]:hidden'
         />
       </form>
     </>

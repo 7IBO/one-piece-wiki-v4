@@ -57,15 +57,22 @@ export function ProgressPanel(
     void router.invalidate();
   };
 
+  // Les valeurs des planches : `border-radius: 6px`, filet `#2c3038`,
+  // fond au niveau du canevas. Les chevrons natifs de `type=number`
+  // sont supprimes globalement (`styles.css`), comme la croix native
+  // de la recherche : personne ne les a dessines, et on ne monte pas
+  // au chapitre 1044 en cliquant mille fois.
   const inputClass =
-    'w-full rounded-md border border-line-strong bg-canvas px-3 py-1.5 text-sm tabular-nums text-fg outline-none transition-colors duration-150 focus:border-gold';
+    'w-full rounded-md border border-line-strong bg-canvas px-3 py-2 text-[13.5px] tabular-nums text-fg outline-none transition-colors duration-150 focus:border-gold';
 
   return (
     <>
-      <p className='display text-[15px] font-bold text-fg'>
-        {t(locale, 'progressTitle')}
-      </p>
-      <p className='mt-1 text-xs leading-relaxed text-muted'>
+      {
+        /* La voix des planches pour un titre de bloc : le label a 9px,
+          pas un titre display de 15px. */
+      }
+      <p className='label-xs'>{t(locale, 'progressTitle')}</p>
+      <p className='mt-2 text-xs leading-relaxed text-muted'>
         {t(locale, 'progressHint')}
       </p>
       <form
@@ -75,7 +82,7 @@ export function ProgressPanel(
           apply({ manga: parseInput(manga), anime: parseInput(anime) });
         }}
       >
-        <label className='block text-xs font-medium text-muted'>
+        <label className='label-xs block'>
           {t(locale, 'progressManga')}
           <input
             type='number'
@@ -86,7 +93,7 @@ export function ProgressPanel(
             className={`mt-1 ${inputClass}`}
           />
         </label>
-        <label className='block text-xs font-medium text-muted'>
+        <label className='label-xs block'>
           {t(locale, 'progressAnime')}
           <input
             type='number'
@@ -97,7 +104,7 @@ export function ProgressPanel(
             className={`mt-1 ${inputClass}`}
           />
         </label>
-        <div className='flex items-center justify-between gap-2 pt-1'>
+        <div className='flex items-center justify-between gap-2 pt-1.5'>
           <button
             type='button'
             onClick={() => {
@@ -105,13 +112,13 @@ export function ProgressPanel(
               setAnime('');
               apply({ manga: null, anime: null });
             }}
-            className='cursor-pointer py-1.5 text-xs font-medium text-faint transition-colors duration-150 hover:text-fg'
+            className='cursor-pointer rounded-md border border-line-strong px-4 py-2 text-[13px] font-semibold text-muted transition-colors duration-150 hover:text-fg'
           >
             {t(locale, 'progressReset')}
           </button>
           <button
             type='submit'
-            className='cursor-pointer rounded-md bg-gold px-4 py-1.5 text-xs font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
+            className='cursor-pointer rounded-md bg-gold px-5 py-2 text-[13px] font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
           >
             {t(locale, 'progressSave')}
           </button>
@@ -156,8 +163,8 @@ export function ProgressControl(
       <Popover.Trigger
         aria-label={t(locale, 'progressTitle')}
         className={variant === 'header'
-          ? 'flex cursor-pointer items-center gap-2.25 rounded-md px-2.5 py-1.5 text-[11px] transition-colors duration-150 hover:bg-surface'
-          : 'flex cursor-pointer items-center rounded-md border border-line-strong px-5 py-2.5 text-[13.5px] font-semibold text-fg transition-colors duration-150 hover:border-gold/45'}
+          ? 'flex cursor-pointer items-center gap-2.25 rounded-md px-2.5 py-1.5 text-[11px] transition-colors duration-150'
+          : 'flex cursor-pointer items-center rounded-md border border-line-strong px-5 py-2.5 text-[13.5px] font-semibold text-fg transition-colors duration-150'}
       >
         {
           /* Two shapes, one control. In the HEADER the plate reads
@@ -195,7 +202,11 @@ export function ProgressControl(
           collisionPadding={12}
           className='isolate z-50'
         >
-          <Popover.Popup className='w-72 rounded-lg border border-line-strong bg-surface p-4 shadow-lg shadow-black/20 outline-none'>
+          {
+            /* Le gabarit `.panel` des planches : 6px de rayon, filet
+              `#1e222a`, fond `#101217`, 14/16 de marge. */
+          }
+          <Popover.Popup className='w-[19rem] rounded-md border border-line bg-panel px-4 py-3.5 shadow-lg shadow-black/40 outline-none'>
             <ProgressPanel progress={progress} onDone={() => setOpen(false)} />
           </Popover.Popup>
         </Popover.Positioner>

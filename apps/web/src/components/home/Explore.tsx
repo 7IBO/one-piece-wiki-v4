@@ -41,14 +41,14 @@ export function TypeTile({ type }: { readonly type: TypeGroup['types'][number]; 
         params={{ type: type.id }}
         className='group block no-underline'
       >
-        <span className='motion-lift relative block overflow-hidden rounded-md ring-1 ring-line transition-shadow hover:ring-[color:var(--tint-accent)]'>
+        <span className='relative block overflow-hidden rounded-md ring-1 ring-line'>
           <EntityImage
             image={null}
             type={type.id}
             slug='index'
             name={type.label}
             ratio='wide'
-            className='w-full transition-transform duration-500 ease-out group-hover:scale-[1.06]'
+            className='w-full'
           />
           <span
             aria-hidden
