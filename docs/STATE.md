@@ -139,6 +139,51 @@ Deux leçons opérationnelles :
    relecture de la page après migration : ruban à 3 cases. Après
    redémarrage : 149. Toujours redémarrer avant de conclure.
 
+## 2026-08-28 — `arc:east-blue` est une SAGA, pas un arc — À DÉCIDER
+
+Après l'enrichissement, **3 chapitres sur 1193** portent deux
+`part-of-arc`. Ce sont les trois chapitres semés à la main avant
+l'importeur, dont l'ancienne arête entre en collision avec celle de
+Fandom. Mais les deux cas ne sont pas de même nature :
+
+| chapitre | arête semée  | arête Fandom   | nature                                        |
+| -------- | ------------ | -------------- | --------------------------------------------- |
+| 585      | `marineford` | `post-war`     | **contradiction** — corrigée (migration 0012) |
+| 1        | `east-blue`  | `romance-dawn` | **granularité** — ouvert                      |
+| 96       | `east-blue`  | `loguetown`    | **granularité** — ouvert                      |
+
+Pour 585, la source tranche : la passe d'arêtes planifie les plages
+FERMÉES par chapitre d'ouverture, donc si la plage Marineford avait
+couvert 585, elle l'aurait réclamé avant que Post-War ne tourne. Elle
+ne l'a pas fait. L'arête `marineford` était un reliquat.
+
+Pour East Blue, non :
+
+```
+arc:east-blue     2 membres   arc_number —    ← semé à la main
+arc:romance-dawn 10 membres   arc_number 1    ← Fandom
+arc:loguetown    11 membres   arc_number 6    ← Fandom
+```
+
+East Blue n'est pas un arc, c'est une **saga** — elle contient Romance
+Dawn, Orange Town, Syrup Village, Baratie, Arlong Park et Loguetown.
+Elle n'a ni `arc_number` ni membres au-delà des 2 semés, parce que
+Fandom ne la publie pas comme un arc.
+
+Le corpus a déjà un type d'entité `saga`… avec **0 entité**.
+
+**Décision demandée** : migrer `arc:east-blue` en `saga:east-blue` et
+peupler le type `saga` (les 4 sagas de One Piece), ou garder les sagas
+hors modèle pour l'instant ? Tant que ce n'est pas tranché, le
+chapitre 1 affiche « East Blue » là où la planche afficherait
+« Romance Dawn ».
+
+C'est la troisième fois ce soir que la même famille de défaut sort :
+une donnée semée à la main avant l'importeur qui survit et contredit
+la source (`arc:wano`, les 9 titres placeholders, ceci). `mergeEntity`
+a raison de ne pas trancher — il ne peut pas savoir que deux ids
+nomment la même chose, ni qu'un est plus grossier que l'autre.
+
 ## 2026-08-27 — la limitation v1 du curseur a un coût, et le voici
 
 `progress.ts` le dit depuis le début, noir sur blanc :

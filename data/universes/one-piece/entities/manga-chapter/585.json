@@ -21,10 +21,6 @@
   "relations": [
     {
       "type": "part-of-arc",
-      "target": "arc:marineford"
-    },
-    {
-      "type": "part-of-arc",
       "target": "arc:post-war"
     },
     {
