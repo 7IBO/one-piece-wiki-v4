@@ -22,9 +22,13 @@
  *      depiction role) the figure adopts it, because here the picture
  *      is the subject and must not be cropped into a slot.
  *
- * `railStart` / `railEnd` hold the ordinal navigation of sequential
- * entities. They are RAILS that FRAME the band, full height, one on
- * each edge — `design/v2` Chapitre.dc.html says so in its own words:
+ * `sequence` drives the ordinal navigation of sequential entities.
+ * The hero draws the RAILS itself rather than receiving them as
+ * nodes: they carry the band's own border and height, so a caller
+ * handing in opaque JSX could not be held to that structure — and the
+ * band would be described in two files instead of one.
+ *
+ * They FRAME the band, full height, one on each edge — `design/v2` Chapitre.dc.html says so in its own words:
  * « entité ordinale : prev/next encadrent le bandeau ». The maintainer
  * had asked for the same thing earlier (« bouton à droite et à gauche
  * pour next et prev »), and this file's own comment recorded it, but
@@ -38,15 +42,19 @@
  * back into the reading column. Presentation only — every string and
  * every visibility decision arrived resolved from the view model.
  */
+import { Link } from '@tanstack/react-router';
 import type { ReactElement, ReactNode } from 'react';
-import type { ImageView } from '../api';
+import type { ImageView, SequenceView } from '../api';
+import { t } from '../lib/chrome';
+import { useLocale } from '../routes/__root';
 import { EntityArt } from './EntityArt';
+import { useScopeSearch } from './EntityChip';
 import { EntityImage, initialOf } from './EntityImage';
 
 export type HeroFigure = 'poster' | 'plate';
 
 export function EntityHero(
-  { entityId, entityType, name, image, figure, railStart, railEnd, children }: {
+  { entityId, entityType, name, image, figure, sequence = null, children }: {
     /** Canonical `type:slug` id — the art seed. */
     readonly entityId: string;
     readonly entityType: string;
@@ -55,10 +63,8 @@ export function EntityHero(
     /** Display image, when the entity has a visible depiction. */
     readonly image: ImageView | null;
     readonly figure: HeroFigure;
-    /** Left rail — the previous instalment. Absent on non-ordinal types. */
-    readonly railStart?: ReactNode;
-    /** Right rail — the next instalment. */
-    readonly railEnd?: ReactNode;
+    /** Ordinal position, when the type has one. Null draws no rails. */
+    readonly sequence?: SequenceView | null;
     /** Identity block laid beside the figure. */
     readonly children: ReactNode;
   },
@@ -95,7 +101,7 @@ export function EntityHero(
       </div>
 
       <div className='relative flex items-stretch'>
-        {railStart}
+        {sequence === null ? null : <SequenceRail step={sequence.prev} side='start' />}
         <div className='page-column flex min-w-0 flex-1 flex-col pb-7 pt-6 lg:pb-8 lg:pt-[34px]'>
           {
             /*
@@ -124,8 +130,53 @@ export function EntityHero(
             <div className='min-w-0 flex-1 lg:pt-1.5'>{children}</div>
           </div>
         </div>
-        {railEnd}
+        {sequence === null ? null : <SequenceRail step={sequence.next} side='end' />}
       </div>
     </div>
+  );
+}
+
+/**
+ * One edge RAIL of an ordinal band — the previous instalment on the
+ * left, the next on the right, exactly as `design/v2` frames it:
+ * « entité ordinale : prev/next encadrent le bandeau ».
+ *
+ * Values read from the plate: a 52px column, a 20px chevron over the
+ * number at 10px, `gap: 6px`, `color: #79818d`, and a single hairline
+ * on the inner edge. A rail with nothing to point at is NOT removed —
+ * it keeps its width so the band stays symmetric — but it renders
+ * dimmed and inert, which is what the plate draws for chapter 1045
+ * sitting beyond the reader.
+ */
+function SequenceRail(
+  { step, side }: {
+    readonly step: SequenceView['prev'];
+    readonly side: 'start' | 'end';
+  },
+): ReactElement {
+  const locale = useLocale();
+  const search = useScopeSearch();
+  const edge = side === 'start' ? 'border-r' : 'border-l';
+  const shell =
+    `relative flex w-11 shrink-0 flex-col items-center justify-center gap-1.5 ${edge} border-line lg:w-[52px]`;
+  if (step === null) {
+    // Dimmed, not absent: removing it would shift the whole band by
+    // 52px between one instalment and the next.
+    return <div aria-hidden className={`${shell} text-[color:var(--color-line-strong)]`} />;
+  }
+  return (
+    <Link
+      to='/$type/$slug'
+      params={{ type: step.chip.type, slug: step.chip.slug }}
+      search={search}
+      aria-label={`${t(locale, side === 'start' ? 'previous' : 'next')} — ${step.chip.name}`}
+      title={step.chip.name}
+      className={`${shell} text-faint transition-colors duration-150 hover:text-gold`}
+    >
+      <span aria-hidden className='text-xl leading-none'>
+        {side === 'start' ? '\u2039' : '\u203a'}
+      </span>
+      <span className='text-[10px] font-semibold tabular-nums'>{step.number}</span>
+    </Link>
   );
 }

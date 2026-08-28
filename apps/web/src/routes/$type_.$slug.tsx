@@ -50,7 +50,6 @@ import {
   type PropertyView,
   type RelationGroupView,
   type RelationItemView,
-  type SequenceView,
   type SourceItemView,
   type SourceTemplateView,
 } from '../api';
@@ -233,12 +232,7 @@ export function EntityArticle(
         name={view.name}
         image={view.image}
         figure={layout.figure}
-        railStart={view.sequence === null
-          ? null
-          : <SequenceRail step={view.sequence.prev} side='start' />}
-        railEnd={view.sequence === null
-          ? null
-          : <SequenceRail step={view.sequence.next} side='end' />}
+        sequence={view.sequence}
       >
         <Identity view={view} />
       </EntityHero>
@@ -435,50 +429,6 @@ function Identity({ view }: { readonly view: EntityView; }): ReactElement {
  * the right edge. The view model already withheld any neighbour
  * beyond the reader's cursor, so nothing here can leak a title.
  */
-/**
- * One edge RAIL of an ordinal band — the previous instalment on the
- * left, the next on the right, exactly as `design/v2` frames it:
- * « entité ordinale : prev/next encadrent le bandeau ».
- *
- * Values read from the plate: a 52px column, a 20px chevron over the
- * number at 10px, `gap: 6px`, `color: #79818d`, and a single hairline
- * on the inner edge. A rail with nothing to point at is NOT removed —
- * it keeps its width so the band stays symmetric — but it renders
- * dimmed and inert, which is what the plate draws for chapter 1045
- * sitting beyond the reader.
- */
-function SequenceRail(
-  { step, side }: {
-    readonly step: SequenceView['prev'];
-    readonly side: 'start' | 'end';
-  },
-): ReactElement {
-  const locale = useLocale();
-  const search = useScopeSearch();
-  const edge = side === 'start' ? 'border-r' : 'border-l';
-  const shell =
-    `relative flex w-11 shrink-0 flex-col items-center justify-center gap-1.5 ${edge} border-line lg:w-[52px]`;
-  if (step === null) {
-    // Dimmed, not absent: removing it would shift the whole band by
-    // 52px between one instalment and the next.
-    return <div aria-hidden className={`${shell} text-[color:var(--color-line-strong)]`} />;
-  }
-  return (
-    <Link
-      to='/$type/$slug'
-      params={{ type: step.chip.type, slug: step.chip.slug }}
-      search={search}
-      aria-label={`${t(locale, side === 'start' ? 'previous' : 'next')} — ${step.chip.name}`}
-      title={step.chip.name}
-      className={`${shell} text-faint transition-colors duration-150 hover:text-gold`}
-    >
-      <span aria-hidden className='text-xl leading-none'>
-        {side === 'start' ? '\u2039' : '\u203a'}
-      </span>
-      <span className='text-[10px] font-semibold tabular-nums'>{step.number}</span>
-    </Link>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Bands: how a layout arranges its modules.
