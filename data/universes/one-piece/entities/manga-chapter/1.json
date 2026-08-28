@@ -20,10 +20,6 @@
   },
   "relations": [
     {
-      "type": "part-of-arc",
-      "target": "arc:east-blue"
-    },
-    {
       "type": "part-of-volume",
       "target": "volume:1"
     },

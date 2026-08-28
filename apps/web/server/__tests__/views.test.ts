@@ -394,12 +394,22 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     // `character` declares no `number` / `*_number` property.
     const luffy = await entity('character', 'monkey-d-luffy');
     expect(luffy.sequence).toBeNull();
-    // `arc` DOES declare `arc_number`, but East Blue carries no value
-    // for it — the axis exists, this entity is not on it. (Only 32 of
-    // the 50 arcs are numbered; the arc-edge pass numbers what the
-    // source numbers.)
-    const eastBlue = await entity('arc', 'east-blue');
-    expect(eastBlue.sequence).toBeNull();
+    // `arc` DOES déclarer `arc_number`, mais tous les arcs n'en
+    // portent pas : l'axe existe, l'entité n'est pas dessus.
+    //
+    // Le test CHERCHE un tel arc au lieu d'en nommer un. Il épinglait
+    // `arc:east-blue`, supprimé depuis par la migration 0013 — la
+    // quatrième assertion de la semaine à tomber sur un import ou une
+    // migration plutôt que sur un défaut. Nommer une entité, c'est
+    // parier sur le corpus ; le contrat, lui, ne bouge pas.
+    const { buildTypeListView } = await import('../views.ts');
+    const arcs = await buildTypeListView('arc', 'en', cursor());
+    const unnumbered = arcs?.items.find((item) => item.ordinal === null);
+    expect(unnumbered).toBeDefined();
+    if (unnumbered !== undefined) {
+      const arc = await entity('arc', unnumbered.slug);
+      expect(arc.sequence).toBeNull();
+    }
     // An ordered type, read at its FIRST instance. This asserted
     // `next === null` too, back when the corpus held one volume — the
     // fifth assertion this week to break on an import rather than on

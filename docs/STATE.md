@@ -18,6 +18,27 @@ this file is the current status + the open threads.
 **Last updated**: 2026-08-28 (ADR-122 ancrage dérivé des conteneurs,
 ADR-123 axe de curseur vide — les deux fuites anti-spoil sont fermées)
 
+## 2026-08-28 — `east-blue` était une SAGA déguisée en arc — RÉGLÉ
+
+Migration 0013. Mesuré avant d'y toucher : les six vrais arcs couvrent
+les chapitres **1 à 100 sans le moindre trou** (romance-dawn 1-7,
+orange-town 8-21, syrup-village 22-41, baratie 42-68, arlong-park
+69-95, loguetown 96-100), tandis que `arc:east-blue` n'en portait que
+**deux** — 1 et 96 — tous deux **déjà** dans leur vrai arc. Ses arêtes
+étaient des doublons purs.
+
+Même défaut que `arc:wano` (migration 0011) : un stub semé à la main
+qui a survécu à l'import et concurrence la donnée réelle. La différence
+est qu'ici le stub nommait la bonne chose au mauvais NIVEAU.
+
+`saga:east-blue` existe maintenant, avec ses six `part-of-saga`. C'est
+ce que la planche Progression réclame : « le dernier arc terminé,
+**groupé par saga** ». Les neuf autres sagas restent à écrire.
+
+Au passage, un test épinglait `arc:east-blue` — la quatrième assertion
+de la semaine à tomber sur une migration plutôt que sur un défaut. Il
+CHERCHE maintenant un arc non numéroté au lieu d'en nommer un.
+
 ## 2026-08-28 — L'axe de curseur vide — RÉGLÉ (ADR-123)
 
 Un axe non renseigné vaut désormais **zéro dès qu'un autre est réglé**,
