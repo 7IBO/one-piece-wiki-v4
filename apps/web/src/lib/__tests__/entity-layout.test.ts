@@ -13,6 +13,7 @@ import {
   layoutFor,
   missingSlots,
   type SlotKey,
+  slotsOfBand,
 } from '../entity-layout.ts';
 
 /** Types with an authored layout — plus a few that have none. */
@@ -37,10 +38,11 @@ const AUTHORED: readonly string[] = [
 
 const UNKNOWN: readonly string[] = ['databook', 'theme-song', 'not-a-real-type-at-all'];
 
+// Uses the library's own walker rather than a copy of it: this test
+// re-implemented the `split` case and went stale the day a third band
+// kind arrived.
 function slotsOf(bands: readonly LayoutBand[]): readonly SlotKey[] {
-  return bands.flatMap((band) =>
-    band.kind === 'split' ? [...band.main, ...band.aside] : band.slots
-  );
+  return bands.flatMap(slotsOfBand);
 }
 
 describe('per-type entity layouts (ADR-105)', () => {

@@ -161,11 +161,18 @@ body {
   }
 
   /* Small uppercase label — the metadata voice. Used sparingly. */
+  /*
+   * `design/v2` `.lbl`: 9px, 0.18em. Tighter and MUCH wider-tracked
+   * than the 10px/0.09em it replaced — at this size the tracking is
+   * what makes a label read as an annotation rather than as small
+   * body text, and it is the single most repeated element of the
+   * plates.
+   */
   .label-xs {
     font-family: var(--font-sans);
-    font-size: 10px;
+    font-size: 9px;
     font-weight: 600;
-    letter-spacing: 0.09em;
+    letter-spacing: 0.18em;
     text-transform: uppercase;
     color: var(--color-faint);
   }
@@ -182,9 +189,10 @@ body {
    */
   .panel {
     border: 1px solid var(--color-line);
-    border-radius: 0.5rem;
+    /* 6px and 14/16, read off the plates' own `.panel` rule. */
+    border-radius: 6px;
     background-color: var(--color-panel);
-    padding: 1rem 1.125rem 1.125rem;
+    padding: 14px 16px;
   }
 
   /*
