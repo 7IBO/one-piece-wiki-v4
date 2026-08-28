@@ -453,6 +453,17 @@ export type EntityView = {
   readonly properties: readonly PropertyView[];
   readonly relations: readonly RelationGroupView[];
   readonly narrative: string | null;
+  /**
+   * Properties the SCHEMA expects for this type that this entity has
+   * no value for — the `CETTE PAGE EST INCOMPLÈTE` panel of
+   * `design/v2`'s `Mineur.dc.html`.
+   *
+   * They are NAMED, not guessed: a page with holes tells you nothing,
+   * a page that says which six facts are missing is a contribution
+   * brief. Read from `required` / `recommended` in the entity type,
+   * so a schema change moves the list with no code change.
+   */
+  readonly missingProperties: readonly LabelledValue[];
   readonly template: TemplateView;
   /** The canon scope to attach to outgoing entity links (`?scope=`). */
   readonly propagateScope: string | null;
@@ -2379,6 +2390,36 @@ export async function buildEntityPreview(
   };
 }
 
+/**
+ * What the schema expects here and the entity does not carry.
+ *
+ * Only `required` and `recommended` count: every type declares a long
+ * tail of optional properties, and listing those would turn a
+ * well-filled page into a wall of "missing" — the panel would say
+ * nothing by saying everything.
+ *
+ * A property the reader cannot see because of their cursor is NOT
+ * missing: this reads the raw rows, not the gated view, so the panel
+ * never becomes a side channel announcing that something exists
+ * further on.
+ */
+function buildMissingProperties(
+  row: EntityRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+): readonly LabelledValue[] {
+  const declared = cat.entityTypes.get(row.type)?.properties ?? [];
+  const out: LabelledValue[] = [];
+  for (const declaration of declared) {
+    if (declaration.required !== true && declaration.recommended !== true) continue;
+    if (rawPropertyEntries(row, declaration.id).length > 0) continue;
+    const schema = cat.propertyTypes.get(declaration.id);
+    if (schema === undefined) continue;
+    out.push({ label: pickLabel(schema.labels, locale), value: declaration.id });
+  }
+  return out;
+}
+
 export async function buildEntityView(
   type: string,
   slug: string,
@@ -2450,6 +2491,7 @@ export async function buildEntityView(
     properties,
     relations: buildRelationViews(edges, cat, locale, consumed, cursor, scope),
     narrative: db.getNarrative(row.id, locale),
+    missingProperties: buildMissingProperties(row, cat, locale),
     template,
     propagateScope: scopeToPropagate(row, cursor, scope),
   };

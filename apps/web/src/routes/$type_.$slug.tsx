@@ -61,6 +61,7 @@ import { EntityImage } from '../components/EntityImage';
 import { HeroChips } from '../components/HeroChips';
 import { HeroStats } from '../components/HeroStats';
 import { HoverPreview } from '../components/HoverPreview';
+import { IncompletePanel } from '../components/IncompletePanel';
 import { ShowMoreList } from '../components/ShowMoreList';
 import { SourceTabs } from '../components/SourceTabs';
 import { type ChromeKey, t } from '../lib/chrome';
@@ -210,6 +211,7 @@ export function EntityArticle(
     readonly section: EntitySection | null;
   },
 ): ReactElement {
+  const locale = useLocale();
   const tint = entityTint(view.id);
   const layout = layoutFor(view.type);
   const bands = restrictBands(bandsFor(view.type), slotsForSection(view.type, section));
@@ -232,6 +234,24 @@ export function EntityArticle(
       <div className='page-column space-y-3 pt-3.5'>
         {bands.map((band, index) => <Band key={index} band={band} view={view} />)}
         {bands.length === 0 ? <EmptySection /> : null}
+        {
+          /*
+           * Only on the overview: a sub-page is a slice of the entity,
+           * and telling a reader on `/appearances` that the birth date
+           * is missing is answering a question they did not ask.
+           */
+        }
+        {section === null
+          ? (
+            <IncompletePanel
+              missing={view.missingProperties}
+              typeLabel={view.typeLabel}
+              type={view.type}
+              slug={view.slug}
+              locale={locale}
+            />
+          )
+          : null}
         <ContributeStrip type={view.type} slug={view.slug} />
       </div>
     </article>
