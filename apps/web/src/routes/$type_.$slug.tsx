@@ -52,6 +52,7 @@ import {
   type RelationItemView,
   type SequenceView,
   type SourceItemView,
+  type SourceTemplateView,
 } from '../api';
 import { ContributeStrip } from '../components/ContributeStrip';
 import { CARD_GRID_CLASS, EntityCard } from '../components/EntityCard';
@@ -63,6 +64,7 @@ import { HeroStats } from '../components/HeroStats';
 import { HoverPreview } from '../components/HoverPreview';
 import { IncompletePanel } from '../components/IncompletePanel';
 import { ShowMoreList } from '../components/ShowMoreList';
+import { SourceRow } from '../components/SourceRow';
 import { SourceTabs } from '../components/SourceTabs';
 import { type ChromeKey, t } from '../lib/chrome';
 import {
@@ -147,6 +149,13 @@ const ROW_LIMIT = 6;
 const CARD_LIMIT = 12;
 /** Collapsed budget of a compact number grid (chapters, episodes…). */
 const NUMBER_LIMIT = 36;
+/**
+ * Budget replié d'une liste d'APPARITIONS. Une rangée fait ~54 px
+ * (vignette 40 + 2×7 de marge), donc douze remplissent déjà un écran —
+ * là où trente-six numéros tenaient dans un bloc. Le reste part
+ * derrière « voir les N autres », comme partout ailleurs.
+ */
+const APPEARANCE_LIMIT = 12;
 
 /**
  * Column count of a full-width row list, derived from how many rows
@@ -624,8 +633,10 @@ function renderSlot(slot: SlotKey, view: EntityView, wide: boolean): ReactNode {
         ? <ContentsSections groups={view.template.groups} wide={wide} />
         : null;
     case 'position':
-      return view.template.kind === 'source' && view.template.arc !== null
-        ? <PositionSection arc={view.template.arc} />
+      return view.template.kind === 'source' ? <PositionSections template={view.template} /> : null;
+    case 'adaptations':
+      return view.template.kind === 'source' && view.template.adaptations.length > 0
+        ? <AdaptationsSection items={view.template.adaptations} />
         : null;
     case 'cast':
       return view.cast.length === 0 ? null : <CastSection groups={view.cast} />;
@@ -1024,6 +1035,37 @@ function ContentsList(
   );
 }
 
+/**
+ * The ribbons a source sits in. `design/v2`'s Chapitre.dc.html shows
+ * TWO — « PART OF ARC / WANO COUNTRY » and « POSITION DANS LE VOLUME
+ * 103 » — because a chapter belongs to two orderings at once and a
+ * reader thinks in both. Each renders only when the corpus knows it.
+ */
+function PositionSections(
+  { template }: { readonly template: SourceTemplateView; },
+): ReactElement | null {
+  const parts = [template.arc, template.volume].filter((part) => part !== null);
+  if (parts.length === 0) return null;
+  return (
+    <div className='space-y-3'>
+      {parts.map((part) => <PositionSection key={part.chip.slug} arc={part} />)}
+    </div>
+  );
+}
+
+/** The episodes a source was adapted into — the plate's ADAPTATION ANIME. */
+function AdaptationsSection(
+  { items }: { readonly items: readonly SourceItemView[]; },
+): ReactElement {
+  const locale = useLocale();
+  return (
+    <section>
+      <SectionHead count={items.length}>{t(locale, 'adaptations')}</SectionHead>
+      <ContentsList items={items} columns={false} />
+    </section>
+  );
+}
+
 function PositionSection(
   { arc }: {
     readonly arc: {
@@ -1261,14 +1303,9 @@ function AppearancesSection(
               </p>
               <div className='mt-2.5'>
                 <ShowMoreList
-                  limit={NUMBER_LIMIT}
-                  listClassName='flex flex-wrap gap-1.5'
-                  items={group.items.map((item) => (
-                    <SourceNumberCell
-                      key={item.chip.id}
-                      item={item}
-                    />
-                  ))}
+                  limit={APPEARANCE_LIMIT}
+                  listClassName='flex flex-col'
+                  items={group.items.map((item) => <SourceRow key={item.chip.id} item={item} />)}
                 />
               </div>
             </>

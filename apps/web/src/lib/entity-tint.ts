@@ -560,6 +560,10 @@ export function entityTint(entityId: string): EntityTint {
     '--tint-surface': css(chord.surface),
     '--tint-line': `oklch(${accent.l} ${accent.c} ${accent.h} / 0.22)`,
     '--tint-line-strong': `oklch(${accent.l} ${accent.c} ${accent.h} / 0.45)`,
+    // Le filet interne des listes denses : la même teinte, plus
+    // discrète encore, pour qu'une liste de trente lignes ne lise pas
+    // comme un tableau.
+    '--tint-line-soft': `oklch(${accent.l} ${accent.c} ${accent.h} / 0.12)`,
     // The artwork's own ground, mass and highlight — the chord's
     // value structure, which is half of what makes two entities differ
     // (hue is the other half, ADR-111).

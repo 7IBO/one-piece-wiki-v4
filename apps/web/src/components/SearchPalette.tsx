@@ -43,6 +43,7 @@ import { useNavigate } from '@tanstack/react-router';
 import { type ReactElement, useEffect, useMemo, useRef, useState } from 'react';
 import { fetchSearch, type SearchResultView, type SearchView } from '../api';
 import { type Locale, t } from '../lib/chrome';
+import { highlightRuns } from '../lib/highlight';
 import { groupByType, visibleResults } from '../lib/search-groups';
 import { useLocale } from '../routes/__root';
 import { EntityImage } from './EntityImage';
@@ -259,6 +260,7 @@ export function SearchPalette(
                           key={result.id}
                           result={result}
                           locale={locale}
+                          query={query}
                           active={index === answer.active}
                           onHover={() => setAnswer((prev) => ({ ...prev, active: index }))}
                           onPick={() => go(result)}
@@ -330,9 +332,11 @@ function Chip(
 }
 
 function Row(
-  { result, locale, active, onHover, onPick }: {
+  { result, locale, query, active, onHover, onPick }: {
     readonly result: SearchResultView;
     readonly locale: Locale;
+    /** The typed term, so the row can show WHERE it matched. */
+    readonly query: string;
     readonly active: boolean;
     readonly onHover: () => void;
     readonly onPick: () => void;
@@ -359,7 +363,16 @@ function Row(
         />
       </span>
       <span className='min-w-0 flex-1'>
-        <span className='block truncate text-sm font-semibold text-fg'>{result.name}</span>
+        <span className='block truncate text-sm font-semibold text-fg'>
+          {highlightRuns(result.name, query).map((run, index) => (
+            run.match
+              // The plate emphasises the matched run in gold inside the
+              // name, so the reader sees WHY a row is here without
+              // reading the secondary line.
+              ? <mark key={index} className='bg-transparent text-gold'>{run.text}</mark>
+              : <span key={index}>{run.text}</span>
+          ))}
+        </span>
         {(result.secondary !== null || result.matched !== null) && (
           <span className='block truncate text-xs text-muted'>
             {result.matched === null

@@ -443,6 +443,20 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(new Set(heldNumbers).size).toBe(heldNumbers.length);
   });
 
+  test('ordinal ribbons stay lean — no thumbnail, no container per sibling', async () => {
+    // `sourceItem` and `appearanceItem` are split on purpose: the LIST
+    // form of an appearance resolves an image and an arc per row, and
+    // a Wano ribbon is 149 siblings. If someone ever swaps the cheap
+    // builder for the rich one, this fails instead of the page
+    // quietly doing 149 extra relation reads.
+    const chapter = await entity('manga-chapter', 'chapter-1044');
+    expect(chapter.template.kind).toBe('source');
+    if (chapter.template.kind !== 'source') return;
+    const ribbon = chapter.template.arc?.items ?? [];
+    expect(ribbon.length).toBeGreaterThan(1);
+    expect(ribbon.every((item) => item.image === null && item.context === null)).toBe(true);
+  });
+
   test('appearances stay empty until appearance edges exist', async () => {
     // The corpus has no chapter/episode → character `features` edges
     // yet (a known data gap): the module must simply not render.

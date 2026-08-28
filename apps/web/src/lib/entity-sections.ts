@@ -184,7 +184,10 @@ export function slotHasContent(slot: SlotKey, view: EntityView): boolean {
     case 'contents':
       return view.template.kind === 'container' && view.template.groups.length > 0;
     case 'position':
-      return view.template.kind === 'source' && view.template.arc !== null;
+      return view.template.kind === 'source'
+        && (view.template.arc !== null || view.template.volume !== null);
+    case 'adaptations':
+      return view.template.kind === 'source' && view.template.adaptations.length > 0;
     case 'cast':
       return view.cast.length > 0;
     case 'availability':
@@ -231,6 +234,8 @@ export function slotCount(slot: SlotKey, view: EntityView): number | null {
       return view.template.groups.reduce((total, group) => total + group.items.length, 0);
     case 'availability':
       return view.availability.length;
+    case 'adaptations':
+      return view.template.kind === 'source' ? view.template.adaptations.length : null;
     case 'sheet':
     case 'narrative':
     case 'affiliations':

@@ -319,6 +319,21 @@ export type SourceItemView = {
   readonly chip: EntityChip;
   readonly number: number | null;
   readonly current: boolean;
+  /**
+   * Thumbnail for the LIST form of an appearance row, at its own
+   * ratio (`design/v2` § images: « la vignette garde son ratio
+   * d'origine mais toutes ont la MEME HAUTEUR »).
+   *
+   * Null on the ordinal RIBBONS, which stay number grids and must not
+   * pay a relation read per sibling — a Wano ribbon is 149 items.
+   */
+  readonly image: ImageView | null;
+  /**
+   * The container this source sits in (its arc), for the row's right
+   * column. Spoiler-gated like any other edge, and null when the
+   * corpus does not place it.
+   */
+  readonly context: EntityChip | null;
 };
 
 export type CastGroupView = {
@@ -344,15 +359,30 @@ export type CrewTemplateView = {
 };
 
 /** A source's position inside its arc/saga (the sibling ribbon). */
+/** A container this source sits inside, with its siblings. */
+export type SourcePositionView = {
+  readonly chip: EntityChip;
+  readonly label: string;
+  readonly items: readonly SourceItemView[];
+};
+
 export type SourceTemplateView = {
   readonly kind: 'source';
-  readonly arc:
-    | {
-      readonly chip: EntityChip;
-      readonly label: string;
-      readonly items: readonly SourceItemView[];
-    }
-    | null;
+  readonly arc: SourcePositionView | null;
+  /**
+   * The VOLUME ribbon — `design/v2` Chapitre.dc.html shows « POSITION
+   * DANS LE VOLUME 103 » beside the arc one, because a chapter sits in
+   * two orderings at once and a reader thinks in both.
+   *
+   * Null until the corpus knows the volume; it was 1 chapter out of
+   * 1193 before ADR-120 and there was nothing to draw.
+   */
+  readonly volume: SourcePositionView | null;
+  /**
+   * Episodes this source was adapted into (`adapted-by`), with their
+   * own titles. The plate's « ADAPTATION ANIME » block.
+   */
+  readonly adaptations: readonly SourceItemView[];
 };
 
 /** One ordered set a container entity holds (an arc's chapters, a
@@ -526,6 +556,13 @@ const CARD_SECONDARY_PROPERTIES: Readonly<Record<string, string>> = {
   'anime-episode': 'released_at',
   volume: 'released_at',
   'streaming-platform': 'platform_kind',
+  // `design/v2` Recherche.dc.html prints « Zoan mythique » under the
+  // fruit and « Arc 31 » under the arc. Both types were simply absent
+  // from this table, so their rows in the palette and the listings
+  // carried a name and nothing else — the search read as a list of
+  // links rather than of things.
+  'devil-fruit': 'classification',
+  arc: 'arc_number',
 };
 /** Entity-card micro-stat property (shown only where context warrants). */
 const CARD_STAT_PROPERTIES: Readonly<Record<string, string>> = {
@@ -1926,7 +1963,57 @@ function sourceItem(
     chip: chipForRow(target, cat, locale, cursor),
     number: ordinalOf(target, cat),
     current: target.id === currentId,
+    image: null,
+    context: null,
   };
+}
+
+/**
+ * The same item with what the LIST form draws: a native-ratio
+ * thumbnail and the arc the source sits in.
+ *
+ * Split from `sourceItem` on purpose rather than hidden behind a
+ * flag: it costs ONE relation read per item, and the ordinal ribbons
+ * — which render hundreds of siblings as bare numbers — must not pay
+ * it for two fields they never draw.
+ */
+function appearanceItem(
+  target: EntityRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): SourceItemView {
+  const base = sourceItem(target, '', cat, locale, cursor);
+  const edges = db.listRelationsFrom(target.id);
+  return {
+    ...base,
+    image: resolveEntityImage(target, edges, cursor, scope, locale, base.chip.name),
+    context: containerChip(edges, cat, locale, cursor),
+  };
+}
+
+/**
+ * The arc an ordered source belongs to, or null. Both spellings the
+ * corpus uses are accepted — a chapter is `part-of-arc`, an event
+ * `occurs-during-arc` — and the edge goes through the same visibility
+ * gate as everything else, so a reader who has not reached the arc
+ * does not learn its name from an appearance row.
+ */
+function containerChip(
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): EntityChip | null {
+  const edge = edges.find((candidate) =>
+    (candidate.relation_type === 'part-of-arc'
+      || candidate.relation_type === 'occurs-during-arc')
+    && isEdgeVisible(candidate, cursor)
+  );
+  if (edge === undefined) return null;
+  const row = db.getEntityById(edge.target_entity_id);
+  return row === null ? null : chipForRow(row, cat, locale, cursor);
 }
 
 const byNumber = (a: SourceItemView, b: SourceItemView): number =>
@@ -2048,7 +2135,44 @@ function buildSourceTemplate(
       };
     }
   }
-  return { kind: 'source', arc };
+  // The volume ribbon, built by the same rule as the arc one: one
+  // helper, two containers, so a chapter cannot end up with two
+  // different notions of "my siblings".
+  let volume: SourcePositionView | null = null;
+  const volumeEdge = edges.find((edge) => edge.relation_type === 'part-of-volume');
+  if (volumeEdge !== undefined) {
+    const volumeRow = db.getEntityById(volumeEdge.target_entity_id);
+    if (volumeRow !== null) {
+      volume = {
+        chip: chipForRow(volumeRow, cat, locale, cursor),
+        label: resolveEdgeLabel(volumeEdge, cat, locale),
+        items: containedSources(
+          volumeRow.id,
+          'part-of-volume.inverse',
+          row.type,
+          row.id,
+          cat,
+          locale,
+          cursor,
+        ),
+      };
+    }
+  }
+
+  // Adaptations go through `sourceItem` like every other ordered
+  // sibling, so they are gated and numbered the same way — an episode
+  // beyond the reader's ANIME cursor does not appear here just
+  // because they reached the chapter.
+  const adaptations: SourceItemView[] = [];
+  for (const edge of edges) {
+    if (edge.relation_type !== 'adapted-by') continue;
+    const target = db.getEntityById(edge.target_entity_id);
+    if (target === null) continue;
+    if (!isSourceVisible(target.id, cursor)) continue;
+    adaptations.push(sourceItem(target, row.id, cat, locale, cursor));
+  }
+
+  return { kind: 'source', arc, volume, adaptations: adaptations.sort(byNumber) };
 }
 
 /**
@@ -2113,6 +2237,7 @@ function buildAppearances(
   cat: ValidatedCatalogue,
   locale: Locale,
   cursor: ProgressCursor,
+  scope: string | null,
 ): readonly AppearanceGroupView[] {
   const groups = new Map<string, {
     key: string;
@@ -2126,7 +2251,7 @@ function buildAppearances(
     const target = db.getEntityById(edge.target_entity_id);
     if (target === null || ordinalPropertyOf(cat, target.type) === null) continue;
     const key = `${edge.relation_type}:${target.type}`;
-    const item = sourceItem(target, '', cat, locale, cursor);
+    const item = appearanceItem(target, cat, locale, cursor, scope);
     const bucket = groups.get(key);
     if (bucket === undefined) {
       groups.set(key, {
@@ -2176,6 +2301,13 @@ function consumedRelationKeys(row: EntityRow, template: TemplateView): ReadonlyS
     case 'source':
       consumed.add('part-of-arc');
       consumed.add('occurs-during-arc');
+      // The volume ribbon and the adaptation panel consume these two
+      // now. Without the additions they rendered TWICE — once as the
+      // plate's block and once again at the bottom as a generic
+      // connection row, which is what a page looks like when a
+      // module is added and this switch is not.
+      consumed.add('part-of-volume');
+      consumed.add('adapted-by');
       break;
     case 'container':
       for (const group of template.groups) consumed.add(group.relationKey);
@@ -2451,7 +2583,7 @@ export async function buildEntityView(
   // Appearances take what the template left; whatever they take is in
   // turn withheld from the generic connection sections, so a fact is
   // never rendered twice — and never dropped either.
-  const appearances = buildAppearances(edges, templateKeys, cat, locale, cursor);
+  const appearances = buildAppearances(edges, templateKeys, cat, locale, cursor, scope);
   const consumed = new Set(templateKeys);
   for (const group of appearances) consumed.add(group.key.split(':')[0] ?? group.key);
   const { properties, infobox: declaredInfobox } = buildPropertyViews(
