@@ -1,0 +1,12 @@
+{
+  "id": "saga:east-blue",
+  "type": "saga",
+  "schema_version": 1,
+  "slug": "east-blue",
+  "canonical_name_key": "saga.east-blue.name",
+  "properties": {
+    "name": [{ "value_key": "saga.east-blue.name", "since": "manga-chapter:1" }],
+    "saga_number": { "value": 1 }
+  },
+  "relations": []
+}
