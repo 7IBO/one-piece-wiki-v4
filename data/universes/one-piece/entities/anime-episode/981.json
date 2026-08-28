@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:981",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-981",
+  "properties": {
+    "number": {
+      "value": 981
+    },
+    "title_key": {
+      "value_key": "anime-episode.981.title"
+    }
+  },
+  "relations": []
+}

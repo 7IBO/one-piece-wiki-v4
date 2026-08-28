@@ -432,7 +432,15 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     if (volume.template.kind !== 'container') return;
     const held = volume.template.groups.find((g) => g.type === 'manga-chapter');
     expect(held?.relationKey).toBe('part-of-volume.inverse');
-    expect(held?.items.map((c) => c.chip.slug)).toEqual(['chapter-1']);
+    // Volume 1 opens on chapter 1 and its contents run upward. It used
+    // to assert `['chapter-1']` exactly, which held only while the
+    // corpus had ONE `part-of-volume` edge in total; the ADR-120
+    // enrichment gave the volume its eight chapters and the test
+    // failed on the feature working.
+    const heldNumbers = (held?.items ?? []).map((c) => c.number);
+    expect(heldNumbers[0]).toBe(1);
+    expect(heldNumbers).toEqual([...heldNumbers].sort((a, b) => (a ?? 0) - (b ?? 0)));
+    expect(new Set(heldNumbers).size).toBe(heldNumbers.length);
   });
 
   test('appearances stay empty until appearance edges exist', async () => {
@@ -501,9 +509,15 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     const ace = characters?.items.find((i) => i.slug === 'portgas-d-ace');
     expect(ace?.tag).toBe('Dead');
     // Chapters: release date; platforms: kind (both via their schemas).
+    //
+    // The claim is that the second line is the release date FORMATTED
+    // for the locale — not that it is one particular date. It used to
+    // name `July 22, 1997`, a hand-seeded value that the rendered
+    // infobox later corrected to July 19 (ADR-120); the test then
+    // failed on an import doing exactly what it was built to do.
     const chapters = await buildTypeListView('manga-chapter', 'en');
-    expect(chapters?.items.find((i) => i.slug === 'chapter-1')?.secondary)
-      .toBe('July 22, 1997');
+    const chapterOne = chapters?.items.find((i) => i.slug === 'chapter-1')?.secondary;
+    expect(chapterOne).toMatch(/^[A-Z][a-z]+ \d{1,2}, 1997$/);
     const platforms = await buildTypeListView('streaming-platform', 'en');
     expect(platforms?.items.find((i) => i.slug === 'netflix')?.secondary)
       .toBe('Streaming (video)');

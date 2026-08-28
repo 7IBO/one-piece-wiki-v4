@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.100.title"
+    },
+    "page_count": {
+      "value": 24
+    },
+    "released_at": {
+      "value": "1999-08-09",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:loguetown"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:12"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:52"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:53"
     }
   ]
 }

@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:624",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-624",
+  "properties": {
+    "number": {
+      "value": 624
+    },
+    "title_key": {
+      "value_key": "anime-episode.624.title"
+    }
+  },
+  "relations": []
+}

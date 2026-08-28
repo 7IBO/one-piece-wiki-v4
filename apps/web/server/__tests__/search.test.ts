@@ -140,10 +140,24 @@ describe.skipIf(!hasArtifact)('search (real artifact)', () => {
     // itself announce that something exists at chapter 1044.
     expect(early.results).toHaveLength(0);
 
-    // Its French name, its slug and a bare "nika" are equally dead ends.
+    // Its French name and its slug are equally dead ends.
     expect(await ids('Révélation', 'fr', cursor(100))).not.toContain('event:nika-reveal');
-    expect(await ids('nika-reveal', 'en', cursor(100))).toEqual([]);
-    expect(await ids('nika', 'en', cursor(100))).toEqual([]);
+    expect(await ids('nika-reveal', 'en', cursor(100))).not.toContain('event:nika-reveal');
+    // A bare "nika" too — stated ABOUT THIS ENTITY, not as "the result
+    // set is empty". The same correction as the chapter test below,
+    // and for the same reason: emptiness held only while no other
+    // entity could match the term. Importing episodes 595-1176 brought
+    // in `anime-episode:1152`, which this test was never about.
+    //
+    // What that episode IS about is worth naming, because it is the
+    // cost of a documented limitation rather than a defect: a reader
+    // at manga 100 who left the anime axis unset is handed
+    // "Bonney's Nika Punch". `isSourceVisible` returns true for an
+    // axis with no cursor (progress.ts: "a documented v1 limitation,
+    // not an accident"), so declaring manga progress buys no
+    // protection on the anime axis. Measured, not fixed here — see
+    // STATE.md.
+    expect(await ids('nika', 'en', cursor(100))).not.toContain('event:nika-reveal');
 
     // A reader who has reached it finds it.
     expect(await ids('Nika Revelation', 'en', cursor(1044))).toContain('event:nika-reveal');

@@ -57,7 +57,28 @@ export type LayoutBand =
     readonly main: readonly SlotKey[];
     readonly aside: readonly SlotKey[];
   }
-  | { readonly kind: 'pack'; readonly slots: readonly SlotKey[]; };
+  | { readonly kind: 'pack'; readonly slots: readonly SlotKey[]; }
+  | { readonly kind: 'grid'; readonly cells: readonly GridCell[]; };
+
+/**
+ * One panel of a `grid` band: a slot and how many of the twelve
+ * columns it takes.
+ *
+ * `design/v2` composes every page this way — `IDENTITÉ` over three
+ * columns beside `PRIME — CHRONOLOGIE` over five and `APPARITIONS PAR
+ * ARC` over four — and that density is what the band model could not
+ * express: `split` only ever yields two columns, so a page of eight
+ * small panels came out as two tall ones.
+ *
+ * A cell whose slot has nothing to show is dropped and the rest
+ * reflow, so a sparse entity gets fewer, wider panels rather than
+ * holes.
+ */
+export type GridCell = {
+  readonly slot: SlotKey;
+  /** Columns out of twelve, 1–12. */
+  readonly span: number;
+};
 
 export type EntityLayout = {
   /** Shape of the figure in the hero: a poster tile or a wide plate. */
@@ -102,25 +123,40 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
   // each property's own history) fills the aside.
   character: {
     figure: 'poster',
+    // `design/v2` Main.dc.html: `IDENTITÉ` over three columns, the
+    // prose over five, the appearance ledger over four; then the crew
+    // and the relations sharing a row; then the gallery.
     bands: [
       {
-        kind: 'split',
-        side: 'end',
-        main: ['narrative', 'affiliations', 'appearances', 'connections'],
-        aside: ['sheet', 'gallery'],
+        kind: 'grid',
+        cells: [
+          { slot: 'sheet', span: 3 },
+          { slot: 'narrative', span: 5 },
+          { slot: 'appearances', span: 4 },
+          { slot: 'affiliations', span: 6 },
+          { slot: 'connections', span: 6 },
+          { slot: 'gallery', span: 12 },
+        ],
       },
     ],
   },
   // A roster: the crew IS its members, so they lead at full width.
   crew: {
     figure: 'poster',
+    // The roster still LEADS at full width — a crew is its members —
+    // and everything under it is the plate's grid.
     bands: [
       { kind: 'full', slots: ['members'] },
       {
-        kind: 'split',
-        side: 'end',
-        main: ['narrative', 'former', 'connections', 'appearances'],
-        aside: ['sheet', 'gallery'],
+        kind: 'grid',
+        cells: [
+          { slot: 'sheet', span: 3 },
+          { slot: 'narrative', span: 5 },
+          { slot: 'appearances', span: 4 },
+          { slot: 'former', span: 6 },
+          { slot: 'connections', span: 6 },
+          { slot: 'gallery', span: 12 },
+        ],
       },
     ],
   },
@@ -129,10 +165,15 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
     bands: [
       { kind: 'full', slots: ['members'] },
       {
-        kind: 'split',
-        side: 'end',
-        main: ['narrative', 'former', 'connections', 'appearances'],
-        aside: ['sheet', 'gallery'],
+        kind: 'grid',
+        cells: [
+          { slot: 'sheet', span: 3 },
+          { slot: 'narrative', span: 5 },
+          { slot: 'appearances', span: 4 },
+          { slot: 'former', span: 6 },
+          { slot: 'connections', span: 6 },
+          { slot: 'gallery', span: 12 },
+        ],
       },
     ],
   },
@@ -142,12 +183,21 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
   // holding three cards and a lot of nothing.
   'devil-fruit': {
     figure: 'poster',
+    // Fruit.dc.html: `FICHE` (3) beside the name's chronology (5) and
+    // the successive bearers (4); the description and what points
+    // here share the row below.
     bands: [
       {
-        kind: 'split',
-        side: 'start',
-        main: ['sheet', 'narrative', 'connections', 'appearances'],
-        aside: ['members', 'former', 'gallery'],
+        kind: 'grid',
+        cells: [
+          { slot: 'sheet', span: 3 },
+          { slot: 'narrative', span: 5 },
+          { slot: 'members', span: 4 },
+          { slot: 'former', span: 4 },
+          { slot: 'connections', span: 4 },
+          { slot: 'appearances', span: 4 },
+          { slot: 'gallery', span: 12 },
+        ],
       },
     ],
   },
@@ -298,8 +348,11 @@ export function layoutFor(type: string): EntityLayout {
   return LAYOUTS[type] ?? GENERIC_LAYOUT;
 }
 
-function slotsOfBand(band: LayoutBand): readonly SlotKey[] {
-  return band.kind === 'split' ? [...band.main, ...band.aside] : band.slots;
+/** Every slot a band names, whatever shape the band is. */
+export function slotsOfBand(band: LayoutBand): readonly SlotKey[] {
+  if (band.kind === 'split') return [...band.main, ...band.aside];
+  if (band.kind === 'grid') return band.cells.map((cell) => cell.slot);
+  return band.slots;
 }
 
 /** Slots an authored layout forgot — never dropped, always appended. */

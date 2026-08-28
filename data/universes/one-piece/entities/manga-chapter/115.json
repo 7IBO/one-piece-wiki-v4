@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.115.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "1999-12-06",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:little-garden"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:13"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:69"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:70"
     }
   ]
 }

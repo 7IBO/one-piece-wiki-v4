@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.195.title"
+    },
+    "page_count": {
+      "value": 21
+    },
+    "released_at": {
+      "value": "2001-08-20",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:arabasta"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:21"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:119"
     }
   ]
 }

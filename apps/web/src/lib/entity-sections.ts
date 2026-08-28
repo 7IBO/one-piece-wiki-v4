@@ -75,6 +75,34 @@ const SECTIONS: Readonly<Record<string, readonly EntitySection[]>> = {
     { id: 'gallery', labelKey: 'gallery', slots: ['gallery'] },
     { id: 'appearances', labelKey: 'appearances', slots: ['appearances'] },
   ],
+  // Fruit.dc.html carries a full tab row — `Porteurs 2`, `Techniques
+  // 47`, `Apparitions 318`. Only the ones we can fill are authored: a
+  // tab that resolves to nothing is worse than no tab, and
+  // `visibleSections` would drop it anyway.
+  'devil-fruit': [
+    { id: 'former-users', labelKey: 'formerUsers', slots: ['former'] },
+    { id: 'gallery', labelKey: 'gallery', slots: ['gallery'] },
+    { id: 'appearances', labelKey: 'appearances', slots: ['appearances', 'connections'] },
+  ],
+  // `contents` is deliberately NOT a sub-page here, and the first
+  // draft of this got it wrong: moving Wano's 149 chapters behind a
+  // tab left the arc overview holding a two-row data sheet and
+  // nothing else. The rule at the top of this file already says why —
+  // what stays on the overview is « the one module the type is really
+  // about », and an arc IS its chapters exactly as a crew IS its
+  // roster. Length is handled by `ShowMoreList`, which is what it is
+  // for.
+  arc: [
+    { id: 'gallery', labelKey: 'gallery', slots: ['gallery'] },
+    { id: 'appearances', labelKey: 'appearances', slots: ['appearances', 'connections'] },
+  ],
+  saga: [
+    { id: 'gallery', labelKey: 'gallery', slots: ['gallery'] },
+    { id: 'appearances', labelKey: 'appearances', slots: ['appearances', 'connections'] },
+  ],
+  volume: [
+    { id: 'gallery', labelKey: 'gallery', slots: ['gallery'] },
+  ],
 };
 
 export function sectionsFor(type: string): readonly EntitySection[] {
@@ -122,6 +150,11 @@ export function restrictBands(
       }
       continue;
     }
+    if (band.kind === 'grid') {
+      const cells = band.cells.filter((cell) => keep.has(cell.slot));
+      if (cells.length > 0) out.push({ kind: 'grid', cells });
+      continue;
+    }
     const slots = filter(band.slots);
     if (slots.length > 0) out.push({ kind: band.kind, slots });
   }
@@ -163,6 +196,57 @@ export function slotHasContent(slot: SlotKey, view: EntityView): boolean {
     case 'connections':
       return view.relations.length > 0;
   }
+}
+
+/**
+ * How many things a slot holds — the number `design/v2` prints beside
+ * a tab (`Apparitions 342`, `Techniques 61`, `Galerie 18`).
+ *
+ * A slot whose content is not a countable list returns null and the
+ * tab renders bare, which is what the plates do for `Vue d'ensemble`,
+ * `Chronologie` and `Sources`. Counting is deliberately the SAME
+ * predicate as `slotHasContent`, one case per slot, so a slot cannot
+ * be shown by one and ignored by the other.
+ */
+export function slotCount(slot: SlotKey, view: EntityView): number | null {
+  switch (slot) {
+    case 'gallery':
+      return view.gallery.length;
+    case 'appearances':
+      return view.appearances.reduce((total, group) => total + group.items.length, 0);
+    case 'connections':
+      return view.relations.reduce((total, group) => total + group.items.length, 0);
+    case 'cast':
+      return view.cast.reduce((total, group) => total + group.items.length, 0);
+    case 'members':
+      if (view.template.kind === 'crew') return view.template.members.length;
+      if (view.template.kind === 'devil-fruit') return view.template.users.length;
+      return null;
+    case 'former':
+      if (view.template.kind === 'crew') return view.template.former.length;
+      if (view.template.kind === 'devil-fruit') return view.template.former.length;
+      return null;
+    case 'contents':
+      if (view.template.kind !== 'container') return null;
+      return view.template.groups.reduce((total, group) => total + group.items.length, 0);
+    case 'availability':
+      return view.availability.length;
+    case 'sheet':
+    case 'narrative':
+    case 'affiliations':
+    case 'position':
+      return null;
+  }
+}
+
+/** The count beside a section's tab: its slots' counts, summed. */
+export function sectionCount(section: EntitySection, view: EntityView): number | null {
+  let total: number | null = null;
+  for (const slot of section.slots) {
+    const count = slotCount(slot, view);
+    if (count !== null) total = (total ?? 0) + count;
+  }
+  return total;
 }
 
 /**

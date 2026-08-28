@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.62.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "1998-10-26",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:baratie"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:7"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:47"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:27"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:28"
     }
   ]
 }

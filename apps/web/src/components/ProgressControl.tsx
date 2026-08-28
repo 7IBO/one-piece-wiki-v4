@@ -127,10 +127,17 @@ export function ProgressPanel(
  * Unset: the invitation to set one.
  */
 export function ProgressControl(
-  { progress, variant = 'header' }: {
+  { progress, variant = 'header', extent }: {
     readonly progress: ProgressCursor;
     /** `header`: the plate's bar segment. `button`: the hero's outlined action. */
     readonly variant?: 'header' | 'button';
+    /**
+     * Highest ordinal the corpus holds per axis — the gauge's
+     * denominator. Absent (or zero) renders the position with no bar,
+     * which is the honest shape when there is nothing to be a
+     * fraction of.
+     */
+    readonly extent?: ProgressCursor;
   },
 ): ReactElement {
   const locale = useLocale();
@@ -168,6 +175,7 @@ export function ProgressControl(
               <span className='hidden uppercase tracking-[0.14em] text-muted sm:inline'>
                 {t(locale, 'myProgress')}
               </span>
+              <ProgressGauge progress={progress} extent={extent} />
               <span
                 className={`block max-w-40 truncate font-bold sm:max-w-64 ${
                   active ? 'tabular-nums text-gold' : 'text-fg/85'
@@ -193,5 +201,34 @@ export function ProgressControl(
         </Popover.Positioner>
       </Popover.Portal>
     </Popover.Root>
+  );
+}
+
+/**
+ * The 90px rail of `design/v2`'s header, filled to the reader's
+ * position. It draws the axis the reader has actually declared —
+ * manga first, else anime — and nothing at all when there is no
+ * cursor or no corpus to measure against: an empty rail would claim a
+ * scale the page cannot back.
+ */
+function ProgressGauge(
+  { progress, extent }: {
+    readonly progress: ProgressCursor;
+    readonly extent: ProgressCursor | undefined;
+  },
+): ReactElement | null {
+  const axis = progress.manga !== null ? 'manga' : progress.anime !== null ? 'anime' : null;
+  if (axis === null || extent === undefined) return null;
+  const at = progress[axis];
+  const total = extent[axis];
+  if (at === null || total === null || total <= 0) return null;
+  const pct = Math.min(100, Math.max(2, Math.round((at / total) * 100)));
+  return (
+    <span
+      aria-hidden
+      className='hidden h-[3px] w-[90px] shrink-0 overflow-hidden rounded-sm bg-line sm:block'
+    >
+      <span className='block h-full rounded-sm bg-gold' style={{ width: `${pct}%` }} />
+    </span>
   );
 }

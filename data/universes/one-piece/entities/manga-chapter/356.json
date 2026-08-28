@@ -12,12 +12,28 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2005-02-28",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:water-7"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:37"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:249"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:250"
     }
   ]
 }

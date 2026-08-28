@@ -1,0 +1,15 @@
+{
+  "id": "anime-episode:642",
+  "type": "anime-episode",
+  "schema_version": 1,
+  "slug": "episode-642",
+  "properties": {
+    "number": {
+      "value": 642
+    },
+    "title_key": {
+      "value_key": "anime-episode.642.title"
+    }
+  },
+  "relations": []
+}
