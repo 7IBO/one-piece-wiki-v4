@@ -11,8 +11,11 @@
       "value_key": "manga-chapter.1.title"
     },
     "released_at": {
-      "value": "1997-07-22",
+      "value": "1997-07-19",
       "territory": "jp"
+    },
+    "page_count": {
+      "value": 53
     }
   },
   "relations": [
@@ -35,6 +38,18 @@
     {
       "type": "part-of-arc",
       "target": "arc:romance-dawn"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:4"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:504"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:878"
     }
   ]
 }

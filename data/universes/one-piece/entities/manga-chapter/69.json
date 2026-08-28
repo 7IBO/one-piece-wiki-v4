@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.69.title"
+    },
+    "page_count": {
+      "value": 20
+    },
+    "released_at": {
+      "value": "1998-12-19",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:arlong-park"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:8"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:31"
     }
   ]
 }

@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.71.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "1999-01-11",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:arlong-park"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:8"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:47"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:32"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:31"
     }
   ]
 }

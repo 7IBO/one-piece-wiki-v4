@@ -9,6 +9,13 @@
     },
     "title_key": {
       "value_key": "manga-chapter.0.title"
+    },
+    "page_count": {
+      "value": 23
+    },
+    "released_at": {
+      "value": "2009-11-30",
+      "territory": "jp"
     }
   },
   "relations": []
