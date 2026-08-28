@@ -12,12 +12,32 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2008-02-04",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:thriller-bark"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:50"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:381"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:379"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:380"
     }
   ]
 }

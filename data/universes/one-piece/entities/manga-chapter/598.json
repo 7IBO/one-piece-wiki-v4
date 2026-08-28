@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.598.title"
+    },
+    "page_count": {
+      "value": 24
+    },
+    "released_at": {
+      "value": "2010-10-04",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:return-to-sabaody"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:61"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:517"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:518"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1"
     }
   ]
 }

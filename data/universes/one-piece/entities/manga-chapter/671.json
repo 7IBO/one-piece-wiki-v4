@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.671.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2012-06-18",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:punk-hazard"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:68"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:597"
     }
   ]
 }

@@ -12,12 +12,32 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2008-11-22",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:amazon-lily"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:54"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:417"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:418"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:419"
     }
   ]
 }

@@ -12,12 +12,28 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2008-07-19",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:sabaody-archipelago"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:52"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:400"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:401"
     }
   ]
 }

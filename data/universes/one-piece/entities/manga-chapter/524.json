@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.524.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2008-12-01",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:amazon-lily"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:54"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:420"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:421"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:419"
     }
   ]
 }

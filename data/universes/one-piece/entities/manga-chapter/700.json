@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.700.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2013-03-04",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:dressrosa"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:70"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:628"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:629"
     }
   ]
 }

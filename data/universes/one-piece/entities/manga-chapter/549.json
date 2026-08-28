@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.549.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2009-07-06",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:impel-down"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:56"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:453"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:452"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:459"
     }
   ]
 }
