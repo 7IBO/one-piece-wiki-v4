@@ -73,6 +73,7 @@ import {
   type LayoutBand,
   layoutFor,
   type SlotKey,
+  slotsOfBand,
 } from '../lib/entity-layout';
 import {
   type EntitySection,
@@ -241,7 +242,12 @@ export function EntityArticle(
 
       {/* The plates open the grid 14px under the band, not 36px. */}
       <div className='page-column space-y-3 pt-3.5'>
-        {bands.map((band, index) => <Band key={index} band={band} view={view} />)}
+        {bands.map((band) => (
+          // Une bande est identifiee par ce qu'elle CONTIENT — le
+          // gabarit est fige par type d'entite, donc deux bandes ne
+          // peuvent pas porter les memes creneaux.
+          <Band key={`${band.kind}:${slotsOfBand(band).join(',')}`} band={band} view={view} />
+        ))}
         {bands.length === 0 ? <EmptySection /> : null}
         {
           /*
@@ -740,8 +746,14 @@ function SheetRow({ property }: { readonly property: PropertyView; }): ReactElem
                   <PropertyEntry entry={latest} />
                 </li>
               )}
-              {older.map((entry, index) => (
-                <li key={index} className='text-[12.5px] text-muted'>
+              {older.map((entry) => (
+                // Une valeur historisee EST son `since` : deux entrees
+                // de la meme propriete ne peuvent pas commencer au
+                // meme endroit avec la meme valeur.
+                <li
+                  key={`${entry.since?.id ?? ''}:${entry.display}`}
+                  className='text-[12.5px] text-muted'
+                >
                   <PropertyEntry entry={entry} past />
                 </li>
               ))}
@@ -773,7 +785,7 @@ function SheetRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): R
 function Connections(
   { view, wide }: { readonly view: EntityView; readonly wide: boolean; },
 ): ReactElement {
-  const groups = [...view.relations].sort((a, b) =>
+  const groups = view.relations.toSorted((a, b) =>
     relationRank(a.key) - relationRank(b.key)
     || Number(a.inverse) - Number(b.inverse)
     || b.items.length - a.items.length
@@ -802,7 +814,15 @@ function ConnectionGroup(
       <ShowMoreList
         limit={columns ? ROW_LIMIT * 3 : ROW_LIMIT}
         listClassName={`grid gap-x-8 ${columns ? rowColumns(group.items.length) : 'grid-cols-1'}`}
-        items={group.items.map((item, i) => <ConnectionRow key={i} item={item} />)}
+        items={group.items.map((item) => (
+          // La cle est l'ARETE, pas la cible : la meme entite peut
+          // revenir dans un groupe avec un autre intervalle — Nami
+          // quitte l'equipage puis y revient.
+          <ConnectionRow
+            key={`${item.target.id}:${item.since?.id ?? ''}:${item.until?.id ?? ''}`}
+            item={item}
+          />
+        ))}
       />
     </>
   );
