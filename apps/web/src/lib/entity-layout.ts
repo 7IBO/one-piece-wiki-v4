@@ -26,6 +26,7 @@
 export const ALL_SLOTS = [
   'narrative',
   'position',
+  'adaptations',
   'contents',
   'members',
   'former',
@@ -100,6 +101,7 @@ export const GENERIC_LAYOUT: EntityLayout = {
       main: [
         'narrative',
         'position',
+        'adaptations',
         'contents',
         'members',
         'former',
@@ -238,15 +240,25 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
   },
   // A numbered instalment: its position in the arc is the first thing
   // on the page, stills next, then who appears in it.
+  // Chapitre.dc.html: the position ribbons lead at full width (a
+  // chapter is WHERE YOU ARE before it is anything else), then the
+  // sheet, the prose and the anime adaptation share the grid.
   'manga-chapter': {
     figure: 'poster',
     bands: [
       { kind: 'full', slots: ['position'] },
       {
-        kind: 'split',
-        side: 'end',
-        main: ['narrative', 'gallery', 'cast', 'connections'],
-        aside: ['sheet', 'availability', 'appearances'],
+        kind: 'grid',
+        cells: [
+          { slot: 'sheet', span: 4 },
+          { slot: 'narrative', span: 4 },
+          { slot: 'adaptations', span: 4 },
+          { slot: 'cast', span: 6 },
+          { slot: 'connections', span: 6 },
+          { slot: 'availability', span: 4 },
+          { slot: 'appearances', span: 4 },
+          { slot: 'gallery', span: 4 },
+        ],
       },
     ],
   },

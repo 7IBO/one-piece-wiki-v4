@@ -191,6 +191,7 @@ const STRINGS = {
   gallery: { en: 'Gallery', fr: 'Galerie' },
   outOf: { en: 'of', fr: 'sur' },
   contents: { en: 'Contents', fr: 'Contenu' },
+  adaptations: { en: 'Anime adaptation', fr: 'Adaptation anime' },
 
   // Search (ADR-108, append-only).
   searchLabel: { en: 'Search the wiki', fr: 'Rechercher dans le wiki' },

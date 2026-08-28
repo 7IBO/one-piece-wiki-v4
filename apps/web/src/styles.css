@@ -152,6 +152,23 @@ body {
 }
 
 /* --- Shared voices (components layer so utilities can override) ---- */
+@layer base {
+  /*
+   * No native clear button on search fields. `design/v2` draws a bare
+   * input; WebKit adds a ✕ of its own, unstyleable and off-palette,
+   * and it lands right where the plate has nothing. `type='search'`
+   * is kept for the semantics (and the keyboard it gets on mobile) —
+   * only the decoration goes.
+   */
+  input[type='search']::-webkit-search-cancel-button,
+  input[type='search']::-webkit-search-decoration,
+  input[type='search']::-webkit-search-results-button,
+  input[type='search']::-webkit-search-results-decoration {
+    appearance: none;
+    display: none;
+  }
+}
+
 @layer components {
   /* The display voice: Archivo semi-expanded. Weight/size via utilities. */
   .display {

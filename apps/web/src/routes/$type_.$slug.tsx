@@ -52,6 +52,7 @@ import {
   type RelationItemView,
   type SequenceView,
   type SourceItemView,
+  type SourceTemplateView,
 } from '../api';
 import { ContributeStrip } from '../components/ContributeStrip';
 import { CARD_GRID_CLASS, EntityCard } from '../components/EntityCard';
@@ -624,8 +625,10 @@ function renderSlot(slot: SlotKey, view: EntityView, wide: boolean): ReactNode {
         ? <ContentsSections groups={view.template.groups} wide={wide} />
         : null;
     case 'position':
-      return view.template.kind === 'source' && view.template.arc !== null
-        ? <PositionSection arc={view.template.arc} />
+      return view.template.kind === 'source' ? <PositionSections template={view.template} /> : null;
+    case 'adaptations':
+      return view.template.kind === 'source' && view.template.adaptations.length > 0
+        ? <AdaptationsSection items={view.template.adaptations} />
         : null;
     case 'cast':
       return view.cast.length === 0 ? null : <CastSection groups={view.cast} />;
@@ -1021,6 +1024,37 @@ function ContentsList(
         </li>
       ))}
     />
+  );
+}
+
+/**
+ * The ribbons a source sits in. `design/v2`'s Chapitre.dc.html shows
+ * TWO — « PART OF ARC / WANO COUNTRY » and « POSITION DANS LE VOLUME
+ * 103 » — because a chapter belongs to two orderings at once and a
+ * reader thinks in both. Each renders only when the corpus knows it.
+ */
+function PositionSections(
+  { template }: { readonly template: SourceTemplateView; },
+): ReactElement | null {
+  const parts = [template.arc, template.volume].filter((part) => part !== null);
+  if (parts.length === 0) return null;
+  return (
+    <div className='space-y-3'>
+      {parts.map((part) => <PositionSection key={part.chip.slug} arc={part} />)}
+    </div>
+  );
+}
+
+/** The episodes a source was adapted into — the plate's ADAPTATION ANIME. */
+function AdaptationsSection(
+  { items }: { readonly items: readonly SourceItemView[]; },
+): ReactElement {
+  const locale = useLocale();
+  return (
+    <section>
+      <SectionHead count={items.length}>{t(locale, 'adaptations')}</SectionHead>
+      <ContentsList items={items} columns={false} />
+    </section>
   );
 }
 

@@ -344,15 +344,30 @@ export type CrewTemplateView = {
 };
 
 /** A source's position inside its arc/saga (the sibling ribbon). */
+/** A container this source sits inside, with its siblings. */
+export type SourcePositionView = {
+  readonly chip: EntityChip;
+  readonly label: string;
+  readonly items: readonly SourceItemView[];
+};
+
 export type SourceTemplateView = {
   readonly kind: 'source';
-  readonly arc:
-    | {
-      readonly chip: EntityChip;
-      readonly label: string;
-      readonly items: readonly SourceItemView[];
-    }
-    | null;
+  readonly arc: SourcePositionView | null;
+  /**
+   * The VOLUME ribbon — `design/v2` Chapitre.dc.html shows « POSITION
+   * DANS LE VOLUME 103 » beside the arc one, because a chapter sits in
+   * two orderings at once and a reader thinks in both.
+   *
+   * Null until the corpus knows the volume; it was 1 chapter out of
+   * 1193 before ADR-120 and there was nothing to draw.
+   */
+  readonly volume: SourcePositionView | null;
+  /**
+   * Episodes this source was adapted into (`adapted-by`), with their
+   * own titles. The plate's « ADAPTATION ANIME » block.
+   */
+  readonly adaptations: readonly SourceItemView[];
 };
 
 /** One ordered set a container entity holds (an arc's chapters, a
@@ -526,6 +541,13 @@ const CARD_SECONDARY_PROPERTIES: Readonly<Record<string, string>> = {
   'anime-episode': 'released_at',
   volume: 'released_at',
   'streaming-platform': 'platform_kind',
+  // `design/v2` Recherche.dc.html prints « Zoan mythique » under the
+  // fruit and « Arc 31 » under the arc. Both types were simply absent
+  // from this table, so their rows in the palette and the listings
+  // carried a name and nothing else — the search read as a list of
+  // links rather than of things.
+  'devil-fruit': 'classification',
+  arc: 'arc_number',
 };
 /** Entity-card micro-stat property (shown only where context warrants). */
 const CARD_STAT_PROPERTIES: Readonly<Record<string, string>> = {
@@ -2048,7 +2070,44 @@ function buildSourceTemplate(
       };
     }
   }
-  return { kind: 'source', arc };
+  // The volume ribbon, built by the same rule as the arc one: one
+  // helper, two containers, so a chapter cannot end up with two
+  // different notions of "my siblings".
+  let volume: SourcePositionView | null = null;
+  const volumeEdge = edges.find((edge) => edge.relation_type === 'part-of-volume');
+  if (volumeEdge !== undefined) {
+    const volumeRow = db.getEntityById(volumeEdge.target_entity_id);
+    if (volumeRow !== null) {
+      volume = {
+        chip: chipForRow(volumeRow, cat, locale, cursor),
+        label: resolveEdgeLabel(volumeEdge, cat, locale),
+        items: containedSources(
+          volumeRow.id,
+          'part-of-volume.inverse',
+          row.type,
+          row.id,
+          cat,
+          locale,
+          cursor,
+        ),
+      };
+    }
+  }
+
+  // Adaptations go through `sourceItem` like every other ordered
+  // sibling, so they are gated and numbered the same way — an episode
+  // beyond the reader's ANIME cursor does not appear here just
+  // because they reached the chapter.
+  const adaptations: SourceItemView[] = [];
+  for (const edge of edges) {
+    if (edge.relation_type !== 'adapted-by') continue;
+    const target = db.getEntityById(edge.target_entity_id);
+    if (target === null) continue;
+    if (!isSourceVisible(target.id, cursor)) continue;
+    adaptations.push(sourceItem(target, row.id, cat, locale, cursor));
+  }
+
+  return { kind: 'source', arc, volume, adaptations: adaptations.sort(byNumber) };
 }
 
 /**
@@ -2176,6 +2235,13 @@ function consumedRelationKeys(row: EntityRow, template: TemplateView): ReadonlyS
     case 'source':
       consumed.add('part-of-arc');
       consumed.add('occurs-during-arc');
+      // The volume ribbon and the adaptation panel consume these two
+      // now. Without the additions they rendered TWICE — once as the
+      // plate's block and once again at the bottom as a generic
+      // connection row, which is what a page looks like when a
+      // module is added and this switch is not.
+      consumed.add('part-of-volume');
+      consumed.add('adapted-by');
       break;
     case 'container':
       for (const group of template.groups) consumed.add(group.relationKey);
