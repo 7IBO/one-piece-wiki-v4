@@ -8,7 +8,7 @@
  */
 import { describe, expect, it } from 'bun:test';
 import type { InfoboxRowView } from '../../api';
-import { heroStatRows } from '../HeroStats';
+import { heroStatRows } from '../hero-stats';
 
 const row = (id: string): InfoboxRowView => ({
   id,

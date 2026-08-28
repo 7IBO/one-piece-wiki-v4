@@ -59,7 +59,7 @@ import { EntityChipLink, ScopeContext, useScopeSearch } from '../components/Enti
 import { EntityHero } from '../components/EntityHero';
 import { EntityImage } from '../components/EntityImage';
 import { HeroChips } from '../components/HeroChips';
-import { heroStatRows, HeroStats } from '../components/HeroStats';
+import { HeroStats } from '../components/HeroStats';
 import { HoverPreview } from '../components/HoverPreview';
 import { ShowMoreList } from '../components/ShowMoreList';
 import { SourceTabs } from '../components/SourceTabs';
@@ -80,6 +80,7 @@ import {
   visibleSections,
 } from '../lib/entity-sections';
 import { entityTint } from '../lib/entity-tint';
+import { heroStatRows } from '../lib/hero-stats';
 import { Markdown } from '../lib/markdown';
 import { validateScopeSearch } from '../lib/scope';
 import { useLocale } from './__root';

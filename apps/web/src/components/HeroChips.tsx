@@ -24,7 +24,13 @@ export function HeroChips(
   // The leading axis is the biggest population — the manga for almost
   // everything, the anime for a filler-only entity. Its ratio is the
   // one worth stating; the others are named, not counted.
-  const lead = [...appearances].sort((a, b) => b.total - a.total)[0];
+  //
+  // Picked with a single pass rather than by sorting a copy: this only
+  // ever needs the maximum, and ordering the rest is work thrown away.
+  const lead = appearances.reduce<AppearanceGroupView | undefined>(
+    (best, group) => (best === undefined || group.total > best.total ? group : best),
+    undefined,
+  );
   return (
     <div className='mt-3 flex flex-wrap items-center gap-[7px]'>
       {appearances.map((group) => (
