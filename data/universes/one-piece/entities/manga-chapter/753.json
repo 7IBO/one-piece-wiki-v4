@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.753.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2014-07-19",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:dressrosa"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:76"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:690"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:691"
     }
   ]
 }

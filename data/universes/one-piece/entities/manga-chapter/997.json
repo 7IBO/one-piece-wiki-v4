@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.997.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2020-11-30",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:wano-country"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:99"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1010"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1011"
     }
   ]
 }

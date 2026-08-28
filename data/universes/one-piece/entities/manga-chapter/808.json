@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.808.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2015-11-30",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:zou"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:81"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:757"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:758"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:760"
     }
   ]
 }

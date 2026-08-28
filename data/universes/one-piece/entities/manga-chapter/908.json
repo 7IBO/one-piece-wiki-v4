@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.908.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2018-06-18",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:levely"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:90"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:888"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:889"
     }
   ]
 }

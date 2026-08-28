@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.802.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2015-10-05",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:zou"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:80"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:747"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:751"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:752"
     }
   ]
 }

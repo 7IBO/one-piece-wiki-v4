@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.789.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2015-06-08",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:dressrosa"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:79"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:731"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:732"
     }
   ]
 }

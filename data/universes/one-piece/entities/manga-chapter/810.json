@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.810.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2015-12-21",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:zou"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:81"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:759"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:760"
     }
   ]
 }

@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.956.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2019-09-21",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:wano-country"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:95"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:957"
     }
   ]
 }

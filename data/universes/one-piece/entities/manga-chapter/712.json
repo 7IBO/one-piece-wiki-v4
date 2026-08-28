@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.712.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2013-07-01",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:dressrosa"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:72"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:640"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:641"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:642"
     }
   ]
 }

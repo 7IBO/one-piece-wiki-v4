@@ -9,12 +9,39 @@
     },
     "title_key": {
       "value_key": "manga-chapter.928.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2018-12-22",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:wano-country"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:92"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:920"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:921"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:922"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:923"
     }
   ]
 }

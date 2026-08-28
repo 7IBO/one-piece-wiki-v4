@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.843.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2016-10-24",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:whole-cake-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:84"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:806"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:807"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:808"
     }
   ]
 }

@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.859.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2017-03-18",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:whole-cake-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:86"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:828"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:829"
     }
   ]
 }

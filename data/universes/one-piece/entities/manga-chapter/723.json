@@ -12,12 +12,32 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2013-10-07",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:dressrosa"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:73"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:653"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:654"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:921"
     }
   ]
 }

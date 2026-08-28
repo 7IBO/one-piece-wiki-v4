@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.927.title"
+    },
+    "page_count": {
+      "value": 15
+    },
+    "released_at": {
+      "value": "2018-12-10",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:wano-country"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:92"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:920"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:921"
     }
   ]
 }

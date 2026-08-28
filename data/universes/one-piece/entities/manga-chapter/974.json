@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.974.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2020-03-16",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:wano-country"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:96"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:976"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:977"
     }
   ]
 }
