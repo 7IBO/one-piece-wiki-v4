@@ -219,3 +219,44 @@ describe('registry-resolved relations + occupation matching', () => {
     expect(result!.warnings.some((w) => w.startsWith('occupation:'))).toBe(true);
   });
 });
+
+describe('ename multi-valeur (le cas Bell-mère)', () => {
+  /** Une page Char Box minimale portant le `ename` incriminé. */
+  const withEname = (ename: string): ParsedPage => ({
+    title: 'T',
+    pageId: 1,
+    url: 'https://onepiece.fandom.com/wiki/T',
+    wikitext: `{{Char Box\n|ename = ${ename}\n|status = Alive\n}}`,
+  });
+
+  it('prend la PREMIÈRE ligne comme nom canonique, pas la liste entière', () => {
+    // Le champ réel qui a produit
+    // `character:belle-mere-viz-media-bellemere-funimation-bell-mere-opcg`.
+    const result = mapCharacter(
+      withEname('Bell-mère<br>Bellemere (Viz Media)<br>Bell-mere (Funimation)<br>Bell-Mere (OPCG)'),
+    );
+    expect(result).not.toBeNull();
+    expect(result!.entity.id).toBe('character:bell-mere');
+    expect(result!.entity.slug).toBe('bell-mere');
+  });
+
+  it('range les orthographes par édition en ALIAS, sans en perdre', () => {
+    const result = mapCharacter(
+      withEname('Bell-mère<br>Bellemere (Viz Media)<br>Bell-mere (Funimation)'),
+    );
+    const names = result!.entity.properties['name'] as { name_type: string; value_key: string; }[];
+    expect(names[0]).toMatchObject({ name_type: 'common' });
+    const aliases = names.filter((n) => n.name_type === 'alias');
+    expect(aliases.length).toBe(2);
+    const values = aliases.map((a) => result!.translations['en']?.[a.value_key]);
+    expect(values).toContain('Bellemere (Viz Media)');
+    expect(values).toContain('Bell-mere (Funimation)');
+  });
+
+  it("n'invente pas d'alias quand le nom tient sur une ligne", () => {
+    const result = mapCharacter(withEname('Nami'));
+    const names = result!.entity.properties['name'] as { name_type: string; }[];
+    expect(names.filter((n) => n.name_type === 'alias')).toEqual([]);
+    expect(result!.entity.slug).toBe('nami');
+  });
+});
