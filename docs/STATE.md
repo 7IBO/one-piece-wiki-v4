@@ -15,9 +15,24 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-28 (analyse du canevas design →
-`docs/DESIGN_PLAN.md` ; apparitions en liste à hauteur constante ;
-fuite anti-spoil sur 46 arcs toujours en attente d'arbitrage)
+**Last updated**: 2026-08-28 (ADR-120 terminé : `released_at` complet
+sur les 1193 chapitres ; analyse du canevas design →
+`docs/DESIGN_PLAN.md` ; plan A épuisé ; quatre arbitrages en attente)
+
+### ADR-120 est terminé
+
+| champ            | wikitext (le point de départ) | aujourd'hui |
+| ---------------- | ----------------------------: | ----------: |
+| `part-of-volume` |                             1 |    **1179** |
+| `adapted-by`     |                             0 |    **1145** |
+| `released_at`    |          10 (semés à la main) |    **1193** |
+| `page_count`     |                           251 |    **1187** |
+
+Les manques restants **ne sont pas des trous, ce sont des faits** :
+les 14 chapitres sans volume sont le ch. 0 (prologue de Strong World)
+et les ch. 1180-1192, pas encore reliés ; les 48 sans adaptation sont
+le ch. 0 et les ch. 1146+, pas encore animés. Réimporter ne les
+remplirait pas.
 
 ## 2026-08-28 — Le canevas design analysé, et le plan par entité
 
@@ -85,10 +100,21 @@ attend un arbitrage comme les trois autres :
   d'édition, pas un spoiler d'intrigue, et seuls les titres comptent.
   C'est ce qui est implémenté aujourd'hui, sans avoir été décidé.
 
-## 2026-08-28 — 194 chapitres sur 700 ont des adaptations non contiguës
+## 2026-08-28 — Les adaptations aberrantes : 134 chapitres sur 1145
 
-Mesuré sur l'artefact courant, en passant. Deux familles distinctes,
-qu'il ne faut pas confondre :
+**Correction d'une mesure trop stricte.** J'avais d'abord compté « 194
+chapitres sur 700 ont des adaptations NON CONTIGUËS ». C'était le
+mauvais critère : un écart d'un épisode est normal, l'anime entrelace
+et intercale du filler.
+
+Mesuré correctement sur les 1145 chapitres portant `adapted-by` :
+
+- **écart médian entre le premier et le dernier épisode : 1** — le cas
+  normal est serré, et c'est ce qui rend les autres lisibles ;
+- **134 chapitres (11,7 %)** ont un écart supérieur à 20, et ce sont
+  eux les suspects.
+
+Deux familles distinctes, qu'il ne faut pas confondre :
 
 - **des récapitulatifs légitimes** — les chapitres 35 à 66 portent
   tous un `anime-episode:46` ou `:47` en plus de leur épisode réel, et
