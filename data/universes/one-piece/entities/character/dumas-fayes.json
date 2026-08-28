@@ -1,0 +1,31 @@
+{
+  "id": "character:dumas-fayes",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "dumas-fayes",
+  "canonical_name_key": "character.dumas-fayes.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.dumas-fayes.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:587"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:587"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "noble"
+        ],
+        "since": "manga-chapter:587"
+      }
+    ]
+  },
+  "relations": []
+}

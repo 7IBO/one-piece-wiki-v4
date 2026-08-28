@@ -1,0 +1,37 @@
+{
+  "id": "character:accino",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "accino",
+  "canonical_name_key": "character.accino.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.accino.name.common",
+        "name_type": "common",
+        "since": "anime-episode:326"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.accino.epithet.don-accino",
+        "since": "anime-episode:326"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:326"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "bounty_hunter"
+        ],
+        "since": "anime-episode:326"
+      }
+    ]
+  },
+  "relations": []
+}

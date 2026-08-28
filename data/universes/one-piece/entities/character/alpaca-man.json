@@ -1,0 +1,23 @@
+{
+  "id": "character:alpaca-man",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "alpaca-man",
+  "canonical_name_key": "character.alpaca-man.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.alpaca-man.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:934"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:934"
+      }
+    ]
+  },
+  "relations": []
+}

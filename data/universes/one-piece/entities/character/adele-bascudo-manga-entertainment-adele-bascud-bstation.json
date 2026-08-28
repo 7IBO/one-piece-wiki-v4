@@ -1,0 +1,30 @@
+{
+  "id": "character:adele-bascudo-manga-entertainment-adele-bascud-bstation",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "adele-bascudo-manga-entertainment-adele-bascud-bstation",
+  "canonical_name_key": "character.adele-bascudo-manga-entertainment-adele-bascud-bstation.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.adele-bascudo-manga-entertainment-adele-bascud-bstation.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.adele-bascudo-manga-entertainment-adele-bascud-bstation.name.anaguma",
+        "name_type": "alias"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "age": [
+      {
+        "value": 11
+      }
+    ]
+  },
+  "relations": []
+}

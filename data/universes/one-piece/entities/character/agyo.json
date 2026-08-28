@@ -1,0 +1,26 @@
+{
+  "id": "character:agyo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "agyo",
+  "canonical_name_key": "character.agyo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.agyo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:706"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:706"
+      }
+    ],
+    "birthday": {
+      "value": "11-29"
+    }
+  },
+  "relations": []
+}

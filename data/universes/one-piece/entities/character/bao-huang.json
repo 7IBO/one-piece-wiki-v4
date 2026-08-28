@@ -1,0 +1,23 @@
+{
+  "id": "character:bao-huang",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bao-huang",
+  "canonical_name_key": "character.bao-huang.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bao-huang.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:979"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:979"
+      }
+    ]
+  },
+  "relations": []
+}

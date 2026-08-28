@@ -1,0 +1,23 @@
+{
+  "id": "character:alpha",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "alpha",
+  "canonical_name_key": "character.alpha.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.alpha.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1100"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1100"
+      }
+    ]
+  },
+  "relations": []
+}

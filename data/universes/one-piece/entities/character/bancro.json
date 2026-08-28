@@ -1,0 +1,31 @@
+{
+  "id": "character:bancro",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bancro",
+  "canonical_name_key": "character.bancro.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bancro.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:967"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:967"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:967"
+      }
+    ]
+  },
+  "relations": []
+}

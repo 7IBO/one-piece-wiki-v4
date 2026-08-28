@@ -1,0 +1,41 @@
+{
+  "id": "character:avalo-pizarro",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "avalo-pizarro",
+  "canonical_name_key": "character.avalo-pizarro.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.avalo-pizarro.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:575"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.avalo-pizarro.epithet.corrupt-king",
+        "since": "manga-chapter:575"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:575"
+      }
+    ],
+    "height": [
+      {
+        "value": 505,
+        "source": "databook-card:0651"
+      }
+    ],
+    "birthday": {
+      "value": "09-30"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

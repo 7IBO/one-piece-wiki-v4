@@ -1,0 +1,28 @@
+{
+  "id": "character:atli",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "atli",
+  "canonical_name_key": "character.atli.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.atli.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "cook"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

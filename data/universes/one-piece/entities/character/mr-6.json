@@ -1,0 +1,23 @@
+{
+  "id": "character:mr-6",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "mr-6",
+  "canonical_name_key": "character.mr-6.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.mr-6.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:155"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:155"
+      }
+    ]
+  },
+  "relations": []
+}

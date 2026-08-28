@@ -1,0 +1,34 @@
+{
+  "id": "character:amadob",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "amadob",
+  "canonical_name_key": "character.amadob.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.amadob.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:558"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:558"
+      }
+    ],
+    "birthday": {
+      "value": "06-20"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:559"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "character:agushily",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "agushily",
+  "canonical_name_key": "character.agushily.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.agushily.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:578"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:578"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:578"
+      }
+    ]
+  },
+  "relations": []
+}

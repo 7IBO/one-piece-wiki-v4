@@ -1,0 +1,26 @@
+{
+  "id": "character:mr-11",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "mr-11",
+  "canonical_name_key": "character.mr-11.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.mr-11.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:128"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:128"
+      }
+    ],
+    "birthday": {
+      "value": "11-21"
+    }
+  },
+  "relations": []
+}

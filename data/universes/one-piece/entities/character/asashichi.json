@@ -1,0 +1,23 @@
+{
+  "id": "character:asashichi",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "asashichi",
+  "canonical_name_key": "character.asashichi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.asashichi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:930"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:930"
+      }
+    ]
+  },
+  "relations": []
+}

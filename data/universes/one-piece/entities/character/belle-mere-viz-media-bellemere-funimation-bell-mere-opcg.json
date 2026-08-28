@@ -1,0 +1,35 @@
+{
+  "id": "character:belle-mere-viz-media-bellemere-funimation-bell-mere-opcg",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "belle-mere-viz-media-bellemere-funimation-bell-mere-opcg",
+  "canonical_name_key": "character.belle-mere-viz-media-bellemere-funimation-bell-mere-opcg.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.belle-mere-viz-media-bellemere-funimation-bell-mere-opcg.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:77"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:77"
+      }
+    ],
+    "height": [
+      {
+        "value": 186,
+        "source": "databook-card:0107"
+      }
+    ],
+    "birthday": {
+      "value": "12-03"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "character:bariete",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bariete",
+  "canonical_name_key": "character.bariete.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bariete.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:804"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:804"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,51 @@
+{
+  "id": "character:bellamy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bellamy",
+  "canonical_name_key": "character.bellamy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bellamy.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:222"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.bellamy.epithet.bellamy-the-hyena",
+        "since": "manga-chapter:222"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:222"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 55000000,
+        "since": "manga-chapter:222"
+      },
+      {
+        "value": 195000000,
+        "since": "manga-chapter:706"
+      }
+    ],
+    "height": [
+      {
+        "value": 240,
+        "source": "databook-card:0238"
+      }
+    ],
+    "birthday": {
+      "value": "08-07"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "character:angel",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "angel",
+  "canonical_name_key": "character.angel.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.angel.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

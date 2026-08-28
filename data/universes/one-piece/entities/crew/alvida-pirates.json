@@ -1,0 +1,17 @@
+{
+  "id": "crew:alvida-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "alvida-pirates",
+  "canonical_name_key": "crew.alvida-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.alvida-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:2"
+      }
+    ]
+  },
+  "relations": []
+}

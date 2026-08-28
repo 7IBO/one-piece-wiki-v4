@@ -1,0 +1,28 @@
+{
+  "id": "character:uweshall-notpass",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "uweshall-notpass",
+  "canonical_name_key": "character.uweshall-notpass.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.uweshall-notpass.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:548"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:548"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 200000000
+      }
+    ]
+  },
+  "relations": []
+}

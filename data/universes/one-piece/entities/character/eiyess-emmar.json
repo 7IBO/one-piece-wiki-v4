@@ -1,0 +1,21 @@
+{
+  "id": "character:eiyess-emmar",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "eiyess-emmar",
+  "canonical_name_key": "character.eiyess-emmar.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.eiyess-emmar.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

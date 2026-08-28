@@ -1,0 +1,23 @@
+{
+  "id": "character:blue-fin",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "blue-fin",
+  "canonical_name_key": "character.blue-fin.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.blue-fin.name.common",
+        "name_type": "common",
+        "since": "anime-episode:317"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:317"
+      }
+    ]
+  },
+  "relations": []
+}

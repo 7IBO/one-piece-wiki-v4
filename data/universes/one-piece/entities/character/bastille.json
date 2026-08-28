@@ -1,0 +1,46 @@
+{
+  "id": "character:bastille",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bastille",
+  "canonical_name_key": "character.bastille.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bastille.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.bastille.epithet.shark-cutter",
+        "since": "manga-chapter:717"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 500000000
+      }
+    ],
+    "height": [
+      {
+        "value": 291,
+        "source": "databook-card:0887"
+      }
+    ],
+    "birthday": {
+      "value": "07-14"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

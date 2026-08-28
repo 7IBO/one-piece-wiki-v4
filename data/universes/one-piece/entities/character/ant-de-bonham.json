@@ -1,0 +1,28 @@
+{
+  "id": "character:ant-de-bonham",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "ant-de-bonham",
+  "canonical_name_key": "character.ant-de-bonham.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.ant-de-bonham.name.common",
+        "name_type": "common",
+        "since": "anime-episode:780"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:780"
+      }
+    ],
+    "age": [
+      {
+        "value": 22
+      }
+    ]
+  },
+  "relations": []
+}

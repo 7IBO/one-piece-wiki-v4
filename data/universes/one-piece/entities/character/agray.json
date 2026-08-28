@@ -1,0 +1,21 @@
+{
+  "id": "character:agray",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "agray",
+  "canonical_name_key": "character.agray.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.agray.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

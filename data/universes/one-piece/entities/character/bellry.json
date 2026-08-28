@@ -1,0 +1,28 @@
+{
+  "id": "character:bellry",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bellry",
+  "canonical_name_key": "character.bellry.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bellry.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "cook"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

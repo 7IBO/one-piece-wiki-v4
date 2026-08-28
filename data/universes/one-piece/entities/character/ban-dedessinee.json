@@ -1,0 +1,23 @@
+{
+  "id": "character:ban-dedessinee",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "ban-dedessinee",
+  "canonical_name_key": "character.ban-dedessinee.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.ban-dedessinee.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:823"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:823"
+      }
+    ]
+  },
+  "relations": []
+}

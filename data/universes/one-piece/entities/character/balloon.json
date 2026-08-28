@@ -1,0 +1,21 @@
+{
+  "id": "character:balloon",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "balloon",
+  "canonical_name_key": "character.balloon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.balloon.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

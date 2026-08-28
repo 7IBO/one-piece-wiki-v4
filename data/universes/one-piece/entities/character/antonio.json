@@ -1,0 +1,26 @@
+{
+  "id": "character:antonio",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "antonio",
+  "canonical_name_key": "character.antonio.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.antonio.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:497"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:497"
+      }
+    ],
+    "birthday": {
+      "value": "01-21"
+    }
+  },
+  "relations": []
+}

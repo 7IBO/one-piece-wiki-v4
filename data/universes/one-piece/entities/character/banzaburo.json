@@ -1,0 +1,23 @@
+{
+  "id": "character:banzaburo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "banzaburo",
+  "canonical_name_key": "character.banzaburo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.banzaburo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:960"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:960"
+      }
+    ]
+  },
+  "relations": []
+}

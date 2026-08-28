@@ -1,0 +1,31 @@
+{
+  "id": "character:barry",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "barry",
+  "canonical_name_key": "character.barry.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.barry.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:552"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:552"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:552"
+      }
+    ]
+  },
+  "relations": []
+}

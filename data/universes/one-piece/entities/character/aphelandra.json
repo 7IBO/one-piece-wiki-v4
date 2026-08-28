@@ -1,0 +1,26 @@
+{
+  "id": "character:aphelandra",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "aphelandra",
+  "canonical_name_key": "character.aphelandra.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.aphelandra.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:514"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:514"
+      }
+    ],
+    "birthday": {
+      "value": "08-01"
+    }
+  },
+  "relations": []
+}

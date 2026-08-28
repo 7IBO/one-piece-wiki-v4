@@ -1,0 +1,35 @@
+{
+  "id": "character:amazon",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "amazon",
+  "canonical_name_key": "character.amazon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.amazon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:238"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:238"
+      }
+    ],
+    "height": [
+      {
+        "value": 120,
+        "source": "databook-card:0281"
+      }
+    ],
+    "birthday": {
+      "value": "08-04"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

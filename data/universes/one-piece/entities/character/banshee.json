@@ -1,0 +1,23 @@
+{
+  "id": "character:banshee",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "banshee",
+  "canonical_name_key": "character.banshee.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.banshee.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:552"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:552"
+      }
+    ]
+  },
+  "relations": []
+}

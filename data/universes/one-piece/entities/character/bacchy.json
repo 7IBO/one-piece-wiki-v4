@@ -1,0 +1,26 @@
+{
+  "id": "character:bacchy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bacchy",
+  "canonical_name_key": "character.bacchy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bacchy.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:43"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:43"
+      }
+    ],
+    "birthday": {
+      "value": "07-01"
+    }
+  },
+  "relations": []
+}

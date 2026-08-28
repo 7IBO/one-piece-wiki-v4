@@ -1,0 +1,26 @@
+{
+  "id": "character:mr-9",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "mr-9",
+  "canonical_name_key": "character.mr-9.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.mr-9.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:103"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:103"
+      }
+    ],
+    "birthday": {
+      "value": "09-27"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "character:bat-man-viz-batman-funimation",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bat-man-viz-batman-funimation",
+  "canonical_name_key": "character.bat-man-viz-batman-funimation.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bat-man-viz-batman-funimation.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:914"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:914"
+      }
+    ]
+  },
+  "relations": []
+}

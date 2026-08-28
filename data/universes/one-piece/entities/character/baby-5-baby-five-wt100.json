@@ -1,0 +1,41 @@
+{
+  "id": "character:baby-5-baby-five-wt100",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "baby-5-baby-five-wt100",
+  "canonical_name_key": "character.baby-5-baby-five-wt100.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.baby-5-baby-five-wt100.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:682"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:682"
+      }
+    ],
+    "age": [
+      {
+        "value": 24,
+        "source": "sbs:volume-75"
+      }
+    ],
+    "height": [
+      {
+        "value": 181,
+        "source": "databook-card:0812"
+      }
+    ],
+    "birthday": {
+      "value": "05-15"
+    },
+    "blood_type": {
+      "value": "XF"
+    }
+  },
+  "relations": []
+}

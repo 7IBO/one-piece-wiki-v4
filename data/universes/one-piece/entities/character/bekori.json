@@ -1,0 +1,23 @@
+{
+  "id": "character:bekori",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bekori",
+  "canonical_name_key": "character.bekori.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bekori.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1097"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1097"
+      }
+    ]
+  },
+  "relations": []
+}

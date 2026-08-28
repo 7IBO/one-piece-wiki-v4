@@ -1,0 +1,23 @@
+{
+  "id": "character:beak-remark",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "beak-remark",
+  "canonical_name_key": "character.beak-remark.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.beak-remark.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:599"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:599"
+      }
+    ]
+  },
+  "relations": []
+}

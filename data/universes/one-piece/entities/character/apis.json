@@ -1,0 +1,23 @@
+{
+  "id": "character:apis",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "apis",
+  "canonical_name_key": "character.apis.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.apis.name.common",
+        "name_type": "common",
+        "since": "anime-episode:54"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:54"
+      }
+    ]
+  },
+  "relations": []
+}

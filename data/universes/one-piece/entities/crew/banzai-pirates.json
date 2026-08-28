@@ -1,0 +1,16 @@
+{
+  "id": "crew:banzai-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "banzai-pirates",
+  "canonical_name_key": "crew.banzai-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.banzai-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "character:aruyutayan-v",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "aruyutayan-v",
+  "canonical_name_key": "character.aruyutayan-v.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.aruyutayan-v.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:292"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:292"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "character:anba",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "anba",
+  "canonical_name_key": "character.anba.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.anba.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:969"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:969"
+      }
+    ]
+  },
+  "relations": []
+}

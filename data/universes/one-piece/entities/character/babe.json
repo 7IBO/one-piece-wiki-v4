@@ -1,0 +1,52 @@
+{
+  "id": "character:babe",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "babe",
+  "canonical_name_key": "character.babe.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.babe.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:160"
+      },
+      {
+        "value_key": "character.babe.name.mr-4",
+        "name_type": "alias",
+        "since": "manga-chapter:160"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.babe.epithet.catcher-killing-babe",
+        "since": "databook-card:0180"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:160"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 3200000,
+        "since": "databook-card:0180"
+      }
+    ],
+    "height": [
+      {
+        "value": 218,
+        "source": "databook-card:0180"
+      }
+    ],
+    "birthday": {
+      "value": "06-19"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

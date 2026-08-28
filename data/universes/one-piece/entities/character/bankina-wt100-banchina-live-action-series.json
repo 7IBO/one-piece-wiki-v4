@@ -1,0 +1,26 @@
+{
+  "id": "character:bankina-wt100-banchina-live-action-series",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bankina-wt100-banchina-live-action-series",
+  "canonical_name_key": "character.bankina-wt100-banchina-live-action-series.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bankina-wt100-banchina-live-action-series.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:41"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:41"
+      }
+    ],
+    "birthday": {
+      "value": "12-17"
+    }
+  },
+  "relations": []
+}

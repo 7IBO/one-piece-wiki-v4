@@ -1,0 +1,26 @@
+{
+  "id": "character:a-a-a",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "a-a-a",
+  "canonical_name_key": "character.a-a-a.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.a-a-a.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 2200000
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "character:bacura-viz-funimation-bakula-funimation-subtitles",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bacura-viz-funimation-bakula-funimation-subtitles",
+  "canonical_name_key": "character.bacura-viz-funimation-bakula-funimation-subtitles.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bacura-viz-funimation-bakula-funimation-subtitles.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "birthday": {
+      "value": "11-29"
+    }
+  },
+  "relations": []
+}

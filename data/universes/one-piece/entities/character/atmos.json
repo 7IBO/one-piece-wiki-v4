@@ -1,0 +1,40 @@
+{
+  "id": "character:atmos",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "atmos",
+  "canonical_name_key": "character.atmos.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.atmos.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.atmos.epithet.water-buffalo",
+        "since": "manga-chapter:556"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "birthday": {
+      "value": "03-19"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:556"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,46 @@
+{
+  "id": "character:albion",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "albion",
+  "canonical_name_key": "character.albion.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.albion.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:600"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.albion.epithet.gashed-albion",
+        "since": "manga-chapter:600"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:600"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 92000000,
+        "since": "manga-chapter:600"
+      }
+    ],
+    "birthday": {
+      "value": "11-09"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:600"
+      }
+    ]
+  },
+  "relations": []
+}

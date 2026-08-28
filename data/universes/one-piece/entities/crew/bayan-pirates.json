@@ -1,0 +1,16 @@
+{
+  "id": "crew:bayan-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "bayan-pirates",
+  "canonical_name_key": "crew.bayan-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.bayan-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

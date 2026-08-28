@@ -1,0 +1,28 @@
+{
+  "id": "character:ain",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "ain",
+  "canonical_name_key": "character.ain.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.ain.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:691"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:691"
+      }
+    ],
+    "height": [
+      {
+        "value": 174
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "character:balong",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "balong",
+  "canonical_name_key": "character.balong.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.balong.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

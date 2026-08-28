@@ -1,0 +1,32 @@
+{
+  "id": "character:ratherby-seifer",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "ratherby-seifer",
+  "canonical_name_key": "character.ratherby-seifer.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.ratherby-seifer.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:528"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:528"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 15000000,
+        "since": "manga-chapter:549"
+      }
+    ],
+    "birthday": {
+      "value": "01-31"
+    }
+  },
+  "relations": []
+}

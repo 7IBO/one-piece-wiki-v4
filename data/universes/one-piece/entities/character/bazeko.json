@@ -1,0 +1,23 @@
+{
+  "id": "character:bazeko",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bazeko",
+  "canonical_name_key": "character.bazeko.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bazeko.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:668"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:668"
+      }
+    ]
+  },
+  "relations": []
+}

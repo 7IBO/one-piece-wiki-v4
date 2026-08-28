@@ -1,0 +1,21 @@
+{
+  "id": "character:benevolent-king-of-the-waves",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "benevolent-king-of-the-waves",
+  "canonical_name_key": "character.benevolent-king-of-the-waves.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.benevolent-king-of-the-waves.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

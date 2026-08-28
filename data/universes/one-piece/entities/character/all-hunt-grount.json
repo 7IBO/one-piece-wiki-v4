@@ -1,0 +1,29 @@
+{
+  "id": "character:all-hunt-grount",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "all-hunt-grount",
+  "canonical_name_key": "character.all-hunt-grount.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.all-hunt-grount.name.common",
+        "name_type": "common",
+        "since": "anime-episode:780"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:780"
+      }
+    ],
+    "age": [
+      {
+        "value": 17,
+        "source": "anime-episode:780"
+      }
+    ]
+  },
+  "relations": []
+}

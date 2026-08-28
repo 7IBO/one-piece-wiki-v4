@@ -1,0 +1,23 @@
+{
+  "id": "character:baggaly-wt100",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "baggaly-wt100",
+  "canonical_name_key": "character.baggaly-wt100.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.baggaly-wt100.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:561"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:561"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "character:abdullah",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "abdullah",
+  "canonical_name_key": "character.abdullah.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.abdullah.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:704"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:704"
+      }
+    ]
+  },
+  "relations": []
+}

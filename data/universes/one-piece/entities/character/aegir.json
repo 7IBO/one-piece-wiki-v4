@@ -1,0 +1,23 @@
+{
+  "id": "character:aegir",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "aegir",
+  "canonical_name_key": "character.aegir.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.aegir.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1134"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1134"
+      }
+    ]
+  },
+  "relations": []
+}

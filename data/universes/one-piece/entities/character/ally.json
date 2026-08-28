@@ -1,0 +1,23 @@
+{
+  "id": "character:ally",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "ally",
+  "canonical_name_key": "character.ally.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.ally.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:658"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:658"
+      }
+    ]
+  },
+  "relations": []
+}

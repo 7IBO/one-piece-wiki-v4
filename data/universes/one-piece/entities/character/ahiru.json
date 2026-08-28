@@ -1,0 +1,23 @@
+{
+  "id": "character:ahiru",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "ahiru",
+  "canonical_name_key": "character.ahiru.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.ahiru.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:905"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:905"
+      }
+    ]
+  },
+  "relations": []
+}

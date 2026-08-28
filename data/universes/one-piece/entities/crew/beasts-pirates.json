@@ -1,0 +1,17 @@
+{
+  "id": "crew:beasts-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "beasts-pirates",
+  "canonical_name_key": "crew.beasts-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.beasts-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:595"
+      }
+    ]
+  },
+  "relations": []
+}

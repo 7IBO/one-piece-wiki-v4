@@ -1,0 +1,38 @@
+{
+  "id": "character:bentag",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bentag",
+  "canonical_name_key": "character.bentag.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bentag.name.common",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.bentag.epithet.misunderstanding"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 9000000
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

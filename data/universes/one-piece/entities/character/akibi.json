@@ -1,0 +1,23 @@
+{
+  "id": "character:akibi",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "akibi",
+  "canonical_name_key": "character.akibi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.akibi.name.common",
+        "name_type": "common",
+        "since": "anime-episode:139"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:139"
+      }
+    ]
+  },
+  "relations": []
+}

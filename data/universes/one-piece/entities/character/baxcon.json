@@ -1,0 +1,31 @@
+{
+  "id": "character:baxcon",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "baxcon",
+  "canonical_name_key": "character.baxcon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.baxcon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:718"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:718"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:889"
+      }
+    ]
+  },
+  "relations": []
+}

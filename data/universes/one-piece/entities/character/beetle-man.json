@@ -1,0 +1,23 @@
+{
+  "id": "character:beetle-man",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "beetle-man",
+  "canonical_name_key": "character.beetle-man.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.beetle-man.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:983"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:983"
+      }
+    ]
+  },
+  "relations": []
+}
