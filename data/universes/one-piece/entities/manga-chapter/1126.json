@@ -9,7 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.1126.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2024-09-16",
+      "territory": "jp"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-volume",
+      "target": "volume:111"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1155"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1156"
+    }
+  ]
 }

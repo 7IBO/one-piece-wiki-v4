@@ -11,14 +11,25 @@
       "value_key": "manga-chapter.1053.title"
     },
     "released_at": {
-      "value": "2022-07-25",
+      "value": "2022-06-20",
       "territory": "jp"
+    },
+    "page_count": {
+      "value": 17
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:wano-country"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:104"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1080"
     }
   ]
 }

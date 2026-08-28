@@ -9,6 +9,13 @@
     },
     "title_key": {
       "value_key": "manga-chapter.1183.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2026-05-25",
+      "territory": "jp"
     }
   },
   "relations": []

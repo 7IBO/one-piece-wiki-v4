@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.1124.title"
+    },
+    "page_count": {
+      "value": 13
+    },
+    "released_at": {
+      "value": "2024-08-26",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:egghead"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:111"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1154"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1155"
     }
   ]
 }

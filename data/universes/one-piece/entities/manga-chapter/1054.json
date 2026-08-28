@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.1054.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2022-07-25",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:wano-country"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:104"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1081"
     }
   ]
 }
