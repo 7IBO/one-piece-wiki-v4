@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.829.title"
+    },
+    "page_count": {
+      "value": 18
+    },
+    "released_at": {
+      "value": "2016-06-20",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:whole-cake-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:83"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:788"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:789"
     }
   ]
 }

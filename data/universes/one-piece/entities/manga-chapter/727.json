@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.727.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2013-11-11",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:dressrosa"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:73"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:657"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:659"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:921"
     }
   ]
 }

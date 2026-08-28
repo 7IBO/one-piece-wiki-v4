@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.977.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2020-04-13",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:wano-country"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:97"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:981"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:982"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:983"
     }
   ]
 }

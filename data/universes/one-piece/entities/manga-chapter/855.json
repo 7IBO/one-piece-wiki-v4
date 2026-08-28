@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.855.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2017-02-13",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:whole-cake-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:85"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:823"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:824"
     }
   ]
 }

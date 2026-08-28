@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.944.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2019-06-03",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:wano-country"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:94"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:942"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:943"
     }
   ]
 }

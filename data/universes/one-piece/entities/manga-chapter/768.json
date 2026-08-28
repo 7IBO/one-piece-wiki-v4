@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.768.title"
+    },
+    "page_count": {
+      "value": 15
+    },
+    "released_at": {
+      "value": "2014-11-22",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:dressrosa"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:77"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:707"
     }
   ]
 }

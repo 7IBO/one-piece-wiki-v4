@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.962.title"
+    },
+    "page_count": {
+      "value": 13
+    },
+    "released_at": {
+      "value": "2019-11-18",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:wano-country"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:95"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:961"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:962"
     }
   ]
 }

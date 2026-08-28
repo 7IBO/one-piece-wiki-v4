@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.758.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2014-09-01",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:dressrosa"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:76"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:694"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:696"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:697"
     }
   ]
 }

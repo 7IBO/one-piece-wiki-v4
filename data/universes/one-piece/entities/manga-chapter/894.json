@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.894.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2018-02-10",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:whole-cake-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:89"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:865"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:868"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:869"
     }
   ]
 }

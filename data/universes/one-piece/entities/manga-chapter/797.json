@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.797.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2015-08-24",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:dressrosa"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:80"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:741"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:742"
     }
   ]
 }

@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.832.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2016-07-16",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:whole-cake-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:83"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:792"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:793"
     }
   ]
 }
