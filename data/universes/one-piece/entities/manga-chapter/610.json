@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.610.title"
+    },
+    "page_count": {
+      "value": 15
+    },
+    "released_at": {
+      "value": "2011-01-17",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:fish-man-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:62"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:529"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:7"
     }
   ]
 }

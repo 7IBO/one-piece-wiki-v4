@@ -12,12 +12,28 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2006-03-06",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:enies-lobby"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:42"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:286"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:287"
     }
   ]
 }

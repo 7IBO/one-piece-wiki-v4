@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.343.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2004-11-01",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:water-7"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:36"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:242"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:243"
     }
   ]
 }

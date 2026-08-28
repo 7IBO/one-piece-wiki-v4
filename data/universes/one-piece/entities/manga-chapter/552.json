@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.552.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2009-08-03",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:marineford"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:57"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:454"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:461"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:462"
     }
   ]
 }

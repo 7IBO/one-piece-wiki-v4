@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.536.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2009-03-23",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:impel-down"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:55"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:437"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:438"
     }
   ]
 }

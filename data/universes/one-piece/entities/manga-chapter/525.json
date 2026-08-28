@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.525.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2008-12-08",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:impel-down"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:54"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:422"
     }
   ]
 }

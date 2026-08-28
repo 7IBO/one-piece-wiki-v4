@@ -26,6 +26,7 @@
 export const ALL_SLOTS = [
   'narrative',
   'position',
+  'adaptations',
   'contents',
   'members',
   'former',
@@ -100,6 +101,7 @@ export const GENERIC_LAYOUT: EntityLayout = {
       main: [
         'narrative',
         'position',
+        'adaptations',
         'contents',
         'members',
         'former',
@@ -107,8 +109,12 @@ export const GENERIC_LAYOUT: EntityLayout = {
         'cast',
         'gallery',
         'connections',
+        // The appearance LIST needs the wide column: its rows carry a
+        // thumbnail, a number, a title and the arc, and an aside
+        // truncates the title to nothing.
+        'appearances',
       ],
-      aside: ['sheet', 'availability', 'appearances'],
+      aside: ['sheet', 'availability'],
     },
   ],
 };
@@ -123,19 +129,26 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
   // each property's own history) fills the aside.
   character: {
     figure: 'poster',
-    // `design/v2` Main.dc.html: `IDENTITÉ` over three columns, the
-    // prose over five, the appearance ledger over four; then the crew
-    // and the relations sharing a row; then the gallery.
+    // `design/v2` Main.dc.html, row by row: `IDENTITÉ` (3) beside the
+    // bounty chronology (5) and an appearance HISTOGRAM (4); the crew
+    // (7) beside the relations (5); then the appearance LIST over
+    // EIGHT, beside the spoiler panel (4).
+    //
+    // The plate's third block of the first row is the histogram, a
+    // module we do not build — so that row is read as 4 + 8 rather
+    // than left with a four-column hole. What the `appearances` slot
+    // holds is the LIST, and the list is the plate's span 8: at four
+    // it truncated every chapter title to « They Call Him "… ».
     bands: [
       {
         kind: 'grid',
         cells: [
-          { slot: 'sheet', span: 3 },
-          { slot: 'narrative', span: 5 },
-          { slot: 'appearances', span: 4 },
-          { slot: 'affiliations', span: 6 },
-          { slot: 'connections', span: 6 },
-          { slot: 'gallery', span: 12 },
+          { slot: 'sheet', span: 4 },
+          { slot: 'narrative', span: 8 },
+          { slot: 'affiliations', span: 7 },
+          { slot: 'connections', span: 5 },
+          { slot: 'appearances', span: 8 },
+          { slot: 'gallery', span: 4 },
         ],
       },
     ],
@@ -150,12 +163,12 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
       {
         kind: 'grid',
         cells: [
-          { slot: 'sheet', span: 3 },
-          { slot: 'narrative', span: 5 },
-          { slot: 'appearances', span: 4 },
+          { slot: 'sheet', span: 4 },
+          { slot: 'narrative', span: 8 },
           { slot: 'former', span: 6 },
           { slot: 'connections', span: 6 },
-          { slot: 'gallery', span: 12 },
+          { slot: 'appearances', span: 8 },
+          { slot: 'gallery', span: 4 },
         ],
       },
     ],
@@ -167,12 +180,12 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
       {
         kind: 'grid',
         cells: [
-          { slot: 'sheet', span: 3 },
-          { slot: 'narrative', span: 5 },
-          { slot: 'appearances', span: 4 },
+          { slot: 'sheet', span: 4 },
+          { slot: 'narrative', span: 8 },
           { slot: 'former', span: 6 },
           { slot: 'connections', span: 6 },
-          { slot: 'gallery', span: 12 },
+          { slot: 'appearances', span: 8 },
+          { slot: 'gallery', span: 4 },
         ],
       },
     ],
@@ -193,10 +206,10 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
           { slot: 'sheet', span: 3 },
           { slot: 'narrative', span: 5 },
           { slot: 'members', span: 4 },
-          { slot: 'former', span: 4 },
-          { slot: 'connections', span: 4 },
-          { slot: 'appearances', span: 4 },
-          { slot: 'gallery', span: 12 },
+          { slot: 'former', span: 6 },
+          { slot: 'connections', span: 6 },
+          { slot: 'appearances', span: 8 },
+          { slot: 'gallery', span: 4 },
         ],
       },
     ],
@@ -209,8 +222,8 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
       {
         kind: 'split',
         side: 'start',
-        main: ['narrative', 'contents', 'cast', 'connections'],
-        aside: ['sheet', 'appearances', 'gallery'],
+        main: ['narrative', 'contents', 'appearances', 'cast', 'connections'],
+        aside: ['sheet', 'gallery'],
       },
     ],
   },
@@ -220,8 +233,8 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
       {
         kind: 'split',
         side: 'start',
-        main: ['narrative', 'contents', 'cast', 'connections'],
-        aside: ['sheet', 'appearances', 'gallery'],
+        main: ['narrative', 'contents', 'appearances', 'cast', 'connections'],
+        aside: ['sheet', 'gallery'],
       },
     ],
   },
@@ -238,27 +251,53 @@ const LAYOUTS: Readonly<Record<string, EntityLayout>> = {
   },
   // A numbered instalment: its position in the arc is the first thing
   // on the page, stills next, then who appears in it.
+  // Chapitre.dc.html: the position ribbons lead at full width (a
+  // chapter is WHERE YOU ARE before it is anything else), then the
+  // sheet, the prose and the anime adaptation share the grid.
   'manga-chapter': {
     figure: 'poster',
     bands: [
       { kind: 'full', slots: ['position'] },
       {
-        kind: 'split',
-        side: 'end',
-        main: ['narrative', 'gallery', 'cast', 'connections'],
-        aside: ['sheet', 'availability', 'appearances'],
+        kind: 'grid',
+        cells: [
+          { slot: 'sheet', span: 4 },
+          { slot: 'narrative', span: 4 },
+          { slot: 'adaptations', span: 4 },
+          { slot: 'cast', span: 6 },
+          { slot: 'connections', span: 6 },
+          { slot: 'availability', span: 4 },
+          { slot: 'appearances', span: 4 },
+          { slot: 'gallery', span: 4 },
+        ],
       },
     ],
   },
+  // The mirror of the chapter, and for the same reason: an episode is
+  // WHERE YOU ARE before it is anything else, so its position ribbon
+  // leads at full width and the rest shares the plate's grid.
+  //
+  // The difference is which way the adaptation points. On a chapter
+  // the `adapted-by` panel names the episodes; on an episode the same
+  // fact arrives as an INCOMING edge and lands in `appearances` — the
+  // chapters this episode adapts. That list is the substance of the
+  // page, so it takes the plate's span 8, not an aside.
   'anime-episode': {
     figure: 'plate',
     bands: [
       { kind: 'full', slots: ['position'] },
       {
-        kind: 'split',
-        side: 'end',
-        main: ['gallery', 'narrative', 'cast', 'connections'],
-        aside: ['sheet', 'availability', 'appearances'],
+        kind: 'grid',
+        cells: [
+          { slot: 'sheet', span: 4 },
+          { slot: 'narrative', span: 4 },
+          { slot: 'adaptations', span: 4 },
+          { slot: 'appearances', span: 8 },
+          { slot: 'availability', span: 4 },
+          { slot: 'cast', span: 6 },
+          { slot: 'connections', span: 6 },
+          { slot: 'gallery', span: 12 },
+        ],
       },
     ],
   },

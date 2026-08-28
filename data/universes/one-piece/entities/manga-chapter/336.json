@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.336.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2004-09-13",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:water-7"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:35"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:238"
     }
   ]
 }

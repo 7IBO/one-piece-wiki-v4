@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.148.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2000-08-21",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:drum-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:17"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:88"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:87"
     }
   ]
 }

@@ -12,12 +12,28 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2010-05-31",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:post-war"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:60"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:500"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:501"
     }
   ]
 }

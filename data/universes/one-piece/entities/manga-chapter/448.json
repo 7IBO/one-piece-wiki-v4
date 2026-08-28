@@ -12,12 +12,28 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2007-03-12",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:thriller-bark"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:46"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:342"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:343"
     }
   ]
 }

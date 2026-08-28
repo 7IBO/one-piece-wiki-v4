@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.625.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2011-05-23",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:fish-man-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:63"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:545"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:546"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:13"
     }
   ]
 }

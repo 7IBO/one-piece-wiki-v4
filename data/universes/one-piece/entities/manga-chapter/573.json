@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.573.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2010-02-08",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:marineford"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:58"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:482"
     }
   ]
 }

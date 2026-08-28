@@ -12,12 +12,28 @@
     },
     "page_count": {
       "value": 17
+    },
+    "released_at": {
+      "value": "2009-10-05",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:marineford"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:57"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:456"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:468"
     }
   ]
 }

@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.101.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "1999-08-23",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:reverse-mountain"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:12"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:68"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:61"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:55"
     }
   ]
 }

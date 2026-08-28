@@ -9,12 +9,39 @@
     },
     "title_key": {
       "value_key": "manga-chapter.645.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2011-11-07",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:fish-man-island"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:65"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:565"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:566"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:567"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:20"
     }
   ]
 }

@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.655.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2012-02-06",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:punk-hazard"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:66"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:574"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:579"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:580"
     }
   ]
 }

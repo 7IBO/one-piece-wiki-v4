@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.440.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2007-01-06",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:post-enies-lobby"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:45"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:324"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:325"
     }
   ]
 }

@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.213.title"
+    },
+    "page_count": {
+      "value": 23
+    },
+    "released_at": {
+      "value": "2001-12-28",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:arabasta"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:23"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:128"
     }
   ]
 }

@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.467.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2007-08-20",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:thriller-bark"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:48"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:362"
     }
   ]
 }

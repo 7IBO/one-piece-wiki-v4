@@ -12,12 +12,36 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2003-12-15",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:long-ring-long-land"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:32"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:195"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:203"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:207"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:225"
     }
   ]
 }
