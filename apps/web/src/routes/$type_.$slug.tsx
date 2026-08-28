@@ -227,7 +227,8 @@ export function EntityArticle(
 
       <SectionNav view={view} current={section} />
 
-      <div className='page-column space-y-12 pt-9'>
+      {/* The plates open the grid 14px under the band, not 36px. */}
+      <div className='page-column space-y-3 pt-3.5'>
         {bands.map((band, index) => <Band key={index} band={band} view={view} />)}
         {bands.length === 0 ? <EmptySection /> : null}
         <ContributeStrip type={view.type} slug={view.slug} />
@@ -632,10 +633,15 @@ function SectionHead(
   { children, count }: { readonly children: string; readonly count?: number; },
 ): ReactElement {
   return (
-    <h2 className='display mb-3.5 flex items-baseline gap-2 border-b border-line pb-2 text-[15px] font-bold uppercase tracking-[0.04em] text-fg'>
+    // The plates title a panel with the SAME 9px annotation label they
+    // use everywhere else — `FICHE`, `PORTEURS SUCCESSIFS`,
+    // `CE QUI DEVIENT VRAI DANS CE CHAPITRE`. A 15px display heading
+    // inside a 14px-padded card made the title compete with the data
+    // it introduces.
+    <h2 className='label-xs mb-3 flex items-baseline gap-2 border-b border-line pb-2'>
       {children}
       {count !== undefined
-        ? <span className='font-sans text-xs font-medium tabular-nums text-faint'>{count}</span>
+        ? <span className='tabular-nums text-faint/70'>{count}</span>
         : null}
     </h2>
   );

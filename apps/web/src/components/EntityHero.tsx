@@ -57,7 +57,11 @@ export function EntityHero(
     ? entityId.split(':', 2)
     : [entityType, entityId];
   return (
-    <div className='relative isolate w-full overflow-hidden'>
+    // The plate closes the band with a hairline (`border-bottom: 1px
+    // solid #1e222a`). Without it a type that authors no sub-pages —
+    // and so renders no tab row — left the hero bleeding into the
+    // panels with nothing between them.
+    <div className='relative isolate w-full overflow-hidden border-b border-line'>
       <div className='pointer-events-none absolute inset-0 -z-10'>
         <EntityArt
           entityId={entityId}
