@@ -7512,6 +7512,69 @@ UI primitives), Tailwind CSS v4 (styling).
 heavy Octokit ecosystem). The team must be comfortable with TanStack
 Start's relative novelty.
 
+## ADR-122 — L'ancre anti-spoil d'un conteneur est DÉRIVÉE de son contenu
+
+**Date**: 2026-08-28
+
+**Context**: `first_appearance_source` vient des axes `since` portés par
+l'entité elle-même. Un conteneur — arc, saga, équipage — n'en porte
+aucun, donc n'avait pas d'ancre : **46 arcs sur 50**. Un arc sans ancre
+s'affiche ENTIÈREMENT à n'importe quel curseur, et la page
+`arc/wano-country` déballait ses 149 chapitres, titres compris, à un
+lecteur au chapitre 100. C'est la promesse centrale du produit qui
+fuyait, et le test qui aurait dû l'attraper couvrait « ce stub-là a un
+`since` », pas « les arcs sont anti-spoilés ».
+
+**Options considérées**:
+
+1. **Écrire les ancres à la main** dans les 46 fichiers JSON. Explicite,
+   mais périmé dès qu'un chapitre rejoint l'arc, et 46 valeurs à tenir
+   à jour à la main.
+2. **Dériver à la construction**, dans `db-builder/extract.ts`.
+   L'artefact SQLite est déjà dérivé et jetable ; la vérité reste les
+   arêtes `part-of-arc` du JSON.
+3. **Rendre l'ancre multi-valuée** (une par axe) et gater comme le fait
+   déjà `search_gates`.
+
+**Décision**: l'option 2. Une entité **sans ancre** vers laquelle
+pointent des arêtes venant de sources **à identifiant numérique**
+s'ouvre à la plus petite d'entre elles.
+
+Trois précisions qui font la règle :
+
+- **« à identifiant numérique », pas « de type ordinal ».** Le test est
+  celui de `progress.ts#isSourceVisible` : `manga-chapter:1044` se
+  compare au curseur, `arc:wano-country` non. La première version de la
+  règle excluait les types « ordinaux » et sautait donc les 50 arcs en
+  silence — un arc DÉCLARE `arc_number`. Avoir un numéro et être
+  filtrable par le curseur sont deux choses différentes.
+- **Le plus petit se calcule PAR TYPE.** Comparer `anime-episode:92` à
+  `manga-chapter:155` les triait alphabétiquement et ancrait
+  `arc:arabasta` sur l'épisode 92.
+- **Ce qui est écrit à la main reste la vérité.** Sur les 4 arcs qui
+  portaient déjà une ancre, la dérivation retombe exactement dessus,
+  ce qui la valide au lieu de la contredire.
+
+**Conséquences**: 44 arcs sur 50 sont ancrés. Les 6 restants n'ont
+encore aucune source connue — ils restent ouverts, ce qui est honnête :
+un conteneur dont on ignore le contenu n'a rien sur quoi se fermer. Le
+builder continue d'ignorer quels types sont des AXES : c'est une
+liaison de présentation (ADR-091), et `search.ts` prend soin de ne pas
+la connaître non plus.
+
+**Limite assumée, à reprendre**: **26 conteneurs sur 44 sont alimentés
+par DEUX médias** et le modèle à une seule ancre ne peut pas exprimer
+« s'ouvre au chapitre 155 ET à l'épisode 92 ». On retient le type qui
+fournit le plus d'arêtes — le média dans lequel le conteneur est le
+mieux documenté, une ancre tirée d'un index partiel valant moins qu'une
+ancre tirée d'un index complet. La vraie correction est l'option 3 :
+`search_gates` est déjà `(doc_id, source_type, ordinal)` avec plusieurs
+lignes par document, et unifier la page sur cette même règle ferait
+enfin coïncider le filtrage de la recherche et celui des pages. Parqué
+dans `IDEAS.md`.
+
+---
+
 ---
 
 ## Template for new entries

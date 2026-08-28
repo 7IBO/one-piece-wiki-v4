@@ -166,6 +166,119 @@ function collectSinceSources(data: Record<string, unknown>): string[] {
   return [...sources];
 }
 
+/**
+ * Une entité est-elle SA PROPRE ancre ?
+ *
+ * Le test est celui du filtre de lecture (`progress.ts#isSourceVisible`)
+ * et pas un autre : un identifiant à suffixe NUMÉRIQUE
+ * (`manga-chapter:1044`) se compare au curseur, donc l'entité se ferme
+ * sur elle-même ; un identifiant à slug (`arc:wano-country`) ne le peut
+ * pas et reste visible quoi qu'il arrive.
+ *
+ * C'était le piège de la première version de cette règle : elle
+ * excluait les types « ordinaux », et un arc DÉCLARE `arc_number` —
+ * donc les 50 arcs étaient sautés en silence, précisément ceux qu'il
+ * fallait ancrer. Avoir un numéro et être filtrable par le curseur
+ * sont deux choses différentes.
+ *
+ * Le builder n'a pas à savoir quels types sont des AXES : c'est une
+ * liaison de présentation (ADR-091), et `search.ts` prend soin de ne
+ * pas la connaître non plus.
+ */
+function isNumberedSource(id: string): boolean {
+  const colon = id.indexOf(':');
+  return colon !== -1 && /^\d+$/.test(id.slice(colon + 1));
+}
+
+/**
+ * L'ancre anti-spoil d'un CONTENEUR, dérivée de ce qu'il contient.
+ *
+ * Le problème mesuré : 46 arcs sur 50 n'avaient pas de
+ * `first_appearance_source`, parce que cette valeur vient des axes
+ * `since` portés par l'entité elle-même — et un arc n'en porte aucun.
+ * Un arc sans ancre s'affiche ENTIÈREMENT à n'importe quel curseur :
+ * la page `arc/wano-country` déballait ses 149 chapitres à un lecteur
+ * au chapitre 100. C'est la promesse centrale du produit qui fuyait.
+ *
+ * La règle, et elle ne nomme aucun type ni aucune relation : **une
+ * entité sans ancre, vers laquelle pointent des arêtes venant de
+ * sources ORDINALES, s'ouvre à la plus petite d'entre elles.** Un arc
+ * s'ouvre à son premier chapitre, un volume au sien, une saga au
+ * premier chapitre de ses arcs.
+ *
+ * Deux garde-fous :
+ *
+ * - on ne dérive QUE pour les types non ordinaux. Un épisode est
+ *   lui-même une source : il se ferme sur son propre id, sur SON axe.
+ *   Lui ajouter l'ancre du chapitre qu'il adapte lui imposerait en
+ *   plus le curseur manga, ce qui changerait le comportement de 1145
+ *   épisodes sans que personne l'ait demandé ;
+ * - on ne dérive QUE si l'ancre est absente. Une valeur écrite à la
+ *   main reste la vérité — et sur les 4 arcs qui en portaient une, la
+ *   dérivation retombe exactement dessus, ce qui la valide au lieu de
+ *   la contredire.
+ *
+ * 17 arcs n'ont encore aucun chapitre connu : ils restent sans ancre,
+ * ce qui est honnête — un conteneur dont on ignore le contenu n'a rien
+ * sur quoi se fermer.
+ */
+function deriveContainerAnchors(
+  rows: readonly EntityRow[],
+  relations: readonly RelationRow[],
+): void {
+  const byId = new Map(rows.map((row) => [row.id, row]));
+  // Par CONTENEUR puis par TYPE de source : « le plus petit » n'a de
+  // sens qu'à l'intérieur d'un même axe. Comparer `anime-episode:92` à
+  // `manga-chapter:155` revenait à les trier alphabétiquement, et
+  // `arabasta` s'ancrait sur l'épisode 92.
+  const perType = new Map<string, Map<string, { id: string; ordinal: number; count: number; }>>();
+  for (const edge of relations) {
+    const from = edge.source_entity_id;
+    const colon = from.indexOf(':');
+    if (!isNumberedSource(from) || !byId.has(from)) continue;
+    const sourceType = from.slice(0, colon);
+    const ordinal = Number(from.slice(colon + 1));
+    const byTypeForTarget = perType.get(edge.target_entity_id)
+      ?? new Map<string, { id: string; ordinal: number; count: number; }>();
+    perType.set(edge.target_entity_id, byTypeForTarget);
+    const current = byTypeForTarget.get(sourceType);
+    if (current === undefined) byTypeForTarget.set(sourceType, { id: from, ordinal, count: 1 });
+    else {
+      current.count += 1;
+      if (ordinal < current.ordinal) {
+        current.id = from;
+        current.ordinal = ordinal;
+      }
+    }
+  }
+
+  for (const row of rows) {
+    if (row.first_appearance_source !== null) continue;
+    if (isNumberedSource(row.id)) continue;
+    const candidates = perType.get(row.id);
+    if (candidates === undefined || candidates.size === 0) continue;
+    // Plusieurs médias décrivent le même conteneur — 26 arcs sur 44
+    // portent à la fois des chapitres et des épisodes. On retient
+    // celui qui fournit LE PLUS d'arêtes : c'est le média dans lequel
+    // ce conteneur est le mieux documenté, et une ancre tirée d'un
+    // index partiel vaut moins qu'une ancre tirée d'un index complet.
+    // Départage par id de type, pour que la construction reste
+    // déterministe.
+    let best: { id: string; ordinal: number; count: number; } | null = null;
+    let bestType = '';
+    for (const [sourceType, candidate] of candidates) {
+      if (
+        best === null || candidate.count > best.count
+        || (candidate.count === best.count && sourceType < bestType)
+      ) {
+        best = candidate;
+        bestType = sourceType;
+      }
+    }
+    if (best !== null) row.first_appearance_source = best.id;
+  }
+}
+
 function extractEntityRow(entity: LoadedEntity): EntityRow {
   const sources = collectSinceSources(entity.data).sort(compareSources);
   return {
@@ -378,6 +491,11 @@ export function extract(
   // double-stored symmetric edges). Runs after the entity loop because
   // the dedup needs the full set of stored edges.
   out.relations.push(...materializeInverses(out.relations, catalogue));
+
+  // Derived: a container's anti-spoiler anchor comes from what it
+  // CONTAINS. Runs before the canon-scope pass, which reads the anchor
+  // this one may have just written.
+  deriveContainerAnchors(out.entities, out.relations);
 
   // Derived: an entity's primary canon scope is the canon_scope declared
   // by the source where it first appears. Resolved here because it needs

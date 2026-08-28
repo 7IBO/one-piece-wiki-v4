@@ -443,6 +443,33 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(new Set(heldNumbers).size).toBe(heldNumbers.length);
   });
 
+  test('a container is gated by what it CONTAINS (ADR-122)', async () => {
+    // Le défaut mesuré : 46 arcs sur 50 n'avaient aucune ancre, donc
+    // s'affichaient entièrement à n'importe quel curseur — la page
+    // `arc/wano-country` déballait ses 149 chapitres à un lecteur au
+    // chapitre 100. L'ancre est maintenant dérivée à la construction.
+    const { buildEntityView } = await import('../views.ts');
+    const beyond = await buildEntityView('arc', 'wano-country', 'en', cursor(100), null);
+    expect(beyond?.kind).toBe('gated');
+    // Et elle s'ouvre bien une fois la position atteinte.
+    const reached = await buildEntityView('arc', 'wano-country', 'en', cursor(1050), null);
+    expect(reached?.kind).toBe('entity');
+    // Sans curseur, le wiki montre tout — c'est le défaut assumé.
+    const open = await buildEntityView('arc', 'wano-country', 'en', cursor(), null);
+    expect(open?.kind).toBe('entity');
+  });
+
+  test('a hand-written anchor is never overwritten by the derived one', async () => {
+    // `arc:baratie` portait `manga-chapter:42` avant la dérivation, et
+    // la dérivation retombe exactement dessus — ce qui la valide au
+    // lieu de la contredire. Le test vaut pour la règle, pas pour la
+    // valeur : ce qui est écrit à la main reste la vérité.
+    const gated = await import('../views.ts').then((m) =>
+      m.buildEntityView('arc', 'baratie', 'en', cursor(10), null)
+    );
+    expect(gated?.kind).toBe('gated');
+  });
+
   test('ordinal ribbons stay lean — no thumbnail, no container per sibling', async () => {
     // `sourceItem` and `appearanceItem` are split on purpose: the LIST
     // form of an appearance resolves an image and an arc per row, and

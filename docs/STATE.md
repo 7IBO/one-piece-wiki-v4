@@ -145,7 +145,27 @@ dépunaisé de #157 n'est pas sur `main`.
 Il reste **11 tranches** d'enrichissement à lancer (chapitres 101 à
 1131), une requête rendue par chapitre.
 
-## 2026-08-27 — 46 arcs sur 50 ne sont pas anti-spoilés — À DÉCIDER
+## 2026-08-28 — Les arcs sont anti-spoilés — RÉGLÉ (ADR-122)
+
+L'ancre d'un conteneur est maintenant DÉRIVÉE de son contenu, à la
+construction. **44 arcs sur 50 sont ancrés** (contre 4), les 6 restants
+n'ayant encore aucune source connue.
+
+Deux pièges rencontrés en chemin, tous deux silencieux :
+
+1. la première règle excluait les types « ordinaux » — et un arc
+   DÉCLARE `arc_number`, donc les 50 arcs étaient sautés sans un mot.
+   Le bon test est celui de `isSourceVisible` : un identifiant à
+   suffixe NUMÉRIQUE se compare au curseur, un identifiant à slug non ;
+2. « le plus petit » se calcule PAR TYPE. Comparer `anime-episode:92` à
+   `manga-chapter:155` les triait alphabétiquement et ancrait
+   `arc:arabasta` sur l'épisode 92.
+
+Limite assumée et parquée dans `IDEAS.md` : 26 conteneurs sur 44 sont
+alimentés par deux médias, et une ancre unique ne peut pas dire
+« chapitre 155 ET épisode 92 ».
+
+## 2026-08-27 — 46 arcs sur 50 ne sont pas anti-spoilés — RÉGLÉ, voir ci-dessus
 
 **C'est la promesse centrale du produit qui fuit, et je ne l'ai pas
 corrigé dans la PR qui l'a révélée.**
