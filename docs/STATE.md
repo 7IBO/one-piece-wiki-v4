@@ -15,9 +15,59 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-27 (ADR-120 substrat rendu pour les
-chapitres ; ADR-121 plage ouverte ; 114 volumes importés ; fuite
-anti-spoil sur 46 arcs en attente d'arbitrage)
+**Last updated**: 2026-08-28 (analyse du canevas design →
+`docs/DESIGN_PLAN.md` ; apparitions en liste à hauteur constante ;
+fuite anti-spoil sur 46 arcs toujours en attente d'arbitrage)
+
+## 2026-08-28 — Le canevas design analysé, et le plan par entité
+
+`docs/DESIGN_PLAN.md` — écrit après avoir **rendu** les planches et
+**compté** le corpus. Deux constats à retenir avant de toucher à l'UI :
+
+1. **`design/` (v1) n'est pas une spec.** Son propre `canvas.json`
+   dit : « 4 directions, même page (Luffy), mêmes données […] Les
+   variables sont la couleur et le layout », avec une note de risque
+   par direction. **Les implémenter serait implémenter des
+   propositions écartées.** Seul `design/v2` fait foi.
+2. **Le corpus est le goulot, pas le layout.** Les planches qui
+   montrent le mieux le design décrivent des types à **10** entités
+   (`character`), **1** (`crew`) et **1** (`devil-fruit`). Les types
+   qui ont de la masse sont les types ORDINAUX — 1193 chapitres, 1174
+   épisodes, 115 volumes, 50 arcs — et ce sont eux qui viennent d'être
+   faits. 39 types sont déclarés au schéma ; 12 existent.
+
+Donc « faire les autres entités » se scinde en (A) du layout, petit,
+et (B) de la donnée, qui est le vrai travail. Le détail des deux plans
+est dans `DESIGN_PLAN.md`.
+
+### Fait : les apparitions en LISTE (plan A, point 1)
+
+`components/SourceRow.tsx`. Conséquence non prévue : la liste ne tient
+pas dans un aside — le créneau `appearances` était en `span 4`, la
+colonne de l'HISTOGRAMME de la planche, alors que la LISTE y est en
+`span 8`. Huit gabarits corrigés, et `anime-episode` a reçu la grille
+miroir de celle du chapitre.
+
+## 2026-08-28 — 194 chapitres sur 700 ont des adaptations non contiguës
+
+Mesuré sur l'artefact courant, en passant. Deux familles distinctes,
+qu'il ne faut pas confondre :
+
+- **des récapitulatifs légitimes** — les chapitres 35 à 66 portent
+  tous un `anime-episode:46` ou `:47` en plus de leur épisode réel, et
+  les épisodes 46/47 SONT des récapitulatifs de East Blue. `adapted-by`
+  sans qualificatif ne distingue pas « adapte » de « récapitule », et
+  la page les affiche à égalité ;
+- **des valeurs manifestement fausses** — `manga-chapter:598` (« Two
+  Years Later », adapté par les ép. 517-518) porte aussi
+  `anime-episode:1`, et `manga-chapter:1` porte `[4, 504, 878]`.
+
+`parseAdaptedEpisodes` balaie tout le champ `anime` avec
+`/\bEpisode\s+(\d+)\b/gi` : il ramasse toute mention numérotée où
+qu'elle soit. **Impossible de trancher sans l'HTML rendu** — Fandom est
+refusé par la politique réseau de cette session — donc il faut passer
+par le workflow CI et journaliser le champ brut AVANT de corriger la
+règle. Ne pas deviner.
 
 ### Chaîne de merge en cours
 
