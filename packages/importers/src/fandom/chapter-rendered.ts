@@ -70,6 +70,37 @@ export function parseAdaptedEpisodes(raw: string): readonly number[] {
 }
 
 /**
+ * Un chapitre est adapté par des épisodes PROCHES : mesuré sur les
+ * 1145 chapitres du corpus, l'écart médian entre le premier et le
+ * dernier est de **1**. Au-delà de 20, ce n'est plus de
+ * l'entrelacement.
+ *
+ * 134 chapitres (11,7 %) dépassent ce seuil, et ils recouvrent deux
+ * familles qu'on ne peut PAS départager depuis le corpus :
+ *
+ * - des récapitulatifs légitimes — les ch. 35 à 66 portent tous
+ *   l'ép. 46 ou 47, qui SONT des récapitulatifs de East Blue ;
+ * - des valeurs fausses — `manga-chapter:1` porte `[4, 504, 878]`,
+ *   `manga-chapter:598` porte l'épisode 1.
+ *
+ * `parseAdaptedEpisodes` balaie tout le champ, donc il ramasse toute
+ * mention numérotée où qu'elle soit. Trancher demande de VOIR le champ
+ * brut, et Fandom n'est joignable que depuis la CI : d'où cet
+ * avertissement, qui recopie la valeur telle qu'elle a été lue.
+ *
+ * Le seuil ne filtre rien et ne corrige rien — il rend seulement le
+ * cas visible dans le journal d'import.
+ */
+const SUSPICIOUS_SPREAD = 20;
+
+export function isSuspiciousSpread(episodes: readonly number[]): boolean {
+  const first = episodes[0];
+  const last = episodes[episodes.length - 1];
+  if (first === undefined || last === undefined) return false;
+  return last - first > SUSPICIOUS_SPREAD;
+}
+
+/**
  * The Japanese title as rendered. A ruby annotation flattens to
  * `BASE （ FURIGANA ）` in the html — the reading is a pronunciation
  * aid, not part of the title, so it is dropped the same way
@@ -133,6 +164,12 @@ export function enrichChapterFromRendered(html: string): ChapterEnrichment | nul
       relations.push({ type: 'adapted-by', target: `anime-episode:${episode}` });
     }
     if (episodes.length === 0) warnings.push(`no episode number in anime field: "${animeRaw}"`);
+    else if (isSuspiciousSpread(episodes)) {
+      // On ne peut pas corriger la règle sans voir ce qu'elle a lu.
+      warnings.push(
+        `suspicious anime spread ${episodes[0]}..${episodes[episodes.length - 1]}: "${animeRaw}"`,
+      );
+    }
   }
 
   const key = `manga-chapter.${number}.title`;

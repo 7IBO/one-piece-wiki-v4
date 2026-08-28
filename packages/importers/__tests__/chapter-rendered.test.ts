@@ -13,6 +13,7 @@ import {
   type ChapterEnrichment,
   enrichChapterFromRendered,
   isSeededChapterTitle,
+  isSuspiciousSpread,
   parseAdaptedEpisodes,
   stripFurigana,
 } from '../src/fandom/chapter-rendered.ts';
@@ -155,5 +156,26 @@ describe('isSeededChapterTitle', () => {
     expect(isSeededChapterTitle(1044, 'Chapter 1044 of the Saga')).toBe(false);
     // A different chapter's seed is not THIS chapter's seed.
     expect(isSeededChapterTitle(1044, 'Chapter 1045')).toBe(false);
+  });
+});
+
+describe('écart suspect entre épisodes adaptés', () => {
+  // Mesuré sur les 1145 chapitres du corpus : l'écart médian entre le
+  // premier et le dernier épisode est de 1. Le seuil ne filtre rien —
+  // il rend le cas VISIBLE dans le journal d'import, parce que
+  // trancher demande de voir le champ brut et que Fandom n'est
+  // joignable que depuis la CI.
+  it('laisse passer le cas normal, y compris un entrelacement', () => {
+    expect(isSuspiciousSpread([517, 518])).toBe(false);
+    expect(isSuspiciousSpread([906, 908])).toBe(false);
+    expect(isSuspiciousSpread([4])).toBe(false);
+    expect(isSuspiciousSpread([])).toBe(false);
+  });
+
+  it('signale les deux familles réellement observées', () => {
+    // Un récapitulatif légitime : les ch. 35-66 portent l'ép. 46.
+    expect(isSuspiciousSpread([15, 46])).toBe(true);
+    // Une valeur fausse : manga-chapter:1 porte [4, 504, 878].
+    expect(isSuspiciousSpread([4, 504, 878])).toBe(true);
   });
 });
