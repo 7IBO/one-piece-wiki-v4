@@ -938,8 +938,17 @@ function MemberCard(
   { member, former }: { readonly member: MemberRowView; readonly former: boolean; },
 ): ReactElement {
   const locale = useLocale();
+  const role = [member.role, member.rank].filter((part) => part !== null).join(' · ');
+  // `design/v2` Equipage.dc.html puts the ROLE on the portrait as a
+  // badge and leaves the membership period its own line under the
+  // name. One slot, one rule: the badge shows the STATUS when there
+  // is one — « former » outranks « Captain », a reader needs to know
+  // they left before they need to know what they did — and otherwise
+  // the role. Whatever the badge does not take stays in the meta line,
+  // so nothing is ever dropped.
+  const status = former ? t(locale, 'formerTag') : null;
   const metaParts = [
-    [member.role, member.rank].filter((part) => part !== null).join(' · '),
+    status !== null ? role : '',
     member.since !== null ? `${t(locale, 'since')} ${member.since.name}` : '',
     member.until !== null ? `${t(locale, 'until')} ${member.until.name}` : '',
   ].filter((part) => part !== '');
@@ -952,7 +961,7 @@ function MemberCard(
       name={member.chip.name}
       secondary={member.secondary}
       meta={meta === '' ? null : meta}
-      tag={former ? t(locale, 'formerTag') : null}
+      tag={status ?? (role === '' ? null : role)}
       stat={member.stat}
       dimmed={former}
     />

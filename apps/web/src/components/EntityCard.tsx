@@ -128,7 +128,13 @@ export function EntityCard(
               ? (
                 <span
                   title={meta}
-                  className='mt-0.5 block truncate text-[10.5px] text-faint'
+                  // Two lines rather than an ellipsis, for the same
+                  // reason as the name above: « since Romance Da… »
+                  // names no chapter, and « Captain · since The
+                  // Meanest M… » names neither the role nor the
+                  // moment. The membership period is the one thing
+                  // the plate's card is FOR.
+                  className='mt-0.5 line-clamp-2 block text-[10.5px] leading-snug text-faint'
                 >
                   {meta}
                 </span>
