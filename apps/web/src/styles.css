@@ -50,6 +50,11 @@
   --color-surface-2: oklch(0.221 0.015 262); /* #171b22 */
   --color-line: oklch(0.251 0.016 264); /* #1e222a */
   --color-line-strong: oklch(0.309 0.015 264); /* #2c3038 */
+  /* Le filet INTERNE d'une liste dense : un cran sous `line`, parce
+   * qu'une liste de trente lignes séparées par le filet de panneau se
+   * lit comme un tableau. `design/v2` : #191c23 pour les rangées
+   * d'apparitions, #1e222a pour ce qui délimite un bloc. */
+  --color-line-soft: oklch(0.226 0.013 264); /* #191c23 */
 
   --color-fg: oklch(0.949 0.006 265); /* 16.9:1 */
   --color-muted: oklch(0.661 0.020 258); /* 6.3:1 */
@@ -296,6 +301,7 @@ body {
     --color-tint: var(--tint-accent, oklch(0.630 0.178 31));
     --color-line: var(--tint-line, oklch(0.251 0.016 264));
     --color-line-strong: var(--tint-line-strong, oklch(0.309 0.015 264));
+    --color-line-soft: var(--tint-line-soft, oklch(0.226 0.013 264));
     --color-surface: var(--tint-surface, oklch(0.182 0.011 268));
   }
 

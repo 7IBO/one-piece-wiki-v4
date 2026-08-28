@@ -31,19 +31,19 @@ de « Gomu Gomu no Mi · depuis toujours »).
 `design/v2/canvas.json` porte douze annotations qui sont des
 **décisions**, pas des légendes. État vérifié :
 
-| règle                                                                                                          | état                             |
-| -------------------------------------------------------------------------------------------------------------- | -------------------------------- |
-| Facettes issues du SCHÉMA, jamais écrites à la main                                                            | ✅                               |
-| Apparitions : un onglet par type de source                                                                     | ✅ `SourceTabs`                  |
-| L'or partout (valeur courante, onglet actif, liens) ; vermillon **réservé** à la rupture                       | ✅ thème v12                     |
-| Cinq classes de ratio dérivées des pixels puis du rôle                                                         | ✅ `image-ratio.ts`              |
-| Les sorties récentes masquent les TITRES, montrent numéro + date                                               | ✅                               |
-| **Anti-spoil : aucun compteur d'absence, aucune tuile pointillée, aucune barre grisée au-delà de la position** | ⚠️ à auditer                      |
-| **Apparitions en LISTE : vignette au ratio natif, toutes à la MÊME HAUTEUR**                                   | ❌ on rend une grille de numéros |
-| **Langue : liste maison ouverte, la courante en or avec sa coche**                                             | ❌ on bascule entre 2 langues    |
-| Progression : par ARC groupé par SAGA, pas par numéro                                                          | ❌ bloqué (0 saga)               |
+| règle                                                                                                          | état                          |
+| -------------------------------------------------------------------------------------------------------------- | ----------------------------- |
+| Facettes issues du SCHÉMA, jamais écrites à la main                                                            | ✅                            |
+| Apparitions : un onglet par type de source                                                                     | ✅ `SourceTabs`               |
+| L'or partout (valeur courante, onglet actif, liens) ; vermillon **réservé** à la rupture                       | ✅ thème v12                  |
+| Cinq classes de ratio dérivées des pixels puis du rôle                                                         | ✅ `image-ratio.ts`           |
+| Les sorties récentes masquent les TITRES, montrent numéro + date                                               | ✅                            |
+| **Anti-spoil : aucun compteur d'absence, aucune tuile pointillée, aucune barre grisée au-delà de la position** | ⚠️ à auditer                   |
+| **Apparitions en LISTE : vignette au ratio natif, toutes à la MÊME HAUTEUR**                                   | ✅ `SourceRow`                |
+| **Langue : liste maison ouverte, la courante en or avec sa coche**                                             | ❌ on bascule entre 2 langues |
+| Progression : par ARC groupé par SAGA, pas par numéro                                                          | ❌ bloqué (0 saga)            |
 
-Les trois ❌ sont du travail identifié, pas des inconnues.
+Les ❌ restants sont du travail identifié, pas des inconnues.
 
 ## 3. Le comptage qui décide du plan
 
@@ -81,10 +81,18 @@ très différente, et il faut le dire avant de commencer :
 
 ## 4. Plan (A) — layout, par ordre de rendement
 
-1. **Apparitions en liste à hauteur constante.** La règle du manifeste
-   qu'on enfreint le plus visiblement. Une vignette 2:3 fait 27 px de
-   large, une 16:9 en fait 78, et les deux tiennent sur la même ligne
-   sans déformation. Touche toutes les pages entité d'un coup.
+1. ~~**Apparitions en liste à hauteur constante.**~~ **Fait.**
+   `components/SourceRow.tsx`, aux valeurs exactes de `Main.dc.html`.
+   Une conséquence non prévue mais nécessaire : la liste ne tient pas
+   dans un aside. Le créneau `appearances` passait en `span 4` (la
+   colonne de l'HISTOGRAMME de la planche) alors que la LISTE y est en
+   `span 8` ; à 4 colonnes le titre du chapitre était tronqué à
+   « They Call Him "… ». Les gabarits `character`, `crew`,
+   `organization`, `devil-fruit`, `anime-episode`, `arc`, `saga` et le
+   gabarit générique ont été corrigés en conséquence — et
+   `anime-episode` a reçu la grille miroir de celle du chapitre, parce
+   que sur un épisode l'adaptation arrive comme arête ENTRANTE et
+   atterrit justement dans `appearances`.
 2. **Équipage** (`Equipage.dc.html`) : adhésions par INTERVALLES
    (« à bord ch. 8 → 69, puis depuis le ch. 95 »), badges
    « Dates connues » / « Revenue » / « Présence attestée », chronologie

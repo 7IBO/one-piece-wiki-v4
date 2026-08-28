@@ -64,6 +64,7 @@ import { HeroStats } from '../components/HeroStats';
 import { HoverPreview } from '../components/HoverPreview';
 import { IncompletePanel } from '../components/IncompletePanel';
 import { ShowMoreList } from '../components/ShowMoreList';
+import { SourceRow } from '../components/SourceRow';
 import { SourceTabs } from '../components/SourceTabs';
 import { type ChromeKey, t } from '../lib/chrome';
 import {
@@ -148,6 +149,13 @@ const ROW_LIMIT = 6;
 const CARD_LIMIT = 12;
 /** Collapsed budget of a compact number grid (chapters, episodes…). */
 const NUMBER_LIMIT = 36;
+/**
+ * Budget replié d'une liste d'APPARITIONS. Une rangée fait ~54 px
+ * (vignette 40 + 2×7 de marge), donc douze remplissent déjà un écran —
+ * là où trente-six numéros tenaient dans un bloc. Le reste part
+ * derrière « voir les N autres », comme partout ailleurs.
+ */
+const APPEARANCE_LIMIT = 12;
 
 /**
  * Column count of a full-width row list, derived from how many rows
@@ -1295,14 +1303,9 @@ function AppearancesSection(
               </p>
               <div className='mt-2.5'>
                 <ShowMoreList
-                  limit={NUMBER_LIMIT}
-                  listClassName='flex flex-wrap gap-1.5'
-                  items={group.items.map((item) => (
-                    <SourceNumberCell
-                      key={item.chip.id}
-                      item={item}
-                    />
-                  ))}
+                  limit={APPEARANCE_LIMIT}
+                  listClassName='flex flex-col'
+                  items={group.items.map((item) => <SourceRow key={item.chip.id} item={item} />)}
                 />
               </div>
             </>

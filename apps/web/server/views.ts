@@ -319,6 +319,21 @@ export type SourceItemView = {
   readonly chip: EntityChip;
   readonly number: number | null;
   readonly current: boolean;
+  /**
+   * Thumbnail for the LIST form of an appearance row, at its own
+   * ratio (`design/v2` § images: « la vignette garde son ratio
+   * d'origine mais toutes ont la MEME HAUTEUR »).
+   *
+   * Null on the ordinal RIBBONS, which stay number grids and must not
+   * pay a relation read per sibling — a Wano ribbon is 149 items.
+   */
+  readonly image: ImageView | null;
+  /**
+   * The container this source sits in (its arc), for the row's right
+   * column. Spoiler-gated like any other edge, and null when the
+   * corpus does not place it.
+   */
+  readonly context: EntityChip | null;
 };
 
 export type CastGroupView = {
@@ -1948,7 +1963,57 @@ function sourceItem(
     chip: chipForRow(target, cat, locale, cursor),
     number: ordinalOf(target, cat),
     current: target.id === currentId,
+    image: null,
+    context: null,
   };
+}
+
+/**
+ * The same item with what the LIST form draws: a native-ratio
+ * thumbnail and the arc the source sits in.
+ *
+ * Split from `sourceItem` on purpose rather than hidden behind a
+ * flag: it costs ONE relation read per item, and the ordinal ribbons
+ * — which render hundreds of siblings as bare numbers — must not pay
+ * it for two fields they never draw.
+ */
+function appearanceItem(
+  target: EntityRow,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+  scope: string | null,
+): SourceItemView {
+  const base = sourceItem(target, '', cat, locale, cursor);
+  const edges = db.listRelationsFrom(target.id);
+  return {
+    ...base,
+    image: resolveEntityImage(target, edges, cursor, scope, locale, base.chip.name),
+    context: containerChip(edges, cat, locale, cursor),
+  };
+}
+
+/**
+ * The arc an ordered source belongs to, or null. Both spellings the
+ * corpus uses are accepted — a chapter is `part-of-arc`, an event
+ * `occurs-during-arc` — and the edge goes through the same visibility
+ * gate as everything else, so a reader who has not reached the arc
+ * does not learn its name from an appearance row.
+ */
+function containerChip(
+  edges: readonly RelationRow[],
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): EntityChip | null {
+  const edge = edges.find((candidate) =>
+    (candidate.relation_type === 'part-of-arc'
+      || candidate.relation_type === 'occurs-during-arc')
+    && isEdgeVisible(candidate, cursor)
+  );
+  if (edge === undefined) return null;
+  const row = db.getEntityById(edge.target_entity_id);
+  return row === null ? null : chipForRow(row, cat, locale, cursor);
 }
 
 const byNumber = (a: SourceItemView, b: SourceItemView): number =>
@@ -2172,6 +2237,7 @@ function buildAppearances(
   cat: ValidatedCatalogue,
   locale: Locale,
   cursor: ProgressCursor,
+  scope: string | null,
 ): readonly AppearanceGroupView[] {
   const groups = new Map<string, {
     key: string;
@@ -2185,7 +2251,7 @@ function buildAppearances(
     const target = db.getEntityById(edge.target_entity_id);
     if (target === null || ordinalPropertyOf(cat, target.type) === null) continue;
     const key = `${edge.relation_type}:${target.type}`;
-    const item = sourceItem(target, '', cat, locale, cursor);
+    const item = appearanceItem(target, cat, locale, cursor, scope);
     const bucket = groups.get(key);
     if (bucket === undefined) {
       groups.set(key, {
@@ -2517,7 +2583,7 @@ export async function buildEntityView(
   // Appearances take what the template left; whatever they take is in
   // turn withheld from the generic connection sections, so a fact is
   // never rendered twice — and never dropped either.
-  const appearances = buildAppearances(edges, templateKeys, cat, locale, cursor);
+  const appearances = buildAppearances(edges, templateKeys, cat, locale, cursor, scope);
   const consumed = new Set(templateKeys);
   for (const group of appearances) consumed.add(group.key.split(':')[0] ?? group.key);
   const { properties, infobox: declaredInfobox } = buildPropertyViews(
