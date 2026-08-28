@@ -48,6 +48,43 @@ colonne de l'HISTOGRAMME de la planche, alors que la LISTE y est en
 `span 8`. Huit gabarits corrigés, et `anime-episode` a reçu la grille
 miroir de celle du chapitre.
 
+## 2026-08-28 — Audit anti-spoil des compteurs — UN ARBITRAGE DE PLUS
+
+Plan A point 6, mesuré sur l'artefact courant.
+
+**Ce qui va bien.** Tous les compteurs de section comptent des
+tableaux **déjà filtrés** par le serveur. Le module des apparitions
+affiche la population VISIBLE au dénominateur (« 2 sur 201 » à
+`{manga: 200, anime: 100}`), et à `{manga: 100}` il **disparaît** au
+lieu de nommer des chapitres non lus. Les TITRES sont correctement
+masqués : à `{manga: 100}`, `manga-chapter:101` s'appelle
+« Chapter 101 ».
+
+**Ce qui ne va pas.** `buildTypeListView` et `buildHomeView` ne
+filtrent **pas** par curseur :
+
+| curseur                   | accueil : chapitres | `/manga-chapter` |
+| ------------------------- | ------------------: | ---------------: |
+| aucun                     |                1193 |             1193 |
+| `{manga: 100}`            |            **1193** |         **1193** |
+| `{manga: 100, anime: 50}` |            **1193** |         **1193** |
+
+Un lecteur au chapitre 100 voit donc **1093 tuiles neutres après sa
+position**. Le manifeste dit : « aucun compteur d'absence, aucune tuile
+pointillée, aucune barre grisée au-delà de la position ». C'est
+exactement ce que la règle nomme.
+
+**Ce n'est pas un bug à corriger seul, c'est un choix produit**, et il
+attend un arbitrage comme les trois autres :
+
+- **(a)** la liste s'arrête au curseur — le plus fidèle à la règle,
+  mais un lecteur au ch. 100 ne peut plus atteindre une page qu'il
+  connaît déjà par ailleurs ;
+- **(b)** la liste garde tout, sans compteur ni tuiles au-delà ;
+- **(c)** statu quo assumé : le NOMBRE de chapitres publiés est un fait
+  d'édition, pas un spoiler d'intrigue, et seuls les titres comptent.
+  C'est ce qui est implémenté aujourd'hui, sans avoir été décidé.
+
 ## 2026-08-28 — 194 chapitres sur 700 ont des adaptations non contiguës
 
 Mesuré sur l'artefact courant, en passant. Deux familles distinctes,
