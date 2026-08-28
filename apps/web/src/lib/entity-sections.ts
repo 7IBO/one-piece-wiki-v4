@@ -75,6 +75,34 @@ const SECTIONS: Readonly<Record<string, readonly EntitySection[]>> = {
     { id: 'gallery', labelKey: 'gallery', slots: ['gallery'] },
     { id: 'appearances', labelKey: 'appearances', slots: ['appearances'] },
   ],
+  // Fruit.dc.html carries a full tab row — `Porteurs 2`, `Techniques
+  // 47`, `Apparitions 318`. Only the ones we can fill are authored: a
+  // tab that resolves to nothing is worse than no tab, and
+  // `visibleSections` would drop it anyway.
+  'devil-fruit': [
+    { id: 'former-users', labelKey: 'formerUsers', slots: ['former'] },
+    { id: 'gallery', labelKey: 'gallery', slots: ['gallery'] },
+    { id: 'appearances', labelKey: 'appearances', slots: ['appearances', 'connections'] },
+  ],
+  // `contents` is deliberately NOT a sub-page here, and the first
+  // draft of this got it wrong: moving Wano's 149 chapters behind a
+  // tab left the arc overview holding a two-row data sheet and
+  // nothing else. The rule at the top of this file already says why —
+  // what stays on the overview is « the one module the type is really
+  // about », and an arc IS its chapters exactly as a crew IS its
+  // roster. Length is handled by `ShowMoreList`, which is what it is
+  // for.
+  arc: [
+    { id: 'gallery', labelKey: 'gallery', slots: ['gallery'] },
+    { id: 'appearances', labelKey: 'appearances', slots: ['appearances', 'connections'] },
+  ],
+  saga: [
+    { id: 'gallery', labelKey: 'gallery', slots: ['gallery'] },
+    { id: 'appearances', labelKey: 'appearances', slots: ['appearances', 'connections'] },
+  ],
+  volume: [
+    { id: 'gallery', labelKey: 'gallery', slots: ['gallery'] },
+  ],
 };
 
 export function sectionsFor(type: string): readonly EntitySection[] {
