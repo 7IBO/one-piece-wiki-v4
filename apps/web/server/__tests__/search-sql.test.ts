@@ -51,19 +51,21 @@ describe('the spoiler gate', () => {
     expect(GATE_PREDICATE).toContain('g.ordinal > ?');
   });
 
-  test('binds three parameters per axis, in axis order', () => {
+  test("lie quatre paramètres par axe, dans l'ordre des axes", () => {
     const params = gateParams({ manga: 100, anime: null });
-    expect(params).toHaveLength(CURSOR_AXES.length * 3);
-    expect(params.slice(0, 3)).toEqual([100, 'manga-chapter', 100]);
-    // An unset axis binds null, so `? IS NOT NULL` makes it inert.
-    expect(params.slice(3)).toEqual([null, 'anime-episode', null]);
+    expect(params).toHaveLength(CURSOR_AXES.length * 4);
+    // Le premier dit qu'un filtrage s'applique du tout.
+    expect(params.slice(0, 4)).toEqual([1, 'manga-chapter', 100, 100]);
+    // L'axe vide est BLOQUANT : `? IS NULL` rend tout « au-delà ».
+    expect(params.slice(4)).toEqual([1, 'anime-episode', null, null]);
   });
 
-  test('an empty cursor filters nothing', () => {
-    expect(
-      gateParams({ manga: null, anime: null }).every((p) => p === null || typeof p === 'string'),
-    )
-      .toBe(true);
+  test('sans aucune position déclarée, le prédicat est inerte', () => {
+    // Le drapeau tombe à 0 sur chaque axe, donc aucun disjunct ne peut
+    // être vrai — c'est ce qui empêche l'axe vide de vider le site
+    // pour un premier visiteur.
+    const params = gateParams({ manga: null, anime: null });
+    expect(params.filter((_, i) => i % 4 === 0)).toEqual([0, 0]);
   });
 
   test('is applied in the WHERE clause of every pass, before any LIMIT', () => {

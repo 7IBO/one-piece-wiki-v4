@@ -43,15 +43,31 @@ describe('isSourceVisible', () => {
     expect(isSourceVisible('anime-episode:51', cursor)).toBe(false);
   });
 
-  test('unset axis, missing anchors and other source types pass', () => {
+  test('missing anchors and unfilterable source types pass', () => {
     expect(isSourceVisible(null, cursor)).toBe(true);
     expect(isSourceVisible(undefined, cursor)).toBe(true);
-    expect(isSourceVisible('manga-chapter:9999', EMPTY_CURSOR)).toBe(true);
-    expect(isSourceVisible('manga-chapter:9999', { manga: null, anime: 5 })).toBe(true);
     expect(isSourceVisible('film:red', cursor)).toBe(true);
     expect(isSourceVisible('sbs:volume-105', cursor)).toBe(true);
-    // Non-numeric slug on a bound axis stays visible (documented v1).
+    // Un slug non numérique sur un axe lié reste visible : il n'y a
+    // rien à comparer au curseur.
     expect(isSourceVisible('manga-chapter:special', cursor)).toBe(true);
+  });
+
+  test("un axe VIDE vaut zéro dès qu'une position est déclarée ailleurs", () => {
+    // C'est la promesse du produit. Avant, un lecteur au chapitre 100
+    // qui n'avait rien dit de l'anime se voyait offrir le titre de
+    // l'épisode 1071 — « Luffy's Peak - Attained! Gear 5 ».
+    expect(isSourceVisible('anime-episode:1071', { manga: 100, anime: null })).toBe(false);
+    expect(isSourceVisible('manga-chapter:9999', { manga: null, anime: 5 })).toBe(false);
+    // …et l'axe renseigné continue de filtrer normalement.
+    expect(isSourceVisible('anime-episode:5', { manga: null, anime: 5 })).toBe(true);
+  });
+
+  test('sans AUCUNE position déclarée, le wiki ne filtre rien', () => {
+    // Un premier visiteur n'a pas demandé à être protégé, et un site
+    // vide serait le mauvais accueil.
+    expect(isSourceVisible('manga-chapter:9999', EMPTY_CURSOR)).toBe(true);
+    expect(isSourceVisible('anime-episode:1176', EMPTY_CURSOR)).toBe(true);
   });
 });
 

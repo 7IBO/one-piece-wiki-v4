@@ -7575,6 +7575,57 @@ dans `IDEAS.md`.
 
 ---
 
+## ADR-123 — Un axe de curseur VIDE vaut zéro, pas l'infini
+
+**Date**: 2026-08-28
+
+**Context**: `isSourceVisible` traitait un axe non renseigné comme
+« pas de filtre » : `manga-chapter:9999` était visible pour un lecteur
+sans curseur manga. Conséquence mesurée sur un lecteur au **chapitre
+100 qui n'avait rien dit de l'anime** : les 1176 épisodes restaient
+visibles, titres compris — dont l'épisode 1071, « Luffy's Peak -
+Attained! Gear 5 ». La promesse centrale du site, prise en défaut de la
+manière la plus visible qui soit.
+
+**Options considérées**:
+
+1. **Statu quo** (axe vide = infini). Aucun lecteur mono-média n'est
+   protégé sur l'autre média.
+2. **Axe vide = zéro, toujours.** Un premier visiteur, qui n'a rien
+   déclaré, tomberait sur un site vide — le mauvais accueil.
+3. **Dériver l'axe vide de l'autre** via les arêtes `adapted-by` : un
+   lecteur au chapitre 1044 est « quelque part vers l'épisode 1071 ».
+4. **Axe vide = zéro dès qu'un autre axe est réglé**, sinon aucun
+   filtrage.
+
+**Décision**: l'option 4. **Déclarer une position, c'est déclarer toute
+sa position.** Un lecteur qui dit « chapitre 100 » et rien de l'anime
+n'a pas dit où il en était dans l'anime, et lui montrer tout est une
+réponse fausse à une question qu'il a posée. Un lecteur qui n'a RIEN
+déclaré est un cas différent : il n'a pas demandé à être protégé, et le
+défaut wiki (tout montrer) reste le bon accueil.
+
+L'option 3 est séduisante et c'est le vrai différenciateur du produit,
+mais elle repose sur `adapted-by`, dont **134 chapitres sur 1145**
+portent un ensemble aberrant (cf. `STATE.md`) : `manga-chapter:1` est
+« adapté par » l'épisode 878. Une dérivation bâtie sur cette donnée
+ouvrirait des pages au lieu d'en fermer. À reprendre une fois
+`adapted-by` fiable.
+
+**Conséquences**: la règle est écrite UNE fois, dans `isSourceVisible`,
+et le prédicat SQL de la recherche la reproduit mot pour mot — un
+paramètre de plus par axe, qui dit si un filtrage s'applique du tout.
+Sans lui, un curseur entièrement vide aurait vidé le site.
+
+Mesuré : à `{manga: 100}`, l'accueil passe de 1176 épisodes à **0**, et
+les 101 chapitres restent. Sans curseur, rien ne change.
+
+Le coût assumé : un lecteur qui ne suit que le manga ne voit plus rien
+du côté anime tant qu'il n'a pas donné sa position — ce qui coûte un
+clic, dans un dialogue qui propose déjà les deux axes.
+
+---
+
 ---
 
 ## Template for new entries

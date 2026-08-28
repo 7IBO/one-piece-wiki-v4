@@ -33,7 +33,7 @@
  * unfilterable anchor is a visible one.
  */
 import { searchTerms } from '@onepiece-wiki/schemas';
-import { CURSOR_AXES, type ProgressCursor } from './progress.ts';
+import { CURSOR_AXES, cursorActive, type ProgressCursor } from './progress.ts';
 
 /** Bindable SQL scalar. Mirrors what bun:sqlite accepts positionally. */
 export type SearchParam = string | number | null;
@@ -50,15 +50,23 @@ export const GATE_PREDICATE: string = `NOT EXISTS (
        WHERE g.doc_id = d.doc_id
          AND (${
   CURSOR_AXES
-    .map(() => `(? IS NOT NULL AND g.source_type = ? AND g.ordinal > ?)`)
+    .map(() => `(? = 1 AND g.source_type = ? AND (? IS NULL OR g.ordinal > ?))`)
     .join('\n           OR ')
 }))`;
 
-/** Positional parameters for {@link GATE_PREDICATE}, in axis order. */
+/**
+ * Positional parameters for {@link GATE_PREDICATE}, four per axis.
+ *
+ * Le premier dit si un filtrage s'applique DU TOUT. C'est ce qui
+ * permet à un axe laissé vide d'être bloquant (`? IS NULL` → tout est
+ * au-delà) sans que l'absence totale de curseur ne vide le site : la
+ * règle de `isSourceVisible`, mot pour mot, exprimée en SQL.
+ */
 export function gateParams(cursor: ProgressCursor): SearchParam[] {
+  const active = cursorActive(cursor) ? 1 : 0;
   return CURSOR_AXES.flatMap(({ axis, sourceType }) => {
     const limit = cursor[axis];
-    return [limit, sourceType, limit];
+    return [active, sourceType, limit, limit];
   });
 }
 

@@ -15,7 +15,20 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-28 (ADR-120 terminé : `released_at` complet
+**Last updated**: 2026-08-28 (ADR-122 ancrage dérivé des conteneurs,
+ADR-123 axe de curseur vide — les deux fuites anti-spoil sont fermées)
+
+## 2026-08-28 — L'axe de curseur vide — RÉGLÉ (ADR-123)
+
+Un axe non renseigné vaut désormais **zéro dès qu'un autre est réglé**,
+et l'absence totale de curseur ne filtre toujours rien. Mesuré : à
+`{manga: 100}`, l'accueil passe de **1176 épisodes à 0**.
+
+La dérivation manga↔anime via `adapted-by` — le vrai différenciateur —
+reste hors de portée tant que 134 chapitres sur 1145 portent un
+ensemble d'épisodes aberrant.
+
+**Last updated (précédent)**: 2026-08-28 (ADR-120 terminé : `released_at` complet
 sur les 1193 chapitres ; analyse du canevas design →
 `docs/DESIGN_PLAN.md` ; plan A épuisé ; quatre arbitrages en attente)
 
