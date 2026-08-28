@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.248.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2002-10-07",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:skypiea"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:27"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:778"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:162"
     }
   ]
 }

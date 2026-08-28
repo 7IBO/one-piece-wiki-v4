@@ -12,12 +12,24 @@
     },
     "page_count": {
       "value": 19
+    },
+    "released_at": {
+      "value": "2005-09-05",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:enies-lobby"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:40"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:267"
     }
   ]
 }

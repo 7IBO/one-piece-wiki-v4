@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.272.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2003-04-14",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:skypiea"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:29"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:174"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:178"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:179"
     }
   ]
 }

@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.312.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2004-03-01",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:long-ring-long-land"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:33"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:212"
     }
   ]
 }

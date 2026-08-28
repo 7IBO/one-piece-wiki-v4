@@ -9,12 +9,27 @@
     },
     "title_key": {
       "value_key": "manga-chapter.228.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2002-04-27",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:jaya"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:25"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:148"
     }
   ]
 }

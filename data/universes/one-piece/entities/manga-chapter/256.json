@@ -9,12 +9,35 @@
     },
     "title_key": {
       "value_key": "manga-chapter.256.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2002-12-02",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:skypiea"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:28"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:778"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:168"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:169"
     }
   ]
 }
