@@ -14,6 +14,13 @@
 export type HighlightRun = {
   readonly text: string;
   readonly match: boolean;
+  /**
+   * Offset of this run in the ORIGINAL label. It is the run's
+   * identity — « the piece starting at character 12 of this name » —
+   * so a caller keys on it rather than on the array index, which
+   * means nothing once the query changes and the cuts move.
+   */
+  readonly start: number;
 };
 
 function fold(value: string): string {
@@ -29,22 +36,22 @@ function fold(value: string): string {
  */
 export function highlightRuns(label: string, query: string): readonly HighlightRun[] {
   const needle = fold(query.trim());
-  if (needle === '') return [{ text: label, match: false }];
+  if (needle === '') return [{ text: label, match: false, start: 0 }];
   const hay = fold(label);
   // Folding can change length (a combining mark disappears), which
   // would slide every later index. Bail to the plain label rather
   // than highlighting the wrong letters.
-  if (hay.length !== label.length) return [{ text: label, match: false }];
+  if (hay.length !== label.length) return [{ text: label, match: false, start: 0 }];
   const runs: HighlightRun[] = [];
   let at = 0;
   for (;;) {
     const found = hay.indexOf(needle, at);
     if (found === -1) break;
-    if (found > at) runs.push({ text: label.slice(at, found), match: false });
-    runs.push({ text: label.slice(found, found + needle.length), match: true });
+    if (found > at) runs.push({ text: label.slice(at, found), match: false, start: at });
+    runs.push({ text: label.slice(found, found + needle.length), match: true, start: found });
     at = found + needle.length;
   }
-  if (runs.length === 0) return [{ text: label, match: false }];
-  if (at < label.length) runs.push({ text: label.slice(at), match: false });
+  if (runs.length === 0) return [{ text: label, match: false, start: 0 }];
+  if (at < label.length) runs.push({ text: label.slice(at), match: false, start: at });
   return runs;
 }
