@@ -33,7 +33,7 @@ export function ContributeStrip(
         href={`${base}/history`}
         target='_blank'
         rel='noreferrer'
-        className='rounded-md px-3.5 py-1.5 text-xs font-medium text-muted ring-1 ring-line transition-colors duration-150 hover:text-fg hover:ring-line-strong'
+        className='rounded-md px-3.5 py-1.5 text-xs font-medium text-muted ring-1 ring-line transition-colors duration-150 hover:text-fg'
       >
         {t(locale, 'contributeHistory')}
       </a>

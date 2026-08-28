@@ -195,6 +195,29 @@ export function unwrapRuby(value: string): string | null {
   return base === undefined || base === '' ? null : base;
 }
 
+/**
+ * Un champ d'infobox MULTI-VALEUR, coupé en lignes.
+ *
+ * Fandom empile plusieurs valeurs dans un seul champ avec `<br>` —
+ * `ename` liste le nom canonique puis une ligne par édition qui
+ * l'orthographie autrement, `alias` empile les surnoms. `cleanValue`
+ * transforme `<br>` en ESPACE, donc appelé sur un champ pareil il
+ * fond toutes les lignes en une seule chaîne : c'est ce qui a produit
+ * le slug `belle-mere-viz-media-bellemere-funimation-bell-mere-opcg`
+ * pour Bell-mère.
+ *
+ * À appeler AVANT `cleanValue`, sur la valeur brute — après, il n'y a
+ * plus de séparateur à trouver. Les listes wiki (`*`) et les vrais
+ * retours à la ligne comptent aussi comme des coupes : les trois
+ * apparaissent dans le corpus. Les lignes vides disparaissent.
+ */
+export function splitLines(value: string): readonly string[] {
+  return value
+    .split(/<br\s*\/?>|\n\s*\*\s*|\n/gi)
+    .map((line) => line.trim())
+    .filter((line) => line !== '');
+}
+
 export function cleanValue(value: string): string {
   return value
     // `<nowiki>` is an ESCAPE, not content: editors wrap punctuation in

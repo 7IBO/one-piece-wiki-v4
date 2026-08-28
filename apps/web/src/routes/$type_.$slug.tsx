@@ -50,7 +50,6 @@ import {
   type PropertyView,
   type RelationGroupView,
   type RelationItemView,
-  type SequenceView,
   type SourceItemView,
   type SourceTemplateView,
 } from '../api';
@@ -233,7 +232,7 @@ export function EntityArticle(
         name={view.name}
         image={view.image}
         figure={layout.figure}
-        nav={view.sequence === null ? null : <SequenceNav sequence={view.sequence} />}
+        sequence={view.sequence}
       >
         <Identity view={view} />
       </EntityHero>
@@ -385,13 +384,32 @@ function Identity({ view }: { readonly view: EntityView; }): ReactElement {
               </Link>
             </span>
           ))}
-          {view.sequence !== null
-            ? <span className='ml-2 tabular-nums text-gold/85'>№ {view.sequence.number}</span>
-            : null}
         </p>
-        <h1 className='display mt-1.5 text-[clamp(1.75rem,3.6vw,2.625rem)] font-extrabold leading-[1.06] tracking-[-0.03em] text-fg'>
-          {view.name}
-        </h1>
+        {
+          /*
+           * La planche compose le titre EN DEUX PIÈCES :
+           * `<span 42px #6a7280>1044</span>` puis
+           * `<span 34px>Le Guerrier de la Libération</span>`, alignés
+           * sur la même ligne de base à 14px d'écart. Le numéro est
+           * plus GROS que le titre et plus discret — c'est l'ordinal
+           * qui situe, le titre qui nomme.
+           *
+           * On le mettait en « № 1044 » dans le kicker, à 9px, ce qui
+           * perdait les deux : le repère et le rythme typographique.
+           */
+        }
+        <div className='mt-[5px] flex flex-wrap items-baseline gap-x-[14px] gap-y-1'>
+          {view.sequence !== null
+            ? (
+              <span className='display text-[42px] font-extrabold leading-none tracking-[-0.03em] text-faint tabular-nums'>
+                {view.sequence.number}
+              </span>
+            )
+            : null}
+          <h1 className='display text-[clamp(1.5rem,2.8vw,2.125rem)] font-extrabold leading-[1.1] tracking-[-0.03em] text-fg'>
+            {view.name}
+          </h1>
+        </div>
         {view.firstAppearance !== null
           ? (
             <p className='mt-1.5 text-sm text-muted'>
@@ -411,59 +429,6 @@ function Identity({ view }: { readonly view: EntityView; }): ReactElement {
  * the right edge. The view model already withheld any neighbour
  * beyond the reader's cursor, so nothing here can leak a title.
  */
-function SequenceNav({ sequence }: { readonly sequence: SequenceView; }): ReactElement | null {
-  const locale = useLocale();
-  const search = useScopeSearch();
-  if (sequence.prev === null && sequence.next === null) return null;
-  const shell =
-    'group flex max-w-[45%] items-center gap-2 rounded-md px-2.5 py-1.5 text-xs ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:ring-line-strong';
-  return (
-    <nav className='flex items-center justify-between gap-3'>
-      {sequence.prev !== null
-        ? (
-          <Link
-            to='/$type/$slug'
-            params={{ type: sequence.prev.chip.type, slug: sequence.prev.chip.slug }}
-            search={search}
-            className={shell}
-          >
-            <span aria-hidden className='text-faint'>←</span>
-            <span className='min-w-0'>
-              <span className='label-xs block'>{t(locale, 'previous')}</span>
-              <span className='block truncate font-semibold tabular-nums text-fg'>
-                {sequence.prev.number}
-                <span className='ml-1.5 hidden font-normal text-muted sm:inline'>
-                  {sequence.prev.chip.name}
-                </span>
-              </span>
-            </span>
-          </Link>
-        )
-        : <span />}
-      {sequence.next !== null
-        ? (
-          <Link
-            to='/$type/$slug'
-            params={{ type: sequence.next.chip.type, slug: sequence.next.chip.slug }}
-            search={search}
-            className={`${shell} text-right`}
-          >
-            <span className='min-w-0'>
-              <span className='label-xs block'>{t(locale, 'next')}</span>
-              <span className='block truncate font-semibold tabular-nums text-fg'>
-                <span className='mr-1.5 hidden font-normal text-muted sm:inline'>
-                  {sequence.next.chip.name}
-                </span>
-                {sequence.next.number}
-              </span>
-            </span>
-            <span aria-hidden className='text-faint'>→</span>
-          </Link>
-        )
-        : <span />}
-    </nav>
-  );
-}
 
 // ---------------------------------------------------------------------------
 // Bands: how a layout arranges its modules.
@@ -676,7 +641,12 @@ function SectionHead(
     // `CE QUI DEVIENT VRAI DANS CE CHAPITRE`. A 15px display heading
     // inside a 14px-padded card made the title compete with the data
     // it introduces.
-    <h2 className='label-xs mb-3 flex items-baseline gap-2 border-b border-line pb-2'>
+    // Et il ne porte AUCUN filet. Les planches donnent au label un
+    // simple `margin-top: 9px` sur le bloc qui suit ; c'est la RANGÉE
+    // qui porte un filet, en bas et dans la teinte douce. On dessinait
+    // les deux — un filet sous le titre, un autre au-dessus de la
+    // première rangée — d'où les doubles séparateurs.
+    <h2 className='label-xs mb-[9px] flex items-baseline gap-2'>
       {children}
       {count !== undefined
         ? <span className='tabular-nums text-faint/70'>{count}</span>
@@ -734,7 +704,7 @@ function SheetRow({ property }: { readonly property: PropertyView; }): ReactElem
   // il fallait lire jusqu'en bas pour savoir ou on en est.
   const older = entries.slice(0, -1).reverse();
   return (
-    <div className='border-t border-line py-2.5'>
+    <div className='border-b border-line-soft py-2.5 last:border-b-0'>
       <dt className='label-xs'>{property.label}</dt>
       <dd className='m-0 mt-1 text-[13.5px] text-fg'>
         {older.length === 0
@@ -766,7 +736,7 @@ function SheetRow({ property }: { readonly property: PropertyView; }): ReactElem
 
 function SheetRelationRow({ row }: { readonly row: InfoboxRelationRowView; }): ReactElement {
   return (
-    <div className='border-t border-line py-2.5'>
+    <div className='border-b border-line-soft py-2.5 last:border-b-0'>
       <dt className='label-xs'>{row.label}</dt>
       <dd className='m-0 mt-1 space-y-0.5 text-[13.5px] font-semibold'>
         {row.chips.map((chip) => (
@@ -842,7 +812,7 @@ function ConnectionRow({ item }: { readonly item: RelationItemView; }): ReactEle
   if (item.until !== null) subParts.push(`${t(locale, 'until')} ${item.until.name}`);
   const sub = subParts.join(' · ');
   return (
-    <li className='border-b border-line'>
+    <li className='border-b border-line-soft last:border-b-0'>
       <Link
         to='/$type/$slug'
         params={{ type: item.target.type, slug: item.target.slug }}
@@ -855,7 +825,7 @@ function ConnectionRow({ item }: { readonly item: RelationItemView; }): ReactEle
           slug={item.target.slug}
           name={item.target.name}
           ratio='square'
-          className='size-10 rounded-[5px] ring-1 ring-line transition-shadow duration-150 group-hover:ring-tint/70'
+          className='size-10 rounded-[5px] ring-1 ring-line'
         />
         <span className='min-w-0 flex-1'>
           <span
@@ -1037,7 +1007,7 @@ function ContentsList(
       {...anchorOf(items)}
       listClassName={`grid gap-x-8 ${columns ? rowColumns(items.length) : 'grid-cols-1'}`}
       items={items.map((item) => (
-        <li key={item.chip.id} className='border-b border-line'>
+        <li key={item.chip.id} className='border-b border-line-soft last:border-b-0'>
           <HoverPreview type={item.chip.type} slug={item.chip.slug}>
             <Link
               to='/$type/$slug'
@@ -1106,7 +1076,7 @@ function PositionSection(
 ): ReactElement {
   return (
     <section>
-      <div className='mb-3 flex flex-wrap items-baseline gap-x-2.5 gap-y-1 border-b border-line pb-2'>
+      <div className='mb-[9px] flex flex-wrap items-baseline gap-x-2.5 gap-y-1'>
         <span className='label-xs'>{arc.label}</span>
         <span className='display text-[15px] font-bold uppercase tracking-[0.04em]'>
           <Link
@@ -1153,7 +1123,7 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): ReactEl
           params={{ type: item.chip.type, slug: item.chip.slug }}
           search={search}
           title={item.chip.name}
-          className='grid min-w-10 place-items-center rounded-md px-2 py-1.5 text-xs font-medium tabular-nums text-muted ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-fg hover:ring-line-strong'
+          className='grid min-w-10 place-items-center rounded-md px-2 py-1.5 text-xs font-medium tabular-nums text-muted ring-1 ring-line transition-colors duration-150 hover:text-fg'
         >
           {label}
         </Link>
@@ -1178,8 +1148,8 @@ function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): 
               params={{ type: item.chip.type, slug: item.chip.slug }}
               search={search}
               title={item.chip.name}
-              className={`group block rounded-md p-2 ring-1 transition-[background-color,box-shadow] duration-150 hover:bg-surface ${
-                item.current ? 'bg-surface ring-gold' : 'ring-line hover:ring-line-strong'
+              className={`group block rounded-md p-2 ring-1 transition-[background-color,box-shadow] duration-150 ${
+                item.current ? 'bg-surface ring-gold' : 'ring-line'
               }`}
             >
               <span className='display block text-base font-bold leading-tight tabular-nums text-fg transition-colors duration-150 group-hover:text-link-hover'>
@@ -1260,7 +1230,7 @@ function AvailabilityItem({ item }: { readonly item: AvailabilityItemView; }): R
         href={item.url}
         target='_blank'
         rel='noreferrer'
-        className='block rounded-md px-3 py-1.5 text-[13px] font-medium text-link ring-1 ring-line transition-colors duration-150 hover:bg-surface hover:text-link-hover hover:ring-line-strong'
+        className='block rounded-md px-3 py-1.5 text-[13px] font-medium text-link ring-1 ring-line transition-colors duration-150 hover:text-link-hover'
       >
         {item.platform.name} ↗
       </a>

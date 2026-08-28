@@ -7512,6 +7512,120 @@ UI primitives), Tailwind CSS v4 (styling).
 heavy Octokit ecosystem). The team must be comfortable with TanStack
 Start's relative novelty.
 
+## ADR-122 — L'ancre anti-spoil d'un conteneur est DÉRIVÉE de son contenu
+
+**Date**: 2026-08-28
+
+**Context**: `first_appearance_source` vient des axes `since` portés par
+l'entité elle-même. Un conteneur — arc, saga, équipage — n'en porte
+aucun, donc n'avait pas d'ancre : **46 arcs sur 50**. Un arc sans ancre
+s'affiche ENTIÈREMENT à n'importe quel curseur, et la page
+`arc/wano-country` déballait ses 149 chapitres, titres compris, à un
+lecteur au chapitre 100. C'est la promesse centrale du produit qui
+fuyait, et le test qui aurait dû l'attraper couvrait « ce stub-là a un
+`since` », pas « les arcs sont anti-spoilés ».
+
+**Options considérées**:
+
+1. **Écrire les ancres à la main** dans les 46 fichiers JSON. Explicite,
+   mais périmé dès qu'un chapitre rejoint l'arc, et 46 valeurs à tenir
+   à jour à la main.
+2. **Dériver à la construction**, dans `db-builder/extract.ts`.
+   L'artefact SQLite est déjà dérivé et jetable ; la vérité reste les
+   arêtes `part-of-arc` du JSON.
+3. **Rendre l'ancre multi-valuée** (une par axe) et gater comme le fait
+   déjà `search_gates`.
+
+**Décision**: l'option 2. Une entité **sans ancre** vers laquelle
+pointent des arêtes venant de sources **à identifiant numérique**
+s'ouvre à la plus petite d'entre elles.
+
+Trois précisions qui font la règle :
+
+- **« à identifiant numérique », pas « de type ordinal ».** Le test est
+  celui de `progress.ts#isSourceVisible` : `manga-chapter:1044` se
+  compare au curseur, `arc:wano-country` non. La première version de la
+  règle excluait les types « ordinaux » et sautait donc les 50 arcs en
+  silence — un arc DÉCLARE `arc_number`. Avoir un numéro et être
+  filtrable par le curseur sont deux choses différentes.
+- **Le plus petit se calcule PAR TYPE.** Comparer `anime-episode:92` à
+  `manga-chapter:155` les triait alphabétiquement et ancrait
+  `arc:arabasta` sur l'épisode 92.
+- **Ce qui est écrit à la main reste la vérité.** Sur les 4 arcs qui
+  portaient déjà une ancre, la dérivation retombe exactement dessus,
+  ce qui la valide au lieu de la contredire.
+
+**Conséquences**: 44 arcs sur 50 sont ancrés. Les 6 restants n'ont
+encore aucune source connue — ils restent ouverts, ce qui est honnête :
+un conteneur dont on ignore le contenu n'a rien sur quoi se fermer. Le
+builder continue d'ignorer quels types sont des AXES : c'est une
+liaison de présentation (ADR-091), et `search.ts` prend soin de ne pas
+la connaître non plus.
+
+**Limite assumée, à reprendre**: **26 conteneurs sur 44 sont alimentés
+par DEUX médias** et le modèle à une seule ancre ne peut pas exprimer
+« s'ouvre au chapitre 155 ET à l'épisode 92 ». On retient le type qui
+fournit le plus d'arêtes — le média dans lequel le conteneur est le
+mieux documenté, une ancre tirée d'un index partiel valant moins qu'une
+ancre tirée d'un index complet. La vraie correction est l'option 3 :
+`search_gates` est déjà `(doc_id, source_type, ordinal)` avec plusieurs
+lignes par document, et unifier la page sur cette même règle ferait
+enfin coïncider le filtrage de la recherche et celui des pages. Parqué
+dans `IDEAS.md`.
+
+---
+
+## ADR-123 — Un axe de curseur VIDE vaut zéro, pas l'infini
+
+**Date**: 2026-08-28
+
+**Context**: `isSourceVisible` traitait un axe non renseigné comme
+« pas de filtre » : `manga-chapter:9999` était visible pour un lecteur
+sans curseur manga. Conséquence mesurée sur un lecteur au **chapitre
+100 qui n'avait rien dit de l'anime** : les 1176 épisodes restaient
+visibles, titres compris — dont l'épisode 1071, « Luffy's Peak -
+Attained! Gear 5 ». La promesse centrale du site, prise en défaut de la
+manière la plus visible qui soit.
+
+**Options considérées**:
+
+1. **Statu quo** (axe vide = infini). Aucun lecteur mono-média n'est
+   protégé sur l'autre média.
+2. **Axe vide = zéro, toujours.** Un premier visiteur, qui n'a rien
+   déclaré, tomberait sur un site vide — le mauvais accueil.
+3. **Dériver l'axe vide de l'autre** via les arêtes `adapted-by` : un
+   lecteur au chapitre 1044 est « quelque part vers l'épisode 1071 ».
+4. **Axe vide = zéro dès qu'un autre axe est réglé**, sinon aucun
+   filtrage.
+
+**Décision**: l'option 4. **Déclarer une position, c'est déclarer toute
+sa position.** Un lecteur qui dit « chapitre 100 » et rien de l'anime
+n'a pas dit où il en était dans l'anime, et lui montrer tout est une
+réponse fausse à une question qu'il a posée. Un lecteur qui n'a RIEN
+déclaré est un cas différent : il n'a pas demandé à être protégé, et le
+défaut wiki (tout montrer) reste le bon accueil.
+
+L'option 3 est séduisante et c'est le vrai différenciateur du produit,
+mais elle repose sur `adapted-by`, dont **134 chapitres sur 1145**
+portent un ensemble aberrant (cf. `STATE.md`) : `manga-chapter:1` est
+« adapté par » l'épisode 878. Une dérivation bâtie sur cette donnée
+ouvrirait des pages au lieu d'en fermer. À reprendre une fois
+`adapted-by` fiable.
+
+**Conséquences**: la règle est écrite UNE fois, dans `isSourceVisible`,
+et le prédicat SQL de la recherche la reproduit mot pour mot — un
+paramètre de plus par axe, qui dit si un filtrage s'applique du tout.
+Sans lui, un curseur entièrement vide aurait vidé le site.
+
+Mesuré : à `{manga: 100}`, l'accueil passe de 1176 épisodes à **0**, et
+les 101 chapitres restent. Sans curseur, rien ne change.
+
+Le coût assumé : un lecteur qui ne suit que le manga ne voit plus rien
+du côté anime tant qu'il n'a pas donné sa position — ce qui coûte un
+clic, dans un dialogue qui propose déjà les deux axes.
+
+---
+
 ---
 
 ## Template for new entries

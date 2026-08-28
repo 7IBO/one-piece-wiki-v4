@@ -31,8 +31,14 @@
  *   qui est vrai pour le lecteur maintenant, `link` porte les liens
  *   dans la même famille mais désaturée, le vermillon est réservé à la
  *   rupture rétroactive. Détail et justification dans `@theme`.
- * - Motion is part of the finish: tiles lift and reveal on hover,
- *   always under `prefers-reduced-motion`.
+ * - **Le survol change la COULEUR, jamais la géométrie.** Les sept
+ *   planches de `design/v2` ne définissent qu'UNE règle de survol —
+ *   `a:hover { color: #e8c15a }` — là où l'app en avait accumulé
+ *   soixante-deux réparties sur huit comportements : la tuile se
+ *   soulevait, l'image grossissait, un anneau teinté apparaissait et
+ *   le fond se remplissait, souvent les quatre à la fois. Une cible
+ *   passe à l'or, un contrôle remonte à `fg`, un bouton plein
+ *   s'assombrit. Rien d'autre ne bouge.
  * - Type: Archivo Variable, expanded and heavy, is the branded
  *   display voice; Inter carries data and UI.
  */
@@ -171,6 +177,23 @@ body {
   input[type='search']::-webkit-search-results-decoration {
     appearance: none;
     display: none;
+  }
+
+  /*
+   * Same rule, same reason, for the number spinners: the progression
+   * dialog asks for a chapter number, and the browser answers with a
+   * pair of grey chevrons nobody designed. A reader types 1044; they
+   * do not step to it one click at a time.
+   */
+  input[type='number'] {
+    appearance: textfield;
+    -moz-appearance: textfield;
+  }
+
+  input[type='number']::-webkit-outer-spin-button,
+  input[type='number']::-webkit-inner-spin-button {
+    appearance: none;
+    margin: 0;
   }
 }
 
@@ -410,14 +433,6 @@ body {
   /* Hover lift — the shared motion of every art tile. Marked with a
    * class so `prefers-reduced-motion` can cancel the transform wholesale
    * (a shortened transition would still jump the layout). */
-  .motion-lift {
-    transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1), box-shadow 220ms ease;
-  }
-
-  .motion-lift:hover,
-  .motion-lift:focus-visible {
-    transform: translateY(-4px);
-  }
 }
 
 /* Comfortable touch targets on coarse pointers (same floor as the
@@ -441,10 +456,6 @@ body {
 
   /* Hover lift and parallax are decoration: drop the transforms
    * entirely rather than merely shortening them. */
-  .motion-lift:hover,
-  .motion-lift:focus-visible {
-    transform: none !important;
-  }
 
   /* The preview appears, it does not travel. */
   .hover-card {

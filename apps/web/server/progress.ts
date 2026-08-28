@@ -4,11 +4,23 @@
  * `web_progress` cookie as JSON (`{"manga": 1044, "anime": 1071}`).
  * Absent cookie = no filtering (wiki default).
  *
- * Visibility rule (v1): a source anchor `manga-chapter:N` /
+ * Visibility rule: a source anchor `manga-chapter:N` /
  * `anime-episode:N` with numeric N is visible iff N <= the matching
- * cursor axis. Anchors with no cursor on their axis, non-numeric
- * anchors and anchors on other source types (film, sbs…) stay visible
- * — a documented v1 limitation, not an accident.
+ * cursor axis. Non-numeric anchors and anchors on source types that
+ * are not axes (film, sbs…) stay visible — they are unfilterable.
+ *
+ * **An axis the reader left EMPTY counts as zero, as soon as they set
+ * another one.** Declaring a position is declaring your whole
+ * position: a reader who says « manga chapter 100 » and nothing about
+ * the anime has not told us where they are in the anime, and the old
+ * rule answered that by showing them everything — episode 1071's title
+ * is « Luffy's Peak - Attained! Gear 5 », handed to someone at chapter
+ * 100. That is the one promise this site makes, failing in the most
+ * visible way possible.
+ *
+ * A reader who has set NOTHING is a different case and keeps the wiki
+ * default: nothing is filtered, because they have not asked to be
+ * protected and an empty site would be the wrong welcome.
  *
  * The axis ids are a presentation-layer binding to well-known source
  * types (ADR-091): unknown types degrade to "visible".
@@ -111,7 +123,9 @@ export function isSourceVisible(
   const axis = AXIS_BY_SOURCE_TYPE[sourceId.slice(0, colon)];
   if (axis === undefined) return true;
   const limit = cursor[axis];
-  if (limit === null) return true;
+  // Axe vide : invisible dès qu'une position est déclarée ailleurs,
+  // visible tant qu'aucune ne l'est.
+  if (limit === null) return !cursorActive(cursor);
   const rest = sourceId.slice(colon + 1);
   if (!/^\d+$/.test(rest)) return true;
   return Number(rest) <= limit;

@@ -30,6 +30,7 @@ import {
   parseNihongo,
   parseQrefs,
   type QrefSource,
+  splitLines,
 } from './wikitext.ts';
 
 export type CharacterMapResult = {
@@ -225,14 +226,29 @@ export function mapCharacter(
     return parseQrefs(raw, qrefTable)[0]?.sourceId ?? null;
   };
 
-  const enName = get('ename');
-  if (enName === undefined) {
+  const enNameRaw = get('ename');
+  if (enNameRaw === undefined) {
     // Without an English name there is no slug — not mappable.
     return null;
   }
-  const slug = slugify(cleanValue(enName));
+  // `ename` is MULTI-VALUE: Fandom lists the canonical English name
+  // first, then one line per release that spells it differently —
+  // « Bell-mère<br>Bellemere (Viz Media)<br>Bell-mere (Funimation) ».
+  // `cleanValue` turns `<br>` into a space, so the whole list was
+  // collapsing into ONE name and then into one slug:
+  // `belle-mere-viz-media-bellemere-funimation-bell-mere-opcg`.
+  //
+  // That is worse than cosmetic. Ids are IMMUTABLE (CLAUDE.md), so
+  // every such import mints a permanently wrong URL for a real
+  // character. Eight of the first 158 were affected.
+  //
+  // The lines after the first are exactly what `name_type: 'alias'`
+  // is for — they even carry their release in parentheses already.
+  const [canonicalRaw = '', ...variantRaws] = splitLines(enNameRaw);
+  const enName = cleanValue(canonicalRaw);
+  const slug = slugify(enName);
   // A template placeholder is not a thing (see isPlaceholderName).
-  if (slug === '' || isPlaceholderName(cleanValue(enName))) return null;
+  if (slug === '' || isPlaceholderName(enName)) return null;
   const id = `character:${slug}`;
 
   // Debut source ("first" carries the chapter+episode Qref) anchors
@@ -244,10 +260,27 @@ export function mapCharacter(
 
   const translations: Record<string, string> = {};
   const nameKey = `character.${slug}.name.common`;
-  translations[nameKey] = cleanValue(enName);
+  translations[nameKey] = enName;
   const properties: Record<string, unknown> = {
     name: [{ value_key: nameKey, name_type: 'common', ...since }],
   };
+
+  // Les orthographes propres a une edition deviennent des ALIAS, pas
+  // des morceaux du nom. Une variante qui retombe sur le meme slug que
+  // le nom canonique n'apporte rien et est ecartee.
+  for (const variantRaw of variantRaws) {
+    const variant = cleanValue(variantRaw);
+    const variantSlug = slugify(variant);
+    if (variant === '' || variantSlug === '' || variantSlug === slug) continue;
+    const key = `character.${slug}.name.${variantSlug}`;
+    if (key in translations) continue;
+    translations[key] = variant;
+    (properties['name'] as unknown[]).push({
+      value_key: key,
+      name_type: 'alias',
+      ...since,
+    });
+  }
 
   const aliasRaw = get('alias');
   if (aliasRaw !== undefined) {

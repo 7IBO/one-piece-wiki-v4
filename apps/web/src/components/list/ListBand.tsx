@@ -104,7 +104,7 @@ export function Chip(
       className={`cursor-pointer rounded-full border px-2.75 py-1.25 text-[11.5px] transition-colors duration-150 ${
         on
           ? 'border-gold bg-gold/10 text-gold'
-          : 'border-line-strong text-[color:var(--color-muted)] hover:border-gold/45 hover:text-fg'
+          : 'border-line-strong text-[color:var(--color-muted)] hover:text-fg'
       }`}
     >
       {label}

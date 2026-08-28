@@ -15,7 +15,41 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-28 (ADR-120 terminé : `released_at` complet
+**Last updated**: 2026-08-28 (ADR-122 ancrage dérivé des conteneurs,
+ADR-123 axe de curseur vide — les deux fuites anti-spoil sont fermées)
+
+## 2026-08-28 — `east-blue` était une SAGA déguisée en arc — RÉGLÉ
+
+Migration 0013. Mesuré avant d'y toucher : les six vrais arcs couvrent
+les chapitres **1 à 100 sans le moindre trou** (romance-dawn 1-7,
+orange-town 8-21, syrup-village 22-41, baratie 42-68, arlong-park
+69-95, loguetown 96-100), tandis que `arc:east-blue` n'en portait que
+**deux** — 1 et 96 — tous deux **déjà** dans leur vrai arc. Ses arêtes
+étaient des doublons purs.
+
+Même défaut que `arc:wano` (migration 0011) : un stub semé à la main
+qui a survécu à l'import et concurrence la donnée réelle. La différence
+est qu'ici le stub nommait la bonne chose au mauvais NIVEAU.
+
+`saga:east-blue` existe maintenant, avec ses six `part-of-saga`. C'est
+ce que la planche Progression réclame : « le dernier arc terminé,
+**groupé par saga** ». Les neuf autres sagas restent à écrire.
+
+Au passage, un test épinglait `arc:east-blue` — la quatrième assertion
+de la semaine à tomber sur une migration plutôt que sur un défaut. Il
+CHERCHE maintenant un arc non numéroté au lieu d'en nommer un.
+
+## 2026-08-28 — L'axe de curseur vide — RÉGLÉ (ADR-123)
+
+Un axe non renseigné vaut désormais **zéro dès qu'un autre est réglé**,
+et l'absence totale de curseur ne filtre toujours rien. Mesuré : à
+`{manga: 100}`, l'accueil passe de **1176 épisodes à 0**.
+
+La dérivation manga↔anime via `adapted-by` — le vrai différenciateur —
+reste hors de portée tant que 134 chapitres sur 1145 portent un
+ensemble d'épisodes aberrant.
+
+**Last updated (précédent)**: 2026-08-28 (ADR-120 terminé : `released_at` complet
 sur les 1193 chapitres ; analyse du canevas design →
 `docs/DESIGN_PLAN.md` ; plan A épuisé ; quatre arbitrages en attente)
 
@@ -145,7 +179,27 @@ dépunaisé de #157 n'est pas sur `main`.
 Il reste **11 tranches** d'enrichissement à lancer (chapitres 101 à
 1131), une requête rendue par chapitre.
 
-## 2026-08-27 — 46 arcs sur 50 ne sont pas anti-spoilés — À DÉCIDER
+## 2026-08-28 — Les arcs sont anti-spoilés — RÉGLÉ (ADR-122)
+
+L'ancre d'un conteneur est maintenant DÉRIVÉE de son contenu, à la
+construction. **44 arcs sur 50 sont ancrés** (contre 4), les 6 restants
+n'ayant encore aucune source connue.
+
+Deux pièges rencontrés en chemin, tous deux silencieux :
+
+1. la première règle excluait les types « ordinaux » — et un arc
+   DÉCLARE `arc_number`, donc les 50 arcs étaient sautés sans un mot.
+   Le bon test est celui de `isSourceVisible` : un identifiant à
+   suffixe NUMÉRIQUE se compare au curseur, un identifiant à slug non ;
+2. « le plus petit » se calcule PAR TYPE. Comparer `anime-episode:92` à
+   `manga-chapter:155` les triait alphabétiquement et ancrait
+   `arc:arabasta` sur l'épisode 92.
+
+Limite assumée et parquée dans `IDEAS.md` : 26 conteneurs sur 44 sont
+alimentés par deux médias, et une ancre unique ne peut pas dire
+« chapitre 155 ET épisode 92 ».
+
+## 2026-08-27 — 46 arcs sur 50 ne sont pas anti-spoilés — RÉGLÉ, voir ci-dessus
 
 **C'est la promesse centrale du produit qui fuit, et je ne l'ai pas
 corrigé dans la PR qui l'a révélée.**

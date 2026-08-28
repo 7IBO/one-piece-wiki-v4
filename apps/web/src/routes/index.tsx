@@ -63,7 +63,7 @@ function HomePage(): ReactElement {
       {/* The plate's body: 12 columns, 12px gutters, 26/40/44 padding. */}
       <div className='mx-auto grid w-full max-w-[1440px] grid-cols-1 gap-3 px-5 pb-11 pt-6.5 lg:grid-cols-12 lg:px-10'>
         <Crossed items={view.crossed} span={view.crossedSpan} />
-        <Releases items={view.releases} />
+        <Releases items={view.releases} alone={view.crossed.length === 0} />
         <Explore groups={view.groups} />
         <Community />
         <Contribute total={view.totalEntities} groups={view.groups} />

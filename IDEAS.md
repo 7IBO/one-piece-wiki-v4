@@ -844,3 +844,20 @@ Conséquences à instruire : effet sur les règles de validation, sur le
 calcul de complétude d'une page, et sur les importeurs (Fandom laisse un
 champ vide sans jamais dire pourquoi). **ADR obligatoire.** Soulevé par
 les maquettes `design/v2`.
+
+## Ancre anti-spoil multi-axes (suite d'ADR-122)
+
+`entities.first_appearance_source` est mono-valuée, alors qu'un
+conteneur existe dans plusieurs médias : 26 arcs sur 44 portent à la
+fois des chapitres et des épisodes, et « s'ouvre au chapitre 155 ET à
+l'épisode 92 » ne peut pas s'écrire aujourd'hui. ADR-122 retient le
+média le mieux documenté, ce qui est un choix par défaut, pas la
+vérité.
+
+`search_gates` a déjà la bonne forme — `(doc_id, source_type, ordinal)`,
+plusieurs lignes par document — et la recherche filtre déjà « visible
+ssi le curseur a dépassé TOUTES les ancres ». Faire passer la page
+d'entité sur cette même table ferait coïncider les deux filtrages, ce
+que le commentaire d'en-tête de `search.ts` annonce déjà comme
+l'intention. Demande un ADR : ça change la forme de `EntityRow` et le
+contrat de `buildEntityView`.

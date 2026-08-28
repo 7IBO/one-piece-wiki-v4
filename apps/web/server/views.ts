@@ -1483,18 +1483,53 @@ function buildReleases(
   return out;
 }
 
+/**
+ * Can the reader see this entity AT ALL?
+ *
+ * Two anchors, and they are different questions: the entity may BE a
+ * source beyond the cursor (a chapter you have not reached), or it may
+ * only EXIST from a source beyond it (a character introduced later).
+ * Either one hides it.
+ *
+ * Extracted because three surfaces have to agree — the entity page,
+ * the type listing and the home counts. They did not: the page gated
+ * correctly while the listing rendered 1093 neutral tiles past the
+ * reader's position and the home page announced how many chapters
+ * exist. `design/v2` forbids exactly that (« aucun compteur d'absence,
+ * aucune tuile pointillée, aucune barre grisée au-delà de la
+ * position »), so the rule is now written ONCE.
+ */
+function isEntityVisible(
+  row: { readonly id: string; readonly first_appearance_source: string | null; },
+  cursor: ProgressCursor,
+): boolean {
+  if (!isSourceVisible(row.id, cursor)) return false;
+  return row.first_appearance_source === null
+    || isSourceVisible(row.first_appearance_source, cursor);
+}
+
 export async function buildHomeView(locale: Locale, cursor: ProgressCursor): Promise<HomeView> {
   const cat = await getCatalogue();
   const grouped = new Map<string, TypeSummary[]>();
   let total = 0;
-  for (const row of db.listTypeCounts()) {
-    total += row.count;
-    const schema: EntityType | undefined = cat.entityTypes.get(row.type);
+  // Counted through the gate rather than by `COUNT(*)`: a reader at
+  // chapter 100 must not be told there are 1193. A type whose whole
+  // population is beyond the cursor drops off the page entirely —
+  // saying « 0 chapters » would be the same announcement in another
+  // form.
+  const visible = new Map<string, number>();
+  for (const row of db.listGateKeys()) {
+    if (!isEntityVisible(row, cursor)) continue;
+    total += 1;
+    visible.set(row.type, (visible.get(row.type) ?? 0) + 1);
+  }
+  for (const [type, count] of visible) {
+    const schema: EntityType | undefined = cat.entityTypes.get(type);
     const group = schema?.ui_hint?.group ?? 'other';
     const summary: TypeSummary = {
-      id: row.type,
-      label: entityTypeLabel(cat, row.type, locale),
-      count: row.count,
+      id: type,
+      label: entityTypeLabel(cat, type, locale),
+      count,
     };
     const bucket = grouped.get(group);
     if (bucket === undefined) grouped.set(group, [summary]);
@@ -1591,8 +1626,12 @@ export async function buildTypeListView(
   cursor: ProgressCursor = EMPTY_CURSOR,
 ): Promise<TypeListView | null> {
   const cat = await getCatalogue();
-  const rows = db.listEntitiesByType(type);
-  if (rows.length === 0 && !cat.entityTypes.has(type)) return null;
+  const all = db.listEntitiesByType(type);
+  if (all.length === 0 && !cat.entityTypes.has(type)) return null;
+  // The listing stops at the reader's position. Facets are computed on
+  // the SURVIVORS, not on the whole type, so a filter never counts
+  // what the reader cannot see either.
+  const rows = all.filter((row) => isEntityVisible(row, cursor));
   // Card enrichment reads the already-loaded row blobs; the image adds
   // one prepared relation lookup per row (v7 image-led listings).
   const { facets, byRow } = buildFacets(rows, type, cat, locale, cursor);
@@ -2569,11 +2608,7 @@ export async function buildEntityView(
   // sits beyond the cursor — or the entity IS a beyond-cursor source
   // (a chapter you have not reached) — show the name and withhold
   // everything else.
-  if (
-    !isSourceVisible(row.id, cursor)
-    || (row.first_appearance_source !== null
-      && !isSourceVisible(row.first_appearance_source, cursor))
-  ) {
+  if (!isEntityVisible(row, cursor)) {
     return { kind: 'gated', type: row.type, typeLabel, slug: row.slug, name };
   }
 

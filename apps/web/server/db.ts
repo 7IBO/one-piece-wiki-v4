@@ -49,6 +49,13 @@ export type TypeCountRow = {
   readonly count: number;
 };
 
+/** The three columns the spoiler gate reads. */
+export type GateKeyRow = {
+  readonly id: string;
+  readonly type: string;
+  readonly first_appearance_source: string | null;
+};
+
 export type EntityRow = {
   readonly id: string;
   readonly type: string;
@@ -110,6 +117,7 @@ function resolveDbPath(): string {
 
 type Statements = {
   readonly typeCounts: Statement;
+  readonly gateKeys: Statement;
   readonly axisMax: Statement;
   readonly entitiesByType: Statement;
   readonly entityBySlug: Statement;
@@ -140,6 +148,12 @@ function getStatements(): Statements {
   statements = {
     typeCounts: db.prepare(
       'SELECT type, COUNT(*) AS count FROM entities GROUP BY type ORDER BY type',
+    ),
+    // Everything the SPOILER GATE needs about every entity, and
+    // nothing else — deliberately NOT `entityColumns`, because the
+    // `data` blob is the whole corpus and the caller only counts.
+    gateKeys: db.prepare(
+      'SELECT id, type, first_appearance_source FROM entities',
     ),
     // The highest ordinal the corpus holds on one source type — the
     // DENOMINATOR of the header's progression gauge. Read from the
@@ -197,6 +211,12 @@ function toEntityRow(row: Record<string, unknown>): EntityRow {
 
 export function listTypeCounts(): readonly TypeCountRow[] {
   return getStatements().typeCounts.all() as TypeCountRow[];
+}
+
+/** Id, type and anti-spoiler anchor of every entity — the narrow row
+ *  a cursor-aware count needs, without the `data` blob. */
+export function listGateKeys(): readonly GateKeyRow[] {
+  return getStatements().gateKeys.all() as GateKeyRow[];
 }
 
 /**

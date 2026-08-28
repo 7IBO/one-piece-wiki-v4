@@ -16,5 +16,10 @@
       "value": 4
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:east-blue"
+    }
+  ]
 }

@@ -220,7 +220,7 @@ function TypeListPage(): ReactElement {
                     <button
                       type='button'
                       onClick={() => setShown((n) => n + PAGE)}
-                      className='cursor-pointer rounded-md border border-line-strong px-6 py-2.5 text-[13px] font-semibold text-fg transition-colors duration-150 hover:border-gold/45 hover:bg-surface'
+                      className='cursor-pointer rounded-md border border-line-strong px-6 py-2.5 text-[13px] font-semibold text-fg transition-colors duration-150'
                     >
                       {t(locale, 'listLoadMore')}
                       <span className='ml-2 tabular-nums text-muted'>
