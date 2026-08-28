@@ -9,7 +9,19 @@
     },
     "title_key": {
       "value_key": "manga-chapter.1169.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2025-12-22",
+      "territory": "jp"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-volume",
+      "target": "volume:115"
+    }
+  ]
 }

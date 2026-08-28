@@ -9,7 +9,19 @@
     },
     "title_key": {
       "value_key": "manga-chapter.1179.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2026-04-06",
+      "territory": "jp"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-volume",
+      "target": "volume:115"
+    }
+  ]
 }

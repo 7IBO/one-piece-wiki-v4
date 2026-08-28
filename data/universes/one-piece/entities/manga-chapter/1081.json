@@ -9,12 +9,31 @@
     },
     "title_key": {
       "value_key": "manga-chapter.1081.title"
+    },
+    "page_count": {
+      "value": 19
+    },
+    "released_at": {
+      "value": "2023-04-24",
+      "territory": "jp"
     }
   },
   "relations": [
     {
       "type": "part-of-arc",
       "target": "arc:egghead"
+    },
+    {
+      "type": "part-of-volume",
+      "target": "volume:107"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1114"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1115"
     }
   ]
 }

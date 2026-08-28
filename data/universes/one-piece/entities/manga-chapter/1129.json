@@ -9,7 +9,23 @@
     },
     "title_key": {
       "value_key": "manga-chapter.1129.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2024-10-14",
+      "territory": "jp"
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-volume",
+      "target": "volume:111"
+    },
+    {
+      "type": "adapted-by",
+      "target": "anime-episode:1159"
+    }
+  ]
 }

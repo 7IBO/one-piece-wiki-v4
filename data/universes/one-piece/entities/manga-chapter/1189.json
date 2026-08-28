@@ -9,6 +9,13 @@
     },
     "title_key": {
       "value_key": "manga-chapter.1189.title"
+    },
+    "page_count": {
+      "value": 17
+    },
+    "released_at": {
+      "value": "2026-07-27",
+      "territory": "jp"
     }
   },
   "relations": []
