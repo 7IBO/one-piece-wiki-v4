@@ -652,7 +652,9 @@
       "entityId": "anime-episode:1071",
       "page": "Episode 1071",
       "pageId": 341823,
-      "redirects": []
+      "redirects": [],
+      "lastRevId": 2123918,
+      "lastImportedAt": "2026-08-28T01:51:54.758Z"
     },
     {
       "entityId": "anime-episode:1072",
@@ -7165,6 +7167,14 @@
       "redirects": [],
       "lastRevId": 1976166,
       "lastImportedAt": "2026-08-27T23:30:30.367Z"
+    },
+    {
+      "entityId": "anime-episode:747",
+      "page": "Episode 747",
+      "pageId": 286574,
+      "redirects": [],
+      "lastRevId": 2087373,
+      "lastImportedAt": "2026-08-28T01:51:54.758Z"
     },
     {
       "entityId": "anime-episode:748",
