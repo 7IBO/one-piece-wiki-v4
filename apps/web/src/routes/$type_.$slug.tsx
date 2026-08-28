@@ -58,19 +58,30 @@ import { CARD_GRID_CLASS, EntityCard } from '../components/EntityCard';
 import { EntityChipLink, ScopeContext, useScopeSearch } from '../components/EntityChip';
 import { EntityHero } from '../components/EntityHero';
 import { EntityImage } from '../components/EntityImage';
+import { HeroChips } from '../components/HeroChips';
+import { HeroStats } from '../components/HeroStats';
 import { HoverPreview } from '../components/HoverPreview';
+import { IncompletePanel } from '../components/IncompletePanel';
 import { ShowMoreList } from '../components/ShowMoreList';
 import { SourceTabs } from '../components/SourceTabs';
 import { type ChromeKey, t } from '../lib/chrome';
-import { bandsFor, type LayoutBand, layoutFor, type SlotKey } from '../lib/entity-layout';
+import {
+  bandsFor,
+  type GridCell,
+  type LayoutBand,
+  layoutFor,
+  type SlotKey,
+} from '../lib/entity-layout';
 import {
   type EntitySection,
   restrictBands,
+  sectionCount,
   slotHasContent,
   slotsForSection,
   visibleSections,
 } from '../lib/entity-sections';
 import { entityTint } from '../lib/entity-tint';
+import { heroStatRows } from '../lib/hero-stats';
 import { Markdown } from '../lib/markdown';
 import { validateScopeSearch } from '../lib/scope';
 import { useLocale } from './__root';
@@ -200,6 +211,7 @@ export function EntityArticle(
     readonly section: EntitySection | null;
   },
 ): ReactElement {
+  const locale = useLocale();
   const tint = entityTint(view.id);
   const layout = layoutFor(view.type);
   const bands = restrictBands(bandsFor(view.type), slotsForSection(view.type, section));
@@ -218,9 +230,28 @@ export function EntityArticle(
 
       <SectionNav view={view} current={section} />
 
-      <div className='page-column space-y-12 pt-9'>
+      {/* The plates open the grid 14px under the band, not 36px. */}
+      <div className='page-column space-y-3 pt-3.5'>
         {bands.map((band, index) => <Band key={index} band={band} view={view} />)}
         {bands.length === 0 ? <EmptySection /> : null}
+        {
+          /*
+           * Only on the overview: a sub-page is a slice of the entity,
+           * and telling a reader on `/appearances` that the birth date
+           * is missing is answering a question they did not ask.
+           */
+        }
+        {section === null
+          ? (
+            <IncompletePanel
+              missing={view.missingProperties}
+              typeLabel={view.typeLabel}
+              type={view.type}
+              slug={view.slug}
+              locale={locale}
+            />
+          )
+          : null}
         <ContributeStrip type={view.type} slug={view.slug} />
       </div>
     </article>
@@ -243,9 +274,11 @@ function SectionNav(
   const search = useScopeSearch();
   const sections = visibleSections(view);
   if (sections.length === 0) return null;
-  const item =
-    'block border-b-2 px-0.5 pb-2 pt-3 text-[12px] font-bold uppercase tracking-[0.08em] transition-colors duration-150';
-  const active = 'border-gold text-fg';
+  // `design/v2`: 12.5px in SENTENCE case, not 12px uppercase with
+  // letter-spacing. The count sits beside the label in a dimmer ink —
+  // the plates print `Apparitions 342`, never `APPARITIONS`.
+  const item = 'block border-b-2 px-0.5 py-3 text-[12.5px] transition-colors duration-150';
+  const active = 'border-gold font-semibold text-fg';
   const idle = 'border-transparent text-muted hover:text-fg';
   return (
     <nav className='page-column border-b border-line'>
@@ -261,19 +294,25 @@ function SectionNav(
             {t(locale, 'sectionOverview')}
           </Link>
         </li>
-        {sections.map((section) => (
-          <li key={section.id}>
-            <Link
-              to='/$type/$slug/$section'
-              params={{ type: view.type, slug: view.slug, section: section.id }}
-              search={search}
-              aria-current={current?.id === section.id ? 'page' : undefined}
-              className={`${item} ${current?.id === section.id ? active : idle}`}
-            >
-              {t(locale, section.labelKey)}
-            </Link>
-          </li>
-        ))}
+        {sections.map((section) => {
+          const count = sectionCount(section, view);
+          return (
+            <li key={section.id}>
+              <Link
+                to='/$type/$slug/$section'
+                params={{ type: view.type, slug: view.slug, section: section.id }}
+                search={search}
+                aria-current={current?.id === section.id ? 'page' : undefined}
+                className={`${item} ${current?.id === section.id ? active : idle}`}
+              >
+                {t(locale, section.labelKey)}
+                {count === null
+                  ? null
+                  : <span className='ml-1.5 tabular-nums text-faint'>{count}</span>}
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );
@@ -286,48 +325,68 @@ function EmptySection(): ReactElement {
 }
 
 /** Overline, name, identity line and the ONE headline figure. */
+/**
+ * The identity block of the hero, laid out as `design/v2` lays it:
+ * a small-caps KICKER of dotted segments, the name at 42px in its own
+ * case, a subtitle of resolved facts, a row of chips, and the stat
+ * strip pushed to the right edge of the band.
+ *
+ * Three things changed from v9 and each was visible in the plates:
+ * the title is NOT uppercased (`Monkey D. Luffy`, not
+ * `MONKEY D. LUFFY`), the kicker carries the entity's own
+ * classification rather than only its type, and the single floating
+ * gold figure became the bordered multi-cell strip.
+ */
 function Identity({ view }: { readonly view: EntityView; }): ReactElement {
   const locale = useLocale();
-  // The bounty (or a crew's derived total) is the ONE gold figure of
-  // the header (ADR-091 binding, degrades to nothing when absent).
-  const headline =
-    view.infobox.find((row) => row.id === 'bounty' || row.id === 'derived:total_bounty') ?? null;
+  const stats = heroStatRows(view.type, view.infobox);
+  // The kicker's extra segments come from the relations the infobox
+  // already resolved — a crew, a role, a classification. Capped so a
+  // richly-linked entity cannot wrap the line (ADR-091: absent =
+  // simply not rendered).
+  const kickerChips = view.infoboxRelations
+    .flatMap((relation) => relation.chips.slice(0, 1))
+    .slice(0, 2);
   return (
-    <div className='flex flex-wrap items-end justify-between gap-x-8 gap-y-4'>
+    <div className='flex flex-wrap items-start justify-between gap-x-8 gap-y-5'>
       <div className='min-w-0'>
         <p className='label-xs'>
           <Link
             to='/$type'
             params={{ type: view.type }}
-            className='text-fg/70 transition-colors duration-150 hover:text-link-hover'
+            className='transition-colors duration-150 hover:text-link-hover'
           >
             {view.typeLabel}
           </Link>
+          {kickerChips.map((chip) => (
+            <span key={chip.id}>
+              <span className='mx-1.5 text-faint'>·</span>
+              <Link
+                to='/$type/$slug'
+                params={{ type: chip.type, slug: chip.slug }}
+                className='transition-colors duration-150 hover:text-link-hover'
+              >
+                {chip.name}
+              </Link>
+            </span>
+          ))}
           {view.sequence !== null
             ? <span className='ml-2 tabular-nums text-gold/85'>№ {view.sequence.number}</span>
             : null}
         </p>
-        <h1 className='display mt-1.5 text-[clamp(2rem,5.6vw,4rem)] font-extrabold uppercase leading-[0.95] text-fg'>
+        <h1 className='display mt-1.5 text-[clamp(1.75rem,3.6vw,2.625rem)] font-extrabold leading-[1.06] tracking-[-0.03em] text-fg'>
           {view.name}
         </h1>
         {view.firstAppearance !== null
           ? (
-            <p className='mt-2.5 text-[13px] text-muted'>
+            <p className='mt-1.5 text-sm text-muted'>
               {t(locale, 'firstAppearance')} · <EntityChipLink chip={view.firstAppearance} />
             </p>
           )
           : null}
+        <HeroChips appearances={view.appearances} locale={locale} />
       </div>
-      {headline !== null
-        ? (
-          <div className='shrink-0'>
-            <p className='label-xs text-gold/80'>{headline.label}</p>
-            <p className='display text-[clamp(1.5rem,3.2vw,2.3rem)] font-extrabold leading-none tabular-nums text-gold'>
-              {headline.entry.display}
-            </p>
-          </div>
-        )
-        : null}
+      <HeroStats rows={stats} />
     </div>
   );
 }
@@ -425,6 +484,7 @@ function Band(
     return nodes.length === 0 ? null : <div className='space-y-12'>{nodes}</div>;
   }
   if (band.kind === 'pack') return packed(band.slots, view, PACK_CLASS);
+  if (band.kind === 'grid') return <GridBand cells={band.cells} view={view} />;
   const main = renderSlots(band.main, view, true);
   const aside = renderSlots(band.aside, view, false);
   if (main.length === 0 && aside.length === 0) return null;
@@ -447,6 +507,65 @@ function Band(
     </div>
   );
 }
+
+/**
+ * A `grid` band: the twelve-column plate of `design/v2`, panels
+ * declaring their own span.
+ *
+ * Empty cells are dropped BEFORE the widths are applied, and the
+ * remaining spans are then stretched to fill the row rather than
+ * leaving a gap where the missing panel was — a sparse entity reads
+ * as a shorter page of wider cards, never as a page with holes.
+ * Below `lg` everything is one column: twelve columns of 100px are
+ * not a layout.
+ */
+function GridBand(
+  { cells, view }: { readonly cells: readonly GridCell[]; readonly view: EntityView; },
+): ReactElement | null {
+  const filled = cells
+    .map((cell) => ({ cell, node: renderSlot(cell.slot, view, cell.span >= 6) }))
+    .filter((entry): entry is { cell: GridCell; node: ReactElement; } => entry.node !== null);
+  if (filled.length === 0) return null;
+  const total = filled.reduce((sum, entry) => sum + entry.cell.span, 0);
+  return (
+    <div className='grid grid-cols-1 items-start gap-3 lg:grid-cols-12'>
+      {filled.map(({ cell, node }) => {
+        // One row's worth or less: stretch the SURVIVING spans back up
+        // to twelve, so a dropped panel widens its neighbours instead
+        // of leaving a hole. More than one row: keep what was authored
+        // and let the grid wrap.
+        const span = total > 0 && total <= 12
+          ? Math.min(12, Math.max(2, Math.round((cell.span / total) * 12)))
+          : cell.span;
+        return (
+          <div key={cell.slot} className={`panel min-w-0 ${SPAN_CLASS[span] ?? 'lg:col-span-12'}`}>
+            {node}
+          </div>
+        );
+      })}
+    </div>
+  );
+}
+
+/**
+ * Column spans as literal class names. Tailwind scans source text, so
+ * a computed `lg:col-span-${n}` would never be generated — the
+ * lookup is what makes the spans real.
+ */
+const SPAN_CLASS: Readonly<Record<number, string>> = {
+  1: 'lg:col-span-1',
+  2: 'lg:col-span-2',
+  3: 'lg:col-span-3',
+  4: 'lg:col-span-4',
+  5: 'lg:col-span-5',
+  6: 'lg:col-span-6',
+  7: 'lg:col-span-7',
+  8: 'lg:col-span-8',
+  9: 'lg:col-span-9',
+  10: 'lg:col-span-10',
+  11: 'lg:col-span-11',
+  12: 'lg:col-span-12',
+};
 
 function renderSlots(
   slots: readonly SlotKey[],
@@ -535,10 +654,15 @@ function SectionHead(
   { children, count }: { readonly children: string; readonly count?: number; },
 ): ReactElement {
   return (
-    <h2 className='display mb-3.5 flex items-baseline gap-2 border-b border-line pb-2 text-[15px] font-bold uppercase tracking-[0.04em] text-fg'>
+    // The plates title a panel with the SAME 9px annotation label they
+    // use everywhere else — `FICHE`, `PORTEURS SUCCESSIFS`,
+    // `CE QUI DEVIENT VRAI DANS CE CHAPITRE`. A 15px display heading
+    // inside a 14px-padded card made the title compete with the data
+    // it introduces.
+    <h2 className='label-xs mb-3 flex items-baseline gap-2 border-b border-line pb-2'>
       {children}
       {count !== undefined
-        ? <span className='font-sans text-xs font-medium tabular-nums text-faint'>{count}</span>
+        ? <span className='tabular-nums text-faint/70'>{count}</span>
         : null}
     </h2>
   );

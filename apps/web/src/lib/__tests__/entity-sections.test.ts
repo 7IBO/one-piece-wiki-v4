@@ -12,7 +12,13 @@
  */
 import { describe, expect, test } from 'bun:test';
 import type { EntityView } from '../../api.ts';
-import { ALL_SLOTS, bandsFor, type LayoutBand, type SlotKey } from '../entity-layout.ts';
+import {
+  ALL_SLOTS,
+  bandsFor,
+  type LayoutBand,
+  type SlotKey,
+  slotsOfBand,
+} from '../entity-layout.ts';
 import {
   overviewSlots,
   restrictBands,
@@ -144,6 +150,8 @@ describe('no empty sub-page is ever offered', () => {
   });
 });
 
+// The library's walker, not a copy — same reason as in
+// `entity-layout.test.ts`.
 function slotsOf(band: LayoutBand): readonly SlotKey[] {
-  return band.kind === 'split' ? [...band.main, ...band.aside] : band.slots;
+  return slotsOfBand(band);
 }

@@ -155,6 +155,34 @@ const STRINGS = {
   // v7 "Vignette" additions (append-only). `#` is replaced by a count.
   formerTag: { en: 'Former', fr: 'Ancien' },
   showNMore: { en: 'Show # more', fr: 'Voir les # autres' },
+  // `design/v2` Mineur.dc.html — the panel that saves a thin page by
+  // NAMING what is missing instead of leaving holes.
+  incompleteTitle: { en: 'This page is incomplete', fr: 'Cette page est incomplète' },
+  incompleteBody: {
+    en:
+      '# properties expected for a @ have no value here. They are named, not guessed — if the work does not say, mark it as such rather than leaving it empty.',
+    fr:
+      '# propriétés attendues pour un @ n’ont pas de valeur ici. Elles sont nommées, pas devinées — si l’information n’existe pas dans l’œuvre, marque-la comme telle plutôt que de la laisser vide.',
+  },
+  /*
+   * The singular is a SEPARATE sentence, not the plural with a
+   * swapped noun: French agrees the participle and the verb too
+   * (« attendue … n'a »), so a `s`-appending helper would have got it
+   * wrong. One missing property is the common case on a rich page.
+   */
+  incompleteBodyOne: {
+    en:
+      'One property expected for a @ has no value here. It is named, not guessed — if the work does not say, mark it as such rather than leaving it empty.',
+    fr:
+      'Une propriété attendue pour un @ n’a pas de valeur ici. Elle est nommée, pas devinée — si l’information n’existe pas dans l’œuvre, marque-la comme telle plutôt que de la laisser vide.',
+  },
+  incompleteCta: { en: 'Complete this page', fr: 'Compléter cette page' },
+  incompleteNote: {
+    en: 'Your contribution goes out as a pull request, reviewed before publication.',
+    fr: 'Ta contribution part en pull request, relue avant publication.',
+  },
+  // `design/v2` hero chip: « 342 apparitions lues sur 1044 ».
+  appearancesRead: { en: '# of @ appearances read', fr: '# apparitions lues sur @' },
   showLess: { en: 'Show less', fr: 'Réduire' },
 
   // v9 per-type layouts (append-only).
