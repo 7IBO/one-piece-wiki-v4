@@ -11,6 +11,15 @@ name: fandom-import
 on:
   workflow_dispatch:
     inputs:
+      pages:
+        description: >-
+          Optional exact page titles, separated by | — e.g.
+          Episode 747|Episode 1071. Given, they are crawled INSTEAD of
+          walking the category, which is the only way to repair a
+          named hole: a category walk that skipped a page once will
+          skip it again.
+        required: false
+        default: ''
       category:
         description: >-
           Fandom category to crawl, EXACT name without the Category: prefix.
@@ -18,7 +27,8 @@ on:
           Real ones: One Piece Chapters, Episodes, Characters, Humans,
           Devil Fruits, Pirate Crews, Story Arcs, Locations, One Piece Volumes.
           Full list: docs/audits/fandom-structure-*.json (2641 categories).
-        required: true
+        required: false
+        default: 'One Piece Chapters'
       limit:
         description: 'Max pages to fetch this run'
         required: true
@@ -62,15 +72,26 @@ jobs:
       - uses: oven-sh/setup-bun@v2
       - run: bun install --frozen-lockfile
       - run: bun run schema:generate
+      # Named pages take precedence over the category walk. The two
+      # modes are exclusive on purpose: mixing them would re-walk the
+      # category on every repair run, which is ten rate-limited
+      # minutes to fetch two pages.
       - name: Crawl and stage
-        run: >
-          bun run import:fandom crawl
-          --category "${{ github.event.inputs.category }}"
-          --depth "${{ github.event.inputs.depth }}"
-          --limit "${{ github.event.inputs.limit }}"
-          ${{ github.event.inputs.skip_known == 'true' && '--skip-known' || '' }}
-          ${{ github.event.inputs.overwrite == 'true' && '--overwrite' || '' }}
-          --stage
+        run: |
+          if [ -n "${{ github.event.inputs.pages }}" ]; then
+            IFS='|' read -ra TITLES <<< "${{ github.event.inputs.pages }}"
+            ARGS=()
+            for t in "${TITLES[@]}"; do ARGS+=(--page "$t"); done
+            bun run import:fandom crawl "${ARGS[@]}" --limit "${{ github.event.inputs.limit }}" \
+              ${{ github.event.inputs.overwrite == 'true' && '--overwrite' || '' }} --stage
+          else
+            bun run import:fandom crawl \
+              --category "${{ github.event.inputs.category }}" \
+              --depth "${{ github.event.inputs.depth }}" \
+              --limit "${{ github.event.inputs.limit }}" \
+              ${{ github.event.inputs.skip_known == 'true' && '--skip-known' || '' }} \
+              ${{ github.event.inputs.overwrite == 'true' && '--overwrite' || '' }} --stage
+          fi
       # The CRAWL is the expensive, unrepeatable artifact: ten
       # rate-limited minutes that cannot be replayed cheaply. So it
       # reaches a branch BEFORE anything is allowed to judge it.
