@@ -134,7 +134,50 @@ attend un arbitrage comme les trois autres :
   d'édition, pas un spoiler d'intrigue, et seuls les titres comptent.
   C'est ce qui est implémenté aujourd'hui, sans avoir été décidé.
 
-## 2026-08-28 — Les adaptations aberrantes : 134 chapitres sur 1145
+## 2026-08-28 — Les adaptations : DIAGNOSTIQUÉES, et je m'étais trompé
+
+Le champ brut, obtenu en CI (run 33193011980) pour le chapitre 1 :
+
+```
+We Are! (p. 1, 49-51)   Episode 4 (p. 6-47)   Episode 504 (p. 48-53)
+Episode of Luffy (p. 4-47)   Episode of East Blue (p. 4-53)
+Episode 878 (p. 4-21, 27-53)
+```
+
+**`[4, 504, 878]` n'est PAS une valeur fausse.** J'avais écrit
+« valeurs manifestement fausses » ; c'est démenti. Fandom liste, pour
+chaque chapitre, TOUTES les œuvres qui l'adaptent AVEC LES PAGES
+qu'elles couvrent. Les épisodes 4, 504 et 878 adaptent réellement des
+parties du chapitre 1.
+
+Une chose conçue exprès fonctionne : `Episode of Luffy` et
+`Episode of East Blue` n'ont pas de numéro, donc le parseur les exclut
+**par construction** plutôt que par une liste d'exceptions.
+
+### Ce qui reste vrai, et qui est plus intéressant
+
+Le défaut n'est pas dans le parseur mais dans la RELATION : `adapted-by`
+ne garde ni la **plage de pages**, ni le **rôle** (adaptation
+principale, récapitulatif, spécial). On jette un signal que la source
+donne, puis la page affiche les six à égalité.
+
+Et ça rouvre une porte que j'avais fermée : pour ADR-123 j'ai écarté la
+dérivation manga→anime en disant `adapted-by` sale. **Elle ne l'est
+pas.** L'adaptation principale est identifiable — c'est celle dont la
+plage de pages est la plus large (`Episode 4`, pp. 6-47, contre 48-53
+pour la 504). Ajouter un qualificatif à une relation demande un ADR et
+un passage par `DATA_MODEL.md` d'abord.
+
+### Un cas non reproductible
+
+`manga-chapter:598` porte `anime-episode:1` dans le corpus, mais un
+re-crawl des chapitres 594-600 (run 33193310199) n'a produit **aucun**
+avertissement — alors qu'un écart de 517 en aurait déclenché un. La
+page d'aujourd'hui ne donne donc plus l'épisode 1 : notre valeur est un
+**reliquat**, pas une lecture actuelle. À confirmer par un run
+`overwrite` ciblé avant de la corriger.
+
+## 2026-08-28 — (mesure initiale, corrigée ci-dessus) 134 chapitres sur 1145
 
 **Correction d'une mesure trop stricte.** J'avais d'abord compté « 194
 chapitres sur 700 ont des adaptations NON CONTIGUËS ». C'était le
