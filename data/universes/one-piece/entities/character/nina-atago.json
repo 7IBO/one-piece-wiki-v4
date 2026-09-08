@@ -1,0 +1,21 @@
+{
+  "id": "character:nina-atago",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "nina-atago",
+  "canonical_name_key": "character.nina-atago.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.nina-atago.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

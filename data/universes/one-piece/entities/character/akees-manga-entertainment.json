@@ -1,0 +1,37 @@
+{
+  "id": "character:akees-manga-entertainment",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "akees-manga-entertainment",
+  "canonical_name_key": "character.akees-manga-entertainment.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.akees-manga-entertainment.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.akees-manga-entertainment.name.akisu-bstation",
+        "name_type": "alias"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.akees-manga-entertainment.epithet.thief-brothers"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "thief"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,34 @@
+{
+  "id": "character:andre",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "andre",
+  "canonical_name_key": "character.andre.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.andre.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:558"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:558"
+      }
+    ],
+    "birthday": {
+      "value": "05-19"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:558"
+      }
+    ]
+  },
+  "relations": []
+}

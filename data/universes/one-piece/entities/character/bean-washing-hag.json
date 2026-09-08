@@ -1,0 +1,23 @@
+{
+  "id": "character:bean-washing-hag",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bean-washing-hag",
+  "canonical_name_key": "character.bean-washing-hag.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bean-washing-hag.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:940"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:940"
+      }
+    ]
+  },
+  "relations": []
+}

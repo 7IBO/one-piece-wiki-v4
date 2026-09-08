@@ -1,0 +1,41 @@
+{
+  "id": "character:baskerville",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "baskerville",
+  "canonical_name_key": "character.baskerville.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.baskerville.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:379"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.baskerville.epithet.three-headed-baskerville",
+        "since": "manga-chapter:379"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:379"
+      }
+    ],
+    "height": [
+      {
+        "value": 512,
+        "source": "databook-card:0413"
+      }
+    ],
+    "birthday": {
+      "value": "03-30"
+    },
+    "blood_type": {
+      "value": "Bas: X And: XF Kerville: F"
+    }
+  },
+  "relations": []
+}

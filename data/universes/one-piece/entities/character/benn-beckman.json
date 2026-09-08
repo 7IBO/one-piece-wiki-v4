@@ -1,0 +1,48 @@
+{
+  "id": "character:benn-beckman",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "benn-beckman",
+  "canonical_name_key": "character.benn-beckman.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.benn-beckman.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1"
+      },
+      {
+        "value_key": "character.benn-beckman.name.ben-beckman-viz-formerly",
+        "name_type": "alias",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "height": [
+      {
+        "value": 206,
+        "source": "databook-card:0020"
+      }
+    ],
+    "birthday": {
+      "value": "11-09"
+    },
+    "blood_type": {
+      "value": "X"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:1"
+      }
+    ]
+  },
+  "relations": []
+}

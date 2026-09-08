@@ -1,0 +1,17 @@
+{
+  "id": "crew:amigo-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "amigo-pirates",
+  "canonical_name_key": "crew.amigo-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.amigo-pirates.name.common",
+        "name_type": "common",
+        "since": "anime-episode:426"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "character:beret-wt100",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "beret-wt100",
+  "canonical_name_key": "character.beret-wt100.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.beret-wt100.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:537"
+      },
+      {
+        "value_key": "character.beret-wt100.name.bellett-opcg",
+        "name_type": "alias",
+        "since": "manga-chapter:537"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:537"
+      }
+    ]
+  },
+  "relations": []
+}

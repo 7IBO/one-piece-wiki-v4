@@ -1,0 +1,42 @@
+{
+  "id": "character:butler-manga-entertainment",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "butler-manga-entertainment",
+  "canonical_name_key": "character.butler-manga-entertainment.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.butler-manga-entertainment.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.butler-manga-entertainment.name.battler-bstation-opcg",
+        "name_type": "alias"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.butler-manga-entertainment.epithet.earl-battler"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 14900000
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "musician"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

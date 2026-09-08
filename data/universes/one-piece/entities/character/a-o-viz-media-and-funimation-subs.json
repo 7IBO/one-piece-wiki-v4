@@ -1,0 +1,39 @@
+{
+  "id": "character:a-o-viz-media-and-funimation-subs",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "a-o-viz-media-and-funimation-subs",
+  "canonical_name_key": "character.a-o-viz-media-and-funimation-subs.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.a-o-viz-media-and-funimation-subs.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:551"
+      },
+      {
+        "value_key": "character.a-o-viz-media-and-funimation-subs.name.a-o-funimation-dub",
+        "name_type": "alias",
+        "since": "manga-chapter:551"
+      }
+    ],
+    "status": [
+      {
+        "value": "unknown",
+        "since": "manga-chapter:551"
+      }
+    ],
+    "birthday": {
+      "value": "01-15"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:551"
+      }
+    ]
+  },
+  "relations": []
+}

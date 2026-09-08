@@ -1,0 +1,35 @@
+{
+  "id": "character:aisa",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "aisa",
+  "canonical_name_key": "character.aisa.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.aisa.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:249"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:249"
+      }
+    ],
+    "height": [
+      {
+        "value": 140,
+        "source": "databook-card:0292"
+      }
+    ],
+    "birthday": {
+      "value": "01-03"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

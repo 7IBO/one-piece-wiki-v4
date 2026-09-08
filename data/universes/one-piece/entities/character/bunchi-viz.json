@@ -1,0 +1,28 @@
+{
+  "id": "character:bunchi-viz",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bunchi-viz",
+  "canonical_name_key": "character.bunchi-viz.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bunchi-viz.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:114"
+      },
+      {
+        "value_key": "character.bunchi-viz.name.bunch-wt100",
+        "name_type": "alias",
+        "since": "manga-chapter:114"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:114"
+      }
+    ]
+  },
+  "relations": []
+}

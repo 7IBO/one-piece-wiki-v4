@@ -1,0 +1,46 @@
+{
+  "id": "character:absalom",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "absalom",
+  "canonical_name_key": "character.absalom.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.absalom.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:444"
+      },
+      {
+        "value_key": "character.absalom.name.absa",
+        "name_type": "alias",
+        "since": "sbs:volume-71"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.absalom.epithet.absalom-of-the-graveyard",
+        "since": "manga-chapter:449"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:444"
+      }
+    ],
+    "height": [
+      {
+        "value": 195,
+        "source": "databook-card:0472"
+      }
+    ],
+    "birthday": {
+      "value": "12-30"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

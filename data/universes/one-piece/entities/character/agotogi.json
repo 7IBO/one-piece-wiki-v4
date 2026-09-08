@@ -1,0 +1,23 @@
+{
+  "id": "character:agotogi",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "agotogi",
+  "canonical_name_key": "character.agotogi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.agotogi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:163"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:163"
+      }
+    ]
+  },
+  "relations": []
+}

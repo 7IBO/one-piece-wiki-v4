@@ -1,0 +1,28 @@
+{
+  "id": "character:heercomes-dasun",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "heercomes-dasun",
+  "canonical_name_key": "character.heercomes-dasun.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.heercomes-dasun.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:483"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:483"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 100000
+      }
+    ]
+  },
+  "relations": []
+}

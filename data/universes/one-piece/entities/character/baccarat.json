@@ -1,0 +1,23 @@
+{
+  "id": "character:baccarat",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "baccarat",
+  "canonical_name_key": "character.baccarat.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.baccarat.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:829"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:829"
+      }
+    ]
+  },
+  "relations": []
+}
