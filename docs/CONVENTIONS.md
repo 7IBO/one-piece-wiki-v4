@@ -26,10 +26,28 @@ contains the number: `manga-chapter:1044`, not `manga-chapter:nika-reveal`.
 - English only
 - Maximum 60 characters
 - No special characters other than `-`
+- **No parenthesised data** — see below
 - Should match the most widely-used name in the English-speaking community
 
 Examples: `monkey-d-luffy`, `gomu-gomu-no-mi` (not `gum-gum-fruit`,
 `straw-hat-pirates`, `battle-of-marineford`).
+
+#### No parenthesised data (ADR-124)
+
+A parenthesis in a source name never carries the identity of the thing;
+it carries a qualifier — an edition (`Belle-Mère (VIZ Media)`), a
+disambiguator (`Zeus (Homies)`), a precision (`Mr. 3 (Galdino)`). It is
+stripped from the slug, and only from the slug: the DISPLAY name keeps
+what the source writes.
+
+    Mr. 3 (Galdino)   → id character:mr-3,      name "Mr. 3 (Galdino)"
+    Belle-Mère (VIZ)  → id character:belle-mere
+
+Enforced in ONE place — `packages/importers/src/slug.ts`, the single
+`slugify` every id passes through. Two source pages that differ only by
+their parenthesis therefore collapse onto one slug; `import:fandom
+crawl` refuses the second and names the page that took the id, rather
+than merging two entities into one.
 
 When a slug changes (rename, disambiguation), the old slug is appended to
 `slug_history` to generate redirects.

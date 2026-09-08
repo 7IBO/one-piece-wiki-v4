@@ -229,7 +229,22 @@ if (kind === 'crawl') {
 
   const importedAt = new Date().toISOString();
   const imported: ImportedPage[] = [];
+  // Deux pages distinctes qui produisent le MEME id sont deux entites
+  // confondues, pas une re-import. `stageToLocal` ne peut pas faire la
+  // difference : il voit un fichier deja present et le saute (ou, avec
+  // `--overwrite`, fond les deux en une chimere). Le run, lui, sait
+  // de quelle page vient chaque id — c'est donc ici que ca se refuse.
+  // Le cas est devenu atteignable en retirant les parentheses du slug
+  // (`../slug.ts`) : Fandom desambigue par parenthese.
+  const pageOfId = new Map<string, string>();
+  const collisions: { readonly page: string; readonly id: string; readonly first: string; }[] = [];
   for (const r of report.results) {
+    const seenOn = pageOfId.get(r.mapped.entity.id);
+    if (seenOn !== undefined && seenOn !== r.page.title) {
+      collisions.push({ page: r.page.title, id: r.mapped.entity.id, first: seenOn });
+      continue;
+    }
+    pageOfId.set(r.mapped.entity.id, r.page.title);
     const files = buildEmitFiles(r.mapped);
     if (stage) {
       // eslint-disable-next-line no-await-in-loop
@@ -247,6 +262,17 @@ if (kind === 'crawl') {
     await saveRegistry(next);
     process.stdout.write(
       `  ledger: ${imported.length} page(s) recorded, ${next.pages.length} tracked total\n`,
+    );
+  }
+  if (collisions.length > 0) {
+    process.stdout.write(
+      `\n${collisions.length} page(s) REFUSEE(S) — id deja produit dans ce run :\n`,
+    );
+    for (const c of collisions) {
+      process.stdout.write(`  ${c.page} → ${c.id} (deja pris par ${c.first})\n`);
+    }
+    process.stdout.write(
+      '  Deux pages Fandom pour une seule entite, ou une desambiguisation perdue.\n',
     );
   }
   const skipNote = report.skippedKnown > 0 ? `, ${report.skippedKnown} already known` : '';

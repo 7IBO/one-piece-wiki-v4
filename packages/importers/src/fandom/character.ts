@@ -19,7 +19,7 @@
  * Anything unresolved, "former"-annotated, or fuzzy stays a warning
  * for the AI-extraction / human pass.
  */
-import { isPlaceholderName } from './box.ts';
+import { isPlaceholderName, slugify } from './box.ts';
 import type { ParsedPage } from './client.ts';
 import { extractWikiLinks, resolveTitle, type TitleIndex } from './registry.ts';
 import {
@@ -198,22 +198,16 @@ export function parseBirthday(value: string): string | null {
  * `;` qui separe les entrees : « Belle-Mère (VIZ Media); » devient
  * « Belle-Mère ».
  *
- * Appele UNIQUEMENT sur un `ename` multi-ligne (voir `mapCharacter`) :
- * la parenthese n'est une edition que parce que le champ entier est
- * une liste par edition. Aucune liste d'editeurs a maintenir — c'est
- * la structure du champ qui porte l'information, pas un vocabulaire.
+ * Ne concerne plus que le NOM AFFICHE. L'id, lui, ne contient jamais
+ * de parenthese — `slugify` les retire toutes (voir `../slug.ts`), ce
+ * qui rend la regle inutile de ce cote. Elle reste ici parce qu'un
+ * nom affiche « Belle-Mère (VIZ Media); » serait faux : la parenthese
+ * n'est une edition que parce que le champ entier est une liste par
+ * edition, et c'est la structure du champ qui le dit — pas une liste
+ * d'editeurs a maintenir.
  */
 export function stripEditionMarker(line: string): string {
   return line.replace(/\s*\([^()]*\)\s*;?\s*$/, '').replace(/\s*;\s*$/, '').trim();
-}
-
-function slugify(name: string): string {
-  return name
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
 }
 
 export function mapCharacter(
@@ -265,11 +259,14 @@ export function mapCharacter(
   // des ids IMMUABLES pour 139 personnages corrects afin d'en reparer
   // neuf. Le remede aurait ete pire.
   //
-  // La regle est donc etroite et tiree de la forme du champ : une
-  // parenthese finale sur une ligne d'un `ename` MULTI-LIGNE est une
-  // mention d'edition, parce que tout le champ est une liste par
-  // edition. Sur un `ename` d'une seule ligne on ne touche a rien —
-  // une parenthese y appartient vraisemblablement au nom.
+  // Cote ID la question est reglee ailleurs et pour tout le monde :
+  // `slugify` retire TOUTE parenthese (../slug.ts), donc
+  // « Mr. 3 (Galdino) » comme « Belle-Mère (VIZ Media) » donnent
+  // `mr-3` et `belle-mere`. Ce qui reste ici est le NOM AFFICHE, et
+  // seulement sur un `ename` multi-ligne : la parenthese n'y est une
+  // mention d'edition que parce que tout le champ est une liste par
+  // edition. Sur une seule ligne le nom affiche garde ce que la page
+  // ecrit.
   const lines = splitLines(enNameRaw);
   const multi = lines.length > 1;
   const [canonicalRaw = '', ...variantRaws] = lines;

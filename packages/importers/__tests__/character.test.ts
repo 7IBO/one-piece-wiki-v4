@@ -251,11 +251,20 @@ describe("`ename` multi-ligne : la mention d'edition n'est pas le nom", () => {
     expect(values).toContain('Bell-mère (OPCG)');
   });
 
-  it("ne touche PAS a une parenthese sur un `ename` d'une seule ligne", () => {
-    // Sur une ligne unique la parenthese appartient vraisemblablement
-    // au nom : rien ne dit que c'est une edition.
+  it('retire la parenthese du SLUG meme sur une seule ligne', () => {
+    // Regle produit : aucune donnee entre parentheses dans un id.
+    // Ce test disait l'inverse il y a un commit — la parenthese d'une
+    // ligne unique etait gardee faute de savoir ce qu'elle portait.
     const result = mapCharacter(page('Mr. 3', 'Mr. 3 (Galdino)'));
-    expect(result!.entity.slug).toBe('mr-3-galdino');
+    expect(result!.entity.slug).toBe('mr-3');
+    expect(result!.entity.id).toBe('character:mr-3');
+  });
+
+  it("garde la parenthese dans le NOM AFFICHE d'une ligne unique", () => {
+    // La regle porte sur l'id, pas sur ce que la page ecrit.
+    const result = mapCharacter(page('Mr. 3', 'Mr. 3 (Galdino)'));
+    const key = result!.entity.canonical_name_key;
+    expect(result!.translations['en']?.[key]).toBe('Mr. 3 (Galdino)');
   });
 
   it("n'invente aucun alias sur le cas ordinaire", () => {

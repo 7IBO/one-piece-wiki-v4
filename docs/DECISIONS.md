@@ -7626,6 +7626,71 @@ clic, dans un dialogue qui propose déjà les deux axes.
 
 ---
 
+## ADR-124 — Aucune donnée entre parenthèses dans un id ; une seule `slugify`
+
+**Date**: 2026-09-08
+
+**Context**: `CLAUDE.md` pose que les ids suivent `type:slug` et que les
+slugs sont du kebab-case anglais. Il ne disait rien des parenthèses, et
+Fandom en met partout — mais **jamais pour nommer la chose** :
+
+- une édition — `Belle-Mère (VIZ Media)` ;
+- une désambiguïsation — `Zeus (Homies)` ;
+- une précision — `Mr. 3 (Galdino)`.
+
+Le correctif précédent (commit `6de2397`) ne coupait la parenthèse que
+sur un `ename` MULTI-LIGNE, en assumant qu'une parenthèse sur une seule
+ligne appartenait au nom. Les trois formes ci-dessus démentent cette
+distinction : aucune n'est l'identité.
+
+Mesuré avant de changer quoi que ce soit : **1 entité du corpus sur
+2557** porte une parenthèse dans son nom canonique
+(`document:luffy-first-wanted-poster`, dont le slug l'excluait déjà à
+la main), et **0 des 2485 pages du registre** en porte dans son titre.
+La règle est donc préventive — elle ne réécrit aucun id existant.
+
+Second constat, trouvé en cherchant l'endroit où l'appliquer : il y
+avait **trois** `slugify` copiées. Celle de `fandom/box.ts` respectait
+la borne de 60 du primitif `Slug` ; celles de `fandom/character.ts` et
+`onepiece-api/common.ts` ne la respectaient pas et pouvaient donc
+produire un id que Zod refuse.
+
+**Options**:
+
+- A — Retirer les parenthèses dans chaque mapper, au cas par cas.
+- B — Les retirer dans `slugify`, et n'avoir qu'une `slugify`.
+- C — Garder la règle étroite du multi-ligne.
+
+**Choice**: B.
+
+**Rationale**: la règle porte sur les ids, et `slugify` est le seul
+entonnoir par lequel un id passe. L'y mettre la rend impossible à
+oublier pour un mapper futur — c'est exactement ce qui avait manqué
+avec la borne de 60. A la disperse en douze copies ; C a déjà été
+démentie par les données.
+
+La règle ne touche que le SLUG. Le nom AFFICHÉ garde ce que la source
+écrit : `Mr. 3 (Galdino)` reste le nom, `character:mr-3` devient l'id.
+La seule exception au nom affiché reste `stripEditionMarker`, sur un
+`ename` multi-ligne, où c'est la structure du champ (une liste par
+édition) qui prouve ce que la parenthèse porte.
+
+**Consequences**: `packages/importers/src/slug.ts` est la source unique ;
+`fandom/box.ts` et `onepiece-api/common.ts` la ré-exportent, la surface
+publique du paquet ne bouge pas. `character.ts` perd sa copie et gagne
+au passage la borne de 60.
+
+Contrepartie assumée, et c'est la seule : deux pages que Fandom ne
+distingue QUE par leur parenthèse retombent sur le même slug.
+`stageToLocal` ne pouvait pas voir la différence — il saute un fichier
+déjà présent, ou le fond dans le premier avec `--overwrite`, ce qui
+fabriquerait une chimère. `import:fandom crawl` **refuse** désormais la
+seconde page d'un id déjà produit dans le même run et la liste avec la
+page qui a pris l'id. Répond au « id unique alors vérifie » du
+mainteneur : le doublon se signale au lieu de s'écraser.
+
+---
+
 ---
 
 ## Template for new entries
