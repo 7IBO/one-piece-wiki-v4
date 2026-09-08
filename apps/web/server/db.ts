@@ -133,10 +133,36 @@ type Statements = {
 };
 
 let statements: Statements | null = null;
+/**
+ * The path `statements` was opened against.
+ *
+ * Memoising the handle UNCONDITIONALLY was a latent flaw: it assumed
+ * that whoever calls first has already decided which artifact to read.
+ * That holds in production — `ONEPIECE_DB_PATH` is set once, before
+ * anything runs — but not under `bun test`, where the display-name
+ * suite grafts synthetic entities onto a COPY of the artifact and
+ * points at it via that variable in its `beforeAll`.
+ *
+ * Whether that works depended on Bun giving each test FILE its own
+ * module registry: with isolation the suite opens its own copy, and
+ * without it, an earlier file (views, search) has already opened the
+ * real artifact and the fixture is silently ignored — all seven tests
+ * then fail with « no view for character/renamed-later ». CI on Bun
+ * 1.3.6 hit exactly that while 1.3.11 locally did not, which is why
+ * the suite looked green everywhere it was run by hand.
+ *
+ * Keying the cache on the PATH costs one string comparison and makes
+ * the answer independent of file order and of Bun's isolation: the
+ * handle is reused while the target is the same, and reopened when it
+ * changes. Production behaviour is untouched — the path never changes
+ * there.
+ */
+let statementsPath: string | null = null;
 
 function getStatements(): Statements {
-  if (statements !== null) return statements;
-  const path = resolveDbPath();
+  const wanted = resolveDbPath();
+  if (statements !== null && statementsPath === wanted) return statements;
+  const path = wanted;
   if (!existsSync(path)) {
     throw new Error(
       `SQLite artifact not found at ${path}. Run \`bun run build:db\` first `
@@ -144,6 +170,7 @@ function getStatements(): Statements {
     );
   }
   const db = new Database(path, { readonly: true });
+  statementsPath = path;
   const entityColumns = 'id, type, slug, canonical_name_key, first_appearance_source, data';
   statements = {
     typeCounts: db.prepare(

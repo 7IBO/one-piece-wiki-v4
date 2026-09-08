@@ -49,6 +49,7 @@ const SECRET_AT = 900;
 const cursor = (manga: number | null = null): ProgressCursor => ({ manga, anime: null });
 
 let workdir: string | null = null;
+const previousDbPath = process.env['ONEPIECE_DB_PATH'];
 
 /**
  * Copy the real artifact and graft the two synthetic entities onto it,
@@ -164,6 +165,13 @@ beforeAll(() => {
 });
 
 afterAll(() => {
+  // La variable est globale au PROCESSUS : la laisser pointer un
+  // dossier qu'on vient de supprimer casse tout fichier dont le
+  // premier accès à la base vient après. Latent tant que `db.ts`
+  // mémoïsait son handle sans retenir le chemin ; actif dès qu'il le
+  // retient. Restaurer, pas seulement nettoyer.
+  if (previousDbPath === undefined) delete process.env['ONEPIECE_DB_PATH'];
+  else process.env['ONEPIECE_DB_PATH'] = previousDbPath;
   if (workdir !== null) rmSync(workdir, { recursive: true, force: true });
 });
 
