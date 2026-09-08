@@ -589,6 +589,37 @@ function entityTypeLabel(cat: ValidatedCatalogue, type: string, locale: Locale):
   return schema === undefined ? humanize(type) : pickLabel(schema.labels, locale);
 }
 
+/**
+ * Libelle du type pour un usage INLINE — un lien, une puce, une ligne
+ * secondaire — ou le contexte porte deja la distinction.
+ *
+ * « Manga chapter 1192 » est juste et illisible : dans « Latest
+ * releases » ou sur la fiche d'un volume, personne ne se demande de
+ * quel media il s'agit. Le type declare donc `short_labels` au SCHEMA
+ * (« Chapter » / « Chapitre ») et on retombe sur `labels` quand il
+ * n'en declare pas — aucun id en dur ici, aucune abreviation devinee.
+ */
+function entityTypeShortLabel(cat: ValidatedCatalogue, type: string, locale: Locale): string {
+  const schema = cat.entityTypes.get(type);
+  if (schema === undefined) return humanize(type);
+  const short = schema.short_labels;
+  return short === undefined ? pickLabel(schema.labels, locale) : pickLabel(short, locale);
+}
+
+/**
+ * Ce type a-t-il sa place dans les rubriques du wiki public ?
+ *
+ * Le drapeau vient du schema (`public_listing`), pas d'une liste dans
+ * le template : `streaming-platform` est de la donnee de production —
+ * utile sur la fiche d'un episode, sans interet comme rubrique. La
+ * page de l'entite reste servie a son URL, et une relation qui la
+ * cible s'affiche toujours ; seules l'ACCUEIL et la RECHERCHE cessent
+ * de la proposer comme quelque chose a parcourir.
+ */
+function isPubliclyListed(cat: ValidatedCatalogue, type: string): boolean {
+  return cat.entityTypes.get(type)?.public_listing !== false;
+}
+
 function vocabValueLabel(
   cat: ValidatedCatalogue,
   enumRef: string | undefined,
@@ -677,7 +708,7 @@ function slugLabel(
   locale: Locale,
 ): string {
   if (!/^\d+$/.test(slug)) return humanize(slug);
-  return `${entityTypeLabel(cat, type, locale)} ${slug}`;
+  return `${entityTypeShortLabel(cat, type, locale)} ${slug}`;
 }
 
 function chipForRow(
@@ -1389,7 +1420,8 @@ function buildCrossed(
   const propertyId = ordinalPropertyOf(cat, primary.sourceType);
   if (propertyId === null) return [];
   const index = ordinalIndexFor(primary.sourceType, propertyId);
-  const typeLabel = entityTypeLabel(cat, primary.sourceType, locale);
+  // Inline sous une tuile : « Chapter 100 », pas « Manga chapter 100 ».
+  const typeLabel = entityTypeShortLabel(cat, primary.sourceType, locale);
   const out: CrossedView[] = [];
   for (let n = primary.at; n >= 0 && out.length < HOME_CROSSED; n -= 1) {
     const row = index.get(n);
@@ -1491,7 +1523,7 @@ function buildReleases(
       const bucket = byAxis.get(sourceType) ?? [];
       bucket.push({
         sourceType,
-        typeLabel: entityTypeLabel(cat, sourceType, locale),
+        typeLabel: entityTypeShortLabel(cat, sourceType, locale),
         slug: row.slug,
         number,
         releasedAt: latestVisibleDisplay(row, 'released_at', cat, locale, cursor),
@@ -1551,6 +1583,10 @@ export async function buildHomeView(locale: Locale, cursor: ProgressCursor): Pro
   const visible = new Map<string, number>();
   for (const row of db.listGateKeys()) {
     if (!isEntityVisible(row, cursor)) continue;
+    // Un type non repertorie ne compte pas non plus dans « entities
+    // indexed » : le total doit dire ce qui est PARCOURABLE, sinon il
+    // annonce quatre pages que rien ne mene nulle part.
+    if (!isPubliclyListed(cat, row.type)) continue;
     total += 1;
     visible.set(row.type, (visible.get(row.type) ?? 0) + 1);
   }
@@ -2578,6 +2614,12 @@ export async function buildEntityPreview(
     if (entry.id === secondaryProperty) continue;
     const value = entry.entry.display;
     if (value === '' || value === '—') continue;
+    // Ni le nom une deuxieme fois. Le titre de la carte le porte deja,
+    // et la fiche d'un equipage affichait « Straw Hat Pirates » en
+    // gras puis « NAME · Straw Hat Pirates » deux lignes plus bas. La
+    // comparaison porte sur la VALEUR, pas sur un id de propriete :
+    // c'est vrai quel que soit le champ dont le nom est tire.
+    if (value === chip.name) continue;
     facts.push({ label: entry.label, value });
   }
   return {

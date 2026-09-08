@@ -1,23 +1,19 @@
 /**
  * Quiet strip at the bottom of every entity page linking to the
  * dashboard (view/edit + history) for the same entity — WEB_APP.md
- * § contribute strip. `VITE_DASHBOARD_URL` is a build-time env
- * override; default is the production dashboard.
+ * § contribute strip. The dashboard address lives in `lib/dashboard`
+ * (`VITE_DASHBOARD_URL` overrides it at build time).
  */
 import { type ReactElement } from 'react';
 import { t } from '../lib/chrome';
+import { dashboardEntityUrl } from '../lib/dashboard';
 import { useLocale } from '../routes/__root';
-
-const envUrl: unknown = import.meta.env['VITE_DASHBOARD_URL'];
-const DASHBOARD_URL: string = typeof envUrl === 'string' && envUrl !== ''
-  ? envUrl.replace(/\/$/, '')
-  : 'https://one-piece-wiki-v4-dashboard.vercel.app';
 
 export function ContributeStrip(
   { type, slug }: { readonly type: string; readonly slug: string; },
 ): ReactElement {
   const locale = useLocale();
-  const base = `${DASHBOARD_URL}/types/${type}/${slug}`;
+  const base = dashboardEntityUrl(type, slug);
   return (
     <div className='mt-14 flex flex-wrap items-center gap-x-4 gap-y-2.5 border-t border-line pt-5 text-[13px] text-muted'>
       <span>{t(locale, 'contributeLead')}</span>

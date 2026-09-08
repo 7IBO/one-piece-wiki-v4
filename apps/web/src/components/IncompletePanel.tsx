@@ -13,10 +13,10 @@
  * subtracts what the entity carries, and nothing here knows the name
  * of a single property.
  */
-import { Link } from '@tanstack/react-router';
 import type { ReactElement } from 'react';
 import type { LabelledValue } from '../api';
 import { type Locale, t } from '../lib/chrome';
+import { dashboardEntityUrl } from '../lib/dashboard';
 
 export function IncompletePanel(
   { missing, typeLabel, type, slug, locale }: {
@@ -47,13 +47,19 @@ export function IncompletePanel(
         ))}
       </ul>
       <div className='mt-4 flex flex-wrap items-center gap-x-4 gap-y-2'>
-        <Link
-          to='/e/$type/$slug'
-          params={{ type, slug }}
+        {
+          /* Vers le DASHBOARD, pas vers `/e/<type>/<slug>` : cette
+            route-la redirige en 301 vers la page courante, donc le
+            bouton rechargeait la page au lieu d'ouvrir l'edition. */
+        }
+        <a
+          href={dashboardEntityUrl(type, slug)}
+          target='_blank'
+          rel='noreferrer'
           className='rounded-md bg-gold px-3.5 py-2 text-[13px] font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
         >
           {t(locale, 'incompleteCta')}
-        </Link>
+        </a>
         <p className='text-xs text-faint'>{t(locale, 'incompleteNote')}</p>
       </div>
     </section>

@@ -89,12 +89,6 @@ const STRINGS = {
   },
   homeTitleHidden: { en: 'Title hidden', fr: 'Titre masqué' },
   homeExplore: { en: 'Explore the universe', fr: 'Explorer l’univers' },
-  homeCommunity: { en: 'The community', fr: 'La communauté' },
-  homeSoon: { en: 'Soon', fr: 'Bientôt' },
-  homeCommunityNote: {
-    en: 'The forum will gate threads beyond your progress, like the rest of the site.',
-    fr: 'Le forum filtrera les fils au-delà de ta progression, comme le reste du site.',
-  },
   homeContinue: { en: 'Continue', fr: 'Continuer' },
   progressTitle: { en: 'My progress', fr: 'Ma progression' },
   progressHint: {

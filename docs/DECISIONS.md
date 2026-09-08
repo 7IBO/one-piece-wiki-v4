@@ -7817,6 +7817,57 @@ l'ignorer depuis le premier jour.
 
 ---
 
+## ADR-127 — Ce qu'un type d'entité montre au public se déclare au schéma
+
+**Date**: 2026-09-08
+
+**Context**: deux demandes du mainteneur, un seul défaut derrière.
+
+1. « l'entity type platform n'est pas utile a afficher dans web, on
+   peut cacher ? » — `streaming-platform` (Crunchyroll, Netflix,
+   4 entités) occupait une tuile d'« Explore the universe » à côté de
+   `manga-chapter` et ses 1193.
+2. « les liens episode doivent etre "episode", chapitre doivent etre
+   "chapter" » — « Latest releases » affichait « Manga chapter 1192 »
+   et « Anime episode 1176 ».
+
+Les deux se règlent d'un `if` dans le template, et c'est exactement ce
+que `CLAUDE.md` refuse : « No property name is hardcoded in application
+code ». Une liste `['streaming-platform']` ou une table
+`{'manga-chapter': 'Chapter'}` dans `apps/web` sont des ids codés en
+dur, et le prochain type ajouté ne serait couvert par ni l'une ni
+l'autre.
+
+**Options**:
+
+- A — Deux `if` dans le template.
+- B — Deux champs optionnels au SCHÉMA du type d'entité.
+
+**Choice**: B. `public_listing: boolean = true` et
+`short_labels: {en, fr}` (optionnel).
+
+**Rationale**: ce sont des faits sur le TYPE, pas sur la page qui
+l'affiche. Un type sait s'il est une rubrique à parcourir ou de la
+donnée de production ; il sait comment il s'appelle quand le contexte
+porte déjà la distinction. Un type ajouté demain déclare les deux — ou
+ne déclare rien et hérite du comportement par défaut, qui reste juste.
+
+`short_labels` ne remplace pas `labels` : hors contexte il faut encore
+distinguer le chapitre du manga de l'épisode de l'anime, donc le titre
+de la page garde « Manga chapter » et seul l'INLINE raccourcit. Deux
+usages distincts, deux champs, `entityTypeShortLabel` retombe sur
+`labels` quand `short_labels` manque.
+
+**Consequences**: `public_listing: false` retire le type de l'accueil
+ET de la recherche, et le décompte « entities indexed » passe de 2557 à
+2553 — le total doit dire ce qui est **parcourable**, sinon il annonce
+quatre pages que rien ne mène nulle part. Il ne cache rien d'autre : la
+page de l'entité est toujours servie à son URL et une relation qui la
+cible s'affiche toujours (un épisode continue de dire où le regarder).
+Un test le vérifie.
+
+---
+
 ---
 
 ## Template for new entries

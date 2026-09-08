@@ -599,3 +599,58 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(luffy.template.kind).toBe('character');
   });
 });
+
+describe.skipIf(!hasArtifact)('ce que le schema retire du wiki public', () => {
+  test("un type `public_listing: false` ne figure pas dans l'accueil", async () => {
+    // `streaming-platform` est de la donnee de production : Crunchyroll
+    // est utile sur la fiche d'un episode (« ou le regarder »), pas
+    // comme rubrique a parcourir. Le drapeau vit au SCHEMA — une liste
+    // de types en dur dans le template serait un id code en dur.
+    const { buildHomeView } = await import('../views.ts');
+    const home = await buildHomeView('en', cursor());
+    const ids = home.groups.flatMap((group) => group.types.map((t) => t.id));
+    expect(ids).not.toContain('streaming-platform');
+    // Et le total compte ce qui est PARCOURABLE, pas ce qui existe.
+    expect(ids).toContain('character');
+  });
+
+  test('sa page reste servie a son URL', async () => {
+    // Cacher un type des rubriques ne le supprime pas : une relation
+    // qui le cible doit toujours mener quelque part.
+    const { buildEntityView } = await import('../views.ts');
+    const view = await buildEntityView('streaming-platform', 'crunchyroll', 'en', cursor(), null);
+    expect(view?.kind).toBe('entity');
+  });
+
+  test('un lien inline porte le libelle COURT du type', async () => {
+    // « Chapter 1192 », pas « Manga chapter 1192 » : sur l'accueil le
+    // contexte porte deja la distinction. Le libelle vient de
+    // `short_labels` au schema, jamais d'une chaine en dur.
+    const { buildHomeView } = await import('../views.ts');
+    const home = await buildHomeView('en', cursor());
+    const chapter = home.releases.find((r) => r.sourceType === 'manga-chapter');
+    const episode = home.releases.find((r) => r.sourceType === 'anime-episode');
+    expect(chapter?.typeLabel).toBe('Chapter');
+    expect(episode?.typeLabel).toBe('Episode');
+  });
+
+  test('le titre de page garde le libelle LONG', async () => {
+    // `short_labels` ne remplace pas `labels` : hors contexte il faut
+    // encore distinguer le chapitre du manga de l'episode de l'anime.
+    const { buildEntityView } = await import('../views.ts');
+    const view = await buildEntityView('manga-chapter', '1044', 'en', cursor(), null);
+    if (view === null || view.kind !== 'entity') throw new Error('expected an entity view');
+    expect(view.typeLabel).toBe('Manga chapter');
+  });
+});
+
+describe.skipIf(!hasArtifact)("l'apercu au survol ne se repete pas", () => {
+  test('un fait ne redit pas le nom deja affiche en titre', async () => {
+    // La carte affichait « Straw Hat Pirates » en gras puis
+    // « NAME · Straw Hat Pirates » deux lignes plus bas.
+    const { buildEntityPreview } = await import('../views.ts');
+    const preview = await buildEntityPreview('crew', 'straw-hat-pirates', 'en', cursor(), null);
+    expect(preview).not.toBeNull();
+    expect(preview!.facts.map((f) => f.value)).not.toContain(preview!.chip.name);
+  });
+});

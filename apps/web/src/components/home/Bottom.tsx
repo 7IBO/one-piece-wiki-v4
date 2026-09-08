@@ -1,12 +1,17 @@
 /**
- * The plate's bottom row: the community panel beside the
- * contribution one.
+ * The plate's bottom row.
  *
- * The plate lists three forum threads and two invented statistics.
- * Neither exists — no entity type, no schema, no ADR — and rendering
- * fabricated rows is the one thing this project cannot afford. Both
- * blocks keep their column span, their panel and their footnote; only
- * the made-up content is missing, and the stats carry real counts.
+ * The plate puts a community panel beside the contribution one, with
+ * three forum threads and two invented statistics. Neither exists — no
+ * entity type, no schema, no ADR — and rendering fabricated rows is the
+ * one thing this project cannot afford; the panel had been kept as an
+ * empty shell with a « soon » badge. The maintainer has now asked for
+ * it to go entirely.
+ *
+ * So the contribution panel takes the whole row rather than sitting in
+ * 7 columns beside a gap: a panel that disappears WIDENS its
+ * neighbour, it never leaves a hole (the same rule `Releases` follows
+ * when `Crossed` is absent).
  */
 import { Link } from '@tanstack/react-router';
 import { type ReactElement } from 'react';
@@ -14,31 +19,6 @@ import type { TypeGroup } from '../../api';
 import { t } from '../../lib/chrome';
 import { useLocale } from '../../routes/__root';
 import { SectionTitle } from './SectionTitle';
-
-export function Community(): ReactElement {
-  const locale = useLocale();
-  return (
-    <section className='mt-3.5 lg:col-span-5'>
-      <div className='flex items-baseline justify-between gap-4'>
-        <SectionTitle>{t(locale, 'homeCommunity')}</SectionTitle>
-        <span className='rounded-[3px] border border-line-strong px-2.5 py-1 text-[11px] text-[color:var(--color-muted)]'>
-          {t(locale, 'homeSoon')}
-        </span>
-      </div>
-      <div className='mt-3.5 rounded-md border border-line bg-surface px-4 py-3.5'>
-        {
-          /* The plate lists three forum threads here. They do not exist
-          — no entity type, no schema, no ADR — and rendering invented
-          titles is the one thing this project cannot afford. The block
-          keeps its geometry; the fabricated rows are what is missing. */
-        }
-        <p className='text-[11.5px] leading-relaxed text-muted'>
-          {t(locale, 'homeCommunityNote')}
-        </p>
-      </div>
-    </section>
-  );
-}
 
 export function Contribute(
   { total, groups }: { readonly total: number; readonly groups: readonly TypeGroup[]; },
@@ -52,7 +32,7 @@ export function Contribute(
     .sort((a, b) => b.count - a.count)
     .slice(0, 2);
   return (
-    <section className='mt-3.5 lg:col-span-7'>
+    <section className='mt-3.5 lg:col-span-12'>
       <SectionTitle>{t(locale, 'homeContribute')}</SectionTitle>
       <div className='mt-3.5 rounded-md border border-line bg-surface px-4 py-3.5'>
         <div className='flex flex-col gap-6.5 lg:flex-row'>

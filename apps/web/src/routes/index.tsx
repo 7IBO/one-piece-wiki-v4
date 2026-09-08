@@ -8,7 +8,8 @@
  * FULL-BLEED 380px hero over a layered colour field, a 320px reading
  * card floating at its right, then a 12-column grid — 8/4 for
  * « ce que tu viens de croiser » beside the releases, 12 for the
- * explore row, 5/7 for the community and the contribution panel.
+ * explore row, and the full 12 for the contribution panel (the
+ * community panel is withheld for now).
  * Every measure below comes from the plate.
  *
  * ## Two states
@@ -39,7 +40,7 @@
 import { createFileRoute } from '@tanstack/react-router';
 import { type ReactElement } from 'react';
 import { fetchHome } from '../api';
-import { Community, Contribute } from '../components/home/Bottom';
+import { Contribute } from '../components/home/Bottom';
 import { Crossed } from '../components/home/Crossed';
 import { Explore } from '../components/home/Explore';
 import { Hero } from '../components/home/Hero';
@@ -65,7 +66,12 @@ function HomePage(): ReactElement {
         <Crossed items={view.crossed} span={view.crossedSpan} />
         <Releases items={view.releases} alone={view.crossed.length === 0} />
         <Explore groups={view.groups} />
-        <Community />
+        {
+          /* Le panneau communaute est retire pour l'instant (demande du
+            mainteneur). Un panneau qui disparait ELARGIT son voisin, il
+            ne laisse pas un trou : `Contribute` prend la ligne entiere,
+            comme `Releases` le fait quand `Crossed` est absent. */
+        }
         <Contribute total={view.totalEntities} groups={view.groups} />
       </div>
     </>

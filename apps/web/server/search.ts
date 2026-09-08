@@ -310,6 +310,11 @@ export async function buildSearchView(
   let approximate = false;
   for (const { scored: candidate } of ranked) {
     const hit = candidate.hit;
+    // Un type que le schema retire des rubriques publiques
+    // (`public_listing: false`) ne remonte pas non plus dans la
+    // recherche : proposer « Crunchyroll » a qui cherche un nom de
+    // personnage n'aide personne. Sa page reste servie a son URL.
+    if (cat.entityTypes.get(hit.entity_type)?.public_listing === false) continue;
     const card = buildEntityCardView(hit.entity_id, cat, locale, cursor);
     if (card === null) continue;
     // The label is resolved through the SAME gate as the match — and

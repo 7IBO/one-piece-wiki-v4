@@ -177,9 +177,9 @@ export function SearchPalette(
       }}
     >
       <Dialog.Portal>
-        <Dialog.Backdrop className='fixed inset-0 z-40 bg-canvas/80 backdrop-blur-[2px]' />
+        <Dialog.Backdrop className='palette-backdrop fixed inset-0 z-40 bg-canvas/80 backdrop-blur-[2px]' />
         <Dialog.Popup
-          className='fixed left-1/2 top-[8vh] z-50 flex max-h-[80vh] w-[min(44rem,92vw)] -translate-x-1/2 flex-col overflow-hidden rounded-lg border border-line-strong bg-surface shadow-2xl'
+          className='palette-popup fixed left-1/2 top-[8vh] z-50 flex max-h-[80vh] w-[min(44rem,92vw)] -translate-x-1/2 flex-col overflow-hidden rounded-lg border border-line-strong bg-surface shadow-2xl'
           onKeyDown={onKeyDown}
         >
           <Dialog.Title className='sr-only'>{t(locale, 'searchLabel')}</Dialog.Title>
