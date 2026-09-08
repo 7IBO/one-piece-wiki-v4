@@ -118,6 +118,9 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): ReactElement {
     return et?.labels[locale] ?? et?.labels.en ?? p.type;
   }, [schemas, locale, p.type]);
 
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => setMounted(true), []);
+
   // ESC closes the drawer — match QualifierSheet behaviour. Guard
   // when not open so each mounted drawer doesn't keep a global
   // listener idle.
@@ -130,7 +133,17 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): ReactElement {
     return () => window.removeEventListener('keydown', onKey);
   }, [p.open, isTop, p.onOpenChange]);
 
-  if (typeof document === 'undefined') return <></>;
+  // Le portail n'apparait qu'APRES l'hydratation.
+  //
+  // Il y avait ici `if (typeof document === 'undefined') return <></>`,
+  // qui fait diverger le serveur (rien) et le PREMIER rendu client (le
+  // portail) : c'est exactement le moment ou React compare les deux, et
+  // une divergence a l'hydratation est un defaut, pas une optimisation.
+  // Un drapeau pose en effet met les deux d'accord — les deux rendent
+  // le vide, le portail arrive au rendu suivant. Rien n'est perdu : le
+  // contenu d'un portail vers `document.body` n'est de toute facon
+  // jamais dans le HTML rendu au serveur.
+  if (!mounted) return <></>;
 
   return createPortal(
     <>

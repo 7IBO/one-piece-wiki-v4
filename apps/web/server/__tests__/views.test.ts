@@ -654,3 +654,48 @@ describe.skipIf(!hasArtifact)("l'apercu au survol ne se repete pas", () => {
     expect(preview!.facts.map((f) => f.value)).not.toContain(preview!.chip.name);
   });
 });
+
+describe.skipIf(!hasArtifact)('les filtres de liste viennent du schema', () => {
+  test('un conteneur devient une facette la ou aucune enum ne separait rien', async () => {
+    // Mesure avant : sur les huit types du corpus, UN SEUL obtenait une
+    // facette (`character` / `status`, dix entites). Les 1193 chapitres
+    // n'avaient aucun filtre — leurs proprietes enumerees se resument a
+    // `canon_scope`, uniforme partout. Ce qui separe des chapitres est
+    // une ARETE, pas une propriete.
+    const { buildTypeListView } = await import('../views.ts');
+    const view = await buildTypeListView('manga-chapter', 'en', cursor());
+    const ids = view?.facets.map((f) => f.id) ?? [];
+    expect(ids).toContain('part-of-arc');
+    expect(ids).toContain('part-of-volume');
+  });
+
+  test('une facette de conteneur groupe vraiment', async () => {
+    // La regle n'est pas un plafond d'options mais un regroupement :
+    // un conteneur qui tient moins de deux entites en moyenne ne
+    // groupe rien, il renomme la liste.
+    const { buildTypeListView } = await import('../views.ts');
+    const view = await buildTypeListView('manga-chapter', 'en', cursor());
+    for (const facet of view?.facets ?? []) {
+      const total = facet.options.reduce((sum, o) => sum + o.count, 0);
+      expect(facet.options.length * 2).toBeLessThanOrEqual(total);
+    }
+  });
+
+  test('les options portent le nom de la cible, passe par la grille anti-spoil', async () => {
+    const { buildTypeListView } = await import('../views.ts');
+    const view = await buildTypeListView('manga-chapter', 'en', cursor());
+    const arc = view?.facets.find((f) => f.id === 'part-of-arc');
+    expect(arc?.label).toBe('Part of arc');
+    for (const option of arc?.options ?? []) {
+      expect(option.value.startsWith('arc:')).toBe(true);
+      expect(option.label.length).toBeGreaterThan(0);
+    }
+  });
+
+  test('chaque entite porte la valeur de facette qui la classe', async () => {
+    const { buildTypeListView } = await import('../views.ts');
+    const view = await buildTypeListView('manga-chapter', 'en', cursor());
+    const item = view?.items.find((i) => i.slug === '1044');
+    expect(item?.facets['part-of-arc']).toBe('arc:wano-country');
+  });
+});

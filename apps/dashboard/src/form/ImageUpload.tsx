@@ -220,7 +220,7 @@ export function ImageUpload(
               ? (
                 <div className='bg-input mt-1 h-1 w-40 overflow-hidden rounded'>
                   <div
-                    className='bg-primary h-full transition-all'
+                    className='bg-primary h-full transition-[width] duration-150 ease-out'
                     style={{ width: `${Math.round(progress * 100)}%` }}
                   />
                 </div>
@@ -248,9 +248,14 @@ function ImagePreview({ src }: { src: string; }): ReactElement {
   const [broken, setBroken] = useState(false);
   // Reset the broken flag when the URL changes so swapping in a new
   // image gives it a fresh chance to load.
-  const lastSrc = useRef(src);
-  if (lastSrc.current !== src) {
-    lastSrc.current = src;
+  //
+  // En ETAT, pas en ref. C'est le motif « ajuster un etat quand une
+  // prop change » de react.dev, et il demande de l'etat : muter une ref
+  // pendant le rendu n'est pas sur en rendu concurrent, ou un rendu
+  // abandonne aurait quand meme ecrit dans la ref.
+  const [lastSrc, setLastSrc] = useState(src);
+  if (lastSrc !== src) {
+    setLastSrc(src);
     if (broken) setBroken(false);
   }
 

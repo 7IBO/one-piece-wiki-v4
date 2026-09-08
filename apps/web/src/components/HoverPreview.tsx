@@ -320,7 +320,12 @@ export function HoverPreview(
     >
       {children}
       {
-        /* Portalled to `document.body` on purpose. The card is
+        /* Portalled to `document.body` on purpose. Le garde
+          `typeof document` est explicite plutot que deduit : `placement`
+          n'est pose que par un gestionnaire de souris ou de focus, donc
+          la branche n'est jamais evaluee au rendu serveur — mais rien
+          dans l'expression ne le disait, et un lecteur (comme
+          react-doctor) devait le reconstituer. The card is
           `position: fixed`, but the hero it can be triggered from is a
           stacking context (`isolation: isolate`), so an in-place card
           would paint UNDER everything that follows the hero in the
@@ -328,7 +333,7 @@ export function HoverPreview(
           client — `fine` is resolved in an effect — so there is no SSR
           document to miss. */
       }
-      {placement !== null && view !== null
+      {placement !== null && view !== null && typeof document !== 'undefined'
         ? createPortal(
           <PreviewCard
             view={view}

@@ -7868,6 +7868,112 @@ Un test le vérifie.
 
 ---
 
+## ADR-128 — Les filtres d'une liste viennent des ARÊTES autant que des propriétés
+
+**Date**: 2026-09-08
+
+**Context**: la dérivation des facettes ne regardait que les propriétés
+**énumérées** du type. Mesure sur les huit types du corpus :
+
+| type            | entités | facettes             |
+| --------------- | ------: | -------------------- |
+| `manga-chapter` |    1193 | **aucune**           |
+| `anime-episode` |    1176 | **aucune**           |
+| `volume`        |     115 | **aucune**           |
+| `arc`           |      49 | **aucune**           |
+| `character`     |      10 | `status` (2 options) |
+
+Un seul type sur huit obtenait un filtre, et c'était celui qui en avait
+le moins besoin. Les quatre types qui portent la masse n'obtenaient
+rien : leurs propriétés énumérées se résument à `canon_scope`, uniforme
+sur tout le corpus. Le mécanisme existait, il ne servait nulle part —
+d'où « dans les pages listes, je veux qu'on puisse avoir des filtres ».
+
+**Options**:
+
+- A — Écrire les filtres utiles à la main par type.
+- B — Élargir la dérivation aux ARÊTES (conteneurs) et aux booléens.
+
+**Choice**: B.
+
+**Rationale**: ce qui sépare 1193 chapitres n'est pas une propriété,
+c'est une arête — l'arc, le tome, la saga. A serait une liste d'ids en
+dur dans `apps/web`, ce que `CLAUDE.md` refuse, et le manifeste
+`design/v2` dit la même chose : « une facette par propriété énumérée du
+type, jamais une liste écrite à la main ».
+
+Aucun id de relation n'est nommé : on retient toute relation qui **se
+comporte** comme un conteneur — au plus une cible par entité, et des
+cibles qui groupent vraiment.
+
+**Consequences**: les chapitres gagnent « par arc » (32 options) et
+« par tome » (115) ; les épisodes « par arc » (37).
+
+Deux points qui ont demandé une décision :
+
+- **Le critère n'est pas un plafond d'options.** Une borne fixe à 60
+  laissait passer les arcs et refusait les tomes, sans qu'aucune raison
+  ne distingue les deux. Le vrai critère est le regroupement : un
+  conteneur qui tient moins de deux entités en moyenne ne groupe rien,
+  il renomme la liste.
+- **Le rail doit rendre une facette longue parcourable.** Replier à
+  quatre avec « + 111 autres » n'est pas un filtre, c'est un mur.
+  Au-delà de douze options la facette reçoit un champ de recherche.
+
+Une entité qui appartient à DEUX conteneurs du même type disqualifie la
+facette entière : un filtre à choix unique mentirait sur ce qu'il
+montre.
+
+Les arêtes sont lues une fois par entité, pas une fois par type de
+relation candidat — sinon les 1193 lignes étaient relues pour chacune.
+
+---
+
+## ADR-129 — Changer de langue RECHARGE la page
+
+**Date**: 2026-09-08
+
+**Context**: « quand on change de langue niveau ui, ca charge dabord les
+textes fixes traduits puis données wiki, je voudrais que ça arrive en
+même temps, pas 1 par 1 ». Mesuré au navigateur : les chaînes fixes du
+front basculent à **117 ms**, les données du wiki à **459 ms**. **342 ms**
+d'en-tête « MA PROGRESSION » au-dessus d'une page encore anglaise.
+
+La cause est structurelle. `router.invalidate()` rejoue le `beforeLoad`
+de la racine ET les loaders de route. Le premier résout la locale en
+lisant un cookie : local, donc immédiat. Les seconds sont des fonctions
+serveur : un aller-retour. React commite le premier sans attendre les
+seconds.
+
+**Options**:
+
+- A — `startTransition` autour de l'invalidation. **Mesuré : 343 ms.**
+  L'invalidation met à jour l'état du routeur sur plusieurs ticks ; la
+  transition ne couvre pas le second.
+- B — Faire passer le chrome par le serveur lui aussi, pour qu'il
+  franchisse la même frontière asynchrone. **Mesuré : 351 ms.** Les
+  deux loaders partent ensemble mais n'arrivent pas ensemble (chrome
+  ~50 ms, page ~340), et le routeur commite chacun à son arrivée.
+- C — Recharger le document.
+
+**Choice**: C — après avoir essayé A et B, et les avoir mesurées.
+
+**Rationale**: le serveur rend la page entière dans la nouvelle langue
+en UNE passe, donc il n'y a pas d'état intermédiaire du tout. Mesuré :
+**0 échantillon mixte sur 24** pendant la bascule.
+
+**Consequences**: 592 ms au lieu de 459 — **133 ms de plus** pour ne
+jamais montrer une page à moitié traduite. C'est le bon échange : la
+langue change rarement, et un demi-écran traduit est un défaut visible
+à chaque fois.
+
+B a été **annulé** plutôt que gardé : il ne réglait pas le problème pour
+lequel il avait été écrit, et il coûtait un aller-retour serveur à
+chaque navigation client. Garder un changement qui a raté son but parce
+qu'il range accessoirement le code n'est pas un bon échange.
+
+---
+
 ---
 
 ## Template for new entries

@@ -95,12 +95,17 @@ export function GlobalCommandPalette(): ReactElement {
   const draftIds = useMemo(() => new Set(drafts.map((d) => d.entityId)), [drafts]);
 
   const pushRecent = useCallback((id: string) => {
-    setRecentIds((prev) => {
-      const next = [id, ...prev.filter((x) => x !== id)].slice(0, RECENT_LIMIT);
-      writeRecent(next);
-      return next;
-    });
+    setRecentIds((prev) => [id, ...prev.filter((x) => x !== id)].slice(0, RECENT_LIMIT));
   }, []);
+
+  // La persistance vit dans un EFFET, pas dans la fonction de mise a
+  // jour. Un updater doit etre pur : React peut le rejouer (StrictMode,
+  // rendu concurrent), et il ecrivait alors deux fois dans
+  // `localStorage`. Ici l'ecriture suit la valeur retenue, quelle que
+  // soit la voie par laquelle elle a change.
+  useEffect(() => {
+    writeRecent(recentIds);
+  }, [recentIds]);
 
   // ⌘K / Ctrl-K toggles. We capture inside any focused input too —
   // cmdk owns the modal once open, so the only risk is hijacking

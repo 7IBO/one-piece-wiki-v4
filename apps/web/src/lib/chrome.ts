@@ -89,6 +89,8 @@ const STRINGS = {
   },
   homeTitleHidden: { en: 'Title hidden', fr: 'Titre masqué' },
   homeExplore: { en: 'Explore the universe', fr: 'Explorer l’univers' },
+  facetSearch: { en: 'Filter…', fr: 'Filtrer…' },
+  facetNoMatch: { en: 'No match', fr: 'Aucun résultat' },
   homeContinue: { en: 'Continue', fr: 'Continuer' },
   progressTitle: { en: 'My progress', fr: 'Ma progression' },
   progressHint: {

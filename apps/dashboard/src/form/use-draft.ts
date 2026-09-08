@@ -142,7 +142,12 @@ export function useDraftAutosave(
   const firstRun = useRef(true);
   const timer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const latest = useRef({ entityId, data, translations });
-  latest.current = { entityId, data, translations };
+  // Ecrite APRES le commit, pas pendant le rendu : elle n'est lue que
+  // depuis le `setTimeout` ci-dessous, donc jamais avant, et un rendu
+  // abandonne n'a plus a laisser sa trace ici.
+  useEffect(() => {
+    latest.current = { entityId, data, translations };
+  });
 
   // Schedule debounced writes. No cleanup here on purpose — cancelling
   // the timer on every dep change (i.e. every keystroke) is what made

@@ -2009,7 +2009,12 @@ function EntryEditorFields(
     p.onUpdate(next);
   }
 
-  const allQualifiers = [...primary, ...secondary];
+  // Memoisee, sinon elle est recreee a chaque rendu — et comme les deux
+  // `useMemo` ci-dessous en dependent, ils recalculaient a chaque rendu
+  // eux aussi. Un memo dont la dependance est neuve a chaque fois n'est
+  // pas un memo, c'est un cout. `primary` et `secondary` viennent d'un
+  // memo stable juste au-dessus, donc celui-ci l'est aussi.
+  const allQualifiers = useMemo(() => [...primary, ...secondary], [primary, secondary]);
   const qualifierById = useMemo(
     () => new Map(allQualifiers.map((q) => [q.id, q])),
     [allQualifiers],

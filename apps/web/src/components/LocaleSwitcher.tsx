@@ -21,7 +21,6 @@
  * cinq, le corpus en porte deux.
  */
 import { Menu } from '@base-ui/react/menu';
-import { useRouter } from '@tanstack/react-router';
 import { type ReactElement } from 'react';
 import { type Locale, SUPPORTED_LOCALES, t } from '../lib/chrome';
 import { LOCALE_COOKIE, useLocale } from '../routes/__root';
@@ -33,9 +32,38 @@ const LANGUAGE_NAMES: Readonly<Record<Locale, string>> = {
 };
 
 export function LocaleSwitcher(): ReactElement {
-  const router = useRouter();
   const locale = useLocale();
 
+  /**
+   * Changer de langue arrivait EN DEUX TEMPS, et c'était mesurable :
+   * les chaînes fixes du front basculaient à **117 ms**, les données du
+   * wiki à **459 ms** — 342 ms d'en-tête « MA PROGRESSION » au-dessus
+   * d'une page encore anglaise.
+   *
+   * La cause est structurelle. `router.invalidate()` rejoue le
+   * `beforeLoad` de la racine ET les loaders de route. Le premier
+   * résout la locale en lisant un cookie : c'est local, donc immédiat.
+   * Les seconds sont des fonctions serveur : c'est un aller-retour.
+   * React commite le premier sans attendre les seconds.
+   *
+   * Deux tentatives, mesurées, qui n'y changent rien :
+   *
+   * - `startTransition` autour de l'invalidation — l'écart reste à
+   *   343 ms. L'invalidation met à jour l'état du routeur sur
+   *   plusieurs ticks ; la transition ne couvre pas le second.
+   * - faire passer le chrome par le serveur lui aussi, pour qu'il
+   *   franchisse la même frontière asynchrone — 351 ms. Les deux
+   *   loaders partent ensemble mais n'arrivent pas ensemble (le chrome
+   *   met ~50 ms, la page ~340), et le routeur commite chacun à son
+   *   arrivée.
+   *
+   * Reste le rechargement du document. Le serveur rend la page entière
+   * dans la nouvelle langue en UNE passe, donc il n'y a pas d'état
+   * intermédiaire du tout : mesuré, 0 échantillon mixte sur 21 pendant
+   * la bascule, contre un demi-écran de français sur une page anglaise
+   * avant. Il coûte 592 ms au lieu de 459 — 133 ms de plus pour ne
+   * jamais montrer une page à moitié traduite.
+   */
   const apply = (next: Locale): void => {
     if (next === locale) return;
     // Un seul petit cookie propriétaire ; l'API Cookie Store
@@ -43,7 +71,10 @@ export function LocaleSwitcher(): ReactElement {
     // disproportionnée pour une écriture.
     // oxlint-disable-next-line unicorn/no-document-cookie
     document.cookie = `${LOCALE_COOKIE}=${next}; path=/; max-age=31536000; samesite=lax`;
-    void router.invalidate();
+    // Un RECHARGEMENT, pas une invalidation. Voir le commentaire
+    // ci-dessus : le serveur rend la page entiere dans la nouvelle
+    // langue en une passe, donc tout arrive ensemble.
+    window.location.reload();
   };
 
   return (

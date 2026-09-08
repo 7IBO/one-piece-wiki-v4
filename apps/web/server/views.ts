@@ -1626,19 +1626,82 @@ export async function buildHomeView(locale: Locale, cursor: ProgressCursor): Pro
   };
 }
 
+/**
+ * Les deux options d'une facette booleenne. Deux libelles, ecrits ici
+ * parce qu'aucun vocabulaire du schema ne couvre « vrai / faux » — et
+ * en ecrire un pour deux mots serait plus lourd que le probleme.
+ */
+const BOOLEAN_YES: Record<string, string> = { en: 'Yes', fr: 'Oui' };
+const BOOLEAN_NO: Record<string, string> = { en: 'No', fr: 'Non' };
+
+/**
+ * Le libelle ACTIF d'un type de relation, dans la locale demandee.
+ *
+ * Meme source que les modules de relations d'une fiche
+ * (`schema.labels[locale].active`), pour qu'une facette « Part of arc »
+ * porte exactement le mot que la page emploie.
+ */
+function relationLabel(cat: ValidatedCatalogue, relationType: string, locale: Locale): string {
+  const schema = cat.relationTypes.get(relationType);
+  if (schema === undefined) return humanize(relationType);
+  const pair = schema.labels[locale] ?? schema.labels.en;
+  return pair.active;
+}
+
 /** At most this many filter rows on a listing — more is a wall, not a tool. */
 const MAX_FACETS = 3;
 /** A facet with more options than this stops being a quick filter. */
 const MAX_FACET_OPTIONS = 8;
+/**
+ * Une facette de CONTENEUR ne se juge pas au nombre d'options mais a
+ * ce qu'elle GROUPE.
+ *
+ * La borne de huit a ete ecrite pour des puces d'enum, ou trente
+ * valeurs sont un defaut de modelisation. « Par arc » sur les
+ * chapitres en compte 32 et « par tome » 115 : c'est normal, et c'est
+ * exactement le filtre qu'on veut. Une borne fixe a 60 laissait passer
+ * les arcs et refusait les tomes, sans qu'aucune raison ne distingue
+ * les deux.
+ *
+ * Le vrai critere est le regroupement : un conteneur qui contient en
+ * moyenne moins de deux entites ne groupe rien, il renomme la liste.
+ * Le rail replie les longues facettes et leur donne un champ de
+ * recherche des qu'elles depassent {@link FACET_SEARCH_THRESHOLD}
+ * options, donc la longueur n'est plus le probleme qu'elle etait.
+ */
+const MIN_CONTAINER_GROUPING = 2;
 
 /**
- * Derive the filters of a type listing from the SCHEMA alone: every
- * declared enum property whose visible values actually split the
- * population becomes a facet, labelled through its vocabulary.
+ * Derive the filters of a type listing from the SCHEMA alone.
+ *
+ * Trois sources, dans cet ordre de priorite — et l'ordre compte,
+ * parce qu'une liste n'accepte que {@link MAX_FACETS} rangees :
+ *
+ * 1. **Les CONTENEURS** : une relation sortante quasi-uni-valuee dont
+ *    les cibles partagent la population (« par arc », « par tome »,
+ *    « par saga »).
+ * 2. **Les proprietes enumerees**, etiquetees par leur vocabulaire.
+ * 3. **Les booleens**, en deux options oui/non.
+ *
+ * Pourquoi les conteneurs d'abord, et pourquoi ils ont ete ajoutes :
+ * la derivation ne regardait QUE les enums, et mesure a l'appui elle
+ * ne produisait rien la ou ca compte. Sur les huit types du corpus,
+ * un seul obtenait une facette — `character`, avec `status` et ses
+ * deux options — pour dix entites. Les quatre types qui ont de la
+ * masse (1193 chapitres, 1176 episodes, 115 tomes, 49 arcs)
+ * n'obtenaient AUCUN filtre : leurs proprietes enumerees se resument a
+ * `canon_scope`, uniforme sur tout le corpus. Le mecanisme existait et
+ * ne servait nulle part.
+ *
+ * Ce qui separe reellement 1193 chapitres n'est pas une propriete,
+ * c'est une ARETE : l'arc, le tome, la saga. La regle reste
+ * structurelle — aucun id de relation n'est nomme ici, on retient
+ * toute relation qui se comporte comme un conteneur : au plus une
+ * cible par entite, et des cibles qui partagent la population.
  *
  * Fully schema-driven — no well-known ids are consulted, so a new type
- * gains filters the moment it declares an enum property, and a type
- * without one simply has none (the listing then renders no filter bar).
+ * gains filters the moment its schema declares something that splits
+ * its population, and a type with nothing renders no rail at all.
  */
 function buildFacets(
   rows: readonly EntityRow[],
@@ -1649,8 +1712,79 @@ function buildFacets(
 ): { facets: readonly FacetView[]; byRow: ReadonlyMap<string, Record<string, string>>; } {
   const byRow = new Map<string, Record<string, string>>();
   for (const row of rows) byRow.set(row.id, {});
-  const declared = cat.entityTypes.get(type)?.properties ?? [];
+  const schemaOfType = cat.entityTypes.get(type);
+  const declared = schemaOfType?.properties ?? [];
   const facets: FacetView[] = [];
+
+  // 1. Les conteneurs. Une arete par entite au plus, des cibles qui
+  //    partagent la population : c'est ce qui separe 1193 chapitres.
+  //
+  //    Les aretes sont lues UNE FOIS par entite, pas une fois par type
+  //    de relation candidat : `manga-chapter` en declare plusieurs, et
+  //    relire 1193 lignes pour chacune multipliait le meme travail.
+  const containers = schemaOfType?.allowed_relations ?? [];
+  // `allowed_relations` porte des `Slug` brandes ; l'arete porte une
+  // chaine nue. Le Set est indexe sur la chaine, pas sur la marque.
+  const candidate = new Set<string>(containers);
+  const targetsByRelation = new Map<string, Map<string, string>>();
+  const multiValued = new Set<string>();
+  if (candidate.size > 0) {
+    for (const row of rows) {
+      const seen = new Map<string, string>();
+      for (const edge of db.listRelationsFrom(row.id)) {
+        if (!candidate.has(edge.relation_type)) continue;
+        if (!isEdgeVisible(edge, cursor)) continue;
+        const already = seen.get(edge.relation_type);
+        // Deux conteneurs pour une entite : ce n'est plus un
+        // conteneur, c'est une appartenance multiple, et un filtre a
+        // choix unique mentirait sur ce qu'il montre.
+        if (already !== undefined && already !== edge.target_entity_id) {
+          multiValued.add(edge.relation_type);
+          continue;
+        }
+        seen.set(edge.relation_type, edge.target_entity_id);
+      }
+      for (const [relationType, target] of seen) {
+        const bucket = targetsByRelation.get(relationType) ?? new Map<string, string>();
+        bucket.set(row.id, target);
+        targetsByRelation.set(relationType, bucket);
+      }
+    }
+  }
+  for (const relationType of containers) {
+    if (facets.length >= MAX_FACETS) break;
+    if (multiValued.has(relationType)) continue;
+    if (cat.relationTypes.get(relationType) === undefined) continue;
+    const targetOf = targetsByRelation.get(relationType);
+    if (targetOf === undefined) continue;
+    const counts = new Map<string, number>();
+    for (const target of targetOf.values()) counts.set(target, (counts.get(target) ?? 0) + 1);
+    // Deux options au moins (sinon elle ne separe rien), et un
+    // regroupement reel (sinon elle ne fait que renommer la liste).
+    if (counts.size < 2) continue;
+    if (counts.size * MIN_CONTAINER_GROUPING > targetOf.size) continue;
+    for (const [rowId, target] of targetOf) {
+      const bucket = byRow.get(rowId);
+      if (bucket !== undefined) bucket[relationType] = target;
+    }
+    const options = [...counts.entries()]
+      .map(([target, count]) => ({
+        // Le nom passe par la MEME grille anti-spoil que la liste : un
+        // arc au-dela de la position du lecteur ne se nomme pas.
+        label: chipFor(target, cat, locale, cursor)?.name
+          ?? chipOrPlaceholder(target, cat, locale, cursor).name,
+        value: target,
+        count,
+      }))
+      .sort((a, b) => b.count - a.count || a.label.localeCompare(b.label));
+    facets.push({
+      id: relationType,
+      label: relationLabel(cat, relationType, locale),
+      options,
+    });
+  }
+
+  // 2. Les proprietes enumerees.
   for (const declaration of declared) {
     if (facets.length >= MAX_FACETS) break;
     const schema = cat.propertyTypes.get(declaration.id);
@@ -1682,6 +1816,40 @@ function buildFacets(
       id: declaration.id,
       label: pickLabel(schema.labels, locale),
       options,
+    });
+  }
+
+  // 3. Les booleens, en deux options. `is_color_spread` sur les
+  //    chapitres est le cas type : une propriete qui separe vraiment
+  //    la population et qu'aucune enum ne couvrait.
+  for (const declaration of declared) {
+    if (facets.length >= MAX_FACETS) break;
+    const schema = cat.propertyTypes.get(declaration.id);
+    if (schema === undefined || schema.value_type !== 'boolean') continue;
+    const counts = new Map<string, number>();
+    const values = new Map<string, string>();
+    for (const row of rows) {
+      const raw = latestRawValue(row, declaration.id, cursor);
+      if (typeof raw !== 'boolean') continue;
+      const key = raw ? 'true' : 'false';
+      values.set(row.id, key);
+      counts.set(key, (counts.get(key) ?? 0) + 1);
+    }
+    if (counts.size < 2) continue;
+    for (const [rowId, value] of values) {
+      const bucket = byRow.get(rowId);
+      if (bucket !== undefined) bucket[declaration.id] = value;
+    }
+    facets.push({
+      id: declaration.id,
+      label: pickLabel(schema.labels, locale),
+      options: [...counts.entries()]
+        .map(([value, count]) => ({
+          value,
+          label: pickLabel(value === 'true' ? BOOLEAN_YES : BOOLEAN_NO, locale),
+          count,
+        }))
+        .sort((a, b) => b.count - a.count),
     });
   }
   return { facets, byRow };
