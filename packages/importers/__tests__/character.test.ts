@@ -220,43 +220,49 @@ describe('registry-resolved relations + occupation matching', () => {
   });
 });
 
-describe('ename multi-valeur (le cas Bell-mère)', () => {
-  /** Une page Char Box minimale portant le `ename` incriminé. */
-  const withEname = (ename: string): ParsedPage => ({
-    title: 'T',
+describe("`ename` multi-ligne : la mention d'edition n'est pas le nom", () => {
+  const page = (title: string, ename: string): ParsedPage => ({
+    title,
     pageId: 1,
-    url: 'https://onepiece.fandom.com/wiki/T',
+    url: `https://onepiece.fandom.com/wiki/${title}`,
     wikitext: `{{Char Box\n|ename = ${ename}\n|status = Alive\n}}`,
   });
 
-  it('prend la PREMIÈRE ligne comme nom canonique, pas la liste entière', () => {
-    // Le champ réel qui a produit
-    // `character:belle-mere-viz-media-bellemere-funimation-bell-mere-opcg`.
-    const result = mapCharacter(
-      withEname('Bell-mère<br>Bellemere (Viz Media)<br>Bell-mere (Funimation)<br>Bell-Mere (OPCG)'),
-    );
+  /** Le champ REEL, releve dans le corpus importe. */
+  const BELL_MERE = 'Belle-Mère (VIZ Media);<br>Bellemere (Funimation);<br>Bell-mère (OPCG)';
+
+  it("retire la parenthese d'edition de la ligne canonique", () => {
+    // Le premier correctif coupait bien sur `<br>` mais gardait la
+    // parenthese : le slug restait `belle-mere-viz-media`.
+    const result = mapCharacter(page('Bell-mère', BELL_MERE));
     expect(result).not.toBeNull();
-    expect(result!.entity.id).toBe('character:bell-mere');
-    expect(result!.entity.slug).toBe('bell-mere');
+    expect(result!.entity.slug).toBe('belle-mere');
+    expect(result!.entity.id).toBe('character:belle-mere');
   });
 
-  it('range les orthographes par édition en ALIAS, sans en perdre', () => {
-    const result = mapCharacter(
-      withEname('Bell-mère<br>Bellemere (Viz Media)<br>Bell-mere (Funimation)'),
-    );
+  it("garde CHAQUE orthographe d'edition comme alias, telle quelle", () => {
+    const result = mapCharacter(page('Bell-mère', BELL_MERE));
     const names = result!.entity.properties['name'] as { name_type: string; value_key: string; }[];
     expect(names[0]).toMatchObject({ name_type: 'common' });
-    const aliases = names.filter((n) => n.name_type === 'alias');
-    expect(aliases.length).toBe(2);
-    const values = aliases.map((a) => result!.translations['en']?.[a.value_key]);
-    expect(values).toContain('Bellemere (Viz Media)');
-    expect(values).toContain('Bell-mere (Funimation)');
+    const values = names
+      .filter((n) => n.name_type === 'alias')
+      .map((a) => result!.translations['en']?.[a.value_key]);
+    expect(values).toContain('Bellemere (Funimation);');
+    expect(values).toContain('Bell-mère (OPCG)');
   });
 
-  it("n'invente pas d'alias quand le nom tient sur une ligne", () => {
-    const result = mapCharacter(withEname('Nami'));
+  it("ne touche PAS a une parenthese sur un `ename` d'une seule ligne", () => {
+    // Sur une ligne unique la parenthese appartient vraisemblablement
+    // au nom : rien ne dit que c'est une edition.
+    const result = mapCharacter(page('Mr. 3', 'Mr. 3 (Galdino)'));
+    expect(result!.entity.slug).toBe('mr-3-galdino');
+  });
+
+  it("n'invente aucun alias sur le cas ordinaire", () => {
+    // 139 des 148 personnages du dernier crawl.
+    const result = mapCharacter(page('Nami', 'Nami'));
     const names = result!.entity.properties['name'] as { name_type: string; }[];
-    expect(names.filter((n) => n.name_type === 'alias')).toEqual([]);
     expect(result!.entity.slug).toBe('nami');
+    expect(names.filter((n) => n.name_type === 'alias')).toEqual([]);
   });
 });
