@@ -7752,6 +7752,71 @@ est nul aujourd'hui, et il ne le restera pas.
 
 ---
 
+## ADR-126 — L'id est `type:` + le slug, jamais un diminutif
+
+**Date**: 2026-09-08
+
+**Context**: quatre entités du corpus portaient un id plus court que
+leur slug :
+
+```
+character:luffy          slug monkey-d-luffy
+character:zoro           slug roronoa-zoro
+character:ace            slug portgas-d-ace
+devil-fruit:gomu-gomu    slug gomu-gomu-no-mi
+```
+
+Ce sont les quatre entités semées à la main au tout début du projet.
+`CLAUDE.md` et `CONVENTIONS.md` donnaient d'ailleurs `character:luffy`
+et `devil-fruit:gomu-gomu` comme EXEMPLES de la convention — la
+divergence était documentée comme la règle.
+
+Elle a un coût mesurable : les clés de traduction se dérivent du slug,
+donc l'entité portait `character.luffy.name.common` avec un slug
+`monkey-d-luffy` ; les mappers construisent l'id depuis le slug, donc
+un ré-import de Luffy aurait créé `character:monkey-d-luffy` **à côté**
+de `character:luffy` au lieu de le mettre à jour. Le doublon était
+programmé.
+
+**Options**:
+
+- A — Aligner l'id sur le slug (renommer les quatre ids).
+- B — Aligner le slug sur l'id (raccourcir les quatre slugs).
+- C — Laisser, et documenter que les deux peuvent diverger.
+
+**Choice**: A.
+
+**Rationale**: le mainteneur a tranché — « les id doivent correspondre
+au slug des noms anglais ». B raccourcirait les URL en
+`/character/luffy`, ce qui perd le nom complet que le wiki affiche
+partout. C est ce qui a produit le défaut.
+
+Les ids sont dits IMMUABLES par `CLAUDE.md`, et cette ADR en casse
+quatre. C'est assumé : projet en bêta, zéro utilisateur, et la
+divergence coûtait un doublon au prochain import.
+
+**Consequences**: quatre fichiers d'entité et dix sidecars de
+traduction renommés, les clés de traduction re-préfixées, et toutes les
+références réécrites (69 fichiers) — corpus, code, tests et docs.
+
+Ce qui n'a **pas** été réécrit, délibérément : `data/migrations/0007`,
+`docs/audits/`, `design/` et les ADR antérieures. Ce sont des registres
+datés ; les corriger falsifierait ce qui était vrai à leur date.
+
+Un test perd de la couverture, et il le dit maintenant : l'index
+d'appariement des importeurs construisait trois clés — nom, slug, slug
+de l'id — et les deux dernières coïncident désormais par construction.
+`matchExisting(index, 'character', ['luffy'])` ne renvoie plus Luffy
+mais `null`, ce qui est le comportement correct : l'appariement est
+exact, pas approximatif.
+
+Et surtout, l'invariant quitte la documentation pour le code :
+`checkCoherence` émet `ID_SLUG_MISMATCH`. Il ne tenait que dans deux
+fichiers `.md`, ce qui est exactement pourquoi quatre entités ont pu
+l'ignorer depuis le premier jour.
+
+---
+
 ---
 
 ## Template for new entries

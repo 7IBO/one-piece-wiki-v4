@@ -139,18 +139,21 @@ describe('evaluateRules — entry scope', () => {
     // Missing list → finding.
     expect(evaluateRules(entry(), [rule])).toHaveLength(1);
     // Plain-string list satisfies the rule.
-    expect(evaluateRules(entry(['character:luffy']), [rule])).toHaveLength(0);
+    expect(evaluateRules(entry(['character:monkey-d-luffy']), [rule])).toHaveLength(0);
     // Object-item list satisfies it too.
     expect(
       evaluateRules(
-        entry([{ target: 'character:luffy', source: 'manga-chapter:585' }]),
+        entry([{ target: 'character:monkey-d-luffy', source: 'manga-chapter:585' }]),
         [rule],
       ),
     ).toHaveLength(0);
     // Mixed list as well.
     expect(
       evaluateRules(
-        entry([{ target: 'character:luffy', source: 'manga-chapter:585' }, 'character:ace']),
+        entry([
+          { target: 'character:monkey-d-luffy', source: 'manga-chapter:585' },
+          'character:portgas-d-ace',
+        ]),
         [rule],
       ),
     ).toHaveLength(0);
@@ -441,29 +444,29 @@ describe('evaluateRules — incoming-edge awareness (ADR-099)', () => {
   });
 
   it('has_active_incoming_relation fires only through the corpus context', () => {
-    const fruit = { id: 'devil-fruit:gomu-gomu', type: 'devil-fruit', properties: {} };
+    const fruit = { id: 'devil-fruit:gomu-gomu-no-mi', type: 'devil-fruit', properties: {} };
 
     // Context says a character actively ate the fruit -> condition
     // holds -> the (unmet) expectation yields a finding.
-    const eaten = contextOf('devil-fruit:gomu-gomu|ate-fruit|character');
+    const eaten = contextOf('devil-fruit:gomu-gomu-no-mi|ate-fruit|character');
     expect(evaluateRules(fruit, [incomingCondition], eaten)).toHaveLength(1);
 
     // No incoming edge -> condition fails -> silent.
     expect(evaluateRules(fruit, [incomingCondition], contextOf())).toHaveLength(0);
 
     // source_type narrowing: an organization eater does not match.
-    const wrongSource = contextOf('devil-fruit:gomu-gomu|ate-fruit|organization');
+    const wrongSource = contextOf('devil-fruit:gomu-gomu-no-mi|ate-fruit|organization');
     expect(evaluateRules(fruit, [incomingCondition], wrongSource)).toHaveLength(0);
   });
 
   it('rules using incoming fields are SKIPPED without a context or entity id', () => {
-    const fruit = { id: 'devil-fruit:gomu-gomu', type: 'devil-fruit', properties: {} };
+    const fruit = { id: 'devil-fruit:gomu-gomu-no-mi', type: 'devil-fruit', properties: {} };
     // No context (the dashboard single-entity call shape): skipped, no
     // finding even though the expectation could never hold.
     expect(evaluateRules(fruit, [incomingCondition])).toHaveLength(0);
     // Context but no id: the index is keyed by id — also skipped.
     const anonymous = { type: 'devil-fruit', properties: {} };
-    const eaten = contextOf('devil-fruit:gomu-gomu|ate-fruit|character');
+    const eaten = contextOf('devil-fruit:gomu-gomu-no-mi|ate-fruit|character');
     expect(evaluateRules(anonymous, [incomingCondition], eaten)).toHaveLength(0);
   });
 

@@ -90,9 +90,9 @@ beforeEach(() => {
 });
 
 const baseRequest = {
-  entityId: 'character:luffy',
-  path: 'data/universes/one-piece/entities/character/luffy.json',
-  newContent: '{"id":"character:luffy"}',
+  entityId: 'character:monkey-d-luffy',
+  path: 'data/universes/one-piece/entities/character/monkey-d-luffy.json',
+  newContent: '{"id":"character:monkey-d-luffy"}',
   expectedSha: 'sha-A',
   contributorLogin: '7IBO',
   contributorId: 1,
@@ -143,9 +143,9 @@ describe('submitEntityEdit — fresh PR', () => {
     expect(result.reused).toBe(false);
     expect(result.number).toBe(7);
     expect(state.calls.createBranch).toHaveLength(1);
-    expect(state.calls.createBranch[0]).toMatch(/^create\/character-luffy\//);
+    expect(state.calls.createBranch[0]).toMatch(/^create\/character-monkey-d-luffy\//);
     expect(state.calls.openPR).toHaveLength(1);
-    expect(state.calls.openPR[0]!.title).toBe('[DATA] Create character:luffy');
+    expect(state.calls.openPR[0]!.title).toBe('[DATA] Create character:monkey-d-luffy');
     expect(state.calls.openPR[0]!.labels).toContain('new-entity');
   });
 
@@ -158,7 +158,7 @@ describe('submitEntityEdit — fresh PR', () => {
     });
     const result = await submitEntityEdit(octokit, config, baseRequest);
     expect(result.number).toBe(7);
-    expect(state.calls.openPR[0]!.title).toBe('[DATA] Edit character:luffy');
+    expect(state.calls.openPR[0]!.title).toBe('[DATA] Edit character:monkey-d-luffy');
     expect(state.calls.openPR[0]!.labels).not.toContain('new-entity');
   });
 });
@@ -375,16 +375,16 @@ describe('submitIncomingEdgesEdit', () => {
 
 describe('submitNarrativeEdit', () => {
   const narrativeRequest = {
-    entityId: 'character:luffy',
+    entityId: 'character:monkey-d-luffy',
     contributorLogin: '7IBO',
     contributorId: 1,
     files: [
       {
-        path: 'data/universes/one-piece/narratives/en/character/luffy.md',
+        path: 'data/universes/one-piece/narratives/en/character/monkey-d-luffy.md',
         content: 'Luffy sets sail.\n',
       },
       {
-        path: 'data/universes/one-piece/narratives/fr/character/luffy.md',
+        path: 'data/universes/one-piece/narratives/fr/character/monkey-d-luffy.md',
         content: null,
       },
     ],
@@ -405,11 +405,11 @@ describe('submitNarrativeEdit', () => {
     expect(result.noOp).toBe(false);
     expect(result.reused).toBe(false);
     expect(result.number).toBe(7);
-    expect(state.calls.createBranch[0]).toMatch(/^narrative\/character-luffy\//);
+    expect(state.calls.createBranch[0]).toMatch(/^narrative\/character-monkey-d-luffy\//);
     expect(state.calls.commit[0]!.files.map((f) => f.path)).toEqual(
       narrativeRequest.files.map((f) => f.path),
     );
-    expect(state.calls.openPR[0]!.title).toBe('[DATA] Edit narrative of character:luffy');
+    expect(state.calls.openPR[0]!.title).toBe('[DATA] Edit narrative of character:monkey-d-luffy');
     expect(state.calls.openPR[0]!.labels).toContain('narrative');
     expect(state.calls.openPR[0]!.body).toContain('_(deleted)_');
   });

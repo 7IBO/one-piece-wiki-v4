@@ -405,7 +405,7 @@ output, for tooling consumption (lint plugins, dashboard preview):
   "errors": [
     {
       "code": "REFERENCE_NOT_FOUND",
-      "file": "data/universes/one-piece/entities/character/luffy.json",
+      "file": "data/universes/one-piece/entities/character/monkey-d-luffy.json",
       "path": "relations[3].target",
       "value": "character:dragonn",
       "suggestion": "character:dragon"

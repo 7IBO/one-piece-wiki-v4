@@ -66,8 +66,8 @@ const familyOf = relationType(
 );
 
 describe('extract — inverse materialization', () => {
-  const luffy = loaded('character:luffy', 'character', {
-    slug: 'luffy',
+  const luffy = loaded('character:monkey-d-luffy', 'character', {
+    slug: 'monkey-d-luffy',
     schema_version: 1,
     properties: {},
     relations: [
@@ -83,7 +83,7 @@ describe('extract — inverse materialization', () => {
 
   it('keeps the stored edge with the active label and is_inferred = 0', () => {
     const stored = rows.find((r) => r.relation_type === 'member-of');
-    expect(stored?.source_entity_id).toBe('character:luffy');
+    expect(stored?.source_entity_id).toBe('character:monkey-d-luffy');
     expect(stored?.target_entity_id).toBe('crew:straw-hats');
     expect(stored?.is_inferred).toBe(0);
     expect(stored?.label).toBe(
@@ -94,7 +94,7 @@ describe('extract — inverse materialization', () => {
   it('materializes the inverse edge with the inverse label and is_inferred = 1', () => {
     const inverse = rows.find((r) => r.relation_type === 'member-of.inverse');
     expect(inverse?.source_entity_id).toBe('crew:straw-hats');
-    expect(inverse?.target_entity_id).toBe('character:luffy');
+    expect(inverse?.target_entity_id).toBe('character:monkey-d-luffy');
     expect(inverse?.is_inferred).toBe(1);
     expect(inverse?.label).toBe(JSON.stringify({ en: 'Members', fr: 'Membres' }));
   });
@@ -112,8 +112,8 @@ describe('extract — inverse materialization', () => {
   });
 
   it('materializes inverses for every relation type, not only inverse_inferred ones', () => {
-    const ace = loaded('character:ace', 'character', {
-      slug: 'ace',
+    const ace = loaded('character:portgas-d-ace', 'character', {
+      slug: 'portgas-d-ace',
       schema_version: 1,
       properties: {},
       relations: [
@@ -138,8 +138,8 @@ describe('extract — object believed_by items ride unchanged (ADR-096)', () => 
   // the materialized inverse must carry the list byte-identical, in
   // the promoted column AND in the qualifiers JSON blob.
   const believedBy = [
-    { target: 'character:luffy', source: 'manga-chapter:585' },
-    'character:ace',
+    { target: 'character:monkey-d-luffy', source: 'manga-chapter:585' },
+    'character:portgas-d-ace',
   ];
   const sabo = loaded('character:sabo', 'character', {
     slug: 'sabo',
@@ -179,26 +179,26 @@ describe('extract — object believed_by items ride unchanged (ADR-096)', () => 
 });
 
 describe('extract — dedup of double-stored symmetric edges', () => {
-  const ace = loaded('character:ace', 'character', {
-    slug: 'ace',
+  const ace = loaded('character:portgas-d-ace', 'character', {
+    slug: 'portgas-d-ace',
     schema_version: 1,
     properties: {},
     relations: [
       {
         type: 'family-of',
-        target: 'character:luffy',
+        target: 'character:monkey-d-luffy',
         qualifiers: { relation_kind: 'sworn_brother' },
       },
     ],
   });
-  const luffy = loaded('character:luffy', 'character', {
-    slug: 'luffy',
+  const luffy = loaded('character:monkey-d-luffy', 'character', {
+    slug: 'monkey-d-luffy',
     schema_version: 1,
     properties: {},
     relations: [
       {
         type: 'family-of',
-        target: 'character:ace',
+        target: 'character:portgas-d-ace',
         qualifiers: { relation_kind: 'sworn_brother' },
       },
     ],
@@ -214,6 +214,6 @@ describe('extract — dedup of double-stored symmetric edges', () => {
 
   it('keeps both stored directions', () => {
     const sources = rows.map((r) => r.source_entity_id).sort();
-    expect(sources).toEqual(['character:ace', 'character:luffy']);
+    expect(sources).toEqual(['character:monkey-d-luffy', 'character:portgas-d-ace']);
   });
 });

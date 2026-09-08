@@ -52,11 +52,11 @@ describe('incomingRelationError', () => {
 });
 
 describe('scanIncomingEdges', () => {
-  const luffy = entity('character:luffy', [
+  const luffy = entity('character:monkey-d-luffy', [
     { type: 'member-of', target: CREW, qualifiers: { role: 'captain' } },
-    { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu' },
+    { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu-no-mi' },
   ]);
-  const zoro = entity('character:zoro', [
+  const zoro = entity('character:roronoa-zoro', [
     { type: 'member-of', target: CREW },
   ]);
   const buggy = entity('character:buggy', [
@@ -68,7 +68,10 @@ describe('scanIncomingEdges', () => {
 
   it('returns one row per matching edge, ignoring other relations/targets', () => {
     const rows = scanIncomingEdges('member-of', CREW, [luffy, zoro, buggy, arc]);
-    expect(rows.map((r) => r.sourceEntityId)).toEqual(['character:luffy', 'character:zoro']);
+    expect(rows.map((r) => r.sourceEntityId)).toEqual([
+      'character:monkey-d-luffy',
+      'character:roronoa-zoro',
+    ]);
     expect(rows[0]!.qualifiers).toEqual({ role: 'captain' });
     expect(rows[1]!.qualifiers).toEqual({});
   });
@@ -77,8 +80,8 @@ describe('scanIncomingEdges', () => {
     const org = entity('organization:marines', [{ type: 'member-of', target: CREW }]);
     const rows = scanIncomingEdges('member-of', CREW, [org, zoro, luffy]);
     expect(rows.map((r) => r.sourceEntityId)).toEqual([
-      'character:luffy',
-      'character:zoro',
+      'character:monkey-d-luffy',
+      'character:roronoa-zoro',
       'organization:marines',
     ]);
   });
@@ -96,14 +99,14 @@ describe('coalesceIncomingPlans', () => {
   it('collapses add + update into upsert, remove stays remove', () => {
     const plans = coalesceIncomingPlans({
       add: [{ entityId: 'character:jinbe', qualifiers: { role: 'helmsman' } }],
-      update: [{ entityId: 'character:zoro', qualifiers: { role: 'swordsman' } }],
+      update: [{ entityId: 'character:roronoa-zoro', qualifiers: { role: 'swordsman' } }],
       remove: ['character:buggy'],
     });
     expect(plans.get('character:jinbe')).toEqual({
       op: 'upsert',
       qualifiers: { role: 'helmsman' },
     });
-    expect(plans.get('character:zoro')).toEqual({
+    expect(plans.get('character:roronoa-zoro')).toEqual({
       op: 'upsert',
       qualifiers: { role: 'swordsman' },
     });
@@ -112,10 +115,10 @@ describe('coalesceIncomingPlans', () => {
 
   it('lets add/update win over remove for the same entity (net add)', () => {
     const plans = coalesceIncomingPlans({
-      add: [{ entityId: 'character:zoro', qualifiers: {} }],
-      remove: ['character:zoro'],
+      add: [{ entityId: 'character:roronoa-zoro', qualifiers: {} }],
+      remove: ['character:roronoa-zoro'],
     });
-    expect(plans.get('character:zoro')).toEqual({ op: 'upsert', qualifiers: {} });
+    expect(plans.get('character:roronoa-zoro')).toEqual({ op: 'upsert', qualifiers: {} });
   });
 
   it('skips malformed items and is empty for an empty body', () => {
@@ -130,7 +133,7 @@ describe('coalesceIncomingPlans', () => {
 
 describe('patchIncomingRelations', () => {
   const relations = [
-    { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu' },
+    { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu-no-mi' },
     { type: 'member-of', target: CREW, qualifiers: { role: 'captain' } },
     { type: 'member-of', target: 'crew:other' },
   ];
@@ -138,7 +141,7 @@ describe('patchIncomingRelations', () => {
   it('remove drops every edge of the pair, keeping everything else', () => {
     const next = patchIncomingRelations(relations, 'member-of', CREW, { op: 'remove' });
     expect(next).toEqual([
-      { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu' },
+      { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu-no-mi' },
       { type: 'member-of', target: 'crew:other' },
     ]);
   });
@@ -211,14 +214,14 @@ const plansOf = (
 ): ReadonlyMap<string, IncomingEdgePlan> => new Map(pairs);
 
 describe('buildIncomingEdgeFiles', () => {
-  const zoro = entity('character:zoro', [{ type: 'member-of', target: CREW }]);
+  const zoro = entity('character:roronoa-zoro', [{ type: 'member-of', target: CREW }]);
 
   it('patches, validates and returns one file per touched entity', () => {
     const result = buildIncomingEdgeFiles(
       memberOf,
       CREW,
       plansOf(
-        ['character:zoro', { op: 'upsert', qualifiers: { role: 'swordsman' } }],
+        ['character:roronoa-zoro', { op: 'upsert', qualifiers: { role: 'swordsman' } }],
       ),
       depsFor([zoro], { expectedShaFor: () => 'sha-zoro' }),
     );
@@ -226,7 +229,7 @@ describe('buildIncomingEdgeFiles', () => {
     if (result.kind !== 'ok') return;
     expect(result.files).toHaveLength(1);
     expect(result.files[0]!.path).toBe(
-      'data/universes/one-piece/entities/character/zoro.json',
+      'data/universes/one-piece/entities/character/roronoa-zoro.json',
     );
     expect(result.files[0]!.expectedSha).toBe('sha-zoro');
     const parsed = JSON.parse(result.files[0]!.content) as {
@@ -309,31 +312,31 @@ describe('buildIncomingEdgeFiles', () => {
     const result = buildIncomingEdgeFiles(
       memberOf,
       CREW,
-      plansOf(['character:zoro', { op: 'upsert', qualifiers: {} }]),
+      plansOf(['character:roronoa-zoro', { op: 'upsert', qualifiers: {} }]),
       depsFor([zoro], { schemaFor: () => failSchema }),
     );
     expect(result).toEqual({
       kind: 'validation_failed',
-      entityId: 'character:zoro',
+      entityId: 'character:roronoa-zoro',
       issues: [{ path: ['relations', '0', 'target'], message: 'Invalid entity id' }],
     });
   });
 
   it('refuses with rule_blocked when an ADR-088 blocking rule matches the patched entity', () => {
     const bountied = entity(
-      'character:zoro',
+      'character:roronoa-zoro',
       [{ type: 'member-of', target: CREW }],
       { bounty: [{ value: 111_100_000 }] },
     );
     const result = buildIncomingEdgeFiles(
       memberOf,
       CREW,
-      plansOf(['character:zoro', { op: 'upsert', qualifiers: { role: 'swordsman' } }]),
+      plansOf(['character:roronoa-zoro', { op: 'upsert', qualifiers: { role: 'swordsman' } }]),
       depsFor([bountied], { rules: () => [blockingRule] }),
     );
     expect(result.kind).toBe('rule_blocked');
     if (result.kind !== 'rule_blocked') return;
-    expect(result.entityId).toBe('character:zoro');
+    expect(result.entityId).toBe('character:roronoa-zoro');
     expect(result.findings[0]!.ruleId).toBe('no-bounty-blocking');
     expect(result.findings[0]!.enforcement).toBe('blocking');
   });
@@ -342,7 +345,7 @@ describe('buildIncomingEdgeFiles', () => {
     const result = buildIncomingEdgeFiles(
       memberOf,
       CREW,
-      plansOf(['character:zoro', { op: 'remove' }]),
+      plansOf(['character:roronoa-zoro', { op: 'remove' }]),
       depsFor([zoro], { schemaFor: () => undefined }),
     );
     expect(result.kind).toBe('bad_request');

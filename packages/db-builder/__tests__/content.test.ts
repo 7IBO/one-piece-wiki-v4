@@ -24,15 +24,15 @@ describe('loadTranslationRows', () => {
     const root = makeUniversesDir();
     write(
       root,
-      'one-piece/translations/fr/character/luffy.json',
-      JSON.stringify({ 'character.luffy.name.common': 'Monkey D. Luffy' }),
+      'one-piece/translations/fr/character/monkey-d-luffy.json',
+      JSON.stringify({ 'character.monkey-d-luffy.name.common': 'Monkey D. Luffy' }),
     );
     write(
       root,
-      'one-piece/translations/en/character/luffy.json',
+      'one-piece/translations/en/character/monkey-d-luffy.json',
       JSON.stringify({
-        'character.luffy.name.common': 'Monkey D. Luffy',
-        'character.luffy.epithet.straw-hat': 'Straw Hat',
+        'character.monkey-d-luffy.name.common': 'Monkey D. Luffy',
+        'character.monkey-d-luffy.epithet.straw-hat': 'Straw Hat',
       }),
     );
 
@@ -41,19 +41,19 @@ describe('loadTranslationRows', () => {
       {
         universe: 'one-piece',
         locale: 'en',
-        key: 'character.luffy.epithet.straw-hat',
+        key: 'character.monkey-d-luffy.epithet.straw-hat',
         value: 'Straw Hat',
       },
       {
         universe: 'one-piece',
         locale: 'en',
-        key: 'character.luffy.name.common',
+        key: 'character.monkey-d-luffy.name.common',
         value: 'Monkey D. Luffy',
       },
       {
         universe: 'one-piece',
         locale: 'fr',
-        key: 'character.luffy.name.common',
+        key: 'character.monkey-d-luffy.name.common',
         value: 'Monkey D. Luffy',
       },
     ]);
@@ -63,18 +63,18 @@ describe('loadTranslationRows', () => {
     const root = makeUniversesDir();
     write(
       root,
-      'one-piece/translations/en/character/luffy.json',
-      JSON.stringify({ 'character.luffy.name.common': 'Monkey D. Luffy' }),
+      'one-piece/translations/en/character/monkey-d-luffy.json',
+      JSON.stringify({ 'character.monkey-d-luffy.name.common': 'Monkey D. Luffy' }),
     );
     write(
       root,
-      'one-piece/translations/ja/character/luffy.json',
-      JSON.stringify({ 'character.luffy.name.common': 'モンキー・D・ルフィ' }),
+      'one-piece/translations/ja/character/monkey-d-luffy.json',
+      JSON.stringify({ 'character.monkey-d-luffy.name.common': 'モンキー・D・ルフィ' }),
     );
     write(
       root,
-      'one-piece/translations/ja-latn/character/luffy.json',
-      JSON.stringify({ 'character.luffy.name.common': 'Monkī Dī Rufi' }),
+      'one-piece/translations/ja-latn/character/monkey-d-luffy.json',
+      JSON.stringify({ 'character.monkey-d-luffy.name.common': 'Monkī Dī Rufi' }),
     );
 
     const rows = await loadTranslationRows(root);
@@ -85,19 +85,19 @@ describe('loadTranslationRows', () => {
       {
         universe: 'one-piece',
         locale: 'en',
-        key: 'character.luffy.name.common',
+        key: 'character.monkey-d-luffy.name.common',
         value: 'Monkey D. Luffy',
       },
       {
         universe: 'one-piece',
         locale: 'ja',
-        key: 'character.luffy.name.common',
+        key: 'character.monkey-d-luffy.name.common',
         value: 'モンキー・D・ルフィ',
       },
       {
         universe: 'one-piece',
         locale: 'ja-latn',
-        key: 'character.luffy.name.common',
+        key: 'character.monkey-d-luffy.name.common',
         value: 'Monkī Dī Rufi',
       },
     ]);
@@ -138,8 +138,16 @@ describe('loadTranslationRows', () => {
 describe('loadNarrativeRows', () => {
   it('derives entity ids from <entityType>/<fileBase>.md and keeps markdown verbatim', async () => {
     const root = makeUniversesDir();
-    write(root, 'one-piece/narratives/en/character/ace.md', '**Ace** dies at Marineford.\n');
-    write(root, 'one-piece/narratives/fr/character/ace.md', '**Ace** meurt à Marineford.\n');
+    write(
+      root,
+      'one-piece/narratives/en/character/portgas-d-ace.md',
+      '**Ace** dies at Marineford.\n',
+    );
+    write(
+      root,
+      'one-piece/narratives/fr/character/portgas-d-ace.md',
+      '**Ace** meurt à Marineford.\n',
+    );
     write(root, 'one-piece/narratives/en/arc/wano.md', 'The [[location:wano]] arc.\n');
 
     const rows = await loadNarrativeRows(root);
@@ -152,13 +160,13 @@ describe('loadNarrativeRows', () => {
       },
       {
         universe: 'one-piece',
-        entity_id: 'character:ace',
+        entity_id: 'character:portgas-d-ace',
         locale: 'en',
         markdown: '**Ace** dies at Marineford.\n',
       },
       {
         universe: 'one-piece',
-        entity_id: 'character:ace',
+        entity_id: 'character:portgas-d-ace',
         locale: 'fr',
         markdown: '**Ace** meurt à Marineford.\n',
       },

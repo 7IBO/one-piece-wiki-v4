@@ -768,7 +768,7 @@ async function handleEntityLinks(type: string, slug: string): Promise<Response> 
 
   // id → (type, slug) so panel rows can deep-link. Entity ids are
   // `type:fileBase` where fileBase may differ from the slug
-  // (character:ace ↔ portgas-d-ace), so resolve via the snapshot;
+  // (character:portgas-d-ace ↔ portgas-d-ace), so resolve via the snapshot;
   // null for dangling targets.
   const routeOf = (id: string): { type: string; slug: string; } | null => {
     const e = snap.entities.get(id);
@@ -1229,7 +1229,7 @@ async function handleEntityHistory(
     );
   }
   // Entity ids are `type:fileBase` where the file base may differ
-  // from the slug (character:ace ↔ portgas-d-ace) — derive the JSON
+  // from the slug (character:portgas-d-ace ↔ portgas-d-ace) — derive the JSON
   // path from the id, exactly like the entity page's history URL.
   const fileBase = entity.id.split(':')[1] ?? slug;
   try {

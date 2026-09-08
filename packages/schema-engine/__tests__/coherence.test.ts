@@ -56,10 +56,41 @@ const baseCatalogue = catalogue(
   },
 );
 
+describe("checkCoherence — l'invariant d'identite (ADR-126)", () => {
+  const cat = catalogue({ character: { allowed_relations: [] } }, {});
+  const withSlug = (id: string, slug: string): LoadedEntity => {
+    const [type = ''] = id.split(':');
+    return { id, type, path: `${id}.json`, data: { id, type, slug, relations: [] } };
+  };
+
+  it('signale un id qui ne redit pas son slug', () => {
+    // Le defaut reel : quatre entites du corpus portaient un
+    // diminutif (`character:luffy` pour le slug `monkey-d-luffy`).
+    const entities = new Map([['character:luffy', withSlug('character:luffy', 'monkey-d-luffy')]]);
+    const errors = checkCoherence(entities, cat).filter((f) => f.severity === 'error');
+    expect(errors.map((f) => f.code)).toEqual(['ID_SLUG_MISMATCH']);
+    expect(errors[0]?.message).toContain('character:monkey-d-luffy');
+  });
+
+  it('ne dit rien quand les deux coincident', () => {
+    const id = 'character:monkey-d-luffy';
+    const entities = new Map([[id, withSlug(id, 'monkey-d-luffy')]]);
+    expect(checkCoherence(entities, cat).filter((f) => f.severity === 'error')).toEqual([]);
+  });
+
+  it("laisse passer une entite sans slug — ce n'est pas son sujet", () => {
+    const entities = new Map([['character:x', entity('character:x')]]);
+    expect(
+      checkCoherence(entities, cat)
+        .filter((f) => f.code === 'ID_SLUG_MISMATCH'),
+    ).toEqual([]);
+  });
+});
+
 describe('checkCoherence — relation rules', () => {
   it('accepts a schema-compliant relation', () => {
     const entities = entityMap(
-      entity('character:luffy', [
+      entity('character:monkey-d-luffy', [
         { type: 'depicted-by', target: 'image:luffy', qualifiers: { role: 'primary_portrait' } },
       ]),
       entity('image:luffy'),
@@ -70,7 +101,9 @@ describe('checkCoherence — relation rules', () => {
   });
 
   it('flags an unknown relation type', () => {
-    const entities = entityMap(entity('character:luffy', [{ type: 'frobnicates', target: 'x:y' }]));
+    const entities = entityMap(
+      entity('character:monkey-d-luffy', [{ type: 'frobnicates', target: 'x:y' }]),
+    );
     const codes = checkCoherence(entities, baseCatalogue).map((f) => f.code);
     expect(codes).toContain('UNKNOWN_RELATION_TYPE');
   });
@@ -79,9 +112,9 @@ describe('checkCoherence — relation rules', () => {
     // image's allowed_relations is ['depicts'] — depicted-by is not allowed there.
     const entities = entityMap(
       entity('image:x', [
-        { type: 'depicted-by', target: 'character:luffy', qualifiers: { role: 'x' } },
+        { type: 'depicted-by', target: 'character:monkey-d-luffy', qualifiers: { role: 'x' } },
       ]),
-      entity('character:luffy'),
+      entity('character:monkey-d-luffy'),
     );
     const codes = checkCoherence(entities, baseCatalogue).map((f) => f.code);
     expect(codes).toContain('RELATION_NOT_ALLOWED');
@@ -90,10 +123,10 @@ describe('checkCoherence — relation rules', () => {
 
   it('flags an invalid target type', () => {
     const entities = entityMap(
-      entity('character:luffy', [
-        { type: 'depicted-by', target: 'character:zoro', qualifiers: { role: 'x' } },
+      entity('character:monkey-d-luffy', [
+        { type: 'depicted-by', target: 'character:roronoa-zoro', qualifiers: { role: 'x' } },
       ]),
-      entity('character:zoro'),
+      entity('character:roronoa-zoro'),
     );
     const codes = checkCoherence(entities, baseCatalogue).map((f) => f.code);
     expect(codes).toContain('RELATION_INVALID_TARGET_TYPE');
@@ -101,7 +134,7 @@ describe('checkCoherence — relation rules', () => {
 
   it('flags a missing required qualifier', () => {
     const entities = entityMap(
-      entity('character:luffy', [{ type: 'depicted-by', target: 'image:luffy' }]),
+      entity('character:monkey-d-luffy', [{ type: 'depicted-by', target: 'image:luffy' }]),
       entity('image:luffy'),
     );
     const codes = checkCoherence(entities, baseCatalogue).map((f) => f.code);
@@ -159,7 +192,7 @@ describe('checkCoherence — ADR-099 corpus context (incoming-edge rules)', () =
       entity('devil-fruit:mera-mera', [
         { type: 'held-by', target: 'organization:donquixote-pirates' },
       ]),
-      entity('character:ace', [
+      entity('character:portgas-d-ace', [
         {
           type: 'ate-fruit',
           target: 'devil-fruit:mera-mera',
@@ -183,7 +216,7 @@ describe('checkCoherence — ADR-099 corpus context (incoming-edge rules)', () =
 describe('checkCoherence — unreferenced warning', () => {
   it('warns about an entity nothing points at', () => {
     const entities = entityMap(
-      entity('character:luffy', [
+      entity('character:monkey-d-luffy', [
         { type: 'depicted-by', target: 'image:luffy', qualifiers: { role: 'x' } },
       ]),
       entity('image:luffy'),
@@ -191,31 +224,31 @@ describe('checkCoherence — unreferenced warning', () => {
     const warnings = checkCoherence(entities, baseCatalogue).filter((f) =>
       f.severity === 'warning'
     );
-    // image:luffy is referenced; character:luffy is not.
-    expect(warnings.map((w) => w.source)).toContain('character:luffy');
+    // image:luffy is referenced; character:monkey-d-luffy is not.
+    expect(warnings.map((w) => w.source)).toContain('character:monkey-d-luffy');
     expect(warnings.map((w) => w.source)).not.toContain('image:luffy');
   });
 
   it('counts since/source axis refs as references', () => {
     const entities = entityMap(
-      entity('character:luffy', [
+      entity('character:monkey-d-luffy', [
         { type: 'depicted-by', target: 'image:luffy', qualifiers: { role: 'x' } },
       ]),
       entity('image:luffy'),
     );
-    // Add a property axis ref to character:luffy from image:luffy's side.
+    // Add a property axis ref to character:monkey-d-luffy from image:luffy's side.
     (entities.get('image:luffy') as LoadedEntity).data['properties'] = {
-      spoiler_since: { value: 'manga-chapter:1', since: 'character:luffy' },
+      spoiler_since: { value: 'manga-chapter:1', since: 'character:monkey-d-luffy' },
     };
     const warnings = checkCoherence(entities, baseCatalogue).filter((f) =>
       f.severity === 'warning'
     );
-    expect(warnings.map((w) => w.source)).not.toContain('character:luffy');
+    expect(warnings.map((w) => w.source)).not.toContain('character:monkey-d-luffy');
   });
 
   it('counts relation epistemic axes (revealed_since / known_truth_by) as references', () => {
     const entities = entityMap(
-      entity('character:luffy', [
+      entity('character:monkey-d-luffy', [
         {
           type: 'depicted-by',
           target: 'image:luffy',
@@ -239,51 +272,51 @@ describe('checkCoherence — unreferenced warning', () => {
 
   it('counts object believed_by items — target AND per-item source (ADR-096)', () => {
     const entities = entityMap(
-      entity('character:luffy', [
+      entity('character:monkey-d-luffy', [
         {
           type: 'depicted-by',
           target: 'image:luffy',
           qualifiers: {
             role: 'x',
             believed_by: [
-              { target: 'character:zoro', source: 'manga-chapter:585' },
+              { target: 'character:roronoa-zoro', source: 'manga-chapter:585' },
               'character:nami',
             ],
           },
         },
       ]),
       entity('image:luffy'),
-      entity('character:zoro'),
+      entity('character:roronoa-zoro'),
       entity('character:nami'),
       entity('manga-chapter:585'),
     );
     const unreferenced = checkCoherence(entities, baseCatalogue)
       .filter((f) => f.severity === 'warning')
       .map((w) => w.source);
-    expect(unreferenced).not.toContain('character:zoro');
+    expect(unreferenced).not.toContain('character:roronoa-zoro');
     expect(unreferenced).not.toContain('character:nami');
     expect(unreferenced).not.toContain('manga-chapter:585');
   });
 
   it('counts property-entry believed_by items — target AND per-item source (ADR-096)', () => {
     const entities = entityMap(
-      entity('character:luffy', [
+      entity('character:monkey-d-luffy', [
         { type: 'depicted-by', target: 'image:luffy', qualifiers: { role: 'x' } },
       ]),
       entity('image:luffy'),
-      entity('character:ace'),
+      entity('character:portgas-d-ace'),
       entity('manga-chapter:585'),
     );
-    (entities.get('character:luffy') as LoadedEntity).data['properties'] = {
+    (entities.get('character:monkey-d-luffy') as LoadedEntity).data['properties'] = {
       status: [{
         value: 'presumed_dead',
-        believed_by: [{ target: 'character:ace', source: ['manga-chapter:585'] }],
+        believed_by: [{ target: 'character:portgas-d-ace', source: ['manga-chapter:585'] }],
       }],
     };
     const unreferenced = checkCoherence(entities, baseCatalogue)
       .filter((f) => f.severity === 'warning')
       .map((w) => w.source);
-    expect(unreferenced).not.toContain('character:ace');
+    expect(unreferenced).not.toContain('character:portgas-d-ace');
     expect(unreferenced).not.toContain('manga-chapter:585');
   });
 });
@@ -377,7 +410,7 @@ describe('checkCoherence — duplicate detection', () => {
       qualifiers: { role: 'primary_portrait' },
     };
     const entities = entityMap(
-      entity('character:luffy', [dup, { ...dup, qualifiers: { ...dup.qualifiers } }]),
+      entity('character:monkey-d-luffy', [dup, { ...dup, qualifiers: { ...dup.qualifiers } }]),
       entity('image:luffy'),
     );
     const codes = checkCoherence(entities, baseCatalogue).map((f) => f.code);
@@ -386,7 +419,7 @@ describe('checkCoherence — duplicate detection', () => {
 
   it('does NOT flag historised re-relations (same type+target, different since)', () => {
     const entities = entityMap(
-      entity('character:luffy', [
+      entity('character:monkey-d-luffy', [
         {
           type: 'depicted-by',
           target: 'image:luffy',
@@ -407,8 +440,8 @@ describe('checkCoherence — duplicate detection', () => {
   });
 
   it('flags an exact-duplicate property entry regardless of key order', () => {
-    const entities = entityMap(entity('character:luffy', []));
-    (entities.get('character:luffy') as LoadedEntity).data['properties'] = {
+    const entities = entityMap(entity('character:monkey-d-luffy', []));
+    (entities.get('character:monkey-d-luffy') as LoadedEntity).data['properties'] = {
       status: [
         { value: 'alive', since: 'manga-chapter:1' },
         { since: 'manga-chapter:1', value: 'alive' },

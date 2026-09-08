@@ -118,7 +118,7 @@ describe('mapCharacter', () => {
     const result = mapCharacter(pair, {
       vocabularies: { occupations: OCCUPATIONS },
       resolveTarget: (name) =>
-        name === 'Straw Hat Pirates' ? 'crew:straw-hat-pirates' : 'devil-fruit:gomu-gomu',
+        name === 'Straw Hat Pirates' ? 'crew:straw-hat-pirates' : 'devil-fruit:gomu-gomu-no-mi',
     });
     expect(result).not.toBeNull();
     expect(result!.entity.id).toBe('character:monkey-d-luffy');
@@ -149,7 +149,7 @@ describe('mapCharacter', () => {
     // led-by/captains) + ate-fruit, both since-less and flagged.
     expect(result!.entity.relations).toEqual([
       { type: 'member-of', target: 'crew:straw-hat-pirates' },
-      { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu' },
+      { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu-no-mi' },
     ]);
     expect(result!.unanchored.some((u) => u.includes('member-of'))).toBe(true);
     expect(result!.gaps).toEqual([]); // every Luffy field is handled

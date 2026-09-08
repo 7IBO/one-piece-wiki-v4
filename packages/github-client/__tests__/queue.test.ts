@@ -7,7 +7,7 @@ import { parseContributorBullet } from '../src/repo-ops.ts';
 
 describe('parseContributorBullet', () => {
   it('parses the GitHub-login bullet', () => {
-    const body = '**Contributors**\n- @7IBO\n\n**Entity:** `character:luffy`';
+    const body = '**Contributors**\n- @7IBO\n\n**Entity:** `character:monkey-d-luffy`';
     expect(parseContributorBullet(body)).toEqual({ kind: 'github', login: '7IBO' });
   });
 

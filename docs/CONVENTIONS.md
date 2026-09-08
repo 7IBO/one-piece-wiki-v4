@@ -8,12 +8,14 @@ here are non-negotiable.
 
 ### IDs
 
-- Format: `<entity-type>:<slug>`
+- Format: `<entity-type>:<slug>` — and the `<slug>` half **is** the
+  entity's `slug` field, not a shorter nickname (ADR-126). `id` and
+  `type + slug` must be derivable from one another in both directions.
 - Always kebab-case
 - Always English
 - Immutable for the lifetime of the entity
 
-Examples: `character:luffy`, `devil-fruit:gomu-gomu`,
+Examples: `character:monkey-d-luffy`, `devil-fruit:gomu-gomu-no-mi`,
 `manga-chapter:1044`, `event:battle-of-marineford`, `arc:wano`,
 `crew:straw-hat-pirates`.
 
@@ -58,8 +60,8 @@ When a slug changes (rename, disambiguation), the old slug is appended to
 ### File names
 
 - Entity files: `<id-without-prefix>.json`
-  - The file `entities/character/luffy.json` has internal id
-    `character:luffy`
+  - The file `entities/character/monkey-d-luffy.json` has internal id
+    `character:monkey-d-luffy`
 - Schema files: `<id>.json`
 - Translation files: mirror the entity tree, by locale:
   `translations/<locale>/<type>/<id>.json`
@@ -120,7 +122,7 @@ Concrete examples:
 
 ```ts
 // Future SDK (camelCase meta, snake_case property IDs preserved)
-const luffy = client.getEntity('character:luffy');
+const luffy = client.getEntity('character:monkey-d-luffy');
 luffy.canonicalNameKey; // meta key, camelCased
 luffy.properties.blood_type?.value; // property ID, immutable
 luffy.properties.blood_type?.value; // "F" — enum value, immutable
@@ -131,7 +133,7 @@ luffy.properties.bounty[0].issued_by; // qualifier ID, immutable
 ```json
 // Future REST API (snake_case meta, snake_case property IDs preserved)
 {
-  "canonical_name_key": "character.luffy.name",
+  "canonical_name_key": "character.monkey-d-luffy.name",
   "properties": {
     "bounty": [{
       "value": 3000000000,

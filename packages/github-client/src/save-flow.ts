@@ -129,8 +129,8 @@ export async function submitEntityEdit(
     { path: request.path, content: request.newContent },
     ...(request.extraFiles ?? []).map((f) => ({ path: f.path, content: f.content })),
   ];
-  // Title verb capitalisation — `Create character:luffy` vs
-  // `Edit character:luffy`. Default to `edit` so every caller that
+  // Title verb capitalisation — `Create character:monkey-d-luffy` vs
+  // `Edit character:monkey-d-luffy`. Default to `edit` so every caller that
   // doesn't pass `verb` keeps the historical phrasing.
   const verb = request.verb ?? 'edit';
   const verbTitle = verb === 'create' ? 'Create' : 'Edit';
@@ -196,7 +196,7 @@ export async function submitEntityEdit(
 
   const ts = new Date().toISOString().replace(/[:.TZ]/g, '').slice(0, 14);
   // Branch prefix matches the verb so `git branch --list` reads
-  // naturally (`create/character-luffy/…` vs `edit/character-buggy/…`).
+  // naturally (`create/character-monkey-d-luffy/…` vs `edit/character-buggy/…`).
   const branchPrefix = verb === 'create' ? 'create' : 'edit';
   const branch = `${branchPrefix}/${safeBranchSegment(request.entityId)}/${ts}`;
   await createBranch(octokit, config, branch);

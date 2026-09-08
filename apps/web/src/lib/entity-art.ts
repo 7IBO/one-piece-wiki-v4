@@ -1619,7 +1619,7 @@ const RATIO_DETAIL: Readonly<Record<ArtRatio, number>> = {
 /**
  * Compose the artwork for one entity.
  *
- * @param id Canonical entity id (`character:luffy`) — the only seed.
+ * @param id Canonical entity id (`character:monkey-d-luffy`) — the only seed.
  * @param type Entity type id; selects the visual family.
  * @param ratio Frame to compose for. `hero` additionally raises the
  *   detail level and wraps the grammar in the atmosphere passes.

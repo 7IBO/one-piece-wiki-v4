@@ -59,9 +59,9 @@ const ctx: HistoryDiffContext = {
       ? { en: 'Straw Hat Pirates', fr: null }
       : id === 'event:marineford'
       ? { en: 'Battle of Marineford', fr: 'Bataille de Marineford' }
-      : id === 'character:luffy'
+      : id === 'character:monkey-d-luffy'
       ? { en: 'Monkey D. Luffy', fr: null }
-      : id === 'character:ace'
+      : id === 'character:portgas-d-ace'
       ? { en: 'Portgas D. Ace', fr: null }
       : undefined,
   locale: 'en',
@@ -207,8 +207,8 @@ describe('diffEntityData', () => {
             value: 'dead',
             since: 'manga-chapter:585',
             believed_by: [
-              { target: 'character:luffy', source: 'manga-chapter:585' },
-              'character:ace',
+              { target: 'character:monkey-d-luffy', source: 'manga-chapter:585' },
+              'character:portgas-d-ace',
             ],
           },
         ],
@@ -236,7 +236,7 @@ describe('diffEntityData', () => {
         qualifiers: {
           since: 'manga-chapter:5',
           believed_by: [{
-            target: 'character:luffy',
+            target: 'character:monkey-d-luffy',
             source: ['manga-chapter:585', 'manga-chapter:590'],
           }],
         },

@@ -347,7 +347,7 @@ function extractLinkTargets(wikitext: string): readonly string[] {
 
 /**
  * Reuse the entity id the sync ledger already binds to this page, so
- * a re-import does not fork `devil-fruit:gomu-gomu` into
+ * a re-import does not fork `devil-fruit:gomu-gomu-no-mi` into
  * `devil-fruit:gomu-gomu-no-mi`. Falls back to `type:slug`.
  */
 export function entityIdFor(

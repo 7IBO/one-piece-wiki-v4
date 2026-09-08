@@ -112,8 +112,8 @@ describe('entity-ref-item lists (ADR-096)', () => {
         color: {
           value: 'red',
           believed_by: [
-            'character:ace',
-            { target: 'character:luffy', source: 'manga-chapter:585' },
+            'character:portgas-d-ace',
+            { target: 'character:monkey-d-luffy', source: 'manga-chapter:585' },
             { target: 'character:nami', source: ['manga-chapter:585', 'anime-episode:504'] },
           ],
           known_truth_by: [{ target: 'character:sabo' }],
@@ -132,8 +132,8 @@ describe('entity-ref-item lists (ADR-096)', () => {
         target: 'widget:y',
         qualifiers: {
           believed_by: [
-            { target: 'character:luffy', source: 'manga-chapter:585' },
-            'character:ace',
+            { target: 'character:monkey-d-luffy', source: 'manga-chapter:585' },
+            'character:portgas-d-ace',
           ],
         },
       }],
@@ -153,7 +153,7 @@ describe('entity-ref-item lists (ADR-096)', () => {
     // Number item.
     expect(schema.safeParse(entry([42])).success).toBe(false);
     // Empty source list (SourceRefOrList requires min 1).
-    expect(schema.safeParse(entry([{ target: 'character:luffy', source: [] }])).success)
+    expect(schema.safeParse(entry([{ target: 'character:monkey-d-luffy', source: [] }])).success)
       .toBe(false);
   });
 });

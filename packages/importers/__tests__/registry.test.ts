@@ -19,7 +19,7 @@ import { parseRedirect } from '../src/fandom/wikitext.ts';
 const registry: FandomRegistry = {
   pages: [
     {
-      entityId: 'character:luffy',
+      entityId: 'character:monkey-d-luffy',
       page: 'Monkey D. Luffy',
       pageId: 1444,
       redirects: ['Straw Hat Luffy', 'Luffy'],
@@ -42,9 +42,9 @@ describe('title normalization + redirect resolution', () => {
 
   it('resolves canonical titles and redirect aliases to the same entity', () => {
     const index = buildTitleIndex(registry);
-    expect(resolveTitle(index, 'Monkey D. Luffy')?.entityId).toBe('character:luffy');
-    expect(resolveTitle(index, 'Straw_Hat_Luffy')?.entityId).toBe('character:luffy');
-    expect(resolveTitle(index, 'luffy')?.entityId).toBe('character:luffy');
+    expect(resolveTitle(index, 'Monkey D. Luffy')?.entityId).toBe('character:monkey-d-luffy');
+    expect(resolveTitle(index, 'Straw_Hat_Luffy')?.entityId).toBe('character:monkey-d-luffy');
+    expect(resolveTitle(index, 'luffy')?.entityId).toBe('character:monkey-d-luffy');
     expect(resolveTitle(index, 'Roronoa Zoro')).toBeNull();
   });
 
@@ -64,7 +64,7 @@ describe('detectEntityLinks', () => {
       + 'See [[Monkey D. Luffy#History]] and [[fr:Monkey D. Luffy]] and [[Category:Humans]].';
     const { linked, unknown } = detectEntityLinks(wikitext, registry);
     expect(linked.map((l) => l.entityId).sort()).toEqual([
-      'character:luffy',
+      'character:monkey-d-luffy',
       'manga-chapter:1044',
     ]);
     expect(unknown).toEqual(['Roronoa Zoro']);
@@ -78,7 +78,7 @@ describe('update detection', () => {
       ['Chapter 1044', 200], // unchanged
     ]);
     expect(staleEntries(registry, live).map((p) => p.entityId)).toEqual([
-      'character:luffy',
+      'character:monkey-d-luffy',
     ]);
   });
 
@@ -121,7 +121,7 @@ describe('update detection', () => {
       },
     ]);
     expect(next.pages.map((p) => p.entityId)).toEqual([
-      'character:luffy',
+      'character:monkey-d-luffy',
       'manga-chapter:1044',
       'manga-chapter:1045',
     ]);
@@ -133,7 +133,7 @@ describe('update detection', () => {
     // A crawl reaches a page through at most ONE alias; a wholesale
     // replace would erase the rest of the redirect set.
     const next = recordImports(registry, [{
-      entityId: 'character:luffy',
+      entityId: 'character:monkey-d-luffy',
       page: 'Monkey D. Luffy',
       pageId: 1444,
       revId: 150,

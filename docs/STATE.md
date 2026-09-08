@@ -1183,7 +1183,7 @@ UNREFERENCED scan counts it; seeded
 ADR-094: one-piece `document` entity type (`document_kind` vocab,
 `first_source`, `narrative_key`) + new `issued-by` relation +
 `profiles`/`held-by`/`depicted-by` extended to document; seeded
-`document:luffy-first-wanted-poster` (profiles character:luffy since
+`document:luffy-first-wanted-poster` (profiles character:monkey-d-luffy since
 manga-chapter:96). 37 entities, all additive (compat snapshot
 updated). Wave 3 (per-item provenance on `believed_by`) stays queued
 — big cross-cutting migration, own ADR needed.

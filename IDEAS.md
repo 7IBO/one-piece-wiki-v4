@@ -263,7 +263,7 @@ do NOT want to break the existing entity edit flow for them:
   `valid_from_types`. Showing an "Apparitions: 0" empty state on
   a chapter's edit page would be visually wrong and confusing.
 - For non-source entities, the Apparitions block lives in its own
-  TAB or sub-page (`/types/character/luffy/apparitions`) — NOT
+  TAB or sub-page (`/types/character/monkey-d-luffy/apparitions`) — NOT
   inline on the main edit page. The main page stays focused on
   property + relation editing. A small badge on the tab header
   (`Apparitions · 47`) gives the count without polluting the
@@ -630,7 +630,7 @@ soft launch surfaces real demand.
 
 ### Comparison view (two entities side-by-side)
 
-A `/compare?a=character:luffy&b=character:zoro` route showing two
+A `/compare?a=character:monkey-d-luffy&b=character:roronoa-zoro` route showing two
 entities' historisable values aligned on a shared timeline (bounty
 curves, fruit awakenings, technique unlocks, status changes). Spoiler
 cursor respected on both sides. Cheap to build once Phase 6.1
@@ -727,7 +727,7 @@ backdrops. Triggered by cursor location, always dismissible.
 
 ### Cross-reference auto-tagging in long-form prose
 
-When narrative prose is rendered, any explicit `[[character:luffy]]`
+When narrative prose is rendered, any explicit `[[character:monkey-d-luffy]]`
 link becomes a typed inline link with hover preview. Beyond that,
 detect bare-text mentions of known entities ("the captain", "the
 straw hats") and offer (not auto-apply) tagging suggestions to

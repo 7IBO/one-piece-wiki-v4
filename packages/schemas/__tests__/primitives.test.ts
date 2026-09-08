@@ -18,7 +18,7 @@ describe('SLUG_PATTERN', () => {
 
 describe('ENTITY_ID_PATTERN', () => {
   test('accepts type:slug, including snake_case slugs', () => {
-    expect(ENTITY_ID_PATTERN.test('character:luffy')).toBe(true);
+    expect(ENTITY_ID_PATTERN.test('character:monkey-d-luffy')).toBe(true);
     // the bug the loose hyphen-only resolver regex silently skipped:
     expect(ENTITY_ID_PATTERN.test('devil-fruit:gomu_gomu')).toBe(true);
     expect(ENTITY_ID_PATTERN.test('manga-chapter:1044')).toBe(true);
@@ -34,7 +34,7 @@ describe('ENTITY_ID_PATTERN', () => {
 
 describe('I18N_KEY_PATTERN', () => {
   test('requires at least one dot segment', () => {
-    expect(I18N_KEY_PATTERN.test('character.luffy.name')).toBe(true);
+    expect(I18N_KEY_PATTERN.test('character.monkey-d-luffy.name')).toBe(true);
     expect(I18N_KEY_PATTERN.test('image.x.caption_key')).toBe(true);
     expect(I18N_KEY_PATTERN.test('nodot')).toBe(false);
     expect(I18N_KEY_PATTERN.test('trailing.')).toBe(false);

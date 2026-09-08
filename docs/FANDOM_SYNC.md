@@ -391,7 +391,7 @@ batches of 50 titles, and emits `fandom-updates.json`:
   "entries": [
     {
       "pageTitle": "Monkey D. Luffy",
-      "entityId": "character:luffy",
+      "entityId": "character:monkey-d-luffy",
       "lastImportedRev": 100,
       "lastImportedAt": "…",
       "currentRev": 150,

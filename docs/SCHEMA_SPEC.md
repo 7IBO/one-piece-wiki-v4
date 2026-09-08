@@ -217,18 +217,18 @@ A file in `/data/schemas/property-types/<id>.json`.
 
 The following primitive `value_type`s are supported:
 
-| value_type   | TypeScript                 | Example                                        |
-| ------------ | -------------------------- | ---------------------------------------------- |
-| `string`     | `string`                   | `"alive"`                                      |
-| `number`     | `number`                   | `30000000`                                     |
-| `boolean`    | `boolean`                  | `true`                                         |
-| `enum`       | one of `enum_ref` values   | `"paramecia"`                                  |
-| `multi_enum` | array of `enum_ref` values | `["conqueror", "armament"]`                    |
-| `date`       | ISO 8601 string            | `"2022-03-07"`                                 |
-| `entity_ref` | entity ID                  | `"location:goa-kingdom"`                       |
-| `source_ref` | source entity ID           | `"manga-chapter:1044"`                         |
-| `i18n_key`   | localizable key            | `"character.luffy.name.full"` (resolved later) |
-| `markdown`   | light markdown string      | `"### Personality\n\nLuffy is **fearless**…"`  |
+| value_type   | TypeScript                 | Example                                                 |
+| ------------ | -------------------------- | ------------------------------------------------------- |
+| `string`     | `string`                   | `"alive"`                                               |
+| `number`     | `number`                   | `30000000`                                              |
+| `boolean`    | `boolean`                  | `true`                                                  |
+| `enum`       | one of `enum_ref` values   | `"paramecia"`                                           |
+| `multi_enum` | array of `enum_ref` values | `["conqueror", "armament"]`                             |
+| `date`       | ISO 8601 string            | `"2022-03-07"`                                          |
+| `entity_ref` | entity ID                  | `"location:goa-kingdom"`                                |
+| `source_ref` | source entity ID           | `"manga-chapter:1044"`                                  |
+| `i18n_key`   | localizable key            | `"character.monkey-d-luffy.name.full"` (resolved later) |
+| `markdown`   | light markdown string      | `"### Personality\n\nLuffy is **fearless**…"`           |
 
 ### Qualifiers
 
@@ -544,7 +544,7 @@ schemas. Use these exact terms; do not coin synonyms.
 
   ```json
   "name": [
-    { "value_key": "character.luffy.name.short", "since": "manga-chapter:1" }
+    { "value_key": "character.monkey-d-luffy.name.short", "since": "manga-chapter:1" }
   ]
   ```
 
@@ -707,8 +707,8 @@ Any failure aborts the PR.
 
 - Schema files: `<id>.json`, where `<id>` is the kebab-case identifier
 - Entity files: `<type-singular>/<id-without-prefix>.json`
-  - Example: `entities/character/luffy.json` (the file's contents have
-    `"id": "character:luffy"`)
+  - Example: `entities/character/monkey-d-luffy.json` (the file's contents have
+    `"id": "character:monkey-d-luffy"`)
 - Vocabulary files: `<id>.json` (e.g. `crew-roles.json`)
 
 ## JSON formatting

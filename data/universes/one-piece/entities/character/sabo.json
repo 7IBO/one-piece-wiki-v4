@@ -23,10 +23,10 @@
         "epistemic_status": "believed_by_characters",
         "believed_by": [
           {
-            "target": "character:luffy",
+            "target": "character:monkey-d-luffy",
             "source": "manga-chapter:585"
           },
-          "character:ace"
+          "character:portgas-d-ace"
         ],
         "actual_value": "alive"
       },

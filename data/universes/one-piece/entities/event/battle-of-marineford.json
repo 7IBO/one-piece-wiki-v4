@@ -22,7 +22,7 @@
     },
     {
       "type": "participant",
-      "target": "character:luffy",
+      "target": "character:monkey-d-luffy",
       "qualifiers": {
         "side": "whitebeard_allies",
         "role": "rescuer",
@@ -31,7 +31,7 @@
     },
     {
       "type": "participant",
-      "target": "character:ace",
+      "target": "character:portgas-d-ace",
       "qualifiers": {
         "side": "captive",
         "outcome": "killed"

@@ -45,12 +45,12 @@ function fixtureClient(): OnePieceApiClient {
 function existingCorpus(): readonly ExistingEntity[] {
   return [
     {
-      id: 'character:luffy',
+      id: 'character:monkey-d-luffy',
       type: 'character',
       slug: 'monkey-d-luffy',
-      path: 'data/universes/one-piece/entities/character/luffy.json',
+      path: 'data/universes/one-piece/entities/character/monkey-d-luffy.json',
       entity: {
-        id: 'character:luffy',
+        id: 'character:monkey-d-luffy',
         type: 'character',
         properties: {
           bounty: [
@@ -63,11 +63,11 @@ function existingCorpus(): readonly ExistingEntity[] {
       names: ['Monkey D. Luffy', 'Straw Hat'],
     },
     {
-      id: 'devil-fruit:gomu-gomu',
+      id: 'devil-fruit:gomu-gomu-no-mi',
       type: 'devil-fruit',
       slug: 'gomu-gomu-no-mi',
-      path: 'data/universes/one-piece/entities/devil-fruit/gomu-gomu.json',
-      entity: { id: 'devil-fruit:gomu-gomu', type: 'devil-fruit', properties: {} },
+      path: 'data/universes/one-piece/entities/devil-fruit/gomu-gomu-no-mi.json',
+      entity: { id: 'devil-fruit:gomu-gomu-no-mi', type: 'devil-fruit', properties: {} },
       names: ['Gomu Gomu no Mi', 'Hito Hito no Mi, Model: Nika'],
     },
     {
@@ -109,13 +109,24 @@ describe('pairRecords', () => {
 });
 
 describe('matching', () => {
-  it('matches by normalized slug, id slug and translated names', () => {
+  it('matches by normalized slug and translated names, exactly', () => {
     const index = buildMatchIndex(existingCorpus());
-    expect(matchExisting(index, 'character', ['Monkey D. Luffy'])?.id).toBe('character:luffy');
-    expect(matchExisting(index, 'character', ['monkey-d-luffy'])?.id).toBe('character:luffy');
-    expect(matchExisting(index, 'character', ['luffy'])?.id).toBe('character:luffy');
+    expect(matchExisting(index, 'character', ['Monkey D. Luffy'])?.id).toBe(
+      'character:monkey-d-luffy',
+    );
+    expect(matchExisting(index, 'character', ['monkey-d-luffy'])?.id).toBe(
+      'character:monkey-d-luffy',
+    );
+    // Le slug de l'id et le slug de l'entite COINCIDENT depuis ADR-124 :
+    // `character:monkey-d-luffy` / `monkey-d-luffy`. Les deux cles de
+    // l'index tombent donc au meme endroit, et un nom court qui n'est
+    // ecrit nulle part ne matche plus rien — l'appariement est exact,
+    // pas approximatif.
+    expect(matchExisting(index, 'character', ['luffy'])).toBeNull();
     // Devil fruits match with and without the "no Mi" suffix.
-    expect(matchExisting(index, 'devil-fruit', ['Gomu Gomu'])?.id).toBe('devil-fruit:gomu-gomu');
+    expect(matchExisting(index, 'devil-fruit', ['Gomu Gomu'])?.id).toBe(
+      'devil-fruit:gomu-gomu-no-mi',
+    );
     // Crews match with and without a leading "The".
     expect(matchExisting(index, 'crew', ['The Straw Hat Pirates'])?.id).toBe(
       'crew:straw-hat-pirates',
@@ -146,7 +157,9 @@ describe('matching', () => {
   it('loads the committed corpus and matches Luffy against the real index', async () => {
     const entities = await loadExistingEntities(REPO_ROOT);
     const index = buildMatchIndex(entities);
-    expect(matchExisting(index, 'character', ['Monkey D. Luffy'])?.id).toBe('character:luffy');
+    expect(matchExisting(index, 'character', ['Monkey D. Luffy'])?.id).toBe(
+      'character:monkey-d-luffy',
+    );
   });
 });
 
@@ -157,25 +170,27 @@ describe('runImport (fixture sweep, EN+FR)', () => {
     // Existing entities → matched diff, NOT created, NO files.
     const matchedIds = report.matchedDiff.map((m) => m.id).sort();
     expect(matchedIds).toEqual([
-      'character:luffy',
+      'character:monkey-d-luffy',
       'crew:straw-hat-pirates',
-      'devil-fruit:gomu-gomu',
+      'devil-fruit:gomu-gomu-no-mi',
     ]);
     const createdIds = report.created.map((c) => c.id);
     for (const id of matchedIds) expect(createdIds).not.toContain(id);
-    expect(files.some((f) => f.path.includes('/character/luffy.json'))).toBe(false);
+    expect(files.some((f) => f.path.includes('/character/monkey-d-luffy.json'))).toBe(false);
     expect(files.some((f) => f.path.includes('/character/monkey-d-luffy.json'))).toBe(false);
 
     // The Luffy diff shows existing vs candidate values (bounty differs
     // in shape: the corpus has the anchored history).
-    const luffy = report.matchedDiff.find((m) => m.id === 'character:luffy')!;
-    expect(luffy.existingPath).toBe('data/universes/one-piece/entities/character/luffy.json');
+    const luffy = report.matchedDiff.find((m) => m.id === 'character:monkey-d-luffy')!;
+    expect(luffy.existingPath).toBe(
+      'data/universes/one-piece/entities/character/monkey-d-luffy.json',
+    );
     const bountyDiff = luffy.diffs.find((d) => d.property === 'bounty')!;
     expect(bountyDiff.existing).toContain('manga-chapter:96');
     expect(bountyDiff.candidate).toBe('[{"value":3000000000}]');
 
     // Matched fruit: its image URL is a note, not a new image entity.
-    const gomu = report.matchedDiff.find((m) => m.id === 'devil-fruit:gomu-gomu')!;
+    const gomu = report.matchedDiff.find((m) => m.id === 'devil-fruit:gomu-gomu-no-mi')!;
     expect(gomu.notes.some((n) => n.includes('gomu-gomu-no-mi.png'))).toBe(true);
     expect(files.some((f) => f.path.includes('gomu-gomu-no-mi-api-onepiece'))).toBe(false);
 
@@ -296,7 +311,7 @@ describe('renderImportMarkdown', () => {
     expect(md).toContain('# api-onepiece.com candidate import');
     expect(md).toContain('## Created candidates');
     expect(md).toContain('## Matched existing entities (diffs — nothing overwritten)');
-    expect(md).toContain('### `character:luffy` ← API "Monkey D. Luffy" (characters)');
+    expect(md).toContain('### `character:monkey-d-luffy` ← API "Monkey D. Luffy" (characters)');
     expect(md).toContain('## Gaps — unmapped API fields (never silently dropped)');
     expect(md).toContain('| characters | doriki |');
     expect(md).toContain('## Unanchored entries');

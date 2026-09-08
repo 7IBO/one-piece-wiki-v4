@@ -166,8 +166,13 @@ describe('registry-resolved relations + occupation matching', () => {
         redirects: ['Strawhat Crew'],
       },
       { entityId: 'location:wano', page: 'Wano Country', pageId: 11, redirects: [] },
-      { entityId: 'devil-fruit:gomu-gomu', page: 'Gomu Gomu no Mi', pageId: 12, redirects: [] },
-      { entityId: 'character:zoro', page: 'Roronoa Zoro', pageId: 13, redirects: [] },
+      {
+        entityId: 'devil-fruit:gomu-gomu-no-mi',
+        page: 'Gomu Gomu no Mi',
+        pageId: 12,
+        redirects: [],
+      },
+      { entityId: 'character:roronoa-zoro', page: 'Roronoa Zoro', pageId: 13, redirects: [] },
     ],
   });
   const occupations = new Map([
@@ -193,7 +198,7 @@ describe('registry-resolved relations + occupation matching', () => {
         qualifiers: { since: 'manga-chapter:5' },
       },
       { type: 'originates-from', target: 'location:wano' },
-      { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu' },
+      { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu-no-mi' },
     ]);
     // Wrong-type target (a character can't be a member-of target),
     // unknown page, and former lines all surface as warnings.
