@@ -15,7 +15,7 @@
  * screen came through the cursor gate.
  */
 import { createFileRoute, useNavigate } from '@tanstack/react-router';
-import { type ReactElement, useEffect, useState } from 'react';
+import { type ReactElement } from 'react';
 import { fetchSearch } from '../api';
 import { CardGrid, EntityCard } from '../components/EntityCard';
 import { t } from '../lib/chrome';
@@ -72,7 +72,22 @@ function SearchPage(): ReactElement {
         )
         : null}
 
-      <QueryField query={view.query} />
+      {
+        /* `key` sur la requete : quand l'URL change par une navigation
+        cote client (un lien depuis la palette), le champ est REMONTE,
+        donc son `defaultValue` reprend la nouvelle requete. C'est la
+        facon React de resynchroniser — un `useEffect(() =>
+        setValue(query), [query])` faisait le meme travail en deux
+        rendus et une copie d'etat de plus.
+
+        Sur un retour arriere le navigateur restaure lui-meme ce qui
+        etait tape, et cette restauration gagne sur `defaultValue` :
+        verifie au navigateur, le champ garde « nami » alors que l'URL
+        repasse a `?q=`. C'est le comportement natif des formulaires,
+        et le laisser est plus juste que le combattre — la requete
+        precedente est ce qu'on veut retrouver sous la main. */
+      }
+      <QueryField key={view.query} query={view.query} />
 
       {!asked
         ? null
@@ -127,10 +142,6 @@ function SearchPage(): ReactElement {
 function QueryField({ query }: { readonly query: string; }): ReactElement {
   const locale = useLocale();
   const navigate = useNavigate();
-  const [value, setValue] = useState(query);
-  // La requete peut changer sans passer par ce champ (retour arriere,
-  // lien depuis la palette) ; le champ suit l'URL.
-  useEffect(() => setValue(query), [query]);
   return (
     <form
       role='search'
@@ -138,22 +149,35 @@ function QueryField({ query }: { readonly query: string; }): ReactElement {
       method='get'
       className='mb-6'
       onSubmit={(event) => {
+        // Le champ n'a PAS d'etat React : le formulaire porte deja la
+        // valeur, et la lire ici evite une copie qui pourrait diverger
+        // de ce que la soumission native enverrait.
+        const asked = new FormData(event.currentTarget).get('q');
         event.preventDefault();
-        void navigate({ to: '/search', search: { q: value.trim() } });
+        void navigate({
+          to: '/search',
+          search: { q: typeof asked === 'string' ? asked.trim() : '' },
+        });
       }}
     >
       <label className='sr-only' htmlFor='search-page-q'>{t(locale, 'searchLabel')}</label>
       <div className='flex items-center gap-2.5 rounded-md border border-line-strong bg-surface px-4 transition-colors duration-150 focus-within:border-line-strong'>
         <span aria-hidden className='shrink-0 text-[13px] text-faint'>⌕</span>
+        {
+          /* Champ NON CONTROLE : le DOM garde ce qui est tape, la
+          soumission native l'envoie sous `q`, et il n'y a aucune copie
+          React a resynchroniser sur l'URL. C'est aussi ce que
+          react-doctor demande (`no-derived-useState`) — et ici la
+          demande coincide avec le plus simple. */
+        }
         <input
           id='search-page-q'
           type='search'
           name='q'
-          value={value}
+          defaultValue={query}
           autoComplete='off'
           spellCheck={false}
           placeholder={t(locale, 'searchPrompt')}
-          onChange={(event) => setValue(event.target.value)}
           className='min-w-0 flex-1 bg-transparent py-3 text-sm text-fg outline-none placeholder:text-faint [&::-webkit-search-cancel-button]:hidden'
         />
       </div>

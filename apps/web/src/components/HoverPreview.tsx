@@ -208,16 +208,10 @@ export function HoverPreview(
    * fluide » — l'œil suit une apparition douce puis se fait arracher
    * l'objet. On la garde montée le temps du fondu, puis on démonte.
    *
-   * `unmount` immédiat existe pour les cas où la carte ne doit PAS
-   * traîner : la cible a quitté l'écran, ou le composant se démonte.
+   * Le démontage SEC (sans fondu) existe aussi, pour le cas où la
+   * carte ne doit pas traîner : la cible a quitté l'écran. Il vit dans
+   * l'effet de suivi, qui est le seul à en avoir besoin.
    */
-  const unmount = (): void => {
-    clearTimers();
-    setLeaving(false);
-    setPlacement(null);
-    setView(null);
-  };
-
   const close = (): void => {
     clearTimers();
     if (placement === null) return;
@@ -253,8 +247,30 @@ export function HoverPreview(
 
   useEffect(() => {
     if (placement === null) return;
+    /*
+     * Cet effet est AUTONOME : il ne referme rien qui soit recree a
+     * chaque rendu (`close`, `unmount`, `triggerRect`), pour que sa
+     * liste de dependances soit honnete plutot que commentee. Il ne
+     * touche que des refs et des setters — stables par construction —
+     * et l'etat `placement` qui le declenche.
+     */
+    const rect = (): DOMRect | null => {
+      const element = anchor.current?.firstElementChild ?? anchor.current;
+      return element === null || element === undefined ? null : element.getBoundingClientRect();
+    };
+    const drop = (): void => {
+      if (exitTimer.current !== null) clearTimeout(exitTimer.current);
+      exitTimer.current = null;
+      setLeaving(false);
+      setPlacement(null);
+      setView(null);
+    };
+    const fadeOut = (): void => {
+      setLeaving(true);
+      exitTimer.current = setTimeout(drop, EXIT_DURATION);
+    };
     const onKey = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') close();
+      if (event.key === 'Escape') fadeOut();
     };
     /*
      * Au scroll la carte SUIT son lien au lieu d'être fermée.
@@ -271,10 +287,11 @@ export function HoverPreview(
       if (frame !== 0) return;
       frame = requestAnimationFrame(() => {
         frame = 0;
-        const box = triggerRect();
+        const box = rect();
         if (box === null) return;
         if (box.bottom < 0 || box.top > window.innerHeight) {
-          unmount();
+          // Plus rien a rattacher : on demonte sec, sans fondu.
+          drop();
           return;
         }
         setPlacement(placeFor(box, CARD_HEIGHT_GUESS));
@@ -289,8 +306,7 @@ export function HoverPreview(
       window.removeEventListener('scroll', follow, true);
       window.removeEventListener('resize', follow);
     };
-    // Re-bound whenever the card opens or closes; the handlers only
-    // touch refs and setState, both stable by construction.
+    // `placement` seul : tout le reste est une ref ou un setter.
   }, [placement]);
 
   return (
