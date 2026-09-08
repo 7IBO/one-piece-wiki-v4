@@ -2,7 +2,7 @@
   "id": "manga-chapter:139",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-139",
+  "slug": "139",
   "properties": {
     "number": {
       "value": 139
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:84"
     }
+  ],
+  "slug_history": [
+    "chapter-139"
   ]
 }

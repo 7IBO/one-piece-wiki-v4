@@ -2,7 +2,7 @@
   "id": "manga-chapter:836",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-836",
+  "slug": "836",
   "properties": {
     "number": {
       "value": 836
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:798"
     }
+  ],
+  "slug_history": [
+    "chapter-836"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:841",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-841",
+  "slug": "841",
   "properties": {
     "number": {
       "value": 841
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:805"
     }
+  ],
+  "slug_history": [
+    "chapter-841"
   ]
 }

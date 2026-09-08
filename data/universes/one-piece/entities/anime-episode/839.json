@@ -2,7 +2,7 @@
   "id": "anime-episode:839",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-839",
+  "slug": "839",
   "properties": {
     "number": {
       "value": 839
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.839.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-839"
+  ]
 }

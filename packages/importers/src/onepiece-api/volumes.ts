@@ -3,7 +3,7 @@
  *
  * Typical record: { id, number (or tome), title, japan_release_date,
  * french_release_date, chapters? }. The ordinal is the identity
- * (`volume:<n>`, slug `volume-<n>` — corpus convention).
+ * (`volume:<n>`, slug `<n>` — l'id fait foi (ADR-125)).
  *
  * The JP release date maps to `released_at` (territory jp); the FR
  * release is reported as informational (the corpus models extra
@@ -52,7 +52,7 @@ export function mapVolume(
     id,
     type: 'volume',
     schema_version: VOLUME_SCHEMA_VERSION,
-    slug: `volume-${number}`,
+    slug: `${number}`,
     properties: {
       number: { value: number },
       title_key: { value_key: titleKey },

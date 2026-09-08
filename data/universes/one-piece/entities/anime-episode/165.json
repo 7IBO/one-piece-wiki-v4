@@ -2,7 +2,7 @@
   "id": "anime-episode:165",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-165",
+  "slug": "165",
   "properties": {
     "number": {
       "value": 165
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:skypiea"
     }
+  ],
+  "slug_history": [
+    "episode-165"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:997",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-997",
+  "slug": "997",
   "properties": {
     "number": {
       "value": 997
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1011"
     }
+  ],
+  "slug_history": [
+    "chapter-997"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:222",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-222",
+  "slug": "222",
   "properties": {
     "number": {
       "value": 222
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:146"
     }
+  ],
+  "slug_history": [
+    "chapter-222"
   ]
 }

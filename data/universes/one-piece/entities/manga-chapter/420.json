@@ -2,7 +2,7 @@
   "id": "manga-chapter:420",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-420",
+  "slug": "420",
   "properties": {
     "number": {
       "value": 420
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:302"
     }
+  ],
+  "slug_history": [
+    "chapter-420"
   ]
 }

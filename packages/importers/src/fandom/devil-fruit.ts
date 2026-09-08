@@ -10,7 +10,7 @@
  *    second string property;
  *  - `first` (`wikilink_list`) → the debut source, which the corpus
  *    stores as the `since` axis of the first `name`/`classification`
- *    values (cf. `devil-fruit:gomu-gomu`). It is deliberately NOT a
+ *    values (cf. `devil-fruit:gomu-gomu-no-mi`). It is deliberately NOT a
  *    property: the appearance EDGE is `features`, whose canonical
  *    direction is `manga-chapter → devil-fruit` (ADR-033/105), so it
  *    belongs on the chapter file, not here — surfaced as a warning;

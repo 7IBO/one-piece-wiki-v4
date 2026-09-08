@@ -2,7 +2,7 @@
   "id": "manga-chapter:1023",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1023",
+  "slug": "1023",
   "properties": {
     "number": {
       "value": 1023
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1047"
     }
+  ],
+  "slug_history": [
+    "chapter-1023"
   ]
 }

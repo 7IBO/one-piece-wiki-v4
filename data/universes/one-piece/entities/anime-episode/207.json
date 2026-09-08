@@ -2,7 +2,7 @@
   "id": "anime-episode:207",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-207",
+  "slug": "207",
   "properties": {
     "number": {
       "value": 207
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:long-ring-long-land"
     }
+  ],
+  "slug_history": [
+    "episode-207"
   ]
 }

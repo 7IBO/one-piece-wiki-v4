@@ -2,7 +2,7 @@
   "id": "manga-chapter:249",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-249",
+  "slug": "249",
   "properties": {
     "number": {
       "value": 249
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:163"
     }
+  ],
+  "slug_history": [
+    "chapter-249"
   ]
 }

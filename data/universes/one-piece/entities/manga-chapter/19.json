@@ -2,7 +2,7 @@
   "id": "manga-chapter:19",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-19",
+  "slug": "19",
   "properties": {
     "number": {
       "value": 19
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:8"
     }
+  ],
+  "slug_history": [
+    "chapter-19"
   ]
 }

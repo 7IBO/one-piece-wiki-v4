@@ -2,7 +2,7 @@
   "id": "anime-episode:517",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-517",
+  "slug": "517",
   "properties": {
     "number": {
       "value": 517
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:return-to-sabaody"
     }
+  ],
+  "slug_history": [
+    "episode-517"
   ]
 }

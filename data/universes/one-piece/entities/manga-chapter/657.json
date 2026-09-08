@@ -2,7 +2,7 @@
   "id": "manga-chapter:657",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-657",
+  "slug": "657",
   "properties": {
     "number": {
       "value": 657
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:582"
     }
+  ],
+  "slug_history": [
+    "chapter-657"
   ]
 }

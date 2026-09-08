@@ -2,7 +2,7 @@
   "id": "manga-chapter:178",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-178",
+  "slug": "178",
   "properties": {
     "number": {
       "value": 178
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:110"
     }
+  ],
+  "slug_history": [
+    "chapter-178"
   ]
 }

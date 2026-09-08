@@ -2,7 +2,7 @@
   "id": "manga-chapter:40",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-40",
+  "slug": "40",
   "properties": {
     "number": {
       "value": 40
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:17"
     }
+  ],
+  "slug_history": [
+    "chapter-40"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:442",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-442",
+  "slug": "442",
   "properties": {
     "number": {
       "value": 442
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:337"
     }
+  ],
+  "slug_history": [
+    "chapter-442"
   ]
 }

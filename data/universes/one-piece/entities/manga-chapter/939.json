@@ -2,7 +2,7 @@
   "id": "manga-chapter:939",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-939",
+  "slug": "939",
   "properties": {
     "number": {
       "value": 939
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:936"
     }
+  ],
+  "slug_history": [
+    "chapter-939"
   ]
 }

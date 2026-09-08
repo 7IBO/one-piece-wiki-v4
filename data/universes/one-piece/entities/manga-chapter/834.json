@@ -2,7 +2,7 @@
   "id": "manga-chapter:834",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-834",
+  "slug": "834",
   "properties": {
     "number": {
       "value": 834
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:795"
     }
+  ],
+  "slug_history": [
+    "chapter-834"
   ]
 }

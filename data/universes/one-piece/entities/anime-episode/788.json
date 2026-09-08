@@ -2,7 +2,7 @@
   "id": "anime-episode:788",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-788",
+  "slug": "788",
   "properties": {
     "number": {
       "value": 788
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.788.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-788"
+  ]
 }

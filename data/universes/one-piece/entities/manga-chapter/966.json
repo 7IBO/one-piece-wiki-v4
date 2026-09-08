@@ -2,7 +2,7 @@
   "id": "manga-chapter:966",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-966",
+  "slug": "966",
   "properties": {
     "number": {
       "value": 966
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:967"
     }
+  ],
+  "slug_history": [
+    "chapter-966"
   ]
 }

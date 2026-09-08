@@ -34,7 +34,7 @@ describe('volume mapper (SYNTHETIC Volume Box fixture)', () => {
     expect(result?.entity).toMatchObject({
       id: 'volume:12',
       type: 'volume',
-      slug: 'volume-12',
+      slug: '12',
       properties: {
         number: { value: 12 },
         title_key: { value_key: 'volume.12.title' },

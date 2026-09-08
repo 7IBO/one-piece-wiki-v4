@@ -2,7 +2,7 @@
   "id": "manga-chapter:501",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-501",
+  "slug": "501",
   "properties": {
     "number": {
       "value": 501
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:395"
     }
+  ],
+  "slug_history": [
+    "chapter-501"
   ]
 }

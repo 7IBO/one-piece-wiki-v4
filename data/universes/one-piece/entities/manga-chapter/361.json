@@ -2,7 +2,7 @@
   "id": "manga-chapter:361",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-361",
+  "slug": "361",
   "properties": {
     "number": {
       "value": 361
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:253"
     }
+  ],
+  "slug_history": [
+    "chapter-361"
   ]
 }

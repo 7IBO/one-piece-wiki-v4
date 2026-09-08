@@ -2,7 +2,7 @@
   "id": "anime-episode:40",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-40",
+  "slug": "40",
   "properties": {
     "number": {
       "value": 40
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:arlong-park"
     }
+  ],
+  "slug_history": [
+    "episode-40"
   ]
 }

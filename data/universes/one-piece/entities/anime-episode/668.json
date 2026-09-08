@@ -2,7 +2,7 @@
   "id": "anime-episode:668",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-668",
+  "slug": "668",
   "properties": {
     "number": {
       "value": 668
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.668.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-668"
+  ]
 }

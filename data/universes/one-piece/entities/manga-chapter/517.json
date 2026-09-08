@@ -2,7 +2,7 @@
   "id": "manga-chapter:517",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-517",
+  "slug": "517",
   "properties": {
     "number": {
       "value": 517
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:411"
     }
+  ],
+  "slug_history": [
+    "chapter-517"
   ]
 }

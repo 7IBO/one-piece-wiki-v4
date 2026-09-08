@@ -2,7 +2,7 @@
   "id": "anime-episode:810",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-810",
+  "slug": "810",
   "properties": {
     "number": {
       "value": 810
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.810.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-810"
+  ]
 }

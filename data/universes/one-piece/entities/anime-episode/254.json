@@ -2,7 +2,7 @@
   "id": "anime-episode:254",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-254",
+  "slug": "254",
   "properties": {
     "number": {
       "value": 254
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:water-7"
     }
+  ],
+  "slug_history": [
+    "episode-254"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:875",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-875",
+  "slug": "875",
   "properties": {
     "number": {
       "value": 875
@@ -43,5 +43,8 @@
       "type": "adapted-by",
       "target": "anime-episode:847"
     }
+  ],
+  "slug_history": [
+    "chapter-875"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:322",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-322",
+  "slug": "322",
   "properties": {
     "number": {
       "value": 322
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:229"
     }
+  ],
+  "slug_history": [
+    "chapter-322"
   ]
 }

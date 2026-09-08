@@ -2,7 +2,7 @@
   "id": "anime-episode:176",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-176",
+  "slug": "176",
   "properties": {
     "number": {
       "value": 176
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:skypiea"
     }
+  ],
+  "slug_history": [
+    "episode-176"
   ]
 }

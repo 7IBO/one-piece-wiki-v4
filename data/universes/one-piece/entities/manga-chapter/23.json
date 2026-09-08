@@ -2,7 +2,7 @@
   "id": "manga-chapter:23",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-23",
+  "slug": "23",
   "properties": {
     "number": {
       "value": 23
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:9"
     }
+  ],
+  "slug_history": [
+    "chapter-23"
   ]
 }

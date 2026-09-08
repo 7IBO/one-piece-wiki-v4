@@ -17,7 +17,7 @@ const hasArtifact = existsSync(DB_PATH);
 describe.skipIf(!hasArtifact)('missingProperties (real artifact)', () => {
   test('names schema-expected properties the entity does not carry', async () => {
     const { buildEntityView } = await import('../../../server/views.ts');
-    const view = await buildEntityView('manga-chapter', 'chapter-1044', 'en');
+    const view = await buildEntityView('manga-chapter', '1044', 'en');
     if (view === null || view.kind !== 'entity') throw new Error('expected an entity view');
     // `manga-chapter` declares `page_count` as recommended, and 1044
     // has no value for it. The assertion is on the RULE, not the
@@ -32,7 +32,7 @@ describe.skipIf(!hasArtifact)('missingProperties (real artifact)', () => {
 
   test('never lists a property the entity actually carries', async () => {
     const { buildEntityView } = await import('../../../server/views.ts');
-    const view = await buildEntityView('manga-chapter', 'chapter-1044', 'en');
+    const view = await buildEntityView('manga-chapter', '1044', 'en');
     if (view === null || view.kind !== 'entity') throw new Error('expected an entity view');
     const present = new Set(view.properties.map((p) => p.id));
     for (const item of view.missingProperties) {

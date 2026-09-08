@@ -2,7 +2,7 @@
   "id": "anime-episode:847",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-847",
+  "slug": "847",
   "properties": {
     "number": {
       "value": 847
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.847.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-847"
+  ]
 }

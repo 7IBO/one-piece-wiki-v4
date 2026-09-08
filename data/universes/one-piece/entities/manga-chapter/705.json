@@ -2,7 +2,7 @@
   "id": "manga-chapter:705",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-705",
+  "slug": "705",
   "properties": {
     "number": {
       "value": 705
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:635"
     }
+  ],
+  "slug_history": [
+    "chapter-705"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:730",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-730",
+  "slug": "730",
   "properties": {
     "number": {
       "value": 730
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:662"
     }
+  ],
+  "slug_history": [
+    "chapter-730"
   ]
 }

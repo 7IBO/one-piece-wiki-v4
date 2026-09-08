@@ -2,7 +2,7 @@
   "id": "anime-episode:739",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-739",
+  "slug": "739",
   "properties": {
     "number": {
       "value": 739
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.739.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-739"
+  ]
 }

@@ -67,11 +67,14 @@ describe('schema-engine generator', () => {
     const CharacterData = entitiesMod.EntityDataSchemas.character;
 
     const mismatched = CharacterData.safeParse({
-      id: 'character:luffy',
+      id: 'character:monkey-d-luffy',
       type: 'devil-fruit',
       schema_version: 1,
-      slug: 'luffy',
-      properties: { name: [{ value_key: 'character.luffy.name' }], status: [{ value: 'alive' }] },
+      slug: 'monkey-d-luffy',
+      properties: {
+        name: [{ value_key: 'character.monkey-d-luffy.name' }],
+        status: [{ value: 'alive' }],
+      },
       relations: [],
     });
     expect(mismatched.success).toBe(false);

@@ -2,7 +2,7 @@
   "id": "manga-chapter:27",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-27",
+  "slug": "27",
   "properties": {
     "number": {
       "value": 27
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:11"
     }
+  ],
+  "slug_history": [
+    "chapter-27"
   ]
 }

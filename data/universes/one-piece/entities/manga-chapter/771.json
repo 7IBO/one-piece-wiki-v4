@@ -2,7 +2,7 @@
   "id": "manga-chapter:771",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-771",
+  "slug": "771",
   "properties": {
     "number": {
       "value": 771
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:711"
     }
+  ],
+  "slug_history": [
+    "chapter-771"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:772",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-772",
+  "slug": "772",
   "properties": {
     "number": {
       "value": 772
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:712"
     }
+  ],
+  "slug_history": [
+    "chapter-772"
   ]
 }

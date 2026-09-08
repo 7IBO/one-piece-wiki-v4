@@ -2,7 +2,7 @@
   "id": "manga-chapter:172",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-172",
+  "slug": "172",
   "properties": {
     "number": {
       "value": 172
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:108"
     }
+  ],
+  "slug_history": [
+    "chapter-172"
   ]
 }

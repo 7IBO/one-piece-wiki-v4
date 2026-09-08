@@ -2,7 +2,7 @@
   "id": "manga-chapter:889",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-889",
+  "slug": "889",
   "properties": {
     "number": {
       "value": 889
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:863"
     }
+  ],
+  "slug_history": [
+    "chapter-889"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:470",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-470",
+  "slug": "470",
   "properties": {
     "number": {
       "value": 470
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:marineford"
     }
+  ],
+  "slug_history": [
+    "episode-470"
   ]
 }

@@ -87,7 +87,7 @@ edit/<entity-id-sanitized>/<nano-id-8>
 
 Examples:
 
-- `edit/character-luffy/k3F2aBx7`
+- `edit/character-monkey-d-luffy/k3F2aBx7`
 - `edit/manga-chapter-1044/m9q2P1r4`
 
 Sanitization: replace `:` and other special characters with `-`.
@@ -119,7 +119,7 @@ Co-Authored-By: <name> <email>
 Example:
 
 ```
-data(onepiece): update character:luffy bounty after Wano
+data(onepiece): update character:monkey-d-luffy bounty after Wano
 
 Add bounty entry of 3,000,000,000 berries as of chapter 1053,
 issued after the defeat of Kaido.
@@ -135,7 +135,7 @@ Generated automatically from the change:
 ```markdown
 ## What
 
-Edit to `character:luffy` submitted via the dashboard.
+Edit to `character:monkey-d-luffy` submitted via the dashboard.
 
 ## Changes
 

@@ -2,7 +2,7 @@
   "id": "manga-chapter:260",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-260",
+  "slug": "260",
   "properties": {
     "number": {
       "value": 260
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:171"
     }
+  ],
+  "slug_history": [
+    "chapter-260"
   ]
 }

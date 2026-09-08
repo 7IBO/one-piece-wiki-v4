@@ -1,20 +1,20 @@
 {
-  "id": "character:ace",
+  "id": "character:portgas-d-ace",
   "type": "character",
   "schema_version": 1,
   "slug": "portgas-d-ace",
-  "canonical_name_key": "character.ace.name.common",
+  "canonical_name_key": "character.portgas-d-ace.name.common",
   "properties": {
     "name": [
       {
-        "value_key": "character.ace.name.common",
+        "value_key": "character.portgas-d-ace.name.common",
         "since": "manga-chapter:1",
         "name_type": "common"
       }
     ],
     "epithet": [
       {
-        "value_key": "character.ace.epithet.fire-fist",
+        "value_key": "character.portgas-d-ace.epithet.fire-fist",
         "since": "manga-chapter:1"
       }
     ],
@@ -34,7 +34,7 @@
   "relations": [
     {
       "type": "family-of",
-      "target": "character:luffy",
+      "target": "character:monkey-d-luffy",
       "qualifiers": { "relation_kind": "sworn_brother" }
     },
     {

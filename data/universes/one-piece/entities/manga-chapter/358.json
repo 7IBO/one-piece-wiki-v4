@@ -2,7 +2,7 @@
   "id": "manga-chapter:358",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-358",
+  "slug": "358",
   "properties": {
     "number": {
       "value": 358
@@ -43,5 +43,8 @@
       "type": "adapted-by",
       "target": "anime-episode:251"
     }
+  ],
+  "slug_history": [
+    "chapter-358"
   ]
 }

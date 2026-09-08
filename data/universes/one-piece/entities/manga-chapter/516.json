@@ -2,7 +2,7 @@
   "id": "manga-chapter:516",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-516",
+  "slug": "516",
   "properties": {
     "number": {
       "value": 516
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:410"
     }
+  ],
+  "slug_history": [
+    "chapter-516"
   ]
 }

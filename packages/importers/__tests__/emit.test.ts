@@ -86,7 +86,7 @@ describe('mergeEntity — `--overwrite` folds, it does not replace (2026-08-27)'
   const stored = {
     id: 'manga-chapter:1044',
     type: 'manga-chapter',
-    slug: 'chapter-1044',
+    slug: '1044',
     properties: {
       number: { value: 1044 },
       released_at: { value: '2022-03-07', territory: 'jp' },

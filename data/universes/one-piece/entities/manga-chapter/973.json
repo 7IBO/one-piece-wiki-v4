@@ -2,7 +2,7 @@
   "id": "manga-chapter:973",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-973",
+  "slug": "973",
   "properties": {
     "number": {
       "value": 973
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:976"
     }
+  ],
+  "slug_history": [
+    "chapter-973"
   ]
 }

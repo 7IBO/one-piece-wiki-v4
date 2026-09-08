@@ -2,7 +2,7 @@
   "id": "manga-chapter:672",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-672",
+  "slug": "672",
   "properties": {
     "number": {
       "value": 672
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:598"
     }
+  ],
+  "slug_history": [
+    "chapter-672"
   ]
 }

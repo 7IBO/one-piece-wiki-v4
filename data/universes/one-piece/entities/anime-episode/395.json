@@ -2,7 +2,7 @@
   "id": "anime-episode:395",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-395",
+  "slug": "395",
   "properties": {
     "number": {
       "value": 395
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:sabaody-archipelago"
     }
+  ],
+  "slug_history": [
+    "episode-395"
   ]
 }

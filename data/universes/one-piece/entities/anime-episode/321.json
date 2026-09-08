@@ -2,7 +2,7 @@
   "id": "anime-episode:321",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-321",
+  "slug": "321",
   "properties": {
     "number": {
       "value": 321
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:post-enies-lobby"
     }
+  ],
+  "slug_history": [
+    "episode-321"
   ]
 }

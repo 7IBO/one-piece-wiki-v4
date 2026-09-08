@@ -2,7 +2,7 @@
   "id": "manga-chapter:686",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-686",
+  "slug": "686",
   "properties": {
     "number": {
       "value": 686
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:921"
     }
+  ],
+  "slug_history": [
+    "chapter-686"
   ]
 }

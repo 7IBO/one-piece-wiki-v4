@@ -2,7 +2,7 @@
   "id": "manga-chapter:121",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-121",
+  "slug": "121",
   "properties": {
     "number": {
       "value": 121
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:74"
     }
+  ],
+  "slug_history": [
+    "chapter-121"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:366",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-366",
+  "slug": "366",
   "properties": {
     "number": {
       "value": 366
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:thriller-bark"
     }
+  ],
+  "slug_history": [
+    "episode-366"
   ]
 }

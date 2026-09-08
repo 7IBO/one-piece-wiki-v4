@@ -2,7 +2,7 @@
   "id": "manga-chapter:348",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-348",
+  "slug": "348",
   "properties": {
     "number": {
       "value": 348
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:245"
     }
+  ],
+  "slug_history": [
+    "chapter-348"
   ]
 }

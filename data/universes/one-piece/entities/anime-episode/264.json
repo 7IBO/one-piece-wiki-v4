@@ -2,7 +2,7 @@
   "id": "anime-episode:264",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-264",
+  "slug": "264",
   "properties": {
     "number": {
       "value": 264
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:enies-lobby"
     }
+  ],
+  "slug_history": [
+    "episode-264"
   ]
 }

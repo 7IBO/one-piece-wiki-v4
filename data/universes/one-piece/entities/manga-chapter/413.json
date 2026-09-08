@@ -2,7 +2,7 @@
   "id": "manga-chapter:413",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-413",
+  "slug": "413",
   "properties": {
     "number": {
       "value": 413
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:297"
     }
+  ],
+  "slug_history": [
+    "chapter-413"
   ]
 }

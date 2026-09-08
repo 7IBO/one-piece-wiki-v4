@@ -18,6 +18,7 @@
  *    `unverified-external`, attribution api-onepiece.com) — no binary
  *    is ever downloaded (ADR-101 §2).
  */
+import { slugify, stripParentheticals } from '../slug.ts';
 
 export type RawRecord = Readonly<Record<string, unknown>>;
 
@@ -77,15 +78,8 @@ export const AUTO_IMPORTED = { review_status: 'auto_imported' } as const;
 /** Spoiler anchor used when a subject has no known first anchor. */
 export const SPOILER_FALLBACK = 'manga-chapter:1';
 
-/** kebab-case English slug (CLAUDE.md id rules). */
-export function slugify(name: string): string {
-  return name
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-}
+/** kebab-case English slug (CLAUDE.md id rules) — une seule regle. */
+export { slugify, stripParentheticals };
 
 /** Trimmed non-empty string, or null (dirty data defence). */
 export function cleanString(value: unknown): string | null {

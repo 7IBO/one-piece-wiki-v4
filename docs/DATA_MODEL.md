@@ -392,8 +392,8 @@ qualifiers therefore accept two forms:
 
 ```json
 "believed_by": [
-  "character:ace",
-  { "target": "character:luffy", "source": "manga-chapter:585" }
+  "character:portgas-d-ace",
+  { "target": "character:monkey-d-luffy", "source": "manga-chapter:585" }
 ]
 ```
 
@@ -470,7 +470,7 @@ Three levels:
 3. **Entity-in-event narrative**: optional, per major participant of an event
 
 Narratives use light Markdown and may include typed entity links via
-`[[character:zoro]]` syntax, which the build pipeline turns into hyperlinks
+`[[character:roronoa-zoro]]` syntax, which the build pipeline turns into hyperlinks
 and uses for cross-reference indexing and spoiler-on-prose filtering.
 
 **File layout (normative).** One file per entity per locale:
@@ -480,8 +480,8 @@ and uses for cross-reference indexing and spoiler-on-prose filtering.
 ```
 
 where `<fileBase>` is the entity id's slug part — i.e. exactly the
-basename of the entity's JSON file (`character:ace` → `entities/
-character/ace.json` → `narratives/en/character/ace.md`). Narrative and
+basename of the entity's JSON file (`character:portgas-d-ace` → `entities/
+character/portgas-d-ace.json` → `narratives/en/character/portgas-d-ace.md`). Narrative and
 entity files therefore always pair up, including when the display slug
 differs from the file base. Events and arcs are entities like any
 other, so event narratives live at `narratives/<locale>/event/…` and
@@ -654,27 +654,27 @@ fruit's `classification`, true `name` and `zoan_model` together — see
 ```json
 {
   "$schema": "../../../../schemas/zod/entity-character.schema.json",
-  "id": "character:luffy",
+  "id": "character:monkey-d-luffy",
   "type": "character",
   "schema_version": 1,
   "slug": "monkey-d-luffy",
-  "canonical_name_key": "character.luffy.name.canonical",
+  "canonical_name_key": "character.monkey-d-luffy.name.canonical",
   "properties": {
     "name": [
       {
-        "value_key": "character.luffy.name.short",
+        "value_key": "character.monkey-d-luffy.name.short",
         "since": "manga-chapter:1",
         "name_type": "common"
       },
       {
-        "value_key": "character.luffy.name.full",
+        "value_key": "character.monkey-d-luffy.name.full",
         "since": "manga-chapter:100",
         "name_type": "full_name"
       }
     ],
     "epithet": [
       {
-        "value_key": "character.luffy.epithet.straw-hat",
+        "value_key": "character.monkey-d-luffy.epithet.straw-hat",
         "since": "manga-chapter:98",
         "given_by": "context:newspapers"
       }
@@ -732,7 +732,7 @@ fruit's `classification`, true `name` and `zoan_model` together — see
     },
     {
       "type": "ate-fruit",
-      "target": "devil-fruit:gomu-gomu",
+      "target": "devil-fruit:gomu-gomu-no-mi",
       "qualifiers": {
         "since": "manga-chapter:1"
       }
@@ -762,19 +762,19 @@ fruit's `classification`, true `name` and `zoan_model` together — see
 ```json
 {
   "$schema": "../../../../schemas/zod/entity-devil-fruit.schema.json",
-  "id": "devil-fruit:gomu-gomu",
+  "id": "devil-fruit:gomu-gomu-no-mi",
   "type": "devil-fruit",
   "schema_version": 1,
   "slug": "gomu-gomu-no-mi",
   "properties": {
     "name": [
       {
-        "value_key": "devil-fruit.gomu-gomu.name.common",
+        "value_key": "devil-fruit.gomu-gomu-no-mi.name.common",
         "since": "manga-chapter:1",
         "name_type": "common"
       },
       {
-        "value_key": "devil-fruit.gomu-gomu.name.true",
+        "value_key": "devil-fruit.gomu-gomu-no-mi.name.true",
         "since": "manga-chapter:1044",
         "name_type": "true_name",
         "epistemic_status": "revealed_to_reader",
@@ -807,7 +807,7 @@ fruit's `classification`, true `name` and `zoan_model` together — see
     },
     {
       "type": "eaten-by",
-      "target": "character:luffy",
+      "target": "character:monkey-d-luffy",
       "qualifiers": {
         "since": "manga-chapter:1"
       }
@@ -848,12 +848,12 @@ fruit's `classification`, true `name` and `zoan_model` together — see
     },
     {
       "type": "features",
-      "target": "character:luffy",
+      "target": "character:monkey-d-luffy",
       "qualifiers": { "appearance_type": "full" }
     },
     {
       "type": "features",
-      "target": "devil-fruit:gomu-gomu",
+      "target": "devil-fruit:gomu-gomu-no-mi",
       "qualifiers": {
         "appearance_type": "revelation",
         "event": "event:nika-reveal"
@@ -887,7 +887,7 @@ fruit's `classification`, true `name` and `zoan_model` together — see
     { "type": "set-in", "target": "location:marineford" },
     {
       "type": "participant",
-      "target": "character:luffy",
+      "target": "character:monkey-d-luffy",
       "qualifiers": {
         "side": "whitebeard-allies",
         "role": "rescuer",
@@ -896,7 +896,7 @@ fruit's `classification`, true `name` and `zoan_model` together — see
     },
     {
       "type": "participant",
-      "target": "character:ace",
+      "target": "character:portgas-d-ace",
       "qualifiers": { "side": "captive", "outcome": "killed" }
     },
     {
@@ -942,7 +942,7 @@ edge, not by the relation name.**
   `video-game`, `sbs`, `sbs-qa`, `databook`. The edge asserts that the
   entity is present in that exact unit. This is the atomic appearance, and
   the countable one: "Luffy appears in 1042 of 1044 published chapters" is
-  the number of `manga-chapter → character:luffy` edges over the number of
+  the number of `manga-chapter → character:monkey-d-luffy` edges over the number of
   `manga-chapter` entities, both cut at the reader's progression cursor.
   The full list of appearances on a character page is the same set, read
   through the generated inverse (ADR-086 materializes it).
@@ -1046,7 +1046,7 @@ Each name entry can carry `given_by` (who calls them this) and `context`
 ## Slugs and IDs
 
 - **ID**: `type:slug` form. Internal, immutable, never in URLs.
-  Example: `character:luffy`, `manga-chapter:1044`.
+  Example: `character:monkey-d-luffy`, `manga-chapter:1044`.
 - **Slug**: kebab-case, English, public, mutable. Used in URLs.
   Example: `monkey-d-luffy`, `chapter-1044`.
 - **slug_history**: list of previous slugs that map to the current entity,

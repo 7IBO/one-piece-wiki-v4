@@ -2,7 +2,7 @@
   "id": "manga-chapter:280",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-280",
+  "slug": "280",
   "properties": {
     "number": {
       "value": 280
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:183"
     }
+  ],
+  "slug_history": [
+    "chapter-280"
   ]
 }

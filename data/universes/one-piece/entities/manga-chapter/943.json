@@ -2,7 +2,7 @@
   "id": "manga-chapter:943",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-943",
+  "slug": "943",
   "properties": {
     "number": {
       "value": 943
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:941"
     }
+  ],
+  "slug_history": [
+    "chapter-943"
   ]
 }

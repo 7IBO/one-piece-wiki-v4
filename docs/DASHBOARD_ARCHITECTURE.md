@@ -90,7 +90,7 @@ at entry:
 
 ### Core data flow for editing
 
-1. User opens `/dashboard/character/luffy/edit`
+1. User opens `/dashboard/character/monkey-d-luffy/edit`
 2. Server loader fetches the entity + its type schema
 3. Form generator renders a form tree from the schema
 4. User edits → React Hook Form holds state, Zod validates on blur
@@ -658,7 +658,7 @@ Via `@onepiece-wiki/github-client` (Octokit wrapper):
 
 PRs from the dashboard carry:
 
-- A descriptive title (`Edit character:luffy — add bounty entry`)
+- A descriptive title (`Edit character:monkey-d-luffy — add bounty entry`)
 - A body with the diff summary, contributor info, draft message
 - Labels: `edit`, `via-dashboard`
 - Optionally, schema-changing PRs carry `schema-breaking`

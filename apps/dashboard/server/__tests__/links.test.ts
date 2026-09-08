@@ -193,39 +193,43 @@ describe('detectConflicts — qualifier-mismatch', () => {
 
 describe('computeEntityLinks', () => {
   const catalogue = [
-    entity('character:ace', [
+    entity('character:portgas-d-ace', [
       {
         type: 'family-of',
-        target: 'character:luffy',
+        target: 'character:monkey-d-luffy',
         qualifiers: { relation_kind: 'sworn_brother' },
       },
     ]),
-    entity('character:luffy', [
+    entity('character:monkey-d-luffy', [
       {
         type: 'family-of',
-        target: 'character:ace',
+        target: 'character:portgas-d-ace',
         qualifiers: { relation_kind: 'sworn_brother' },
       },
     ]),
     entity('manga-chapter:574', [
-      { type: 'features', target: 'character:ace', qualifiers: { appearance_type: 'main' } },
+      {
+        type: 'features',
+        target: 'character:portgas-d-ace',
+        qualifiers: { appearance_type: 'main' },
+      },
     ]),
     entity('event:marineford', [
-      { type: 'caused-death-of', target: 'character:ace' },
+      { type: 'caused-death-of', target: 'character:portgas-d-ace' },
     ]),
   ];
 
   it('returns outgoing, incoming and conflicts for the entity', () => {
-    const links = computeEntityLinks('character:ace', catalogue, SYMMETRIC_TYPES);
+    const links = computeEntityLinks('character:portgas-d-ace', catalogue, SYMMETRIC_TYPES);
     expect(links.outgoing).toEqual([
       {
         relationType: 'family-of',
-        target: 'character:luffy',
+        target: 'character:monkey-d-luffy',
         qualifiers: { relation_kind: 'sworn_brother' },
       },
     ]);
     expect(links.incoming.map((i) => [i.relationType, i.sourceEntityId])).toEqual([
-      ['family-of', 'character:luffy'],
+      ['family-of', 'character:monkey-d-luffy'],
       ['features', 'manga-chapter:574'],
       ['caused-death-of', 'event:marineford'],
     ]);

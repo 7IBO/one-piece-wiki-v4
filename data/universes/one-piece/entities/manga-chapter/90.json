@@ -2,7 +2,7 @@
   "id": "manga-chapter:90",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-90",
+  "slug": "90",
   "properties": {
     "number": {
       "value": 90
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:42"
     }
+  ],
+  "slug_history": [
+    "chapter-90"
   ]
 }

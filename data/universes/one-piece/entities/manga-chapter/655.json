@@ -2,7 +2,7 @@
   "id": "manga-chapter:655",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-655",
+  "slug": "655",
   "properties": {
     "number": {
       "value": 655
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:580"
     }
+  ],
+  "slug_history": [
+    "chapter-655"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:338",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-338",
+  "slug": "338",
   "properties": {
     "number": {
       "value": 338
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:239"
     }
+  ],
+  "slug_history": [
+    "chapter-338"
   ]
 }

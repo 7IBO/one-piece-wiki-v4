@@ -2,7 +2,7 @@
   "id": "anime-episode:446",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-446",
+  "slug": "446",
   "properties": {
     "number": {
       "value": 446
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.446.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-446"
+  ]
 }

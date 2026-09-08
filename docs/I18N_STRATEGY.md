@@ -92,10 +92,10 @@ Translation files are flat key-value maps:
 
 ```json
 {
-  "character.luffy.name.short": "Luffy",
-  "character.luffy.name.full": "Monkey D. Luffy",
-  "character.luffy.epithet.straw-hat": "Straw Hat",
-  "character.luffy.epithet.fifth-emperor": "Fifth Emperor"
+  "character.monkey-d-luffy.name.short": "Luffy",
+  "character.monkey-d-luffy.name.full": "Monkey D. Luffy",
+  "character.monkey-d-luffy.epithet.straw-hat": "Straw Hat",
+  "character.monkey-d-luffy.epithet.fifth-emperor": "Fifth Emperor"
 }
 ```
 
@@ -103,10 +103,10 @@ FR equivalent:
 
 ```json
 {
-  "character.luffy.name.short": "Luffy",
-  "character.luffy.name.full": "Monkey D. Luffy",
-  "character.luffy.epithet.straw-hat": "Chapeau de Paille",
-  "character.luffy.epithet.fifth-emperor": "Cinquième Empereur"
+  "character.monkey-d-luffy.name.short": "Luffy",
+  "character.monkey-d-luffy.name.full": "Monkey D. Luffy",
+  "character.monkey-d-luffy.epithet.straw-hat": "Chapeau de Paille",
+  "character.monkey-d-luffy.epithet.fifth-emperor": "Cinquième Empereur"
 }
 ```
 
@@ -118,7 +118,7 @@ variants:
 
 ```json
 {
-  "devil-fruit.gomu-gomu.name.common": {
+  "devil-fruit.gomu-gomu-no-mi.name.common": {
     "default": "Gomu Gomu no Mi",
     "variants": {
       "viz": "Gum-Gum Fruit",
@@ -155,10 +155,10 @@ A consistent convention helps editors and Claude alike:
 
 - Pattern: `<entity-type>.<entity-slug>.<property>.<variant>`
 - Examples:
-  - `character.luffy.name.short`
-  - `character.luffy.epithet.straw-hat`
-  - `devil-fruit.gomu-gomu.name.common`
-  - `devil-fruit.gomu-gomu.name.true`
+  - `character.monkey-d-luffy.name.short`
+  - `character.monkey-d-luffy.epithet.straw-hat`
+  - `devil-fruit.gomu-gomu-no-mi.name.common`
+  - `devil-fruit.gomu-gomu-no-mi.name.true`
   - `event.battle-of-marineford.summary`
 
 For UI chrome:
@@ -174,7 +174,7 @@ For UI chrome:
 Narratives are Markdown files, one per (locale, scope). They can contain:
 
 - Light Markdown (headings, bold, italic, links)
-- Typed entity links: `[[character:zoro]]` rendered as a hyperlink
+- Typed entity links: `[[character:roronoa-zoro]]` rendered as a hyperlink
   with the entity's localized name
 - Spoiler markers: `:::spoiler chapter:1044{Some text}:::`
   hidden if the user hasn't reached chapter 1044
@@ -183,8 +183,8 @@ Example:
 
 ```markdown
 After breaking out of Impel Down with a group of dangerous prisoners,
-[[character:luffy]] arrived at Marineford to rescue his brother
-[[character:ace]] from execution. Despite the overwhelming forces of
+[[character:monkey-d-luffy]] arrived at Marineford to rescue his brother
+[[character:portgas-d-ace]] from execution. Despite the overwhelming forces of
 the Marines and the [[crew:whitebeard-pirates]]' efforts, Ace was
 killed by [[character:akainu]] while protecting Luffy.
 ```

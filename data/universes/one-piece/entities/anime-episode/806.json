@@ -2,7 +2,7 @@
   "id": "anime-episode:806",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-806",
+  "slug": "806",
   "properties": {
     "number": {
       "value": 806
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.806.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-806"
+  ]
 }

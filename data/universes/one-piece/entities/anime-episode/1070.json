@@ -2,7 +2,7 @@
   "id": "anime-episode:1070",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-1070",
+  "slug": "1070",
   "properties": {
     "number": {
       "value": 1070
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.1070.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-1070"
+  ]
 }

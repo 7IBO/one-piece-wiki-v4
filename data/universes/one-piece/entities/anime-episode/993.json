@@ -2,7 +2,7 @@
   "id": "anime-episode:993",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-993",
+  "slug": "993",
   "properties": {
     "number": {
       "value": 993
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.993.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-993"
+  ]
 }

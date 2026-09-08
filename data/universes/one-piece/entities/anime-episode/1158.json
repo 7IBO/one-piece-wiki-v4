@@ -2,7 +2,7 @@
   "id": "anime-episode:1158",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-1158",
+  "slug": "1158",
   "properties": {
     "number": {
       "value": 1158
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.1158.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-1158"
+  ]
 }

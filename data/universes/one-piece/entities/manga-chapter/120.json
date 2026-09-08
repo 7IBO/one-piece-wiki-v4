@@ -2,7 +2,7 @@
   "id": "manga-chapter:120",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-120",
+  "slug": "120",
   "properties": {
     "number": {
       "value": 120
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:73"
     }
+  ],
+  "slug_history": [
+    "chapter-120"
   ]
 }

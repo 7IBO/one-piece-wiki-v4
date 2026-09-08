@@ -195,7 +195,7 @@ describe('buildSearchRows — spoiler gates', () => {
       entityRow({
         id: 'manga-chapter:1044',
         type: 'manga-chapter',
-        slug: 'chapter-1044',
+        slug: '1044',
         first_appearance_source: null,
         data: { properties: { title_key: { value_key: 'manga-chapter.1044.title' } } },
       }),

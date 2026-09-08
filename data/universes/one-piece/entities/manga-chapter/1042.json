@@ -2,7 +2,7 @@
   "id": "manga-chapter:1042",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1042",
+  "slug": "1042",
   "properties": {
     "number": {
       "value": 1042
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1069"
     }
+  ],
+  "slug_history": [
+    "chapter-1042"
   ]
 }

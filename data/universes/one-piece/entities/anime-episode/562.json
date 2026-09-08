@@ -2,7 +2,7 @@
   "id": "anime-episode:562",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-562",
+  "slug": "562",
   "properties": {
     "number": {
       "value": 562
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.562.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-562"
+  ]
 }

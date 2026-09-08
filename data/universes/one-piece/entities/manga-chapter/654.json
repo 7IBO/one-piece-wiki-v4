@@ -2,7 +2,7 @@
   "id": "manga-chapter:654",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-654",
+  "slug": "654",
   "properties": {
     "number": {
       "value": 654
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:574"
     }
+  ],
+  "slug_history": [
+    "chapter-654"
   ]
 }

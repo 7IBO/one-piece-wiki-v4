@@ -2,7 +2,7 @@
   "id": "manga-chapter:733",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-733",
+  "slug": "733",
   "properties": {
     "number": {
       "value": 733
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:665"
     }
+  ],
+  "slug_history": [
+    "chapter-733"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:384",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-384",
+  "slug": "384",
   "properties": {
     "number": {
       "value": 384
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:271"
     }
+  ],
+  "slug_history": [
+    "chapter-384"
   ]
 }

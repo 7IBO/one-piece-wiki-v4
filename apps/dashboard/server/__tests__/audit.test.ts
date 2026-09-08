@@ -51,7 +51,7 @@ const vocabularies = new Map([
 ]);
 
 const translations = {
-  en: { 'character.luffy.name.common': 'Monkey D. Luffy' },
+  en: { 'character.monkey-d-luffy.name.common': 'Monkey D. Luffy' },
   fr: {},
 };
 
@@ -72,7 +72,7 @@ describe('missingRecommendedFor', () => {
   it('lists expected properties without content and absent recommended relations', () => {
     const data = {
       properties: {
-        name: [{ value_key: 'character.luffy.name.common' }],
+        name: [{ value_key: 'character.monkey-d-luffy.name.common' }],
         status: [], // present but empty → still missing
         // bounty absent entirely.
       },
@@ -113,20 +113,20 @@ describe('missingRecommendedFor', () => {
 describe('referencedI18nKeys / missingTranslationsFor', () => {
   it('collects canonical_name_key + every value_key, deduplicated', () => {
     const data = {
-      canonical_name_key: 'character.luffy.name.common',
+      canonical_name_key: 'character.monkey-d-luffy.name.common',
       properties: {
         name: [
-          { value_key: 'character.luffy.name.common' },
-          { value_key: 'character.luffy.name.true' },
+          { value_key: 'character.monkey-d-luffy.name.common' },
+          { value_key: 'character.monkey-d-luffy.name.true' },
         ],
-        epithet: { value_key: 'character.luffy.epithet.straw-hat' },
+        epithet: { value_key: 'character.monkey-d-luffy.epithet.straw-hat' },
         bounty: [{ value: 30_000_000 }],
       },
     };
     expect(referencedI18nKeys(data)).toEqual([
-      'character.luffy.name.common',
-      'character.luffy.name.true',
-      'character.luffy.epithet.straw-hat',
+      'character.monkey-d-luffy.name.common',
+      'character.monkey-d-luffy.name.true',
+      'character.monkey-d-luffy.epithet.straw-hat',
     ]);
   });
 
@@ -162,7 +162,7 @@ describe('entryDisplay', () => {
   it('resolves value_key through translations (en first, fr fallback, — when untranslated)', () => {
     expect(
       entryDisplay(
-        { value_key: 'character.luffy.name.common' },
+        { value_key: 'character.monkey-d-luffy.name.common' },
         propertyTypes.get('name'),
         displayCtx,
       ),
@@ -193,7 +193,11 @@ describe('entryDisplay', () => {
       .toBe('En vie');
     // FR translation missing → EN fallback, never the raw key.
     expect(
-      entryDisplay({ value_key: 'character.luffy.name.common' }, propertyTypes.get('name'), frCtx),
+      entryDisplay(
+        { value_key: 'character.monkey-d-luffy.name.common' },
+        propertyTypes.get('name'),
+        frCtx,
+      ),
     ).toBe('Monkey D. Luffy');
   });
 
@@ -277,15 +281,15 @@ describe('buildAuditRow', () => {
   it('assembles the full row for a partly-filled entity', () => {
     const row = buildAuditRow(
       {
-        id: 'character:luffy',
+        id: 'character:monkey-d-luffy',
         type: 'character',
         data: {
-          id: 'character:luffy',
+          id: 'character:monkey-d-luffy',
           type: 'character',
           slug: 'monkey-d-luffy',
-          canonical_name_key: 'character.luffy.name.common',
+          canonical_name_key: 'character.monkey-d-luffy.name.common',
           properties: {
-            name: [{ value_key: 'character.luffy.name.common', since: 'manga-chapter:1' }],
+            name: [{ value_key: 'character.monkey-d-luffy.name.common', since: 'manga-chapter:1' }],
             bounty: [
               { value: 30_000_000, since: 'manga-chapter:96' },
               { value: 3_000_000_000, since: 'manga-chapter:1053' },
@@ -296,7 +300,7 @@ describe('buildAuditRow', () => {
       },
       ctx,
     );
-    expect(row.id).toBe('character:luffy');
+    expect(row.id).toBe('character:monkey-d-luffy');
     expect(row.type).toBe('character');
     expect(row.slug).toBe('monkey-d-luffy');
     expect(row.displayName).toEqual({ en: 'Monkey D. Luffy', fr: null });
@@ -304,7 +308,7 @@ describe('buildAuditRow', () => {
     expect(row.completeness).toEqual({ filled: 3, expected: 4 });
     expect(row.missingRecommended).toEqual(['status']);
     // canonical + name key are the same key, translated in EN only.
-    expect(row.missingTranslations).toEqual(['character.luffy.name.common (fr)']);
+    expect(row.missingTranslations).toEqual(['character.monkey-d-luffy.name.common (fr)']);
     expect(row.values).toEqual([
       {
         property: 'name',
@@ -312,7 +316,7 @@ describe('buildAuditRow', () => {
         entries: [{
           display: 'Monkey D. Luffy',
           since: 'C1',
-          raw: { value_key: 'character.luffy.name.common', since: 'manga-chapter:1' },
+          raw: { value_key: 'character.monkey-d-luffy.name.common', since: 'manga-chapter:1' },
         }],
       },
       {

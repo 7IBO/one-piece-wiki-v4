@@ -2,7 +2,7 @@
   "id": "manga-chapter:632",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-632",
+  "slug": "632",
   "properties": {
     "number": {
       "value": 632
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:16"
     }
+  ],
+  "slug_history": [
+    "chapter-632"
   ]
 }

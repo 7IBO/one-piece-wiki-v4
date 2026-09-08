@@ -2,7 +2,7 @@
   "id": "manga-chapter:701",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-701",
+  "slug": "701",
   "properties": {
     "number": {
       "value": 701
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:631"
     }
+  ],
+  "slug_history": [
+    "chapter-701"
   ]
 }

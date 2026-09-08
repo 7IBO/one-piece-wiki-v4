@@ -2,7 +2,7 @@
   "id": "manga-chapter:1084",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1084",
+  "slug": "1084",
   "properties": {
     "number": {
       "value": 1084
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1118"
     }
+  ],
+  "slug_history": [
+    "chapter-1084"
   ]
 }

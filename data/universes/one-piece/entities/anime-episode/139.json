@@ -2,7 +2,7 @@
   "id": "anime-episode:139",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-139",
+  "slug": "139",
   "properties": {
     "number": {
       "value": 139
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:ruluka-island"
     }
+  ],
+  "slug_history": [
+    "episode-139"
   ]
 }

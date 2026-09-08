@@ -2,7 +2,7 @@
   "id": "manga-chapter:14",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-14",
+  "slug": "14",
   "properties": {
     "number": {
       "value": 14
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:6"
     }
+  ],
+  "slug_history": [
+    "chapter-14"
   ]
 }

@@ -13,8 +13,8 @@ import {
 const RATIOS: readonly ArtRatio[] = ['portrait', 'square', 'wide', 'hero'];
 
 const IDS: readonly string[] = [
-  'character:luffy',
-  'character:zoro',
+  'character:monkey-d-luffy',
+  'character:roronoa-zoro',
   'character:nami',
   'character:usopp',
   'character:sanji',
@@ -23,7 +23,7 @@ const IDS: readonly string[] = [
   'arc:romance-dawn',
   'arc:alabasta',
   'event:battle-of-marineford',
-  'devil-fruit:gomu-gomu',
+  'devil-fruit:gomu-gomu-no-mi',
   'manga-chapter:1',
   'manga-chapter:1044',
   'volume:1',
@@ -44,8 +44,8 @@ describe('hashString', () => {
   test('is the documented FNV-1a 32-bit, pinned so art never silently shifts', () => {
     expect(hashString('')).toBe(2166136261);
     expect(hashString('a')).toBe(3826002220);
-    expect(hashString('character:luffy')).toBe(hashString('character:luffy'));
-    expect(hashString('character:luffy')).not.toBe(hashString('character:zoro'));
+    expect(hashString('character:monkey-d-luffy')).toBe(hashString('character:monkey-d-luffy'));
+    expect(hashString('character:monkey-d-luffy')).not.toBe(hashString('character:roronoa-zoro'));
   });
 
   test('always returns an unsigned 32-bit integer', () => {
@@ -90,17 +90,17 @@ describe('buildEntityArt — distinctness', () => {
   });
 
   test('a single character difference in the id changes the artwork', () => {
-    const a = JSON.stringify(buildEntityArt('character:luffy', 'character', 'portrait'));
+    const a = JSON.stringify(buildEntityArt('character:monkey-d-luffy', 'character', 'portrait'));
     const b = JSON.stringify(buildEntityArt('character:luffz', 'character', 'portrait'));
     expect(a).not.toBe(b);
   });
 
   test('each ratio is composed for its own frame, not cropped from one', () => {
-    const [portrait, square, wide] = scenes('character:luffy');
+    const [portrait, square, wide] = scenes('character:monkey-d-luffy');
     expect(portrait?.shapes).not.toEqual(square?.shapes ?? []);
     expect(square?.shapes).not.toEqual(wide?.shapes ?? []);
     for (const ratio of RATIOS) {
-      const scene = buildEntityArt('character:luffy', 'character', ratio);
+      const scene = buildEntityArt('character:monkey-d-luffy', 'character', ratio);
       expect(scene.width).toBe(ART_RATIOS[ratio].width);
       expect(scene.height).toBe(ART_RATIOS[ratio].height);
     }
@@ -119,7 +119,7 @@ describe('buildEntityArt — per-type grammar', () => {
   });
 
   test('a character never composes like a chapter', () => {
-    const character = buildEntityArt('character:luffy', 'character', 'portrait');
+    const character = buildEntityArt('character:monkey-d-luffy', 'character', 'portrait');
     const chapter = buildEntityArt('manga-chapter:1', 'manga-chapter', 'portrait');
     expect(character.grammar).not.toBe(chapter.grammar);
   });
@@ -202,8 +202,8 @@ describe('buildEntityArt — output sanity', () => {
 
 describe('buildEntityArt — the initial is a compositional element', () => {
   test('no initial, no mark', () => {
-    expect(buildEntityArt('character:luffy', 'character', 'portrait').mark).toBeNull();
-    expect(buildEntityArt('character:luffy', 'character', 'portrait', '').mark).toBeNull();
+    expect(buildEntityArt('character:monkey-d-luffy', 'character', 'portrait').mark).toBeNull();
+    expect(buildEntityArt('character:monkey-d-luffy', 'character', 'portrait', '').mark).toBeNull();
   });
 
   test('when set, it is oversized and cropped by the frame — never a centred letter', () => {
@@ -246,7 +246,7 @@ describe('buildEntityArt — the hero frame (ADR-103)', () => {
   });
 
   test('raising the detail level never breaks the grammar mapping', () => {
-    expect(buildEntityArt('character:luffy', 'character', 'hero').grammar).toBe('figure');
+    expect(buildEntityArt('character:monkey-d-luffy', 'character', 'hero').grammar).toBe('figure');
     expect(buildEntityArt('x:y', 'totally-unknown', 'hero').grammar).toBe('field');
   });
 

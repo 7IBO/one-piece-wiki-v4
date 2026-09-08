@@ -2,7 +2,7 @@
   "id": "manga-chapter:295",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-295",
+  "slug": "295",
   "properties": {
     "number": {
       "value": 295
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:191"
     }
+  ],
+  "slug_history": [
+    "chapter-295"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:158",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-158",
+  "slug": "158",
   "properties": {
     "number": {
       "value": 158
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:94"
     }
+  ],
+  "slug_history": [
+    "chapter-158"
   ]
 }

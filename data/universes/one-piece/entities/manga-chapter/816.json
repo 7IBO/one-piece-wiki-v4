@@ -2,7 +2,7 @@
   "id": "manga-chapter:816",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-816",
+  "slug": "816",
   "properties": {
     "number": {
       "value": 816
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:767"
     }
+  ],
+  "slug_history": [
+    "chapter-816"
   ]
 }

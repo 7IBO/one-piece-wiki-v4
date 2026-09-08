@@ -2,7 +2,7 @@
   "id": "manga-chapter:528",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-528",
+  "slug": "528",
   "properties": {
     "number": {
       "value": 528
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:430"
     }
+  ],
+  "slug_history": [
+    "chapter-528"
   ]
 }

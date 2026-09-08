@@ -2,7 +2,7 @@
   "id": "manga-chapter:240",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-240",
+  "slug": "240",
   "properties": {
     "number": {
       "value": 240
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:154"
     }
+  ],
+  "slug_history": [
+    "chapter-240"
   ]
 }

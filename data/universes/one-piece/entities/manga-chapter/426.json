@@ -2,7 +2,7 @@
   "id": "manga-chapter:426",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-426",
+  "slug": "426",
   "properties": {
     "number": {
       "value": 426
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:309"
     }
+  ],
+  "slug_history": [
+    "chapter-426"
   ]
 }

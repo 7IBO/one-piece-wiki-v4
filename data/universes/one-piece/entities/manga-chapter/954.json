@@ -2,7 +2,7 @@
   "id": "manga-chapter:954",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-954",
+  "slug": "954",
   "properties": {
     "number": {
       "value": 954
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:955"
     }
+  ],
+  "slug_history": [
+    "chapter-954"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:409",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-409",
+  "slug": "409",
   "properties": {
     "number": {
       "value": 409
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:amazon-lily"
     }
+  ],
+  "slug_history": [
+    "episode-409"
   ]
 }

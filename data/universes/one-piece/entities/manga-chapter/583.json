@@ -2,7 +2,7 @@
   "id": "manga-chapter:583",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-583",
+  "slug": "583",
   "properties": {
     "number": {
       "value": 583
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:494"
     }
+  ],
+  "slug_history": [
+    "chapter-583"
   ]
 }

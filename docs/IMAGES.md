@@ -109,7 +109,7 @@ import — not after.
 
 Phase 4 dashboard (Phase 1 has no UI; images entered by hand).
 
-1. Editor opens an entity (e.g. `character:luffy`) and clicks
+1. Editor opens an entity (e.g. `character:monkey-d-luffy`) and clicks
    `+ Image` on a `depicted-by` slot.
 2. The form shows: file picker, `license` dropdown, `attribution`
    text input, optional `caption_key` + `alt_text_key` fields,
@@ -229,7 +229,7 @@ depicted entity:
   "qualifiers": { "role": "group_photo", "since": "manga-chapter:567" }
 }
 
-// Inside character:luffy.json
+// Inside character:monkey-d-luffy.json
 {
   "type": "depicted-by",
   "target": "image:straw-hats-marineford-arrival",
@@ -240,8 +240,8 @@ depicted entity:
 ```
 
 The build pipeline materialises the auto-inferred `depicts` direction
-on the image entity: `depicts character:luffy`, `depicts
-character:zoro`, …, `depicts crew:straw-hats`. The maintainer never
+on the image entity: `depicts character:monkey-d-luffy`, `depicts
+character:roronoa-zoro`, …, `depicts crew:straw-hats`. The maintainer never
 authors the inverse.
 
 **When NOT to reuse.** If the depiction differs meaningfully — same

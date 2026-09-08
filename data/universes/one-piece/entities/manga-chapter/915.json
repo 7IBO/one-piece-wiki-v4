@@ -2,7 +2,7 @@
   "id": "manga-chapter:915",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-915",
+  "slug": "915",
   "properties": {
     "number": {
       "value": 915
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:902"
     }
+  ],
+  "slug_history": [
+    "chapter-915"
   ]
 }

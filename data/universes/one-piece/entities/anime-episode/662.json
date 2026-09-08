@@ -2,7 +2,7 @@
   "id": "anime-episode:662",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-662",
+  "slug": "662",
   "properties": {
     "number": {
       "value": 662
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.662.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-662"
+  ]
 }

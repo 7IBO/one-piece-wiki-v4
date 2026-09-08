@@ -2,7 +2,7 @@
   "id": "manga-chapter:374",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-374",
+  "slug": "374",
   "properties": {
     "number": {
       "value": 374
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:263"
     }
+  ],
+  "slug_history": [
+    "chapter-374"
   ]
 }

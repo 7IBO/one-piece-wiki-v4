@@ -2,7 +2,7 @@
   "id": "manga-chapter:264",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-264",
+  "slug": "264",
   "properties": {
     "number": {
       "value": 264
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:174"
     }
+  ],
+  "slug_history": [
+    "chapter-264"
   ]
 }

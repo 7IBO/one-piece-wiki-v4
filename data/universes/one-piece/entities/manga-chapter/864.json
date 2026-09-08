@@ -2,7 +2,7 @@
   "id": "manga-chapter:864",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-864",
+  "slug": "864",
   "properties": {
     "number": {
       "value": 864
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:834"
     }
+  ],
+  "slug_history": [
+    "chapter-864"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:299",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-299",
+  "slug": "299",
   "properties": {
     "number": {
       "value": 299
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:193"
     }
+  ],
+  "slug_history": [
+    "chapter-299"
   ]
 }

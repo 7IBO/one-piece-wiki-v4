@@ -2,7 +2,7 @@
   "id": "manga-chapter:448",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-448",
+  "slug": "448",
   "properties": {
     "number": {
       "value": 448
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:343"
     }
+  ],
+  "slug_history": [
+    "chapter-448"
   ]
 }

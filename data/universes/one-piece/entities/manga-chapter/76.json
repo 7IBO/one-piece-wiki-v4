@@ -2,7 +2,7 @@
   "id": "manga-chapter:76",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-76",
+  "slug": "76",
   "properties": {
     "number": {
       "value": 76
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:34"
     }
+  ],
+  "slug_history": [
+    "chapter-76"
   ]
 }

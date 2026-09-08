@@ -2,7 +2,7 @@
   "id": "anime-episode:215",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-215",
+  "slug": "215",
   "properties": {
     "number": {
       "value": 215
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:long-ring-long-land"
     }
+  ],
+  "slug_history": [
+    "episode-215"
   ]
 }

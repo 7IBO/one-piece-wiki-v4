@@ -48,6 +48,8 @@ import { type CorpusContext, evaluateRules, relationIsActive } from './rules.ts'
 
 export type CoherenceFinding = {
   readonly code:
+    // identite (ADR-126)
+    | 'ID_SLUG_MISMATCH'
     | 'UNKNOWN_RELATION_TYPE'
     | 'RELATION_NOT_ALLOWED'
     | 'RELATION_INVALID_SOURCE_TYPE'
@@ -181,6 +183,27 @@ export function checkCoherence(
   catalogue: ValidatedCatalogue,
 ): readonly CoherenceFinding[] {
   const findings: CoherenceFinding[] = [];
+
+  // L'invariant d'identite (ADR-126) : l'id est `type:` suivi du SLUG,
+  // pas d'un diminutif. Il tenait dans deux fichiers de documentation
+  // et nulle part dans le code — d'ou quatre entites (`character:luffy`
+  // pour le slug `monkey-d-luffy`, trois autres) qui l'ignoraient
+  // depuis le debut sans que rien ne le dise. Une regle de coherence
+  // coute une comparaison de chaines et le redit a chaque `bun run
+  // check:coherence`.
+  for (const entity of entities.values()) {
+    const slug = (entity.data as { slug?: unknown; }).slug;
+    if (typeof slug === 'string' && entity.id !== `${entity.type}:${slug}`) {
+      findings.push({
+        code: 'ID_SLUG_MISMATCH',
+        severity: 'error',
+        source: entity.id,
+        path: 'slug',
+        message:
+          `Id and slug disagree: "${entity.id}" should be "${entity.type}:${slug}" (ADR-126).`,
+      });
+    }
+  }
 
   for (const entity of entities.values()) {
     const entityType = catalogue.entityTypes.get(entity.type);

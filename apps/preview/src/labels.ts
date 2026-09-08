@@ -2,7 +2,7 @@
  * Locale-aware label resolution. Phase 3 reads labels directly from the
  * schema catalogue (entity-type and vocabulary `labels` fields) since
  * translation files are not yet populated. Entity-specific i18n keys
- * (character.luffy.name.common, etc.) fall back to the key itself —
+ * (character.monkey-d-luffy.name.common, etc.) fall back to the key itself —
  * the preview makes the key visible so a missing translation is
  * obvious.
  */

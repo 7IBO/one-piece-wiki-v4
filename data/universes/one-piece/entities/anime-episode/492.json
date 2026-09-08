@@ -2,7 +2,7 @@
   "id": "anime-episode:492",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-492",
+  "slug": "492",
   "properties": {
     "number": {
       "value": 492
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.492.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-492"
+  ]
 }

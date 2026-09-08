@@ -2,7 +2,7 @@
   "id": "anime-episode:158",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-158",
+  "slug": "158",
   "properties": {
     "number": {
       "value": 158
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:skypiea"
     }
+  ],
+  "slug_history": [
+    "episode-158"
   ]
 }

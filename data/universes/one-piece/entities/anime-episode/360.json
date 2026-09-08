@@ -2,7 +2,7 @@
   "id": "anime-episode:360",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-360",
+  "slug": "360",
   "properties": {
     "number": {
       "value": 360
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:thriller-bark"
     }
+  ],
+  "slug_history": [
+    "episode-360"
   ]
 }

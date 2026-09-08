@@ -2,7 +2,7 @@
   "id": "manga-chapter:385",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-385",
+  "slug": "385",
   "properties": {
     "number": {
       "value": 385
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:272"
     }
+  ],
+  "slug_history": [
+    "chapter-385"
   ]
 }

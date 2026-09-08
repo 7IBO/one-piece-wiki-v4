@@ -63,7 +63,7 @@ describe('Phase 2 end-to-end', () => {
   });
 
   it('returns a character with its first/last appearance', () => {
-    const luffy = client.getEntity('character:luffy');
+    const luffy = client.getEntity('character:monkey-d-luffy');
     expect(luffy).not.toBeNull();
     expect(luffy!.type).toBe('character');
     expect(luffy!.slug).toBe('monkey-d-luffy');
@@ -72,7 +72,7 @@ describe('Phase 2 end-to-end', () => {
   });
 
   it('exposes the historisable bounty as one row per entry', () => {
-    const properties = client.getProperties('character:luffy');
+    const properties = client.getProperties('character:monkey-d-luffy');
     const bounty = properties.filter((p) => p.property_id === 'bounty');
     expect(bounty.length).toBe(4);
     expect(bounty.map((b) => b.since_source)).toEqual([
@@ -84,16 +84,19 @@ describe('Phase 2 end-to-end', () => {
   });
 
   it('generates the inverse direction for relations marked inverse_inferred', () => {
-    const luffyRelations = client.getRelations('character:luffy', 'outgoing');
+    const luffyRelations = client.getRelations('character:monkey-d-luffy', 'outgoing');
     const ateFruit = luffyRelations.find(
-      (r) => r.relation_type === 'ate-fruit' && r.target_entity_id === 'devil-fruit:gomu-gomu',
+      (r) =>
+        r.relation_type === 'ate-fruit' && r.target_entity_id === 'devil-fruit:gomu-gomu-no-mi',
     );
     expect(ateFruit).toBeDefined();
     expect(ateFruit!.is_inferred).toBe(false);
 
-    const fruitOutgoing = client.getRelations('devil-fruit:gomu-gomu', 'outgoing');
+    const fruitOutgoing = client.getRelations('devil-fruit:gomu-gomu-no-mi', 'outgoing');
     const inverse = fruitOutgoing.find(
-      (r) => r.relation_type === 'ate-fruit.inverse' && r.target_entity_id === 'character:luffy',
+      (r) =>
+        r.relation_type === 'ate-fruit.inverse'
+        && r.target_entity_id === 'character:monkey-d-luffy',
     );
     expect(inverse).toBeDefined();
     expect(inverse!.is_inferred).toBe(true);
@@ -104,9 +107,10 @@ describe('Phase 2 end-to-end', () => {
     // promotes the engine default through to the SDK record. This
     // exercises the full DDL → writer → client wiring of the four
     // relation base-qualifier columns.
-    const luffyRelations = client.getRelations('character:luffy', 'outgoing');
+    const luffyRelations = client.getRelations('character:monkey-d-luffy', 'outgoing');
     const ateFruit = luffyRelations.find(
-      (r) => r.relation_type === 'ate-fruit' && r.target_entity_id === 'devil-fruit:gomu-gomu',
+      (r) =>
+        r.relation_type === 'ate-fruit' && r.target_entity_id === 'devil-fruit:gomu-gomu-no-mi',
     );
     expect(ateFruit).toBeDefined();
     expect(ateFruit!.epistemic_status).toBe('true');
@@ -116,7 +120,7 @@ describe('Phase 2 end-to-end', () => {
   });
 
   it('spoiler filter cuts bounty history at user progression', () => {
-    const properties = client.getProperties('character:luffy');
+    const properties = client.getProperties('character:monkey-d-luffy');
     const earlyBounties = visibleProperties(properties, { manga_chapter: 432 });
     const bounty = earlyBounties.find((p) => p.property_id === 'bounty');
     expect(bounty).toBeDefined();
@@ -129,7 +133,7 @@ describe('Phase 2 end-to-end', () => {
   });
 
   it('spoiler filter hides relations whose qualifier since is unreached', () => {
-    const luffyRelations = client.getRelations('character:luffy', 'outgoing');
+    const luffyRelations = client.getRelations('character:monkey-d-luffy', 'outgoing');
     const allMemberOf = luffyRelations.filter((r) => r.relation_type === 'member-of');
     expect(allMemberOf.length).toBeGreaterThan(0);
 
@@ -149,7 +153,7 @@ describe('Phase 2 end-to-end', () => {
     // CONFIRMED only at ch.1044 (the Nika reveal). The spoiler filter
     // must show the believed value before the reveal and the confirmed
     // value after — and must NOT leak the truth early.
-    const props = client.getProperties('devil-fruit:gomu-gomu');
+    const props = client.getProperties('devil-fruit:gomu-gomu-no-mi');
 
     const preReveal = visibleProperties(props, { manga_chapter: 1043 })
       .find((p) => p.property_id === 'classification');

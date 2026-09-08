@@ -2,7 +2,7 @@
   "id": "manga-chapter:544",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-544",
+  "slug": "544",
   "properties": {
     "number": {
       "value": 544
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:447"
     }
+  ],
+  "slug_history": [
+    "chapter-544"
   ]
 }

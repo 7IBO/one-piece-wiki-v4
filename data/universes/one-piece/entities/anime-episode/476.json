@@ -2,7 +2,7 @@
   "id": "anime-episode:476",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-476",
+  "slug": "476",
   "properties": {
     "number": {
       "value": 476
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:marineford"
     }
+  ],
+  "slug_history": [
+    "episode-476"
   ]
 }

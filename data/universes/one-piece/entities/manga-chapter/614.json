@@ -2,7 +2,7 @@
   "id": "manga-chapter:614",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-614",
+  "slug": "614",
   "properties": {
     "number": {
       "value": 614
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:9"
     }
+  ],
+  "slug_history": [
+    "chapter-614"
   ]
 }

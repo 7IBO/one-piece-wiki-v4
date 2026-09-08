@@ -45,8 +45,10 @@ import { mapOrganization } from '../fandom/organization.ts';
 import {
   buildTitleIndex,
   type FandomRegistry,
+  findTitleClashes,
   type ImportedPage,
   recordImports,
+  recordRedirects,
   staleEntries,
 } from '../fandom/registry.ts';
 import { parseOrdinalRange, parseRenderedInfobox } from '../fandom/rendered-box.ts';
@@ -229,7 +231,22 @@ if (kind === 'crawl') {
 
   const importedAt = new Date().toISOString();
   const imported: ImportedPage[] = [];
+  // Deux pages distinctes qui produisent le MEME id sont deux entites
+  // confondues, pas une re-import. `stageToLocal` ne peut pas faire la
+  // difference : il voit un fichier deja present et le saute (ou, avec
+  // `--overwrite`, fond les deux en une chimere). Le run, lui, sait
+  // de quelle page vient chaque id — c'est donc ici que ca se refuse.
+  // Le cas est devenu atteignable en retirant les parentheses du slug
+  // (`../slug.ts`) : Fandom desambigue par parenthese.
+  const pageOfId = new Map<string, string>();
+  const collisions: { readonly page: string; readonly id: string; readonly first: string; }[] = [];
   for (const r of report.results) {
+    const seenOn = pageOfId.get(r.mapped.entity.id);
+    if (seenOn !== undefined && seenOn !== r.page.title) {
+      collisions.push({ page: r.page.title, id: r.mapped.entity.id, first: seenOn });
+      continue;
+    }
+    pageOfId.set(r.mapped.entity.id, r.page.title);
     const files = buildEmitFiles(r.mapped);
     if (stage) {
       // eslint-disable-next-line no-await-in-loop
@@ -247,6 +264,17 @@ if (kind === 'crawl') {
     await saveRegistry(next);
     process.stdout.write(
       `  ledger: ${imported.length} page(s) recorded, ${next.pages.length} tracked total\n`,
+    );
+  }
+  if (collisions.length > 0) {
+    process.stdout.write(
+      `\n${collisions.length} page(s) REFUSEE(S) — id deja produit dans ce run :\n`,
+    );
+    for (const c of collisions) {
+      process.stdout.write(`  ${c.page} → ${c.id} (deja pris par ${c.first})\n`);
+    }
+    process.stdout.write(
+      '  Deux pages Fandom pour une seule entite, ou une desambiguisation perdue.\n',
     );
   }
   const skipNote = report.skippedKnown > 0 ? `, ${report.skippedKnown} already known` : '';
@@ -520,7 +548,37 @@ if (kind === 'crawl') {
   const titles = registry.pages.map((p) => p.page);
   const info = await client.queryInfo(titles);
   const live = new Map([...info.entries()].map(([t, i]) => [t, i.lastRevId]));
-  const stale = staleEntries(registry, live);
+
+  // `queryInfo` demande `prop=info|redirects` et rend les alias — que
+  // ce bloc jetait, en ne gardant que la revision. Le registre montrait
+  // donc 1 redirection sur 2485 pages alors que l'appel qui les
+  // rapporte tourne sur les 2485 a chaque sync. On les ecrit.
+  const observed = new Map(
+    [...info.entries()].map(([t, i]) => [t, { pageId: i.pageId, redirects: i.redirects }]),
+  );
+  const withRedirects = recordRedirects(registry, observed);
+  const before = registry.pages.reduce((n, p) => n + p.redirects.length, 0);
+  const after = withRedirects.pages.reduce((n, p) => n + p.redirects.length, 0);
+  if (after !== before) {
+    await saveRegistry(withRedirects);
+    process.stdout.write(
+      `  ledger: ${after - before} redirection(s) apprise(s) (${after} au total)\n`,
+    );
+  }
+
+  // Deux entites pour une seule page Fandom : le doublon d'entite que
+  // le mainteneur cherchait. Signale, jamais corrige tout seul — fondre
+  // deux entites demande de savoir laquelle garde son id.
+  const clashes = findTitleClashes(withRedirects);
+  if (clashes.length > 0) {
+    process.stdout.write(`\n${clashes.length} page(s) revendiquee(s) par PLUSIEURS entites :\n`);
+    for (const c of clashes) {
+      process.stdout.write(`  "${c.title}" ← ${c.entityIds.join(', ')}\n`);
+    }
+    process.stdout.write('  Doublon probable : une page Fandom, deux entites chez nous.\n\n');
+  }
+
+  const stale = staleEntries(withRedirects, live);
   if (stale.length === 0) {
     process.stdout.write(`OK: ${titles.length} tracked page(s), none stale.\n`);
   } else {

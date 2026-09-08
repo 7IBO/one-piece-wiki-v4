@@ -2,7 +2,7 @@
   "id": "manga-chapter:931",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-931",
+  "slug": "931",
   "properties": {
     "number": {
       "value": 931
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:926"
     }
+  ],
+  "slug_history": [
+    "chapter-931"
   ]
 }

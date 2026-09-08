@@ -2,7 +2,7 @@
   "id": "manga-chapter:304",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-304",
+  "slug": "304",
   "properties": {
     "number": {
       "value": 304
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:207"
     }
+  ],
+  "slug_history": [
+    "chapter-304"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:424",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-424",
+  "slug": "424",
   "properties": {
     "number": {
       "value": 424
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:impel-down"
     }
+  ],
+  "slug_history": [
+    "episode-424"
   ]
 }

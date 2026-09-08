@@ -2,7 +2,7 @@
   "id": "manga-chapter:194",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-194",
+  "slug": "194",
   "properties": {
     "number": {
       "value": 194
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:119"
     }
+  ],
+  "slug_history": [
+    "chapter-194"
   ]
 }

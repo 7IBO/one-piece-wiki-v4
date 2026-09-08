@@ -2,7 +2,7 @@
   "id": "manga-chapter:550",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-550",
+  "slug": "550",
   "properties": {
     "number": {
       "value": 550
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:459"
     }
+  ],
+  "slug_history": [
+    "chapter-550"
   ]
 }

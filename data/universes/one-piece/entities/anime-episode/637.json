@@ -2,7 +2,7 @@
   "id": "anime-episode:637",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-637",
+  "slug": "637",
   "properties": {
     "number": {
       "value": 637
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.637.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-637"
+  ]
 }

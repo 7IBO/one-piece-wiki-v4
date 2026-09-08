@@ -2,7 +2,7 @@
   "id": "manga-chapter:484",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-484",
+  "slug": "484",
   "properties": {
     "number": {
       "value": 484
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:376"
     }
+  ],
+  "slug_history": [
+    "chapter-484"
   ]
 }

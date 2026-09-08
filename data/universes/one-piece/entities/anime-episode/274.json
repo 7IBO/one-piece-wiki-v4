@@ -2,7 +2,7 @@
   "id": "anime-episode:274",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-274",
+  "slug": "274",
   "properties": {
     "number": {
       "value": 274
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:enies-lobby"
     }
+  ],
+  "slug_history": [
+    "episode-274"
   ]
 }

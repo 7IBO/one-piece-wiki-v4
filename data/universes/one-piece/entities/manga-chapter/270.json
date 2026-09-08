@@ -2,7 +2,7 @@
   "id": "manga-chapter:270",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-270",
+  "slug": "270",
   "properties": {
     "number": {
       "value": 270
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:177"
     }
+  ],
+  "slug_history": [
+    "chapter-270"
   ]
 }

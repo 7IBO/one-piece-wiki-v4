@@ -53,7 +53,7 @@ export function mapEpisode(
     id,
     type: 'anime-episode',
     schema_version: ANIME_EPISODE_SCHEMA_VERSION,
-    slug: `episode-${number}`,
+    slug: `${number}`,
     properties: {
       number: { value: number },
       title_key: { value_key: titleKey },

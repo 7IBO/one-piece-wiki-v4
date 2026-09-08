@@ -7626,6 +7626,197 @@ clic, dans un dialogue qui propose déjà les deux axes.
 
 ---
 
+## ADR-124 — Aucune donnée entre parenthèses dans un id ; une seule `slugify`
+
+**Date**: 2026-09-08
+
+**Context**: `CLAUDE.md` pose que les ids suivent `type:slug` et que les
+slugs sont du kebab-case anglais. Il ne disait rien des parenthèses, et
+Fandom en met partout — mais **jamais pour nommer la chose** :
+
+- une édition — `Belle-Mère (VIZ Media)` ;
+- une désambiguïsation — `Zeus (Homies)` ;
+- une précision — `Mr. 3 (Galdino)`.
+
+Le correctif précédent (commit `6de2397`) ne coupait la parenthèse que
+sur un `ename` MULTI-LIGNE, en assumant qu'une parenthèse sur une seule
+ligne appartenait au nom. Les trois formes ci-dessus démentent cette
+distinction : aucune n'est l'identité.
+
+Mesuré avant de changer quoi que ce soit : **1 entité du corpus sur
+2557** porte une parenthèse dans son nom canonique
+(`document:luffy-first-wanted-poster`, dont le slug l'excluait déjà à
+la main), et **0 des 2485 pages du registre** en porte dans son titre.
+La règle est donc préventive — elle ne réécrit aucun id existant.
+
+Second constat, trouvé en cherchant l'endroit où l'appliquer : il y
+avait **trois** `slugify` copiées. Celle de `fandom/box.ts` respectait
+la borne de 60 du primitif `Slug` ; celles de `fandom/character.ts` et
+`onepiece-api/common.ts` ne la respectaient pas et pouvaient donc
+produire un id que Zod refuse.
+
+**Options**:
+
+- A — Retirer les parenthèses dans chaque mapper, au cas par cas.
+- B — Les retirer dans `slugify`, et n'avoir qu'une `slugify`.
+- C — Garder la règle étroite du multi-ligne.
+
+**Choice**: B.
+
+**Rationale**: la règle porte sur les ids, et `slugify` est le seul
+entonnoir par lequel un id passe. L'y mettre la rend impossible à
+oublier pour un mapper futur — c'est exactement ce qui avait manqué
+avec la borne de 60. A la disperse en douze copies ; C a déjà été
+démentie par les données.
+
+La règle ne touche que le SLUG. Le nom AFFICHÉ garde ce que la source
+écrit : `Mr. 3 (Galdino)` reste le nom, `character:mr-3` devient l'id.
+La seule exception au nom affiché reste `stripEditionMarker`, sur un
+`ename` multi-ligne, où c'est la structure du champ (une liste par
+édition) qui prouve ce que la parenthèse porte.
+
+**Consequences**: `packages/importers/src/slug.ts` est la source unique ;
+`fandom/box.ts` et `onepiece-api/common.ts` la ré-exportent, la surface
+publique du paquet ne bouge pas. `character.ts` perd sa copie et gagne
+au passage la borne de 60.
+
+Contrepartie assumée, et c'est la seule : deux pages que Fandom ne
+distingue QUE par leur parenthèse retombent sur le même slug.
+`stageToLocal` ne pouvait pas voir la différence — il saute un fichier
+déjà présent, ou le fond dans le premier avec `--overwrite`, ce qui
+fabriquerait une chimère. `import:fandom crawl` **refuse** désormais la
+seconde page d'un id déjà produit dans le même run et la liste avec la
+page qui a pris l'id. Répond au « id unique alors vérifie » du
+mainteneur : le doublon se signale au lieu de s'écraser.
+
+---
+
+## ADR-125 — Le slug d'une entité ordinale EST son numéro ; l'id fait foi
+
+**Date**: 2026-09-08
+
+**Context**: l'id et le slug d'une même entité disaient deux choses
+différentes, et pas sur trois cas isolés :
+
+```
+id manga-chapter:1044   slug chapter-1044
+id anime-episode:1071   slug episode-1071
+id volume:115           slug volume-115
+```
+
+Mesuré : **2484 entités sur 2557**, soit 97 % du corpus, avaient
+`id != type:slug`. Les 73 restantes étaient conformes, sauf quatre
+(trois personnages, un fruit) où c'est l'id qui est court — traitées
+séparément.
+
+**Options**:
+
+- A — Aligner l'ID sur le slug : `manga-chapter:chapter-1044`.
+- B — Aligner le SLUG sur l'id : `1044`.
+- C — Ne rien faire, documenter la divergence.
+
+**Choice**: B.
+
+**Rationale**: le sens n'est pas symétrique, et c'est le système
+anti-spoil qui tranche. `isSourceVisible` (apps/web/server/progress.ts)
+et `isNumberedSource` (db-builder) lisent l'ORDINAL **dans le suffixe
+de l'id** — `manga-chapter:1044` → 1044. C'est la clé de tout le
+filtrage par progression. L'option A l'aurait cassé sur 2484 entités ;
+elle aurait aussi mis le type deux fois dans l'URL
+(`/manga-chapter/chapter-1044`).
+
+La règle écrite est structurelle, pas une liste de types : « si le
+suffixe de l'id est entièrement numérique, le slug EST ce nombre ».
+C'est mot pour mot `isNumberedSource`, donc un type ordinal ajouté
+demain en hérite sans qu'on y pense.
+
+**Consequences**: les URL passent de `/manga-chapter/chapter-1044` à
+`/manga-chapter/1044`. Les six mappers ordinaux (fandom + onepiece-api)
+produisent la nouvelle forme, sinon le prochain import réintroduirait
+l'ancienne.
+
+Une conséquence n'était pas évidente et a demandé un correctif :
+`resolveEntityName` dégradait vers `humanize(row.slug)` quand le lecteur
+n'a atteint aucun nom — ce qui rendait « Chapter 1044 » tant que le slug
+valait `chapter-1044`, et aurait rendu « 1044 » tout court. Le nom de
+repli se recompose donc **depuis le schéma** : libellé du type dans la
+locale demandée, puis le numéro. Au passage il se localise, ce qu'il ne
+faisait pas (un lecteur français lisait « Chapter 1044 »).
+
+Ce que ça casse, et qui est assumé : les anciennes URL répondent 404.
+`slug_history` reçoit bien l'ancien slug — 2484 entrées — mais **rien
+ne le consomme** ; il n'est même pas extrait dans la table `entities`.
+Servir ces redirections est un contrat d'URL à part entière, parqué
+dans `IDEAS.md` avec l'ADR qu'il réclame. À zéro utilisateur le coût
+est nul aujourd'hui, et il ne le restera pas.
+
+---
+
+## ADR-126 — L'id est `type:` + le slug, jamais un diminutif
+
+**Date**: 2026-09-08
+
+**Context**: quatre entités du corpus portaient un id plus court que
+leur slug :
+
+```
+character:luffy          slug monkey-d-luffy
+character:zoro           slug roronoa-zoro
+character:ace            slug portgas-d-ace
+devil-fruit:gomu-gomu    slug gomu-gomu-no-mi
+```
+
+Ce sont les quatre entités semées à la main au tout début du projet.
+`CLAUDE.md` et `CONVENTIONS.md` donnaient d'ailleurs `character:luffy`
+et `devil-fruit:gomu-gomu` comme EXEMPLES de la convention — la
+divergence était documentée comme la règle.
+
+Elle a un coût mesurable : les clés de traduction se dérivent du slug,
+donc l'entité portait `character.luffy.name.common` avec un slug
+`monkey-d-luffy` ; les mappers construisent l'id depuis le slug, donc
+un ré-import de Luffy aurait créé `character:monkey-d-luffy` **à côté**
+de `character:luffy` au lieu de le mettre à jour. Le doublon était
+programmé.
+
+**Options**:
+
+- A — Aligner l'id sur le slug (renommer les quatre ids).
+- B — Aligner le slug sur l'id (raccourcir les quatre slugs).
+- C — Laisser, et documenter que les deux peuvent diverger.
+
+**Choice**: A.
+
+**Rationale**: le mainteneur a tranché — « les id doivent correspondre
+au slug des noms anglais ». B raccourcirait les URL en
+`/character/luffy`, ce qui perd le nom complet que le wiki affiche
+partout. C est ce qui a produit le défaut.
+
+Les ids sont dits IMMUABLES par `CLAUDE.md`, et cette ADR en casse
+quatre. C'est assumé : projet en bêta, zéro utilisateur, et la
+divergence coûtait un doublon au prochain import.
+
+**Consequences**: quatre fichiers d'entité et dix sidecars de
+traduction renommés, les clés de traduction re-préfixées, et toutes les
+références réécrites (69 fichiers) — corpus, code, tests et docs.
+
+Ce qui n'a **pas** été réécrit, délibérément : `data/migrations/0007`,
+`docs/audits/`, `design/` et les ADR antérieures. Ce sont des registres
+datés ; les corriger falsifierait ce qui était vrai à leur date.
+
+Un test perd de la couverture, et il le dit maintenant : l'index
+d'appariement des importeurs construisait trois clés — nom, slug, slug
+de l'id — et les deux dernières coïncident désormais par construction.
+`matchExisting(index, 'character', ['luffy'])` ne renvoie plus Luffy
+mais `null`, ce qui est le comportement correct : l'appariement est
+exact, pas approximatif.
+
+Et surtout, l'invariant quitte la documentation pour le code :
+`checkCoherence` émet `ID_SLUG_MISMATCH`. Il ne tenait que dans deux
+fichiers `.md`, ce qui est exactement pourquoi quatre entités ont pu
+l'ignorer depuis le premier jour.
+
+---
+
 ---
 
 ## Template for new entries

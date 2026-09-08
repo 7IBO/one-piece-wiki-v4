@@ -27,7 +27,7 @@ export const NARRATIVE_MAX_CHARS = 10_000;
 
 /**
  * Repo-relative path of one narrative file. `fileBase` is the entity
- * id's slug part (`character:ace` → `ace`), i.e. exactly the entity
+ * id's slug part (`character:portgas-d-ace` → `ace`), i.e. exactly the entity
  * JSON's basename — narrative and entity files always pair up.
  */
 export function narrativePath(

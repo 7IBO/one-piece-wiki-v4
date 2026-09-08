@@ -2,7 +2,7 @@
   "id": "manga-chapter:644",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-644",
+  "slug": "644",
   "properties": {
     "number": {
       "value": 644
@@ -43,5 +43,8 @@
       "type": "adapted-by",
       "target": "anime-episode:19"
     }
+  ],
+  "slug_history": [
+    "chapter-644"
   ]
 }

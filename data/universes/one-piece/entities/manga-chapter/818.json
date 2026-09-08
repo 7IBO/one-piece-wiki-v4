@@ -2,7 +2,7 @@
   "id": "manga-chapter:818",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-818",
+  "slug": "818",
   "properties": {
     "number": {
       "value": 818
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:770"
     }
+  ],
+  "slug_history": [
+    "chapter-818"
   ]
 }

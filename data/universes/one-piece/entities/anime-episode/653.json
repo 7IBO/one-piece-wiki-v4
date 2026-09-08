@@ -2,7 +2,7 @@
   "id": "anime-episode:653",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-653",
+  "slug": "653",
   "properties": {
     "number": {
       "value": 653
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.653.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-653"
+  ]
 }

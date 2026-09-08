@@ -2,7 +2,7 @@
   "id": "anime-episode:747",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-747",
+  "slug": "747",
   "properties": {
     "number": {
       "value": 747
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.747.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-747"
+  ]
 }

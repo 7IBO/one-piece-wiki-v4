@@ -2,7 +2,7 @@
   "id": "manga-chapter:192",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-192",
+  "slug": "192",
   "properties": {
     "number": {
       "value": 192
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:117"
     }
+  ],
+  "slug_history": [
+    "chapter-192"
   ]
 }

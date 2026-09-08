@@ -48,7 +48,7 @@ const IDS: readonly string[] = [
   'crew:straw-hat-pirates',
   'arc:wano-country',
   'manga-chapter:1044',
-  'devil-fruit:gomu-gomu',
+  'devil-fruit:gomu-gomu-no-mi',
   'event:battle-of-marineford',
   'volume:1',
   'location:water-seven',

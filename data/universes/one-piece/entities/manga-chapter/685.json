@@ -2,7 +2,7 @@
   "id": "manga-chapter:685",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-685",
+  "slug": "685",
   "properties": {
     "number": {
       "value": 685
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:611"
     }
+  ],
+  "slug_history": [
+    "chapter-685"
   ]
 }

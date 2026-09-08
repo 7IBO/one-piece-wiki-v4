@@ -2,7 +2,7 @@
   "id": "manga-chapter:813",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-813",
+  "slug": "813",
   "properties": {
     "number": {
       "value": 813
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:764"
     }
+  ],
+  "slug_history": [
+    "chapter-813"
   ]
 }

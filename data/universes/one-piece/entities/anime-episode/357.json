@@ -2,7 +2,7 @@
   "id": "anime-episode:357",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-357",
+  "slug": "357",
   "properties": {
     "number": {
       "value": 357
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:thriller-bark"
     }
+  ],
+  "slug_history": [
+    "episode-357"
   ]
 }

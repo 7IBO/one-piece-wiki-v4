@@ -2,7 +2,7 @@
   "id": "manga-chapter:835",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-835",
+  "slug": "835",
   "properties": {
     "number": {
       "value": 835
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:797"
     }
+  ],
+  "slug_history": [
+    "chapter-835"
   ]
 }

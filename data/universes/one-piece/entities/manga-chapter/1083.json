@@ -2,7 +2,7 @@
   "id": "manga-chapter:1083",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1083",
+  "slug": "1083",
   "properties": {
     "number": {
       "value": 1083
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1117"
     }
+  ],
+  "slug_history": [
+    "chapter-1083"
   ]
 }

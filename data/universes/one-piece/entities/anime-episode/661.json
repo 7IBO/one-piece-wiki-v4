@@ -2,7 +2,7 @@
   "id": "anime-episode:661",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-661",
+  "slug": "661",
   "properties": {
     "number": {
       "value": 661
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.661.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-661"
+  ]
 }

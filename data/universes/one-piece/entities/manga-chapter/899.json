@@ -2,7 +2,7 @@
   "id": "manga-chapter:899",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-899",
+  "slug": "899",
   "properties": {
     "number": {
       "value": 899
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:874"
     }
+  ],
+  "slug_history": [
+    "chapter-899"
   ]
 }

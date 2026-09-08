@@ -2,7 +2,7 @@
   "id": "manga-chapter:852",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-852",
+  "slug": "852",
   "properties": {
     "number": {
       "value": 852
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:820"
     }
+  ],
+  "slug_history": [
+    "chapter-852"
   ]
 }

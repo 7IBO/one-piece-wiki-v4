@@ -2,7 +2,7 @@
   "id": "manga-chapter:598",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-598",
+  "slug": "598",
   "properties": {
     "number": {
       "value": 598
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1"
     }
+  ],
+  "slug_history": [
+    "chapter-598"
   ]
 }

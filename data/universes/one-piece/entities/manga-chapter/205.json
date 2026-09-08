@@ -2,7 +2,7 @@
   "id": "manga-chapter:205",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-205",
+  "slug": "205",
   "properties": {
     "number": {
       "value": 205
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:124"
     }
+  ],
+  "slug_history": [
+    "chapter-205"
   ]
 }

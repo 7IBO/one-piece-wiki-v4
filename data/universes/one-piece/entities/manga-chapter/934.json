@@ -2,7 +2,7 @@
   "id": "manga-chapter:934",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-934",
+  "slug": "934",
   "properties": {
     "number": {
       "value": 934
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:930"
     }
+  ],
+  "slug_history": [
+    "chapter-934"
   ]
 }

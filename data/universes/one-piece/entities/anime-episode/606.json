@@ -2,7 +2,7 @@
   "id": "anime-episode:606",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-606",
+  "slug": "606",
   "properties": {
     "number": {
       "value": 606
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.606.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-606"
+  ]
 }

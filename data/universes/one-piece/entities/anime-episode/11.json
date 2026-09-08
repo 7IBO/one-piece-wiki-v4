@@ -2,7 +2,7 @@
   "id": "anime-episode:11",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-11",
+  "slug": "11",
   "properties": {
     "number": {
       "value": 11
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:syrup-village"
     }
+  ],
+  "slug_history": [
+    "episode-11"
   ]
 }

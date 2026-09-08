@@ -2,7 +2,7 @@
   "id": "manga-chapter:611",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-611",
+  "slug": "611",
   "properties": {
     "number": {
       "value": 611
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:7"
     }
+  ],
+  "slug_history": [
+    "chapter-611"
   ]
 }

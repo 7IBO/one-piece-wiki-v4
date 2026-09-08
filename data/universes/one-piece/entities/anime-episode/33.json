@@ -2,7 +2,7 @@
   "id": "anime-episode:33",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-33",
+  "slug": "33",
   "properties": {
     "number": {
       "value": 33
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:arlong-park"
     }
+  ],
+  "slug_history": [
+    "episode-33"
   ]
 }

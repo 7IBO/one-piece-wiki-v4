@@ -2,7 +2,7 @@
   "id": "manga-chapter:1140",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1140",
+  "slug": "1140",
   "properties": {
     "number": {
       "value": 1140
@@ -27,5 +27,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1170"
     }
+  ],
+  "slug_history": [
+    "chapter-1140"
   ]
 }

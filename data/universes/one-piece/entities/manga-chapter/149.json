@@ -2,7 +2,7 @@
   "id": "manga-chapter:149",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-149",
+  "slug": "149",
   "properties": {
     "number": {
       "value": 149
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:88"
     }
+  ],
+  "slug_history": [
+    "chapter-149"
   ]
 }

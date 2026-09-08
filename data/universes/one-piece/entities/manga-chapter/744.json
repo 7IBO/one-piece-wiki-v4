@@ -2,7 +2,7 @@
   "id": "manga-chapter:744",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-744",
+  "slug": "744",
   "properties": {
     "number": {
       "value": 744
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:679"
     }
+  ],
+  "slug_history": [
+    "chapter-744"
   ]
 }

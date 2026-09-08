@@ -2,7 +2,7 @@
   "id": "manga-chapter:468",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-468",
+  "slug": "468",
   "properties": {
     "number": {
       "value": 468
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:363"
     }
+  ],
+  "slug_history": [
+    "chapter-468"
   ]
 }

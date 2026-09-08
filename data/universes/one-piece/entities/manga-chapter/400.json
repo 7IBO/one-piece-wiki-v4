@@ -2,7 +2,7 @@
   "id": "manga-chapter:400",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-400",
+  "slug": "400",
   "properties": {
     "number": {
       "value": 400
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:285"
     }
+  ],
+  "slug_history": [
+    "chapter-400"
   ]
 }

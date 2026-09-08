@@ -2,7 +2,7 @@
   "id": "manga-chapter:776",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-776",
+  "slug": "776",
   "properties": {
     "number": {
       "value": 776
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:717"
     }
+  ],
+  "slug_history": [
+    "chapter-776"
   ]
 }

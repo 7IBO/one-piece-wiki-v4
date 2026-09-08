@@ -2,7 +2,7 @@
   "id": "manga-chapter:173",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-173",
+  "slug": "173",
   "properties": {
     "number": {
       "value": 173
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:108"
     }
+  ],
+  "slug_history": [
+    "chapter-173"
   ]
 }

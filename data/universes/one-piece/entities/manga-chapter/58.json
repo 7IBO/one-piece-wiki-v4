@@ -2,7 +2,7 @@
   "id": "manga-chapter:58",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-58",
+  "slug": "58",
   "properties": {
     "number": {
       "value": 58
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:26"
     }
+  ],
+  "slug_history": [
+    "chapter-58"
   ]
 }

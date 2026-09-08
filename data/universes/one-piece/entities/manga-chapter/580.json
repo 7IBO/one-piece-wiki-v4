@@ -2,7 +2,7 @@
   "id": "manga-chapter:580",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-580",
+  "slug": "580",
   "properties": {
     "number": {
       "value": 580
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:489"
     }
+  ],
+  "slug_history": [
+    "chapter-580"
   ]
 }

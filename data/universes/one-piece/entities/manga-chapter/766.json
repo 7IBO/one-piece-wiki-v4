@@ -2,7 +2,7 @@
   "id": "manga-chapter:766",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-766",
+  "slug": "766",
   "properties": {
     "number": {
       "value": 766
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:705"
     }
+  ],
+  "slug_history": [
+    "chapter-766"
   ]
 }

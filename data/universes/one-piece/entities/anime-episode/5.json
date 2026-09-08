@@ -2,7 +2,7 @@
   "id": "anime-episode:5",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-5",
+  "slug": "5",
   "properties": {
     "number": {
       "value": 5
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:orange-town"
     }
+  ],
+  "slug_history": [
+    "episode-5"
   ]
 }

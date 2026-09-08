@@ -2,7 +2,7 @@
   "id": "manga-chapter:1133",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1133",
+  "slug": "1133",
   "properties": {
     "number": {
       "value": 1133
@@ -27,5 +27,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1163"
     }
+  ],
+  "slug_history": [
+    "chapter-1133"
   ]
 }

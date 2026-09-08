@@ -2,7 +2,7 @@
   "id": "manga-chapter:187",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-187",
+  "slug": "187",
   "properties": {
     "number": {
       "value": 187
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:115"
     }
+  ],
+  "slug_history": [
+    "chapter-187"
   ]
 }

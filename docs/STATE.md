@@ -581,10 +581,26 @@ Réparé : tout run qui **stage** replie ses résultats dans le registre
 
 - **Les alias s'accumulent.** Un crawl n'atteint une page que par UN
   redirect au plus ; un remplacement en bloc effacerait le reste du jeu
-  d'alias appris par les runs précédents et par `check-updates` (qui les
-  lit par paquets de cinquante). `mergeImport` fusionne, et garde
-  l'ancien titre d'une page renommée comme alias — les wikiliens
+  d'alias appris par les runs précédents. `mergeImport` fusionne, et
+  garde l'ancien titre d'une page renommée comme alias — les wikiliens
   entrants l'utilisent encore.
+- **`check-updates` écrit enfin ce qu'il lit.** Il demandait déjà
+  `prop=info|redirects` par paquets de cinquante et **jetait les
+  alias**, ne gardant que `lastRevId` — d'où 1 redirection pour 2485
+  pages suivies, alors que l'appel qui les rapporte tourne sur les 2485
+  à chaque sync. Ce qui manquait n'était pas la donnée, c'était
+  l'écriture. `recordRedirects` la fait, et **ne touche ni `lastRevId`
+  ni `lastImportedAt`** : observer une page n'est pas l'importer, et
+  écrire la révision vive ici marquerait à jour une entité dont le
+  contenu n'a pas été relu — précisément ce que `staleEntries` empêche.
+- **Le doublon d'entité se signale.** Avec les redirections écrites,
+  `findTitleClashes` nomme les pages revendiquées par plus d'une
+  entité — le cas qu'un renommage Fandom fabrique (deux imports à
+  quelques mois d'écart, l'un sous le nouveau titre, l'autre sous
+  l'ancien devenu alias). `buildTitleIndex` le résolvait en silence
+  parce que sa mission est de résoudre un lien, pas d'auditer.
+  Signalé, jamais corrigé tout seul : fondre deux entités demande de
+  savoir laquelle garde son id.
 - **La révision est capturée.** `action=parse` demande maintenant
   `prop=wikitext|revid`, donc une entrée porte la révision réellement
   lue. Sans ça `check-updates` aurait déclaré les 881 pages périmées à
@@ -1183,7 +1199,7 @@ UNREFERENCED scan counts it; seeded
 ADR-094: one-piece `document` entity type (`document_kind` vocab,
 `first_source`, `narrative_key`) + new `issued-by` relation +
 `profiles`/`held-by`/`depicted-by` extended to document; seeded
-`document:luffy-first-wanted-poster` (profiles character:luffy since
+`document:luffy-first-wanted-poster` (profiles character:monkey-d-luffy since
 manga-chapter:96). 37 entities, all additive (compat snapshot
 updated). Wave 3 (per-item provenance on `believed_by`) stays queued
 — big cross-cutting migration, own ADR needed.

@@ -2,7 +2,7 @@
   "id": "manga-chapter:640",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-640",
+  "slug": "640",
   "properties": {
     "number": {
       "value": 640
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:18"
     }
+  ],
+  "slug_history": [
+    "chapter-640"
   ]
 }

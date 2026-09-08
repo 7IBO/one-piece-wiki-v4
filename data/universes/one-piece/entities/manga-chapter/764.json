@@ -2,7 +2,7 @@
   "id": "manga-chapter:764",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-764",
+  "slug": "764",
   "properties": {
     "number": {
       "value": 764
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:704"
     }
+  ],
+  "slug_history": [
+    "chapter-764"
   ]
 }

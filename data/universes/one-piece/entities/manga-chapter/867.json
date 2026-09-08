@@ -2,7 +2,7 @@
   "id": "manga-chapter:867",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-867",
+  "slug": "867",
   "properties": {
     "number": {
       "value": 867
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:837"
     }
+  ],
+  "slug_history": [
+    "chapter-867"
   ]
 }

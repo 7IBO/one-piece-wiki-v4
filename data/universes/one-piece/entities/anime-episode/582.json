@@ -2,7 +2,7 @@
   "id": "anime-episode:582",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-582",
+  "slug": "582",
   "properties": {
     "number": {
       "value": 582
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:punk-hazard"
     }
+  ],
+  "slug_history": [
+    "episode-582"
   ]
 }

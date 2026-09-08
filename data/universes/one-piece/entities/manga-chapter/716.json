@@ -2,7 +2,7 @@
   "id": "manga-chapter:716",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-716",
+  "slug": "716",
   "properties": {
     "number": {
       "value": 716
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:646"
     }
+  ],
+  "slug_history": [
+    "chapter-716"
   ]
 }

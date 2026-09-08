@@ -2,7 +2,7 @@
   "id": "manga-chapter:944",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-944",
+  "slug": "944",
   "properties": {
     "number": {
       "value": 944
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:943"
     }
+  ],
+  "slug_history": [
+    "chapter-944"
   ]
 }

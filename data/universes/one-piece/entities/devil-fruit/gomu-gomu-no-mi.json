@@ -1,18 +1,18 @@
 {
-  "id": "devil-fruit:gomu-gomu",
+  "id": "devil-fruit:gomu-gomu-no-mi",
   "type": "devil-fruit",
   "schema_version": 1,
   "slug": "gomu-gomu-no-mi",
-  "canonical_name_key": "devil-fruit.gomu-gomu.name.common",
+  "canonical_name_key": "devil-fruit.gomu-gomu-no-mi.name.common",
   "properties": {
     "name": [
       {
-        "value_key": "devil-fruit.gomu-gomu.name.common",
+        "value_key": "devil-fruit.gomu-gomu-no-mi.name.common",
         "since": "manga-chapter:1",
         "name_type": "common"
       },
       {
-        "value_key": "devil-fruit.gomu-gomu.name.true",
+        "value_key": "devil-fruit.gomu-gomu-no-mi.name.true",
         "since": "manga-chapter:1044",
         "name_type": "true_name",
         "epistemic_status": "revealed_to_reader",

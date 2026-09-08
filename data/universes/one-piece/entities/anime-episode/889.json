@@ -2,7 +2,7 @@
   "id": "anime-episode:889",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-889",
+  "slug": "889",
   "properties": {
     "number": {
       "value": 889
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.889.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-889"
+  ]
 }

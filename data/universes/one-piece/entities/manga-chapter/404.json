@@ -2,7 +2,7 @@
   "id": "manga-chapter:404",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-404",
+  "slug": "404",
   "properties": {
     "number": {
       "value": 404
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:288"
     }
+  ],
+  "slug_history": [
+    "chapter-404"
   ]
 }

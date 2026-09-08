@@ -2,7 +2,7 @@
   "id": "anime-episode:363",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-363",
+  "slug": "363",
   "properties": {
     "number": {
       "value": 363
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:thriller-bark"
     }
+  ],
+  "slug_history": [
+    "episode-363"
   ]
 }

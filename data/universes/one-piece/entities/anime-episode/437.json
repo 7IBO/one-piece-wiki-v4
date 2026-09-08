@@ -2,7 +2,7 @@
   "id": "anime-episode:437",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-437",
+  "slug": "437",
   "properties": {
     "number": {
       "value": 437
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.437.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-437"
+  ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:436",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-436",
+  "slug": "436",
   "properties": {
     "number": {
       "value": 436
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:321"
     }
+  ],
+  "slug_history": [
+    "chapter-436"
   ]
 }

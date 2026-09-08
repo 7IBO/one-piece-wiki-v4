@@ -2,7 +2,7 @@
   "id": "manga-chapter:642",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-642",
+  "slug": "642",
   "properties": {
     "number": {
       "value": 642
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:19"
     }
+  ],
+  "slug_history": [
+    "chapter-642"
   ]
 }

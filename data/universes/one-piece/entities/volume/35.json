@@ -2,7 +2,7 @@
   "id": "volume:35",
   "type": "volume",
   "schema_version": 1,
-  "slug": "volume-35",
+  "slug": "35",
   "properties": {
     "number": {
       "value": 35
@@ -11,5 +11,8 @@
       "value_key": "volume.35.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "volume-35"
+  ]
 }

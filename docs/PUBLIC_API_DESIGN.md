@@ -86,8 +86,8 @@ Each `packages/api-vN/` is an independent workspace containing:
 
 `apps/api/` mounts each `packages/api-vN/` under its URL prefix:
 
-- `GET /api/v1/entities/character/luffy` → `packages/api-v1/routes/entities.ts`
-- `GET /api/v2/entities/character/luffy` → `packages/api-v2/routes/entities.ts`
+- `GET /api/v1/entities/character/monkey-d-luffy` → `packages/api-v1/routes/entities.ts`
+- `GET /api/v2/entities/character/monkey-d-luffy` → `packages/api-v2/routes/entities.ts`
 
 ## 3. Naming conventions
 
@@ -100,7 +100,7 @@ Each `packages/api-vN/` is an independent workspace containing:
 | Entity-type IDs              | unchanged                       | data-defined                                    | `character`, `devil-fruit`, `manga-chapter`                           |
 | Vocabulary IDs               | unchanged                       | data-defined                                    | `blood-types`, `haki-types`, `epistemic-statuses`                     |
 | Enum values                  | unchanged                       | data-defined                                    | `A_plus`, `confirmed`, `believed_by_world`                            |
-| URL path segments            | `kebab-case`                    | code + `url_segment` from data                  | `/api/v1/entities/devil-fruit/gomu-gomu`                              |
+| URL path segments            | `kebab-case`                    | code + `url_segment` from data                  | `/api/v1/entities/devil-fruit/gomu-gomu-no-mi`                        |
 | HTTP headers (response)      | `Pascal-Case` (HTTP convention) | code-defined                                    | `X-API-Version`, `X-Schema-Hash`, `Sunset`                            |
 | Query parameters             | `snake_case`                    | code-defined                                    | `?progression=...&include_labels=true`                                |
 
@@ -135,7 +135,7 @@ property names (which is where most other projects get it wrong).
   "error": {
     "code": "PROGRESSION_REQUIRED",
     "message": "Query parameter `progression` is required on this endpoint.",
-    "details": { "endpoint": "/api/v1/entities/character/luffy" }
+    "details": { "endpoint": "/api/v1/entities/character/monkey-d-luffy" }
   },
   "api_version": "v1.4.2"
 }
@@ -157,20 +157,20 @@ Stable codes (excerpt; full list lives in OpenAPI):
 ### Entity detail
 
 ```json
-GET /api/v1/entities/character/luffy?progression=manga-chapter:1044&lang=fr
+GET /api/v1/entities/character/monkey-d-luffy?progression=manga-chapter:1044&lang=fr
 
 {
-  "id": "character:luffy",
+  "id": "character:monkey-d-luffy",
   "type": "character",
   "slug": "luffy",
   "schema_version": 2,
-  "canonical_name_key": "character.luffy.name",
+  "canonical_name_key": "character.monkey-d-luffy.name",
   "first_appearance_source": "manga-chapter:1",
   "last_appearance_source": "manga-chapter:1043",
   "properties": {
     "name": [
       {
-        "value_key": "character.luffy.name",
+        "value_key": "character.monkey-d-luffy.name",
         "value": "Monkey D. Luffy",
         "since_source": "manga-chapter:1",
         "epistemic_status": "confirmed",
@@ -242,12 +242,12 @@ Vocabularies are cacheable for very long (1 year + ETag). Most clients will fetc
 ### Narrative
 
 ```json
-GET /api/v1/narratives/character/luffy?progression=manga-chapter:1044&lang=fr
+GET /api/v1/narratives/character/monkey-d-luffy?progression=manga-chapter:1044&lang=fr
 
 {
   "key": "character.luffy",
   "type": "character",
-  "subject_id": "character:luffy",
+  "subject_id": "character:monkey-d-luffy",
   "format": "markdown",
   "content": "Monkey D. Luffy est le capitaine de l'équipage du Chapeau de paille...",
   "content_chunks": [
@@ -266,8 +266,8 @@ GET /api/v1/entities/character?progression=manga-chapter:1044&lang=en&limit=20&c
 
 {
   "items": [
-    { "id": "character:luffy", "slug": "luffy", "name": "Monkey D. Luffy" },
-    { "id": "character:zoro", "slug": "zoro", "name": "Roronoa Zoro" }
+    { "id": "character:monkey-d-luffy", "slug": "luffy", "name": "Monkey D. Luffy" },
+    { "id": "character:roronoa-zoro", "slug": "zoro", "name": "Roronoa Zoro" }
   ],
   "pagination": {
     "next_cursor": "eyJsYXN0IjoiemVmZiJ9",

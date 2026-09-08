@@ -2,7 +2,7 @@
   "id": "anime-episode:814",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-814",
+  "slug": "814",
   "properties": {
     "number": {
       "value": 814
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.814.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-814"
+  ]
 }

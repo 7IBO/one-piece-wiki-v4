@@ -2,7 +2,7 @@
   "id": "anime-episode:670",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-670",
+  "slug": "670",
   "properties": {
     "number": {
       "value": 670
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.670.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-670"
+  ]
 }

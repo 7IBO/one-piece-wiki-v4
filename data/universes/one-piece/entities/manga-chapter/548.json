@@ -2,7 +2,7 @@
   "id": "manga-chapter:548",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-548",
+  "slug": "548",
   "properties": {
     "number": {
       "value": 548
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:451"
     }
+  ],
+  "slug_history": [
+    "chapter-548"
   ]
 }

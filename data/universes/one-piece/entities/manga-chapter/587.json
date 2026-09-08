@@ -2,7 +2,7 @@
   "id": "manga-chapter:587",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-587",
+  "slug": "587",
   "properties": {
     "number": {
       "value": 587
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:502"
     }
+  ],
+  "slug_history": [
+    "chapter-587"
   ]
 }

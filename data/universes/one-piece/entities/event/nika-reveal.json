@@ -22,7 +22,7 @@
     },
     {
       "type": "participant",
-      "target": "character:luffy",
+      "target": "character:monkey-d-luffy",
       "qualifiers": {
         "role": "subject",
         "outcome": "awakened"

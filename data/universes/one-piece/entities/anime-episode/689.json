@@ -2,7 +2,7 @@
   "id": "anime-episode:689",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-689",
+  "slug": "689",
   "properties": {
     "number": {
       "value": 689
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.689.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-689"
+  ]
 }

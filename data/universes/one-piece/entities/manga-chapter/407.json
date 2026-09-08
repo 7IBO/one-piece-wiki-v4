@@ -2,7 +2,7 @@
   "id": "manga-chapter:407",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-407",
+  "slug": "407",
   "properties": {
     "number": {
       "value": 407
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:293"
     }
+  ],
+  "slug_history": [
+    "chapter-407"
   ]
 }

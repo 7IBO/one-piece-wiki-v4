@@ -20,7 +20,7 @@ const registry: FandomRegistry = {
     // Deleted on Fandom's side.
     { entityId: 'character:gone', page: 'Gone Page', pageId: 5, redirects: [], lastRevId: 10 },
     {
-      entityId: 'character:luffy',
+      entityId: 'character:monkey-d-luffy',
       page: 'Monkey D. Luffy',
       pageId: 1444,
       redirects: ['Straw Hat Luffy'],
@@ -78,7 +78,7 @@ describe('detectUpdates', () => {
       currentRev: 200,
       status: 'unchanged',
     });
-    expect(byId.get('character:luffy')).toMatchObject({
+    expect(byId.get('character:monkey-d-luffy')).toMatchObject({
       lastImportedRev: 100,
       lastImportedAt: '2026-06-14T22:00:00Z',
       currentRev: 150,
@@ -163,7 +163,7 @@ describe('renderUpdatesSummary', () => {
     const summary = renderUpdatesSummary(await detectUpdates(client, registry));
     expect(summary).toContain('5 tracked page(s): 1 unchanged, 2 changed, 1 redirected, 1 missing');
     expect(summary).toContain('CHANGED');
-    expect(summary).toContain('character:luffy');
+    expect(summary).toContain('character:monkey-d-luffy');
     expect(summary).toContain('rev 100 → 150');
     expect(summary).toContain('REDIRECTED');
     expect(summary).toContain('→ "Toki"');

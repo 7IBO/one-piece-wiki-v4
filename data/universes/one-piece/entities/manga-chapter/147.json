@@ -2,7 +2,7 @@
   "id": "manga-chapter:147",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-147",
+  "slug": "147",
   "properties": {
     "number": {
       "value": 147
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:87"
     }
+  ],
+  "slug_history": [
+    "chapter-147"
   ]
 }

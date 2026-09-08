@@ -2,7 +2,7 @@
   "id": "anime-episode:730",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-730",
+  "slug": "730",
   "properties": {
     "number": {
       "value": 730
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.730.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-730"
+  ]
 }

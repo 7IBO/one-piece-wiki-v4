@@ -2,7 +2,7 @@
   "id": "anime-episode:439",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-439",
+  "slug": "439",
   "properties": {
     "number": {
       "value": 439
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.439.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-439"
+  ]
 }

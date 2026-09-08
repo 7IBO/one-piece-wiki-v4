@@ -2,7 +2,7 @@
   "id": "manga-chapter:492",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-492",
+  "slug": "492",
   "properties": {
     "number": {
       "value": 492
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:387"
     }
+  ],
+  "slug_history": [
+    "chapter-492"
   ]
 }

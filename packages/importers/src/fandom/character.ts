@@ -19,7 +19,7 @@
  * Anything unresolved, "former"-annotated, or fuzzy stays a warning
  * for the AI-extraction / human pass.
  */
-import { isPlaceholderName } from './box.ts';
+import { isPlaceholderName, slugify } from './box.ts';
 import type { ParsedPage } from './client.ts';
 import { extractWikiLinks, resolveTitle, type TitleIndex } from './registry.ts';
 import {
@@ -193,13 +193,21 @@ export function parseBirthday(value: string): string | null {
   return `${month}-${day}`;
 }
 
-function slugify(name: string): string {
-  return name
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
+/**
+ * Retire la mention d'edition qu'une ligne de `ename` traine, plus le
+ * `;` qui separe les entrees : « Belle-Mère (VIZ Media); » devient
+ * « Belle-Mère ».
+ *
+ * Ne concerne plus que le NOM AFFICHE. L'id, lui, ne contient jamais
+ * de parenthese — `slugify` les retire toutes (voir `../slug.ts`), ce
+ * qui rend la regle inutile de ce cote. Elle reste ici parce qu'un
+ * nom affiche « Belle-Mère (VIZ Media); » serait faux : la parenthese
+ * n'est une edition que parce que le champ entier est une liste par
+ * edition, et c'est la structure du champ qui le dit — pas une liste
+ * d'editeurs a maintenir.
+ */
+export function stripEditionMarker(line: string): string {
+  return line.replace(/\s*\([^()]*\)\s*;?\s*$/, '').replace(/\s*;\s*$/, '').trim();
 }
 
 export function mapCharacter(
@@ -231,21 +239,38 @@ export function mapCharacter(
     // Without an English name there is no slug — not mappable.
     return null;
   }
-  // `ename` is MULTI-VALUE: Fandom lists the canonical English name
-  // first, then one line per release that spells it differently —
-  // « Bell-mère<br>Bellemere (Viz Media)<br>Bell-mere (Funimation) ».
-  // `cleanValue` turns `<br>` into a space, so the whole list was
-  // collapsing into ONE name and then into one slug:
-  // `belle-mere-viz-media-bellemere-funimation-bell-mere-opcg`.
+  // `ename` is MULTI-VALUE, and EVERY line carries its release:
   //
-  // That is worse than cosmetic. Ids are IMMUTABLE (CLAUDE.md), so
-  // every such import mints a permanently wrong URL for a real
-  // character. Eight of the first 158 were affected.
+  //   Belle-Mère (VIZ Media);
+  //   Bellemere (Funimation);
+  //   Bell-mère (OPCG)
   //
-  // The lines after the first are exactly what `name_type: 'alias'`
-  // is for — they even carry their release in parentheses already.
-  const [canonicalRaw = '', ...variantRaws] = splitLines(enNameRaw);
-  const enName = cleanValue(canonicalRaw);
+  // There is no bare name in there at all. Splitting on `<br>` fixed
+  // half the damage — the slug stopped being
+  // `belle-mere-viz-media-bellemere-funimation-bell-mere-opcg` — but
+  // the first line still dragged its parenthetical in, leaving
+  // `belle-mere-viz-media`. Nine of 148 in the second crawl.
+  //
+  // On garde `ename` comme source d'identite et on lui retire sa
+  // mention d'edition. Prendre le TITRE DE PAGE a la place aurait ete
+  // plus simple — c'est ce que font `arc.ts` et `crew.ts` — mais la
+  // fixture reelle de Hyougoro le dement : sa page s'appelle
+  // « Hyougoro » et son `ename` « Hyogoro ». Basculer aurait change
+  // des ids IMMUABLES pour 139 personnages corrects afin d'en reparer
+  // neuf. Le remede aurait ete pire.
+  //
+  // Cote ID la question est reglee ailleurs et pour tout le monde :
+  // `slugify` retire TOUTE parenthese (../slug.ts), donc
+  // « Mr. 3 (Galdino) » comme « Belle-Mère (VIZ Media) » donnent
+  // `mr-3` et `belle-mere`. Ce qui reste ici est le NOM AFFICHE, et
+  // seulement sur un `ename` multi-ligne : la parenthese n'y est une
+  // mention d'edition que parce que tout le champ est une liste par
+  // edition. Sur une seule ligne le nom affiche garde ce que la page
+  // ecrit.
+  const lines = splitLines(enNameRaw);
+  const multi = lines.length > 1;
+  const [canonicalRaw = '', ...variantRaws] = lines;
+  const enName = multi ? stripEditionMarker(cleanValue(canonicalRaw)) : cleanValue(canonicalRaw);
   const slug = slugify(enName);
   // A template placeholder is not a thing (see isPlaceholderName).
   if (slug === '' || isPlaceholderName(enName)) return null;
@@ -267,7 +292,8 @@ export function mapCharacter(
 
   // Les orthographes propres a une edition deviennent des ALIAS, pas
   // des morceaux du nom. Une variante qui retombe sur le meme slug que
-  // le nom canonique n'apporte rien et est ecartee.
+  // le nom canonique n'apporte rien et est ecartee — ce qui couvre le
+  // cas ordinaire, ou `ename` repete simplement le titre de page.
   for (const variantRaw of variantRaws) {
     const variant = cleanValue(variantRaw);
     const variantSlug = slugify(variant);

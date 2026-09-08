@@ -2,7 +2,7 @@
   "id": "anime-episode:484",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-484",
+  "slug": "484",
   "properties": {
     "number": {
       "value": 484
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:marineford"
     }
+  ],
+  "slug_history": [
+    "episode-484"
   ]
 }

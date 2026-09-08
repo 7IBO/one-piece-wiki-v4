@@ -2,7 +2,7 @@
   "id": "manga-chapter:87",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-87",
+  "slug": "87",
   "properties": {
     "number": {
       "value": 87
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:40"
     }
+  ],
+  "slug_history": [
+    "chapter-87"
   ]
 }

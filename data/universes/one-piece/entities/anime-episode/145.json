@@ -2,7 +2,7 @@
   "id": "anime-episode:145",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-145",
+  "slug": "145",
   "properties": {
     "number": {
       "value": 145
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:jaya"
     }
+  ],
+  "slug_history": [
+    "episode-145"
   ]
 }

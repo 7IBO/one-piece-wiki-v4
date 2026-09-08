@@ -2,7 +2,7 @@
   "id": "manga-chapter:213",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-213",
+  "slug": "213",
   "properties": {
     "number": {
       "value": 213
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:128"
     }
+  ],
+  "slug_history": [
+    "chapter-213"
   ]
 }

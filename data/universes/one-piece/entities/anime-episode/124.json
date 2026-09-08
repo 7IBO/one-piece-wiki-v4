@@ -2,7 +2,7 @@
   "id": "anime-episode:124",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-124",
+  "slug": "124",
   "properties": {
     "number": {
       "value": 124
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:arabasta"
     }
+  ],
+  "slug_history": [
+    "episode-124"
   ]
 }

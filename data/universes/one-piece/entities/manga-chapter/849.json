@@ -2,7 +2,7 @@
   "id": "manga-chapter:849",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-849",
+  "slug": "849",
   "properties": {
     "number": {
       "value": 849
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:815"
     }
+  ],
+  "slug_history": [
+    "chapter-849"
   ]
 }

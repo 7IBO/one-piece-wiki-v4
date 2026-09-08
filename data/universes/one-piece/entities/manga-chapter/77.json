@@ -2,7 +2,7 @@
   "id": "manga-chapter:77",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-77",
+  "slug": "77",
   "properties": {
     "number": {
       "value": 77
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:35"
     }
+  ],
+  "slug_history": [
+    "chapter-77"
   ]
 }

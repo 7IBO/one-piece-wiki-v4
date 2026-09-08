@@ -225,7 +225,7 @@ export function mapChapter(page: ParsedPage): ChapterMapResult | null {
       id: `manga-chapter:${number}`,
       type: 'manga-chapter',
       schema_version: MANGA_CHAPTER_SCHEMA_VERSION,
-      slug: `chapter-${number}`,
+      slug: `${number}`,
       properties,
       relations,
     },

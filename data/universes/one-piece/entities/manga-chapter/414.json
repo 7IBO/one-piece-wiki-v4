@@ -2,7 +2,7 @@
   "id": "manga-chapter:414",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-414",
+  "slug": "414",
   "properties": {
     "number": {
       "value": 414
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:298"
     }
+  ],
+  "slug_history": [
+    "chapter-414"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:447",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-447",
+  "slug": "447",
   "properties": {
     "number": {
       "value": 447
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:342"
     }
+  ],
+  "slug_history": [
+    "chapter-447"
   ]
 }

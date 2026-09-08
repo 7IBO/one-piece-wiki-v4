@@ -2,7 +2,7 @@
   "id": "manga-chapter:114",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-114",
+  "slug": "114",
   "properties": {
     "number": {
       "value": 114
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:67"
     }
+  ],
+  "slug_history": [
+    "chapter-114"
   ]
 }

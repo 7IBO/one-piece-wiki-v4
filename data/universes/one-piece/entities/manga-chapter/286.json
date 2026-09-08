@@ -2,7 +2,7 @@
   "id": "manga-chapter:286",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-286",
+  "slug": "286",
   "properties": {
     "number": {
       "value": 286
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:187"
     }
+  ],
+  "slug_history": [
+    "chapter-286"
   ]
 }

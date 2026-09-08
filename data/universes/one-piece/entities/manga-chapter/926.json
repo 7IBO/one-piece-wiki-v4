@@ -2,7 +2,7 @@
   "id": "manga-chapter:926",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-926",
+  "slug": "926",
   "properties": {
     "number": {
       "value": 926
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:919"
     }
+  ],
+  "slug_history": [
+    "chapter-926"
   ]
 }

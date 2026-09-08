@@ -2,7 +2,7 @@
   "id": "manga-chapter:480",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-480",
+  "slug": "480",
   "properties": {
     "number": {
       "value": 480
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:373"
     }
+  ],
+  "slug_history": [
+    "chapter-480"
   ]
 }

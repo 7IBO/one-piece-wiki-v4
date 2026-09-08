@@ -2,7 +2,7 @@
   "id": "anime-episode:950",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-950",
+  "slug": "950",
   "properties": {
     "number": {
       "value": 950
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.950.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-950"
+  ]
 }

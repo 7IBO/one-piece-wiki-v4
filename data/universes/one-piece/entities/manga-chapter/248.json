@@ -2,7 +2,7 @@
   "id": "manga-chapter:248",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-248",
+  "slug": "248",
   "properties": {
     "number": {
       "value": 248
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:162"
     }
+  ],
+  "slug_history": [
+    "chapter-248"
   ]
 }

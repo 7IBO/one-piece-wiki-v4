@@ -2,7 +2,7 @@
   "id": "manga-chapter:623",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-623",
+  "slug": "623",
   "properties": {
     "number": {
       "value": 623
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:13"
     }
+  ],
+  "slug_history": [
+    "chapter-623"
   ]
 }

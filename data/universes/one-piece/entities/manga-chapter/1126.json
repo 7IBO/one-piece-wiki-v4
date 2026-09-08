@@ -2,7 +2,7 @@
   "id": "manga-chapter:1126",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1126",
+  "slug": "1126",
   "properties": {
     "number": {
       "value": 1126
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1156"
     }
+  ],
+  "slug_history": [
+    "chapter-1126"
   ]
 }

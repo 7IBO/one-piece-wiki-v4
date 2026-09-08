@@ -654,7 +654,30 @@ function resolveEntityName(
       if (translated !== null) return translated;
     }
   }
-  return humanize(row.slug);
+  return slugLabel(cat, row.type, row.slug, locale);
+}
+
+/**
+ * Dernier recours de nommage, quand le lecteur n'a atteint aucun nom.
+ *
+ * `humanize(slug)` suffisait tant que le slug d'un chapitre etait
+ * `chapter-1044` : il rendait « Chapter 1044 ». Depuis que le slug
+ * d'une entite ordinale EST son numero (ADR-125), il rendrait « 1044 »
+ * tout court — et en anglais quelle que soit la langue, ce qu'il
+ * faisait deja.
+ *
+ * On recompose donc a partir du SCHEMA : le libelle du type dans la
+ * locale demandee, puis le numero. Aucun id en dur, et le cas non
+ * numerique retombe exactement sur l'ancien comportement.
+ */
+function slugLabel(
+  cat: ValidatedCatalogue,
+  type: string,
+  slug: string,
+  locale: Locale,
+): string {
+  if (!/^\d+$/.test(slug)) return humanize(slug);
+  return `${entityTypeLabel(cat, type, locale)} ${slug}`;
 }
 
 function chipForRow(
@@ -692,7 +715,15 @@ function chipOrPlaceholder(
   const chip = chipFor(id, cat, locale, cursor);
   if (chip !== null) return chip;
   const [type = '', slug = id] = id.includes(':') ? id.split(':', 2) : ['', id];
-  return { id, type, typeLabel: humanize(type), slug, name: humanize(slug) };
+  // Reference pendante : le type n'est pas forcement au catalogue, donc
+  // `entityTypeLabel` retombe sur `humanize(type)` de lui-meme.
+  return {
+    id,
+    type,
+    typeLabel: entityTypeLabel(cat, type, locale),
+    slug,
+    name: slugLabel(cat, type, slug, locale),
+  };
 }
 
 // ---------------------------------------------------------------------------

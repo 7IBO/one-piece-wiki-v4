@@ -2,7 +2,7 @@
   "id": "manga-chapter:1080",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1080",
+  "slug": "1080",
   "properties": {
     "number": {
       "value": 1080
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1114"
     }
+  ],
+  "slug_history": [
+    "chapter-1080"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:780",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-780",
+  "slug": "780",
   "properties": {
     "number": {
       "value": 780
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:721"
     }
+  ],
+  "slug_history": [
+    "chapter-780"
   ]
 }

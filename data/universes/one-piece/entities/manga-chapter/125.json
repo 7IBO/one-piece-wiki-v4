@@ -2,7 +2,7 @@
   "id": "manga-chapter:125",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-125",
+  "slug": "125",
   "properties": {
     "number": {
       "value": 125
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:76"
     }
+  ],
+  "slug_history": [
+    "chapter-125"
   ]
 }

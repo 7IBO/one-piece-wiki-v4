@@ -2,7 +2,7 @@
   "id": "anime-episode:551",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-551",
+  "slug": "551",
   "properties": {
     "number": {
       "value": 551
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.551.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-551"
+  ]
 }

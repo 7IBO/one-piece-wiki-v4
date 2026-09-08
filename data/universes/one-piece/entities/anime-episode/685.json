@@ -2,7 +2,7 @@
   "id": "anime-episode:685",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-685",
+  "slug": "685",
   "properties": {
     "number": {
       "value": 685
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.685.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-685"
+  ]
 }

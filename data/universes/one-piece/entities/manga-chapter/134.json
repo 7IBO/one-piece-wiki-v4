@@ -2,7 +2,7 @@
   "id": "manga-chapter:134",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-134",
+  "slug": "134",
   "properties": {
     "number": {
       "value": 134
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:81"
     }
+  ],
+  "slug_history": [
+    "chapter-134"
   ]
 }

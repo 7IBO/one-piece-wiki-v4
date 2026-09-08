@@ -2,7 +2,7 @@
   "id": "manga-chapter:608",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-608",
+  "slug": "608",
   "properties": {
     "number": {
       "value": 608
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:6"
     }
+  ],
+  "slug_history": [
+    "chapter-608"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:2",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-2",
+  "slug": "2",
   "properties": {
     "number": {
       "value": 2
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:romance-dawn"
     }
+  ],
+  "slug_history": [
+    "episode-2"
   ]
 }

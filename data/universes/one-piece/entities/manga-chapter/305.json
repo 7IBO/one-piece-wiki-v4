@@ -2,7 +2,7 @@
   "id": "manga-chapter:305",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-305",
+  "slug": "305",
   "properties": {
     "number": {
       "value": 305
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:208"
     }
+  ],
+  "slug_history": [
+    "chapter-305"
   ]
 }

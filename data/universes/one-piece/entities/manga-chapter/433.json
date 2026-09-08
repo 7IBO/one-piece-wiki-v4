@@ -2,7 +2,7 @@
   "id": "manga-chapter:433",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-433",
+  "slug": "433",
   "properties": {
     "number": {
       "value": 433
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:316"
     }
+  ],
+  "slug_history": [
+    "chapter-433"
   ]
 }

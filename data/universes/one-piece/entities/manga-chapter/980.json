@@ -2,7 +2,7 @@
   "id": "manga-chapter:980",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-980",
+  "slug": "980",
   "properties": {
     "number": {
       "value": 980
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:986"
     }
+  ],
+  "slug_history": [
+    "chapter-980"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:262",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-262",
+  "slug": "262",
   "properties": {
     "number": {
       "value": 262
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:172"
     }
+  ],
+  "slug_history": [
+    "chapter-262"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:399",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-399",
+  "slug": "399",
   "properties": {
     "number": {
       "value": 399
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:sabaody-archipelago"
     }
+  ],
+  "slug_history": [
+    "episode-399"
   ]
 }

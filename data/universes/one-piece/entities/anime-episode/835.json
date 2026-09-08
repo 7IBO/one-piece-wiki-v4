@@ -2,7 +2,7 @@
   "id": "anime-episode:835",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-835",
+  "slug": "835",
   "properties": {
     "number": {
       "value": 835
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.835.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-835"
+  ]
 }

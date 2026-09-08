@@ -2,7 +2,7 @@
   "id": "manga-chapter:717",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-717",
+  "slug": "717",
   "properties": {
     "number": {
       "value": 717
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:647"
     }
+  ],
+  "slug_history": [
+    "chapter-717"
   ]
 }

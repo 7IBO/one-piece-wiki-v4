@@ -2,7 +2,7 @@
   "id": "manga-chapter:895",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-895",
+  "slug": "895",
   "properties": {
     "number": {
       "value": 895
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:870"
     }
+  ],
+  "slug_history": [
+    "chapter-895"
   ]
 }

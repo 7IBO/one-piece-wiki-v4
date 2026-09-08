@@ -2,7 +2,7 @@
   "id": "manga-chapter:560",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-560",
+  "slug": "560",
   "properties": {
     "number": {
       "value": 560
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:469"
     }
+  ],
+  "slug_history": [
+    "chapter-560"
   ]
 }

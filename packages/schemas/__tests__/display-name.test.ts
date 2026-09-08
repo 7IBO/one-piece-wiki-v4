@@ -12,11 +12,11 @@ import {
 
 const translations = {
   en: {
-    'character.luffy.name': 'Monkey D. Luffy',
+    'character.monkey-d-luffy.name': 'Monkey D. Luffy',
     'manga-chapter.1.title': 'Romance Dawn',
   },
   fr: {
-    'character.luffy.name': 'Monkey D. Luffy',
+    'character.monkey-d-luffy.name': 'Monkey D. Luffy',
   },
 };
 
@@ -25,12 +25,12 @@ describe('nameKeyFor', () => {
     const data = {
       properties: {
         name: [
-          { value_key: 'character.luffy.name.old', since: 'manga-chapter:1' },
-          { value_key: 'character.luffy.name', since: 'manga-chapter:100' },
+          { value_key: 'character.monkey-d-luffy.name.old', since: 'manga-chapter:1' },
+          { value_key: 'character.monkey-d-luffy.name', since: 'manga-chapter:100' },
         ],
       },
     };
-    expect(nameKeyFor(data)).toBe('character.luffy.name');
+    expect(nameKeyFor(data)).toBe('character.monkey-d-luffy.name');
   });
 
   it('falls back to title_key when name is absent', () => {
@@ -42,10 +42,10 @@ describe('nameKeyFor', () => {
     const data = {
       properties: {
         title_key: { value_key: 'manga-chapter.1.title' },
-        name: { value_key: 'character.luffy.name' },
+        name: { value_key: 'character.monkey-d-luffy.name' },
       },
     };
-    expect(nameKeyFor(data)).toBe('character.luffy.name');
+    expect(nameKeyFor(data)).toBe('character.monkey-d-luffy.name');
   });
 
   it('returns null when no name-like property exists', () => {
@@ -59,7 +59,7 @@ describe('nameKeyFor', () => {
 });
 
 describe('resolveDisplayName', () => {
-  const data = { properties: { name: [{ value_key: 'character.luffy.name' }] } };
+  const data = { properties: { name: [{ value_key: 'character.monkey-d-luffy.name' }] } };
 
   it('resolves against the requested locale', () => {
     expect(resolveDisplayName(data, translations, 'fr')).toBe('Monkey D. Luffy');
@@ -79,7 +79,7 @@ describe('resolveDisplayName', () => {
     const data = {
       properties: {
         name: [
-          { value_key: 'character.luffy.name' },
+          { value_key: 'character.monkey-d-luffy.name' },
           { value_key: 'untranslated.key' },
         ],
       },
@@ -98,7 +98,7 @@ describe('schema-driven nameProperties', () => {
   it('a custom list restricts which properties are scanned', () => {
     const data = {
       properties: {
-        name: { value_key: 'character.luffy.name' },
+        name: { value_key: 'character.monkey-d-luffy.name' },
         title_key: { value_key: 'manga-chapter.1.title' },
       },
     };
@@ -109,22 +109,22 @@ describe('schema-driven nameProperties', () => {
   it('a custom list controls priority order', () => {
     const data = {
       properties: {
-        name: { value_key: 'character.luffy.name' },
-        epithet: { value_key: 'character.luffy.epithet' },
+        name: { value_key: 'character.monkey-d-luffy.name' },
+        epithet: { value_key: 'character.monkey-d-luffy.epithet' },
       },
     };
-    expect(nameKeyFor(data, ['epithet', 'name'])).toBe('character.luffy.epithet');
+    expect(nameKeyFor(data, ['epithet', 'name'])).toBe('character.monkey-d-luffy.epithet');
   });
 
   it('an empty list resolves to null (no name-like property declared)', () => {
-    const data = { properties: { name: { value_key: 'character.luffy.name' } } };
+    const data = { properties: { name: { value_key: 'character.monkey-d-luffy.name' } } };
     expect(nameKeyFor(data, [])).toBeNull();
   });
 
   it('resolveDisplayName honours a custom property list', () => {
     const data = {
       properties: {
-        name: { value_key: 'character.luffy.name' },
+        name: { value_key: 'character.monkey-d-luffy.name' },
         title_key: { value_key: 'manga-chapter.1.title' },
       },
     };

@@ -2,7 +2,7 @@
   "id": "manga-chapter:235",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-235",
+  "slug": "235",
   "properties": {
     "number": {
       "value": 235
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:152"
     }
+  ],
+  "slug_history": [
+    "chapter-235"
   ]
 }

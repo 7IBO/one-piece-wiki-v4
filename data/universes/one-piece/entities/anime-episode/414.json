@@ -2,7 +2,7 @@
   "id": "anime-episode:414",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-414",
+  "slug": "414",
   "properties": {
     "number": {
       "value": 414
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:amazon-lily"
     }
+  ],
+  "slug_history": [
+    "episode-414"
   ]
 }

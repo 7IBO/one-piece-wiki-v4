@@ -2,7 +2,7 @@
   "id": "manga-chapter:255",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-255",
+  "slug": "255",
   "properties": {
     "number": {
       "value": 255
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:168"
     }
+  ],
+  "slug_history": [
+    "chapter-255"
   ]
 }

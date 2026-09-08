@@ -2,7 +2,7 @@
   "id": "manga-chapter:605",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-605",
+  "slug": "605",
   "properties": {
     "number": {
       "value": 605
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:4"
     }
+  ],
+  "slug_history": [
+    "chapter-605"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:659",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-659",
+  "slug": "659",
   "properties": {
     "number": {
       "value": 659
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:584"
     }
+  ],
+  "slug_history": [
+    "chapter-659"
   ]
 }

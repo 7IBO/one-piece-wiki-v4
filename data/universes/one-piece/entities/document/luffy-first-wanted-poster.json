@@ -14,7 +14,7 @@
   "relations": [
     {
       "type": "profiles",
-      "target": "character:luffy",
+      "target": "character:monkey-d-luffy",
       "qualifiers": { "since": "manga-chapter:96" }
     }
   ]

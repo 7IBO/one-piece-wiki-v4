@@ -2,7 +2,7 @@
   "id": "manga-chapter:1085",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1085",
+  "slug": "1085",
   "properties": {
     "number": {
       "value": 1085
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1119"
     }
+  ],
+  "slug_history": [
+    "chapter-1085"
   ]
 }

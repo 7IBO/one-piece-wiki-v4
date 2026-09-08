@@ -2,7 +2,7 @@
   "id": "manga-chapter:627",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-627",
+  "slug": "627",
   "properties": {
     "number": {
       "value": 627
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:14"
     }
+  ],
+  "slug_history": [
+    "chapter-627"
   ]
 }

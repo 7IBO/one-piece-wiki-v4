@@ -2,7 +2,7 @@
   "id": "manga-chapter:760",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-760",
+  "slug": "760",
   "properties": {
     "number": {
       "value": 760
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:699"
     }
+  ],
+  "slug_history": [
+    "chapter-760"
   ]
 }

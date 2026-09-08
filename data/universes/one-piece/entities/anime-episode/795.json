@@ -2,7 +2,7 @@
   "id": "anime-episode:795",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-795",
+  "slug": "795",
   "properties": {
     "number": {
       "value": 795
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.795.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-795"
+  ]
 }

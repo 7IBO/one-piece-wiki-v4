@@ -2,7 +2,7 @@
   "id": "manga-chapter:398",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-398",
+  "slug": "398",
   "properties": {
     "number": {
       "value": 398
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:278"
     }
+  ],
+  "slug_history": [
+    "chapter-398"
   ]
 }

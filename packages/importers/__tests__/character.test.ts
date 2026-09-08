@@ -166,8 +166,13 @@ describe('registry-resolved relations + occupation matching', () => {
         redirects: ['Strawhat Crew'],
       },
       { entityId: 'location:wano', page: 'Wano Country', pageId: 11, redirects: [] },
-      { entityId: 'devil-fruit:gomu-gomu', page: 'Gomu Gomu no Mi', pageId: 12, redirects: [] },
-      { entityId: 'character:zoro', page: 'Roronoa Zoro', pageId: 13, redirects: [] },
+      {
+        entityId: 'devil-fruit:gomu-gomu-no-mi',
+        page: 'Gomu Gomu no Mi',
+        pageId: 12,
+        redirects: [],
+      },
+      { entityId: 'character:roronoa-zoro', page: 'Roronoa Zoro', pageId: 13, redirects: [] },
     ],
   });
   const occupations = new Map([
@@ -193,7 +198,7 @@ describe('registry-resolved relations + occupation matching', () => {
         qualifiers: { since: 'manga-chapter:5' },
       },
       { type: 'originates-from', target: 'location:wano' },
-      { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu' },
+      { type: 'ate-fruit', target: 'devil-fruit:gomu-gomu-no-mi' },
     ]);
     // Wrong-type target (a character can't be a member-of target),
     // unknown page, and former lines all surface as warnings.
@@ -220,43 +225,58 @@ describe('registry-resolved relations + occupation matching', () => {
   });
 });
 
-describe('ename multi-valeur (le cas Bell-mère)', () => {
-  /** Une page Char Box minimale portant le `ename` incriminé. */
-  const withEname = (ename: string): ParsedPage => ({
-    title: 'T',
+describe("`ename` multi-ligne : la mention d'edition n'est pas le nom", () => {
+  const page = (title: string, ename: string): ParsedPage => ({
+    title,
     pageId: 1,
-    url: 'https://onepiece.fandom.com/wiki/T',
+    url: `https://onepiece.fandom.com/wiki/${title}`,
     wikitext: `{{Char Box\n|ename = ${ename}\n|status = Alive\n}}`,
   });
 
-  it('prend la PREMIÈRE ligne comme nom canonique, pas la liste entière', () => {
-    // Le champ réel qui a produit
-    // `character:belle-mere-viz-media-bellemere-funimation-bell-mere-opcg`.
-    const result = mapCharacter(
-      withEname('Bell-mère<br>Bellemere (Viz Media)<br>Bell-mere (Funimation)<br>Bell-Mere (OPCG)'),
-    );
+  /** Le champ REEL, releve dans le corpus importe. */
+  const BELL_MERE = 'Belle-Mère (VIZ Media);<br>Bellemere (Funimation);<br>Bell-mère (OPCG)';
+
+  it("retire la parenthese d'edition de la ligne canonique", () => {
+    // Le premier correctif coupait bien sur `<br>` mais gardait la
+    // parenthese : le slug restait `belle-mere-viz-media`.
+    const result = mapCharacter(page('Bell-mère', BELL_MERE));
     expect(result).not.toBeNull();
-    expect(result!.entity.id).toBe('character:bell-mere');
-    expect(result!.entity.slug).toBe('bell-mere');
+    expect(result!.entity.slug).toBe('belle-mere');
+    expect(result!.entity.id).toBe('character:belle-mere');
   });
 
-  it('range les orthographes par édition en ALIAS, sans en perdre', () => {
-    const result = mapCharacter(
-      withEname('Bell-mère<br>Bellemere (Viz Media)<br>Bell-mere (Funimation)'),
-    );
+  it("garde CHAQUE orthographe d'edition comme alias, telle quelle", () => {
+    const result = mapCharacter(page('Bell-mère', BELL_MERE));
     const names = result!.entity.properties['name'] as { name_type: string; value_key: string; }[];
     expect(names[0]).toMatchObject({ name_type: 'common' });
-    const aliases = names.filter((n) => n.name_type === 'alias');
-    expect(aliases.length).toBe(2);
-    const values = aliases.map((a) => result!.translations['en']?.[a.value_key]);
-    expect(values).toContain('Bellemere (Viz Media)');
-    expect(values).toContain('Bell-mere (Funimation)');
+    const values = names
+      .filter((n) => n.name_type === 'alias')
+      .map((a) => result!.translations['en']?.[a.value_key]);
+    expect(values).toContain('Bellemere (Funimation);');
+    expect(values).toContain('Bell-mère (OPCG)');
   });
 
-  it("n'invente pas d'alias quand le nom tient sur une ligne", () => {
-    const result = mapCharacter(withEname('Nami'));
+  it('retire la parenthese du SLUG meme sur une seule ligne', () => {
+    // Regle produit : aucune donnee entre parentheses dans un id.
+    // Ce test disait l'inverse il y a un commit — la parenthese d'une
+    // ligne unique etait gardee faute de savoir ce qu'elle portait.
+    const result = mapCharacter(page('Mr. 3', 'Mr. 3 (Galdino)'));
+    expect(result!.entity.slug).toBe('mr-3');
+    expect(result!.entity.id).toBe('character:mr-3');
+  });
+
+  it("garde la parenthese dans le NOM AFFICHE d'une ligne unique", () => {
+    // La regle porte sur l'id, pas sur ce que la page ecrit.
+    const result = mapCharacter(page('Mr. 3', 'Mr. 3 (Galdino)'));
+    const key = result!.entity.canonical_name_key;
+    expect(result!.translations['en']?.[key]).toBe('Mr. 3 (Galdino)');
+  });
+
+  it("n'invente aucun alias sur le cas ordinaire", () => {
+    // 139 des 148 personnages du dernier crawl.
+    const result = mapCharacter(page('Nami', 'Nami'));
     const names = result!.entity.properties['name'] as { name_type: string; }[];
-    expect(names.filter((n) => n.name_type === 'alias')).toEqual([]);
     expect(result!.entity.slug).toBe('nami');
+    expect(names.filter((n) => n.name_type === 'alias')).toEqual([]);
   });
 });

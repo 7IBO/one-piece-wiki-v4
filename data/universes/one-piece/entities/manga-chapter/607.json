@@ -2,7 +2,7 @@
   "id": "manga-chapter:607",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-607",
+  "slug": "607",
   "properties": {
     "number": {
       "value": 607
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:5"
     }
+  ],
+  "slug_history": [
+    "chapter-607"
   ]
 }

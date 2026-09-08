@@ -2,7 +2,7 @@
   "id": "anime-episode:794",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-794",
+  "slug": "794",
   "properties": {
     "number": {
       "value": 794
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.794.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-794"
+  ]
 }

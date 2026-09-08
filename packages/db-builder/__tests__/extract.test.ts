@@ -29,7 +29,7 @@ function toMap(entities: LoadedEntity[]): Map<string, LoadedEntity> {
 
 describe('extract — derived fields', () => {
   const chapter1 = loaded('manga-chapter:1', 'manga-chapter', {
-    slug: 'chapter-1',
+    slug: '1',
     schema_version: 1,
     properties: { canon_scope: [{ value: 'manga', since: 'manga-chapter:1' }] },
     relations: [
@@ -37,7 +37,7 @@ describe('extract — derived fields', () => {
     ],
   });
   const chapter5 = loaded('manga-chapter:5', 'manga-chapter', {
-    slug: 'chapter-5',
+    slug: '5',
     schema_version: 1,
     properties: { canon_scope: [{ value: 'manga', since: 'manga-chapter:5' }] },
     relations: [
@@ -146,17 +146,21 @@ describe('extract — relation base qualifiers (ADR-037)', () => {
   });
 
   it('defaults epistemic_status to "true" and leaves arrays null when absent', () => {
-    const plain = loaded('character:zoro', 'character', {
-      slug: 'zoro',
+    const plain = loaded('character:roronoa-zoro', 'character', {
+      slug: 'roronoa-zoro',
       schema_version: 1,
       properties: {},
       relations: [
-        { type: 'ally-of', target: 'character:luffy', qualifiers: { since: 'manga-chapter:1' } },
+        {
+          type: 'ally-of',
+          target: 'character:monkey-d-luffy',
+          qualifiers: { since: 'manga-chapter:1' },
+        },
       ],
     });
     const out = extract(toMap([plain]), catalogueWithAlly);
     const row = out.relations.find(
-      (r) => r.relation_type === 'ally-of' && r.source_entity_id === 'character:zoro',
+      (r) => r.relation_type === 'ally-of' && r.source_entity_id === 'character:roronoa-zoro',
     );
     expect(row?.epistemic_status).toBe('true');
     expect(row?.believed_by).toBeNull();

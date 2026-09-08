@@ -2,7 +2,7 @@
   "id": "manga-chapter:1105",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1105",
+  "slug": "1105",
   "properties": {
     "number": {
       "value": 1105
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1139"
     }
+  ],
+  "slug_history": [
+    "chapter-1105"
   ]
 }

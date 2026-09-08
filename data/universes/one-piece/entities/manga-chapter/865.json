@@ -2,7 +2,7 @@
   "id": "manga-chapter:865",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-865",
+  "slug": "865",
   "properties": {
     "number": {
       "value": 865
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:835"
     }
+  ],
+  "slug_history": [
+    "chapter-865"
   ]
 }

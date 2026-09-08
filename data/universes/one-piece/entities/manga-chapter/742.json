@@ -2,7 +2,7 @@
   "id": "manga-chapter:742",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-742",
+  "slug": "742",
   "properties": {
     "number": {
       "value": 742
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:676"
     }
+  ],
+  "slug_history": [
+    "chapter-742"
   ]
 }

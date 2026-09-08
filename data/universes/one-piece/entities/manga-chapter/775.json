@@ -2,7 +2,7 @@
   "id": "manga-chapter:775",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-775",
+  "slug": "775",
   "properties": {
     "number": {
       "value": 775
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:716"
     }
+  ],
+  "slug_history": [
+    "chapter-775"
   ]
 }

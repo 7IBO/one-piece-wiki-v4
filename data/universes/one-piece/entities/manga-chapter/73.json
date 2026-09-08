@@ -2,7 +2,7 @@
   "id": "manga-chapter:73",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-73",
+  "slug": "73",
   "properties": {
     "number": {
       "value": 73
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:32"
     }
+  ],
+  "slug_history": [
+    "chapter-73"
   ]
 }

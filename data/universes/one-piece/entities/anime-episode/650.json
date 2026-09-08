@@ -2,7 +2,7 @@
   "id": "anime-episode:650",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-650",
+  "slug": "650",
   "properties": {
     "number": {
       "value": 650
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.650.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-650"
+  ]
 }

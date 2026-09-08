@@ -2,7 +2,7 @@
   "id": "anime-episode:270",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-270",
+  "slug": "270",
   "properties": {
     "number": {
       "value": 270
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:enies-lobby"
     }
+  ],
+  "slug_history": [
+    "episode-270"
   ]
 }

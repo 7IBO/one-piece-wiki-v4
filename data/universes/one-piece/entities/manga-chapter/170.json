@@ -2,7 +2,7 @@
   "id": "manga-chapter:170",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-170",
+  "slug": "170",
   "properties": {
     "number": {
       "value": 170
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:106"
     }
+  ],
+  "slug_history": [
+    "chapter-170"
   ]
 }

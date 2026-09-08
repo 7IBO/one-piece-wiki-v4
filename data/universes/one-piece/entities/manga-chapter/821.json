@@ -2,7 +2,7 @@
   "id": "manga-chapter:821",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-821",
+  "slug": "821",
   "properties": {
     "number": {
       "value": 821
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:774"
     }
+  ],
+  "slug_history": [
+    "chapter-821"
   ]
 }

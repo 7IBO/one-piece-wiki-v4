@@ -2,7 +2,7 @@
   "id": "manga-chapter:133",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-133",
+  "slug": "133",
   "properties": {
     "number": {
       "value": 133
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:80"
     }
+  ],
+  "slug_history": [
+    "chapter-133"
   ]
 }

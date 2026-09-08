@@ -2,7 +2,7 @@
   "id": "anime-episode:24",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-24",
+  "slug": "24",
   "properties": {
     "number": {
       "value": 24
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:baratie"
     }
+  ],
+  "slug_history": [
+    "episode-24"
   ]
 }

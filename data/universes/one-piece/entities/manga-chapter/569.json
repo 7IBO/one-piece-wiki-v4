@@ -2,7 +2,7 @@
   "id": "manga-chapter:569",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-569",
+  "slug": "569",
   "properties": {
     "number": {
       "value": 569
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:478"
     }
+  ],
+  "slug_history": [
+    "chapter-569"
   ]
 }

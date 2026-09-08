@@ -2,7 +2,7 @@
   "id": "manga-chapter:738",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-738",
+  "slug": "738",
   "properties": {
     "number": {
       "value": 738
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:671"
     }
+  ],
+  "slug_history": [
+    "chapter-738"
   ]
 }

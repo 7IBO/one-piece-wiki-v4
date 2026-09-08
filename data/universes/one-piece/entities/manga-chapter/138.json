@@ -2,7 +2,7 @@
   "id": "manga-chapter:138",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-138",
+  "slug": "138",
   "properties": {
     "number": {
       "value": 138
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:83"
     }
+  ],
+  "slug_history": [
+    "chapter-138"
   ]
 }

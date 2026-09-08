@@ -2,7 +2,7 @@
   "id": "manga-chapter:970",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-970",
+  "slug": "970",
   "properties": {
     "number": {
       "value": 970
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:972"
     }
+  ],
+  "slug_history": [
+    "chapter-970"
   ]
 }

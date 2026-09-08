@@ -2,7 +2,7 @@
   "id": "manga-chapter:634",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-634",
+  "slug": "634",
   "properties": {
     "number": {
       "value": 634
@@ -43,5 +43,8 @@
       "type": "adapted-by",
       "target": "anime-episode:17"
     }
+  ],
+  "slug_history": [
+    "chapter-634"
   ]
 }

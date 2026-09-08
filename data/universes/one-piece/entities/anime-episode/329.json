@@ -2,7 +2,7 @@
   "id": "anime-episode:329",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-329",
+  "slug": "329",
   "properties": {
     "number": {
       "value": 329
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:ice-hunter"
     }
+  ],
+  "slug_history": [
+    "episode-329"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:153",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-153",
+  "slug": "153",
   "properties": {
     "number": {
       "value": 153
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:90"
     }
+  ],
+  "slug_history": [
+    "chapter-153"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:333",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-333",
+  "slug": "333",
   "properties": {
     "number": {
       "value": 333
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:236"
     }
+  ],
+  "slug_history": [
+    "chapter-333"
   ]
 }

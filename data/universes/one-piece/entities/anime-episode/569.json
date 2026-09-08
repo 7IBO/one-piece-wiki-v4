@@ -2,7 +2,7 @@
   "id": "anime-episode:569",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-569",
+  "slug": "569",
   "properties": {
     "number": {
       "value": 569
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.569.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-569"
+  ]
 }

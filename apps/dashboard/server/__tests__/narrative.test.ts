@@ -12,8 +12,8 @@ import {
 
 describe('narrativePath', () => {
   test('follows narratives/<locale>/<type>/<fileBase>.md', () => {
-    expect(narrativePath('one-piece', 'en', 'character', 'luffy')).toBe(
-      'data/universes/one-piece/narratives/en/character/luffy.md',
+    expect(narrativePath('one-piece', 'en', 'character', 'monkey-d-luffy')).toBe(
+      'data/universes/one-piece/narratives/en/character/monkey-d-luffy.md',
     );
     expect(narrativePath('one-piece', 'fr', 'event', 'battle-of-marineford')).toBe(
       'data/universes/one-piece/narratives/fr/event/battle-of-marineford.md',
@@ -21,10 +21,10 @@ describe('narrativePath', () => {
   });
 
   test('uses the entity file base, not the display slug', () => {
-    // character:ace lives in ace.json even though its slug is
+    // character:portgas-d-ace lives in ace.json even though its slug is
     // portgas-d-ace — the narrative pairs with the JSON file.
-    expect(narrativePath('one-piece', 'en', 'character', 'ace')).toBe(
-      'data/universes/one-piece/narratives/en/character/ace.md',
+    expect(narrativePath('one-piece', 'en', 'character', 'portgas-d-ace')).toBe(
+      'data/universes/one-piece/narratives/en/character/portgas-d-ace.md',
     );
   });
 });

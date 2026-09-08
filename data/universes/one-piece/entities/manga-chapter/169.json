@@ -2,7 +2,7 @@
   "id": "manga-chapter:169",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-169",
+  "slug": "169",
   "properties": {
     "number": {
       "value": 169
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:106"
     }
+  ],
+  "slug_history": [
+    "chapter-169"
   ]
 }

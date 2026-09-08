@@ -2,7 +2,7 @@
   "id": "manga-chapter:156",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-156",
+  "slug": "156",
   "properties": {
     "number": {
       "value": 156
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:92"
     }
+  ],
+  "slug_history": [
+    "chapter-156"
   ]
 }

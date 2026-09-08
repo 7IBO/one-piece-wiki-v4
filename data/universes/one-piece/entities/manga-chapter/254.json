@@ -2,7 +2,7 @@
   "id": "manga-chapter:254",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-254",
+  "slug": "254",
   "properties": {
     "number": {
       "value": 254
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:167"
     }
+  ],
+  "slug_history": [
+    "chapter-254"
   ]
 }

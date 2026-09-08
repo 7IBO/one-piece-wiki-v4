@@ -2,7 +2,7 @@
   "id": "anime-episode:99",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-99",
+  "slug": "99",
   "properties": {
     "number": {
       "value": 99
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:arabasta"
     }
+  ],
+  "slug_history": [
+    "episode-99"
   ]
 }

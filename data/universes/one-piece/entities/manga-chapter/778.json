@@ -2,7 +2,7 @@
   "id": "manga-chapter:778",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-778",
+  "slug": "778",
   "properties": {
     "number": {
       "value": 778
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:719"
     }
+  ],
+  "slug_history": [
+    "chapter-778"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:86",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-86",
+  "slug": "86",
   "properties": {
     "number": {
       "value": 86
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:40"
     }
+  ],
+  "slug_history": [
+    "chapter-86"
   ]
 }

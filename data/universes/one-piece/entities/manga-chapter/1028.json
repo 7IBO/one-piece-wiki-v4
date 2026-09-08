@@ -2,7 +2,7 @@
   "id": "manga-chapter:1028",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1028",
+  "slug": "1028",
   "properties": {
     "number": {
       "value": 1028
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1053"
     }
+  ],
+  "slug_history": [
+    "chapter-1028"
   ]
 }

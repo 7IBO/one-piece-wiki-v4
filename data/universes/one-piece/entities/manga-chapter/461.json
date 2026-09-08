@@ -2,7 +2,7 @@
   "id": "manga-chapter:461",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-461",
+  "slug": "461",
   "properties": {
     "number": {
       "value": 461
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:356"
     }
+  ],
+  "slug_history": [
+    "chapter-461"
   ]
 }

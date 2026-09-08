@@ -2,7 +2,7 @@
   "id": "manga-chapter:474",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-474",
+  "slug": "474",
   "properties": {
     "number": {
       "value": 474
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:369"
     }
+  ],
+  "slug_history": [
+    "chapter-474"
   ]
 }

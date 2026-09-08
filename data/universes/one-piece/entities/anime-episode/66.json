@@ -2,7 +2,7 @@
   "id": "anime-episode:66",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-66",
+  "slug": "66",
   "properties": {
     "number": {
       "value": 66
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:whisky-peak"
     }
+  ],
+  "slug_history": [
+    "episode-66"
   ]
 }

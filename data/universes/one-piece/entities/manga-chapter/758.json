@@ -2,7 +2,7 @@
   "id": "manga-chapter:758",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-758",
+  "slug": "758",
   "properties": {
     "number": {
       "value": 758
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:697"
     }
+  ],
+  "slug_history": [
+    "chapter-758"
   ]
 }

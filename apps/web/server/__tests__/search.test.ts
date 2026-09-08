@@ -46,13 +46,13 @@ describe.skipIf(!hasArtifact)('search (real artifact)', () => {
   // Matching
 
   test('exact match: a name ranks its own entity first', async () => {
-    expect(await ids('Monkey D. Luffy')).toContain('character:luffy');
-    expect((await ids('Monkey D. Luffy'))[0]).toBe('character:luffy');
-    expect((await ids('Roronoa Zoro'))[0]).toBe('character:zoro');
+    expect(await ids('Monkey D. Luffy')).toContain('character:monkey-d-luffy');
+    expect((await ids('Monkey D. Luffy'))[0]).toBe('character:monkey-d-luffy');
+    expect((await ids('Roronoa Zoro'))[0]).toBe('character:roronoa-zoro');
   });
 
   test('prefix match: a partial word finds the entity', async () => {
-    expect(await ids('luf')).toContain('character:luffy');
+    expect(await ids('luf')).toContain('character:monkey-d-luffy');
     expect(await ids('marine')).toContain('arc:marineford');
   });
 
@@ -81,7 +81,7 @@ describe.skipIf(!hasArtifact)('search (real artifact)', () => {
 
   test('typo: a misspelled name still finds the entity, flagged approximate', async () => {
     const zorro = await search('zorro');
-    expect(zorro.results.map((r) => r.id)).toContain('character:zoro');
+    expect(zorro.results.map((r) => r.id)).toContain('character:roronoa-zoro');
     expect(zorro.approximate).toBe(true);
 
     expect(await ids('sandji')).toContain('character:sanji');
@@ -115,10 +115,10 @@ describe.skipIf(!hasArtifact)('search (real artifact)', () => {
     expect(await ids('Straw Hat Pirates', 'fr')).toContain('crew:straw-hat-pirates');
 
     const fr = await search('gomu', 'fr');
-    const fruitFr = fr.results.find((r) => r.id === 'devil-fruit:gomu-gomu');
+    const fruitFr = fr.results.find((r) => r.id === 'devil-fruit:gomu-gomu-no-mi');
     expect(fruitFr?.name).toBe('Fruit du Gum-Gum');
     const en = await search('gomu', 'en');
-    const fruitEn = en.results.find((r) => r.id === 'devil-fruit:gomu-gomu');
+    const fruitEn = en.results.find((r) => r.id === 'devil-fruit:gomu-gomu-no-mi');
     expect(fruitEn?.name).toBe('Gomu Gomu no Mi');
   });
 
@@ -189,18 +189,20 @@ describe.skipIf(!hasArtifact)('search (real artifact)', () => {
   test('a later epithet does not surface its bearer, but the earlier name does', async () => {
     // Luffy exists from chapter 1; "Straw Hat" is his only from 96.
     const atFifty = await ids('Straw Hat', 'en', cursor(50));
-    expect(atFifty).not.toContain('character:luffy');
+    expect(atFifty).not.toContain('character:monkey-d-luffy');
     // The CREW is named "Straw Hat Pirates" from chapter 1 — it is not
     // a spoiler and must still be found. The rule gates strings, not
     // words.
     expect(atFifty).toContain('crew:straw-hat-pirates');
     // And the character is still reachable by the name he has now.
-    expect(await ids('Luffy', 'en', cursor(50))).toContain('character:luffy');
+    expect(await ids('Luffy', 'en', cursor(50))).toContain('character:monkey-d-luffy');
     // Same in French, on the translated epithet.
-    expect(await ids('Chapeau de Paille', 'fr', cursor(50))).not.toContain('character:luffy');
+    expect(await ids('Chapeau de Paille', 'fr', cursor(50))).not.toContain(
+      'character:monkey-d-luffy',
+    );
 
     // Past chapter 96 the epithet is the reader's knowledge again.
-    expect(await ids('Straw Hat', 'en', cursor(200))).toContain('character:luffy');
+    expect(await ids('Straw Hat', 'en', cursor(200))).toContain('character:monkey-d-luffy');
   });
 
   test('a renamed entity is found — and LABELLED — by the name it had at the cursor', async () => {
@@ -208,7 +210,7 @@ describe.skipIf(!hasArtifact)('search (real artifact)', () => {
     // Nika at chapter 1044. Before that, the fruit exists and is
     // findable, under its old name only.
     const early = await search('gomu gomu', 'en', cursor(100));
-    const fruit = early.results.find((r) => r.id === 'devil-fruit:gomu-gomu');
+    const fruit = early.results.find((r) => r.id === 'devil-fruit:gomu-gomu-no-mi');
     expect(fruit).toBeDefined();
     expect(fruit?.name).toBe('Gomu Gomu no Mi');
     // Nothing on the result card leaks the later name.
@@ -217,16 +219,18 @@ describe.skipIf(!hasArtifact)('search (real artifact)', () => {
 
     // The true name is not a way in.
     expect(await ids('Hito Hito no Mi', 'en', cursor(100))).not.toContain(
-      'devil-fruit:gomu-gomu',
+      'devil-fruit:gomu-gomu-no-mi',
     );
     // Past the reveal it is.
-    expect(await ids('Hito Hito no Mi', 'en', cursor(1044))).toContain('devil-fruit:gomu-gomu');
+    expect(await ids('Hito Hito no Mi', 'en', cursor(1044))).toContain(
+      'devil-fruit:gomu-gomu-no-mi',
+    );
   });
 
   test('the cursor never hides anything from a reader who has not set one', async () => {
     const all = await ids('nika');
     expect(all).toContain('event:nika-reveal');
-    expect(all).toContain('devil-fruit:gomu-gomu');
+    expect(all).toContain('devil-fruit:gomu-gomu-no-mi');
   });
 
   // -------------------------------------------------------------------------
@@ -245,7 +249,9 @@ describe.skipIf(!hasArtifact)('search (real artifact)', () => {
   });
 
   test('a result carries the type label and the same card data a listing does', async () => {
-    const luffy = (await search('Luffy', 'en')).results.find((r) => r.id === 'character:luffy');
+    const luffy = (await search('Luffy', 'en')).results.find((r) =>
+      r.id === 'character:monkey-d-luffy'
+    );
     expect(luffy?.typeLabel).toBe('Character');
     expect(luffy?.type).toBe('character');
     expect(luffy?.slug).toBe('monkey-d-luffy');

@@ -2,7 +2,7 @@
   "id": "manga-chapter:728",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-728",
+  "slug": "728",
   "properties": {
     "number": {
       "value": 728
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:661"
     }
+  ],
+  "slug_history": [
+    "chapter-728"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:131",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-131",
+  "slug": "131",
   "properties": {
     "number": {
       "value": 131
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:79"
     }
+  ],
+  "slug_history": [
+    "chapter-131"
   ]
 }

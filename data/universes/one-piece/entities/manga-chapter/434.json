@@ -2,7 +2,7 @@
   "id": "manga-chapter:434",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-434",
+  "slug": "434",
   "properties": {
     "number": {
       "value": 434
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:325"
     }
+  ],
+  "slug_history": [
+    "chapter-434"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:507",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-507",
+  "slug": "507",
   "properties": {
     "number": {
       "value": 507
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:401"
     }
+  ],
+  "slug_history": [
+    "chapter-507"
   ]
 }

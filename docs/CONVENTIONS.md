@@ -8,17 +8,22 @@ here are non-negotiable.
 
 ### IDs
 
-- Format: `<entity-type>:<slug>`
+- Format: `<entity-type>:<slug>` — and the `<slug>` half **is** the
+  entity's `slug` field, not a shorter nickname (ADR-126). `id` and
+  `type + slug` must be derivable from one another in both directions.
 - Always kebab-case
 - Always English
 - Immutable for the lifetime of the entity
 
-Examples: `character:luffy`, `devil-fruit:gomu-gomu`,
+Examples: `character:monkey-d-luffy`, `devil-fruit:gomu-gomu-no-mi`,
 `manga-chapter:1044`, `event:battle-of-marineford`, `arc:wano`,
 `crew:straw-hat-pirates`.
 
-For sources with intrinsic numeric ordering (chapters, episodes), the slug
-contains the number: `manga-chapter:1044`, not `manga-chapter:nika-reveal`.
+For sources with intrinsic numeric ordering (chapters, episodes, volumes),
+the slug **is** the number: id `manga-chapter:1044`, slug `1044`, URL
+`/manga-chapter/1044`. Not `manga-chapter:nika-reveal`, and no longer
+`chapter-1044` — the id is what the anti-spoiler gate reads (ADR-125),
+so the slug follows it rather than the other way round.
 
 ### Slugs
 
@@ -26,10 +31,28 @@ contains the number: `manga-chapter:1044`, not `manga-chapter:nika-reveal`.
 - English only
 - Maximum 60 characters
 - No special characters other than `-`
+- **No parenthesised data** — see below
 - Should match the most widely-used name in the English-speaking community
 
 Examples: `monkey-d-luffy`, `gomu-gomu-no-mi` (not `gum-gum-fruit`,
 `straw-hat-pirates`, `battle-of-marineford`).
+
+#### No parenthesised data (ADR-124)
+
+A parenthesis in a source name never carries the identity of the thing;
+it carries a qualifier — an edition (`Belle-Mère (VIZ Media)`), a
+disambiguator (`Zeus (Homies)`), a precision (`Mr. 3 (Galdino)`). It is
+stripped from the slug, and only from the slug: the DISPLAY name keeps
+what the source writes.
+
+    Mr. 3 (Galdino)   → id character:mr-3,      name "Mr. 3 (Galdino)"
+    Belle-Mère (VIZ)  → id character:belle-mere
+
+Enforced in ONE place — `packages/importers/src/slug.ts`, the single
+`slugify` every id passes through. Two source pages that differ only by
+their parenthesis therefore collapse onto one slug; `import:fandom
+crawl` refuses the second and names the page that took the id, rather
+than merging two entities into one.
 
 When a slug changes (rename, disambiguation), the old slug is appended to
 `slug_history` to generate redirects.
@@ -37,8 +60,8 @@ When a slug changes (rename, disambiguation), the old slug is appended to
 ### File names
 
 - Entity files: `<id-without-prefix>.json`
-  - The file `entities/character/luffy.json` has internal id
-    `character:luffy`
+  - The file `entities/character/monkey-d-luffy.json` has internal id
+    `character:monkey-d-luffy`
 - Schema files: `<id>.json`
 - Translation files: mirror the entity tree, by locale:
   `translations/<locale>/<type>/<id>.json`
@@ -99,7 +122,7 @@ Concrete examples:
 
 ```ts
 // Future SDK (camelCase meta, snake_case property IDs preserved)
-const luffy = client.getEntity('character:luffy');
+const luffy = client.getEntity('character:monkey-d-luffy');
 luffy.canonicalNameKey; // meta key, camelCased
 luffy.properties.blood_type?.value; // property ID, immutable
 luffy.properties.blood_type?.value; // "F" — enum value, immutable
@@ -110,7 +133,7 @@ luffy.properties.bounty[0].issued_by; // qualifier ID, immutable
 ```json
 // Future REST API (snake_case meta, snake_case property IDs preserved)
 {
-  "canonical_name_key": "character.luffy.name",
+  "canonical_name_key": "character.monkey-d-luffy.name",
   "properties": {
     "bounty": [{
       "value": 3000000000,

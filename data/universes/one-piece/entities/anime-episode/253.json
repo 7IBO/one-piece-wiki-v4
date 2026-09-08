@@ -2,7 +2,7 @@
   "id": "anime-episode:253",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-253",
+  "slug": "253",
   "properties": {
     "number": {
       "value": 253
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:water-7"
     }
+  ],
+  "slug_history": [
+    "episode-253"
   ]
 }

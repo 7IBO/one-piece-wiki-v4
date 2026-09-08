@@ -2,7 +2,7 @@
   "id": "manga-chapter:369",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-369",
+  "slug": "369",
   "properties": {
     "number": {
       "value": 369
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:258"
     }
+  ],
+  "slug_history": [
+    "chapter-369"
   ]
 }

@@ -120,7 +120,7 @@ export function mapEpisode(page: ParsedPage): EpisodeMapResult | null {
       id: `anime-episode:${number}`,
       type: 'anime-episode',
       schema_version: ANIME_EPISODE_SCHEMA_VERSION,
-      slug: `episode-${number}`,
+      slug: `${number}`,
       properties,
       relations: [],
     },

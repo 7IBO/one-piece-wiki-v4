@@ -2,7 +2,7 @@
   "id": "manga-chapter:1047",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1047",
+  "slug": "1047",
   "properties": {
     "number": {
       "value": 1047
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1074"
     }
+  ],
+  "slug_history": [
+    "chapter-1047"
   ]
 }

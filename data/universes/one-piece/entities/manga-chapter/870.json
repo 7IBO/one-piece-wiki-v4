@@ -2,7 +2,7 @@
   "id": "manga-chapter:870",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-870",
+  "slug": "870",
   "properties": {
     "number": {
       "value": 870
@@ -43,5 +43,8 @@
       "type": "adapted-by",
       "target": "anime-episode:841"
     }
+  ],
+  "slug_history": [
+    "chapter-870"
   ]
 }

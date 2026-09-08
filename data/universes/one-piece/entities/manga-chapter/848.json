@@ -2,7 +2,7 @@
   "id": "manga-chapter:848",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-848",
+  "slug": "848",
   "properties": {
     "number": {
       "value": 848
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:815"
     }
+  ],
+  "slug_history": [
+    "chapter-848"
   ]
 }

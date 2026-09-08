@@ -2,7 +2,7 @@
   "id": "anime-episode:214",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-214",
+  "slug": "214",
   "properties": {
     "number": {
       "value": 214
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:long-ring-long-land"
     }
+  ],
+  "slug_history": [
+    "episode-214"
   ]
 }

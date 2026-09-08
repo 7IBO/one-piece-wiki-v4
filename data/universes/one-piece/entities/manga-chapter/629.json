@@ -2,7 +2,7 @@
   "id": "manga-chapter:629",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-629",
+  "slug": "629",
   "properties": {
     "number": {
       "value": 629
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:15"
     }
+  ],
+  "slug_history": [
+    "chapter-629"
   ]
 }

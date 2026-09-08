@@ -2,7 +2,7 @@
   "id": "anime-episode:240",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-240",
+  "slug": "240",
   "properties": {
     "number": {
       "value": 240
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:water-7"
     }
+  ],
+  "slug_history": [
+    "episode-240"
   ]
 }

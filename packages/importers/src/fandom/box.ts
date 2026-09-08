@@ -19,8 +19,11 @@
  * for) is returned as a warning — never guessed, never widened into
  * an ad-hoc property (CLAUDE.md: "Do not invent").
  */
+import { slugify } from '../slug.ts';
 import { resolveTitle, type TitleIndex } from './registry.ts';
 import { cleanValue, parseQrefs, parseTemplates, type QrefSource } from './wikitext.ts';
+
+export { slugify, stripParentheticals } from '../slug.ts';
 
 /** Lowercased label/alias → vocabulary value id, for one vocabulary. */
 export type VocabularyIndex = ReadonlyMap<string, string>;
@@ -91,20 +94,6 @@ export function splitSegments(raw: string): readonly string[] {
     .flatMap((line) => line.split(/;|-{4,}/))
     .map((s) => s.trim())
     .filter((s) => s !== '');
-}
-
-/** kebab-case English slug, ASCII-folded, capped at the Slug max (60). */
-export function slugify(name: string, maxLength = 60): string {
-  const base = name
-    .normalize('NFD')
-    .replace(/[̀-ͯ]/g, '')
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, '-')
-    .replace(/^-+|-+$/g, '');
-  if (base.length <= maxLength) return base;
-  const cut = base.slice(0, maxLength);
-  const lastDash = cut.lastIndexOf('-');
-  return (lastDash > 0 ? cut.slice(0, lastDash) : cut).replace(/-+$/, '');
 }
 
 /**
@@ -358,7 +347,7 @@ function extractLinkTargets(wikitext: string): readonly string[] {
 
 /**
  * Reuse the entity id the sync ledger already binds to this page, so
- * a re-import does not fork `devil-fruit:gomu-gomu` into
+ * a re-import does not fork `devil-fruit:gomu-gomu-no-mi` into
  * `devil-fruit:gomu-gomu-no-mi`. Falls back to `type:slug`.
  */
 export function entityIdFor(

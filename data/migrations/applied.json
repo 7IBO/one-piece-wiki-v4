@@ -9,6 +9,10 @@
     "0007-catalogue-dedup-relations",
     "0008-trim-name-and-loyalty-vocabularies",
     "0009-single-home-removals",
-    "0010-merge-membership-status-vocabularies"
+    "0010-merge-membership-status-vocabularies",
+    "0011-merge-duplicate-wano-arc",
+    "0012-chapter-585-belongs-to-post-war",
+    "0013-east-blue-is-a-saga",
+    "0014-ordinal-slug-is-the-number"
   ]
 }

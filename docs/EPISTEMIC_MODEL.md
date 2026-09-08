@@ -53,7 +53,7 @@ their ids. Optionally `known_truth_by` lists characters who know the truth.
 
 Example: Sabo's status is `presumed_dead` after the canon incident (since
 chapter 585, `epistemic_status: believed_by_characters`,
-`believed_by: [character:luffy, character:ace, character:dragon]`,
+`believed_by: [character:monkey-d-luffy, character:portgas-d-ace, character:dragon]`,
 `known_truth_by: [character:dragon, character:ivankov]`,
 `actual_value: alive`).
 
@@ -167,7 +167,7 @@ definition of `review_status` and its sibling qualifier `assisted_by`.
     "value": "presumed_dead",
     "since": "manga-chapter:585",
     "epistemic_status": "believed_by_characters",
-    "believed_by": ["character:luffy", "character:ace"],
+    "believed_by": ["character:monkey-d-luffy", "character:portgas-d-ace"],
     "known_truth_by": ["character:dragon", "character:ivankov"],
     "actual_value": "alive",
     "event": "event:sabo-canon-incident"

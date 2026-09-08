@@ -2,7 +2,7 @@
   "id": "manga-chapter:390",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-390",
+  "slug": "390",
   "properties": {
     "number": {
       "value": 390
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:274"
     }
+  ],
+  "slug_history": [
+    "chapter-390"
   ]
 }

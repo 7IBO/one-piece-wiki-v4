@@ -2,7 +2,7 @@
   "id": "manga-chapter:566",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-566",
+  "slug": "566",
   "properties": {
     "number": {
       "value": 566
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:475"
     }
+  ],
+  "slug_history": [
+    "chapter-566"
   ]
 }

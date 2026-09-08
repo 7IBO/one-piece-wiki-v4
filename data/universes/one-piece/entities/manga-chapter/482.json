@@ -2,7 +2,7 @@
   "id": "manga-chapter:482",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-482",
+  "slug": "482",
   "properties": {
     "number": {
       "value": 482
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:374"
     }
+  ],
+  "slug_history": [
+    "chapter-482"
   ]
 }

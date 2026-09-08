@@ -2,7 +2,7 @@
   "id": "manga-chapter:263",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-263",
+  "slug": "263",
   "properties": {
     "number": {
       "value": 263
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:174"
     }
+  ],
+  "slug_history": [
+    "chapter-263"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:508",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-508",
+  "slug": "508",
   "properties": {
     "number": {
       "value": 508
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:401"
     }
+  ],
+  "slug_history": [
+    "chapter-508"
   ]
 }

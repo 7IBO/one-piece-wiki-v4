@@ -93,9 +93,9 @@ and the tooling to validate them.
    - Arc: East Blue, Marineford, Wano
    - Event: Battle of Marineford, Nika Reveal
    - Images: ~3 examples covering the model end-to-end, e.g.
-     `image:luffy-primary-portrait` (depicted-by character:luffy,
+     `image:luffy-primary-portrait` (depicted-by character:monkey-d-luffy,
      role: primary_portrait), `image:gomu-gomu-no-mi`
-     (depicted-by devil-fruit:gomu-gomu), and one group photo
+     (depicted-by devil-fruit:gomu-gomu-no-mi), and one group photo
      exercising the reuse pattern (depicted-by multiple characters)
 
 7. **Validation pipeline**
@@ -636,7 +636,7 @@ order is sequential — earlier sub-phases unblock later ones.
 - Dark mode (system + manual toggle).
 - Layout shell: header, nav, footer, breadcrumbs.
 
-**Exit**: `/en/types/character/luffy` renders a clean basic page;
+**Exit**: `/en/types/character/monkey-d-luffy` renders a clean basic page;
 Lighthouse ≥ 95 on cold visit.
 
 #### Phase 6.1 — Per-entity-type templates
@@ -724,7 +724,7 @@ the facet bar remains.)_
 
 The phase that creates the "wow" reaction:
 
-- Typed entity links via `<EntityLink id="character:luffy">`
+- Typed entity links via `<EntityLink id="character:monkey-d-luffy">`
   rendering an inline avatar + epithet; on hover, a preview card
   (avatar, epithet, current bounty at cursor, top-line stats).
 - Image handling: srcset, blur placeholder, lazy-loading,

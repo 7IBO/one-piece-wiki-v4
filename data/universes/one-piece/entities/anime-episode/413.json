@@ -2,7 +2,7 @@
   "id": "anime-episode:413",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-413",
+  "slug": "413",
   "properties": {
     "number": {
       "value": 413
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:amazon-lily"
     }
+  ],
+  "slug_history": [
+    "episode-413"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:804",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-804",
+  "slug": "804",
   "properties": {
     "number": {
       "value": 804
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:753"
     }
+  ],
+  "slug_history": [
+    "chapter-804"
   ]
 }

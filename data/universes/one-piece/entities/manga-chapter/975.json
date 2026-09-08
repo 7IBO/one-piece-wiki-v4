@@ -2,7 +2,7 @@
   "id": "manga-chapter:975",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-975",
+  "slug": "975",
   "properties": {
     "number": {
       "value": 975
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:979"
     }
+  ],
+  "slug_history": [
+    "chapter-975"
   ]
 }

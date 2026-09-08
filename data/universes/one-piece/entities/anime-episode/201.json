@@ -2,7 +2,7 @@
   "id": "anime-episode:201",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-201",
+  "slug": "201",
   "properties": {
     "number": {
       "value": 201
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:g-8"
     }
+  ],
+  "slug_history": [
+    "episode-201"
   ]
 }

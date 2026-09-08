@@ -2,7 +2,7 @@
   "id": "manga-chapter:844",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-844",
+  "slug": "844",
   "properties": {
     "number": {
       "value": 844
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:808"
     }
+  ],
+  "slug_history": [
+    "chapter-844"
   ]
 }

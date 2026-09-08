@@ -55,9 +55,14 @@ If any task touches a specialized area, also read the relevant deep-dive doc:
   well-known ids, provided every binding degrades to the generic
   schema-driven rendering when the id is absent. Dashboard, packages
   and pipeline remain 100% schema-driven.
-- **IDs follow the pattern `type:slug`**, e.g. `character:luffy`,
-  `devil-fruit:gomu-gomu`, `manga-chapter:1044`. IDs are immutable. Slugs may
-  change (with redirect history).
+- **IDs follow the pattern `type:slug`**, e.g. `character:monkey-d-luffy`,
+  `devil-fruit:gomu-gomu-no-mi`, `manga-chapter:1044`. The id and the slug
+  say the **same thing**: the id is `type:` followed by the entity's slug,
+  never a shorter nickname (ADR-126). IDs are immutable. Slugs may
+  change (with redirect history) — and an id follows.
+- **No parenthesised data in a slug or an id** (ADR-124): a parenthesis in a
+  source name carries an edition, a disambiguator or a precision, never the
+  identity. `Mr. 3 (Galdino)` → `character:mr-3`, display name unchanged.
 - **Slugs are kebab-case English only.** URLs use these slugs regardless of
   display locale.
 - **Every historisable value carries the four axes**: `since`, `epistemic_status`,

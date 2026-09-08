@@ -2,7 +2,7 @@
   "id": "manga-chapter:51",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-51",
+  "slug": "51",
   "properties": {
     "number": {
       "value": 51
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:24"
     }
+  ],
+  "slug_history": [
+    "chapter-51"
   ]
 }

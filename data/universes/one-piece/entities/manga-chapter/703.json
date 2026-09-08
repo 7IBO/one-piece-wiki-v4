@@ -2,7 +2,7 @@
   "id": "manga-chapter:703",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-703",
+  "slug": "703",
   "properties": {
     "number": {
       "value": 703
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:633"
     }
+  ],
+  "slug_history": [
+    "chapter-703"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:798",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-798",
+  "slug": "798",
   "properties": {
     "number": {
       "value": 798
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:743"
     }
+  ],
+  "slug_history": [
+    "chapter-798"
   ]
 }

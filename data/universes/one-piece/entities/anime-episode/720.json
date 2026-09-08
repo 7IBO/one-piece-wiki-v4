@@ -2,7 +2,7 @@
   "id": "anime-episode:720",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-720",
+  "slug": "720",
   "properties": {
     "number": {
       "value": 720
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.720.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-720"
+  ]
 }

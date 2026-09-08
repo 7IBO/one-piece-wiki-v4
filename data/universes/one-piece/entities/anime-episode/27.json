@@ -2,7 +2,7 @@
   "id": "anime-episode:27",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-27",
+  "slug": "27",
   "properties": {
     "number": {
       "value": 27
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:baratie"
     }
+  ],
+  "slug_history": [
+    "episode-27"
   ]
 }
