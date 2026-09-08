@@ -45,8 +45,10 @@ import { mapOrganization } from '../fandom/organization.ts';
 import {
   buildTitleIndex,
   type FandomRegistry,
+  findTitleClashes,
   type ImportedPage,
   recordImports,
+  recordRedirects,
   staleEntries,
 } from '../fandom/registry.ts';
 import { parseOrdinalRange, parseRenderedInfobox } from '../fandom/rendered-box.ts';
@@ -546,7 +548,37 @@ if (kind === 'crawl') {
   const titles = registry.pages.map((p) => p.page);
   const info = await client.queryInfo(titles);
   const live = new Map([...info.entries()].map(([t, i]) => [t, i.lastRevId]));
-  const stale = staleEntries(registry, live);
+
+  // `queryInfo` demande `prop=info|redirects` et rend les alias — que
+  // ce bloc jetait, en ne gardant que la revision. Le registre montrait
+  // donc 1 redirection sur 2485 pages alors que l'appel qui les
+  // rapporte tourne sur les 2485 a chaque sync. On les ecrit.
+  const observed = new Map(
+    [...info.entries()].map(([t, i]) => [t, { pageId: i.pageId, redirects: i.redirects }]),
+  );
+  const withRedirects = recordRedirects(registry, observed);
+  const before = registry.pages.reduce((n, p) => n + p.redirects.length, 0);
+  const after = withRedirects.pages.reduce((n, p) => n + p.redirects.length, 0);
+  if (after !== before) {
+    await saveRegistry(withRedirects);
+    process.stdout.write(
+      `  ledger: ${after - before} redirection(s) apprise(s) (${after} au total)\n`,
+    );
+  }
+
+  // Deux entites pour une seule page Fandom : le doublon d'entite que
+  // le mainteneur cherchait. Signale, jamais corrige tout seul — fondre
+  // deux entites demande de savoir laquelle garde son id.
+  const clashes = findTitleClashes(withRedirects);
+  if (clashes.length > 0) {
+    process.stdout.write(`\n${clashes.length} page(s) revendiquee(s) par PLUSIEURS entites :\n`);
+    for (const c of clashes) {
+      process.stdout.write(`  "${c.title}" ← ${c.entityIds.join(', ')}\n`);
+    }
+    process.stdout.write('  Doublon probable : une page Fandom, deux entites chez nous.\n\n');
+  }
+
+  const stale = staleEntries(withRedirects, live);
   if (stale.length === 0) {
     process.stdout.write(`OK: ${titles.length} tracked page(s), none stale.\n`);
   } else {

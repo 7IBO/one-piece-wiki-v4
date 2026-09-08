@@ -9,8 +9,10 @@ import {
   buildTitleIndex,
   detectEntityLinks,
   type FandomRegistry,
+  findTitleClashes,
   normalizeTitle,
   recordImports,
+  recordRedirects,
   resolveTitle,
   staleEntries,
 } from '../src/fandom/registry.ts';
@@ -273,5 +275,86 @@ describe('CLI argument parsing (2026-08-27)', () => {
       '--skip-known',
       '--stage',
     ])).toEqual(['crawl']);
+  });
+});
+
+describe('recordRedirects — ce que `check-updates` jetait', () => {
+  const base = (): FandomRegistry => ({
+    pages: [
+      {
+        entityId: 'character:monkey-d-luffy',
+        page: 'Monkey D. Luffy',
+        pageId: 0,
+        redirects: ['Luffy'],
+        lastRevId: 100,
+        lastImportedAt: '2026-01-01T00:00:00.000Z',
+      },
+    ],
+  });
+
+  it('accumule les alias observes sans remplacer les connus', () => {
+    const next = recordRedirects(
+      base(),
+      new Map([['Monkey D. Luffy', { pageId: 42, redirects: ['Straw Hat Luffy'] }]]),
+    );
+    expect(next.pages[0]?.redirects).toEqual(['Luffy', 'Straw Hat Luffy']);
+  });
+
+  it('remplit un pageId a 0 et ne touche PAS un pageId connu', () => {
+    const next = recordRedirects(
+      base(),
+      new Map([['Monkey D. Luffy', { pageId: 42, redirects: [] }]]),
+    );
+    expect(next.pages[0]?.pageId).toBe(42);
+    const again = recordRedirects(
+      next,
+      new Map([['Monkey D. Luffy', { pageId: 999, redirects: [] }]]),
+    );
+    expect(again.pages[0]?.pageId).toBe(42);
+  });
+
+  it("ne touche ni lastRevId ni lastImportedAt — observer n'est pas importer", () => {
+    // Ecrire la revision vive ici marquerait a jour une entite dont le
+    // contenu n'a pas ete relu : `staleEntries` ne la reverrait plus.
+    const next = recordRedirects(
+      base(),
+      new Map([['Monkey D. Luffy', { pageId: 42, redirects: ['X'] }]]),
+    );
+    expect(next.pages[0]?.lastRevId).toBe(100);
+    expect(next.pages[0]?.lastImportedAt).toBe('2026-01-01T00:00:00.000Z');
+  });
+
+  it("n'ajoute pas le titre canonique a ses propres alias", () => {
+    const next = recordRedirects(
+      base(),
+      // `normalizeTitle` remplace les underscores et majuscule la
+      // PREMIERE lettre seulement — c'est la normalisation MediaWiki.
+      new Map([['Monkey D. Luffy', { pageId: 42, redirects: ['monkey_D._Luffy'] }]]),
+    );
+    expect(next.pages[0]?.redirects).toEqual(['Luffy']);
+  });
+});
+
+describe('findTitleClashes — une page Fandom, deux entites', () => {
+  it('nomme le doublon que `buildTitleIndex` resout en silence', () => {
+    const registry: FandomRegistry = {
+      pages: [
+        { entityId: 'character:a', page: 'Hyogoro', pageId: 1, redirects: [] },
+        { entityId: 'character:b', page: 'Hyougoro', pageId: 2, redirects: ['Hyogoro'] },
+      ],
+    };
+    expect(findTitleClashes(registry)).toEqual([
+      { title: 'Hyogoro', entityIds: ['character:a', 'character:b'] },
+    ]);
+  });
+
+  it('ne dit rien quand chaque page a une seule entite', () => {
+    const registry: FandomRegistry = {
+      pages: [
+        { entityId: 'character:a', page: 'Nami', pageId: 1, redirects: ['Nami (character)'] },
+        { entityId: 'character:b', page: 'Zoro', pageId: 2, redirects: [] },
+      ],
+    };
+    expect(findTitleClashes(registry)).toEqual([]);
   });
 });

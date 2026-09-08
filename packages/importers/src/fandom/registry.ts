@@ -127,6 +127,91 @@ export function staleEntries(
   return out;
 }
 
+/** Ce que `client.queryInfo` observe d'une page, sans l'importer. */
+export type ObservedPage = {
+  readonly pageId: number;
+  readonly redirects: readonly string[];
+};
+
+/**
+ * Fold les redirections observees par `check-updates` dans le registre.
+ *
+ * `queryInfo` demande deja `prop=info|redirects` et rend les alias par
+ * paquets de cinquante — et `check-updates` n'en gardait que
+ * `lastRevId`, jetant le reste sans jamais reecrire le registre.
+ * Resultat mesure : **1 page sur 2485** portait une redirection, alors
+ * que l'appel qui les rapporte tourne sur les 2485 a chaque sync.
+ *
+ * Ce qui manquait n'etait pas la donnee, c'etait l'ecriture.
+ *
+ * Deliberement partiel : ni `lastRevId` ni `lastImportedAt` ne bougent.
+ * Observer une page n'est pas l'importer, et ecrire la revision vive
+ * ici marquerait a jour des entites dont le contenu n'a pas ete relu —
+ * exactement ce que `staleEntries` sert a empecher. Seuls les faits
+ * d'IDENTITE sont retenus : les alias s'accumulent (jamais remplaces),
+ * et un `pageId` a 0 se remplit.
+ */
+export function recordRedirects(
+  registry: FandomRegistry,
+  observed: ReadonlyMap<string, ObservedPage>,
+): FandomRegistry {
+  const byTitle = new Map<string, ObservedPage>();
+  for (const [title, page] of observed) byTitle.set(normalizeTitle(title), page);
+  return {
+    pages: registry.pages.map((link) => {
+      const seen = byTitle.get(normalizeTitle(link.page));
+      if (seen === undefined) return link;
+      const aliases = new Set(link.redirects);
+      for (const alias of seen.redirects) {
+        if (normalizeTitle(alias) !== normalizeTitle(link.page)) aliases.add(alias);
+      }
+      const pageId = link.pageId !== 0 ? link.pageId : seen.pageId;
+      if (aliases.size === link.redirects.length && pageId === link.pageId) return link;
+      return { ...link, pageId, redirects: [...aliases].sort((a, b) => a.localeCompare(b)) };
+    }),
+  };
+}
+
+/** Deux entites qui revendiquent le meme titre Fandom — canonique ou
+ *  via un alias. C'est la forme que prend un doublon d'entite. */
+export type TitleClash = {
+  /** Titre normalise revendique plusieurs fois. */
+  readonly title: string;
+  /** Ids des entites qui le revendiquent, triees. */
+  readonly entityIds: readonly string[];
+};
+
+/**
+ * Deux entites pour une seule page Fandom.
+ *
+ * `buildTitleIndex` resout ce cas en silence — « le titre canonique
+ * l'emporte sur un alias qui le percute » — parce que sa mission est de
+ * resoudre un lien, pas d'auditer le registre. Ici on le NOMME.
+ *
+ * Le cas n'est pas theorique : Fandom renomme des pages et laisse
+ * l'ancien titre en redirection, donc deux imports separes a quelques
+ * mois d'intervalle peuvent creer deux entites pour la meme page — la
+ * seconde sous le nouveau titre, la premiere sous l'ancien devenu
+ * alias. Rien ne le disait avant que les redirections soient ecrites.
+ */
+export function findTitleClashes(registry: FandomRegistry): readonly TitleClash[] {
+  const claims = new Map<string, Set<string>>();
+  for (const link of registry.pages) {
+    for (const title of [link.page, ...link.redirects]) {
+      const key = normalizeTitle(title);
+      if (key === '') continue;
+      const set = claims.get(key) ?? new Set<string>();
+      set.add(link.entityId);
+      claims.set(key, set);
+    }
+  }
+  const out: TitleClash[] = [];
+  for (const [title, ids] of claims) {
+    if (ids.size > 1) out.push({ title, entityIds: [...ids].sort((a, b) => a.localeCompare(b)) });
+  }
+  return out.sort((a, b) => a.title.localeCompare(b.title));
+}
+
 /** One page an import run actually reached, as the run saw it. */
 export type ImportedPage = {
   readonly entityId: string;
