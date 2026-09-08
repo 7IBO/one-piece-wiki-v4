@@ -2,7 +2,7 @@
   "id": "manga-chapter:17",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-17",
+  "slug": "17",
   "properties": {
     "number": {
       "value": 17
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:7"
     }
+  ],
+  "slug_history": [
+    "chapter-17"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:588",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-588",
+  "slug": "588",
   "properties": {
     "number": {
       "value": 588
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:503"
     }
+  ],
+  "slug_history": [
+    "chapter-588"
   ]
 }

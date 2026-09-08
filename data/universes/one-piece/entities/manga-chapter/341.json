@@ -2,7 +2,7 @@
   "id": "manga-chapter:341",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-341",
+  "slug": "341",
   "properties": {
     "number": {
       "value": 341
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:241"
     }
+  ],
+  "slug_history": [
+    "chapter-341"
   ]
 }

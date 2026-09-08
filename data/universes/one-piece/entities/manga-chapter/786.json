@@ -2,7 +2,7 @@
   "id": "manga-chapter:786",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-786",
+  "slug": "786",
   "properties": {
     "number": {
       "value": 786
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:729"
     }
+  ],
+  "slug_history": [
+    "chapter-786"
   ]
 }

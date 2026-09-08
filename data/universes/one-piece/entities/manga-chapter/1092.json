@@ -2,7 +2,7 @@
   "id": "manga-chapter:1092",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1092",
+  "slug": "1092",
   "properties": {
     "number": {
       "value": 1092
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1126"
     }
+  ],
+  "slug_history": [
+    "chapter-1092"
   ]
 }

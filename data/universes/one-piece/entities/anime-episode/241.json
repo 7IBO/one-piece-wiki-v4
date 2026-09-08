@@ -2,7 +2,7 @@
   "id": "anime-episode:241",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-241",
+  "slug": "241",
   "properties": {
     "number": {
       "value": 241
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:water-7"
     }
+  ],
+  "slug_history": [
+    "episode-241"
   ]
 }

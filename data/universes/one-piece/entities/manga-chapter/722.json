@@ -2,7 +2,7 @@
   "id": "manga-chapter:722",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-722",
+  "slug": "722",
   "properties": {
     "number": {
       "value": 722
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:653"
     }
+  ],
+  "slug_history": [
+    "chapter-722"
   ]
 }

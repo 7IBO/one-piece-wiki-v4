@@ -2,7 +2,7 @@
   "id": "manga-chapter:1166",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1166",
+  "slug": "1166",
   "properties": {
     "number": {
       "value": 1166
@@ -23,5 +23,8 @@
       "type": "part-of-volume",
       "target": "volume:114"
     }
+  ],
+  "slug_history": [
+    "chapter-1166"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:198",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-198",
+  "slug": "198",
   "properties": {
     "number": {
       "value": 198
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:121"
     }
+  ],
+  "slug_history": [
+    "chapter-198"
   ]
 }

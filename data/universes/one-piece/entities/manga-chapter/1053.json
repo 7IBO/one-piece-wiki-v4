@@ -2,7 +2,7 @@
   "id": "manga-chapter:1053",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1053",
+  "slug": "1053",
   "properties": {
     "number": {
       "value": 1053
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1080"
     }
+  ],
+  "slug_history": [
+    "chapter-1053"
   ]
 }

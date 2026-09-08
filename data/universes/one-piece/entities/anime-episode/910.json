@@ -2,7 +2,7 @@
   "id": "anime-episode:910",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-910",
+  "slug": "910",
   "properties": {
     "number": {
       "value": 910
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.910.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-910"
+  ]
 }

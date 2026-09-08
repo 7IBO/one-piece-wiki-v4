@@ -2,7 +2,7 @@
   "id": "manga-chapter:789",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-789",
+  "slug": "789",
   "properties": {
     "number": {
       "value": 789
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:732"
     }
+  ],
+  "slug_history": [
+    "chapter-789"
   ]
 }

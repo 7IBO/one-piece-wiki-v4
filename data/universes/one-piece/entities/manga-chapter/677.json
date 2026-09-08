@@ -2,7 +2,7 @@
   "id": "manga-chapter:677",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-677",
+  "slug": "677",
   "properties": {
     "number": {
       "value": 677
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:921"
     }
+  ],
+  "slug_history": [
+    "chapter-677"
   ]
 }

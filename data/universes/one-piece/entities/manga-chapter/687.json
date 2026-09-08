@@ -2,7 +2,7 @@
   "id": "manga-chapter:687",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-687",
+  "slug": "687",
   "properties": {
     "number": {
       "value": 687
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:613"
     }
+  ],
+  "slug_history": [
+    "chapter-687"
   ]
 }

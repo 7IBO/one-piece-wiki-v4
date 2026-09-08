@@ -2,7 +2,7 @@
   "id": "manga-chapter:35",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-35",
+  "slug": "35",
   "properties": {
     "number": {
       "value": 35
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:15"
     }
+  ],
+  "slug_history": [
+    "chapter-35"
   ]
 }

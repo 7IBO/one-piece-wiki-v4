@@ -2,7 +2,7 @@
   "id": "anime-episode:450",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-450",
+  "slug": "450",
   "properties": {
     "number": {
       "value": 450
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.450.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-450"
+  ]
 }

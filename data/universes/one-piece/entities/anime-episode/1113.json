@@ -2,7 +2,7 @@
   "id": "anime-episode:1113",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-1113",
+  "slug": "1113",
   "properties": {
     "number": {
       "value": 1113
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.1113.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-1113"
+  ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:785",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-785",
+  "slug": "785",
   "properties": {
     "number": {
       "value": 785
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:728"
     }
+  ],
+  "slug_history": [
+    "chapter-785"
   ]
 }

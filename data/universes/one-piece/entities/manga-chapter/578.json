@@ -2,7 +2,7 @@
   "id": "manga-chapter:578",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-578",
+  "slug": "578",
   "properties": {
     "number": {
       "value": 578
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:487"
     }
+  ],
+  "slug_history": [
+    "chapter-578"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:696",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-696",
+  "slug": "696",
   "properties": {
     "number": {
       "value": 696
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:622"
     }
+  ],
+  "slug_history": [
+    "chapter-696"
   ]
 }

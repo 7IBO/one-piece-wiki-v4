@@ -2,7 +2,7 @@
   "id": "manga-chapter:877",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-877",
+  "slug": "877",
   "properties": {
     "number": {
       "value": 877
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:849"
     }
+  ],
+  "slug_history": [
+    "chapter-877"
   ]
 }

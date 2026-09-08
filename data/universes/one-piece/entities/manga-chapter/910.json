@@ -2,7 +2,7 @@
   "id": "manga-chapter:910",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-910",
+  "slug": "910",
   "properties": {
     "number": {
       "value": 910
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:893"
     }
+  ],
+  "slug_history": [
+    "chapter-910"
   ]
 }

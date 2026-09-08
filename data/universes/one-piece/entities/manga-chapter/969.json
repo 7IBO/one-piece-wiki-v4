@@ -2,7 +2,7 @@
   "id": "manga-chapter:969",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-969",
+  "slug": "969",
   "properties": {
     "number": {
       "value": 969
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:971"
     }
+  ],
+  "slug_history": [
+    "chapter-969"
   ]
 }

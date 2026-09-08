@@ -2,7 +2,7 @@
   "id": "manga-chapter:282",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-282",
+  "slug": "282",
   "properties": {
     "number": {
       "value": 282
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:184"
     }
+  ],
+  "slug_history": [
+    "chapter-282"
   ]
 }

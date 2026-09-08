@@ -2,7 +2,7 @@
   "id": "manga-chapter:797",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-797",
+  "slug": "797",
   "properties": {
     "number": {
       "value": 797
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:742"
     }
+  ],
+  "slug_history": [
+    "chapter-797"
   ]
 }

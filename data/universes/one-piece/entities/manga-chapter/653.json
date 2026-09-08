@@ -2,7 +2,7 @@
   "id": "manga-chapter:653",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-653",
+  "slug": "653",
   "properties": {
     "number": {
       "value": 653
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:21"
     }
+  ],
+  "slug_history": [
+    "chapter-653"
   ]
 }

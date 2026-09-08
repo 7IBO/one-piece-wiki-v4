@@ -2,7 +2,7 @@
   "id": "manga-chapter:362",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-362",
+  "slug": "362",
   "properties": {
     "number": {
       "value": 362
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:253"
     }
+  ],
+  "slug_history": [
+    "chapter-362"
   ]
 }

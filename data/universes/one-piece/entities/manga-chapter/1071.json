@@ -2,7 +2,7 @@
   "id": "manga-chapter:1071",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1071",
+  "slug": "1071",
   "properties": {
     "number": {
       "value": 1071
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1103"
     }
+  ],
+  "slug_history": [
+    "chapter-1071"
   ]
 }

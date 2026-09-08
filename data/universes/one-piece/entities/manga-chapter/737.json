@@ -2,7 +2,7 @@
   "id": "manga-chapter:737",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-737",
+  "slug": "737",
   "properties": {
     "number": {
       "value": 737
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:670"
     }
+  ],
+  "slug_history": [
+    "chapter-737"
   ]
 }

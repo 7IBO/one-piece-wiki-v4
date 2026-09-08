@@ -2,7 +2,7 @@
   "id": "manga-chapter:44",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-44",
+  "slug": "44",
   "properties": {
     "number": {
       "value": 44
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:21"
     }
+  ],
+  "slug_history": [
+    "chapter-44"
   ]
 }

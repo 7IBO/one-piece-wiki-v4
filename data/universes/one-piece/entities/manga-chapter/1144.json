@@ -2,7 +2,7 @@
   "id": "manga-chapter:1144",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1144",
+  "slug": "1144",
   "properties": {
     "number": {
       "value": 1144
@@ -27,5 +27,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1174"
     }
+  ],
+  "slug_history": [
+    "chapter-1144"
   ]
 }

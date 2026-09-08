@@ -2,7 +2,7 @@
   "id": "manga-chapter:697",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-697",
+  "slug": "697",
   "properties": {
     "number": {
       "value": 697
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:623"
     }
+  ],
+  "slug_history": [
+    "chapter-697"
   ]
 }

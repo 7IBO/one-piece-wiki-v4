@@ -2,7 +2,7 @@
   "id": "manga-chapter:81",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-81",
+  "slug": "81",
   "properties": {
     "number": {
       "value": 81
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:37"
     }
+  ],
+  "slug_history": [
+    "chapter-81"
   ]
 }

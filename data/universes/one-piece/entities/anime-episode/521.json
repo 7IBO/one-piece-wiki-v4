@@ -2,7 +2,7 @@
   "id": "anime-episode:521",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-521",
+  "slug": "521",
   "properties": {
     "number": {
       "value": 521
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:return-to-sabaody"
     }
+  ],
+  "slug_history": [
+    "episode-521"
   ]
 }

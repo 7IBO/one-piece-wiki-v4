@@ -2,7 +2,7 @@
   "id": "manga-chapter:660",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-660",
+  "slug": "660",
   "properties": {
     "number": {
       "value": 660
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:585"
     }
+  ],
+  "slug_history": [
+    "chapter-660"
   ]
 }

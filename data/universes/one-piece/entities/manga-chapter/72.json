@@ -2,7 +2,7 @@
   "id": "manga-chapter:72",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-72",
+  "slug": "72",
   "properties": {
     "number": {
       "value": 72
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:32"
     }
+  ],
+  "slug_history": [
+    "chapter-72"
   ]
 }

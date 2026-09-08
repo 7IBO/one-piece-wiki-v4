@@ -2,7 +2,7 @@
   "id": "anime-episode:374",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-374",
+  "slug": "374",
   "properties": {
     "number": {
       "value": 374
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:thriller-bark"
     }
+  ],
+  "slug_history": [
+    "episode-374"
   ]
 }

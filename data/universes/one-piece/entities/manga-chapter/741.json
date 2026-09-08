@@ -2,7 +2,7 @@
   "id": "manga-chapter:741",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-741",
+  "slug": "741",
   "properties": {
     "number": {
       "value": 741
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:675"
     }
+  ],
+  "slug_history": [
+    "chapter-741"
   ]
 }

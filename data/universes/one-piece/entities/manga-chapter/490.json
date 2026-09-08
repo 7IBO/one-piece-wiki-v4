@@ -2,7 +2,7 @@
   "id": "manga-chapter:490",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-490",
+  "slug": "490",
   "properties": {
     "number": {
       "value": 490
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:386"
     }
+  ],
+  "slug_history": [
+    "chapter-490"
   ]
 }

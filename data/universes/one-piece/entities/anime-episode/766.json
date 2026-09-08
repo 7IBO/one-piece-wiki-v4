@@ -2,7 +2,7 @@
   "id": "anime-episode:766",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-766",
+  "slug": "766",
   "properties": {
     "number": {
       "value": 766
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.766.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-766"
+  ]
 }

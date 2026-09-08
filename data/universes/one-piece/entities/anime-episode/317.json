@@ -2,7 +2,7 @@
   "id": "anime-episode:317",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-317",
+  "slug": "317",
   "properties": {
     "number": {
       "value": 317
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:post-enies-lobby"
     }
+  ],
+  "slug_history": [
+    "episode-317"
   ]
 }

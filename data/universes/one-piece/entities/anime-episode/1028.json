@@ -2,7 +2,7 @@
   "id": "anime-episode:1028",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-1028",
+  "slug": "1028",
   "properties": {
     "number": {
       "value": 1028
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.1028.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-1028"
+  ]
 }

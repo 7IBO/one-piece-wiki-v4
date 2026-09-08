@@ -2,7 +2,7 @@
   "id": "anime-episode:72",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-72",
+  "slug": "72",
   "properties": {
     "number": {
       "value": 72
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:little-garden"
     }
+  ],
+  "slug_history": [
+    "episode-72"
   ]
 }

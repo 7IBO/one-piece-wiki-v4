@@ -2,7 +2,7 @@
   "id": "anime-episode:87",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-87",
+  "slug": "87",
   "properties": {
     "number": {
       "value": 87
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:drum-island"
     }
+  ],
+  "slug_history": [
+    "episode-87"
   ]
 }

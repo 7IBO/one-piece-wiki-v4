@@ -2,7 +2,7 @@
   "id": "manga-chapter:886",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-886",
+  "slug": "886",
   "properties": {
     "number": {
       "value": 886
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:860"
     }
+  ],
+  "slug_history": [
+    "chapter-886"
   ]
 }

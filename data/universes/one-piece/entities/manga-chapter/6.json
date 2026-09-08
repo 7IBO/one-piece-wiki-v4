@@ -2,7 +2,7 @@
   "id": "manga-chapter:6",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-6",
+  "slug": "6",
   "properties": {
     "number": {
       "value": 6
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:3"
     }
+  ],
+  "slug_history": [
+    "chapter-6"
   ]
 }

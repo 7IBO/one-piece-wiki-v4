@@ -2,7 +2,7 @@
   "id": "anime-episode:768",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-768",
+  "slug": "768",
   "properties": {
     "number": {
       "value": 768
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.768.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-768"
+  ]
 }

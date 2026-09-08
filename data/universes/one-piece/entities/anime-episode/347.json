@@ -2,7 +2,7 @@
   "id": "anime-episode:347",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-347",
+  "slug": "347",
   "properties": {
     "number": {
       "value": 347
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:thriller-bark"
     }
+  ],
+  "slug_history": [
+    "episode-347"
   ]
 }

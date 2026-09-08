@@ -2,7 +2,7 @@
   "id": "anime-episode:283",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-283",
+  "slug": "283",
   "properties": {
     "number": {
       "value": 283
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:enies-lobby"
     }
+  ],
+  "slug_history": [
+    "episode-283"
   ]
 }

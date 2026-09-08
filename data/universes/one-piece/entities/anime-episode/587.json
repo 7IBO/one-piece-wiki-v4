@@ -2,7 +2,7 @@
   "id": "anime-episode:587",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-587",
+  "slug": "587",
   "properties": {
     "number": {
       "value": 587
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:punk-hazard"
     }
+  ],
+  "slug_history": [
+    "episode-587"
   ]
 }

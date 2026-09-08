@@ -2,7 +2,7 @@
   "id": "manga-chapter:1132",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1132",
+  "slug": "1132",
   "properties": {
     "number": {
       "value": 1132
@@ -27,5 +27,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1162"
     }
+  ],
+  "slug_history": [
+    "chapter-1132"
   ]
 }

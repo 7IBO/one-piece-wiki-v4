@@ -2,7 +2,7 @@
   "id": "manga-chapter:684",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-684",
+  "slug": "684",
   "properties": {
     "number": {
       "value": 684
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:610"
     }
+  ],
+  "slug_history": [
+    "chapter-684"
   ]
 }

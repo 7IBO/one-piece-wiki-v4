@@ -2,7 +2,7 @@
   "id": "manga-chapter:532",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-532",
+  "slug": "532",
   "properties": {
     "number": {
       "value": 532
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:433"
     }
+  ],
+  "slug_history": [
+    "chapter-532"
   ]
 }

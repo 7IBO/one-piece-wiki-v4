@@ -2,7 +2,7 @@
   "id": "manga-chapter:301",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-301",
+  "slug": "301",
   "properties": {
     "number": {
       "value": 301
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:194"
     }
+  ],
+  "slug_history": [
+    "chapter-301"
   ]
 }

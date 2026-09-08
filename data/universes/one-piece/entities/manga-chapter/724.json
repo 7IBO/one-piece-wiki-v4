@@ -2,7 +2,7 @@
   "id": "manga-chapter:724",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-724",
+  "slug": "724",
   "properties": {
     "number": {
       "value": 724
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:655"
     }
+  ],
+  "slug_history": [
+    "chapter-724"
   ]
 }

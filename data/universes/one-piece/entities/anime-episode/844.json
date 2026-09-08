@@ -2,7 +2,7 @@
   "id": "anime-episode:844",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-844",
+  "slug": "844",
   "properties": {
     "number": {
       "value": 844
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.844.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-844"
+  ]
 }

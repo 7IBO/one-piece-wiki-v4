@@ -2,7 +2,7 @@
   "id": "manga-chapter:231",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-231",
+  "slug": "231",
   "properties": {
     "number": {
       "value": 231
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:150"
     }
+  ],
+  "slug_history": [
+    "chapter-231"
   ]
 }

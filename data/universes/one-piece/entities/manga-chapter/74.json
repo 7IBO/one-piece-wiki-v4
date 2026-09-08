@@ -2,7 +2,7 @@
   "id": "manga-chapter:74",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-74",
+  "slug": "74",
   "properties": {
     "number": {
       "value": 74
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:33"
     }
+  ],
+  "slug_history": [
+    "chapter-74"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:592",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-592",
+  "slug": "592",
   "properties": {
     "number": {
       "value": 592
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:508"
     }
+  ],
+  "slug_history": [
+    "chapter-592"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:656",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-656",
+  "slug": "656",
   "properties": {
     "number": {
       "value": 656
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:581"
     }
+  ],
+  "slug_history": [
+    "chapter-656"
   ]
 }

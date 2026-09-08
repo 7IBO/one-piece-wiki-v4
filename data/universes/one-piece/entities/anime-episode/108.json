@@ -2,7 +2,7 @@
   "id": "anime-episode:108",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-108",
+  "slug": "108",
   "properties": {
     "number": {
       "value": 108
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:arabasta"
     }
+  ],
+  "slug_history": [
+    "episode-108"
   ]
 }

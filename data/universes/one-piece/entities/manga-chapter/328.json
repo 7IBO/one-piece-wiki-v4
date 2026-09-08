@@ -2,7 +2,7 @@
   "id": "manga-chapter:328",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-328",
+  "slug": "328",
   "properties": {
     "number": {
       "value": 328
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:233"
     }
+  ],
+  "slug_history": [
+    "chapter-328"
   ]
 }

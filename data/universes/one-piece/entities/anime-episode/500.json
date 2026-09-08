@@ -2,7 +2,7 @@
   "id": "anime-episode:500",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-500",
+  "slug": "500",
   "properties": {
     "number": {
       "value": 500
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.500.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-500"
+  ]
 }

@@ -288,7 +288,7 @@ describe('mapChapter / mapVolume / mapEpisode', () => {
     const result = mapChapter(pair);
     expect(result).not.toBeNull();
     expect(result!.entity.id).toBe('manga-chapter:1044');
-    expect(result!.entity.slug).toBe('chapter-1044');
+    expect(result!.entity.slug).toBe('1044');
     expect(result!.entity.properties['number']).toEqual({ value: 1044 });
     expect(result!.entity.properties['title_key']).toEqual({
       value_key: 'manga-chapter.1044.title',

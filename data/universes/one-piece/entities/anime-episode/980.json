@@ -2,7 +2,7 @@
   "id": "anime-episode:980",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-980",
+  "slug": "980",
   "properties": {
     "number": {
       "value": 980
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.980.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-980"
+  ]
 }

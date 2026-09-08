@@ -2,7 +2,7 @@
   "id": "manga-chapter:787",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-787",
+  "slug": "787",
   "properties": {
     "number": {
       "value": 787
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:730"
     }
+  ],
+  "slug_history": [
+    "chapter-787"
   ]
 }

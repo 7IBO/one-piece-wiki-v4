@@ -2,7 +2,7 @@
   "id": "manga-chapter:289",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-289",
+  "slug": "289",
   "properties": {
     "number": {
       "value": 289
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:188"
     }
+  ],
+  "slug_history": [
+    "chapter-289"
   ]
 }

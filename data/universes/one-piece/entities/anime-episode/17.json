@@ -2,7 +2,7 @@
   "id": "anime-episode:17",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-17",
+  "slug": "17",
   "properties": {
     "number": {
       "value": 17
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:syrup-village"
     }
+  ],
+  "slug_history": [
+    "episode-17"
   ]
 }

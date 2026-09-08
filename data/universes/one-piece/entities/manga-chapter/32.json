@@ -2,7 +2,7 @@
   "id": "manga-chapter:32",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-32",
+  "slug": "32",
   "properties": {
     "number": {
       "value": 32
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:13"
     }
+  ],
+  "slug_history": [
+    "chapter-32"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:828",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-828",
+  "slug": "828",
   "properties": {
     "number": {
       "value": 828
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:788"
     }
+  ],
+  "slug_history": [
+    "chapter-828"
   ]
 }

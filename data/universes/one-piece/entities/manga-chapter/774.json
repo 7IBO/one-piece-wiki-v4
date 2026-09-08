@@ -2,7 +2,7 @@
   "id": "manga-chapter:774",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-774",
+  "slug": "774",
   "properties": {
     "number": {
       "value": 774
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:714"
     }
+  ],
+  "slug_history": [
+    "chapter-774"
   ]
 }

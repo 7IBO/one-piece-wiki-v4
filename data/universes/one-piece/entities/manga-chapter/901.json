@@ -2,7 +2,7 @@
   "id": "manga-chapter:901",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-901",
+  "slug": "901",
   "properties": {
     "number": {
       "value": 901
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:876"
     }
+  ],
+  "slug_history": [
+    "chapter-901"
   ]
 }

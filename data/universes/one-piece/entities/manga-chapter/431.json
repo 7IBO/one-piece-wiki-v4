@@ -2,7 +2,7 @@
   "id": "manga-chapter:431",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-431",
+  "slug": "431",
   "properties": {
     "number": {
       "value": 431
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:313"
     }
+  ],
+  "slug_history": [
+    "chapter-431"
   ]
 }

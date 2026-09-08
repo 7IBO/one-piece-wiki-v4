@@ -2,7 +2,7 @@
   "id": "manga-chapter:748",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-748",
+  "slug": "748",
   "properties": {
     "number": {
       "value": 748
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:684"
     }
+  ],
+  "slug_history": [
+    "chapter-748"
   ]
 }

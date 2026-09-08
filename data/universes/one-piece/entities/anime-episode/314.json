@@ -2,7 +2,7 @@
   "id": "anime-episode:314",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-314",
+  "slug": "314",
   "properties": {
     "number": {
       "value": 314
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:post-enies-lobby"
     }
+  ],
+  "slug_history": [
+    "episode-314"
   ]
 }

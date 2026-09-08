@@ -2,7 +2,7 @@
   "id": "manga-chapter:641",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-641",
+  "slug": "641",
   "properties": {
     "number": {
       "value": 641
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:19"
     }
+  ],
+  "slug_history": [
+    "chapter-641"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:785",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-785",
+  "slug": "785",
   "properties": {
     "number": {
       "value": 785
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.785.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-785"
+  ]
 }

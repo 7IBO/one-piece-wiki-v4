@@ -2,7 +2,7 @@
   "id": "anime-episode:56",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-56",
+  "slug": "56",
   "properties": {
     "number": {
       "value": 56
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:warship-island"
     }
+  ],
+  "slug_history": [
+    "episode-56"
   ]
 }

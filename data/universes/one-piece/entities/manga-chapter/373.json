@@ -2,7 +2,7 @@
   "id": "manga-chapter:373",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-373",
+  "slug": "373",
   "properties": {
     "number": {
       "value": 373
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:262"
     }
+  ],
+  "slug_history": [
+    "chapter-373"
   ]
 }

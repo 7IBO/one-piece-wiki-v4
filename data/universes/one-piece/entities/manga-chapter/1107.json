@@ -2,7 +2,7 @@
   "id": "manga-chapter:1107",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1107",
+  "slug": "1107",
   "properties": {
     "number": {
       "value": 1107
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1141"
     }
+  ],
+  "slug_history": [
+    "chapter-1107"
   ]
 }

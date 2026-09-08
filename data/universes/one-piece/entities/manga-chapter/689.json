@@ -2,7 +2,7 @@
   "id": "manga-chapter:689",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-689",
+  "slug": "689",
   "properties": {
     "number": {
       "value": 689
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:615"
     }
+  ],
+  "slug_history": [
+    "chapter-689"
   ]
 }

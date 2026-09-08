@@ -2,7 +2,7 @@
   "id": "manga-chapter:912",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-912",
+  "slug": "912",
   "properties": {
     "number": {
       "value": 912
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:897"
     }
+  ],
+  "slug_history": [
+    "chapter-912"
   ]
 }

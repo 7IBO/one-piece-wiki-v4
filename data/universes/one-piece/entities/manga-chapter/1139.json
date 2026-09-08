@@ -2,7 +2,7 @@
   "id": "manga-chapter:1139",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1139",
+  "slug": "1139",
   "properties": {
     "number": {
       "value": 1139
@@ -27,5 +27,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1169"
     }
+  ],
+  "slug_history": [
+    "chapter-1139"
   ]
 }

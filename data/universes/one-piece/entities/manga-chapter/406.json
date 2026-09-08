@@ -2,7 +2,7 @@
   "id": "manga-chapter:406",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-406",
+  "slug": "406",
   "properties": {
     "number": {
       "value": 406
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:290"
     }
+  ],
+  "slug_history": [
+    "chapter-406"
   ]
 }

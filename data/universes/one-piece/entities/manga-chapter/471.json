@@ -2,7 +2,7 @@
   "id": "manga-chapter:471",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-471",
+  "slug": "471",
   "properties": {
     "number": {
       "value": 471
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:365"
     }
+  ],
+  "slug_history": [
+    "chapter-471"
   ]
 }

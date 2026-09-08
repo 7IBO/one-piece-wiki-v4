@@ -2,7 +2,7 @@
   "id": "anime-episode:34",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-34",
+  "slug": "34",
   "properties": {
     "number": {
       "value": 34
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:arlong-park"
     }
+  ],
+  "slug_history": [
+    "episode-34"
   ]
 }

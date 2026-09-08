@@ -2,7 +2,7 @@
   "id": "manga-chapter:347",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-347",
+  "slug": "347",
   "properties": {
     "number": {
       "value": 347
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:245"
     }
+  ],
+  "slug_history": [
+    "chapter-347"
   ]
 }

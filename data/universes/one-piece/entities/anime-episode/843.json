@@ -2,7 +2,7 @@
   "id": "anime-episode:843",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-843",
+  "slug": "843",
   "properties": {
     "number": {
       "value": 843
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.843.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-843"
+  ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:695",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-695",
+  "slug": "695",
   "properties": {
     "number": {
       "value": 695
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:621"
     }
+  ],
+  "slug_history": [
+    "chapter-695"
   ]
 }

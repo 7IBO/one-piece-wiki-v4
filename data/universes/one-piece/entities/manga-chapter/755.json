@@ -2,7 +2,7 @@
   "id": "manga-chapter:755",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-755",
+  "slug": "755",
   "properties": {
     "number": {
       "value": 755
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:693"
     }
+  ],
+  "slug_history": [
+    "chapter-755"
   ]
 }

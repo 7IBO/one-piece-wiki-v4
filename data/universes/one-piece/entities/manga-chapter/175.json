@@ -2,7 +2,7 @@
   "id": "manga-chapter:175",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-175",
+  "slug": "175",
   "properties": {
     "number": {
       "value": 175
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:109"
     }
+  ],
+  "slug_history": [
+    "chapter-175"
   ]
 }

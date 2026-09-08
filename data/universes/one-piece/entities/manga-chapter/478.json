@@ -2,7 +2,7 @@
   "id": "manga-chapter:478",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-478",
+  "slug": "478",
   "properties": {
     "number": {
       "value": 478
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:372"
     }
+  ],
+  "slug_history": [
+    "chapter-478"
   ]
 }

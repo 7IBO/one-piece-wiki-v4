@@ -2,7 +2,7 @@
   "id": "manga-chapter:538",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-538",
+  "slug": "538",
   "properties": {
     "number": {
       "value": 538
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:440"
     }
+  ],
+  "slug_history": [
+    "chapter-538"
   ]
 }

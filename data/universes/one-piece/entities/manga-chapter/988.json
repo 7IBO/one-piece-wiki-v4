@@ -2,7 +2,7 @@
   "id": "manga-chapter:988",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-988",
+  "slug": "988",
   "properties": {
     "number": {
       "value": 988
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:998"
     }
+  ],
+  "slug_history": [
+    "chapter-988"
   ]
 }

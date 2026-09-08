@@ -2,7 +2,7 @@
   "id": "manga-chapter:467",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-467",
+  "slug": "467",
   "properties": {
     "number": {
       "value": 467
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:362"
     }
+  ],
+  "slug_history": [
+    "chapter-467"
   ]
 }

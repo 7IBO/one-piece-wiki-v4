@@ -2,7 +2,7 @@
   "id": "anime-episode:611",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-611",
+  "slug": "611",
   "properties": {
     "number": {
       "value": 611
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.611.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-611"
+  ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:1079",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1079",
+  "slug": "1079",
   "properties": {
     "number": {
       "value": 1079
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1112"
     }
+  ],
+  "slug_history": [
+    "chapter-1079"
   ]
 }

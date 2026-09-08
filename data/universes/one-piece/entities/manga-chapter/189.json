@@ -2,7 +2,7 @@
   "id": "manga-chapter:189",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-189",
+  "slug": "189",
   "properties": {
     "number": {
       "value": 189
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:116"
     }
+  ],
+  "slug_history": [
+    "chapter-189"
   ]
 }

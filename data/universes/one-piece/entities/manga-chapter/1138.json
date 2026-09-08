@@ -2,7 +2,7 @@
   "id": "manga-chapter:1138",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1138",
+  "slug": "1138",
   "properties": {
     "number": {
       "value": 1138
@@ -27,5 +27,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1168"
     }
+  ],
+  "slug_history": [
+    "chapter-1138"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:30",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-30",
+  "slug": "30",
   "properties": {
     "number": {
       "value": 30
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:baratie"
     }
+  ],
+  "slug_history": [
+    "episode-30"
   ]
 }

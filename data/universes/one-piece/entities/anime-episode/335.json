@@ -2,7 +2,7 @@
   "id": "anime-episode:335",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-335",
+  "slug": "335",
   "properties": {
     "number": {
       "value": 335
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:ice-hunter"
     }
+  ],
+  "slug_history": [
+    "episode-335"
   ]
 }

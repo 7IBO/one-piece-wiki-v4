@@ -2,7 +2,7 @@
   "id": "manga-chapter:977",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-977",
+  "slug": "977",
   "properties": {
     "number": {
       "value": 977
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:983"
     }
+  ],
+  "slug_history": [
+    "chapter-977"
   ]
 }

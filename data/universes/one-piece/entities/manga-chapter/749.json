@@ -2,7 +2,7 @@
   "id": "manga-chapter:749",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-749",
+  "slug": "749",
   "properties": {
     "number": {
       "value": 749
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:686"
     }
+  ],
+  "slug_history": [
+    "chapter-749"
   ]
 }

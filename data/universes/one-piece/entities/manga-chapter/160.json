@@ -2,7 +2,7 @@
   "id": "manga-chapter:160",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-160",
+  "slug": "160",
   "properties": {
     "number": {
       "value": 160
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:96"
     }
+  ],
+  "slug_history": [
+    "chapter-160"
   ]
 }

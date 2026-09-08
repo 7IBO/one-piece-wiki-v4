@@ -2,7 +2,7 @@
   "id": "manga-chapter:643",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-643",
+  "slug": "643",
   "properties": {
     "number": {
       "value": 643
@@ -43,5 +43,8 @@
       "type": "adapted-by",
       "target": "anime-episode:19"
     }
+  ],
+  "slug_history": [
+    "chapter-643"
   ]
 }

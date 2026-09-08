@@ -2,7 +2,7 @@
   "id": "manga-chapter:624",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-624",
+  "slug": "624",
   "properties": {
     "number": {
       "value": 624
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:13"
     }
+  ],
+  "slug_history": [
+    "chapter-624"
   ]
 }

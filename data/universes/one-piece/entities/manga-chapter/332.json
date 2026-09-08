@@ -2,7 +2,7 @@
   "id": "manga-chapter:332",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-332",
+  "slug": "332",
   "properties": {
     "number": {
       "value": 332
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:236"
     }
+  ],
+  "slug_history": [
+    "chapter-332"
   ]
 }

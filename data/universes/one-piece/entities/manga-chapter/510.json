@@ -2,7 +2,7 @@
   "id": "manga-chapter:510",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-510",
+  "slug": "510",
   "properties": {
     "number": {
       "value": 510
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:403"
     }
+  ],
+  "slug_history": [
+    "chapter-510"
   ]
 }

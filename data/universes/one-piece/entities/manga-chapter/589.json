@@ -2,7 +2,7 @@
   "id": "manga-chapter:589",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-589",
+  "slug": "589",
   "properties": {
     "number": {
       "value": 589
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:504"
     }
+  ],
+  "slug_history": [
+    "chapter-589"
   ]
 }

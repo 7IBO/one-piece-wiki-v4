@@ -2,7 +2,7 @@
   "id": "anime-episode:1063",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-1063",
+  "slug": "1063",
   "properties": {
     "number": {
       "value": 1063
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.1063.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-1063"
+  ]
 }

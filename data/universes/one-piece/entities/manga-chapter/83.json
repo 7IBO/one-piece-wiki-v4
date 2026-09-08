@@ -2,7 +2,7 @@
   "id": "manga-chapter:83",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-83",
+  "slug": "83",
   "properties": {
     "number": {
       "value": 83
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:38"
     }
+  ],
+  "slug_history": [
+    "chapter-83"
   ]
 }

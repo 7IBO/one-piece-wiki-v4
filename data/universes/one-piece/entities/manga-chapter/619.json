@@ -2,7 +2,7 @@
   "id": "manga-chapter:619",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-619",
+  "slug": "619",
   "properties": {
     "number": {
       "value": 619
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:11"
     }
+  ],
+  "slug_history": [
+    "chapter-619"
   ]
 }

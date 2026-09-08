@@ -2,7 +2,7 @@
   "id": "manga-chapter:769",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-769",
+  "slug": "769",
   "properties": {
     "number": {
       "value": 769
@@ -43,5 +43,8 @@
       "type": "adapted-by",
       "target": "anime-episode:711"
     }
+  ],
+  "slug_history": [
+    "chapter-769"
   ]
 }

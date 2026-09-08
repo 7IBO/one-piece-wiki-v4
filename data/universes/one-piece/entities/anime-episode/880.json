@@ -2,7 +2,7 @@
   "id": "anime-episode:880",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-880",
+  "slug": "880",
   "properties": {
     "number": {
       "value": 880
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.880.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-880"
+  ]
 }

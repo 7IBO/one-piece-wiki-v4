@@ -2,7 +2,7 @@
   "id": "manga-chapter:914",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-914",
+  "slug": "914",
   "properties": {
     "number": {
       "value": 914
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:901"
     }
+  ],
+  "slug_history": [
+    "chapter-914"
   ]
 }

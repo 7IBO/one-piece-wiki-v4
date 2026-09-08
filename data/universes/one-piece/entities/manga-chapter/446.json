@@ -2,7 +2,7 @@
   "id": "manga-chapter:446",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-446",
+  "slug": "446",
   "properties": {
     "number": {
       "value": 446
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:341"
     }
+  ],
+  "slug_history": [
+    "chapter-446"
   ]
 }

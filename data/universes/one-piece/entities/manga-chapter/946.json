@@ -2,7 +2,7 @@
   "id": "manga-chapter:946",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-946",
+  "slug": "946",
   "properties": {
     "number": {
       "value": 946
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:945"
     }
+  ],
+  "slug_history": [
+    "chapter-946"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:191",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-191",
+  "slug": "191",
   "properties": {
     "number": {
       "value": 191
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:skypiea"
     }
+  ],
+  "slug_history": [
+    "episode-191"
   ]
 }

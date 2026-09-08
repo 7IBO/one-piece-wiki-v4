@@ -2,7 +2,7 @@
   "id": "manga-chapter:586",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-586",
+  "slug": "586",
   "properties": {
     "number": {
       "value": 586
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:501"
     }
+  ],
+  "slug_history": [
+    "chapter-586"
   ]
 }

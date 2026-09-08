@@ -2,7 +2,7 @@
   "id": "manga-chapter:145",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-145",
+  "slug": "145",
   "properties": {
     "number": {
       "value": 145
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:87"
     }
+  ],
+  "slug_history": [
+    "chapter-145"
   ]
 }

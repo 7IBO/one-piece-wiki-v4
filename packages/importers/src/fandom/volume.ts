@@ -176,7 +176,7 @@ export function mapVolume(page: ParsedPage): VolumeMapResult | null {
       id: `volume:${number}`,
       type: 'volume',
       schema_version: VOLUME_SCHEMA_VERSION,
-      slug: `volume-${number}`,
+      slug: `${number}`,
       properties,
       relations: [],
     },

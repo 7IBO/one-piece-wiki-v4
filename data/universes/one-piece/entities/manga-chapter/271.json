@@ -2,7 +2,7 @@
   "id": "manga-chapter:271",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-271",
+  "slug": "271",
   "properties": {
     "number": {
       "value": 271
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:178"
     }
+  ],
+  "slug_history": [
+    "chapter-271"
   ]
 }

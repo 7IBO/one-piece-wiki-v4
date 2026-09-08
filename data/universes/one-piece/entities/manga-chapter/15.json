@@ -2,7 +2,7 @@
   "id": "manga-chapter:15",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-15",
+  "slug": "15",
   "properties": {
     "number": {
       "value": 15
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:7"
     }
+  ],
+  "slug_history": [
+    "chapter-15"
   ]
 }

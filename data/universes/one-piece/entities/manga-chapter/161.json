@@ -2,7 +2,7 @@
   "id": "manga-chapter:161",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-161",
+  "slug": "161",
   "properties": {
     "number": {
       "value": 161
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:96"
     }
+  ],
+  "slug_history": [
+    "chapter-161"
   ]
 }

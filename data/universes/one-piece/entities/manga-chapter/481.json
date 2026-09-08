@@ -2,7 +2,7 @@
   "id": "manga-chapter:481",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-481",
+  "slug": "481",
   "properties": {
     "number": {
       "value": 481
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:374"
     }
+  ],
+  "slug_history": [
+    "chapter-481"
   ]
 }

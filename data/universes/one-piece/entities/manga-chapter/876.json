@@ -2,7 +2,7 @@
   "id": "manga-chapter:876",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-876",
+  "slug": "876",
   "properties": {
     "number": {
       "value": 876
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:848"
     }
+  ],
+  "slug_history": [
+    "chapter-876"
   ]
 }

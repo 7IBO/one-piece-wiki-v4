@@ -2,7 +2,7 @@
   "id": "manga-chapter:682",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-682",
+  "slug": "682",
   "properties": {
     "number": {
       "value": 682
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:921"
     }
+  ],
+  "slug_history": [
+    "chapter-682"
   ]
 }

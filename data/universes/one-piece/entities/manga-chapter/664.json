@@ -2,7 +2,7 @@
   "id": "manga-chapter:664",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-664",
+  "slug": "664",
   "properties": {
     "number": {
       "value": 664
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:589"
     }
+  ],
+  "slug_history": [
+    "chapter-664"
   ]
 }

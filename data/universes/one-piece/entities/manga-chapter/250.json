@@ -2,7 +2,7 @@
   "id": "manga-chapter:250",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-250",
+  "slug": "250",
   "properties": {
     "number": {
       "value": 250
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:163"
     }
+  ],
+  "slug_history": [
+    "chapter-250"
   ]
 }

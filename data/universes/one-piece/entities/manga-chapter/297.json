@@ -2,7 +2,7 @@
   "id": "manga-chapter:297",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-297",
+  "slug": "297",
   "properties": {
     "number": {
       "value": 297
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:192"
     }
+  ],
+  "slug_history": [
+    "chapter-297"
   ]
 }

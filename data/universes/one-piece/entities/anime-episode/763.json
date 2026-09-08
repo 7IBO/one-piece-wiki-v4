@@ -2,7 +2,7 @@
   "id": "anime-episode:763",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-763",
+  "slug": "763",
   "properties": {
     "number": {
       "value": 763
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.763.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-763"
+  ]
 }

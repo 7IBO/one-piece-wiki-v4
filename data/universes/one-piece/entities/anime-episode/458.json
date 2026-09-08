@@ -2,7 +2,7 @@
   "id": "anime-episode:458",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-458",
+  "slug": "458",
   "properties": {
     "number": {
       "value": 458
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:marineford"
     }
+  ],
+  "slug_history": [
+    "episode-458"
   ]
 }

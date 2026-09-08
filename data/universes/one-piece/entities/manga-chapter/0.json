@@ -2,7 +2,7 @@
   "id": "manga-chapter:0",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-0",
+  "slug": "0",
   "properties": {
     "number": {
       "value": 0
@@ -18,5 +18,8 @@
       "territory": "jp"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "chapter-0"
+  ]
 }

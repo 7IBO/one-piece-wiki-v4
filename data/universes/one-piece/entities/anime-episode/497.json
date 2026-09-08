@@ -2,7 +2,7 @@
   "id": "anime-episode:497",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-497",
+  "slug": "497",
   "properties": {
     "number": {
       "value": 497
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.497.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-497"
+  ]
 }

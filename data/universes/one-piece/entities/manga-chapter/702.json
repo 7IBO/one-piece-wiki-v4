@@ -2,7 +2,7 @@
   "id": "manga-chapter:702",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-702",
+  "slug": "702",
   "properties": {
     "number": {
       "value": 702
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:921"
     }
+  ],
+  "slug_history": [
+    "chapter-702"
   ]
 }

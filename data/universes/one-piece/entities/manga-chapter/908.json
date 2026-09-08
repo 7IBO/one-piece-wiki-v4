@@ -2,7 +2,7 @@
   "id": "manga-chapter:908",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-908",
+  "slug": "908",
   "properties": {
     "number": {
       "value": 908
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:889"
     }
+  ],
+  "slug_history": [
+    "chapter-908"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:90",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-90",
+  "slug": "90",
   "properties": {
     "number": {
       "value": 90
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:drum-island"
     }
+  ],
+  "slug_history": [
+    "episode-90"
   ]
 }

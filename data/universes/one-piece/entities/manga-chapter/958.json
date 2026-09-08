@@ -2,7 +2,7 @@
   "id": "manga-chapter:958",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-958",
+  "slug": "958",
   "properties": {
     "number": {
       "value": 958
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:959"
     }
+  ],
+  "slug_history": [
+    "chapter-958"
   ]
 }

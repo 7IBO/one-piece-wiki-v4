@@ -2,7 +2,7 @@
   "id": "manga-chapter:505",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-505",
+  "slug": "505",
   "properties": {
     "number": {
       "value": 505
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:399"
     }
+  ],
+  "slug_history": [
+    "chapter-505"
   ]
 }

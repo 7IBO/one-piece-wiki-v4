@@ -2,7 +2,7 @@
   "id": "manga-chapter:48",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-48",
+  "slug": "48",
   "properties": {
     "number": {
       "value": 48
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:23"
     }
+  ],
+  "slug_history": [
+    "chapter-48"
   ]
 }

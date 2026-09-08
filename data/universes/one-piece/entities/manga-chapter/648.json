@@ -2,7 +2,7 @@
   "id": "manga-chapter:648",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-648",
+  "slug": "648",
   "properties": {
     "number": {
       "value": 648
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:20"
     }
+  ],
+  "slug_history": [
+    "chapter-648"
   ]
 }

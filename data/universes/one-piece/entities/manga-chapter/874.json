@@ -2,7 +2,7 @@
   "id": "manga-chapter:874",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-874",
+  "slug": "874",
   "properties": {
     "number": {
       "value": 874
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:845"
     }
+  ],
+  "slug_history": [
+    "chapter-874"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:499",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-499",
+  "slug": "499",
   "properties": {
     "number": {
       "value": 499
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.499.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-499"
+  ]
 }

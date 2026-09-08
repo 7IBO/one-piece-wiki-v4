@@ -2,7 +2,7 @@
   "id": "manga-chapter:636",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-636",
+  "slug": "636",
   "properties": {
     "number": {
       "value": 636
@@ -47,5 +47,8 @@
       "type": "adapted-by",
       "target": "anime-episode:18"
     }
+  ],
+  "slug_history": [
+    "chapter-636"
   ]
 }

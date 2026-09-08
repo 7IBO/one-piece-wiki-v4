@@ -2,7 +2,7 @@
   "id": "manga-chapter:80",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-80",
+  "slug": "80",
   "properties": {
     "number": {
       "value": 80
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:37"
     }
+  ],
+  "slug_history": [
+    "chapter-80"
   ]
 }

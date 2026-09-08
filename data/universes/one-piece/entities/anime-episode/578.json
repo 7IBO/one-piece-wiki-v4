@@ -2,7 +2,7 @@
   "id": "anime-episode:578",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-578",
+  "slug": "578",
   "properties": {
     "number": {
       "value": 578
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:z-s-ambition"
     }
+  ],
+  "slug_history": [
+    "episode-578"
   ]
 }

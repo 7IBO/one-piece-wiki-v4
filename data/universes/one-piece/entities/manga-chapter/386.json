@@ -2,7 +2,7 @@
   "id": "manga-chapter:386",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-386",
+  "slug": "386",
   "properties": {
     "number": {
       "value": 386
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:272"
     }
+  ],
+  "slug_history": [
+    "chapter-386"
   ]
 }

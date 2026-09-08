@@ -2,7 +2,7 @@
   "id": "anime-episode:197",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-197",
+  "slug": "197",
   "properties": {
     "number": {
       "value": 197
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:g-8"
     }
+  ],
+  "slug_history": [
+    "episode-197"
   ]
 }

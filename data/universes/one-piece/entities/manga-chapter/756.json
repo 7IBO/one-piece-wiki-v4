@@ -2,7 +2,7 @@
   "id": "manga-chapter:756",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-756",
+  "slug": "756",
   "properties": {
     "number": {
       "value": 756
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:695"
     }
+  ],
+  "slug_history": [
+    "chapter-756"
   ]
 }

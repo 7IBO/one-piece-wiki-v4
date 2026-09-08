@@ -2,7 +2,7 @@
   "id": "manga-chapter:403",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-403",
+  "slug": "403",
   "properties": {
     "number": {
       "value": 403
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:288"
     }
+  ],
+  "slug_history": [
+    "chapter-403"
   ]
 }

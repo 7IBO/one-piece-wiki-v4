@@ -2,7 +2,7 @@
   "id": "manga-chapter:829",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-829",
+  "slug": "829",
   "properties": {
     "number": {
       "value": 829
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:789"
     }
+  ],
+  "slug_history": [
+    "chapter-829"
   ]
 }

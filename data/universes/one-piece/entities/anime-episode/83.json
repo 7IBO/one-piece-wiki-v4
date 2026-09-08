@@ -2,7 +2,7 @@
   "id": "anime-episode:83",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-83",
+  "slug": "83",
   "properties": {
     "number": {
       "value": 83
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:drum-island"
     }
+  ],
+  "slug_history": [
+    "episode-83"
   ]
 }

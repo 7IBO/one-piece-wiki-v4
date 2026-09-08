@@ -2,7 +2,7 @@
   "id": "manga-chapter:845",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-845",
+  "slug": "845",
   "properties": {
     "number": {
       "value": 845
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:810"
     }
+  ],
+  "slug_history": [
+    "chapter-845"
   ]
 }

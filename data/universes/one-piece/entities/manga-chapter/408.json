@@ -2,7 +2,7 @@
   "id": "manga-chapter:408",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-408",
+  "slug": "408",
   "properties": {
     "number": {
       "value": 408
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:293"
     }
+  ],
+  "slug_history": [
+    "chapter-408"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:1070",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1070",
+  "slug": "1070",
   "properties": {
     "number": {
       "value": 1070
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1102"
     }
+  ],
+  "slug_history": [
+    "chapter-1070"
   ]
 }

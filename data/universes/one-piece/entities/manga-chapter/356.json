@@ -2,7 +2,7 @@
   "id": "manga-chapter:356",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-356",
+  "slug": "356",
   "properties": {
     "number": {
       "value": 356
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:250"
     }
+  ],
+  "slug_history": [
+    "chapter-356"
   ]
 }

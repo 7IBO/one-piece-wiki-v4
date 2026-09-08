@@ -2,7 +2,7 @@
   "id": "manga-chapter:807",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-807",
+  "slug": "807",
   "properties": {
     "number": {
       "value": 807
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:757"
     }
+  ],
+  "slug_history": [
+    "chapter-807"
   ]
 }

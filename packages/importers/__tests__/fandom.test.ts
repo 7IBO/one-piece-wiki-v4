@@ -108,7 +108,7 @@ describe('chapter mapper (real Chapter Box)', () => {
     expect(result?.entity).toMatchObject({
       id: 'manga-chapter:1044',
       type: 'manga-chapter',
-      slug: 'chapter-1044',
+      slug: '1044',
       properties: {
         number: { value: 1044 },
         title_key: { value_key: 'manga-chapter.1044.title' },
@@ -158,7 +158,7 @@ describe('episode mapper (real Episode Box)', () => {
     expect(result).not.toBeNull();
     expect(result?.entity).toMatchObject({
       id: 'anime-episode:1071',
-      slug: 'episode-1071',
+      slug: '1071',
       properties: {
         number: { value: 1071 },
         title_key: { value_key: 'anime-episode.1071.title' },

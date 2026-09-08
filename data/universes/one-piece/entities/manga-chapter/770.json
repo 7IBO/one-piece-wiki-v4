@@ -2,7 +2,7 @@
   "id": "manga-chapter:770",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-770",
+  "slug": "770",
   "properties": {
     "number": {
       "value": 770
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:711"
     }
+  ],
+  "slug_history": [
+    "chapter-770"
   ]
 }

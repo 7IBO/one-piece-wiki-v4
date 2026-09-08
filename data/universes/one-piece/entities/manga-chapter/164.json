@@ -2,7 +2,7 @@
   "id": "manga-chapter:164",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-164",
+  "slug": "164",
   "properties": {
     "number": {
       "value": 164
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:103"
     }
+  ],
+  "slug_history": [
+    "chapter-164"
   ]
 }

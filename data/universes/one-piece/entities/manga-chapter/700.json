@@ -2,7 +2,7 @@
   "id": "manga-chapter:700",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-700",
+  "slug": "700",
   "properties": {
     "number": {
       "value": 700
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:629"
     }
+  ],
+  "slug_history": [
+    "chapter-700"
   ]
 }

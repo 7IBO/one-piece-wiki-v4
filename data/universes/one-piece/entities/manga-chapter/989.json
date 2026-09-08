@@ -2,7 +2,7 @@
   "id": "manga-chapter:989",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-989",
+  "slug": "989",
   "properties": {
     "number": {
       "value": 989
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1000"
     }
+  ],
+  "slug_history": [
+    "chapter-989"
   ]
 }

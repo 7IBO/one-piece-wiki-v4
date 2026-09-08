@@ -2,7 +2,7 @@
   "id": "manga-chapter:662",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-662",
+  "slug": "662",
   "properties": {
     "number": {
       "value": 662
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:588"
     }
+  ],
+  "slug_history": [
+    "chapter-662"
   ]
 }

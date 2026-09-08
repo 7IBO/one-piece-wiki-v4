@@ -7691,6 +7691,67 @@ mainteneur : le doublon se signale au lieu de s'écraser.
 
 ---
 
+## ADR-125 — Le slug d'une entité ordinale EST son numéro ; l'id fait foi
+
+**Date**: 2026-09-08
+
+**Context**: l'id et le slug d'une même entité disaient deux choses
+différentes, et pas sur trois cas isolés :
+
+```
+id manga-chapter:1044   slug chapter-1044
+id anime-episode:1071   slug episode-1071
+id volume:115           slug volume-115
+```
+
+Mesuré : **2484 entités sur 2557**, soit 97 % du corpus, avaient
+`id != type:slug`. Les 73 restantes étaient conformes, sauf quatre
+(trois personnages, un fruit) où c'est l'id qui est court — traitées
+séparément.
+
+**Options**:
+
+- A — Aligner l'ID sur le slug : `manga-chapter:chapter-1044`.
+- B — Aligner le SLUG sur l'id : `1044`.
+- C — Ne rien faire, documenter la divergence.
+
+**Choice**: B.
+
+**Rationale**: le sens n'est pas symétrique, et c'est le système
+anti-spoil qui tranche. `isSourceVisible` (apps/web/server/progress.ts)
+et `isNumberedSource` (db-builder) lisent l'ORDINAL **dans le suffixe
+de l'id** — `manga-chapter:1044` → 1044. C'est la clé de tout le
+filtrage par progression. L'option A l'aurait cassé sur 2484 entités ;
+elle aurait aussi mis le type deux fois dans l'URL
+(`/manga-chapter/chapter-1044`).
+
+La règle écrite est structurelle, pas une liste de types : « si le
+suffixe de l'id est entièrement numérique, le slug EST ce nombre ».
+C'est mot pour mot `isNumberedSource`, donc un type ordinal ajouté
+demain en hérite sans qu'on y pense.
+
+**Consequences**: les URL passent de `/manga-chapter/chapter-1044` à
+`/manga-chapter/1044`. Les six mappers ordinaux (fandom + onepiece-api)
+produisent la nouvelle forme, sinon le prochain import réintroduirait
+l'ancienne.
+
+Une conséquence n'était pas évidente et a demandé un correctif :
+`resolveEntityName` dégradait vers `humanize(row.slug)` quand le lecteur
+n'a atteint aucun nom — ce qui rendait « Chapter 1044 » tant que le slug
+valait `chapter-1044`, et aurait rendu « 1044 » tout court. Le nom de
+repli se recompose donc **depuis le schéma** : libellé du type dans la
+locale demandée, puis le numéro. Au passage il se localise, ce qu'il ne
+faisait pas (un lecteur français lisait « Chapter 1044 »).
+
+Ce que ça casse, et qui est assumé : les anciennes URL répondent 404.
+`slug_history` reçoit bien l'ancien slug — 2484 entrées — mais **rien
+ne le consomme** ; il n'est même pas extrait dans la table `entities`.
+Servir ces redirections est un contrat d'URL à part entière, parqué
+dans `IDEAS.md` avec l'ADR qu'il réclame. À zéro utilisateur le coût
+est nul aujourd'hui, et il ne le restera pas.
+
+---
+
 ---
 
 ## Template for new entries

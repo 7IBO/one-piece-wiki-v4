@@ -2,7 +2,7 @@
   "id": "anime-episode:556",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-556",
+  "slug": "556",
   "properties": {
     "number": {
       "value": 556
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.556.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-556"
+  ]
 }

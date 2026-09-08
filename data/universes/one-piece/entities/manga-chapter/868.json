@@ -2,7 +2,7 @@
   "id": "manga-chapter:868",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-868",
+  "slug": "868",
   "properties": {
     "number": {
       "value": 868
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:839"
     }
+  ],
+  "slug_history": [
+    "chapter-868"
   ]
 }

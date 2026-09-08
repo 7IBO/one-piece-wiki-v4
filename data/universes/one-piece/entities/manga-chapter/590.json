@@ -2,7 +2,7 @@
   "id": "manga-chapter:590",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-590",
+  "slug": "590",
   "properties": {
     "number": {
       "value": 590
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:505"
     }
+  ],
+  "slug_history": [
+    "chapter-590"
   ]
 }

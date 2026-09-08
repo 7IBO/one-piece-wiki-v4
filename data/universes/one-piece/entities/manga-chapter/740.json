@@ -2,7 +2,7 @@
   "id": "manga-chapter:740",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-740",
+  "slug": "740",
   "properties": {
     "number": {
       "value": 740
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:674"
     }
+  ],
+  "slug_history": [
+    "chapter-740"
   ]
 }

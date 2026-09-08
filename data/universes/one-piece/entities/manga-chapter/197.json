@@ -2,7 +2,7 @@
   "id": "manga-chapter:197",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-197",
+  "slug": "197",
   "properties": {
     "number": {
       "value": 197
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:120"
     }
+  ],
+  "slug_history": [
+    "chapter-197"
   ]
 }

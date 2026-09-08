@@ -2,7 +2,7 @@
   "id": "manga-chapter:511",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-511",
+  "slug": "511",
   "properties": {
     "number": {
       "value": 511
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:404"
     }
+  ],
+  "slug_history": [
+    "chapter-511"
   ]
 }

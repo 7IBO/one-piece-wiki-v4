@@ -2,7 +2,7 @@
   "id": "manga-chapter:639",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-639",
+  "slug": "639",
   "properties": {
     "number": {
       "value": 639
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:18"
     }
+  ],
+  "slug_history": [
+    "chapter-639"
   ]
 }

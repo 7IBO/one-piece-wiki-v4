@@ -2,7 +2,7 @@
   "id": "manga-chapter:1181",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1181",
+  "slug": "1181",
   "properties": {
     "number": {
       "value": 1181
@@ -18,5 +18,8 @@
       "territory": "jp"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "chapter-1181"
+  ]
 }

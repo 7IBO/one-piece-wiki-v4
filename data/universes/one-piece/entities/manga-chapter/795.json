@@ -2,7 +2,7 @@
   "id": "manga-chapter:795",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-795",
+  "slug": "795",
   "properties": {
     "number": {
       "value": 795
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:739"
     }
+  ],
+  "slug_history": [
+    "chapter-795"
   ]
 }

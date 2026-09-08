@@ -2,7 +2,7 @@
   "id": "manga-chapter:1064",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1064",
+  "slug": "1064",
   "properties": {
     "number": {
       "value": 1064
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1094"
     }
+  ],
+  "slug_history": [
+    "chapter-1064"
   ]
 }

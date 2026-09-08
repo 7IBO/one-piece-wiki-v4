@@ -2,7 +2,7 @@
   "id": "manga-chapter:955",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-955",
+  "slug": "955",
   "properties": {
     "number": {
       "value": 955
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:956"
     }
+  ],
+  "slug_history": [
+    "chapter-955"
   ]
 }

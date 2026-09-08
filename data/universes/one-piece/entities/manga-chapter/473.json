@@ -2,7 +2,7 @@
   "id": "manga-chapter:473",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-473",
+  "slug": "473",
   "properties": {
     "number": {
       "value": 473
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:368"
     }
+  ],
+  "slug_history": [
+    "chapter-473"
   ]
 }

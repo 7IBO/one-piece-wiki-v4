@@ -275,7 +275,7 @@ describe('buildCandidateFiles', () => {
         id: 'manga-chapter:1044',
         type: 'manga-chapter',
         schema_version: 8,
-        slug: 'chapter-1044',
+        slug: '1044',
         properties: {},
         relations: [],
       },

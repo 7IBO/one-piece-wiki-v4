@@ -2,7 +2,7 @@
   "id": "manga-chapter:1062",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1062",
+  "slug": "1062",
   "properties": {
     "number": {
       "value": 1062
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1093"
     }
+  ],
+  "slug_history": [
+    "chapter-1062"
   ]
 }

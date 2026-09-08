@@ -2,7 +2,7 @@
   "id": "anime-episode:78",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-78",
+  "slug": "78",
   "properties": {
     "number": {
       "value": 78
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:drum-island"
     }
+  ],
+  "slug_history": [
+    "episode-78"
   ]
 }

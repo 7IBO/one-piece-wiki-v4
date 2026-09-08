@@ -2,7 +2,7 @@
   "id": "anime-episode:403",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-403",
+  "slug": "403",
   "properties": {
     "number": {
       "value": 403
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:sabaody-archipelago"
     }
+  ],
+  "slug_history": [
+    "episode-403"
   ]
 }

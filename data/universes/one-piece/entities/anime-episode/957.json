@@ -2,7 +2,7 @@
   "id": "anime-episode:957",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-957",
+  "slug": "957",
   "properties": {
     "number": {
       "value": 957
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.957.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-957"
+  ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:880",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-880",
+  "slug": "880",
   "properties": {
     "number": {
       "value": 880
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:853"
     }
+  ],
+  "slug_history": [
+    "chapter-880"
   ]
 }

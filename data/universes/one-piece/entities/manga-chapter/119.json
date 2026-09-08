@@ -2,7 +2,7 @@
   "id": "manga-chapter:119",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-119",
+  "slug": "119",
   "properties": {
     "number": {
       "value": 119
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:73"
     }
+  ],
+  "slug_history": [
+    "chapter-119"
   ]
 }

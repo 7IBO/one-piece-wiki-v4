@@ -2,7 +2,7 @@
   "id": "anime-episode:757",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-757",
+  "slug": "757",
   "properties": {
     "number": {
       "value": 757
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.757.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-757"
+  ]
 }

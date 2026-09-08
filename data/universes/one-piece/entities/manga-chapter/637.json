@@ -2,7 +2,7 @@
   "id": "manga-chapter:637",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-637",
+  "slug": "637",
   "properties": {
     "number": {
       "value": 637
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:18"
     }
+  ],
+  "slug_history": [
+    "chapter-637"
   ]
 }

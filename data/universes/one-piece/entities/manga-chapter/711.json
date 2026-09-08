@@ -2,7 +2,7 @@
   "id": "manga-chapter:711",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-711",
+  "slug": "711",
   "properties": {
     "number": {
       "value": 711
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:642"
     }
+  ],
+  "slug_history": [
+    "chapter-711"
   ]
 }

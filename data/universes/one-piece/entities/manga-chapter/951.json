@@ -2,7 +2,7 @@
   "id": "manga-chapter:951",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-951",
+  "slug": "951",
   "properties": {
     "number": {
       "value": 951
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:952"
     }
+  ],
+  "slug_history": [
+    "chapter-951"
   ]
 }

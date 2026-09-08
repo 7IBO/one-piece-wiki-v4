@@ -2,7 +2,7 @@
   "id": "anime-episode:434",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-434",
+  "slug": "434",
   "properties": {
     "number": {
       "value": 434
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.434.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-434"
+  ]
 }

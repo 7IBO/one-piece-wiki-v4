@@ -2,7 +2,7 @@
   "id": "manga-chapter:296",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-296",
+  "slug": "296",
   "properties": {
     "number": {
       "value": 296
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:191"
     }
+  ],
+  "slug_history": [
+    "chapter-296"
   ]
 }

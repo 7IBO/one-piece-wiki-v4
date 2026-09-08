@@ -2,7 +2,7 @@
   "id": "anime-episode:931",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-931",
+  "slug": "931",
   "properties": {
     "number": {
       "value": 931
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.931.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-931"
+  ]
 }

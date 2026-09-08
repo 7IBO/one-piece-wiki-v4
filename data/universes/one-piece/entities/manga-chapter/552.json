@@ -2,7 +2,7 @@
   "id": "manga-chapter:552",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-552",
+  "slug": "552",
   "properties": {
     "number": {
       "value": 552
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:462"
     }
+  ],
+  "slug_history": [
+    "chapter-552"
   ]
 }

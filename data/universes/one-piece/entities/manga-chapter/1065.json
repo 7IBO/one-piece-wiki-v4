@@ -2,7 +2,7 @@
   "id": "manga-chapter:1065",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1065",
+  "slug": "1065",
   "properties": {
     "number": {
       "value": 1065
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1095"
     }
+  ],
+  "slug_history": [
+    "chapter-1065"
   ]
 }

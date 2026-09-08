@@ -2,7 +2,7 @@
   "id": "manga-chapter:303",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-303",
+  "slug": "303",
   "properties": {
     "number": {
       "value": 303
@@ -43,5 +43,8 @@
       "type": "adapted-by",
       "target": "anime-episode:225"
     }
+  ],
+  "slug_history": [
+    "chapter-303"
   ]
 }

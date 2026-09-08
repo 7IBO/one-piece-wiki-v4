@@ -2,7 +2,7 @@
   "id": "anime-episode:899",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-899",
+  "slug": "899",
   "properties": {
     "number": {
       "value": 899
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.899.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-899"
+  ]
 }

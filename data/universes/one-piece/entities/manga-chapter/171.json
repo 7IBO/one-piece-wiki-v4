@@ -2,7 +2,7 @@
   "id": "manga-chapter:171",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-171",
+  "slug": "171",
   "properties": {
     "number": {
       "value": 171
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:107"
     }
+  ],
+  "slug_history": [
+    "chapter-171"
   ]
 }

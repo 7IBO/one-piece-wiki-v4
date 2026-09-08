@@ -2,7 +2,7 @@
   "id": "manga-chapter:1046",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1046",
+  "slug": "1046",
   "properties": {
     "number": {
       "value": 1046
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1073"
     }
+  ],
+  "slug_history": [
+    "chapter-1046"
   ]
 }

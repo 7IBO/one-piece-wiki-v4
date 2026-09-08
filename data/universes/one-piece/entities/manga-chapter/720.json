@@ -2,7 +2,7 @@
   "id": "manga-chapter:720",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-720",
+  "slug": "720",
   "properties": {
     "number": {
       "value": 720
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:650"
     }
+  ],
+  "slug_history": [
+    "chapter-720"
   ]
 }

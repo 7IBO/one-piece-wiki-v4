@@ -2,7 +2,7 @@
   "id": "manga-chapter:554",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-554",
+  "slug": "554",
   "properties": {
     "number": {
       "value": 554
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:464"
     }
+  ],
+  "slug_history": [
+    "chapter-554"
   ]
 }

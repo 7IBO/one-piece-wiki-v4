@@ -2,7 +2,7 @@
   "id": "manga-chapter:806",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-806",
+  "slug": "806",
   "properties": {
     "number": {
       "value": 806
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:755"
     }
+  ],
+  "slug_history": [
+    "chapter-806"
   ]
 }

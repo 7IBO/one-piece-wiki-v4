@@ -2,7 +2,7 @@
   "id": "manga-chapter:698",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-698",
+  "slug": "698",
   "properties": {
     "number": {
       "value": 698
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:625"
     }
+  ],
+  "slug_history": [
+    "chapter-698"
   ]
 }

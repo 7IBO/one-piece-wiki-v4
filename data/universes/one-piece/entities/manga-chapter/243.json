@@ -2,7 +2,7 @@
   "id": "manga-chapter:243",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-243",
+  "slug": "243",
   "properties": {
     "number": {
       "value": 243
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:157"
     }
+  ],
+  "slug_history": [
+    "chapter-243"
   ]
 }

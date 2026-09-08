@@ -2,7 +2,7 @@
   "id": "manga-chapter:736",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-736",
+  "slug": "736",
   "properties": {
     "number": {
       "value": 736
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:669"
     }
+  ],
+  "slug_history": [
+    "chapter-736"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:827",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-827",
+  "slug": "827",
   "properties": {
     "number": {
       "value": 827
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:786"
     }
+  ],
+  "slug_history": [
+    "chapter-827"
   ]
 }

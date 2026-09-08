@@ -2,7 +2,7 @@
   "id": "manga-chapter:366",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-366",
+  "slug": "366",
   "properties": {
     "number": {
       "value": 366
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:257"
     }
+  ],
+  "slug_history": [
+    "chapter-366"
   ]
 }

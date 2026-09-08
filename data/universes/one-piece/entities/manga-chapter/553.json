@@ -2,7 +2,7 @@
   "id": "manga-chapter:553",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-553",
+  "slug": "553",
   "properties": {
     "number": {
       "value": 553
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:463"
     }
+  ],
+  "slug_history": [
+    "chapter-553"
   ]
 }

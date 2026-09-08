@@ -2,7 +2,7 @@
   "id": "anime-episode:443",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-443",
+  "slug": "443",
   "properties": {
     "number": {
       "value": 443
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.443.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-443"
+  ]
 }

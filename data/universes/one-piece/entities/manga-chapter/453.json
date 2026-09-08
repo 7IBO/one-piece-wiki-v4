@@ -2,7 +2,7 @@
   "id": "manga-chapter:453",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-453",
+  "slug": "453",
   "properties": {
     "number": {
       "value": 453
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:347"
     }
+  ],
+  "slug_history": [
+    "chapter-453"
   ]
 }

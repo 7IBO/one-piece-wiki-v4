@@ -2,7 +2,7 @@
   "id": "manga-chapter:708",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-708",
+  "slug": "708",
   "properties": {
     "number": {
       "value": 708
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:637"
     }
+  ],
+  "slug_history": [
+    "chapter-708"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:141",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-141",
+  "slug": "141",
   "properties": {
     "number": {
       "value": 141
@@ -43,5 +43,8 @@
       "type": "adapted-by",
       "target": "anime-episode:87"
     }
+  ],
+  "slug_history": [
+    "chapter-141"
   ]
 }

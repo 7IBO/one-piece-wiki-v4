@@ -2,7 +2,7 @@
   "id": "anime-episode:986",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-986",
+  "slug": "986",
   "properties": {
     "number": {
       "value": 986
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.986.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-986"
+  ]
 }

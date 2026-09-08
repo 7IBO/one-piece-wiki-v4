@@ -2,7 +2,7 @@
   "id": "manga-chapter:1027",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1027",
+  "slug": "1027",
   "properties": {
     "number": {
       "value": 1027
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1052"
     }
+  ],
+  "slug_history": [
+    "chapter-1027"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:112",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-112",
+  "slug": "112",
   "properties": {
     "number": {
       "value": 112
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:arabasta"
     }
+  ],
+  "slug_history": [
+    "episode-112"
   ]
 }

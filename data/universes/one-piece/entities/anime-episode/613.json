@@ -2,7 +2,7 @@
   "id": "anime-episode:613",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-613",
+  "slug": "613",
   "properties": {
     "number": {
       "value": 613
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.613.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-613"
+  ]
 }

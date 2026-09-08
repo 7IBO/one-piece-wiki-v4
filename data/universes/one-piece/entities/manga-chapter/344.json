@@ -2,7 +2,7 @@
   "id": "manga-chapter:344",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-344",
+  "slug": "344",
   "properties": {
     "number": {
       "value": 344
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:243"
     }
+  ],
+  "slug_history": [
+    "chapter-344"
   ]
 }

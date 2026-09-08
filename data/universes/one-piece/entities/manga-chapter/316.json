@@ -2,7 +2,7 @@
   "id": "manga-chapter:316",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-316",
+  "slug": "316",
   "properties": {
     "number": {
       "value": 316
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:218"
     }
+  ],
+  "slug_history": [
+    "chapter-316"
   ]
 }

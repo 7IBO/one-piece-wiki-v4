@@ -2,7 +2,7 @@
   "id": "manga-chapter:199",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-199",
+  "slug": "199",
   "properties": {
     "number": {
       "value": 199
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:121"
     }
+  ],
+  "slug_history": [
+    "chapter-199"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:911",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-911",
+  "slug": "911",
   "properties": {
     "number": {
       "value": 911
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:894"
     }
+  ],
+  "slug_history": [
+    "chapter-911"
   ]
 }

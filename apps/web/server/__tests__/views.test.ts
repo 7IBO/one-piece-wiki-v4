@@ -255,7 +255,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     // A source page beyond the cursor gates on its own id.
     const chapter = await buildEntityView(
       'manga-chapter',
-      'chapter-1044',
+      '1044',
       'en',
       cursor(1043),
       null,
@@ -307,7 +307,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
   });
 
   test('chapter page: arc siblings + availability', async () => {
-    const ch1044 = await entity('manga-chapter', 'chapter-1044');
+    const ch1044 = await entity('manga-chapter', '1044');
     expect(ch1044.template.kind).toBe('source');
     if (ch1044.template.kind !== 'source') return;
     expect(ch1044.template.arc?.chip.slug).toBe('wano-country');
@@ -322,7 +322,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(numbers).toEqual([...numbers].sort((a, b) => (a ?? 0) - (b ?? 0)));
     // Chapter 1 resolves its Manga Plus link template + external_id.
     // Availability is a page-level module now, not a source-only one.
-    const ch1 = await entity('manga-chapter', 'chapter-1');
+    const ch1 = await entity('manga-chapter', '1');
     const mangaPlus = ch1.availability.find((a) => a.platform.slug === 'manga-plus');
     expect(mangaPlus?.url).toBe('https://mangaplus.shueisha.co.jp/viewer/1000486');
   });
@@ -331,10 +331,10 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
   // Ordinal sequence (prev/next), discovered from the schema
 
   test('sequence derives the ordinal property and both neighbours', async () => {
-    const ch1044 = await entity('manga-chapter', 'chapter-1044');
+    const ch1044 = await entity('manga-chapter', '1044');
     expect(ch1044.sequence?.propertyId).toBe('number');
     expect(ch1044.sequence?.number).toBe(1044);
-    expect(ch1044.sequence?.prev?.chip.slug).toBe('chapter-1043');
+    expect(ch1044.sequence?.prev?.chip.slug).toBe('1043');
     expect(ch1044.sequence?.prev?.number).toBe(1043);
     // `next` was asserted null here, with the comment "no chapter-1045
     // in corpus". True when the corpus stopped at 1044, false the
@@ -354,15 +354,15 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     // from the corpus, and `number` even forbade it (min 1) until
     // ADR-116. Now that it is imported, chapter 1 has a predecessor,
     // and that is the sequence logic working, not a regression.
-    const ch1 = await entity('manga-chapter', 'chapter-1');
+    const ch1 = await entity('manga-chapter', '1');
     expect(ch1.sequence?.prev?.number).toBe(0);
-    const ch0 = await entity('manga-chapter', 'chapter-0');
+    const ch0 = await entity('manga-chapter', '0');
     expect(ch0.sequence?.number).toBe(0);
     expect(ch0.sequence?.prev).toBeNull(); // 0 IS the start of the axis
   });
 
   test('sequence hides a neighbour beyond the progression cursor', async () => {
-    const ch1043 = await entity('manga-chapter', 'chapter-1043', 'en', cursor(1043));
+    const ch1043 = await entity('manga-chapter', '1043', 'en', cursor(1043));
     // 1044 exists, but announcing even its title would be a spoiler.
     expect(ch1043.sequence?.next).toBeNull();
     // `prev` was asserted null with the comment "1042 is not in the
@@ -380,7 +380,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     // population — chapters past the cursor (1044, 1053) drop out. The
     // exact sizes follow the corpus; the inequality between them does
     // not, so it is what we assert.
-    const ungated = (await entity('manga-chapter', 'chapter-1043')).sequence?.total ?? 0;
+    const ungated = (await entity('manga-chapter', '1043')).sequence?.total ?? 0;
     expect(ch1043.sequence?.total ?? 0).toBeLessThan(ungated);
     // Same rule on the arc ribbon: it never hands out a sibling past
     // the cursor, and the current chapter is still in it.
@@ -415,7 +415,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     // fifth assertion this week to break on an import rather than on
     // a defect. What is true of volume 1 whatever the corpus holds:
     // it is on the axis, it is number 1, and nothing precedes it.
-    const volume = await entity('volume', 'volume-1');
+    const volume = await entity('volume', '1');
     expect(volume.sequence?.propertyId).toBe('number');
     expect(volume.sequence?.number).toBe(1);
     expect(volume.sequence?.prev).toBeNull();
@@ -438,7 +438,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(arcChapters).toEqual([...arcChapters].sort((a, b) => (a ?? 0) - (b ?? 0)));
     expect(new Set(arcChapters).size).toBe(arcChapters.length);
     // A volume is a container too — same derivation, no arc-specific code.
-    const volume = await entity('volume', 'volume-1');
+    const volume = await entity('volume', '1');
     if (volume.template.kind !== 'container') return;
     const held = volume.template.groups.find((g) => g.type === 'manga-chapter');
     expect(held?.relationKey).toBe('part-of-volume.inverse');
@@ -486,7 +486,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     // a Wano ribbon is 149 siblings. If someone ever swaps the cheap
     // builder for the rich one, this fails instead of the page
     // quietly doing 149 extra relation reads.
-    const chapter = await entity('manga-chapter', 'chapter-1044');
+    const chapter = await entity('manga-chapter', '1044');
     expect(chapter.template.kind).toBe('source');
     if (chapter.template.kind !== 'source') return;
     const ribbon = chapter.template.arc?.items ?? [];
@@ -500,7 +500,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     const luffy = await entity('character', 'monkey-d-luffy');
     expect(luffy.appearances).toEqual([]);
     // …and a container's contents are NOT mistaken for appearances.
-    const volume = await entity('volume', 'volume-1');
+    const volume = await entity('volume', '1');
     expect(volume.appearances).toEqual([]);
   });
 
@@ -567,7 +567,7 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     // infobox later corrected to July 19 (ADR-120); the test then
     // failed on an import doing exactly what it was built to do.
     const chapters = await buildTypeListView('manga-chapter', 'en');
-    const chapterOne = chapters?.items.find((i) => i.slug === 'chapter-1')?.secondary;
+    const chapterOne = chapters?.items.find((i) => i.slug === '1')?.secondary;
     expect(chapterOne).toMatch(/^[A-Z][a-z]+ \d{1,2}, 1997$/);
     const platforms = await buildTypeListView('streaming-platform', 'en');
     expect(platforms?.items.find((i) => i.slug === 'netflix')?.secondary)

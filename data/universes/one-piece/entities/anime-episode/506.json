@@ -2,7 +2,7 @@
   "id": "anime-episode:506",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-506",
+  "slug": "506",
   "properties": {
     "number": {
       "value": 506
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.506.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-506"
+  ]
 }

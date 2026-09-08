@@ -17,8 +17,11 @@ Examples: `character:luffy`, `devil-fruit:gomu-gomu`,
 `manga-chapter:1044`, `event:battle-of-marineford`, `arc:wano`,
 `crew:straw-hat-pirates`.
 
-For sources with intrinsic numeric ordering (chapters, episodes), the slug
-contains the number: `manga-chapter:1044`, not `manga-chapter:nika-reveal`.
+For sources with intrinsic numeric ordering (chapters, episodes, volumes),
+the slug **is** the number: id `manga-chapter:1044`, slug `1044`, URL
+`/manga-chapter/1044`. Not `manga-chapter:nika-reveal`, and no longer
+`chapter-1044` — the id is what the anti-spoiler gate reads (ADR-125),
+so the slug follows it rather than the other way round.
 
 ### Slugs
 

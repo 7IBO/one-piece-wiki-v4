@@ -3,7 +3,7 @@
  *
  * Typical record: { id, number (or chapter), title, tome: {id, number,
  * …}, release_date, pages }. The ordinal is the identity (`manga-
- * chapter:<n>`, slug `chapter-<n>` — corpus convention); records
+ * chapter:<n>`, slug `<n>` — l'id fait foi (ADR-125)); records
  * without a parseable number are not mappable.
  *
  * EN + FR titles land in the per-locale translation sidecars under
@@ -53,7 +53,7 @@ export function mapChapter(
     id,
     type: 'manga-chapter',
     schema_version: MANGA_CHAPTER_SCHEMA_VERSION,
-    slug: `chapter-${number}`,
+    slug: `${number}`,
     properties: {
       number: { value: number },
       title_key: { value_key: titleKey },

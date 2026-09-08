@@ -2,7 +2,7 @@
   "id": "manga-chapter:232",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-232",
+  "slug": "232",
   "properties": {
     "number": {
       "value": 232
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:151"
     }
+  ],
+  "slug_history": [
+    "chapter-232"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:1008",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1008",
+  "slug": "1008",
   "properties": {
     "number": {
       "value": 1008
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1025"
     }
+  ],
+  "slug_history": [
+    "chapter-1008"
   ]
 }

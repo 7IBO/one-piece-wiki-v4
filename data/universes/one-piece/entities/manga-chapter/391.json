@@ -2,7 +2,7 @@
   "id": "manga-chapter:391",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-391",
+  "slug": "391",
   "properties": {
     "number": {
       "value": 391
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:275"
     }
+  ],
+  "slug_history": [
+    "chapter-391"
   ]
 }

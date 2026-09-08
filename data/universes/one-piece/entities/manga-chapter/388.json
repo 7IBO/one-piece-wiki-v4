@@ -2,7 +2,7 @@
   "id": "manga-chapter:388",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-388",
+  "slug": "388",
   "properties": {
     "number": {
       "value": 388
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:273"
     }
+  ],
+  "slug_history": [
+    "chapter-388"
   ]
 }

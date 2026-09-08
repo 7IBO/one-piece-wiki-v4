@@ -2,7 +2,7 @@
   "id": "manga-chapter:337",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-337",
+  "slug": "337",
   "properties": {
     "number": {
       "value": 337
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:239"
     }
+  ],
+  "slug_history": [
+    "chapter-337"
   ]
 }

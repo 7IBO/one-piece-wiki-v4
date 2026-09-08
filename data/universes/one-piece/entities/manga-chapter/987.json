@@ -2,7 +2,7 @@
   "id": "manga-chapter:987",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-987",
+  "slug": "987",
   "properties": {
     "number": {
       "value": 987
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:997"
     }
+  ],
+  "slug_history": [
+    "chapter-987"
   ]
 }

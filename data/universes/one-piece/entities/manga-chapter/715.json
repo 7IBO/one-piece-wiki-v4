@@ -2,7 +2,7 @@
   "id": "manga-chapter:715",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-715",
+  "slug": "715",
   "properties": {
     "number": {
       "value": 715
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:645"
     }
+  ],
+  "slug_history": [
+    "chapter-715"
   ]
 }

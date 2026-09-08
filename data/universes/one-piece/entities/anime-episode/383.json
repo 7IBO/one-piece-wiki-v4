@@ -2,7 +2,7 @@
   "id": "anime-episode:383",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-383",
+  "slug": "383",
   "properties": {
     "number": {
       "value": 383
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:spa-island"
     }
+  ],
+  "slug_history": [
+    "episode-383"
   ]
 }

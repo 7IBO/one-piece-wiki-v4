@@ -2,7 +2,7 @@
   "id": "manga-chapter:727",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-727",
+  "slug": "727",
   "properties": {
     "number": {
       "value": 727
@@ -39,5 +39,8 @@
       "type": "adapted-by",
       "target": "anime-episode:921"
     }
+  ],
+  "slug_history": [
+    "chapter-727"
   ]
 }

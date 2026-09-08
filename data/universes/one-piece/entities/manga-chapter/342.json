@@ -2,7 +2,7 @@
   "id": "manga-chapter:342",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-342",
+  "slug": "342",
   "properties": {
     "number": {
       "value": 342
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:242"
     }
+  ],
+  "slug_history": [
+    "chapter-342"
   ]
 }

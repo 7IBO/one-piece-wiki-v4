@@ -2,7 +2,7 @@
   "id": "anime-episode:540",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-540",
+  "slug": "540",
   "properties": {
     "number": {
       "value": 540
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:fish-man-island"
     }
+  ],
+  "slug_history": [
+    "episode-540"
   ]
 }

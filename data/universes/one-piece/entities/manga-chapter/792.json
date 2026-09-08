@@ -2,7 +2,7 @@
   "id": "manga-chapter:792",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-792",
+  "slug": "792",
   "properties": {
     "number": {
       "value": 792
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:735"
     }
+  ],
+  "slug_history": [
+    "chapter-792"
   ]
 }

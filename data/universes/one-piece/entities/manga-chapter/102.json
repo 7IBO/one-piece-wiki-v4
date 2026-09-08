@@ -2,7 +2,7 @@
   "id": "manga-chapter:102",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-102",
+  "slug": "102",
   "properties": {
     "number": {
       "value": 102
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:62"
     }
+  ],
+  "slug_history": [
+    "chapter-102"
   ]
 }

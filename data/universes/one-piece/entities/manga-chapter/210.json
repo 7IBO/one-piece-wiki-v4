@@ -2,7 +2,7 @@
   "id": "manga-chapter:210",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-210",
+  "slug": "210",
   "properties": {
     "number": {
       "value": 210
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:126"
     }
+  ],
+  "slug_history": [
+    "chapter-210"
   ]
 }

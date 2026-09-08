@@ -2,7 +2,7 @@
   "id": "anime-episode:897",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-897",
+  "slug": "897",
   "properties": {
     "number": {
       "value": 897
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.897.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-897"
+  ]
 }

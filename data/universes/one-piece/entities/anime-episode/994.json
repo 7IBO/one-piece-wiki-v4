@@ -2,7 +2,7 @@
   "id": "anime-episode:994",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-994",
+  "slug": "994",
   "properties": {
     "number": {
       "value": 994
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.994.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-994"
+  ]
 }

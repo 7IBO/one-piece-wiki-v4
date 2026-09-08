@@ -2,7 +2,7 @@
   "id": "anime-episode:309",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-309",
+  "slug": "309",
   "properties": {
     "number": {
       "value": 309
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.309.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-309"
+  ]
 }

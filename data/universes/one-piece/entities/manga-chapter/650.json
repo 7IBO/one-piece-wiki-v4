@@ -2,7 +2,7 @@
   "id": "manga-chapter:650",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-650",
+  "slug": "650",
   "properties": {
     "number": {
       "value": 650
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:21"
     }
+  ],
+  "slug_history": [
+    "chapter-650"
   ]
 }

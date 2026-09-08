@@ -2,7 +2,7 @@
   "id": "manga-chapter:236",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-236",
+  "slug": "236",
   "properties": {
     "number": {
       "value": 236
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:152"
     }
+  ],
+  "slug_history": [
+    "chapter-236"
   ]
 }

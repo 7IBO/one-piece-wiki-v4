@@ -2,7 +2,7 @@
   "id": "manga-chapter:379",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-379",
+  "slug": "379",
   "properties": {
     "number": {
       "value": 379
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:267"
     }
+  ],
+  "slug_history": [
+    "chapter-379"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:116",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-116",
+  "slug": "116",
   "properties": {
     "number": {
       "value": 116
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:71"
     }
+  ],
+  "slug_history": [
+    "chapter-116"
   ]
 }

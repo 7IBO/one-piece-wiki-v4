@@ -2,7 +2,7 @@
   "id": "anime-episode:674",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-674",
+  "slug": "674",
   "properties": {
     "number": {
       "value": 674
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.674.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-674"
+  ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:537",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-537",
+  "slug": "537",
   "properties": {
     "number": {
       "value": 537
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:439"
     }
+  ],
+  "slug_history": [
+    "chapter-537"
   ]
 }

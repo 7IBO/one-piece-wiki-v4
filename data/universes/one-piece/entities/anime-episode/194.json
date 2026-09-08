@@ -2,7 +2,7 @@
   "id": "anime-episode:194",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-194",
+  "slug": "194",
   "properties": {
     "number": {
       "value": 194
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:skypiea"
     }
+  ],
+  "slug_history": [
+    "episode-194"
   ]
 }

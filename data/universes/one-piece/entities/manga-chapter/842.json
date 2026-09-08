@@ -2,7 +2,7 @@
   "id": "manga-chapter:842",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-842",
+  "slug": "842",
   "properties": {
     "number": {
       "value": 842
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:806"
     }
+  ],
+  "slug_history": [
+    "chapter-842"
   ]
 }

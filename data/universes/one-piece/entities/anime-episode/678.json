@@ -2,7 +2,7 @@
   "id": "anime-episode:678",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-678",
+  "slug": "678",
   "properties": {
     "number": {
       "value": 678
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.678.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-678"
+  ]
 }

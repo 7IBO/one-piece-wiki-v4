@@ -2,7 +2,7 @@
   "id": "manga-chapter:339",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-339",
+  "slug": "339",
   "properties": {
     "number": {
       "value": 339
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:240"
     }
+  ],
+  "slug_history": [
+    "chapter-339"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "anime-episode:50",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-50",
+  "slug": "50",
   "properties": {
     "number": {
       "value": 50
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:loguetown"
     }
+  ],
+  "slug_history": [
+    "episode-50"
   ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:555",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-555",
+  "slug": "555",
   "properties": {
     "number": {
       "value": 555
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:464"
     }
+  ],
+  "slug_history": [
+    "chapter-555"
   ]
 }

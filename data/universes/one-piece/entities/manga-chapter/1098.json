@@ -2,7 +2,7 @@
   "id": "manga-chapter:1098",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-1098",
+  "slug": "1098",
   "properties": {
     "number": {
       "value": 1098
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:1132"
     }
+  ],
+  "slug_history": [
+    "chapter-1098"
   ]
 }

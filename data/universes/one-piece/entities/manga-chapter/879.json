@@ -2,7 +2,7 @@
   "id": "manga-chapter:879",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-879",
+  "slug": "879",
   "properties": {
     "number": {
       "value": 879
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:852"
     }
+  ],
+  "slug_history": [
+    "chapter-879"
   ]
 }

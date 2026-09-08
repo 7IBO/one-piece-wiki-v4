@@ -2,7 +2,7 @@
   "id": "manga-chapter:678",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-678",
+  "slug": "678",
   "properties": {
     "number": {
       "value": 678
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:604"
     }
+  ],
+  "slug_history": [
+    "chapter-678"
   ]
 }

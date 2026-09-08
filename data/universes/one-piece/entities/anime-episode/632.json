@@ -2,7 +2,7 @@
   "id": "anime-episode:632",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-632",
+  "slug": "632",
   "properties": {
     "number": {
       "value": 632
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.632.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-632"
+  ]
 }

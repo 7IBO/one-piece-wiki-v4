@@ -29,7 +29,7 @@ function toMap(entities: LoadedEntity[]): Map<string, LoadedEntity> {
 
 describe('extract — derived fields', () => {
   const chapter1 = loaded('manga-chapter:1', 'manga-chapter', {
-    slug: 'chapter-1',
+    slug: '1',
     schema_version: 1,
     properties: { canon_scope: [{ value: 'manga', since: 'manga-chapter:1' }] },
     relations: [
@@ -37,7 +37,7 @@ describe('extract — derived fields', () => {
     ],
   });
   const chapter5 = loaded('manga-chapter:5', 'manga-chapter', {
-    slug: 'chapter-5',
+    slug: '5',
     schema_version: 1,
     properties: { canon_scope: [{ value: 'manga', since: 'manga-chapter:5' }] },
     relations: [

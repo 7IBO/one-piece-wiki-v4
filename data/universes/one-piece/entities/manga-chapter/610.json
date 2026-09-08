@@ -2,7 +2,7 @@
   "id": "manga-chapter:610",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-610",
+  "slug": "610",
   "properties": {
     "number": {
       "value": 610
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:7"
     }
+  ],
+  "slug_history": [
+    "chapter-610"
   ]
 }

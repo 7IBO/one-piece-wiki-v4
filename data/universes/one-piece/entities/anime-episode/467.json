@@ -2,7 +2,7 @@
   "id": "anime-episode:467",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-467",
+  "slug": "467",
   "properties": {
     "number": {
       "value": 467
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:marineford"
     }
+  ],
+  "slug_history": [
+    "episode-467"
   ]
 }

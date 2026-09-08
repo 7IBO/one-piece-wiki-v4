@@ -2,7 +2,7 @@
   "id": "manga-chapter:466",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-466",
+  "slug": "466",
   "properties": {
     "number": {
       "value": 466
@@ -35,5 +35,8 @@
       "type": "adapted-by",
       "target": "anime-episode:362"
     }
+  ],
+  "slug_history": [
+    "chapter-466"
   ]
 }

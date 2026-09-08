@@ -2,7 +2,7 @@
   "id": "manga-chapter:293",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-293",
+  "slug": "293",
   "properties": {
     "number": {
       "value": 293
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:189"
     }
+  ],
+  "slug_history": [
+    "chapter-293"
   ]
 }

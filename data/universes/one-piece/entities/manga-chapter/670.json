@@ -2,7 +2,7 @@
   "id": "manga-chapter:670",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-670",
+  "slug": "670",
   "properties": {
     "number": {
       "value": 670
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:596"
     }
+  ],
+  "slug_history": [
+    "chapter-670"
   ]
 }

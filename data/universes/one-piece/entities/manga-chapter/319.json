@@ -2,7 +2,7 @@
   "id": "manga-chapter:319",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-319",
+  "slug": "319",
   "properties": {
     "number": {
       "value": 319
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:227"
     }
+  ],
+  "slug_history": [
+    "chapter-319"
   ]
 }

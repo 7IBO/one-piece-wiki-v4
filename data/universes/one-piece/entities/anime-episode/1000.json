@@ -2,7 +2,7 @@
   "id": "anime-episode:1000",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-1000",
+  "slug": "1000",
   "properties": {
     "number": {
       "value": 1000
@@ -11,5 +11,8 @@
       "value_key": "anime-episode.1000.title"
     }
   },
-  "relations": []
+  "relations": [],
+  "slug_history": [
+    "episode-1000"
+  ]
 }

@@ -2,7 +2,7 @@
   "id": "manga-chapter:393",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-393",
+  "slug": "393",
   "properties": {
     "number": {
       "value": 393
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:276"
     }
+  ],
+  "slug_history": [
+    "chapter-393"
   ]
 }

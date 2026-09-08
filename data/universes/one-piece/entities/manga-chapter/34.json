@@ -2,7 +2,7 @@
   "id": "manga-chapter:34",
   "type": "manga-chapter",
   "schema_version": 1,
-  "slug": "chapter-34",
+  "slug": "34",
   "properties": {
     "number": {
       "value": 34
@@ -31,5 +31,8 @@
       "type": "adapted-by",
       "target": "anime-episode:14"
     }
+  ],
+  "slug_history": [
+    "chapter-34"
   ]
 }

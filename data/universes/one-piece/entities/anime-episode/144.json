@@ -2,7 +2,7 @@
   "id": "anime-episode:144",
   "type": "anime-episode",
   "schema_version": 1,
-  "slug": "episode-144",
+  "slug": "144",
   "properties": {
     "number": {
       "value": 144
@@ -16,5 +16,8 @@
       "type": "part-of-arc",
       "target": "arc:jaya"
     }
+  ],
+  "slug_history": [
+    "episode-144"
   ]
 }
