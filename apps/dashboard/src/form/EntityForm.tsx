@@ -62,6 +62,12 @@ import { type QualifierDef, resolveQualifiers } from './qualifiers';
 import { QualifierRowList, SideSheet } from './QualifierSheet';
 import { type RelationEntry, RelationsEditor } from './RelationsEditor';
 import { useDraftAutosave, useStoredDraft } from './use-draft';
+import {
+  NO_ERRORS,
+  type ValidationErrors,
+  visibleErrors,
+  withLiveIssues,
+} from './validation-errors';
 
 type PropertyEntry = Record<string, unknown>;
 type PropertyValue = PropertyEntry | PropertyEntry[];
@@ -840,23 +846,14 @@ export function EntityForm(props: EntityFormProps): ReactElement {
    * the next dirty change so the maintainer isn't yelled at after
    * fixing the typo.
    */
-  const [fieldErrors, setFieldErrors] = useState<Record<string, readonly string[]>>({});
-  const [topLevelErrors, setTopLevelErrors] = useState<readonly string[]>([]);
-
-  // Clear errors when the user starts editing again — keeping a stale
-  // red ring around a property the user just corrected is hostile.
-  // Compares stringified data via the existing memo for cheapness.
-  const errorClearMemo = useRef(currentDataString);
-  useEffect(() => {
-    if (currentDataString !== errorClearMemo.current) {
-      errorClearMemo.current = currentDataString;
-      if (Object.keys(fieldErrors).length > 0 || topLevelErrors.length > 0) {
-        setFieldErrors({});
-        setTopLevelErrors([]);
-      }
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [currentDataString]);
+  // Les erreurs sont ESTAMPILLEES avec la donnee qu'elles decrivent, et
+  // ce qui s'affiche se derive au rendu — voir `validation-errors.ts`
+  // pour le pourquoi. Aucun effet ne les nettoie.
+  const [errors, setErrors] = useState<ValidationErrors>(NO_ERRORS);
+  const { byProperty: fieldErrors, topLevel: topLevelErrors } = visibleErrors(
+    errors,
+    currentDataString,
+  );
 
   // Live validation (W-F2 redesign): the same Zod the server applies
   // on save, synthesised in the browser from the catalogue the form
@@ -887,16 +884,7 @@ export function EntityForm(props: EntityFormProps): ReactElement {
           (byProperty[id] ??= []).push(formatIssueLine(issue.path.slice(2), issue.message));
         }
       }
-      // Only touch state when the picture actually changed — the
-      // error-clearing effect above resets on every edit, so writing
-      // {} here every pause would be a render loop for nothing.
-      setFieldErrors((prev) => {
-        const prevKeys = Object.keys(prev);
-        const nextKeys = Object.keys(byProperty);
-        if (prevKeys.length === 0 && nextKeys.length === 0) return prev;
-        if (JSON.stringify(prev) === JSON.stringify(byProperty)) return prev;
-        return byProperty;
-      });
+      setErrors((prev) => withLiveIssues(prev, currentDataString, byProperty));
     }, 600);
     return () => clearTimeout(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -936,8 +924,7 @@ export function EntityForm(props: EntityFormProps): ReactElement {
   async function handleSave(): Promise<void> {
     setSaving(true);
     setError(null);
-    setFieldErrors({});
-    setTopLevelErrors([]);
+    setErrors(NO_ERRORS);
     try {
       // Send the normalised payload — strips entries the user revealed
       // but never filled in (e.g. clicked the sidebar then changed
@@ -966,8 +953,9 @@ export function EntityForm(props: EntityFormProps): ReactElement {
             topLevel.push(`${p}: ${formatted}`);
           }
         }
-        setFieldErrors(byProperty);
-        setTopLevelErrors(topLevel);
+        // Estampillees avec la donnee ENVOYEE : elles s'effacent seules
+        // des que l'utilisateur y touche.
+        setErrors({ forData: currentDataString, byProperty, topLevel });
         setError(null); // top-banner is already covered by topLevelErrors
         return;
       }
@@ -987,8 +975,7 @@ export function EntityForm(props: EntityFormProps): ReactElement {
           if (f.property !== undefined) (byProperty[f.property] ??= []).push(line);
           else topLevel.push(line);
         }
-        setFieldErrors(byProperty);
-        setTopLevelErrors(topLevel);
+        setErrors({ forData: currentDataString, byProperty, topLevel });
         setError(null);
       } else {
         setError(err instanceof Error ? err.message : String(err));
