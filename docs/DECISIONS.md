@@ -7974,6 +7974,59 @@ qu'il range accessoirement le code n'est pas un bon échange.
 
 ---
 
+## ADR-130 — Les URLs publiques utilisent le `url_segment` que le schéma déclarait déjà
+
+**Date**: 2026-09-09
+
+**Context**: « pour les pages de liste, on peut pas avoir les keys
+pluriel dans url, genre "arcs", "chapters" etc ? »
+
+La réponse est oui, et le plus intéressant est qu'il n'y avait rien à
+inventer : **les 38 types déclarent un `url_segment` depuis le début**
+— `chapters`, `arcs`, `episodes`, `volumes`, `characters`, `people`,
+`companies`, `games`… — et `apps/web` ne le lisait **nulle part**. Les
+URLs reprenaient l'id de type brut, donc `/manga-chapter/1044` là où le
+schéma disait `chapters`. Le champ existait, la donnée était juste,
+personne ne s'en servait. `SCHEMA_SPEC.md` le documente pourtant comme
+« Segment used in URLs ».
+
+**Options**:
+
+- A — Une table segment → type dans `apps/web`.
+- B — Lire le champ du schéma, dans les deux sens.
+
+**Choice**: B, évidemment — A serait une table d'ids en dur pour
+recopier une donnée déjà présente.
+
+**Rationale et conséquences**:
+
+`urlSegmentOf` (id → segment) alimente les vues ; `resolveTypeSegment`
+(segment → id) accueille les routes. Ce dernier **accepte aussi un id
+de type tel quel**, ce qui fait que les anciennes URL continuent de
+répondre sans table de redirection à tenir : deux formes, une entité,
+et le lien canonique émis partout est désormais le segment.
+
+Le point qui demandait une décision : `type` et `urlSegment` sont deux
+champs, pas un. Ils ont des usages différents et divergents —
+
+- `type` est l'**id** : c'est lui que le dashboard attend
+  (`/types/manga-chapter/1044`), lui que lisent les schémas, et lui qui
+  sert de **graine** à la teinte et à l'illustration générée ;
+- `urlSegment` est ce qui va dans l'**URL publique**.
+
+Les confondre aurait envoyé `/types/chapters/1044` au dashboard, qui ne
+connaît que `manga-chapter`, et **changé la couleur de chaque entité du
+corpus** en changeant la graine.
+
+Vérifié au navigateur : sur l'accueil, la liste des chapitres, une
+fiche de personnage et une fiche de chapitre, **0 lien sur 148** garde
+l'ancienne forme ; `/chapters/1044`, `/characters/monkey-d-luffy`,
+`/arcs/wano-country`, `/episodes/1071`, `/volumes/1`, `/platforms/…`
+répondent 200, les sous-pages de section aussi, et
+`/manga-chapter/1044` répond toujours 200.
+
+---
+
 ---
 
 ## Template for new entries

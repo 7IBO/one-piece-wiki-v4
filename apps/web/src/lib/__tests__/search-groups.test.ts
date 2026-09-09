@@ -10,6 +10,7 @@ function result(id: string, type: string, typeLabel: string): SearchResultView {
   return {
     id,
     type,
+    urlSegment: `${type}s`,
     typeLabel,
     slug: id,
     name: id,

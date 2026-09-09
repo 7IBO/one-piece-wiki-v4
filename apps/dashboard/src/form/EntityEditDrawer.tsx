@@ -23,7 +23,7 @@
 import { Button } from '@/components/ui/button';
 import { resolveDisplayName } from '@onepiece-wiki/schemas';
 import { ExternalLink, X } from 'lucide-react';
-import { type ReactElement, useEffect, useMemo, useState } from 'react';
+import { type ReactElement, useEffect, useMemo, useState, useSyncExternalStore } from 'react';
 import { createPortal } from 'react-dom';
 import { toast } from 'sonner';
 import { api, type EntityDetail, type SchemaCatalogue, type SourceRef } from '../api';
@@ -50,6 +50,21 @@ function prettifySlug(slug: string): string {
     .split('-')
     .map((p) => p.length > 0 ? p[0]!.toUpperCase() + p.slice(1) : p)
     .join(' ');
+}
+
+/**
+ * `false` au rendu serveur ET au premier rendu client, `true` ensuite.
+ *
+ * C'est le primitif prevu pour ca : `useSyncExternalStore` a un
+ * instantane serveur distinct, donc les deux cotes s'accordent a
+ * l'hydratation sans etat ni effet — la ou un drapeau `useState` +
+ * `useEffect` fait le meme travail en deux rendus et une variable
+ * d'etat de plus.
+ */
+const NEVER_CHANGES = (): () => void => () => {};
+
+function useHydrated(): boolean {
+  return useSyncExternalStore(NEVER_CHANGES, () => true, () => false);
 }
 
 export function EntityEditDrawer(p: EntityEditDrawerProps): ReactElement {
@@ -118,9 +133,6 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): ReactElement {
     return et?.labels[locale] ?? et?.labels.en ?? p.type;
   }, [schemas, locale, p.type]);
 
-  const [mounted, setMounted] = useState(false);
-  useEffect(() => setMounted(true), []);
-
   // ESC closes the drawer — match QualifierSheet behaviour. Guard
   // when not open so each mounted drawer doesn't keep a global
   // listener idle.
@@ -134,6 +146,7 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): ReactElement {
   }, [p.open, isTop, p.onOpenChange]);
 
   // Le portail n'apparait qu'APRES l'hydratation.
+  const hydrated = useHydrated();
   //
   // Il y avait ici `if (typeof document === 'undefined') return <></>`,
   // qui fait diverger le serveur (rien) et le PREMIER rendu client (le
@@ -143,7 +156,7 @@ export function EntityEditDrawer(p: EntityEditDrawerProps): ReactElement {
   // le vide, le portail arrive au rendu suivant. Rien n'est perdu : le
   // contenu d'un portail vers `document.body` n'est de toute facon
   // jamais dans le HTML rendu au serveur.
-  if (!mounted) return <></>;
+  if (!hydrated) return <></>;
 
   return createPortal(
     <>

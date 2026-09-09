@@ -35,7 +35,7 @@ export function Crossed(
           <li key={`${item.sourceType}/${item.slug}`}>
             <Link
               to='/$type/$slug'
-              params={{ type: item.sourceType, slug: item.slug }}
+              params={{ type: item.urlSegment, slug: item.slug }}
               className='group block no-underline'
             >
               <span className='block overflow-hidden rounded-[5px]'>

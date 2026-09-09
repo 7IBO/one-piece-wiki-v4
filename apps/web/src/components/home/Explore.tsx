@@ -38,7 +38,7 @@ export function TypeTile({ type }: { readonly type: TypeGroup['types'][number]; 
     <li style={tint.vars as CSSProperties}>
       <Link
         to='/$type'
-        params={{ type: type.id }}
+        params={{ type: type.urlSegment }}
         className='group block no-underline'
       >
         <span className='relative block overflow-hidden rounded-md ring-1 ring-line'>

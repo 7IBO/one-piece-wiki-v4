@@ -300,7 +300,7 @@ function SectionNav(
         <li>
           <Link
             to='/$type/$slug'
-            params={{ type: view.type, slug: view.slug }}
+            params={{ type: view.urlSegment, slug: view.slug }}
             search={search}
             aria-current={current === null ? 'page' : undefined}
             className={`${item} ${current === null ? active : idle}`}
@@ -314,7 +314,7 @@ function SectionNav(
             <li key={section.id}>
               <Link
                 to='/$type/$slug/$section'
-                params={{ type: view.type, slug: view.slug, section: section.id }}
+                params={{ type: view.urlSegment, slug: view.slug, section: section.id }}
                 search={search}
                 aria-current={current?.id === section.id ? 'page' : undefined}
                 className={`${item} ${current?.id === section.id ? active : idle}`}
@@ -367,7 +367,7 @@ function Identity({ view }: { readonly view: EntityView; }): ReactElement {
         <p className='label-xs'>
           <Link
             to='/$type'
-            params={{ type: view.type }}
+            params={{ type: view.urlSegment }}
             className='transition-colors duration-150 hover:text-link-hover'
           >
             {view.typeLabel}
@@ -377,7 +377,7 @@ function Identity({ view }: { readonly view: EntityView; }): ReactElement {
               <span className='mx-1.5 text-faint'>·</span>
               <Link
                 to='/$type/$slug'
-                params={{ type: chip.type, slug: chip.slug }}
+                params={{ type: chip.urlSegment, slug: chip.slug }}
                 className='transition-colors duration-150 hover:text-link-hover'
               >
                 {chip.name}
@@ -815,7 +815,7 @@ function ConnectionRow({ item }: { readonly item: RelationItemView; }): ReactEle
     <li className='border-b border-line-soft last:border-b-0'>
       <Link
         to='/$type/$slug'
-        params={{ type: item.target.type, slug: item.target.slug }}
+        params={{ type: item.target.urlSegment, slug: item.target.slug }}
         search={search}
         className='group flex items-center gap-3 py-2'
       >
@@ -881,6 +881,7 @@ function CrewSections(
                       <EntityCard
                         key={member.chip.id}
                         type={member.chip.type}
+                        urlSegment={member.chip.urlSegment}
                         slug={member.chip.slug}
                         image={member.image}
                         name={member.chip.name}
@@ -946,6 +947,7 @@ function MemberCard(
   return (
     <EntityCard
       type={member.chip.type}
+      urlSegment={member.chip.urlSegment}
       slug={member.chip.slug}
       image={member.image}
       name={member.chip.name}
@@ -1011,7 +1013,7 @@ function ContentsList(
           <HoverPreview type={item.chip.type} slug={item.chip.slug}>
             <Link
               to='/$type/$slug'
-              params={{ type: item.chip.type, slug: item.chip.slug }}
+              params={{ type: item.chip.urlSegment, slug: item.chip.slug }}
               search={search}
               aria-current={item.current ? 'page' : undefined}
               className='group flex items-baseline gap-3 py-2.5'
@@ -1068,7 +1070,11 @@ function AdaptationsSection(
 function PositionSection(
   { arc }: {
     readonly arc: {
-      readonly chip: { readonly type: string; readonly slug: string; readonly name: string; };
+      readonly chip: {
+        readonly urlSegment: string;
+        readonly slug: string;
+        readonly name: string;
+      };
       readonly label: string;
       readonly items: readonly SourceItemView[];
     };
@@ -1081,7 +1087,7 @@ function PositionSection(
         <span className='display text-[15px] font-bold uppercase tracking-[0.04em]'>
           <Link
             to='/$type/$slug'
-            params={{ type: arc.chip.type, slug: arc.chip.slug }}
+            params={{ type: arc.chip.urlSegment, slug: arc.chip.slug }}
             className='text-link transition-colors duration-150 hover:text-link-hover'
           >
             {arc.chip.name}
@@ -1120,7 +1126,7 @@ function SourceNumberCell({ item }: { readonly item: SourceItemView; }): ReactEl
       <HoverPreview type={item.chip.type} slug={item.chip.slug}>
         <Link
           to='/$type/$slug'
-          params={{ type: item.chip.type, slug: item.chip.slug }}
+          params={{ type: item.chip.urlSegment, slug: item.chip.slug }}
           search={search}
           title={item.chip.name}
           className='grid min-w-10 place-items-center rounded-md px-2 py-1.5 text-xs font-medium tabular-nums text-muted ring-1 ring-line transition-colors duration-150 hover:text-fg'
@@ -1145,7 +1151,7 @@ function NumberGrid({ items }: { readonly items: readonly SourceItemView[]; }): 
           <HoverPreview type={item.chip.type} slug={item.chip.slug}>
             <Link
               to='/$type/$slug'
-              params={{ type: item.chip.type, slug: item.chip.slug }}
+              params={{ type: item.chip.urlSegment, slug: item.chip.slug }}
               search={search}
               title={item.chip.name}
               className={`group block rounded-md p-2 ring-1 transition-[background-color,box-shadow] duration-150 ${
@@ -1187,6 +1193,7 @@ function CastSection({ groups }: { readonly groups: readonly CastGroupView[]; })
                 <EntityCard
                   key={item.chip.id}
                   type={item.chip.type}
+                  urlSegment={item.chip.urlSegment}
                   slug={item.chip.slug}
                   image={item.image}
                   name={item.chip.name}

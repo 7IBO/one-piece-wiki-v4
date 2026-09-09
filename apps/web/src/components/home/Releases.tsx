@@ -49,7 +49,7 @@ export function Releases(
           >
             <Link
               to='/$type/$slug'
-              params={{ type: item.sourceType, slug: item.slug }}
+              params={{ type: item.urlSegment, slug: item.slug }}
               className='min-w-0 truncate no-underline'
             >
               <span className='font-semibold tabular-nums text-fg'>

@@ -194,13 +194,20 @@ function TypeListPage(): ReactElement {
               <ScopeContext.Provider value={scope ?? null}>
                 <div className='mt-4'>
                   {tab === 'table'
-                    ? <ListTable type={view.type} items={visible} facets={view.facets} />
+                    ? (
+                      <ListTable
+                        urlSegment={view.urlSegment}
+                        items={visible}
+                        facets={view.facets}
+                      />
+                    )
                     : (
                       <CardGrid>
                         {visible.map((item) => (
                           <EntityCard
                             key={item.slug}
                             type={view.type}
+                            urlSegment={view.urlSegment}
                             slug={item.slug}
                             image={item.image}
                             name={item.name}

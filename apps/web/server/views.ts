@@ -45,6 +45,17 @@ export { EMPTY_CURSOR };
 export type EntityChip = {
   readonly id: string;
   readonly type: string;
+  /**
+   * Le segment d'URL du type, tel que le SCHEMA le declare
+   * (`url_segment`) : `chapters`, `arcs`, `episodes`, `characters`.
+   *
+   * Separe de `type` parce que les deux ont des usages differents et
+   * qu'ils divergent : `type` est l'id, celui qu'attend le dashboard et
+   * les lectures de schema ; `urlSegment` est ce qui va dans l'URL
+   * publique. Les confondre aurait envoye `/types/chapters/1044` au
+   * dashboard, qui ne connait que `manga-chapter`.
+   */
+  readonly urlSegment: string;
   readonly typeLabel: string;
   readonly slug: string;
   readonly name: string;
@@ -83,6 +94,8 @@ export type ImageView = {
 // Home
 
 export type TypeSummary = {
+  /** Segment d'URL declare au schema (`url_segment`). */
+  readonly urlSegment: string;
   readonly id: string;
   readonly label: string;
   readonly count: number;
@@ -129,6 +142,8 @@ export type ReadingView = {
  * "exists, dated, not named for you yet".
  */
 export type ReleaseView = {
+  /** Segment d'URL declare au schema (`url_segment`). */
+  readonly urlSegment: string;
   readonly sourceType: string;
   readonly typeLabel: string;
   readonly slug: string;
@@ -152,6 +167,8 @@ export type ReleaseView = {
  * title may be shown.
  */
 export type CrossedView = {
+  /** Segment d'URL declare au schema (`url_segment`). */
+  readonly urlSegment: string;
   readonly sourceType: string;
   readonly typeLabel: string;
   readonly slug: string;
@@ -218,6 +235,8 @@ export type FacetView = {
 
 export type TypeListView = {
   readonly type: string;
+  /** Segment d'URL declare au schema (`url_segment`). */
+  readonly urlSegment: string;
   readonly label: string;
   readonly facets: readonly FacetView[];
   readonly items: readonly EntityListItem[];
@@ -463,6 +482,8 @@ export type EntityView = {
   readonly kind: 'entity';
   readonly id: string;
   readonly type: string;
+  /** Segment d'URL declare au schema (`url_segment`). */
+  readonly urlSegment: string;
   readonly typeLabel: string;
   readonly slug: string;
   readonly name: string;
@@ -720,6 +741,7 @@ function chipForRow(
   return {
     id: row.id,
     type: row.type,
+    urlSegment: urlSegmentOf(cat, row.type),
     typeLabel: entityTypeLabel(cat, row.type, locale),
     slug: row.slug,
     name: resolveEntityName(row, cat, locale, cursor),
@@ -751,6 +773,7 @@ function chipOrPlaceholder(
   return {
     id,
     type,
+    urlSegment: urlSegmentOf(cat, type),
     typeLabel: entityTypeLabel(cat, type, locale),
     slug,
     name: slugLabel(cat, type, slug, locale),
@@ -1429,6 +1452,7 @@ function buildCrossed(
     if (!isSourceVisible(row.id, cursor)) continue;
     out.push({
       sourceType: primary.sourceType,
+      urlSegment: urlSegmentOf(cat, primary.sourceType),
       typeLabel,
       slug: row.slug,
       number: n,
@@ -1523,6 +1547,7 @@ function buildReleases(
       const bucket = byAxis.get(sourceType) ?? [];
       bucket.push({
         sourceType,
+        urlSegment: urlSegmentOf(cat, sourceType),
         typeLabel: entityTypeShortLabel(cat, sourceType, locale),
         slug: row.slug,
         number,
@@ -1595,6 +1620,7 @@ export async function buildHomeView(locale: Locale, cursor: ProgressCursor): Pro
     const group = schema?.ui_hint?.group ?? 'other';
     const summary: TypeSummary = {
       id: type,
+      urlSegment: urlSegmentOf(cat, type),
       label: entityTypeLabel(cat, type, locale),
       count,
     };
@@ -1633,6 +1659,52 @@ export async function buildHomeView(locale: Locale, cursor: ProgressCursor): Pro
  */
 const BOOLEAN_YES: Record<string, string> = { en: 'Yes', fr: 'Oui' };
 const BOOLEAN_NO: Record<string, string> = { en: 'No', fr: 'Non' };
+
+/**
+ * L'inverse d'{@link urlSegmentOf} : d'un segment d'URL vers l'id de
+ * type.
+ *
+ * Accepte AUSSI un id de type tel quel. C'est deliberé : les anciennes
+ * URL (`/manga-chapter/1044`, ecrites avant que le segment declare au
+ * schema soit lu) continuent de repondre, sans table de redirection a
+ * tenir. Le cout est nul — deux formes resolvent vers la meme entite —
+ * et le lien canonique emis partout est desormais le segment.
+ *
+ * L'index est construit une fois par catalogue, pas a chaque appel.
+ */
+const segmentIndexes = new WeakMap<ValidatedCatalogue, ReadonlyMap<string, string>>();
+
+function resolveTypeSegment(cat: ValidatedCatalogue, segment: string): string {
+  let index = segmentIndexes.get(cat);
+  if (index === undefined) {
+    const built = new Map<string, string>();
+    for (const [id, schema] of cat.entityTypes) {
+      built.set(id, id);
+      // L'id l'emporte sur un segment qui le percuterait.
+      if (!built.has(schema.url_segment)) built.set(schema.url_segment, id);
+    }
+    index = built;
+    segmentIndexes.set(cat, built);
+  }
+  return index.get(segment) ?? segment;
+}
+
+/**
+ * Le segment d'URL public d'un type d'entite.
+ *
+ * Il est declare au SCHEMA depuis le debut — les 38 types portent un
+ * `url_segment` (`chapters`, `arcs`, `episodes`, `people`,
+ * `companies`...) — et `apps/web` ne le lisait NULLE PART : les URLs
+ * reprenaient l'id de type brut, donc `/manga-chapter/1044` la ou le
+ * schema disait `chapters`. Le champ existait, la donnee etait juste,
+ * personne ne s'en servait.
+ *
+ * Repli sur l'id quand le type est inconnu du catalogue : une
+ * reference pendante doit toujours mener quelque part.
+ */
+function urlSegmentOf(cat: ValidatedCatalogue, type: string): string {
+  return cat.entityTypes.get(type)?.url_segment ?? type;
+}
 
 /**
  * Le libelle ACTIF d'un type de relation, dans la locale demandee.
@@ -1861,15 +1933,16 @@ export async function buildTypeListView(
   cursor: ProgressCursor = EMPTY_CURSOR,
 ): Promise<TypeListView | null> {
   const cat = await getCatalogue();
-  const all = db.listEntitiesByType(type);
-  if (all.length === 0 && !cat.entityTypes.has(type)) return null;
+  const resolved = resolveTypeSegment(cat, type);
+  const all = db.listEntitiesByType(resolved);
+  if (all.length === 0 && !cat.entityTypes.has(resolved)) return null;
   // The listing stops at the reader's position. Facets are computed on
   // the SURVIVORS, not on the whole type, so a filter never counts
   // what the reader cannot see either.
   const rows = all.filter((row) => isEntityVisible(row, cursor));
   // Card enrichment reads the already-loaded row blobs; the image adds
   // one prepared relation lookup per row (v7 image-led listings).
-  const { facets, byRow } = buildFacets(rows, type, cat, locale, cursor);
+  const { facets, byRow } = buildFacets(rows, resolved, cat, locale, cursor);
   const items = rows
     .map((row) => {
       const name = resolveEntityName(row, cat, locale, cursor);
@@ -1901,7 +1974,13 @@ export async function buildTypeListView(
         ? a.ordinal - b.ordinal
         : a.name.localeCompare(b.name)
     );
-  return { type, label: entityTypeLabel(cat, type, locale), facets, items };
+  return {
+    type: resolved,
+    urlSegment: urlSegmentOf(cat, resolved),
+    label: entityTypeLabel(cat, resolved, locale),
+    facets,
+    items,
+  };
 }
 
 function buildEntryView(
@@ -2760,7 +2839,7 @@ export async function buildEntityPreview(
   scope: string | null = null,
 ): Promise<EntityPreviewView | null> {
   const cat = await getCatalogue();
-  const row = db.getEntityBySlug(type, slug);
+  const row = db.getEntityBySlug(resolveTypeSegment(cat, type), slug);
   if (row === null) return null;
   // Same gate as the page (rule 3): beyond the cursor, no preview.
   if (
@@ -2840,7 +2919,7 @@ export async function buildEntityView(
   scope: string | null = null,
 ): Promise<EntityPageView | null> {
   const cat = await getCatalogue();
-  const row = db.getEntityBySlug(type, slug);
+  const row = db.getEntityBySlug(resolveTypeSegment(cat, type), slug);
   if (row === null) return null;
   const typeLabel = entityTypeLabel(cat, row.type, locale);
   const name = resolveEntityName(row, cat, locale, cursor);
@@ -2884,6 +2963,7 @@ export async function buildEntityView(
     kind: 'entity',
     id: row.id,
     type: row.type,
+    urlSegment: urlSegmentOf(cat, row.type),
     typeLabel,
     slug: row.slug,
     name,

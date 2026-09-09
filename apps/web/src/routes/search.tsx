@@ -103,6 +103,7 @@ function SearchPage(): ReactElement {
               <EntityCard
                 key={result.id}
                 type={result.type}
+                urlSegment={result.urlSegment}
                 slug={result.slug}
                 image={result.image}
                 name={result.name}

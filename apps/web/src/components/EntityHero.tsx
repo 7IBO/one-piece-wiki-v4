@@ -167,7 +167,7 @@ function SequenceRail(
   return (
     <Link
       to='/$type/$slug'
-      params={{ type: step.chip.type, slug: step.chip.slug }}
+      params={{ type: step.chip.urlSegment, slug: step.chip.slug }}
       search={search}
       aria-label={`${t(locale, side === 'start' ? 'previous' : 'next')} — ${step.chip.name}`}
       title={step.chip.name}

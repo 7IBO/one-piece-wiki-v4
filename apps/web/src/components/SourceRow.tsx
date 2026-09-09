@@ -79,7 +79,7 @@ export function SourceRow({ item }: { readonly item: SourceItemView; }): ReactEl
       <HoverPreview type={item.chip.type} slug={item.chip.slug}>
         <Link
           to='/$type/$slug'
-          params={{ type: item.chip.type, slug: item.chip.slug }}
+          params={{ type: item.chip.urlSegment, slug: item.chip.slug }}
           search={search}
           className='flex items-center gap-[11px] border-b border-line-soft py-[7px] text-link transition-colors duration-150 hover:text-link-hover'
         >

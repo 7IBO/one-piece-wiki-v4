@@ -699,3 +699,54 @@ describe.skipIf(!hasArtifact)('les filtres de liste viennent du schema', () => {
     expect(item?.facets['part-of-arc']).toBe('arc:wano-country');
   });
 });
+
+describe.skipIf(!hasArtifact)("l'URL publique vient du schema (url_segment)", () => {
+  test('le segment declare est celui qui sort dans les liens', async () => {
+    // Les 38 types declarent un `url_segment` depuis le debut
+    // (`chapters`, `arcs`, `episodes`, `people`, `companies`...) et
+    // `apps/web` ne le lisait NULLE PART : les URLs reprenaient l'id de
+    // type brut. Le champ existait, la donnee etait juste, personne ne
+    // s'en servait.
+    const { buildEntityView } = await import('../views.ts');
+    const view = await buildEntityView('chapters', '1044', 'en', cursor(), null);
+    if (view === null || view.kind !== 'entity') throw new Error('expected an entity view');
+    expect(view.urlSegment).toBe('chapters');
+    // L'id reste l'id : c'est lui que le dashboard attend, et lui qui
+    // sert de graine aux couleurs.
+    expect(view.type).toBe('manga-chapter');
+  });
+
+  test("l'ancienne forme continue de repondre", async () => {
+    // Deux formes vers la meme entite, sans table de redirection a
+    // tenir : `resolveTypeSegment` accepte aussi un id de type.
+    const { buildEntityView } = await import('../views.ts');
+    const bySegment = await buildEntityView('chapters', '1044', 'en', cursor(), null);
+    const byId = await buildEntityView('manga-chapter', '1044', 'en', cursor(), null);
+    expect(bySegment?.kind).toBe('entity');
+    expect(byId?.kind).toBe('entity');
+    if (bySegment?.kind === 'entity' && byId?.kind === 'entity') {
+      expect(bySegment.id).toBe(byId.id);
+    }
+  });
+
+  test('la liste de type accepte les deux formes et rend le segment', async () => {
+    const { buildTypeListView } = await import('../views.ts');
+    const bySegment = await buildTypeListView('chapters', 'en', cursor());
+    const byId = await buildTypeListView('manga-chapter', 'en', cursor());
+    expect(bySegment?.type).toBe('manga-chapter');
+    expect(bySegment?.urlSegment).toBe('chapters');
+    expect(bySegment?.items.length).toBe(byId?.items.length);
+  });
+
+  test('une puce porte le segment de SON type, pas celui de la page', async () => {
+    // Sur une fiche de personnage, la premiere apparition est un
+    // CHAPITRE : la puce doit mener vers `/chapters/...`, pas vers le
+    // segment de la page qui la porte.
+    const { buildEntityView } = await import('../views.ts');
+    const view = await buildEntityView('characters', 'monkey-d-luffy', 'en', cursor(), null);
+    if (view === null || view.kind !== 'entity') throw new Error('expected an entity view');
+    expect(view.urlSegment).toBe('characters');
+    expect(view.firstAppearance).not.toBeNull();
+    expect(view.firstAppearance?.urlSegment).toBe('chapters');
+  });
+});

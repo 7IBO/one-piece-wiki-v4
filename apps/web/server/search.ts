@@ -60,6 +60,8 @@ import { buildEntityCardView, type ImageView, type Locale, propertyLabel } from 
 export type SearchResultView = {
   readonly id: string;
   readonly type: string;
+  /** Segment d'URL declare au schema (`url_segment`). */
+  readonly urlSegment: string;
   readonly typeLabel: string;
   readonly slug: string;
   /** Cursor-checked display name (never a name from beyond the cursor). */
@@ -331,6 +333,7 @@ export async function buildSearchView(
     results.push({
       id: hit.entity_id,
       type: hit.entity_type,
+      urlSegment: card.chip.urlSegment,
       typeLabel: card.chip.typeLabel,
       slug: hit.slug,
       name,

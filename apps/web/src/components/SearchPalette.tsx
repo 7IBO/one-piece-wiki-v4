@@ -129,7 +129,7 @@ export function SearchPalette(
     onClose();
     void navigate({
       to: '/$type/$slug',
-      params: { type: result.type, slug: result.slug },
+      params: { type: result.urlSegment, slug: result.slug },
     });
   };
 
