@@ -26,9 +26,6 @@
       ],
       "ignore": ["src/components/ui/**"]
     },
-    "apps/preview": {
-      "entry": ["src/server.ts"]
-    },
     "apps/web": {
       "entry": [
         "vite.config.ts",

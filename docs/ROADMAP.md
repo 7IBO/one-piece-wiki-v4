@@ -178,6 +178,21 @@ and the tooling to validate them.
 
 ## Phase 3 — Preview app
 
+> **Retiré (2026-09-09).** `apps/preview` a été supprimé : 435 lignes,
+> un serveur Bun rendant du HTML brut depuis le SDK, sans design, sans
+> cookie de progression, et sans rien de commun avec le rendu de
+> `apps/web`. Il a rempli son rôle — prouver le modèle de données de
+> bout en bout — et le site principal fait désormais tout ce qu'il
+> faisait, mieux. Un second moteur de rendu que plus personne
+> n'utilise ne fait que diverger.
+>
+> Ce que le mainteneur veut à la place — prévisualiser les brouillons
+> du dashboard **dans le site principal**, avec un badge flottant —
+> est décrit dans `IDEAS.md` et demande un ADR.
+>
+> Les critères ci-dessous sont conservés comme registre de ce que la
+> phase demandait à sa date.
+
 **Goal**: a minimal reading app that proves the data model end-to-end and
 acts as a development sandbox for the dashboard.
 

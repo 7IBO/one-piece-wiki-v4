@@ -67,7 +67,7 @@ After a real run (either CLI):
 3. `bun run format` — dprint normalises the rewritten JSON.
 4. `bun run validate` — confirm the corpus still parses.
 5. Update the internal consumers (`packages/sdk`, `apps/dashboard`,
-   `apps/preview`) in the **same PR** — see ADR-029.
+   `apps/web`) in the **same PR** — see ADR-029.
 
 Migrations are kept in the repo as a historical record. They are not
 re-run on every build; `migrate:all` replays only what the ledger says is

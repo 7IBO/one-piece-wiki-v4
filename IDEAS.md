@@ -879,3 +879,67 @@ courant échoue.
 Demande un ADR : c'est un contrat d'URL, et il faut décider si un alias
 peut être réattribué à une autre entité (donc si l'unicité porte sur
 `(type, slug)` toutes générations confondues).
+
+## Mode preview : prévisualiser les brouillons du dashboard dans le site principal
+
+Demande du mainteneur (2026-09-09) : le site principal accepte un
+paramètre `?preview` et rend les données **en tenant compte des
+changements locaux non publiés** du dashboard. En mode preview, un
+widget flottant en bas à droite — le registre d'un badge d'extension,
+type bandeau « site de test » — annonce qu'on prévisualise des
+changements en cours, liste les pages affectées **et les langues**, et
+permet de fermer la preview.
+
+L'intention explicite : « je veux utilisation de la même logique entre
+dashboard preview changes et affichage des données sur web ».
+
+`apps/preview` a été supprimé dans la foulée (cf. `ROADMAP.md` phase 3) :
+c'était un second moteur de rendu, pas un aperçu des brouillons.
+
+### Le blocage, mesuré
+
+Les brouillons vivent dans **IndexedDB** (`apps/dashboard/src/form/use-draft.ts`),
+clé `dashboard.draft.v1.<entityId>`, valeur `{data, translations, savedAt,
+version}`, TTL 24 h, plus un `BroadcastChannel` pour la synchro entre
+onglets. `listDrafts()` rend déjà `{entityId, savedAt}` — de quoi
+alimenter « les pages affectées » sans rien inventer.
+
+**IndexedDB est cloisonné par ORIGINE.** Le dashboard est servi depuis
+`…-dashboard.vercel.app`, le site depuis `…-web.vercel.app` : deux
+origines, donc **le site ne peut pas lire ces brouillons**. Toute
+conception qui suppose « le web lit le localStorage du dashboard » est
+morte avant d'être écrite. C'est la première chose à trancher.
+
+Trois transports possibles :
+
+1. **`postMessage` entre onglets** — le dashboard ouvre le site et lui
+   passe le brouillon avec une origine cible explicite ; le site le
+   garde en `sessionStorage` (sa propre origine). Aucun changement
+   d'infra, aucun état serveur, rien ne sort du navigateur. Le moins
+   cher qui soit correct.
+2. **Une seule origine** (site + `/admin`) — IndexedDB devient partagé
+   et tout devient trivial. Mais ça touche la config Vercel, que
+   `CLAUDE.md` interdit de merger sans revue humaine (leçon #23).
+3. **Brouillons côté serveur** — le plus utile à terme (ils
+   survivraient à un changement de machine, les deux apps les liraient),
+   le plus gros chantier.
+
+### La seconde décision : comment rendre l'aperçu
+
+`CLAUDE.md` : « Never write code that mutates SQLite at runtime ». Un
+aperçu doit donc **shadower une lecture**, pas muter la base — la
+distinction mérite d'être écrite noir sur blanc dans l'ADR.
+
+Le seul dessin qui tienne la promesse « même logique » est un **overlay
+de lecture à portée requête** : une couche qui substitue les
+`data`/`translations` du brouillon pour cette entité juste avant que
+`buildEntityView` construise ses vues. Un seul moteur de rendu, une
+seule grille anti-spoil, un seul jeu de view models. L'alternative — un
+chemin de rendu séparé pour l'aperçu — est exactement ce que faisait
+`apps/preview`, et elle rediverge.
+
+Le seam à ouvrir est dans `apps/web/server/views.ts` et `server/db.ts`.
+
+**ADR obligatoire** : ça touche la frontière entre le dashboard et le
+web, le contrat d'immuabilité de l'artefact, et le transport
+inter-origines.
