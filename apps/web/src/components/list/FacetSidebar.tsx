@@ -21,6 +21,17 @@ import { useLocale } from '../../routes/__root';
 
 /** Options shown before the rail offers to reveal the rest. */
 const VISIBLE_OPTIONS = 4;
+/**
+ * Au-dela de ce nombre d'options, replier ne suffit plus : « + 111
+ * autres » n'est pas un filtre, c'est un mur. La facette recoit un
+ * champ de recherche.
+ *
+ * Le cas qui l'a rendu necessaire : « par tome » sur les chapitres,
+ * 115 options. La derivation les accepte parce qu'elles GROUPENT
+ * vraiment (dix chapitres par tome en moyenne) ; c'est au rail de les
+ * rendre parcourables.
+ */
+const FACET_SEARCH_THRESHOLD = 12;
 
 export function FacetSidebar(
   { facets, selection, onToggle, onReset }: {
@@ -73,15 +84,31 @@ function FacetGroup(
 ): ReactElement {
   const locale = useLocale();
   const [expanded, setExpanded] = useState(false);
+  const [needle, setNeedle] = useState('');
+  const searchable = facet.options.length > FACET_SEARCH_THRESHOLD;
+  const asked = needle.trim().toLocaleLowerCase(locale);
+  const matching = asked === ''
+    ? facet.options
+    : facet.options.filter((o) => o.label.toLocaleLowerCase(locale).includes(asked));
   // The selected option is always shown, even past the fold: a filter
   // you cannot see is a filter you cannot lift.
-  const shown = expanded
-    ? facet.options
-    : facet.options.filter((o, i) => i < VISIBLE_OPTIONS || o.value === selected);
-  const hidden = facet.options.length - shown.length;
+  const shown = expanded || asked !== ''
+    ? matching
+    : matching.filter((o, i) => i < VISIBLE_OPTIONS || o.value === selected);
+  const hidden = matching.length - shown.length;
   return (
     <div>
       <p className='mb-2.25 text-[9px] uppercase tracking-[0.16em] text-muted'>{facet.label}</p>
+      {searchable && (
+        <input
+          type='search'
+          value={needle}
+          onChange={(event) => setNeedle(event.target.value)}
+          placeholder={t(locale, 'facetSearch')}
+          aria-label={`${facet.label} — ${t(locale, 'facetSearch')}`}
+          className='mb-2 w-full rounded-[3px] border border-line bg-canvas px-2 py-1 text-[11.5px] text-fg outline-none transition-colors duration-150 placeholder:text-faint focus:border-line-strong [&::-webkit-search-cancel-button]:hidden'
+        />
+      )}
       {shown.map((option) => (
         <button
           key={option.value}
@@ -97,6 +124,9 @@ function FacetGroup(
           <span className='shrink-0 tabular-nums text-muted'>{option.count}</span>
         </button>
       ))}
+      {shown.length === 0 && (
+        <p className='py-1.25 text-[12.5px] text-faint'>{t(locale, 'facetNoMatch')}</p>
+      )}
       {hidden > 0 && (
         <button
           type='button'

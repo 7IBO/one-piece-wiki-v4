@@ -224,7 +224,13 @@ function TableComponent(): ReactElement {
   const [selectedCols, setSelectedCols] = useState<readonly string[]>([]);
   // Track whether the user has touched the column picker, so we don't
   // keep clobbering their choice with the schema's default each render.
-  const colsInitialized = useRef(false);
+  // Le type pour lequel les colonnes par defaut ont deja ete posees.
+  // C'etait un booleen remis a `false` PENDANT LE RENDU au changement
+  // de type — une mutation de ref pendant le rendu, que le rendu
+  // concurrent rend fausse. Retenir le type plutot qu'un oui/non rend
+  // la remise a zero inutile : l'effet voit tout seul qu'il regarde un
+  // autre type.
+  const colsSeededFor = useRef<string | null>(null);
 
   // Reset the local edit state when switching entity types (the fetch
   // itself resets via the hook's deps) — render-time adjustment
@@ -233,7 +239,6 @@ function TableComponent(): ReactElement {
   if (prevType !== type) {
     setPrevType(type);
     setDrafts(new Map());
-    colsInitialized.current = false;
   }
 
   const entityType = schemas?.entityTypes[type];
@@ -265,7 +270,7 @@ function TableComponent(): ReactElement {
   // notable scalars). The maintainer can always open the picker to
   // expand from here.
   useEffect(() => {
-    if (colsInitialized.current) return;
+    if (colsSeededFor.current === type) return;
     if (allowedProperties.length === 0) return;
     const defaults = allowedProperties
       .filter((pt) =>
@@ -276,8 +281,8 @@ function TableComponent(): ReactElement {
       .slice(0, 3)
       .map((pt) => pt.id);
     setSelectedCols(defaults.length > 0 ? defaults : [allowedProperties[0]!.id]);
-    colsInitialized.current = true;
-  }, [allowedProperties]);
+    colsSeededFor.current = type;
+  }, [allowedProperties, type]);
 
   const visibleCols = useMemo(
     () =>

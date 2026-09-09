@@ -268,7 +268,7 @@ SEO/SSG, the spoiler cursor, search, and per-type templates
 
 ## Deployment
 
-- **Vercel** hosts both apps (`apps/dashboard`, `apps/preview`).
+- **Vercel** hosts both apps (`apps/dashboard`, `apps/web`).
 - **Cloudflare R2** holds the image bucket, fronted by Cloudflare's CDN.
 - **GitHub Actions** runs CI: lint, typecheck, test, build, and on `main`
   triggers a Vercel deployment.

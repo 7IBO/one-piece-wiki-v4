@@ -6,6 +6,10 @@
     "en": "Anime episode",
     "fr": "Épisode d'anime"
   },
+  "short_labels": {
+    "en": "Episode",
+    "fr": "Épisode"
+  },
   "url_segment": "episodes",
   "properties": [
     {

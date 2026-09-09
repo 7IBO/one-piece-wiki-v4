@@ -32,6 +32,33 @@ export const EntityTypeSchema = z.object({
   /** Universe scope; omitted = shared core (e.g. `character`, `image`). See ADR-035. */
   universes: z.array(Slug).optional(),
   labels: LocalizedLabel,
+  /**
+   * Libelle COURT, pour les endroits ou le type est deja evident par le
+   * contexte : un lien vers un chapitre dit « Chapter 1044 », pas
+   * « Manga chapter 1044 ». Optionnel — sans lui les appelants
+   * retombent sur `labels`, ce qui reste correct, seulement plus long.
+   *
+   * Ce n'est pas une abreviation decorative : `labels.en` doit rester
+   * « Manga chapter » parce qu'un titre de page doit distinguer le
+   * chapitre du manga de l'episode de l'anime. C'est en INLINE que la
+   * distinction est deja portee par ce qui entoure le lien.
+   */
+  short_labels: LocalizedLabel.optional(),
+  /**
+   * Ce type a-t-il sa place dans le wiki PUBLIC (accueil, listes,
+   * recherche) ? Defaut `true`.
+   *
+   * `streaming-platform` est l'exemple : Crunchyroll et Netflix sont
+   * de la donnee de production, utile sur la fiche d'un episode (« ou
+   * le regarder ») et sans aucun interet comme rubrique a parcourir.
+   * Le drapeau vit au SCHEMA et non dans `apps/web` pour la meme
+   * raison que tout le reste : une liste de types en dur dans le
+   * template serait un id code en dur de plus.
+   *
+   * Ne cache RIEN d'autre : la page de l'entite existe toujours a son
+   * URL, et une relation qui la cible s'affiche toujours.
+   */
+  public_listing: z.boolean().default(true),
   url_segment: Slug,
   properties: z.array(PropertyDeclaration),
   allowed_relations: z.array(Slug).default([]),

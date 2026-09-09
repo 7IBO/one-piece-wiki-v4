@@ -228,8 +228,8 @@ export function PropertyNav(p: PropertyNavProps): ReactElement {
                 <div className='bg-muted/40 mt-1 h-0.5 w-full overflow-hidden rounded-full'>
                   <div
                     className={g.requiredMissing > 0
-                      ? 'bg-amber-500 h-full transition-all'
-                      : 'bg-emerald-500/60 h-full transition-all'}
+                      ? 'bg-amber-500 h-full transition-[width] duration-150 ease-out'
+                      : 'bg-emerald-500/60 h-full transition-[width] duration-150 ease-out'}
                     style={{ width: `${(g.filled / Math.max(g.items.length, 1)) * 100}%` }}
                   />
                 </div>
@@ -304,8 +304,8 @@ function ProgressBar(p: {
       <div className='bg-muted/50 h-1.5 w-full overflow-hidden rounded-full'>
         <div
           className={p.requiredMissing > 0
-            ? 'bg-amber-500 h-full transition-all'
-            : 'bg-emerald-500 h-full transition-all'}
+            ? 'bg-amber-500 h-full transition-[width] duration-150 ease-out'
+            : 'bg-emerald-500 h-full transition-[width] duration-150 ease-out'}
           style={{ width: `${pct}%` }}
         />
       </div>

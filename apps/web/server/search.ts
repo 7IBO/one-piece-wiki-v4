@@ -60,6 +60,8 @@ import { buildEntityCardView, type ImageView, type Locale, propertyLabel } from 
 export type SearchResultView = {
   readonly id: string;
   readonly type: string;
+  /** Segment d'URL declare au schema (`url_segment`). */
+  readonly urlSegment: string;
   readonly typeLabel: string;
   readonly slug: string;
   /** Cursor-checked display name (never a name from beyond the cursor). */
@@ -310,6 +312,11 @@ export async function buildSearchView(
   let approximate = false;
   for (const { scored: candidate } of ranked) {
     const hit = candidate.hit;
+    // Un type que le schema retire des rubriques publiques
+    // (`public_listing: false`) ne remonte pas non plus dans la
+    // recherche : proposer « Crunchyroll » a qui cherche un nom de
+    // personnage n'aide personne. Sa page reste servie a son URL.
+    if (cat.entityTypes.get(hit.entity_type)?.public_listing === false) continue;
     const card = buildEntityCardView(hit.entity_id, cat, locale, cursor);
     if (card === null) continue;
     // The label is resolved through the SAME gate as the match — and
@@ -326,6 +333,7 @@ export async function buildSearchView(
     results.push({
       id: hit.entity_id,
       type: hit.entity_type,
+      urlSegment: card.chip.urlSegment,
       typeLabel: card.chip.typeLabel,
       slug: hit.slug,
       name,

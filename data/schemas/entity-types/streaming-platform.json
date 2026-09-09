@@ -2,12 +2,31 @@
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "streaming-platform",
   "schema_version": 1,
-  "labels": { "en": "Platform", "fr": "Plateforme" },
+  "labels": {
+    "en": "Platform",
+    "fr": "Plateforme"
+  },
+  "public_listing": false,
   "url_segment": "platforms",
   "properties": [
-    { "id": "name", "required": true, "historical": true, "localizable": true },
-    { "id": "platform_kind", "required": true, "historical": false, "localizable": false },
-    { "id": "homepage_url", "required": false, "historical": false, "localizable": false },
+    {
+      "id": "name",
+      "required": true,
+      "historical": true,
+      "localizable": true
+    },
+    {
+      "id": "platform_kind",
+      "required": true,
+      "historical": false,
+      "localizable": false
+    },
+    {
+      "id": "homepage_url",
+      "required": false,
+      "historical": false,
+      "localizable": false
+    },
     {
       "id": "link_template",
       "required": false,
@@ -17,5 +36,8 @@
     }
   ],
   "allowed_relations": [],
-  "ui_hint": { "icon": "monitor-play", "group": "production" }
+  "ui_hint": {
+    "icon": "monitor-play",
+    "group": "production"
+  }
 }

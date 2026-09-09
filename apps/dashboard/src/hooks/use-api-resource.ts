@@ -38,7 +38,11 @@ export function useApiResource<T>(
   // Latest loader without making it a dependency — callers pass inline
   // closures; the `deps` array is the explicit cache key.
   const loadRef = useRef(load);
-  loadRef.current = load;
+  // Ecrite APRES le commit : elle n'est lue que depuis l'effet
+  // ci-dessous, donc jamais pendant le rendu qui la pose.
+  useEffect(() => {
+    loadRef.current = load;
+  });
 
   // Previous deps snapshot so the effect can tell "deps changed"
   // (reset to null → skeleton) apart from "reload() bumped the nonce"

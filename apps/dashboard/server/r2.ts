@@ -22,7 +22,7 @@
 //
 // `type`-only imports stay eager (they're erased at compile time and
 // don't pull the runtime modules into the bundle's main chunk).
-import type { GetObjectCommand, PutObjectCommand, S3Client } from '@aws-sdk/client-s3';
+import type { S3Client } from '@aws-sdk/client-s3';
 import { randomBytes } from 'node:crypto';
 
 type SdkBundle = {

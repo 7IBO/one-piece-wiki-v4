@@ -18,8 +18,9 @@ import { type ReactElement } from 'react';
 import type { EntityListItem, FacetView } from '../../api';
 
 export function ListTable(
-  { type, items, facets }: {
-    readonly type: string;
+  { urlSegment, items, facets }: {
+    /** Segment d'URL du type (`url_segment` du schema). */
+    readonly urlSegment: string;
     readonly items: readonly EntityListItem[];
     readonly facets: readonly FacetView[];
   },
@@ -47,7 +48,7 @@ export function ListTable(
               <td className='py-2 pr-4'>
                 <Link
                   to='/$type/$slug'
-                  params={{ type, slug: item.slug }}
+                  params={{ type: urlSegment, slug: item.slug }}
                   className='font-semibold text-fg no-underline transition-colors duration-150 hover:text-gold'
                 >
                   {item.name}

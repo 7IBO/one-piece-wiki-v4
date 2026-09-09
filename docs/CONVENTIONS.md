@@ -59,6 +59,11 @@ When a slug changes (rename, disambiguation), the old slug is appended to
 
 ### File names
 
+> **URLs publiques.** Le segment d'URL d'un type est son `url_segment`
+> de schéma, pas son id : `/chapters/1044`, `/arcs/wano-country`,
+> `/characters/monkey-d-luffy` (ADR-130). L'id reste ce que le
+> dashboard et les lectures de schéma emploient.
+
 - Entity files: `<id-without-prefix>.json`
   - The file `entities/character/monkey-d-luffy.json` has internal id
     `character:monkey-d-luffy`

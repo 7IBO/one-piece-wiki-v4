@@ -34,6 +34,7 @@ export function CardGrid({ children }: { readonly children: ReactNode; }): React
 export function EntityCard(
   {
     type,
+    urlSegment,
     slug,
     image,
     name,
@@ -44,6 +45,13 @@ export function EntityCard(
     dimmed = false,
   }: {
     readonly type: string;
+    /**
+     * Segment d'URL du type (`url_segment` du schema). Distinct de
+     * `type`, qui reste l'id : il sert de graine a la teinte et a
+     * l'illustration generee, et changer cette graine changerait
+     * toutes les couleurs du corpus.
+     */
+    readonly urlSegment: string;
     readonly slug: string;
     readonly image: ImageView | null;
     readonly name: string;
@@ -65,7 +73,7 @@ export function EntityCard(
     <li style={tint.vars as CSSProperties}>
       <Link
         to='/$type/$slug'
-        params={{ type, slug }}
+        params={{ type: urlSegment, slug }}
         search={search}
         className='group block overflow-hidden rounded-lg ring-1 ring-line-strong'
       >

@@ -2,14 +2,44 @@
   "$schema": "../../../packages/schema-engine/meta-schemas/entity-type.schema.json",
   "id": "volume",
   "schema_version": 1,
-  "labels": { "en": "Volume", "fr": "Tome" },
+  "labels": {
+    "en": "Volume",
+    "fr": "Tome"
+  },
+  "short_labels": {
+    "en": "Volume",
+    "fr": "Tome"
+  },
   "url_segment": "volumes",
   "properties": [
-    { "id": "number", "required": true, "historical": false, "localizable": false },
-    { "id": "title_key", "required": false, "historical": false, "localizable": true },
-    { "id": "released_at", "required": false, "historical": false, "localizable": false }
+    {
+      "id": "number",
+      "required": true,
+      "historical": false,
+      "localizable": false
+    },
+    {
+      "id": "title_key",
+      "required": false,
+      "historical": false,
+      "localizable": true
+    },
+    {
+      "id": "released_at",
+      "required": false,
+      "historical": false,
+      "localizable": false
+    }
   ],
-  "display_name_properties": ["title_key"],
-  "allowed_relations": ["depicted-by", "available-on"],
-  "ui_hint": { "icon": "book", "group": "sources" }
+  "display_name_properties": [
+    "title_key"
+  ],
+  "allowed_relations": [
+    "depicted-by",
+    "available-on"
+  ],
+  "ui_hint": {
+    "icon": "book",
+    "group": "sources"
+  }
 }

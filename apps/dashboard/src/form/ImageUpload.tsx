@@ -161,7 +161,7 @@ export function ImageUpload(
       {hasImage
         ? (
           <div className='border-input bg-card flex items-center gap-3 rounded-md border p-2'>
-            <ImagePreview src={value!} />
+            <ImagePreview key={value!} src={value!} />
             <div className='min-w-0 flex-1'>
               <p className='truncate text-xs font-mono text-muted-foreground'>{value}</p>
               <div className='mt-1 flex gap-2'>
@@ -220,7 +220,7 @@ export function ImageUpload(
               ? (
                 <div className='bg-input mt-1 h-1 w-40 overflow-hidden rounded'>
                   <div
-                    className='bg-primary h-full transition-all'
+                    className='bg-primary h-full transition-[width] duration-150 ease-out'
                     style={{ width: `${Math.round(progress * 100)}%` }}
                   />
                 </div>
@@ -245,14 +245,17 @@ export function ImageUpload(
  * up at a glance.
  */
 function ImagePreview({ src }: { src: string; }): ReactElement {
+  // Le drapeau « cassee » se remet a zero tout seul : l'appelant passe
+  // `key={src}`, donc changer d'URL REMONTE ce composant.
+  //
+  // Il y avait ici un suivi de la prop precedente — d'abord une ref
+  // mutee pendant le rendu (pas sur en rendu concurrent : un rendu
+  // abandonne ecrit quand meme), puis un `useState` miroir, qui coute
+  // un rendu de plus et n'est jamais affiche. Les deux repondaient a
+  // une question que `key` fait disparaitre, et c'est le premier
+  // remede que react.dev propose pour « reinitialiser l'etat quand une
+  // prop change ».
   const [broken, setBroken] = useState(false);
-  // Reset the broken flag when the URL changes so swapping in a new
-  // image gives it a fresh chance to load.
-  const lastSrc = useRef(src);
-  if (lastSrc.current !== src) {
-    lastSrc.current = src;
-    if (broken) setBroken(false);
-  }
 
   if (broken) {
     let host = '?';

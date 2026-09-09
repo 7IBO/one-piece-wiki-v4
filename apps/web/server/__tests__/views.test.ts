@@ -599,3 +599,154 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(luffy.template.kind).toBe('character');
   });
 });
+
+describe.skipIf(!hasArtifact)('ce que le schema retire du wiki public', () => {
+  test("un type `public_listing: false` ne figure pas dans l'accueil", async () => {
+    // `streaming-platform` est de la donnee de production : Crunchyroll
+    // est utile sur la fiche d'un episode (« ou le regarder »), pas
+    // comme rubrique a parcourir. Le drapeau vit au SCHEMA — une liste
+    // de types en dur dans le template serait un id code en dur.
+    const { buildHomeView } = await import('../views.ts');
+    const home = await buildHomeView('en', cursor());
+    const ids = home.groups.flatMap((group) => group.types.map((t) => t.id));
+    expect(ids).not.toContain('streaming-platform');
+    // Et le total compte ce qui est PARCOURABLE, pas ce qui existe.
+    expect(ids).toContain('character');
+  });
+
+  test('sa page reste servie a son URL', async () => {
+    // Cacher un type des rubriques ne le supprime pas : une relation
+    // qui le cible doit toujours mener quelque part.
+    const { buildEntityView } = await import('../views.ts');
+    const view = await buildEntityView('streaming-platform', 'crunchyroll', 'en', cursor(), null);
+    expect(view?.kind).toBe('entity');
+  });
+
+  test('un lien inline porte le libelle COURT du type', async () => {
+    // « Chapter 1192 », pas « Manga chapter 1192 » : sur l'accueil le
+    // contexte porte deja la distinction. Le libelle vient de
+    // `short_labels` au schema, jamais d'une chaine en dur.
+    const { buildHomeView } = await import('../views.ts');
+    const home = await buildHomeView('en', cursor());
+    const chapter = home.releases.find((r) => r.sourceType === 'manga-chapter');
+    const episode = home.releases.find((r) => r.sourceType === 'anime-episode');
+    expect(chapter?.typeLabel).toBe('Chapter');
+    expect(episode?.typeLabel).toBe('Episode');
+  });
+
+  test('le titre de page garde le libelle LONG', async () => {
+    // `short_labels` ne remplace pas `labels` : hors contexte il faut
+    // encore distinguer le chapitre du manga de l'episode de l'anime.
+    const { buildEntityView } = await import('../views.ts');
+    const view = await buildEntityView('manga-chapter', '1044', 'en', cursor(), null);
+    if (view === null || view.kind !== 'entity') throw new Error('expected an entity view');
+    expect(view.typeLabel).toBe('Manga chapter');
+  });
+});
+
+describe.skipIf(!hasArtifact)("l'apercu au survol ne se repete pas", () => {
+  test('un fait ne redit pas le nom deja affiche en titre', async () => {
+    // La carte affichait « Straw Hat Pirates » en gras puis
+    // « NAME · Straw Hat Pirates » deux lignes plus bas.
+    const { buildEntityPreview } = await import('../views.ts');
+    const preview = await buildEntityPreview('crew', 'straw-hat-pirates', 'en', cursor(), null);
+    expect(preview).not.toBeNull();
+    expect(preview!.facts.map((f) => f.value)).not.toContain(preview!.chip.name);
+  });
+});
+
+describe.skipIf(!hasArtifact)('les filtres de liste viennent du schema', () => {
+  test('un conteneur devient une facette la ou aucune enum ne separait rien', async () => {
+    // Mesure avant : sur les huit types du corpus, UN SEUL obtenait une
+    // facette (`character` / `status`, dix entites). Les 1193 chapitres
+    // n'avaient aucun filtre — leurs proprietes enumerees se resument a
+    // `canon_scope`, uniforme partout. Ce qui separe des chapitres est
+    // une ARETE, pas une propriete.
+    const { buildTypeListView } = await import('../views.ts');
+    const view = await buildTypeListView('manga-chapter', 'en', cursor());
+    const ids = view?.facets.map((f) => f.id) ?? [];
+    expect(ids).toContain('part-of-arc');
+    expect(ids).toContain('part-of-volume');
+  });
+
+  test('une facette de conteneur groupe vraiment', async () => {
+    // La regle n'est pas un plafond d'options mais un regroupement :
+    // un conteneur qui tient moins de deux entites en moyenne ne
+    // groupe rien, il renomme la liste.
+    const { buildTypeListView } = await import('../views.ts');
+    const view = await buildTypeListView('manga-chapter', 'en', cursor());
+    for (const facet of view?.facets ?? []) {
+      const total = facet.options.reduce((sum, o) => sum + o.count, 0);
+      expect(facet.options.length * 2).toBeLessThanOrEqual(total);
+    }
+  });
+
+  test('les options portent le nom de la cible, passe par la grille anti-spoil', async () => {
+    const { buildTypeListView } = await import('../views.ts');
+    const view = await buildTypeListView('manga-chapter', 'en', cursor());
+    const arc = view?.facets.find((f) => f.id === 'part-of-arc');
+    expect(arc?.label).toBe('Part of arc');
+    for (const option of arc?.options ?? []) {
+      expect(option.value.startsWith('arc:')).toBe(true);
+      expect(option.label.length).toBeGreaterThan(0);
+    }
+  });
+
+  test('chaque entite porte la valeur de facette qui la classe', async () => {
+    const { buildTypeListView } = await import('../views.ts');
+    const view = await buildTypeListView('manga-chapter', 'en', cursor());
+    const item = view?.items.find((i) => i.slug === '1044');
+    expect(item?.facets['part-of-arc']).toBe('arc:wano-country');
+  });
+});
+
+describe.skipIf(!hasArtifact)("l'URL publique vient du schema (url_segment)", () => {
+  test('le segment declare est celui qui sort dans les liens', async () => {
+    // Les 38 types declarent un `url_segment` depuis le debut
+    // (`chapters`, `arcs`, `episodes`, `people`, `companies`...) et
+    // `apps/web` ne le lisait NULLE PART : les URLs reprenaient l'id de
+    // type brut. Le champ existait, la donnee etait juste, personne ne
+    // s'en servait.
+    const { buildEntityView } = await import('../views.ts');
+    const view = await buildEntityView('chapters', '1044', 'en', cursor(), null);
+    if (view === null || view.kind !== 'entity') throw new Error('expected an entity view');
+    expect(view.urlSegment).toBe('chapters');
+    // L'id reste l'id : c'est lui que le dashboard attend, et lui qui
+    // sert de graine aux couleurs.
+    expect(view.type).toBe('manga-chapter');
+  });
+
+  test("l'ancienne forme continue de repondre", async () => {
+    // Deux formes vers la meme entite, sans table de redirection a
+    // tenir : `resolveTypeSegment` accepte aussi un id de type.
+    const { buildEntityView } = await import('../views.ts');
+    const bySegment = await buildEntityView('chapters', '1044', 'en', cursor(), null);
+    const byId = await buildEntityView('manga-chapter', '1044', 'en', cursor(), null);
+    expect(bySegment?.kind).toBe('entity');
+    expect(byId?.kind).toBe('entity');
+    if (bySegment?.kind === 'entity' && byId?.kind === 'entity') {
+      expect(bySegment.id).toBe(byId.id);
+    }
+  });
+
+  test('la liste de type accepte les deux formes et rend le segment', async () => {
+    const { buildTypeListView } = await import('../views.ts');
+    const bySegment = await buildTypeListView('chapters', 'en', cursor());
+    const byId = await buildTypeListView('manga-chapter', 'en', cursor());
+    expect(bySegment?.type).toBe('manga-chapter');
+    expect(bySegment?.urlSegment).toBe('chapters');
+    expect(bySegment?.items.length).toBe(byId?.items.length);
+  });
+
+  test('une puce porte le segment de SON type, pas celui de la page', async () => {
+    // Sur une fiche de personnage, la premiere apparition est un
+    // CHAPITRE : la puce doit mener vers `/chapters/...`, pas vers le
+    // segment de la page qui la porte.
+    const { buildEntityView } = await import('../views.ts');
+    const view = await buildEntityView('characters', 'monkey-d-luffy', 'en', cursor(), null);
+    if (view === null || view.kind !== 'entity') throw new Error('expected an entity view');
+    expect(view.urlSegment).toBe('characters');
+    expect(view.firstAppearance).not.toBeNull();
+    expect(view.firstAppearance?.urlSegment).toBe('chapters');
+  });
+});

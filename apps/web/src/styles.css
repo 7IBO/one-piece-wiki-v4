@@ -316,15 +316,24 @@ body {
      * La teinte colore l'AMBIANCE, plus jamais la sémantique. Elle ne
      * re-pointe donc ni `accent` (la rupture, qui doit rester
      * reconnaissable d'une page à l'autre) ni `link` (les liens, qui
-     * doivent rester calmes) : elle prend `tint`, les filets et la
-     * surface. C'est ce qui permet à une page d'être colorée sans que
-     * la couleur veuille dire quelque chose de différent selon
-     * l'entité.
+     * doivent rester calmes).
+     *
+     * Elle ne re-pointe plus les FILETS non plus. Elle le faisait, et
+     * ça donnait ce que le mainteneur a refusé : « les couleurs random
+     * de contours j'aime pas ». Le défaut était structurel et pas
+     * cosmétique — `--color-line*` est lu par CHAQUE `border-line` et
+     * `ring-line` de la page, donc une teinte tirée d'un hachage d'id
+     * repeignait tous les contours d'une fiche, y compris ceux qui ne
+     * disent rien de l'entité : le liseré de la hover card, les
+     * séparateurs de lignes, l'anneau d'une puce. Douze accords tirés
+     * au hasard sur des contours ne font pas une palette, ils font du
+     * bruit.
+     *
+     * Il reste donc `tint` (le bandeau, les lavis, l'illustration
+     * générée) et `surface` (un fond à peine teinté). Les contours
+     * restent la ligne neutre, partout et sur toutes les fiches.
      */
     --color-tint: var(--tint-accent, oklch(0.630 0.178 31));
-    --color-line: var(--tint-line, oklch(0.251 0.016 264));
-    --color-line-strong: var(--tint-line-strong, oklch(0.309 0.015 264));
-    --color-line-soft: var(--tint-line-soft, oklch(0.226 0.013 264));
     --color-surface: var(--tint-surface, oklch(0.182 0.011 268));
   }
 
@@ -416,6 +425,54 @@ body {
     animation: hover-card-in 130ms cubic-bezier(0.22, 1, 0.36, 1) both;
   }
 
+  /*
+   * La palette de recherche : elle apparaissait et disparaissait
+   * d'un seul coup, sans transition — c'est la deuxième moitié du
+   * « ça fait pas smooth ». Base UI pose `data-starting-style` et
+   * `data-ending-style` autour de chaque changement d'état ; une
+   * transition CSS ordinaire suffit, sans plugin d'animation.
+   *
+   * On anime `translate` et non `transform` : le popup se centre avec
+   * `-translate-x-1/2`, et animer `transform` l'écraserait (même piège
+   * que la hover card).
+   */
+  .palette-popup {
+    transition:
+      opacity 140ms ease-out,
+      translate 140ms cubic-bezier(0.22, 1, 0.36, 1);
+  }
+
+  .palette-popup[data-starting-style],
+  .palette-popup[data-ending-style] {
+    opacity: 0;
+    translate: 0 -8px;
+  }
+
+  .palette-backdrop {
+    transition: opacity 140ms ease-out;
+  }
+
+  .palette-backdrop[data-starting-style],
+  .palette-backdrop[data-ending-style] {
+    opacity: 0;
+  }
+
+  /* La sortie. Elle n'existait pas : la carte entrait en 130 ms et
+   * était démontée en zéro. C'est ce déséquilibre qu'on lit comme « pas
+   * fluide ». Plus courte que l'entrée — on ne fait pas attendre
+   * quelqu'un qui a déjà quitté le lien — et sans translation, parce
+   * qu'un objet qui repart en glissant réclame l'attention qu'on vient
+   * de lui retirer. La durée doit rester égale à `EXIT_DURATION`. */
+  .hover-card--leaving {
+    animation: hover-card-out 110ms ease-out both;
+  }
+
+  @keyframes hover-card-out {
+    to {
+      opacity: 0;
+    }
+  }
+
   /* The rise uses `translate`, not `transform`: the component owns
    * `transform` (it flips the card above the link when there is no
    * room below) and an animation would otherwise win over it. */
@@ -458,7 +515,14 @@ body {
    * entirely rather than merely shortening them. */
 
   /* The preview appears, it does not travel. */
-  .hover-card {
+  .hover-card,
+  .hover-card--leaving {
     animation: none !important;
+  }
+
+  /* La palette non plus. */
+  .palette-popup,
+  .palette-backdrop {
+    transition: none !important;
   }
 }

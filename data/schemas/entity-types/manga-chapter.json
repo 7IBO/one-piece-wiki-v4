@@ -6,6 +6,10 @@
     "en": "Manga chapter",
     "fr": "Chapitre du manga"
   },
+  "short_labels": {
+    "en": "Chapter",
+    "fr": "Chapitre"
+  },
   "url_segment": "chapters",
   "properties": [
     {

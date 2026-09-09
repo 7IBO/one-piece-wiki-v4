@@ -39,7 +39,7 @@ export function EntityChipLink(
   const link = (
     <Link
       to='/$type/$slug'
-      params={{ type: chip.type, slug: chip.slug }}
+      params={{ type: chip.urlSegment, slug: chip.slug }}
       search={search}
       className='group inline-flex max-w-full items-baseline gap-1.5'
     >

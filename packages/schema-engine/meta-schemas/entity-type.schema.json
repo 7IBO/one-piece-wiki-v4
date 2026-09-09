@@ -43,6 +43,28 @@
       ],
       "additionalProperties": false
     },
+    "short_labels": {
+      "type": "object",
+      "properties": {
+        "en": {
+          "type": "string",
+          "minLength": 1
+        },
+        "fr": {
+          "type": "string",
+          "minLength": 1
+        }
+      },
+      "required": [
+        "en",
+        "fr"
+      ],
+      "additionalProperties": false
+    },
+    "public_listing": {
+      "type": "boolean",
+      "default": true
+    },
     "url_segment": {
       "type": "string",
       "minLength": 1,

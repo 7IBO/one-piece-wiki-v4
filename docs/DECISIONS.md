@@ -7817,6 +7817,216 @@ l'ignorer depuis le premier jour.
 
 ---
 
+## ADR-127 — Ce qu'un type d'entité montre au public se déclare au schéma
+
+**Date**: 2026-09-08
+
+**Context**: deux demandes du mainteneur, un seul défaut derrière.
+
+1. « l'entity type platform n'est pas utile a afficher dans web, on
+   peut cacher ? » — `streaming-platform` (Crunchyroll, Netflix,
+   4 entités) occupait une tuile d'« Explore the universe » à côté de
+   `manga-chapter` et ses 1193.
+2. « les liens episode doivent etre "episode", chapitre doivent etre
+   "chapter" » — « Latest releases » affichait « Manga chapter 1192 »
+   et « Anime episode 1176 ».
+
+Les deux se règlent d'un `if` dans le template, et c'est exactement ce
+que `CLAUDE.md` refuse : « No property name is hardcoded in application
+code ». Une liste `['streaming-platform']` ou une table
+`{'manga-chapter': 'Chapter'}` dans `apps/web` sont des ids codés en
+dur, et le prochain type ajouté ne serait couvert par ni l'une ni
+l'autre.
+
+**Options**:
+
+- A — Deux `if` dans le template.
+- B — Deux champs optionnels au SCHÉMA du type d'entité.
+
+**Choice**: B. `public_listing: boolean = true` et
+`short_labels: {en, fr}` (optionnel).
+
+**Rationale**: ce sont des faits sur le TYPE, pas sur la page qui
+l'affiche. Un type sait s'il est une rubrique à parcourir ou de la
+donnée de production ; il sait comment il s'appelle quand le contexte
+porte déjà la distinction. Un type ajouté demain déclare les deux — ou
+ne déclare rien et hérite du comportement par défaut, qui reste juste.
+
+`short_labels` ne remplace pas `labels` : hors contexte il faut encore
+distinguer le chapitre du manga de l'épisode de l'anime, donc le titre
+de la page garde « Manga chapter » et seul l'INLINE raccourcit. Deux
+usages distincts, deux champs, `entityTypeShortLabel` retombe sur
+`labels` quand `short_labels` manque.
+
+**Consequences**: `public_listing: false` retire le type de l'accueil
+ET de la recherche, et le décompte « entities indexed » passe de 2557 à
+2553 — le total doit dire ce qui est **parcourable**, sinon il annonce
+quatre pages que rien ne mène nulle part. Il ne cache rien d'autre : la
+page de l'entité est toujours servie à son URL et une relation qui la
+cible s'affiche toujours (un épisode continue de dire où le regarder).
+Un test le vérifie.
+
+---
+
+## ADR-128 — Les filtres d'une liste viennent des ARÊTES autant que des propriétés
+
+**Date**: 2026-09-08
+
+**Context**: la dérivation des facettes ne regardait que les propriétés
+**énumérées** du type. Mesure sur les huit types du corpus :
+
+| type            | entités | facettes             |
+| --------------- | ------: | -------------------- |
+| `manga-chapter` |    1193 | **aucune**           |
+| `anime-episode` |    1176 | **aucune**           |
+| `volume`        |     115 | **aucune**           |
+| `arc`           |      49 | **aucune**           |
+| `character`     |      10 | `status` (2 options) |
+
+Un seul type sur huit obtenait un filtre, et c'était celui qui en avait
+le moins besoin. Les quatre types qui portent la masse n'obtenaient
+rien : leurs propriétés énumérées se résument à `canon_scope`, uniforme
+sur tout le corpus. Le mécanisme existait, il ne servait nulle part —
+d'où « dans les pages listes, je veux qu'on puisse avoir des filtres ».
+
+**Options**:
+
+- A — Écrire les filtres utiles à la main par type.
+- B — Élargir la dérivation aux ARÊTES (conteneurs) et aux booléens.
+
+**Choice**: B.
+
+**Rationale**: ce qui sépare 1193 chapitres n'est pas une propriété,
+c'est une arête — l'arc, le tome, la saga. A serait une liste d'ids en
+dur dans `apps/web`, ce que `CLAUDE.md` refuse, et le manifeste
+`design/v2` dit la même chose : « une facette par propriété énumérée du
+type, jamais une liste écrite à la main ».
+
+Aucun id de relation n'est nommé : on retient toute relation qui **se
+comporte** comme un conteneur — au plus une cible par entité, et des
+cibles qui groupent vraiment.
+
+**Consequences**: les chapitres gagnent « par arc » (32 options) et
+« par tome » (115) ; les épisodes « par arc » (37).
+
+Deux points qui ont demandé une décision :
+
+- **Le critère n'est pas un plafond d'options.** Une borne fixe à 60
+  laissait passer les arcs et refusait les tomes, sans qu'aucune raison
+  ne distingue les deux. Le vrai critère est le regroupement : un
+  conteneur qui tient moins de deux entités en moyenne ne groupe rien,
+  il renomme la liste.
+- **Le rail doit rendre une facette longue parcourable.** Replier à
+  quatre avec « + 111 autres » n'est pas un filtre, c'est un mur.
+  Au-delà de douze options la facette reçoit un champ de recherche.
+
+Une entité qui appartient à DEUX conteneurs du même type disqualifie la
+facette entière : un filtre à choix unique mentirait sur ce qu'il
+montre.
+
+Les arêtes sont lues une fois par entité, pas une fois par type de
+relation candidat — sinon les 1193 lignes étaient relues pour chacune.
+
+---
+
+## ADR-129 — Changer de langue RECHARGE la page
+
+**Date**: 2026-09-08
+
+**Context**: « quand on change de langue niveau ui, ca charge dabord les
+textes fixes traduits puis données wiki, je voudrais que ça arrive en
+même temps, pas 1 par 1 ». Mesuré au navigateur : les chaînes fixes du
+front basculent à **117 ms**, les données du wiki à **459 ms**. **342 ms**
+d'en-tête « MA PROGRESSION » au-dessus d'une page encore anglaise.
+
+La cause est structurelle. `router.invalidate()` rejoue le `beforeLoad`
+de la racine ET les loaders de route. Le premier résout la locale en
+lisant un cookie : local, donc immédiat. Les seconds sont des fonctions
+serveur : un aller-retour. React commite le premier sans attendre les
+seconds.
+
+**Options**:
+
+- A — `startTransition` autour de l'invalidation. **Mesuré : 343 ms.**
+  L'invalidation met à jour l'état du routeur sur plusieurs ticks ; la
+  transition ne couvre pas le second.
+- B — Faire passer le chrome par le serveur lui aussi, pour qu'il
+  franchisse la même frontière asynchrone. **Mesuré : 351 ms.** Les
+  deux loaders partent ensemble mais n'arrivent pas ensemble (chrome
+  ~50 ms, page ~340), et le routeur commite chacun à son arrivée.
+- C — Recharger le document.
+
+**Choice**: C — après avoir essayé A et B, et les avoir mesurées.
+
+**Rationale**: le serveur rend la page entière dans la nouvelle langue
+en UNE passe, donc il n'y a pas d'état intermédiaire du tout. Mesuré :
+**0 échantillon mixte sur 24** pendant la bascule.
+
+**Consequences**: 592 ms au lieu de 459 — **133 ms de plus** pour ne
+jamais montrer une page à moitié traduite. C'est le bon échange : la
+langue change rarement, et un demi-écran traduit est un défaut visible
+à chaque fois.
+
+B a été **annulé** plutôt que gardé : il ne réglait pas le problème pour
+lequel il avait été écrit, et il coûtait un aller-retour serveur à
+chaque navigation client. Garder un changement qui a raté son but parce
+qu'il range accessoirement le code n'est pas un bon échange.
+
+---
+
+## ADR-130 — Les URLs publiques utilisent le `url_segment` que le schéma déclarait déjà
+
+**Date**: 2026-09-09
+
+**Context**: « pour les pages de liste, on peut pas avoir les keys
+pluriel dans url, genre "arcs", "chapters" etc ? »
+
+La réponse est oui, et le plus intéressant est qu'il n'y avait rien à
+inventer : **les 38 types déclarent un `url_segment` depuis le début**
+— `chapters`, `arcs`, `episodes`, `volumes`, `characters`, `people`,
+`companies`, `games`… — et `apps/web` ne le lisait **nulle part**. Les
+URLs reprenaient l'id de type brut, donc `/manga-chapter/1044` là où le
+schéma disait `chapters`. Le champ existait, la donnée était juste,
+personne ne s'en servait. `SCHEMA_SPEC.md` le documente pourtant comme
+« Segment used in URLs ».
+
+**Options**:
+
+- A — Une table segment → type dans `apps/web`.
+- B — Lire le champ du schéma, dans les deux sens.
+
+**Choice**: B, évidemment — A serait une table d'ids en dur pour
+recopier une donnée déjà présente.
+
+**Rationale et conséquences**:
+
+`urlSegmentOf` (id → segment) alimente les vues ; `resolveTypeSegment`
+(segment → id) accueille les routes. Ce dernier **accepte aussi un id
+de type tel quel**, ce qui fait que les anciennes URL continuent de
+répondre sans table de redirection à tenir : deux formes, une entité,
+et le lien canonique émis partout est désormais le segment.
+
+Le point qui demandait une décision : `type` et `urlSegment` sont deux
+champs, pas un. Ils ont des usages différents et divergents —
+
+- `type` est l'**id** : c'est lui que le dashboard attend
+  (`/types/manga-chapter/1044`), lui que lisent les schémas, et lui qui
+  sert de **graine** à la teinte et à l'illustration générée ;
+- `urlSegment` est ce qui va dans l'**URL publique**.
+
+Les confondre aurait envoyé `/types/chapters/1044` au dashboard, qui ne
+connaît que `manga-chapter`, et **changé la couleur de chaque entité du
+corpus** en changeant la graine.
+
+Vérifié au navigateur : sur l'accueil, la liste des chapitres, une
+fiche de personnage et une fiche de chapitre, **0 lien sur 148** garde
+l'ancienne forme ; `/chapters/1044`, `/characters/monkey-d-luffy`,
+`/arcs/wano-country`, `/episodes/1071`, `/volumes/1`, `/platforms/…`
+répondent 200, les sous-pages de section aussi, et
+`/manga-chapter/1044` répond toujours 200.
+
+---
+
 ---
 
 ## Template for new entries

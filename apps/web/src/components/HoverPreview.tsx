@@ -59,7 +59,6 @@ import {
 import { createPortal } from 'react-dom';
 import { type EntityPreviewView, fetchPreview } from '../api';
 import { type Locale, t } from '../lib/chrome';
-import { entityTint } from '../lib/entity-tint';
 import { useLocale } from '../routes/__root';
 import { useScopeSearch } from './EntityChip';
 import { EntityImage } from './EntityImage';
@@ -68,8 +67,18 @@ import { EntityImage } from './EntityImage';
 const OPEN_DELAY = 170;
 /** Grace period on leave, so a jitter does not flicker the card. */
 const CLOSE_DELAY = 110;
+/** Durée du fondu de sortie — doit rester égale à `.hover-card--leaving`. */
+const EXIT_DURATION = 110;
 /** Card width; also the clamp used to keep it inside the viewport. */
 const CARD_WIDTH = 264;
+/** Marge minimale entre la carte et le bord du viewport. */
+const VIEWPORT_MARGIN = 12;
+/**
+ * Hauteur approximative de la carte — la vignette plus deux lignes.
+ * Le retournement n'a besoin que d'un ordre de grandeur, et la carte se
+ * recale de toute façon sur le viewport.
+ */
+const CARD_HEIGHT_GUESS = 190;
 /** Gap between the link and the card. */
 const CARD_OFFSET = 8;
 
@@ -123,13 +132,27 @@ function useFinePointer(): boolean {
   return fine;
 }
 
-/** Where the card goes: below the link, flipped above when it would not fit. */
+/**
+ * Ou va la carte : sous le lien, retournee au-dessus faute de place,
+ * et CENTREE horizontalement sur lui.
+ *
+ * Elle etait alignee a gauche du lien (`rect.left`), ce qui la fait
+ * partir en biais des qu'un lien est court : une puce de trente pixels
+ * ouvrait une carte de 264 qui s'etalait toute vers la droite, sans
+ * rapport visible avec ce qu'on survole. Centrer sur le milieu du
+ * declencheur rattache la carte a son lien.
+ *
+ * La butee de bord reste : au ras du viewport la carte se recale au
+ * lieu de deborder — donc elle n'est plus exactement centree, ce qui
+ * est le bon compromis (une carte coupee ne se lit pas).
+ */
 function placeFor(rect: DOMRect, cardHeight: number): Placement {
   const room = window.innerHeight - rect.bottom;
   const above = room < cardHeight + CARD_OFFSET && rect.top > room;
-  const maxLeft = window.innerWidth - CARD_WIDTH - 12;
+  const maxLeft = window.innerWidth - CARD_WIDTH - VIEWPORT_MARGIN;
+  const centered = rect.left + rect.width / 2 - CARD_WIDTH / 2;
   return {
-    left: Math.max(12, Math.min(rect.left, maxLeft)),
+    left: Math.max(VIEWPORT_MARGIN, Math.min(centered, maxLeft)),
     top: above ? rect.top - CARD_OFFSET : rect.bottom + CARD_OFFSET,
     above,
   };
@@ -149,8 +172,11 @@ export function HoverPreview(
   const anchor = useRef<HTMLSpanElement | null>(null);
   const openTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const exitTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
   const [placement, setPlacement] = useState<Placement | null>(null);
   const [view, setView] = useState<EntityPreviewView | null>(null);
+  /** La carte est montée mais en train de sortir : elle joue son fondu. */
+  const [leaving, setLeaving] = useState(false);
 
   /**
    * The box to anchor to. The wrapper is `display: contents` — it must
@@ -166,21 +192,41 @@ export function HoverPreview(
   const clearTimers = (): void => {
     if (openTimer.current !== null) clearTimeout(openTimer.current);
     if (closeTimer.current !== null) clearTimeout(closeTimer.current);
+    if (exitTimer.current !== null) clearTimeout(exitTimer.current);
     openTimer.current = null;
     closeTimer.current = null;
+    exitTimer.current = null;
   };
 
   useEffect(() => clearTimers, []);
 
+  /**
+   * La carte SORT avant de disparaître.
+   *
+   * Elle était démontée d'un coup : elle entrait en 130 ms et
+   * s'évanouissait en zéro. C'est ce déséquilibre qu'on lit comme « pas
+   * fluide » — l'œil suit une apparition douce puis se fait arracher
+   * l'objet. On la garde montée le temps du fondu, puis on démonte.
+   *
+   * Le démontage SEC (sans fondu) existe aussi, pour le cas où la
+   * carte ne doit pas traîner : la cible a quitté l'écran. Il vit dans
+   * l'effet de suivi, qui est le seul à en avoir besoin.
+   */
   const close = (): void => {
     clearTimers();
-    setPlacement(null);
-    setView(null);
+    if (placement === null) return;
+    setLeaving(true);
+    exitTimer.current = setTimeout(() => {
+      setLeaving(false);
+      setPlacement(null);
+      setView(null);
+    }, EXIT_DURATION);
   };
 
   const open = (delay: number): void => {
     if (!fine) return;
     clearTimers();
+    setLeaving(false);
     openTimer.current = setTimeout(() => {
       if (anchor.current === null) return;
       const key = keyFor(locale, type, slug, scope);
@@ -189,9 +235,7 @@ export function HoverPreview(
         const box = triggerRect();
         if (preview === null || box === null) return;
         setView(preview);
-        // 190px is the plate plus two lines; the flip only needs a
-        // ballpark, and the card clamps itself to the viewport anyway.
-        setPlacement(placeFor(box, 190));
+        setPlacement(placeFor(box, CARD_HEIGHT_GUESS));
       });
     }, delay);
   };
@@ -203,17 +247,66 @@ export function HoverPreview(
 
   useEffect(() => {
     if (placement === null) return;
+    /*
+     * Cet effet est AUTONOME : il ne referme rien qui soit recree a
+     * chaque rendu (`close`, `unmount`, `triggerRect`), pour que sa
+     * liste de dependances soit honnete plutot que commentee. Il ne
+     * touche que des refs et des setters — stables par construction —
+     * et l'etat `placement` qui le declenche.
+     */
+    const rect = (): DOMRect | null => {
+      const element = anchor.current?.firstElementChild ?? anchor.current;
+      return element === null || element === undefined ? null : element.getBoundingClientRect();
+    };
+    const drop = (): void => {
+      if (exitTimer.current !== null) clearTimeout(exitTimer.current);
+      exitTimer.current = null;
+      setLeaving(false);
+      setPlacement(null);
+      setView(null);
+    };
+    const fadeOut = (): void => {
+      setLeaving(true);
+      exitTimer.current = setTimeout(drop, EXIT_DURATION);
+    };
     const onKey = (event: KeyboardEvent): void => {
-      if (event.key === 'Escape') close();
+      if (event.key === 'Escape') fadeOut();
+    };
+    /*
+     * Au scroll la carte SUIT son lien au lieu d'être fermée.
+     *
+     * Elle se fermait à la moindre molette : la carte est `fixed`, donc
+     * sans ça elle restait plantée pendant que le lien s'en allait — le
+     * remède était pire que le mal, il suffisait d'un pixel de scroll
+     * pour perdre ce qu'on lisait. On recalcule la position (une fois
+     * par frame) et on ne démonte que si le lien quitte l'écran, cas où
+     * il n'y a plus rien à rattacher.
+     */
+    let frame = 0;
+    const follow = (): void => {
+      if (frame !== 0) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const box = rect();
+        if (box === null) return;
+        if (box.bottom < 0 || box.top > window.innerHeight) {
+          // Plus rien a rattacher : on demonte sec, sans fondu.
+          drop();
+          return;
+        }
+        setPlacement(placeFor(box, CARD_HEIGHT_GUESS));
+      });
     };
     window.addEventListener('keydown', onKey);
-    window.addEventListener('scroll', close, true);
+    window.addEventListener('scroll', follow, true);
+    window.addEventListener('resize', follow);
     return () => {
+      if (frame !== 0) cancelAnimationFrame(frame);
       window.removeEventListener('keydown', onKey);
-      window.removeEventListener('scroll', close, true);
+      window.removeEventListener('scroll', follow, true);
+      window.removeEventListener('resize', follow);
     };
-    // Re-bound whenever the card opens or closes; `close` only touches
-    // refs and setState, both stable by construction.
+    // `placement` seul : tout le reste est une ref ou un setter.
   }, [placement]);
 
   return (
@@ -227,7 +320,12 @@ export function HoverPreview(
     >
       {children}
       {
-        /* Portalled to `document.body` on purpose. The card is
+        /* Portalled to `document.body` on purpose. Le garde
+          `typeof document` est explicite plutot que deduit : `placement`
+          n'est pose que par un gestionnaire de souris ou de focus, donc
+          la branche n'est jamais evaluee au rendu serveur — mais rien
+          dans l'expression ne le disait, et un lecteur (comme
+          react-doctor) devait le reconstituer. The card is
           `position: fixed`, but the hero it can be triggered from is a
           stacking context (`isolation: isolate`), so an in-place card
           would paint UNDER everything that follows the hero in the
@@ -235,9 +333,14 @@ export function HoverPreview(
           client — `fine` is resolved in an effect — so there is no SSR
           document to miss. */
       }
-      {placement !== null && view !== null
+      {placement !== null && view !== null && typeof document !== 'undefined'
         ? createPortal(
-          <PreviewCard view={view} placement={placement} locale={locale} />,
+          <PreviewCard
+            view={view}
+            placement={placement}
+            locale={locale}
+            leaving={leaving}
+          />,
           document.body,
         )
         : null}
@@ -252,25 +355,34 @@ export function HoverPreview(
  * VISION.md § 4 rejects.
  */
 function PreviewCard(
-  { view, placement, locale }: {
+  { view, placement, locale, leaving }: {
     readonly view: EntityPreviewView;
     readonly placement: Placement;
     readonly locale: Locale;
+    readonly leaving: boolean;
   },
 ): ReactElement {
-  const tint = entityTint(view.chip.id);
   return (
     <span
       aria-hidden
-      className='hover-card tinted pointer-events-none fixed z-40 block rounded-[3px] bg-canvas ring-1 ring-line-strong'
+      className={`hover-card${
+        leaving ? ' hover-card--leaving' : ''
+      } pointer-events-none fixed z-40 block overflow-hidden rounded-[3px] border border-line-strong bg-canvas`}
       style={{
-        ...tint.vars,
         width: `${CARD_WIDTH}px`,
         left: `${placement.left}px`,
         top: `${placement.top}px`,
         ...(placement.above ? { transform: 'translateY(-100%)' } : {}),
       } as CSSProperties}
     >
+      {
+        /* Chrome NEUTRE. La carte portait `tinted`, donc son liseré
+        prenait la teinte de l'entité survolée — un contour vert ici,
+        rouge trois lignes plus bas, pour une carte qui est du mobilier
+        et non du contenu. Le mainteneur a tranché : « les couleurs
+        random de contours j'aime pas ». L'illustration garde sa teinte,
+        elle se la donne elle-même (`EntityImage`). */
+      }
       <span className='relative block'>
         <EntityImage
           image={view.image}
@@ -278,23 +390,38 @@ function PreviewCard(
           slug={view.chip.slug}
           name={view.chip.name}
           ratio='wide'
-          className='w-full rounded-t-[3px]'
+          className='w-full'
         />
+        {
+          /* Un dégradé COURT, en bas seulement. Il montait aux deux
+          tiers de l'image et la mangeait : la vignette existe pour
+          montrer quelque chose, pas pour servir de fond au texte. */
+        }
         <span
           aria-hidden
-          className='absolute inset-x-0 bottom-0 h-2/3 bg-gradient-to-t from-canvas via-canvas/70 to-transparent'
+          className='absolute inset-x-0 bottom-0 h-1/3 bg-gradient-to-t from-canvas to-transparent'
         />
-        {view.tag !== null
-          ? (
-            <span className='absolute left-2 top-2 rounded-sm bg-canvas/85 px-1.5 py-0.5 text-[9.5px] font-bold uppercase tracking-[0.1em] text-fg'>
-              {view.tag}
-            </span>
-          )
-          : null}
       </span>
-      <span className='block px-3 pb-2.5 pt-1.5'>
-        <span className='label-xs block'>{view.chip.typeLabel}</span>
-        <span className='display mt-0.5 block truncate text-[15px] font-extrabold leading-tight text-fg'>
+      <span className='block px-3.5 pb-3 pt-2'>
+        {
+          /* Type et première apparition sur UNE ligne d'en-tête : deux
+          repères de même nature (où l'on est dans le catalogue, où l'on
+          est dans l'œuvre), qui tenaient l'un tout en haut et l'autre
+          tout en bas avec le contenu coincé entre. */
+        }
+        <span className='flex items-baseline justify-between gap-2'>
+          <span className='label-xs truncate'>{view.tag ?? view.chip.typeLabel}</span>
+          {view.firstAppearance !== null
+            ? (
+              // Le libellé reste : une source nue à droite d'un type
+              // ne dit pas ce qu'elle est.
+              <span className='shrink-0 truncate text-[10.5px] text-faint'>
+                {t(locale, 'firstAppearance')} · {view.firstAppearance}
+              </span>
+            )
+            : null}
+        </span>
+        <span className='display mt-1 block truncate text-[15.5px] font-extrabold leading-tight text-fg'>
           {view.chip.name}
         </span>
         {view.secondary !== null
@@ -302,22 +429,15 @@ function PreviewCard(
           : null}
         {view.facts.length > 0
           ? (
-            <span className='mt-2 block border-t border-line pt-1.5'>
+            <span className='mt-2.5 block border-t border-line-soft pt-2'>
               {view.facts.map((fact) => (
-                <span key={fact.label} className='flex items-baseline gap-2 py-[1px]'>
+                <span key={fact.label} className='flex items-baseline gap-3 py-[1.5px]'>
                   <span className='label-xs shrink-0'>{fact.label}</span>
                   <span className='min-w-0 flex-1 truncate text-right text-[11.5px] tabular-nums text-fg'>
                     {fact.value}
                   </span>
                 </span>
               ))}
-            </span>
-          )
-          : null}
-        {view.firstAppearance !== null
-          ? (
-            <span className='mt-1.5 block truncate text-[10.5px] text-faint'>
-              {t(locale, 'firstAppearance')} · {view.firstAppearance}
             </span>
           )
           : null}
