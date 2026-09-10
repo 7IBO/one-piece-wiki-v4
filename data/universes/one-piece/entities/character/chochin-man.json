@@ -1,0 +1,23 @@
+{
+  "id": "character:chochin-man",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chochin-man",
+  "canonical_name_key": "character.chochin-man.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chochin-man.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:980"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:980"
+      }
+    ]
+  },
+  "relations": []
+}

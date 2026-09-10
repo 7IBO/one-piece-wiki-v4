@@ -36,6 +36,7 @@ import type { BoxMapContext } from '../fandom/box.ts';
 import { enrichChapterFromRendered, isSeededChapterTitle } from '../fandom/chapter-rendered.ts';
 import { mapChapter } from '../fandom/chapter.ts';
 import { mapCharacter } from '../fandom/character.ts';
+import { citedSourceIds, stubForCitedSource } from '../fandom/cited-sources.ts';
 import { FandomClient, type ParsedPage } from '../fandom/client.ts';
 import { crawl, type CrawlResult, type MapperKind } from '../fandom/crawl.ts';
 import { mapCrew } from '../fandom/crew.ts';
@@ -284,6 +285,8 @@ if (kind === 'crawl') {
   const imported: ImportedPage[] = [];
   /** Sagas mappees mais hors chaine : sans rang, le fichier serait invalide. */
   const unranked: string[] = [];
+  /** Sources citees par Qref (`sbs:`, `databook-card:`) a materialiser. */
+  const citedSources = new Set<string>();
   // Deux pages distinctes qui produisent le MEME id sont deux entites
   // confondues, pas une re-import. `stageToLocal` ne peut pas faire la
   // difference : il voit un fichier deja present et le saute (ou, avec
@@ -311,6 +314,7 @@ if (kind === 'crawl') {
       }
       emit = withSagaNumber(r.mapped, rank);
     }
+    for (const sourceId of citedSourceIds(emit)) citedSources.add(sourceId);
     const files = buildEmitFiles(emit);
     if (stage) {
       // eslint-disable-next-line no-await-in-loop
@@ -337,6 +341,28 @@ if (kind === 'crawl') {
         + '  Relancer avec les pages manquantes de la chaine (prev/next).\n',
     );
   }
+  // Les sources citees existent, ou la reference est pendante. On les
+  // ecrit APRES les entites, et sans `--overwrite` : une fiche deja
+  // renseignee a la main ne doit pas retomber a son stub.
+  if (stage && citedSources.size > 0) {
+    let written = 0;
+    for (const sourceId of [...citedSources].sort()) {
+      const stub = stubForCitedSource(sourceId);
+      if (stub === null) continue;
+      // eslint-disable-next-line no-await-in-loop
+      const staged = await stageToLocal(buildEmitFiles(stub), {
+        repoRoot: REPO_ROOT,
+        overwrite: false,
+      });
+      written += staged.written.length;
+    }
+    if (written > 0) {
+      process.stdout.write(
+        `  sources citees : ${written} fichier(s) ecrit(s) pour ${citedSources.size} source(s)\n`,
+      );
+    }
+  }
+
   if (collisions.length > 0) {
     process.stdout.write(
       `\n${collisions.length} page(s) REFUSEE(S) — id deja produit dans ce run :\n`,

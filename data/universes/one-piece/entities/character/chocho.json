@@ -1,0 +1,23 @@
+{
+  "id": "character:chocho",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chocho",
+  "canonical_name_key": "character.chocho.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chocho.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:921"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:921"
+      }
+    ]
+  },
+  "relations": []
+}

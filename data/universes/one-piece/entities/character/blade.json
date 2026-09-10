@@ -1,0 +1,23 @@
+{
+  "id": "character:blade",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "blade",
+  "canonical_name_key": "character.blade.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.blade.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1142"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1142"
+      }
+    ]
+  },
+  "relations": []
+}

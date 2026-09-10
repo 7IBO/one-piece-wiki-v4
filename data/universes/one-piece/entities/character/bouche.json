@@ -1,0 +1,23 @@
+{
+  "id": "character:bouche",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bouche",
+  "canonical_name_key": "character.bouche.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bouche.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:880"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:880"
+      }
+    ]
+  },
+  "relations": []
+}

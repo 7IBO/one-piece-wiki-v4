@@ -1,0 +1,38 @@
+{
+  "id": "character:capone-pez",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "capone-pez",
+  "canonical_name_key": "character.capone-pez.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.capone-pez.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:834"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.capone-pez.epithet.gang",
+        "since": "manga-chapter:834"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:834"
+      }
+    ],
+    "age": [
+      {
+        "value": 1,
+        "source": "databook-card:1008"
+      }
+    ],
+    "birthday": {
+      "value": "01-22"
+    }
+  },
+  "relations": []
+}

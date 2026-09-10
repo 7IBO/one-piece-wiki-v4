@@ -1,0 +1,31 @@
+{
+  "id": "character:vence",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "vence",
+  "canonical_name_key": "character.vence.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.vence.name.common",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.vence.epithet.dice"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 20000000
+      }
+    ]
+  },
+  "relations": []
+}

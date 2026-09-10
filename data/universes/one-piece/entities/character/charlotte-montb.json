@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-montb",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-montb",
+  "canonical_name_key": "character.charlotte-montb.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-montb.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:897"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:897"
+      }
+    ],
+    "age": [
+      {
+        "value": 28
+      }
+    ]
+  },
+  "relations": []
+}

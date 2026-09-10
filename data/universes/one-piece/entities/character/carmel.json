@@ -1,0 +1,46 @@
+{
+  "id": "character:carmel",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "carmel",
+  "canonical_name_key": "character.carmel.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.carmel.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:861"
+      },
+      {
+        "value_key": "character.carmel.name.mother-carmel",
+        "name_type": "alias",
+        "since": "manga-chapter:866"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.carmel.epithet.holy-mother",
+        "since": "manga-chapter:866"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:861"
+      }
+    ],
+    "height": [
+      {
+        "value": 185,
+        "source": "databook-card:1100"
+      }
+    ],
+    "birthday": {
+      "value": "12-21"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,34 @@
+{
+  "id": "character:adele-bascudo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "adele-bascudo",
+  "canonical_name_key": "character.adele-bascudo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.adele-bascudo.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.adele-bascudo.name.adele-bascud",
+        "name_type": "alias"
+      },
+      {
+        "value_key": "character.adele-bascudo.name.anaguma",
+        "name_type": "alias"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "age": [
+      {
+        "value": 11
+      }
+    ]
+  },
+  "relations": []
+}

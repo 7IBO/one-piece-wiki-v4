@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-nusstorte",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-nusstorte",
+  "canonical_name_key": "character.charlotte-nusstorte.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-nusstorte.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "age": [
+      {
+        "value": 42
+      }
+    ],
+    "birthday": {
+      "value": "01-23"
+    }
+  },
+  "relations": []
+}

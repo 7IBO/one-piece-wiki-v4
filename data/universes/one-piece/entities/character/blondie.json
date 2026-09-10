@@ -1,0 +1,34 @@
+{
+  "id": "character:blondie",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "blondie",
+  "canonical_name_key": "character.blondie.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.blondie.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:558"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:558"
+      }
+    ],
+    "birthday": {
+      "value": "02-06"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:558"
+      }
+    ]
+  },
+  "relations": []
+}

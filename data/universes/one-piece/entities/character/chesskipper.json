@@ -1,0 +1,33 @@
+{
+  "id": "character:chesskipper",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chesskipper",
+  "canonical_name_key": "character.chesskipper.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chesskipper.name.common",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.chesskipper.epithet.chesskippa-the-hanger-on-qref-name-id-data-blue-deep-page"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

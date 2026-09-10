@@ -1,0 +1,34 @@
+{
+  "id": "character:bluefan",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bluefan",
+  "canonical_name_key": "character.bluefan.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bluefan.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "birthday": {
+      "value": "07-11"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:516"
+      }
+    ]
+  },
+  "relations": []
+}

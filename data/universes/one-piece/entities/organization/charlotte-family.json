@@ -1,0 +1,20 @@
+{
+  "id": "organization:charlotte-family",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "charlotte-family",
+  "canonical_name_key": "organization.charlotte-family.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.charlotte-family.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:476"
+      }
+    ],
+    "organization_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

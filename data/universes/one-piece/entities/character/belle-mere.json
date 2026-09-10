@@ -1,0 +1,45 @@
+{
+  "id": "character:belle-mere",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "belle-mere",
+  "canonical_name_key": "character.belle-mere.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.belle-mere.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:77"
+      },
+      {
+        "value_key": "character.belle-mere.name.bellemere",
+        "name_type": "alias",
+        "since": "manga-chapter:77"
+      },
+      {
+        "value_key": "character.belle-mere.name.bell-mere",
+        "name_type": "alias",
+        "since": "manga-chapter:77"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:77"
+      }
+    ],
+    "height": [
+      {
+        "value": 186,
+        "source": "databook-card:0107"
+      }
+    ],
+    "birthday": {
+      "value": "12-03"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

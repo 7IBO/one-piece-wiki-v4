@@ -1,0 +1,23 @@
+{
+  "id": "character:bisley",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bisley",
+  "canonical_name_key": "character.bisley.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bisley.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:993"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:993"
+      }
+    ]
+  },
+  "relations": []
+}

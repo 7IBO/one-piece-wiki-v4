@@ -1,0 +1,31 @@
+{
+  "id": "character:barbarossa",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "barbarossa",
+  "canonical_name_key": "character.barbarossa.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.barbarossa.name.common",
+        "name_type": "common",
+        "since": "anime-episode:97"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:97"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "anime-episode:97"
+      }
+    ]
+  },
+  "relations": []
+}

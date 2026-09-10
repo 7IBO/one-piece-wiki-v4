@@ -1,0 +1,36 @@
+{
+  "id": "character:komille",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "komille",
+  "canonical_name_key": "character.komille.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.komille.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:289"
+      },
+      {
+        "value_key": "character.komille.name.comille",
+        "name_type": "alias",
+        "since": "manga-chapter:289"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:289"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 500000000
+      }
+    ],
+    "birthday": {
+      "value": "10-01"
+    }
+  },
+  "relations": []
+}

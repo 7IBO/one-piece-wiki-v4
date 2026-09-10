@@ -1,0 +1,58 @@
+{
+  "id": "character:demalo-black",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "demalo-black",
+  "canonical_name_key": "character.demalo-black.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.demalo-black.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:598"
+      },
+      {
+        "value_key": "character.demalo-black.name.demaro-black",
+        "name_type": "alias",
+        "since": "manga-chapter:598"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.demalo-black.epithet.three-tongued-demalo-black",
+        "since": "manga-chapter:598"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:598"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 26000000,
+        "since": "manga-chapter:601"
+      }
+    ],
+    "age": [
+      {
+        "value": 36,
+        "source": "databook-card:0680"
+      }
+    ],
+    "height": [
+      {
+        "value": 245,
+        "source": "databook-card:0680"
+      }
+    ],
+    "birthday": {
+      "value": "05-05"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

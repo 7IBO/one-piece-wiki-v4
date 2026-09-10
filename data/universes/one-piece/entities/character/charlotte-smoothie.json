@@ -1,0 +1,47 @@
+{
+  "id": "character:charlotte-smoothie",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-smoothie",
+  "canonical_name_key": "character.charlotte-smoothie.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-smoothie.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:846"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:846"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 932000000,
+        "since": "manga-chapter:846"
+      }
+    ],
+    "age": [
+      {
+        "value": 35,
+        "source": "sbs:volume-88"
+      }
+    ],
+    "height": [
+      {
+        "value": 464,
+        "source": "sbs:volume-88"
+      }
+    ],
+    "birthday": {
+      "value": "10-12"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

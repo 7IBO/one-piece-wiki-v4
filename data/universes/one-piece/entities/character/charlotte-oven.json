@@ -1,0 +1,47 @@
+{
+  "id": "character:charlotte-oven",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-oven",
+  "canonical_name_key": "character.charlotte-oven.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-oven.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:861"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:861"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 300000000,
+        "since": "databook-card:1088"
+      }
+    ],
+    "age": [
+      {
+        "value": 48,
+        "source": "sbs:volume-87"
+      }
+    ],
+    "height": [
+      {
+        "value": 492,
+        "source": "sbs:volume-87"
+      }
+    ],
+    "birthday": {
+      "value": "11-25"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

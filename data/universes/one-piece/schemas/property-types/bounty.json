@@ -8,8 +8,7 @@
   },
   "value_type": "number",
   "value_constraints": {
-    "min": 0,
-    "step": 100000
+    "min": 0
   },
   "unit": "berry",
   "historical": true,

@@ -1,0 +1,53 @@
+{
+  "id": "character:bepo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bepo",
+  "canonical_name_key": "character.bepo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bepo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:498"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:498"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 500
+      },
+      {
+        "value": 1500,
+        "since": "databook-card:0520"
+      }
+    ],
+    "height": [
+      {
+        "value": 240,
+        "source": "databook-card:0520"
+      }
+    ],
+    "birthday": {
+      "value": "11-20"
+    },
+    "blood_type": {
+      "value": "S"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate",
+          "navigator"
+        ],
+        "since": "manga-chapter:805"
+      }
+    ]
+  },
+  "relations": []
+}

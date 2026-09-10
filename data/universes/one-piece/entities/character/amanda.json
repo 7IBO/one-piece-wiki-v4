@@ -1,0 +1,21 @@
+{
+  "id": "character:amanda",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "amanda",
+  "canonical_name_key": "character.amanda.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.amanda.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

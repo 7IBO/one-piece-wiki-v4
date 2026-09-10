@@ -1,0 +1,23 @@
+{
+  "id": "character:choco-police-chocopolice",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "choco-police-chocopolice",
+  "canonical_name_key": "character.choco-police-chocopolice.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.choco-police-chocopolice.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:827"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:827"
+      }
+    ]
+  },
+  "relations": []
+}

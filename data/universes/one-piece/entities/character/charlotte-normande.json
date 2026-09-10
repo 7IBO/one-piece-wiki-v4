@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-normande",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-normande",
+  "canonical_name_key": "character.charlotte-normande.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-normande.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "age": [
+      {
+        "value": 10
+      }
+    ]
+  },
+  "relations": []
+}

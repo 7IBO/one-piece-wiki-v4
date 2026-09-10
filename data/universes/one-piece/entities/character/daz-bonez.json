@@ -1,0 +1,52 @@
+{
+  "id": "character:daz-bonez",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "daz-bonez",
+  "canonical_name_key": "character.daz-bonez.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.daz-bonez.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:160"
+      },
+      {
+        "value_key": "character.daz-bonez.name.mr-1",
+        "name_type": "alias",
+        "since": "manga-chapter:160"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.daz-bonez.epithet.the-killer",
+        "since": "manga-chapter:195"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:160"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 75000000,
+        "since": "databook-card:0182"
+      }
+    ],
+    "height": [
+      {
+        "value": 212,
+        "source": "databook-card:0182"
+      }
+    ],
+    "birthday": {
+      "value": "01-01"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

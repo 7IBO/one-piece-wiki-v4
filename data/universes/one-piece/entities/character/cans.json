@@ -1,0 +1,31 @@
+{
+  "id": "character:cans",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cans",
+  "canonical_name_key": "character.cans.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cans.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:569"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:569"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:569"
+      }
+    ]
+  },
+  "relations": []
+}

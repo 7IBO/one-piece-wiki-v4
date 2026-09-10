@@ -1,0 +1,23 @@
+{
+  "id": "character:aswa",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "aswa",
+  "canonical_name_key": "character.aswa.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.aswa.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:163"
+      }
+    ],
+    "status": [
+      {
+        "value": "unknown",
+        "since": "manga-chapter:163"
+      }
+    ]
+  },
+  "relations": []
+}

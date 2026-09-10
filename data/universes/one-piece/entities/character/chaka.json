@@ -1,0 +1,41 @@
+{
+  "id": "character:chaka",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chaka",
+  "canonical_name_key": "character.chaka.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chaka.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:155"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.chaka.epithet.chaka-the-jackal",
+        "since": "manga-chapter:167"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:155"
+      }
+    ],
+    "height": [
+      {
+        "value": 213,
+        "source": "databook-card:0200"
+      }
+    ],
+    "birthday": {
+      "value": "04-26"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

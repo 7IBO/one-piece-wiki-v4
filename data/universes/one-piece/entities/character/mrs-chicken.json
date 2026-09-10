@@ -1,0 +1,26 @@
+{
+  "id": "character:mrs-chicken",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "mrs-chicken",
+  "canonical_name_key": "character.mrs-chicken.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.mrs-chicken.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "birthday": {
+      "value": "02-08"
+    }
+  },
+  "relations": []
+}

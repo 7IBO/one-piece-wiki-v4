@@ -1,0 +1,21 @@
+{
+  "id": "character:bonbori",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bonbori",
+  "canonical_name_key": "character.bonbori.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bonbori.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

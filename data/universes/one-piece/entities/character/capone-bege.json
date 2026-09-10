@@ -1,0 +1,55 @@
+{
+  "id": "character:capone-bege",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "capone-bege",
+  "canonical_name_key": "character.capone-bege.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.capone-bege.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:498"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.capone-bege.epithet.gang",
+        "since": "manga-chapter:498"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:498"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 138000000,
+        "since": "manga-chapter:498"
+      },
+      {
+        "value": 300000000,
+        "since": "manga-chapter:812"
+      },
+      {
+        "value": 350000000,
+        "since": "manga-chapter:966"
+      }
+    ],
+    "height": [
+      {
+        "value": 166,
+        "source": "sbs:volume-68"
+      }
+    ],
+    "birthday": {
+      "value": "01-17"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

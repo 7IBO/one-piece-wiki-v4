@@ -1,0 +1,35 @@
+{
+  "id": "character:bobbin",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bobbin",
+  "canonical_name_key": "character.bobbin.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bobbin.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:651"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.bobbin.epithet.sweeper",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "status": [
+      {
+        "value": "dead",
+        "since": "manga-chapter:651"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 105500000,
+        "since": "manga-chapter:855"
+      }
+    ]
+  },
+  "relations": []
+}

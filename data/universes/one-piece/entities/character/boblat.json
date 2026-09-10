@@ -1,0 +1,37 @@
+{
+  "id": "character:boblat",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "boblat",
+  "canonical_name_key": "character.boblat.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.boblat.name.common",
+        "name_type": "common",
+        "since": "anime-episode:747"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:747"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 68000000,
+        "since": "anime-episode:747"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "anime-episode:747"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,41 @@
+{
+  "id": "character:charlotte-chiffon",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-chiffon",
+  "canonical_name_key": "character.charlotte-chiffon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-chiffon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:825"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:825"
+      }
+    ],
+    "age": [
+      {
+        "value": 26,
+        "source": "manga-chapter:887"
+      }
+    ],
+    "height": [
+      {
+        "value": 215,
+        "source": "databook-card:1007"
+      }
+    ],
+    "birthday": {
+      "value": "01-27"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

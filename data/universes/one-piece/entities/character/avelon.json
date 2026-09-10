@@ -1,0 +1,31 @@
+{
+  "id": "character:avelon",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "avelon",
+  "canonical_name_key": "character.avelon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.avelon.name.common",
+        "name_type": "common",
+        "since": "anime-episode:747"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:747"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "anime-episode:747"
+      }
+    ]
+  },
+  "relations": []
+}

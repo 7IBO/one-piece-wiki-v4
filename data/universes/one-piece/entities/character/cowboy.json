@@ -1,0 +1,41 @@
+{
+  "id": "character:cowboy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cowboy",
+  "canonical_name_key": "character.cowboy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cowboy.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:180"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:180"
+      }
+    ],
+    "age": [
+      {
+        "value": 16,
+        "source": "databook-card:208"
+      }
+    ],
+    "height": [
+      {
+        "value": 155,
+        "source": "databook-card:208"
+      }
+    ],
+    "birthday": {
+      "value": "04-12"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

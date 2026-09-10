@@ -1,0 +1,40 @@
+{
+  "id": "character:charlotte-newshi",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-newshi",
+  "canonical_name_key": "character.charlotte-newshi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-newshi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "age": [
+      {
+        "value": 18,
+        "source": "sbs:volume-85"
+      }
+    ],
+    "birthday": {
+      "value": "12-02"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:854"
+      }
+    ]
+  },
+  "relations": []
+}

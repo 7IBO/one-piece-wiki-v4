@@ -1,0 +1,35 @@
+{
+  "id": "character:clou-d-clover",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "clou-d-clover",
+  "canonical_name_key": "character.clou-d-clover.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.clou-d-clover.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:391"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:391"
+      }
+    ],
+    "height": [
+      {
+        "value": 172,
+        "source": "databook-card:0426"
+      }
+    ],
+    "birthday": {
+      "value": "04-08"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

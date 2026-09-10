@@ -1,0 +1,32 @@
+{
+  "id": "character:bluemarine",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bluemarine",
+  "canonical_name_key": "character.bluemarine.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bluemarine.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:967"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:967"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate",
+          "shipwright"
+        ],
+        "since": "sbs:volume-112"
+      }
+    ]
+  },
+  "relations": []
+}

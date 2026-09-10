@@ -1,0 +1,20 @@
+{
+  "id": "organization:baroque-works",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "baroque-works",
+  "canonical_name_key": "organization.baroque-works.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.baroque-works.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:103"
+      }
+    ],
+    "organization_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

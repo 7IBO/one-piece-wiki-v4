@@ -1,0 +1,29 @@
+{
+  "id": "character:ocho",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "ocho",
+  "canonical_name_key": "character.ocho.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.ocho.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:952"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.ocho.epithet.moonflower-o-cho",
+        "since": "manga-chapter:952"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:952"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,34 @@
+{
+  "id": "character:byrnndi-world",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "byrnndi-world",
+  "canonical_name_key": "character.byrnndi-world.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.byrnndi-world.name.common",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.byrnndi-world.epithet.world-destroyer"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 200000000
+      },
+      {
+        "value": 500000000
+      }
+    ]
+  },
+  "relations": []
+}

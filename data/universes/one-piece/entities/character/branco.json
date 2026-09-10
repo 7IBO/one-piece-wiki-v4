@@ -1,0 +1,21 @@
+{
+  "id": "character:branco",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "branco",
+  "canonical_name_key": "character.branco.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.branco.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,47 @@
+{
+  "id": "character:charlotte-daifuku",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-daifuku",
+  "canonical_name_key": "character.charlotte-daifuku.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-daifuku.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:861"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:861"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 300000000,
+        "since": "databook-card:1087"
+      }
+    ],
+    "age": [
+      {
+        "value": 48,
+        "source": "sbs:volume-87"
+      }
+    ],
+    "height": [
+      {
+        "value": 489,
+        "source": "sbs:volume-87"
+      }
+    ],
+    "birthday": {
+      "value": "11-25"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

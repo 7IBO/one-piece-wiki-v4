@@ -1,0 +1,23 @@
+{
+  "id": "character:chichilisia",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chichilisia",
+  "canonical_name_key": "character.chichilisia.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chichilisia.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:879"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:879"
+      }
+    ]
+  },
+  "relations": []
+}

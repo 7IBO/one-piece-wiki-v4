@@ -1,0 +1,23 @@
+{
+  "id": "character:choi",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "choi",
+  "canonical_name_key": "character.choi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.choi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:555"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:555"
+      }
+    ]
+  },
+  "relations": []
+}

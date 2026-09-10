@@ -1,0 +1,34 @@
+{
+  "id": "character:bomba",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bomba",
+  "canonical_name_key": "character.bomba.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bomba.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:711"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:711"
+      }
+    ],
+    "birthday": {
+      "value": "08-14"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:889"
+      }
+    ]
+  },
+  "relations": []
+}

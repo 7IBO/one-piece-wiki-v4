@@ -1,0 +1,31 @@
+{
+  "id": "character:bubblegum",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bubblegum",
+  "canonical_name_key": "character.bubblegum.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bubblegum.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1024"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1024"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:1024"
+      }
+    ]
+  },
+  "relations": []
+}

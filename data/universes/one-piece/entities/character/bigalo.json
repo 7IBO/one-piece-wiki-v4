@@ -1,0 +1,31 @@
+{
+  "id": "character:bigalo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bigalo",
+  "canonical_name_key": "character.bigalo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bigalo.name.common",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.bigalo.epithet.bigalo-the-hanged-man"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 14900000
+      }
+    ]
+  },
+  "relations": []
+}

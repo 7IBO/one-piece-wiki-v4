@@ -1,0 +1,34 @@
+{
+  "id": "character:boo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "boo",
+  "canonical_name_key": "character.boo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.boo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:704"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:704"
+      }
+    ],
+    "birthday": {
+      "value": "08-20"
+    },
+    "occupation": [
+      {
+        "value": [
+          "martial_artist"
+        ],
+        "since": "manga-chapter:715"
+      }
+    ]
+  },
+  "relations": []
+}

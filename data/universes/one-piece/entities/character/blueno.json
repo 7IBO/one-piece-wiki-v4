@@ -1,0 +1,35 @@
+{
+  "id": "character:blueno",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "blueno",
+  "canonical_name_key": "character.blueno.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.blueno.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:325"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:325"
+      }
+    ],
+    "height": [
+      {
+        "value": 258,
+        "source": "databook-card:0387"
+      }
+    ],
+    "birthday": {
+      "value": "04-20"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

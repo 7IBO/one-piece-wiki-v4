@@ -1,0 +1,28 @@
+{
+  "id": "character:birdy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "birdy",
+  "canonical_name_key": "character.birdy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.birdy.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:101"
+      },
+      {
+        "value_key": "character.birdy.name.bird-neptunian",
+        "name_type": "alias",
+        "since": "manga-chapter:101"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:101"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "character:anikin",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "anikin",
+  "canonical_name_key": "character.anikin.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.anikin.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "bounty_hunter"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

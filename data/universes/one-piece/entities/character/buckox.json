@@ -1,0 +1,26 @@
+{
+  "id": "character:buckox",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "buckox",
+  "canonical_name_key": "character.buckox.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.buckox.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:22"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:22"
+      }
+    ],
+    "birthday": {
+      "value": "02-19"
+    }
+  },
+  "relations": []
+}

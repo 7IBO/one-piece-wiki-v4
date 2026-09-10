@@ -1,0 +1,49 @@
+{
+  "id": "character:cocoa",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cocoa",
+  "canonical_name_key": "character.cocoa.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cocoa.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:598"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:598"
+      }
+    ],
+    "age": [
+      {
+        "value": 27,
+        "source": "databook-card:0686"
+      }
+    ],
+    "height": [
+      {
+        "value": 138,
+        "source": "databook-card:0686"
+      }
+    ],
+    "birthday": {
+      "value": "11-07"
+    },
+    "blood_type": {
+      "value": "X"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:598"
+      }
+    ]
+  },
+  "relations": []
+}

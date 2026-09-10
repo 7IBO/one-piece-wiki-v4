@@ -1,0 +1,31 @@
+{
+  "id": "character:cornelia",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cornelia",
+  "canonical_name_key": "character.cornelia.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cornelia.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:552"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:552"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:552"
+      }
+    ]
+  },
+  "relations": []
+}

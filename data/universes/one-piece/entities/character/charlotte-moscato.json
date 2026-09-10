@@ -1,0 +1,26 @@
+{
+  "id": "character:charlotte-moscato",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-moscato",
+  "canonical_name_key": "character.charlotte-moscato.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-moscato.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:829"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:829"
+      }
+    ],
+    "birthday": {
+      "value": "12-16"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,55 @@
+{
+  "id": "character:bobby-funk",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bobby-funk",
+  "canonical_name_key": "character.bobby-funk.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bobby-funk.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:704"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:704"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 36000000,
+        "since": "databook-card:0842"
+      }
+    ],
+    "age": [
+      {
+        "value": 33,
+        "source": "databook-card:0842"
+      }
+    ],
+    "height": [
+      {
+        "value": 320,
+        "source": "databook-card:0842"
+      }
+    ],
+    "birthday": {
+      "value": "02-19"
+    },
+    "blood_type": {
+      "value": "X"
+    },
+    "occupation": [
+      {
+        "value": [
+          "assassin"
+        ],
+        "since": "manga-chapter:704"
+      }
+    ]
+  },
+  "relations": []
+}

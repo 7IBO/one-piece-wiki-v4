@@ -1,0 +1,36 @@
+{
+  "id": "character:charlotte-effiler",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-effiler",
+  "canonical_name_key": "character.charlotte-effiler.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-effiler.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:864"
+      },
+      {
+        "value_key": "character.charlotte-effiler.name.charlotte-effilee",
+        "name_type": "alias",
+        "since": "manga-chapter:864"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:864"
+      }
+    ],
+    "age": [
+      {
+        "value": 47
+      }
+    ],
+    "birthday": {
+      "value": "12-10"
+    }
+  },
+  "relations": []
+}

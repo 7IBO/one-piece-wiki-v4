@@ -1,0 +1,23 @@
+{
+  "id": "character:babanuki",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "babanuki",
+  "canonical_name_key": "character.babanuki.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.babanuki.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:934"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:934"
+      }
+    ]
+  },
+  "relations": []
+}

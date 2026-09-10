@@ -1,0 +1,21 @@
+{
+  "id": "character:bit",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bit",
+  "canonical_name_key": "character.bit.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bit.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

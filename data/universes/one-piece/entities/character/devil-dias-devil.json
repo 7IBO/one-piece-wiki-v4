@@ -1,0 +1,31 @@
+{
+  "id": "character:devil-dias-devil",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "devil-dias-devil",
+  "canonical_name_key": "character.devil-dias-devil.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.devil-dias-devil.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:497"
+      }
+    ],
+    "status": [
+      {
+        "value": "unknown",
+        "since": "manga-chapter:497"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 60000000
+      }
+    ],
+    "birthday": {
+      "value": "09-18"
+    }
+  },
+  "relations": []
+}

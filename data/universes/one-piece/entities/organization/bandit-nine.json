@@ -1,0 +1,19 @@
+{
+  "id": "organization:bandit-nine",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "bandit-nine",
+  "canonical_name_key": "organization.bandit-nine.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.bandit-nine.name.common",
+        "name_type": "common"
+      }
+    ],
+    "organization_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

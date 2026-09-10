@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-mash",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-mash",
+  "canonical_name_key": "character.charlotte-mash.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-mash.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:865"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:865"
+      }
+    ],
+    "age": [
+      {
+        "value": 40
+      }
+    ],
+    "birthday": {
+      "value": "12-16"
+    }
+  },
+  "relations": []
+}

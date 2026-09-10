@@ -1,0 +1,23 @@
+{
+  "id": "character:chokyumei-no-chosuke",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chokyumei-no-chosuke",
+  "canonical_name_key": "character.chokyumei-no-chosuke.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chokyumei-no-chosuke.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:954"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:954"
+      }
+    ]
+  },
+  "relations": []
+}

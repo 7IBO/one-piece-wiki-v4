@@ -1,0 +1,25 @@
+{
+  "id": "character:anne",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "anne",
+  "canonical_name_key": "character.anne.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.anne.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.anne.name.ann",
+        "name_type": "alias"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "character:billy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "billy",
+  "canonical_name_key": "character.billy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.billy.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

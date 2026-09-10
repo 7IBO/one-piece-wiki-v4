@@ -1,0 +1,21 @@
+{
+  "id": "character:chip-dip",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chip-dip",
+  "canonical_name_key": "character.chip-dip.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chip-dip.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,17 @@
+{
+  "id": "sbs:volume-83",
+  "type": "sbs",
+  "schema_version": 1,
+  "slug": "volume-83",
+  "properties": {
+    "canon_scope": {
+      "value": "sbs"
+    }
+  },
+  "relations": [
+    {
+      "type": "part-of-volume",
+      "target": "volume:83"
+    }
+  ]
+}

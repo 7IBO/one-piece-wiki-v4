@@ -1,0 +1,46 @@
+{
+  "id": "character:buckingham-stussy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "buckingham-stussy",
+  "canonical_name_key": "character.buckingham-stussy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.buckingham-stussy.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:802"
+      },
+      {
+        "value_key": "character.buckingham-stussy.name.miss-buckin",
+        "name_type": "alias",
+        "since": "manga-chapter:802"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:802"
+      }
+    ],
+    "age": [
+      {
+        "value": 76,
+        "source": "databook-card:0948"
+      }
+    ],
+    "height": [
+      {
+        "value": 68,
+        "source": "databook-card:0948"
+      }
+    ],
+    "birthday": {
+      "value": "04-12"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

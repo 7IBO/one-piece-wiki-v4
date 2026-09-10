@@ -1,0 +1,21 @@
+{
+  "id": "character:arsel",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "arsel",
+  "canonical_name_key": "character.arsel.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.arsel.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

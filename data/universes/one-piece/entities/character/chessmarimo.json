@@ -1,0 +1,31 @@
+{
+  "id": "character:chessmarimo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chessmarimo",
+  "canonical_name_key": "character.chessmarimo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chessmarimo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:147"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:147"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:147"
+      }
+    ]
+  },
+  "relations": []
+}

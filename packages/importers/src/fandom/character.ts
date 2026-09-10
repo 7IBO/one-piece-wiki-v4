@@ -210,6 +210,35 @@ export function stripEditionMarker(line: string): string {
   return line.replace(/\s*\([^()]*\)\s*;?\s*$/, '').replace(/\s*;\s*$/, '').trim();
 }
 
+/**
+ * Les quatre groupes sanguins du monde de One Piece — le vocabulaire
+ * `blood-types`, redit ici parce qu'un mapper ne lit pas le schema.
+ */
+const BLOOD_TYPES: readonly string[] = ['XF', 'F', 'S', 'X'];
+
+/**
+ * Le champ `blood type` du Char Box porte parfois autre chose qu'un
+ * groupe, releve sur les 441 personnages importes :
+ *
+ *   « S (RH-) »                      une precision entre parentheses
+ *   « Bas: X And: XF Kerville: F »   trois tetes, un seul champ
+ *
+ * Le premier cas se nettoie — la parenthese porte une precision, pas
+ * l'identite (ADR-124), et « S » reste vrai sans elle. Le second ne se
+ * nettoie PAS : trois valeurs dans un champ qui n'en accepte qu'une,
+ * c'est un choix a faire, et un import qui choisit invente. Il repart
+ * donc en avertissement, sans propriete.
+ */
+export function parseBloodType(raw: string): string | null {
+  const withoutPrecision = raw.replace(/\([^()]*\)/g, ' ').replace(/\s+/g, ' ').trim();
+  const upper = withoutPrecision.toUpperCase();
+  // `XF` avant `F` : sinon « XF » se lirait « F ».
+  for (const type of BLOOD_TYPES) {
+    if (upper === type) return type;
+  }
+  return null;
+}
+
 export function mapCharacter(
   page: ParsedPage,
   ctx: CharacterMapContext = {},
@@ -400,7 +429,9 @@ export function mapCharacter(
 
   const bloodRaw = get('blood type', 'blood_type', 'bloodtype');
   if (bloodRaw !== undefined) {
-    properties['blood_type'] = { value: cleanValue(bloodRaw) };
+    const blood = parseBloodType(cleanValue(bloodRaw));
+    if (blood !== null) properties['blood_type'] = { value: blood };
+    else warnings.push(`unparseable blood type: "${cleanValue(bloodRaw)}"`);
   }
 
   // Relation params resolve their [[wikilinks]] through the sync

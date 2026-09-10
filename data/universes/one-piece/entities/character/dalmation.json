@@ -1,0 +1,36 @@
+{
+  "id": "character:dalmation",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "dalmation",
+  "canonical_name_key": "character.dalmation.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.dalmation.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:553"
+      },
+      {
+        "value_key": "character.dalmation.name.dalmatian",
+        "name_type": "alias",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 500000000
+      }
+    ],
+    "birthday": {
+      "value": "11-01"
+    }
+  },
+  "relations": []
+}

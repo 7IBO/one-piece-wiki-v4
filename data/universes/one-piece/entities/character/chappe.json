@@ -1,0 +1,29 @@
+{
+  "id": "character:chappe",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chappe",
+  "canonical_name_key": "character.chappe.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chappe.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:668"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.chappe.epithet.rope-tugging-chappe",
+        "since": "manga-chapter:668"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:668"
+      }
+    ]
+  },
+  "relations": []
+}

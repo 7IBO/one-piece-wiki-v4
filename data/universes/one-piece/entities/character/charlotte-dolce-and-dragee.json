@@ -1,0 +1,32 @@
+{
+  "id": "character:charlotte-dolce-and-dragee",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-dolce-and-dragee",
+  "canonical_name_key": "character.charlotte-dolce-and-dragee.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-dolce-and-dragee.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "age": [
+      {
+        "value": 9,
+        "source": "sbs:volume-90"
+      }
+    ],
+    "birthday": {
+      "value": "02-21"
+    }
+  },
+  "relations": []
+}

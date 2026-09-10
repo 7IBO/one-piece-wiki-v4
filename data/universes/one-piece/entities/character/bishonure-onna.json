@@ -1,0 +1,23 @@
+{
+  "id": "character:bishonure-onna",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bishonure-onna",
+  "canonical_name_key": "character.bishonure-onna.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bishonure-onna.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:998"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:998"
+      }
+    ]
+  },
+  "relations": []
+}

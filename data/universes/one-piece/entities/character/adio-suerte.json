@@ -1,0 +1,47 @@
+{
+  "id": "character:adio-suerte",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "adio-suerte",
+  "canonical_name_key": "character.adio-suerte.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.adio-suerte.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1053"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.adio-suerte.epithet.master-of-the-gun",
+        "since": "manga-chapter:1053"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1053"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 2009430000
+      }
+    ],
+    "age": [
+      {
+        "value": 45
+      }
+    ],
+    "height": [
+      {
+        "value": 243.6
+      }
+    ],
+    "birthday": {
+      "value": "05-10"
+    }
+  },
+  "relations": []
+}

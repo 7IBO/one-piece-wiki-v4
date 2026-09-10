@@ -1,0 +1,35 @@
+{
+  "id": "character:braham",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "braham",
+  "canonical_name_key": "character.braham.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.braham.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:249"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:249"
+      }
+    ],
+    "height": [
+      {
+        "value": 179,
+        "source": "databook-card:0296"
+      }
+    ],
+    "birthday": {
+      "value": "10-10"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

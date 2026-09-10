@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-basans",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-basans",
+  "canonical_name_key": "character.charlotte-basans.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-basans.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "age": [
+      {
+        "value": 34
+      }
+    ]
+  },
+  "relations": []
+}

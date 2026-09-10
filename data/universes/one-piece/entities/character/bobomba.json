@@ -1,0 +1,23 @@
+{
+  "id": "character:bobomba",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bobomba",
+  "canonical_name_key": "character.bobomba.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bobomba.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:711"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:711"
+      }
+    ]
+  },
+  "relations": []
+}

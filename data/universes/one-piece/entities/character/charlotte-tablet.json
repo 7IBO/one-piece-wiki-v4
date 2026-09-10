@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-tablet",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-tablet",
+  "canonical_name_key": "character.charlotte-tablet.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-tablet.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "age": [
+      {
+        "value": 36
+      }
+    ]
+  },
+  "relations": []
+}

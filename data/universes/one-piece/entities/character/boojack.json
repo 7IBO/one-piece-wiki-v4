@@ -1,0 +1,37 @@
+{
+  "id": "character:boojack",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "boojack",
+  "canonical_name_key": "character.boojack.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.boojack.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.boojack.name.boo-jack",
+        "name_type": "alias"
+      }
+    ],
+    "status": [
+      {
+        "value": "unknown"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 3200000
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

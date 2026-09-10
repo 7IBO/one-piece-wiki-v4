@@ -1,0 +1,23 @@
+{
+  "id": "character:coburn",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "coburn",
+  "canonical_name_key": "character.coburn.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.coburn.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:287"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:287"
+      }
+    ]
+  },
+  "relations": []
+}
