@@ -8,9 +8,11 @@ import { describe, expect, test } from 'bun:test';
 import { join } from 'node:path';
 import {
   type Appearance,
+  FEATURES_TARGET_TYPES,
   parseAppearanceType,
   parseChapterAppearances,
   parseEpisodeAppearances,
+  planAppearanceEdges,
 } from '../src/fandom/appearances.ts';
 
 async function fixture(name: string): Promise<string> {
@@ -102,5 +104,71 @@ describe('parseEpisodeAppearances', () => {
 
   test('une page sans la section rend une liste vide', () => {
     expect(parseEpisodeAppearances('<p>rien</p>')).toEqual([]);
+  });
+});
+
+describe('planAppearanceEdges', () => {
+  const index = new Map<string, string>([
+    ['Monkey D. Luffy', 'character:monkey-d-luffy'],
+    ['Kaidou', 'character:kaidou'],
+    ['Charlotte Oven', 'character:charlotte-oven'],
+    ['Wano Country', 'location:wano-country'],
+    ['Chapter 1043', 'manga-chapter:1043'],
+  ]);
+  const resolve = (title: string): string | null => index.get(title) ?? null;
+
+  test('une cible connue devient une arête, avec son type d’apparition', () => {
+    const plan = planAppearanceEdges(
+      [{ title: 'Monkey D. Luffy' }, { title: 'Charlotte Oven', appearanceType: 'cover_story' }],
+      resolve,
+    );
+    expect(plan.edges).toEqual([
+      { type: 'features', target: 'character:monkey-d-luffy' },
+      {
+        type: 'features',
+        target: 'character:charlotte-oven',
+        qualifiers: { appearance_type: 'cover_story' },
+      },
+    ]);
+  });
+
+  test('une cible inconnue ne fabrique PAS un id — elle part en frontière', () => {
+    // Fabriquer `character:zunesha` depuis le titre creerait une
+    // reference pendante, ce que `check:references` refuse a raison.
+    const plan = planAppearanceEdges([{ title: 'Zunesha' }, { title: 'Tristan' }], resolve);
+    expect(plan.edges).toEqual([]);
+    expect(plan.unresolved).toEqual(['Zunesha', 'Tristan']);
+  });
+
+  test('un type que `features` n’accepte pas est refusé, pas force', () => {
+    const plan = planAppearanceEdges([{ title: 'Chapter 1043' }], resolve, {
+      targetTypes: FEATURES_TARGET_TYPES,
+    });
+    expect(plan.edges).toEqual([]);
+    expect(plan.warnings.some((w) => w.includes('manga-chapter'))).toBe(true);
+  });
+
+  test('un lieu est une cible légitime de `features`', () => {
+    const plan = planAppearanceEdges([{ title: 'Wano Country' }], resolve, {
+      targetTypes: FEATURES_TARGET_TYPES,
+    });
+    expect(plan.edges).toEqual([{ type: 'features', target: 'location:wano-country' }]);
+  });
+
+  test('la perte du rang est DITE, pas silencieuse', () => {
+    const plan = planAppearanceEdges(
+      [{ title: 'Monkey D. Luffy', order: 1 }, { title: 'Kaidou', order: 2 }],
+      resolve,
+    );
+    expect(plan.edges).toHaveLength(2);
+    expect(plan.warnings.some((w) => w.includes('rang'))).toBe(true);
+  });
+
+  test('un doublon ne produit qu’une arête', () => {
+    const plan = planAppearanceEdges(
+      [{ title: 'Kaidou' }, { title: 'Kaidou', appearanceType: 'flashback' }],
+      resolve,
+    );
+    expect(plan.edges).toHaveLength(1);
   });
 });

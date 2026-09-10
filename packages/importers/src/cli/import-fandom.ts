@@ -30,6 +30,12 @@
 import { join } from 'node:path';
 import { REPO_ROOT } from '../../../schema-engine/src/paths.ts';
 import { buildEmitFiles, type MapperEmit, mergeEntity, stageToLocal } from '../emit.ts';
+import {
+  FEATURES_TARGET_TYPES,
+  parseChapterAppearances,
+  parseEpisodeAppearances,
+  planAppearanceEdges,
+} from '../fandom/appearances.ts';
 import { type ArcSpans, findOverlaps, orderArcs, planArcEdges } from '../fandom/arc-ranges.ts';
 import { mapArc } from '../fandom/arc.ts';
 import type { BoxMapContext } from '../fandom/box.ts';
@@ -51,6 +57,7 @@ import {
   type ImportedPage,
   recordImports,
   recordRedirects,
+  resolveTitle,
   staleEntries,
 } from '../fandom/registry.ts';
 import { parseOrdinalRange, parseRenderedInfobox } from '../fandom/rendered-box.ts';
@@ -615,6 +622,99 @@ if (kind === 'crawl') {
   if (failures.length > 20) {
     process.stdout.write(`  … and ${failures.length - 20} more\n`);
   }
+} else if (kind === 'appearances') {
+  // bun run import:fandom appearances [--kind chapter|episode] [--from N]
+  //   [--to N] [--limit N] [--stage]
+  //
+  // Les aretes `features` : QUI apparait dans ce chapitre / cet
+  // episode. Le corpus en compte zero, et DESIGN_PLAN en fait le
+  // premier deblocage produit.
+  //
+  // Passe a aretes SEULES : elle n'ecrit que des relations, par
+  // `addToEntity` -> `mergeEntity`. Les proprietes de la source ne
+  // sont jamais touchees, et un second passage n'ecrit rien.
+  const opt = (name: string): string | undefined =>
+    args.flatMap((
+      a,
+      i,
+    ) => (a === `--${name}` && args[i + 1] !== undefined ? [args[i + 1]!] : []))[0];
+  const which = opt('kind') ?? 'chapter';
+  if (which !== 'chapter' && which !== 'episode') {
+    process.stdout.write('--kind attend `chapter` ou `episode`.\n');
+    process.exit(1);
+  }
+  const sourceType = which === 'chapter' ? 'manga-chapter' : 'anime-episode';
+  const pageNoun = which === 'chapter' ? 'Chapter' : 'Episode';
+  const from = Number(opt('from') ?? '0');
+  const to = Number(opt('to') ?? String(Number.MAX_SAFE_INTEGER));
+  const limit = Number(opt('limit') ?? '50');
+
+  const registry = await loadRegistry();
+  const titleIndex = buildTitleIndex(registry);
+  const resolve = (title: string): string | null =>
+    resolveTitle(titleIndex, title)?.entityId ?? null;
+
+  const onDisk = [...await ordinalsOnDisk(sourceType)]
+    .filter((n) => n >= from && n <= to)
+    .sort((a, b) => a - b)
+    .slice(0, limit);
+  process.stdout.write(
+    `${onDisk.length} ${which}(s) dans l'intervalle, lecture des pages rendues…\n`,
+  );
+
+  let written = 0;
+  let edgesPlanned = 0;
+  const unresolved = new Map<string, number>();
+  const failures: string[] = [];
+  for (const number of onDisk) {
+    const title = `${pageNoun} ${number}`;
+    let html: string;
+    try {
+      // eslint-disable-next-line no-await-in-loop
+      html = (await client.fetchRendered(title)).html;
+    } catch (error) {
+      failures.push(`${title}: ${error instanceof Error ? error.message : String(error)}`);
+      continue;
+    }
+    const appearances = which === 'chapter'
+      ? parseChapterAppearances(html)
+      : parseEpisodeAppearances(html);
+    if (appearances.length === 0) {
+      failures.push(`${title}: aucune section d'apparitions dans la page rendue`);
+      continue;
+    }
+    const plan = planAppearanceEdges(appearances, resolve, {
+      targetTypes: FEATURES_TARGET_TYPES,
+    });
+    edgesPlanned += plan.edges.length;
+    // La frontiere : ce que la page cite et que le corpus ignore. Elle
+    // dit quoi importer ensuite, classee par frequence.
+    for (const missing of plan.unresolved) {
+      unresolved.set(missing, (unresolved.get(missing) ?? 0) + 1);
+    }
+    process.stdout.write(
+      `  ${title}: ${appearances.length} apparition(s), ${plan.edges.length} arete(s)`
+        + `${plan.unresolved.length > 0 ? `, ${plan.unresolved.length} hors corpus` : ''}\n`,
+    );
+    if (!stage || plan.edges.length === 0) continue;
+    // eslint-disable-next-line no-await-in-loop
+    if (await addToEntity(`${sourceType}:${number}`, { relations: plan.edges })) written += 1;
+  }
+
+  process.stdout.write(`\n${edgesPlanned} arete(s) features planifiee(s).\n`);
+  if (unresolved.size > 0) {
+    const top = [...unresolved.entries()].sort((a, b) => b[1] - a[1]).slice(0, 25);
+    process.stdout.write(
+      `\n${unresolved.size} cible(s) hors corpus — a importer ensuite (top 25) :\n`,
+    );
+    for (const [name, count] of top) process.stdout.write(`  ${count}x ${name}\n`);
+  }
+  if (failures.length > 0) {
+    process.stdout.write(`\n${failures.length} page(s) sans apparitions :\n`);
+    for (const f of failures.slice(0, 20)) process.stdout.write(`  ${f}\n`);
+  }
+  if (stage) process.stdout.write(`\nStaged: ${written} fichier(s) mis a jour.\n`);
+  else process.stdout.write('(dry-run — passer --stage pour ecrire)\n');
 } else if (kind === 'render') {
   // bun run import:fandom render "Alabasta Arc" --out docs/audits/rendered
   //
@@ -739,6 +839,7 @@ if (kind === 'crawl') {
       + '       bun run import:fandom crawl --category <name>… [--depth N] [--page <title>…] [--limit N] [--skip-known] [--stage]\n'
       + '       bun run import:fandom arc-edges [--category <name>…] [--limit N] [--stage]\n'
       + '       bun run import:fandom chapter-render [--from N] [--to N] [--limit N] [--stage]\n'
+      + '       bun run import:fandom appearances [--kind chapter|episode] [--from N] [--to N] [--limit N] [--stage]\n'
       + '       bun run import:fandom render <page…> [--out <dir>]\n'
       + '       bun run import:fandom check-updates\n',
   );

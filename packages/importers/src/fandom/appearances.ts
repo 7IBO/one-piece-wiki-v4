@@ -172,3 +172,92 @@ function dedupe(entries: readonly Appearance[]): readonly Appearance[] {
   }
   return out;
 }
+
+/** Une arête `features` prête à fondre dans l'entité source. */
+export type FeaturesEdge = {
+  readonly type: 'features';
+  readonly target: string;
+  readonly qualifiers?: { readonly appearance_type: string; };
+};
+
+export type AppearancePlan = {
+  readonly edges: readonly FeaturesEdge[];
+  /** Cibles que le registre ne connaît pas — la frontière d'import. */
+  readonly unresolved: readonly string[];
+  readonly warnings: readonly string[];
+};
+
+/**
+ * Les apparitions relevées → les arêtes que la source doit porter.
+ *
+ * **Une cible non résolue ne produit pas d'arête.** Le registre dit
+ * quelles pages sont des entités chez nous ; le reste est un
+ * personnage pas encore importé, et fabriquer un id à partir du titre
+ * créerait une référence pendante — ce que `check:references` refuse,
+ * à raison. Ces titres repartent en `unresolved`, qui EST la liste de
+ * ce qu'il faut importer ensuite.
+ *
+ * **Le rang d'apparition est perdu, et c'est dit.** La section
+ * d'épisode l'ordonne, mais `features` n'a que `appearance_type` et
+ * `role` comme qualificatifs : aucun n'est un ordinal. Le garder
+ * demanderait un qualificatif de plus, donc un ADR.
+ */
+export function planAppearanceEdges(
+  appearances: readonly Appearance[],
+  resolve: (title: string) => string | null,
+  options: { readonly targetTypes?: readonly string[]; } = {},
+): AppearancePlan {
+  const edges: FeaturesEdge[] = [];
+  const unresolved: string[] = [];
+  const warnings: string[] = [];
+  const allowed = options.targetTypes;
+  const seen = new Set<string>();
+
+  for (const appearance of appearances) {
+    const id = resolve(appearance.title);
+    if (id === null) {
+      if (!unresolved.includes(appearance.title)) unresolved.push(appearance.title);
+      continue;
+    }
+    const type = id.slice(0, id.indexOf(':'));
+    if (allowed !== undefined && !allowed.includes(type)) {
+      warnings.push(`${appearance.title} → ${id} : \`features\` n'accepte pas le type ${type}`);
+      continue;
+    }
+    if (seen.has(id)) continue;
+    seen.add(id);
+    edges.push({
+      type: 'features',
+      target: id,
+      ...(appearance.appearanceType !== undefined
+        ? { qualifiers: { appearance_type: appearance.appearanceType } }
+        : {}),
+    });
+  }
+
+  const ordered = appearances.filter((a) => a.order !== undefined).length;
+  if (ordered > 0) {
+    warnings.push(
+      `${ordered} apparition(s) ordonnée(s) : le rang n'est pas conservé — `
+        + "`features` n'a pas de qualificatif ordinal (demanderait un ADR)",
+    );
+  }
+  return { edges, unresolved, warnings };
+}
+
+/** Les types que `features` accepte comme cible (schéma, ADR-105). */
+export const FEATURES_TARGET_TYPES: readonly string[] = [
+  'character',
+  'devil-fruit',
+  'crew',
+  'image',
+  'concept',
+  'title',
+  'event',
+  'ship',
+  'technique',
+  'weapon',
+  'location',
+  'organization',
+  'race',
+];
