@@ -1,0 +1,20 @@
+{
+  "id": "ship:polar-tang",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "polar-tang",
+  "canonical_name_key": "ship.polar-tang.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.polar-tang.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:578"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

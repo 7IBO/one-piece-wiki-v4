@@ -1,0 +1,20 @@
+{
+  "id": "ship:shiro-mokuba-i",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "shiro-mokuba-i",
+  "canonical_name_key": "ship.shiro-mokuba-i.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.shiro-mokuba-i.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:220"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

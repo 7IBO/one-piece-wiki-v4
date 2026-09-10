@@ -1,0 +1,20 @@
+{
+  "id": "ship:machina-hallelujah",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "machina-hallelujah",
+  "canonical_name_key": "ship.machina-hallelujah.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.machina-hallelujah.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:22"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

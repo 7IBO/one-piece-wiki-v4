@@ -1,0 +1,20 @@
+{
+  "id": "ship:tarielishin",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "tarielishin",
+  "canonical_name_key": "ship.tarielishin.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.tarielishin.name.common",
+        "name_type": "common",
+        "since": "anime-episode:139"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

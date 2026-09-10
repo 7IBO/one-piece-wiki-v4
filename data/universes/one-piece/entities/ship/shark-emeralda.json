@@ -1,0 +1,19 @@
+{
+  "id": "ship:shark-emeralda",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "shark-emeralda",
+  "canonical_name_key": "ship.shark-emeralda.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.shark-emeralda.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

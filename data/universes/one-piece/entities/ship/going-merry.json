@@ -1,0 +1,20 @@
+{
+  "id": "ship:going-merry",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "going-merry",
+  "canonical_name_key": "ship.going-merry.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.going-merry.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:41"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

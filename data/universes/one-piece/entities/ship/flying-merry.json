@@ -1,0 +1,19 @@
+{
+  "id": "ship:flying-merry",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "flying-merry",
+  "canonical_name_key": "ship.flying-merry.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.flying-merry.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

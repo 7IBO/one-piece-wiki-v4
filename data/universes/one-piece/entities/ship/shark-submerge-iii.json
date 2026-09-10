@@ -1,0 +1,20 @@
+{
+  "id": "ship:shark-submerge-iii",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "shark-submerge-iii",
+  "canonical_name_key": "ship.shark-submerge-iii.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.shark-submerge-iii.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:444"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

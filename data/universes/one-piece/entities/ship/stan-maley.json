@@ -1,0 +1,20 @@
+{
+  "id": "ship:stan-maley",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "stan-maley",
+  "canonical_name_key": "ship.stan-maley.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.stan-maley.name.common",
+        "name_type": "common",
+        "since": "anime-episode:197"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

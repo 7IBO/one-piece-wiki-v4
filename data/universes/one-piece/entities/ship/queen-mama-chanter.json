@@ -1,0 +1,20 @@
+{
+  "id": "ship:queen-mama-chanter",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "queen-mama-chanter",
+  "canonical_name_key": "ship.queen-mama-chanter.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.queen-mama-chanter.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:730"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

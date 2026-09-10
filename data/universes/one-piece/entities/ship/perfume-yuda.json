@@ -1,0 +1,20 @@
+{
+  "id": "ship:perfume-yuda",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "perfume-yuda",
+  "canonical_name_key": "ship.perfume-yuda.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.perfume-yuda.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

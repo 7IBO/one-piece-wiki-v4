@@ -1,0 +1,20 @@
+{
+  "id": "ship:grudge-dolph",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "grudge-dolph",
+  "canonical_name_key": "ship.grudge-dolph.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.grudge-dolph.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:581"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

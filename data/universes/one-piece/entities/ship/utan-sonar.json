@@ -1,0 +1,20 @@
+{
+  "id": "ship:utan-sonar",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "utan-sonar",
+  "canonical_name_key": "ship.utan-sonar.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.utan-sonar.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:226"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

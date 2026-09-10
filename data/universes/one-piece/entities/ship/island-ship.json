@@ -1,0 +1,19 @@
+{
+  "id": "ship:island-ship",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "island-ship",
+  "canonical_name_key": "ship.island-ship.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.island-ship.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

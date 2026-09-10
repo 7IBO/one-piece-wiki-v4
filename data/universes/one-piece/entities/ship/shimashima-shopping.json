@@ -1,0 +1,20 @@
+{
+  "id": "ship:shimashima-shopping",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "shimashima-shopping",
+  "canonical_name_key": "ship.shimashima-shopping.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.shimashima-shopping.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:68"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ship:nita-maria",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "nita-maria",
+  "canonical_name_key": "ship.nita-maria.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.nita-maria.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:799"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

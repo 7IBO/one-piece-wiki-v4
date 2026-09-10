@@ -1,0 +1,20 @@
+{
+  "id": "ship:migohai-gaimika",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "migohai-gaimika",
+  "canonical_name_key": "ship.migohai-gaimika.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.migohai-gaimika.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:624"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

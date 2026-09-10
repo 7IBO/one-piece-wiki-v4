@@ -1,0 +1,20 @@
+{
+  "id": "ship:st-briss",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "st-briss",
+  "canonical_name_key": "ship.st-briss.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.st-briss.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:218"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

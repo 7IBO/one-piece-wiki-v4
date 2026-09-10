@@ -1,0 +1,20 @@
+{
+  "id": "ship:victoria-punk",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "victoria-punk",
+  "canonical_name_key": "ship.victoria-punk.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.victoria-punk.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:581"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ship:hanjomaru",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "hanjomaru",
+  "canonical_name_key": "ship.hanjomaru.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.hanjomaru.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:581"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

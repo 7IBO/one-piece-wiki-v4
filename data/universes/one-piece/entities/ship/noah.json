@@ -1,0 +1,20 @@
+{
+  "id": "ship:noah",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "noah",
+  "canonical_name_key": "ship.noah.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.noah.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:608"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

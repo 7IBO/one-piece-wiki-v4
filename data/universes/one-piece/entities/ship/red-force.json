@@ -1,0 +1,20 @@
+{
+  "id": "ship:red-force",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "red-force",
+  "canonical_name_key": "ship.red-force.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.red-force.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:434"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ship:sabagashira-i",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "sabagashira-i",
+  "canonical_name_key": "ship.sabagashira-i.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.sabagashira-i.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:43"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

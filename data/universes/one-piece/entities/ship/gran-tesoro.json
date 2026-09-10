@@ -1,0 +1,20 @@
+{
+  "id": "ship:gran-tesoro",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "gran-tesoro",
+  "canonical_name_key": "ship.gran-tesoro.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.gran-tesoro.name.common",
+        "name_type": "common",
+        "since": "anime-episode:750"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

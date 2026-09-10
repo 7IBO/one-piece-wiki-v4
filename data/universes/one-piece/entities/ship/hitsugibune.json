@@ -1,0 +1,20 @@
+{
+  "id": "ship:hitsugibune",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "hitsugibune",
+  "canonical_name_key": "ship.hitsugibune.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.hitsugibune.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:49"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

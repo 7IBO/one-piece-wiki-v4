@@ -1,0 +1,19 @@
+{
+  "id": "ship:tettiri-55",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "tettiri-55",
+  "canonical_name_key": "ship.tettiri-55.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.tettiri-55.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

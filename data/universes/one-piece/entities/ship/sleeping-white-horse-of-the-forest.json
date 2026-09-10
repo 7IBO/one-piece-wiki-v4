@@ -1,0 +1,20 @@
+{
+  "id": "ship:sleeping-white-horse-of-the-forest",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "sleeping-white-horse-of-the-forest",
+  "canonical_name_key": "ship.sleeping-white-horse-of-the-forest.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.sleeping-white-horse-of-the-forest.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:800"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ship:striker",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "striker",
+  "canonical_name_key": "ship.striker.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.striker.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:159"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}
