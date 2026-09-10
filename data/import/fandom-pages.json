@@ -12301,7 +12301,7 @@
     },
     {
       "entityId": "devil-fruit:ryu-ryu-no-mi-model-nidhoggr",
-      "page": "Ryu Ryu no Mi, Model: Nidh\u00f6ggr",
+      "page": "Ryu Ryu no Mi, Model: Nidhöggr",
       "pageId": 354135,
       "redirects": [],
       "lastRevId": 2121803,
@@ -22260,6 +22260,94 @@
       "lastImportedAt": "2026-09-10T02:03:31.468Z"
     },
     {
+      "entityId": "saga:arabasta",
+      "page": "Arabasta Saga",
+      "pageId": 201829,
+      "redirects": [],
+      "lastRevId": 2123583,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
+      "entityId": "saga:dressrosa",
+      "page": "Dressrosa Saga",
+      "pageId": 47826,
+      "redirects": [],
+      "lastRevId": 2035343,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
+      "entityId": "saga:east-blue",
+      "page": "East Blue Saga",
+      "pageId": 1533,
+      "redirects": [],
+      "lastRevId": 2103304,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
+      "entityId": "saga:final",
+      "page": "Final Saga",
+      "pageId": 336991,
+      "redirects": [],
+      "lastRevId": 2128772,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
+      "entityId": "saga:fish-man-island",
+      "page": "Fish-Man Island Saga",
+      "pageId": 182697,
+      "redirects": [],
+      "lastRevId": 2088648,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
+      "entityId": "saga:sky-island",
+      "page": "Sky Island Saga",
+      "pageId": 1549,
+      "redirects": [],
+      "lastRevId": 2084351,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
+      "entityId": "saga:summit-war",
+      "page": "Summit War Saga",
+      "pageId": 8126,
+      "redirects": [],
+      "lastRevId": 2109460,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
+      "entityId": "saga:thriller-bark",
+      "page": "Thriller Bark Saga",
+      "pageId": 211804,
+      "redirects": [],
+      "lastRevId": 2034823,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
+      "entityId": "saga:wano-country",
+      "page": "Wano Country Saga",
+      "pageId": 285024,
+      "redirects": [],
+      "lastRevId": 2034829,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
+      "entityId": "saga:water-7",
+      "page": "Water 7 Saga",
+      "pageId": 211775,
+      "redirects": [],
+      "lastRevId": 2098635,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
+      "entityId": "saga:whole-cake-island",
+      "page": "Whole Cake Island Saga",
+      "pageId": 334865,
+      "redirects": [],
+      "lastRevId": 2035344,
+      "lastImportedAt": "2026-09-10T02:15:05.212Z"
+    },
+    {
       "entityId": "ship:alexandra",
       "page": "Alexandra",
       "pageId": 54879,
@@ -22669,7 +22757,7 @@
     },
     {
       "entityId": "ship:marchen",
-      "page": "M\u00e4rchen",
+      "page": "Märchen",
       "pageId": 169073,
       "redirects": [],
       "lastRevId": 2063195,
