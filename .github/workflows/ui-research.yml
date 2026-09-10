@@ -1,0 +1,79 @@
+# Relevé d'UI sur des sites de référence — déclenchement MANUEL.
+#
+# Pourquoi passer par un runner plutôt que par une machine locale : le
+# lancement de Chromium par Playwright échoue sur certains postes
+# Windows — le processus démarre, la connexion n'aboutit jamais, et le
+# symptôme est identique quel que soit le binaire. Playwright parle au
+# navigateur par un tuyau hérité (`--remote-debugging-pipe`), qu'un
+# antivirus ou un EDR peut rompre. Un runner Ubuntu n'a ni l'un ni
+# l'autre, et son egress est normal — contrairement au bac à sable de
+# l'agent, où la passerelle refuse les hôtes non autorisés.
+#
+# La sortie part en ARTEFACT, jamais en commit. Des captures et des
+# mesures pour se comparer sont l'usage normal ; verser les pages d'un
+# site tiers dans le dépôt est autre chose.
+name: ui-research
+on:
+  workflow_dispatch:
+    inputs:
+      preset:
+        description: 'Liste prête à l''emploi (vide = utiliser urls)'
+        required: false
+        default: 'speedrun'
+        type: choice
+        options: ['speedrun', '']
+      urls:
+        description: >-
+          URL supplémentaires, séparées par | — s'ajoutent au preset,
+          ou le remplacent si preset est vide.
+        required: false
+        default: ''
+      throttle:
+        description: >-
+          Brider à 1,6 Mb/s. Plus fidèle au ressenti, dix fois plus
+          lent. Les chiffres restent comparables tant que les deux
+          sites sont relevés avec le même réglage.
+        required: true
+        default: 'false'
+        type: choice
+        options: ['false', 'true']
+
+permissions:
+  contents: read
+
+jobs:
+  research:
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      # Le navigateur ET ses dépendances système : sur un runner nu, il
+      # manque une douzaine de bibliothèques partagées sans lesquelles
+      # Chromium se ferme au démarrage.
+      - run: bunx playwright install --with-deps chromium
+
+      - name: Relever
+        run: |
+          ARGS=()
+          if [ -n "${{ github.event.inputs.preset }}" ]; then
+            ARGS+=(--preset "${{ github.event.inputs.preset }}")
+          fi
+          if [ -n "${{ github.event.inputs.urls }}" ]; then
+            IFS='|' read -ra EXTRA <<< "${{ github.event.inputs.urls }}"
+            ARGS+=("${EXTRA[@]}")
+          fi
+          if [ "${{ github.event.inputs.throttle }}" = "true" ]; then
+            ARGS+=(--throttle)
+          fi
+          bun scripts/ui-research.ts "${ARGS[@]}" | tee "$GITHUB_STEP_SUMMARY"
+
+      - name: Publier le relevé
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: ui-research
+          path: .cache/ui-research
+          if-no-files-found: error
+          retention-days: 14

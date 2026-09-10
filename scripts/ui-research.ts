@@ -22,7 +22,7 @@
  * d'un site tiers dans un dépôt est autre chose. Les captures d'écran
  * restent hors de git (`.cache/`).
  */
-import { mkdir, writeFile } from 'node:fs/promises';
+import { access, mkdir, rm, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
 
 /**
@@ -64,8 +64,14 @@ const VIEWPORTS = [
 ] as const;
 
 /**
- * Câble volontairement étroit. Mesurer sur une fibre ne dit rien : tout
- * y est instantané, y compris ce qui ne l'est pas chez un lecteur.
+ * Câble étroit, en OPTION (`--throttle`).
+ *
+ * Mesurer sur une fibre ne dit rien — mais brider à 1,6 Mb/s multiplie
+ * la durée du relevé par dix, et sur quarante-deux pages ça devient une
+ * demi-heure d'attente muette. Les chiffres restent comparables entre
+ * deux sites tant qu'on emploie le MÊME réglage des deux côtés, donc le
+ * défaut est « sans bridage » et l'option sert quand on veut le detail
+ * du ressenti reel.
  */
 const THROTTLE = {
   offline: false,
@@ -73,6 +79,32 @@ const THROTTLE = {
   downloadThroughput: (1.6 * 1024 * 1024) / 8,
   uploadThroughput: (750 * 1024) / 8,
 };
+
+/**
+ * `networkidle` ne convient pas a un site commercial : entre les
+ * mouchards, les websockets et les sondages, le reseau ne se tait
+ * jamais, et l'attente va jusqu'au timeout. On attend le `load`, puis
+ * un court repos pour laisser les polices et les images differees se
+ * poser.
+ */
+const NAV_TIMEOUT_MS = 25_000;
+const SETTLE_MS = 1500;
+
+/** Les deux commandes qui debloquent le cas « le canal est rompu ». */
+const CHROME_PORT_HINT = '  # 1. dans une premiere fenetre PowerShell :\n'
+  + '  & "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" '
+  + '--remote-debugging-port=9222 --headless=new --user-data-dir="$env:TEMP\\ui-research"\n'
+  + '  # 2. dans une seconde :\n'
+  + '  bun scripts/ui-research.ts --preset speedrun --cdp http://localhost:9222\n';
+
+async function exists(path: string): Promise<boolean> {
+  try {
+    await access(path);
+    return true;
+  } catch {
+    return false;
+  }
+}
 
 function slugOf(url: URL): string {
   const path = url.pathname.replace(/^\/|\/$/g, '') || 'index';
@@ -91,11 +123,22 @@ async function main(): Promise<void> {
     process.exitCode = 1;
     return;
   }
-  const urls = [...(preset ?? []), ...args.filter((a) => a.startsWith('http'))];
+  const throttled = args.includes('--throttle');
+  const force = args.includes('--force');
+  const cdpAt = args.indexOf('--cdp');
+  const cdpUrl = cdpAt === -1 ? null : args[cdpAt + 1] ?? null;
+  const urls = [
+    ...(preset ?? []),
+    ...args.filter((a, i) => a.startsWith('http') && i !== cdpAt + 1),
+  ];
   if (urls.length === 0) {
     process.stderr.write(
       'usage: bun scripts/ui-research.ts [--preset speedrun] [<url>…]\n\n'
         + `  --preset speedrun   les ${PRESETS['speedrun']!.length} pages de reference\n`
+        + '  --throttle          bride a 1,6 Mb/s (dix fois plus lent)\n'
+        + '  --force             refait les releves deja ecrits\n'
+        + '  --cdp <url>         s attache a un Chrome deja lance\n'
+        + '                      (quand Playwright n arrive pas a en demarrer un)\n'
         + "  bun scripts/ui-research.ts 'https://exemple.com/une-page'\n",
     );
     process.exitCode = 1;
@@ -103,7 +146,8 @@ async function main(): Promise<void> {
   }
   process.stdout.write(
     `${urls.length} page(s) x ${VIEWPORTS.length} largeurs = `
-      + `${urls.length * VIEWPORTS.length} releves\n`,
+      + `${urls.length * VIEWPORTS.length} releves`
+      + `${throttled ? ' (bride a 1,6 Mb/s)' : ''}\n`,
   );
 
   // Import dynamique : Playwright n'est pas une dependance declaree du
@@ -121,13 +165,86 @@ async function main(): Promise<void> {
   }
 
   const root = join('.cache', 'ui-research');
-  // Sur une machine ordinaire, Playwright trouve son Chromium tout
-  // seul. Dans un conteneur qui en fournit deja un sous un autre nom,
-  // `CHROMIUM_PATH` evite de retelecharger 150 Mo pour rien.
-  const executablePath = process.env['CHROMIUM_PATH'];
-  const browser = await chromium.launch(
-    executablePath === undefined || executablePath === '' ? {} : { executablePath },
-  );
+
+  /*
+   * Le lancement du navigateur, par ordre de fiabilite.
+   *
+   * Playwright demarre par defaut `chrome-headless-shell`, un binaire
+   * distinct du Chromium complet. Sous Windows il lui arrive de
+   * DEMARRER puis de ne jamais repondre — le processus existe, la
+   * connexion n'aboutit pas, et l'attente va jusqu'au timeout. Un
+   * antivirus qui inspecte son canal de communication suffit.
+   *
+   * Le Chromium complet en mode headless ne souffre pas de ca, pour un
+   * cout negligeable a notre echelle. On l'essaie donc en premier, et
+   * on retombe sur le comportement par defaut s'il manque.
+   *
+   * `CHROMIUM_PATH` passe avant tout : dans un conteneur qui fournit
+   * deja un binaire sous un autre nom, ca evite d'en retelecharger un.
+   */
+  let browser;
+
+  /*
+   * `--cdp` : on s'ATTACHE a un navigateur deja lance, au lieu d'en
+   * demarrer un.
+   *
+   * C'est l'echappatoire quand Playwright n'arrive pas a parler au
+   * navigateur qu'il vient pourtant de demarrer — le processus existe,
+   * la connexion n'aboutit jamais. Playwright communique par
+   * `--remote-debugging-pipe`, un tuyau herite ; un antivirus ou un EDR
+   * qui l'inspecte suffit a le rompre, et le symptome est identique
+   * quel que soit le binaire. Un port TCP sur la boucle locale, lui,
+   * passe.
+   */
+  if (cdpUrl !== null) {
+    try {
+      browser = await chromium.connectOverCDP(cdpUrl, { timeout: 20_000 });
+      process.stdout.write(`attache a ${cdpUrl}\n`);
+    } catch (err) {
+      process.stderr.write(
+        `impossible de s attacher a ${cdpUrl} — ${
+          err instanceof Error ? err.message.split('\n')[0] : String(err)
+        }\n\nLance d abord Chrome avec un port de debogage :\n${CHROME_PORT_HINT}`,
+      );
+      process.exitCode = 1;
+      return;
+    }
+  } else {
+    const executablePath = process.env['CHROMIUM_PATH'];
+    const attempts = executablePath !== undefined && executablePath !== ''
+      ? [{ label: 'CHROMIUM_PATH', opts: { executablePath } }]
+      : [
+        { label: 'chromium complet', opts: { channel: 'chromium' } },
+        { label: 'headless shell', opts: {} },
+      ];
+
+    for (const attempt of attempts) {
+      try {
+        browser = await chromium.launch({ ...attempt.opts, timeout: 60_000 });
+        break;
+      } catch (err) {
+        process.stderr.write(
+          `lancement via ${attempt.label} : echec — ${
+            err instanceof Error ? err.message.split('\n')[0] : String(err)
+          }\n`,
+        );
+      }
+    }
+    if (browser === undefined) {
+      process.stderr.write(
+        '\nAucun navigateur n a demarre.\n\n'
+          + 'Si le processus DEMARRE puis ne repond pas, le binaire n est pas'
+          + ' en cause : c est le canal.\n'
+          + 'Playwright parle au navigateur par un tuyau herite'
+          + ' (--remote-debugging-pipe), qu un antivirus\n'
+          + 'ou un EDR peut rompre. Lance alors Chrome toi-meme sur un port,'
+          + ' et attache-toi :\n\n'
+          + CHROME_PORT_HINT,
+      );
+      process.exitCode = 1;
+      return;
+    }
+  }
 
   for (const raw of urls) {
     const url = new URL(raw);
@@ -136,23 +253,38 @@ async function main(): Promise<void> {
     process.stdout.write(`\n${url.href}\n`);
 
     for (const vp of VIEWPORTS) {
+      // Reprise : un relevé deja ecrit n'est pas refait. Une course de
+      // quarante-deux pages sera interrompue, et la recommencer depuis
+      // zero est le meilleur moyen de ne jamais la finir.
+      const jsonPath = join(dir, `${vp.name}.json`);
+      if (!force && await exists(jsonPath)) {
+        process.stdout.write(`  ${vp.name.padEnd(8)} deja releve\n`);
+        continue;
+      }
+
+      // Annonce AVANT de commencer : une ligne qui n'arrive qu'apres
+      // coup laisse croire que rien ne se passe, ce qui etait le
+      // defaut de la premiere version.
+      process.stdout.write(`  ${vp.name.padEnd(8)} …`);
+      const started = Date.now();
+
       const ctx = await browser.newContext({
         viewport: { width: vp.width, height: vp.height },
-        deviceScaleFactor: 2,
       });
       const page = await ctx.newPage();
       const cdp = await ctx.newCDPSession(page);
       await cdp.send('Network.enable');
       await cdp.send('Network.setCacheDisabled', { cacheDisabled: true });
-      await cdp.send('Network.emulateNetworkConditions', THROTTLE);
+      if (throttled) await cdp.send('Network.emulateNetworkConditions', THROTTLE);
 
+      let timedOut = false;
       try {
-        await page.goto(url.href, { waitUntil: 'networkidle', timeout: 60_000 });
+        await page.goto(url.href, { waitUntil: 'load', timeout: NAV_TIMEOUT_MS });
       } catch {
-        process.stdout.write(`  ${vp.name}: chargement trop long, on continue\n`);
+        timedOut = true;
       }
       // Laisse les polices et les images differees se poser.
-      await page.waitForTimeout(1200);
+      await page.waitForTimeout(SETTLE_MS);
 
       await page.screenshot({
         path: join(dir, `${vp.name}.png`),
@@ -260,15 +392,33 @@ async function main(): Promise<void> {
         };
       });
 
+      // Un echec de chargement ne laisse RIEN derriere lui.
+      //
+      // Sans ce garde, le script ecrivait un releve de la page d'erreur
+      // du navigateur — une requete, zero octet, « This site can't be
+      // reached » en h1 — et la reprise le sautait ensuite pour
+      // toujours. Une panne passagere devenait un trou permanent qu'il
+      // fallait `--force` pour combler.
+      if (report.perf.requests <= 1 && report.perf.docKb === 0) {
+        await rm(join(dir, `${vp.name}.png`), { force: true });
+        process.stdout.write(
+          `\r  ${vp.name.padEnd(8)} ECHEC — page non chargee, releve non ecrit\n`,
+        );
+        await ctx.close();
+        continue;
+      }
+
       await writeFile(
-        join(dir, `${vp.name}.json`),
+        jsonPath,
         `${JSON.stringify(report, null, 2)}\n`,
       );
       process.stdout.write(
-        `  ${vp.name.padEnd(8)} FCP ${String(report.perf.fcp).padStart(5)} ms  `
-          + `${String(report.perf.totalKb).padStart(7)} Ko  `
+        `\r  ${vp.name.padEnd(8)} FCP ${String(report.perf.fcp).padStart(5)} ms  `
+          + `${String(report.perf.totalKb).padStart(8)} Ko  `
           + `${String(report.perf.requests).padStart(3)} req  `
-          + `div/semantique ${report.markup.ratio}\n`,
+          + `div/sem ${String(report.markup.ratio).padStart(5)}  `
+          + `${((Date.now() - started) / 1000).toFixed(1)}s`
+          + `${timedOut ? '  (charge partielle)' : ''}\n`,
       );
       await ctx.close();
     }
