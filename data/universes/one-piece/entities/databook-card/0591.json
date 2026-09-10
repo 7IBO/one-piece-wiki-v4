@@ -1,0 +1,15 @@
+{
+  "id": "databook-card:0591",
+  "type": "databook-card",
+  "schema_version": 1,
+  "slug": "0591",
+  "properties": {
+    "card_number": {
+      "value": "0591"
+    },
+    "card_kind": {
+      "value": "ship"
+    }
+  },
+  "relations": []
+}

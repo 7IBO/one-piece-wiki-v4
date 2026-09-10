@@ -1,0 +1,15 @@
+{
+  "id": "databook-card:1554",
+  "type": "databook-card",
+  "schema_version": 1,
+  "slug": "1554",
+  "properties": {
+    "card_number": {
+      "value": "1554"
+    },
+    "card_kind": {
+      "value": "crew"
+    }
+  },
+  "relations": []
+}

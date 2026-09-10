@@ -1,0 +1,15 @@
+{
+  "id": "databook-card:0729",
+  "type": "databook-card",
+  "schema_version": 1,
+  "slug": "0729",
+  "properties": {
+    "card_number": {
+      "value": "0729"
+    },
+    "card_kind": {
+      "value": "character"
+    }
+  },
+  "relations": []
+}
