@@ -90,6 +90,13 @@ const THROTTLE = {
 const NAV_TIMEOUT_MS = 25_000;
 const SETTLE_MS = 1500;
 
+/** Les deux commandes qui debloquent le cas « le canal est rompu ». */
+const CHROME_PORT_HINT = '  # 1. dans une premiere fenetre PowerShell :\n'
+  + '  & "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe" '
+  + '--remote-debugging-port=9222 --headless=new --user-data-dir="$env:TEMP\\ui-research"\n'
+  + '  # 2. dans une seconde :\n'
+  + '  bun scripts/ui-research.ts --preset speedrun --cdp http://localhost:9222\n';
+
 async function exists(path: string): Promise<boolean> {
   try {
     await access(path);
@@ -118,13 +125,20 @@ async function main(): Promise<void> {
   }
   const throttled = args.includes('--throttle');
   const force = args.includes('--force');
-  const urls = [...(preset ?? []), ...args.filter((a) => a.startsWith('http'))];
+  const cdpAt = args.indexOf('--cdp');
+  const cdpUrl = cdpAt === -1 ? null : args[cdpAt + 1] ?? null;
+  const urls = [
+    ...(preset ?? []),
+    ...args.filter((a, i) => a.startsWith('http') && i !== cdpAt + 1),
+  ];
   if (urls.length === 0) {
     process.stderr.write(
       'usage: bun scripts/ui-research.ts [--preset speedrun] [<url>…]\n\n'
         + `  --preset speedrun   les ${PRESETS['speedrun']!.length} pages de reference\n`
         + '  --throttle          bride a 1,6 Mb/s (dix fois plus lent)\n'
         + '  --force             refait les releves deja ecrits\n'
+        + '  --cdp <url>         s attache a un Chrome deja lance\n'
+        + '                      (quand Playwright n arrive pas a en demarrer un)\n'
         + "  bun scripts/ui-research.ts 'https://exemple.com/une-page'\n",
     );
     process.exitCode = 1;
@@ -168,40 +182,68 @@ async function main(): Promise<void> {
    * `CHROMIUM_PATH` passe avant tout : dans un conteneur qui fournit
    * deja un binaire sous un autre nom, ca evite d'en retelecharger un.
    */
-  const executablePath = process.env['CHROMIUM_PATH'];
-  const attempts = executablePath !== undefined && executablePath !== ''
-    ? [{ label: 'CHROMIUM_PATH', opts: { executablePath } }]
-    : [
-      { label: 'chromium complet', opts: { channel: 'chromium' } },
-      { label: 'headless shell', opts: {} },
-    ];
-
   let browser;
-  for (const attempt of attempts) {
+
+  /*
+   * `--cdp` : on s'ATTACHE a un navigateur deja lance, au lieu d'en
+   * demarrer un.
+   *
+   * C'est l'echappatoire quand Playwright n'arrive pas a parler au
+   * navigateur qu'il vient pourtant de demarrer — le processus existe,
+   * la connexion n'aboutit jamais. Playwright communique par
+   * `--remote-debugging-pipe`, un tuyau herite ; un antivirus ou un EDR
+   * qui l'inspecte suffit a le rompre, et le symptome est identique
+   * quel que soit le binaire. Un port TCP sur la boucle locale, lui,
+   * passe.
+   */
+  if (cdpUrl !== null) {
     try {
-      browser = await chromium.launch({ ...attempt.opts, timeout: 60_000 });
-      break;
+      browser = await chromium.connectOverCDP(cdpUrl, { timeout: 20_000 });
+      process.stdout.write(`attache a ${cdpUrl}\n`);
     } catch (err) {
       process.stderr.write(
-        `lancement via ${attempt.label} : echec — ${
+        `impossible de s attacher a ${cdpUrl} — ${
           err instanceof Error ? err.message.split('\n')[0] : String(err)
-        }\n`,
+        }\n\nLance d abord Chrome avec un port de debogage :\n${CHROME_PORT_HINT}`,
       );
+      process.exitCode = 1;
+      return;
     }
-  }
-  if (browser === undefined) {
-    process.stderr.write(
-      '\nAucun navigateur n a demarre. Deux pistes, dans cet ordre :\n'
-        + '  1. bunx playwright install chromium   (le binaire complet, pas'
-        + ' seulement le headless shell)\n'
-        + '  2. un antivirus bloque le canal de Chromium — autorise'
-        + ' chrome.exe / chrome-headless-shell.exe,\n'
-        + '     ou pointe CHROMIUM_PATH vers un Chrome deja installe :\n'
-        + '     $env:CHROMIUM_PATH="C:\\Program Files\\Google\\Chrome'
-        + '\\Application\\chrome.exe"\n',
-    );
-    process.exitCode = 1;
-    return;
+  } else {
+    const executablePath = process.env['CHROMIUM_PATH'];
+    const attempts = executablePath !== undefined && executablePath !== ''
+      ? [{ label: 'CHROMIUM_PATH', opts: { executablePath } }]
+      : [
+        { label: 'chromium complet', opts: { channel: 'chromium' } },
+        { label: 'headless shell', opts: {} },
+      ];
+
+    for (const attempt of attempts) {
+      try {
+        browser = await chromium.launch({ ...attempt.opts, timeout: 60_000 });
+        break;
+      } catch (err) {
+        process.stderr.write(
+          `lancement via ${attempt.label} : echec — ${
+            err instanceof Error ? err.message.split('\n')[0] : String(err)
+          }\n`,
+        );
+      }
+    }
+    if (browser === undefined) {
+      process.stderr.write(
+        '\nAucun navigateur n a demarre.\n\n'
+          + 'Si le processus DEMARRE puis ne repond pas, le binaire n est pas'
+          + ' en cause : c est le canal.\n'
+          + 'Playwright parle au navigateur par un tuyau herite'
+          + ' (--remote-debugging-pipe), qu un antivirus\n'
+          + 'ou un EDR peut rompre. Lance alors Chrome toi-meme sur un port,'
+          + ' et attache-toi :\n\n'
+          + CHROME_PORT_HINT,
+      );
+      process.exitCode = 1;
+      return;
+    }
   }
 
   for (const raw of urls) {
