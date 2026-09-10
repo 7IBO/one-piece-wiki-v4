@@ -37,7 +37,7 @@ import { enrichChapterFromRendered, isSeededChapterTitle } from '../fandom/chapt
 import { mapChapter } from '../fandom/chapter.ts';
 import { mapCharacter } from '../fandom/character.ts';
 import { FandomClient, type ParsedPage } from '../fandom/client.ts';
-import { crawl, type MapperKind } from '../fandom/crawl.ts';
+import { crawl, type CrawlResult, type MapperKind } from '../fandom/crawl.ts';
 import { mapCrew } from '../fandom/crew.ts';
 import { mapDevilFruit } from '../fandom/devil-fruit.ts';
 import { mapEpisode } from '../fandom/episode.ts';
@@ -52,6 +52,7 @@ import {
   staleEntries,
 } from '../fandom/registry.ts';
 import { parseOrdinalRange, parseRenderedInfobox } from '../fandom/rendered-box.ts';
+import { orderSagas, type SagaChainLink } from '../fandom/saga-order.ts';
 import { mapSaga } from '../fandom/saga.ts';
 import { mapShip } from '../fandom/ship.ts';
 import { loadVocabularyIndexes } from '../fandom/vocabulary.ts';
@@ -188,6 +189,50 @@ async function buildMappers(): Promise<
 }
 
 const args = process.argv.slice(2);
+/** Le rang injecte dans l'entite mappee, sans muter la sortie du mapper. */
+function withSagaNumber<T extends MapperEmit>(emit: T, sagaNumber: number): T {
+  const properties = emit.entity['properties'];
+  const base = typeof properties === 'object' && properties !== null
+    ? properties as Record<string, unknown>
+    : {};
+  return {
+    ...emit,
+    entity: { ...emit.entity, properties: { ...base, saga_number: { value: sagaNumber } } },
+  };
+}
+
+/**
+ * `saga_number` est `required` au schema et absent du Saga Box : il se
+ * deduit de la CHAINE des pages mappees dans le run (`orderSagas`).
+ *
+ * Le rang n'arrive donc pas du mapper mais d'ici, apres le crawl,
+ * quand l'ensemble est connu. `crawl()` efface structurellement le
+ * champ `chain` de `SagaMapResult` — le re-mapper est pur et sans
+ * reseau, c'est le chemin type plutot qu'un cast.
+ */
+function rankSagas(
+  results: readonly CrawlResult[],
+): { readonly ranks: ReadonlyMap<string, number>; readonly warnings: readonly string[]; } {
+  const links: SagaChainLink[] = [];
+  for (const r of results) {
+    if (r.kind !== 'saga') continue;
+    const remapped = mapSaga(r.page);
+    if (remapped === null) continue;
+    links.push({
+      id: remapped.entity.id,
+      title: r.page.title,
+      previous: remapped.chain.previous,
+      next: remapped.chain.next,
+    });
+  }
+  if (links.length === 0) return { ranks: new Map(), warnings: [] };
+  const ordering = orderSagas(links);
+  return {
+    ranks: new Map(ordering.ranks.map((r) => [r.id, r.sagaNumber])),
+    warnings: ordering.warnings,
+  };
+}
+
 const stage = args.includes('--stage');
 const overwrite = args.includes('--overwrite');
 /**
@@ -232,8 +277,13 @@ if (kind === 'crawl') {
     log: (line) => process.stdout.write(`  ${line}\n`),
   });
 
+  const sagas = rankSagas(report.results);
+  for (const w of sagas.warnings) process.stdout.write(`  saga: ${w}\n`);
+
   const importedAt = new Date().toISOString();
   const imported: ImportedPage[] = [];
+  /** Sagas mappees mais hors chaine : sans rang, le fichier serait invalide. */
+  const unranked: string[] = [];
   // Deux pages distinctes qui produisent le MEME id sont deux entites
   // confondues, pas une re-import. `stageToLocal` ne peut pas faire la
   // difference : il voit un fichier deja present et le saute (ou, avec
@@ -250,7 +300,18 @@ if (kind === 'crawl') {
       continue;
     }
     pageOfId.set(r.mapped.entity.id, r.page.title);
-    const files = buildEmitFiles(r.mapped);
+    let emit = r.mapped;
+    if (r.kind === 'saga') {
+      const rank = sagas.ranks.get(r.mapped.entity.id);
+      // Sans rang, ecrire le fichier produirait une entite invalide
+      // (`saga_number` requis). On refuse la page plutot que le corpus.
+      if (rank === undefined) {
+        unranked.push(r.mapped.entity.id);
+        continue;
+      }
+      emit = withSagaNumber(r.mapped, rank);
+    }
+    const files = buildEmitFiles(emit);
     if (stage) {
       // eslint-disable-next-line no-await-in-loop
       const staged = await stageToLocal(files, { repoRoot: REPO_ROOT, overwrite });
@@ -267,6 +328,13 @@ if (kind === 'crawl') {
     await saveRegistry(next);
     process.stdout.write(
       `  ledger: ${imported.length} page(s) recorded, ${next.pages.length} tracked total\n`,
+    );
+  }
+  if (unranked.length > 0) {
+    process.stdout.write(
+      `\n${unranked.length} saga(s) NON ECRITE(S) — hors de la chaine, donc sans rang :\n`
+        + `  ${unranked.join(', ')}\n`
+        + '  Relancer avec les pages manquantes de la chaine (prev/next).\n',
     );
   }
   if (collisions.length > 0) {
