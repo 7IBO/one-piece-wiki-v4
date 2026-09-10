@@ -15,5 +15,10 @@
       "value": 18
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:thriller-bark"
+    }
+  ]
 }

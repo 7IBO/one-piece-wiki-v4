@@ -15,5 +15,10 @@
       "value": 11
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:arabasta"
+    }
+  ]
 }

@@ -15,5 +15,10 @@
       "value": 24
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:fish-man-island"
+    }
+  ]
 }

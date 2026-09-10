@@ -15,5 +15,10 @@
       "value": 26
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:dressrosa"
+    }
+  ]
 }

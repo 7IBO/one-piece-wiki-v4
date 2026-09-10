@@ -15,5 +15,10 @@
       "value": 32
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:final"
+    }
+  ]
 }

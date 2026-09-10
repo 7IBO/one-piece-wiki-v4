@@ -15,5 +15,10 @@
       "value": 13
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:sky-island"
+    }
+  ]
 }
