@@ -50,6 +50,7 @@
     "knip": "^5.0.0",
     "lefthook": "^1.10.0",
     "oxlint": "^0.15.0",
+    "playwright": "1.63.0",
     "react-doctor": "0.5.2",
     "turbo": "^2.3.0",
     "typescript": "^5.7.0"
