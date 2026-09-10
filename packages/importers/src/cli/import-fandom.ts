@@ -13,7 +13,7 @@
  *   bun run import:fandom check-updates
  *
  * Kinds (ADR-079 + ADR-109): chapter, episode, character, volume,
- * devil-fruit, crew, ship, organization, weapon, arc. `crawl`
+ * devil-fruit, crew, ship, organization, weapon, arc, saga. `crawl`
  * auto-detects the infobox, so a category run needs no kind.
  *
  * `check-updates` compares the live revisions of every ledger page
@@ -52,6 +52,7 @@ import {
   staleEntries,
 } from '../fandom/registry.ts';
 import { parseOrdinalRange, parseRenderedInfobox } from '../fandom/rendered-box.ts';
+import { mapSaga } from '../fandom/saga.ts';
 import { mapShip } from '../fandom/ship.ts';
 import { loadVocabularyIndexes } from '../fandom/vocabulary.ts';
 import { mapVolume } from '../fandom/volume.ts';
@@ -68,6 +69,7 @@ const MAPPER_KINDS: readonly MapperKind[] = [
   'organization',
   'weapon',
   'arc',
+  'saga',
 ];
 
 const REGISTRY_PATH = join(REPO_ROOT, 'data', 'import', 'fandom-pages.json');
@@ -181,6 +183,7 @@ async function buildMappers(): Promise<
     organization: (page) => mapOrganization(page, boxCtx),
     weapon: (page) => mapWeapon(page, boxCtx),
     arc: (page) => mapArc(page, boxCtx),
+    saga: mapSaga,
   };
 }
 
