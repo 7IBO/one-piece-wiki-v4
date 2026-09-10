@@ -1,0 +1,23 @@
+{
+  "id": "character:mecha-shark",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "mecha-shark",
+  "canonical_name_key": "character.mecha-shark.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.mecha-shark.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1061"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1061"
+      }
+    ]
+  },
+  "relations": []
+}

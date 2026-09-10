@@ -1,0 +1,25 @@
+{
+  "id": "weapon:same-kiri-bocho",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "same-kiri-bocho",
+  "canonical_name_key": "weapon.same-kiri-bocho.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.same-kiri-bocho.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:717"
+      },
+      {
+        "value_key": "weapon.same-kiri-bocho.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:717"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

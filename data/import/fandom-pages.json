@@ -9409,6 +9409,94 @@
       "lastImportedAt": "2026-08-27T23:30:30.367Z"
     },
     {
+      "entityId": "character:alpacacino",
+      "page": "Alpacacino",
+      "pageId": 181076,
+      "redirects": [],
+      "lastRevId": 2121378,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:butler",
+      "page": "Battler",
+      "pageId": 3494,
+      "redirects": [
+        "Wild Animal Violin"
+      ],
+      "lastRevId": 2104416,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:cerberus",
+      "page": "Cerberus (Sword)",
+      "pageId": 350046,
+      "redirects": [],
+      "lastRevId": 2129799,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:divine-breath",
+      "page": "Divine Breath",
+      "pageId": 340936,
+      "redirects": [],
+      "lastRevId": 2054901,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:fullbody",
+      "page": "Fullbody",
+      "pageId": 1685,
+      "redirects": [
+        "Ironfist"
+      ],
+      "lastRevId": 2131971,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:funkfreed",
+      "page": "Funkfreed",
+      "pageId": 3237,
+      "redirects": [],
+      "lastRevId": 2091280,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:gion",
+      "page": "Gion",
+      "pageId": 248881,
+      "redirects": [
+        "Konpira"
+      ],
+      "lastRevId": 2129208,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:ikaros-much",
+      "page": "Ikaros Much",
+      "pageId": 59006,
+      "redirects": [
+        "Surume Ika no Yari"
+      ],
+      "lastRevId": 2122951,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:kagero",
+      "page": "Kagero (Non-Canon)",
+      "pageId": 324483,
+      "redirects": [],
+      "lastRevId": 2126879,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:mecha-shark",
+      "page": "Mecha-Shark",
+      "pageId": 336984,
+      "redirects": [],
+      "lastRevId": 2106411,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
       "entityId": "character:monkey-d-luffy",
       "page": "Monkey D. Luffy",
       "pageId": 1444,
@@ -9416,6 +9504,32 @@
         "Straw Hat Luffy",
         "Luffy"
       ]
+    },
+    {
+      "entityId": "character:patty",
+      "page": "Patty",
+      "pageId": 1967,
+      "redirects": [
+        "Shokuatari Meatball"
+      ],
+      "lastRevId": 2117625,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:ragnir",
+      "page": "Ragnir",
+      "pageId": 350494,
+      "redirects": [],
+      "lastRevId": 2131288,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "character:wanyudo",
+      "page": "Wanyudo",
+      "pageId": 329951,
+      "redirects": [],
+      "lastRevId": 2124727,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
     },
     {
       "entityId": "manga-chapter:0",
@@ -18960,6 +19074,78 @@
       "lastImportedAt": "2026-08-27T20:43:36.613Z"
     },
     {
+      "entityId": "ship:brachio-tank-v",
+      "page": "Brachio Tank V",
+      "pageId": 98051,
+      "redirects": [],
+      "lastRevId": 2107114,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "ship:foxy-fighter",
+      "page": "Foxy Fighter",
+      "pageId": 346279,
+      "redirects": [],
+      "lastRevId": 2003138,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "ship:gorilla-puncher-13",
+      "page": "Gorilla Puncher 13",
+      "pageId": 115837,
+      "redirects": [],
+      "lastRevId": 2130915,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "ship:gorilla-puncher-18",
+      "page": "Gorilla Puncher 18",
+      "pageId": 342908,
+      "redirects": [],
+      "lastRevId": 2073183,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "ship:iron-pirate-general-franky",
+      "page": "Battle Frankies/General Franky",
+      "pageId": 99394,
+      "redirects": [],
+      "lastRevId": 2060541,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "ship:kurosai-fr-u-iv",
+      "page": "Kurosai FR-U IV",
+      "pageId": 98052,
+      "redirects": [],
+      "lastRevId": 2107115,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "ship:pluton",
+      "page": "Pluton",
+      "pageId": 1604,
+      "redirects": [],
+      "lastRevId": 2094002,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "ship:roba-san-kick-18",
+      "page": "Roba-san Kick 18",
+      "pageId": 163844,
+      "redirects": [],
+      "lastRevId": 2045409,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "ship:vegaforce-01",
+      "page": "Vegaforce-01",
+      "pageId": 337408,
+      "redirects": [],
+      "lastRevId": 2126790,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
       "entityId": "volume:1",
       "page": "Volume 1",
       "pageId": 32434,
@@ -19878,6 +20064,854 @@
       "redirects": [],
       "lastRevId": 2108805,
       "lastImportedAt": "2026-08-27T23:12:56.940Z"
+    },
+    {
+      "entityId": "weapon:ace",
+      "page": "Ace (Sword)",
+      "pageId": 329477,
+      "redirects": [],
+      "lastRevId": 2102262,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:ame-no-habakiri",
+      "page": "Ame no Habakiri",
+      "pageId": 317619,
+      "redirects": [],
+      "lastRevId": 2092836,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:ancient-weapons",
+      "page": "Ancient Weapons",
+      "pageId": 1594,
+      "redirects": [],
+      "lastRevId": 2110275,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:axe-of-xingtian",
+      "page": "Axe of Xingtian",
+      "pageId": 356317,
+      "redirects": [],
+      "lastRevId": 2132025,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:bamboo",
+      "page": "Bamboo",
+      "pageId": 316063,
+      "redirects": [],
+      "lastRevId": 2110083,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:battle-smasher",
+      "page": "Battle Smasher",
+      "pageId": 183089,
+      "redirects": [],
+      "lastRevId": 2116332,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:beethoven",
+      "page": "Beethoven",
+      "pageId": 344030,
+      "redirects": [],
+      "lastRevId": 2129743,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:bohu",
+      "page": "Bohu",
+      "pageId": 356296,
+      "redirects": [],
+      "lastRevId": 2131828,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:bruiser-axe",
+      "page": "Bruiser Axe",
+      "pageId": 137367,
+      "redirects": [],
+      "lastRevId": 2115942,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:buggy-balls",
+      "page": "Buggy Balls",
+      "pageId": 8434,
+      "redirects": [],
+      "lastRevId": 2114629,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:burn-bazooka",
+      "page": "Burn Bazooka",
+      "pageId": 8403,
+      "redirects": [],
+      "lastRevId": 2007622,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:burn-blade",
+      "page": "Burn Blade",
+      "pageId": 3124,
+      "redirects": [],
+      "lastRevId": 1911501,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:candy-jacket",
+      "page": "Candy Jacket",
+      "pageId": 316763,
+      "redirects": [],
+      "lastRevId": 2094048,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:carbonation-equipment",
+      "page": "Carbonation Equipment",
+      "pageId": 321848,
+      "redirects": [],
+      "lastRevId": 2064530,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:cat-claws",
+      "page": "Cat Claws",
+      "pageId": 6666,
+      "redirects": [],
+      "lastRevId": 2120974,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:clima-tact",
+      "page": "Art of Weather/Clima-Tact",
+      "pageId": 104008,
+      "redirects": [],
+      "lastRevId": 2124228,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:cutie-baton",
+      "page": "Cutie Baton",
+      "pageId": 346271,
+      "redirects": [],
+      "lastRevId": 2003009,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:daisenso",
+      "page": "Daisenso",
+      "pageId": 334950,
+      "redirects": [],
+      "lastRevId": 2091277,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:durandal",
+      "page": "Durandal",
+      "pageId": 206852,
+      "redirects": [],
+      "lastRevId": 2115822,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:dyna-stone",
+      "page": "Dyna Stone",
+      "pageId": 169555,
+      "redirects": [],
+      "lastRevId": 2114753,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:eagle-launcher",
+      "page": "Eagle Launcher",
+      "pageId": 8429,
+      "redirects": [],
+      "lastRevId": 2052485,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:eclipse",
+      "page": "Eclipse",
+      "pageId": 354156,
+      "redirects": [],
+      "lastRevId": 2106949,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:eisen-whip",
+      "page": "Eisen Whip",
+      "pageId": 264540,
+      "redirects": [],
+      "lastRevId": 2121752,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:enma",
+      "page": "Enma",
+      "pageId": 317470,
+      "redirects": [],
+      "lastRevId": 2092831,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:excite-bullets",
+      "page": "Excite Bullets",
+      "pageId": 316762,
+      "redirects": [],
+      "lastRevId": 2072995,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:explosive",
+      "page": "Explosive",
+      "pageId": 303813,
+      "redirects": [],
+      "lastRevId": 2096466,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:firearm",
+      "page": "Firearm",
+      "pageId": 4184,
+      "redirects": [],
+      "lastRevId": 2131912,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:flash-gun",
+      "page": "Flash Gun",
+      "pageId": 266365,
+      "redirects": [],
+      "lastRevId": 1957276,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:flintlock-44-caliber-6-shot-revolver",
+      "page": "Flintlock .44 Caliber 6 Shot Revolver",
+      "pageId": 268712,
+      "redirects": [],
+      "lastRevId": 2122262,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:flower-bullets",
+      "page": "Flower Bullets",
+      "pageId": 340763,
+      "redirects": [],
+      "lastRevId": 2071931,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:fragarach",
+      "page": "Fragarach",
+      "pageId": 356310,
+      "redirects": [],
+      "lastRevId": 2128986,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:franken",
+      "page": "Franken",
+      "pageId": 344026,
+      "redirects": [],
+      "lastRevId": 2091279,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:gero-gero-gun",
+      "page": "Gero Gero Gun",
+      "pageId": 268714,
+      "redirects": [],
+      "lastRevId": 2059717,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:ginga-pachinko",
+      "page": "Usopp Tactics/Ginga Pachinko",
+      "pageId": 104003,
+      "redirects": [],
+      "lastRevId": 2078765,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:gram",
+      "page": "Gram (Sword)",
+      "pageId": 356297,
+      "redirects": [],
+      "lastRevId": 2129202,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:gryphon",
+      "page": "Gryphon",
+      "pageId": 303505,
+      "redirects": [],
+      "lastRevId": 2127530,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:hassaikai",
+      "page": "Hassaikai",
+      "pageId": 330402,
+      "redirects": [],
+      "lastRevId": 2115815,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:heat-javelin",
+      "page": "Heat Javelin",
+      "pageId": 264559,
+      "redirects": [],
+      "lastRevId": 1957272,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:honebami-toshiro",
+      "page": "Honebami Toshiro",
+      "pageId": 356449,
+      "redirects": [],
+      "lastRevId": 2130671,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:hyper-shibireru-kun",
+      "page": "Hyper Shibireru-kun",
+      "pageId": 352990,
+      "redirects": [],
+      "lastRevId": 2084756,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kabuto",
+      "page": "Usopp Tactics/Kabuto",
+      "pageId": 104002,
+      "redirects": [],
+      "lastRevId": 2078764,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:karakuri-rasento",
+      "page": "Karakuri Rasento",
+      "pageId": 329783,
+      "redirects": [],
+      "lastRevId": 2064658,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:karakuri-sword",
+      "page": "Karakuri Sword",
+      "pageId": 331758,
+      "redirects": [],
+      "lastRevId": 2064642,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kashu",
+      "page": "Kashu",
+      "pageId": 3229,
+      "redirects": [],
+      "lastRevId": 2115795,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kessui",
+      "page": "Kessui",
+      "pageId": 16466,
+      "redirects": [],
+      "lastRevId": 2091283,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kikoku",
+      "page": "Kikoku",
+      "pageId": 220534,
+      "redirects": [],
+      "lastRevId": 2105078,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:king-cannon",
+      "page": "King Cannon",
+      "pageId": 139793,
+      "redirects": [],
+      "lastRevId": 2100680,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kiribachi",
+      "page": "Kiribachi",
+      "pageId": 8390,
+      "redirects": [],
+      "lastRevId": 2111363,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kirisame",
+      "page": "Kirisame",
+      "pageId": 109880,
+      "redirects": [],
+      "lastRevId": 2091372,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kogatana",
+      "page": "Kogatana",
+      "pageId": 48969,
+      "redirects": [],
+      "lastRevId": 2107713,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kosho",
+      "page": "Kosho",
+      "pageId": 349532,
+      "redirects": [],
+      "lastRevId": 2115799,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kuro-kabuto",
+      "page": "Usopp Tactics/Kuro Kabuto",
+      "pageId": 104000,
+      "redirects": [],
+      "lastRevId": 2113601,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kx-launcher",
+      "page": "KX Launcher",
+      "pageId": 295500,
+      "redirects": [],
+      "lastRevId": 2082611,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:kyokuen",
+      "page": "Kyokuen",
+      "pageId": 352865,
+      "redirects": [],
+      "lastRevId": 2115801,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:laser",
+      "page": "Laser",
+      "pageId": 347075,
+      "redirects": [],
+      "lastRevId": 2094159,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:longinus",
+      "page": "Longinus",
+      "pageId": 356309,
+      "redirects": [],
+      "lastRevId": 2131956,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:mh5",
+      "page": "MH5",
+      "pageId": 334953,
+      "redirects": [],
+      "lastRevId": 2044620,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:milky-arrow",
+      "page": "Milky Arrow",
+      "pageId": 266393,
+      "redirects": [],
+      "lastRevId": 1911520,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:mogura",
+      "page": "Mogura",
+      "pageId": 303210,
+      "redirects": [],
+      "lastRevId": 2129796,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:murakumogiri",
+      "page": "Murakumogiri",
+      "pageId": 316435,
+      "redirects": [],
+      "lastRevId": 2121033,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:muramasa",
+      "page": "Muramasa",
+      "pageId": 356318,
+      "redirects": [],
+      "lastRevId": 2129197,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:nailpaddle",
+      "page": "Nailpaddle",
+      "pageId": 350748,
+      "redirects": [],
+      "lastRevId": 2067091,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:nakiri-swords",
+      "page": "Nakiri Swords",
+      "pageId": 334949,
+      "redirects": [],
+      "lastRevId": 2091384,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:nanashaku-jitte",
+      "page": "Nanashaku Jitte",
+      "pageId": 22352,
+      "redirects": [],
+      "lastRevId": 2043808,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:nemesis",
+      "page": "Nemesis",
+      "pageId": 356323,
+      "redirects": [],
+      "lastRevId": 2131947,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:nidai-kitetsu",
+      "page": "Nidai Kitetsu",
+      "pageId": 4625,
+      "redirects": [],
+      "lastRevId": 2097700,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:nonosama-bo",
+      "page": "Nonosama Bo",
+      "pageId": 67421,
+      "redirects": [],
+      "lastRevId": 2126218,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:omni-cannon",
+      "page": "Omni-Cannon",
+      "pageId": 337421,
+      "redirects": [],
+      "lastRevId": 2115592,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:oto-and-kogarashi",
+      "page": "Oto and Kogarashi",
+      "pageId": 24751,
+      "redirects": [],
+      "lastRevId": 2125450,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:peacock-slashers",
+      "page": "Peacock Slashers",
+      "pageId": 5976,
+      "redirects": [],
+      "lastRevId": 2131515,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:perfect-clima-tact",
+      "page": "Art of Weather/Perfect Clima-Tact",
+      "pageId": 104007,
+      "redirects": [],
+      "lastRevId": 2102777,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:poseidon",
+      "page": "Poseidon",
+      "pageId": 1605,
+      "redirects": [],
+      "lastRevId": 2127934,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:pretzel",
+      "page": "Pretzel",
+      "pageId": 289503,
+      "redirects": [],
+      "lastRevId": 2091393,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:protagonist-tractor-beam",
+      "page": "Protagonist Tractor Beam",
+      "pageId": 350139,
+      "redirects": [],
+      "lastRevId": 2108491,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:punishers",
+      "page": "Punishers",
+      "pageId": 327420,
+      "redirects": [],
+      "lastRevId": 2124227,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:raiu",
+      "page": "Raiu",
+      "pageId": 311463,
+      "redirects": [],
+      "lastRevId": 2091394,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:royal-drum-crown-7-shot-bliking-cannon",
+      "page": "Royal Drum Crown 7-Shot Bliking Cannon",
+      "pageId": 6343,
+      "redirects": [],
+      "lastRevId": 2097174,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:same-kiri-bocho",
+      "page": "Same-kiri Bocho",
+      "pageId": 249891,
+      "redirects": [],
+      "lastRevId": 2091295,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:sandai-kitetsu",
+      "page": "Sandai Kitetsu",
+      "pageId": 3232,
+      "redirects": [],
+      "lastRevId": 2112218,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:senpu-king",
+      "page": "Senpu King",
+      "pageId": 183198,
+      "redirects": [],
+      "lastRevId": 2039114,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:senriku",
+      "page": "Senriku",
+      "pageId": 20756,
+      "redirects": [],
+      "lastRevId": 2030567,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:shichiseiken",
+      "page": "Shichiseiken",
+      "pageId": 11650,
+      "redirects": [],
+      "lastRevId": 2101886,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:shigure",
+      "page": "Shigure",
+      "pageId": 3234,
+      "redirects": [],
+      "lastRevId": 2121451,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:shirauo",
+      "page": "Shirauo",
+      "pageId": 292194,
+      "redirects": [],
+      "lastRevId": 2091412,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:shodai-kitetsu",
+      "page": "Shodai Kitetsu",
+      "pageId": 2132,
+      "redirects": [],
+      "lastRevId": 2128001,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:shusui",
+      "page": "Shusui",
+      "pageId": 6709,
+      "redirects": [],
+      "lastRevId": 2113462,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:sorcery-clima-tact",
+      "page": "Art of Weather/Sorcery Clima-Tact",
+      "pageId": 104006,
+      "redirects": [],
+      "lastRevId": 2124607,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:soto-muso",
+      "page": "Soto Muso",
+      "pageId": 316489,
+      "redirects": [],
+      "lastRevId": 2091511,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:soul-solid",
+      "page": "Soul Solid",
+      "pageId": 108819,
+      "redirects": [],
+      "lastRevId": 2131153,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:stigma",
+      "page": "Stigma",
+      "pageId": 356325,
+      "redirects": [],
+      "lastRevId": 2129196,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:sukesan-and-kakusan",
+      "page": "Sukesan and Kakusan",
+      "pageId": 329513,
+      "redirects": [],
+      "lastRevId": 2091299,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:takeru",
+      "page": "Takeru",
+      "pageId": 331544,
+      "redirects": [],
+      "lastRevId": 2115820,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:ten-fold-axe",
+      "page": "Ten-Fold Axe",
+      "pageId": 6021,
+      "redirects": [],
+      "lastRevId": 2077177,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:terry-sword",
+      "page": "Terry Sword",
+      "pageId": 137359,
+      "redirects": [],
+      "lastRevId": 2115941,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:tohu",
+      "page": "Tohu",
+      "pageId": 356316,
+      "redirects": [],
+      "lastRevId": 2131826,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:tsuji-shibai",
+      "page": "Tsuji Shibai",
+      "pageId": 329484,
+      "redirects": [],
+      "lastRevId": 2091421,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:uranus",
+      "page": "Uranus",
+      "pageId": 120610,
+      "redirects": [],
+      "lastRevId": 2087883,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:wado-ichimonji",
+      "page": "Wado Ichimonji",
+      "pageId": 3226,
+      "redirects": [],
+      "lastRevId": 2092830,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:walker",
+      "page": "Walker",
+      "pageId": 293359,
+      "redirects": [],
+      "lastRevId": 2052427,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:warabide-sword",
+      "page": "Warabide Sword",
+      "pageId": 334947,
+      "redirects": [],
+      "lastRevId": 2112418,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:yakuza-kasen",
+      "page": "Yakuza Kasen",
+      "pageId": 346954,
+      "redirects": [],
+      "lastRevId": 2091432,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:yamaoroshi",
+      "page": "Yamaoroshi",
+      "pageId": 39940,
+      "redirects": [],
+      "lastRevId": 2115796,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:yellow-gun",
+      "page": "Yellow Gun",
+      "pageId": 268713,
+      "redirects": [],
+      "lastRevId": 1740738,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:yoru",
+      "page": "Yoru",
+      "pageId": 2127,
+      "redirects": [],
+      "lastRevId": 2115804,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:yubashiri",
+      "page": "Yubashiri",
+      "pageId": 3230,
+      "redirects": [],
+      "lastRevId": 2115793,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
+    },
+    {
+      "entityId": "weapon:zangetsumaru",
+      "page": "Zangetsumaru",
+      "pageId": 352864,
+      "redirects": [],
+      "lastRevId": 2115800,
+      "lastImportedAt": "2026-09-10T02:04:26.935Z"
     }
   ]
 }

@@ -1,0 +1,28 @@
+{
+  "id": "weapon:wado-ichimonji",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "wado-ichimonji",
+  "canonical_name_key": "weapon.wado-ichimonji.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.wado-ichimonji.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:5"
+      },
+      {
+        "value_key": "weapon.wado-ichimonji.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:5"
+      }
+    ],
+    "weapon_type": {
+      "value": "katana"
+    },
+    "weapon_grade": {
+      "value": "o_wazamono"
+    }
+  },
+  "relations": []
+}

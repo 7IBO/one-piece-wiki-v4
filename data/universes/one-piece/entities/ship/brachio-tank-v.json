@@ -1,0 +1,20 @@
+{
+  "id": "ship:brachio-tank-v",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "brachio-tank-v",
+  "canonical_name_key": "ship.brachio-tank-v.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.brachio-tank-v.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:635"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

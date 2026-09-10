@@ -1,0 +1,20 @@
+{
+  "id": "weapon:explosive",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "explosive",
+  "canonical_name_key": "weapon.explosive.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.explosive.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

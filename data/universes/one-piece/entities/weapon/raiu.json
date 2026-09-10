@@ -1,0 +1,25 @@
+{
+  "id": "weapon:raiu",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "raiu",
+  "canonical_name_key": "weapon.raiu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.raiu.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:542"
+      },
+      {
+        "value_key": "weapon.raiu.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:542"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

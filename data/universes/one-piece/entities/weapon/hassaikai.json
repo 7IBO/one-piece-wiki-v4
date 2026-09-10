@@ -1,0 +1,25 @@
+{
+  "id": "weapon:hassaikai",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "hassaikai",
+  "canonical_name_key": "weapon.hassaikai.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.hassaikai.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:824"
+      },
+      {
+        "value_key": "weapon.hassaikai.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:824"
+      }
+    ],
+    "weapon_type": {
+      "value": "kanabo"
+    }
+  },
+  "relations": []
+}

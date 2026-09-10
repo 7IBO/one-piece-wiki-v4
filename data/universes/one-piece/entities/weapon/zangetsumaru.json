@@ -1,0 +1,26 @@
+{
+  "id": "weapon:zangetsumaru",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "zangetsumaru",
+  "canonical_name_key": "weapon.zangetsumaru.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.zangetsumaru.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "weapon.zangetsumaru.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    },
+    "weapon_grade": {
+      "value": "ryo_wazamono"
+    }
+  },
+  "relations": []
+}

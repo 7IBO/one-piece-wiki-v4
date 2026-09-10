@@ -1,0 +1,20 @@
+{
+  "id": "ship:pluton",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "pluton",
+  "canonical_name_key": "ship.pluton.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.pluton.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:192"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

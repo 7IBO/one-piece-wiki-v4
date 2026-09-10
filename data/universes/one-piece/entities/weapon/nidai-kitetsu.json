@@ -1,0 +1,28 @@
+{
+  "id": "weapon:nidai-kitetsu",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "nidai-kitetsu",
+  "canonical_name_key": "weapon.nidai-kitetsu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.nidai-kitetsu.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:912"
+      },
+      {
+        "value_key": "weapon.nidai-kitetsu.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:912"
+      }
+    ],
+    "weapon_type": {
+      "value": "katana"
+    },
+    "weapon_grade": {
+      "value": "o_wazamono"
+    }
+  },
+  "relations": []
+}

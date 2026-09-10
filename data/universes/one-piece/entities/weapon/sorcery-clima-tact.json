@@ -1,0 +1,25 @@
+{
+  "id": "weapon:sorcery-clima-tact",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "sorcery-clima-tact",
+  "canonical_name_key": "weapon.sorcery-clima-tact.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.sorcery-clima-tact.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:598"
+      },
+      {
+        "value_key": "weapon.sorcery-clima-tact.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:598"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

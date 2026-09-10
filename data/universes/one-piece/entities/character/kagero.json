@@ -1,0 +1,21 @@
+{
+  "id": "character:kagero",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "kagero",
+  "canonical_name_key": "character.kagero.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.kagero.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "weapon:honebami-toshiro",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "honebami-toshiro",
+  "canonical_name_key": "weapon.honebami-toshiro.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.honebami-toshiro.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:907"
+      },
+      {
+        "value_key": "weapon.honebami-toshiro.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:907"
+      }
+    ],
+    "weapon_type": {
+      "value": "katana"
+    }
+  },
+  "relations": []
+}

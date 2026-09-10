@@ -1,0 +1,20 @@
+{
+  "id": "weapon:cutie-baton",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "cutie-baton",
+  "canonical_name_key": "weapon.cutie-baton.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.cutie-baton.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:305"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

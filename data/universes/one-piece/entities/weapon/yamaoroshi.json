@@ -1,0 +1,26 @@
+{
+  "id": "weapon:yamaoroshi",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "yamaoroshi",
+  "canonical_name_key": "weapon.yamaoroshi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.yamaoroshi.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "weapon.yamaoroshi.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "weapon_type": {
+      "value": "katana"
+    },
+    "weapon_grade": {
+      "value": "ryo_wazamono"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,51 @@
+{
+  "id": "character:fullbody",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "fullbody",
+  "canonical_name_key": "character.fullbody.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.fullbody.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:43"
+      },
+      {
+        "value_key": "character.fullbody.name.full-body",
+        "name_type": "alias",
+        "since": "manga-chapter:43"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.fullbody.epithet.double-ironfist-fullbody",
+        "since": "manga-chapter:214"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:43"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 1000000
+      }
+    ],
+    "height": [
+      {
+        "value": 184,
+        "source": "databook-card:0073"
+      }
+    ],
+    "birthday": {
+      "value": "09-07"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

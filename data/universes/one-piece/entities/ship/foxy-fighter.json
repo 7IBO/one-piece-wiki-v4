@@ -1,0 +1,20 @@
+{
+  "id": "ship:foxy-fighter",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "foxy-fighter",
+  "canonical_name_key": "ship.foxy-fighter.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.foxy-fighter.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:317"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

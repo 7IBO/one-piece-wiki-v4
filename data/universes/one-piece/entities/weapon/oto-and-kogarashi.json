@@ -1,0 +1,28 @@
+{
+  "id": "weapon:oto-and-kogarashi",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "oto-and-kogarashi",
+  "canonical_name_key": "weapon.oto-and-kogarashi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.oto-and-kogarashi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:0"
+      },
+      {
+        "value_key": "weapon.oto-and-kogarashi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:0"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    },
+    "weapon_grade": {
+      "value": "ryo_wazamono"
+    }
+  },
+  "relations": []
+}

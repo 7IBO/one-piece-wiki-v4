@@ -1,0 +1,20 @@
+{
+  "id": "weapon:durandal",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "durandal",
+  "canonical_name_key": "weapon.durandal.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.durandal.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:704"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}
