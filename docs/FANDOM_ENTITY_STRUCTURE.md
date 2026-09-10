@@ -126,6 +126,45 @@ import ne doit pas faire. **Laissé en avertissement.**
 | **Manga Box**                |        12 | —                                | hors périmètre : décrit des séries dérivées                                                                                                                         |
 | **Scroll Box / Message Box** | 500 / 137 | —                                | **ce ne sont pas des entités** : ce sont des bandeaux de mise en page. Leur présence en tête du classement par volume est un artefact de comptage, pas un gisement. |
 
+## 6 bis. Qui apparaît dans une source — et pourquoi ce n'est pas dans l'infobox
+
+La question « quelles entités sont présentes dans ce chapitre / cet
+épisode / ce film » ne se répond **pas** depuis l'infobox. Relevé sur
+les pages rendues :
+
+| source   | section                               |      pages | forme                        |
+| -------- | ------------------------------------- | ---------: | ---------------------------- |
+| chapitre | « Characters »                        |    39 / 40 | `<table class="CharTable">`  |
+| épisode  | « Characters in Order of Appearance » |    40 / 40 | `<ul>` dans un bloc défilant |
+| film     | « Characters in Order of Appearance » | **4 / 28** | —                            |
+
+**Le film n'est pas couvert, et c'est une mesure, pas un renoncement.**
+Sa section n'existe que sur 4 pages sur 28 ; ce qu'il porte à la place
+(« Cast », 21/28) liste des comédiens de doublage, donc des `person` et
+une relation `staffed-by`, pas des personnages présents. Vérifié page
+par page sur _Film: Red_, qui n'a pas la section du tout.
+
+### Ce que la CharTable dit, et ce qu'elle ne dit pas
+
+Elle groupe **par faction** (colonnes : Pirates, Marines, World
+Government, Bounty Hunters, Shipwrights, Revolutionary Army, Citizens,
+Animals) **puis par équipage** (`<dt>`). C'est tentant, et c'est un
+piège : `narrative-roles` — le vocabulaire du qualificatif `role` —
+porte protagoniste, antagoniste, mentor, allié… pas une faction. Et
+déduire une appartenance d'équipage **à la date du chapitre** serait
+une inférence, pas une lecture. Le groupement est donc **ignoré**.
+
+Ce qui est lu, en revanche : l'annotation entre parenthèses. Relevé sur
+six pages — `(flashback)` 21 fois, `(cover)` 7 — et elle tombe
+exactement sur le vocabulaire `appearance-types`.
+
+### Ce qui est perdu, et qui demande un ADR
+
+Le **rang** d'apparition. La section d'épisode s'appelle « in Order of
+Appearance » et l'ordre est donc une donnée de la source ; mais
+`features` n'a que `appearance_type` et `role` comme qualificatifs, et
+aucun n'est un ordinal.
+
 ## 7. Ce qui est décidé, et dans quel ordre
 
 **Fait dans cette passe** (la donnée existe, le schéma a déjà sa place) :
@@ -154,7 +193,11 @@ import ne doit pas faire. **Laissé en avertissement.**
 
 **Ensuite, par rendement décroissant** :
 
-4. `charDebut` → les arêtes d'apparition (52 % des épisodes).
+4. ~~`charDebut`~~ **dépassé** : la section « Characters » du chapitre
+   et « Characters in Order of Appearance » de l'épisode couvrent
+   39/40 et 40/40 des pages, contre 52 % pour `charDebut`, et elles
+   donnent TOUTES les apparitions, pas seulement les débuts. Fait —
+   voir §6 bis.
 5. Les dates de diffusion par territoire (`released_at` + `territory`).
 6. Live-Action Episode Box, puis Album, puis Game : trois boîtes propres
    dont le type existe déjà.
