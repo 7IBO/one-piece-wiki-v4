@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:ushi-ushi-no-mi-model-bison",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "ushi-ushi-no-mi-model-bison",
+  "canonical_name_key": "devil-fruit.ushi-ushi-no-mi-model-bison.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.ushi-ushi-no-mi-model-bison.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:135"
+      },
+      {
+        "value_key": "devil-fruit.ushi-ushi-no-mi-model-bison.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:135"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "manga-chapter:135"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Bison",
+        "since": "manga-chapter:135"
+      }
+    ]
+  },
+  "relations": []
+}

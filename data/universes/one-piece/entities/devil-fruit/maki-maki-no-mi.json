@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:maki-maki-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "maki-maki-no-mi",
+  "canonical_name_key": "devil-fruit.maki-maki-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.maki-maki-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:817"
+      },
+      {
+        "value_key": "devil-fruit.maki-maki-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:817"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "manga-chapter:817"
+      }
+    ]
+  },
+  "relations": []
+}

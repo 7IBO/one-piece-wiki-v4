@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:sara-sara-no-mi-model-axolotl",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "sara-sara-no-mi-model-axolotl",
+  "canonical_name_key": "devil-fruit.sara-sara-no-mi-model-axolotl.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.sara-sara-no-mi-model-axolotl.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:668"
+      },
+      {
+        "value_key": "devil-fruit.sara-sara-no-mi-model-axolotl.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:668"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "manga-chapter:668"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Axolotl",
+        "since": "manga-chapter:668"
+      }
+    ]
+  },
+  "relations": []
+}

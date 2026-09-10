@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:neko-neko-no-mi-model-leopard",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "neko-neko-no-mi-model-leopard",
+  "canonical_name_key": "devil-fruit.neko-neko-no-mi-model-leopard.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.neko-neko-no-mi-model-leopard.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:348"
+      },
+      {
+        "value_key": "devil-fruit.neko-neko-no-mi-model-leopard.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:348"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "manga-chapter:348"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Leopard",
+        "since": "manga-chapter:348"
+      }
+    ]
+  },
+  "relations": []
+}

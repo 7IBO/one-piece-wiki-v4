@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:peto-peto-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "peto-peto-no-mi",
+  "canonical_name_key": "devil-fruit.peto-peto-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.peto-peto-no-mi.name.common",
+        "name_type": "common",
+        "since": "anime-episode:625"
+      },
+      {
+        "value_key": "devil-fruit.peto-peto-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "anime-episode:625"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "anime-episode:625"
+      }
+    ]
+  },
+  "relations": []
+}

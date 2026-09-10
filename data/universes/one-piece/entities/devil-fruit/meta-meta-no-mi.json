@@ -1,0 +1,25 @@
+{
+  "id": "devil-fruit:meta-meta-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "meta-meta-no-mi",
+  "canonical_name_key": "devil-fruit.meta-meta-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.meta-meta-no-mi.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "devil-fruit.meta-meta-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "classification": [
+      {
+        "value": "unknown"
+      }
+    ]
+  },
+  "relations": []
+}

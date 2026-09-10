@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:beri-beri-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "beri-beri-no-mi",
+  "canonical_name_key": "devil-fruit.beri-beri-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.beri-beri-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:426"
+      },
+      {
+        "value_key": "devil-fruit.beri-beri-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:426"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "manga-chapter:426"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "devil-fruit:smile",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "smile",
+  "canonical_name_key": "devil-fruit.smile.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.smile.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:689"
+      }
+    ],
+    "classification": [
+      {
+        "value": "artificial",
+        "since": "manga-chapter:689"
+      }
+    ]
+  },
+  "relations": []
+}

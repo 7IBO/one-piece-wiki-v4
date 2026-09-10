@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:uo-uo-no-mi-model-seiryu",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "uo-uo-no-mi-model-seiryu",
+  "canonical_name_key": "devil-fruit.uo-uo-no-mi-model-seiryu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.uo-uo-no-mi-model-seiryu.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:921"
+      },
+      {
+        "value_key": "devil-fruit.uo-uo-no-mi-model-seiryu.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:921"
+      }
+    ],
+    "classification": [
+      {
+        "value": "mythical_zoan",
+        "since": "manga-chapter:921"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Seiryu",
+        "since": "manga-chapter:921"
+      }
+    ]
+  },
+  "relations": []
+}

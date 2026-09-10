@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:ryu-ryu-no-mi-model-brachiosaurus",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "ryu-ryu-no-mi-model-brachiosaurus",
+  "canonical_name_key": "devil-fruit.ryu-ryu-no-mi-model-brachiosaurus.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.ryu-ryu-no-mi-model-brachiosaurus.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:945"
+      },
+      {
+        "value_key": "devil-fruit.ryu-ryu-no-mi-model-brachiosaurus.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:945"
+      }
+    ],
+    "classification": [
+      {
+        "value": "ancient_zoan",
+        "since": "manga-chapter:945"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Brachiosaurus",
+        "since": "manga-chapter:945"
+      }
+    ]
+  },
+  "relations": []
+}

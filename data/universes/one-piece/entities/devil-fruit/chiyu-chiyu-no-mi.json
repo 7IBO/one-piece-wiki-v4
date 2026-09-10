@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:chiyu-chiyu-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "chiyu-chiyu-no-mi",
+  "canonical_name_key": "devil-fruit.chiyu-chiyu-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.chiyu-chiyu-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:774"
+      },
+      {
+        "value_key": "devil-fruit.chiyu-chiyu-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:774"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "manga-chapter:774"
+      }
+    ]
+  },
+  "relations": []
+}

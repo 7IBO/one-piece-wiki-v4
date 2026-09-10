@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:inu-inu-no-mi-model-wolf",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "inu-inu-no-mi-model-wolf",
+  "canonical_name_key": "devil-fruit.inu-inu-no-mi-model-wolf.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-wolf.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:379"
+      },
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-wolf.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:379"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "manga-chapter:379"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Wolf",
+        "since": "manga-chapter:379"
+      }
+    ]
+  },
+  "relations": []
+}

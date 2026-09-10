@@ -9418,6 +9418,1686 @@
       ]
     },
     {
+      "entityId": "devil-fruit:akuma-no-mi",
+      "page": "Akuma no Mi",
+      "pageId": 4415,
+      "redirects": [],
+      "lastRevId": 2131833,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ame-ame-no-mi",
+      "page": "Ame Ame no Mi",
+      "pageId": 3668,
+      "redirects": [],
+      "lastRevId": 2100956,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ami-ami-no-mi",
+      "page": "Ami Ami no Mi",
+      "pageId": 24651,
+      "redirects": [],
+      "lastRevId": 2086447,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:aro-aro-no-mi",
+      "page": "Aro Aro no Mi",
+      "pageId": 349976,
+      "redirects": [],
+      "lastRevId": 2131157,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:artificial-devil-fruit",
+      "page": "Artificial Devil Fruit",
+      "pageId": 175365,
+      "redirects": [],
+      "lastRevId": 2100041,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ato-ato-no-mi",
+      "page": "Ato Ato no Mi",
+      "pageId": 223357,
+      "redirects": [],
+      "lastRevId": 2085261,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:atsu-atsu-no-mi",
+      "page": "Atsu Atsu no Mi",
+      "pageId": 7566,
+      "redirects": [],
+      "lastRevId": 2121173,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:awa-awa-no-mi",
+      "page": "Awa Awa no Mi",
+      "pageId": 2636,
+      "redirects": [],
+      "lastRevId": 2085351,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:baku-baku-no-mi",
+      "page": "Baku Baku no Mi",
+      "pageId": 2120,
+      "redirects": [],
+      "lastRevId": 2117512,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:bana-bana-no-mi",
+      "page": "Bana Bana no Mi",
+      "pageId": 324021,
+      "redirects": [],
+      "lastRevId": 2103334,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:bane-bane-no-mi",
+      "page": "Bane Bane no Mi",
+      "pageId": 2633,
+      "redirects": [],
+      "lastRevId": 2086918,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:bara-bara-no-mi",
+      "page": "Bara Bara no Mi",
+      "pageId": 2112,
+      "redirects": [],
+      "lastRevId": 2129664,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:bari-bari-no-mi",
+      "page": "Bari Bari no Mi",
+      "pageId": 208114,
+      "redirects": [],
+      "lastRevId": 2116143,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:basu-basu-no-mi",
+      "page": "Basu Basu no Mi",
+      "pageId": 315631,
+      "redirects": [],
+      "lastRevId": 2103331,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:bata-bata-no-mi",
+      "page": "Bata Bata no Mi",
+      "pageId": 312198,
+      "redirects": [],
+      "lastRevId": 2038118,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:batto-batto-no-mi",
+      "page": "Batto Batto no Mi",
+      "pageId": 232774,
+      "redirects": [],
+      "lastRevId": 2113199,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:batto-batto-no-mi-model-vampire",
+      "page": "Batto Batto no Mi, Model: Vampire",
+      "pageId": 231500,
+      "redirects": [],
+      "lastRevId": 2123260,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:beri-beri-no-mi",
+      "page": "Beri Beri no Mi",
+      "pageId": 2116,
+      "redirects": [],
+      "lastRevId": 2086441,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:beta-beta-no-mi",
+      "page": "Beta Beta no Mi",
+      "pageId": 240126,
+      "redirects": [],
+      "lastRevId": 2114930,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:bijo-bijo-no-mi",
+      "page": "Bijo Bijo no Mi",
+      "pageId": 297121,
+      "redirects": [],
+      "lastRevId": 2103368,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:bisu-bisu-no-mi",
+      "page": "Bisu Bisu no Mi",
+      "pageId": 289758,
+      "redirects": [],
+      "lastRevId": 2070215,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:bomu-bomu-no-mi",
+      "page": "Bomu Bomu no Mi",
+      "pageId": 2115,
+      "redirects": [],
+      "lastRevId": 2112136,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:buki-buki-no-mi",
+      "page": "Buki Buki no Mi",
+      "pageId": 181607,
+      "redirects": [],
+      "lastRevId": 2085255,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:buku-buku-no-mi",
+      "page": "Buku Buku no Mi",
+      "pageId": 309718,
+      "redirects": [],
+      "lastRevId": 2095969,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:chiyu-chiyu-no-mi",
+      "page": "Chiyu Chiyu no Mi",
+      "pageId": 259504,
+      "redirects": [],
+      "lastRevId": 2123873,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:choki-choki-no-mi",
+      "page": "Choki Choki no Mi",
+      "pageId": 13772,
+      "redirects": [],
+      "lastRevId": 2087418,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:chuni-chuni-no-mi",
+      "page": "Chuni Chuni no Mi",
+      "pageId": 335618,
+      "redirects": [],
+      "lastRevId": 2103326,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:deka-deka-no-mi",
+      "page": "Deka Deka no Mi",
+      "pageId": 340651,
+      "redirects": [],
+      "lastRevId": 2115335,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:deri-deri-no-mi",
+      "page": "Deri Deri no Mi",
+      "pageId": 323814,
+      "redirects": [],
+      "lastRevId": 2103332,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:dero-dero-no-mi",
+      "page": "Dero Dero no Mi",
+      "pageId": 316161,
+      "redirects": [],
+      "lastRevId": 2084747,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:doa-doa-no-mi",
+      "page": "Doa Doa no Mi",
+      "pageId": 2635,
+      "redirects": [],
+      "lastRevId": 2086440,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:doku-doku-no-mi",
+      "page": "Doku Doku no Mi",
+      "pageId": 11659,
+      "redirects": [],
+      "lastRevId": 2131669,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:doru-doru-no-mi",
+      "page": "Doru Doru no Mi",
+      "pageId": 2119,
+      "redirects": [],
+      "lastRevId": 2085146,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:fude-fude-no-mi",
+      "page": "Fude Fude no Mi",
+      "pageId": 329479,
+      "redirects": [],
+      "lastRevId": 2116456,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:fuku-fuku-no-mi",
+      "page": "Fuku Fuku no Mi",
+      "pageId": 310880,
+      "redirects": [],
+      "lastRevId": 2086050,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:fuwa-fuwa-no-mi",
+      "page": "Fuwa Fuwa no Mi",
+      "pageId": 24903,
+      "redirects": [],
+      "lastRevId": 2115835,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:gabu-gabu-no-mi",
+      "page": "Gabu Gabu no Mi",
+      "pageId": 340652,
+      "redirects": [],
+      "lastRevId": 2064111,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:gasha-gasha-no-mi",
+      "page": "Gasha Gasha no Mi",
+      "pageId": 315930,
+      "redirects": [],
+      "lastRevId": 2077663,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:gasu-gasu-no-mi",
+      "page": "Gasu Gasu no Mi",
+      "pageId": 150646,
+      "redirects": [],
+      "lastRevId": 2111540,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:gemu-gemu-no-mi",
+      "page": "Gemu Gemu no Mi",
+      "pageId": 337473,
+      "redirects": [],
+      "lastRevId": 2081270,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:giro-giro-no-mi",
+      "page": "Giro Giro no Mi",
+      "pageId": 214489,
+      "redirects": [],
+      "lastRevId": 2128255,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:gocha-gocha-no-mi",
+      "page": "Gocha Gocha no Mi",
+      "pageId": 313335,
+      "redirects": [],
+      "lastRevId": 2055655,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:goe-goe-no-mi",
+      "page": "Goe Goe no Mi",
+      "pageId": 2637,
+      "redirects": [],
+      "lastRevId": 2060540,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:gomu-gomu-no-mi",
+      "page": "Gomu Gomu no Mi",
+      "pageId": 2109,
+      "redirects": [],
+      "lastRevId": 2129663,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:goro-goro-no-mi",
+      "page": "Goro Goro no Mi",
+      "pageId": 2676,
+      "redirects": [],
+      "lastRevId": 2116078,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:goru-goru-no-mi",
+      "page": "Goru Goru no Mi",
+      "pageId": 283415,
+      "redirects": [],
+      "lastRevId": 2128222,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:gunyo-gunyo-no-mi",
+      "page": "Gunyo Gunyo no Mi",
+      "pageId": 340656,
+      "redirects": [],
+      "lastRevId": 2105253,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:gura-gura-no-mi",
+      "page": "Gura Gura no Mi",
+      "pageId": 19253,
+      "redirects": [],
+      "lastRevId": 2117850,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:guru-guru-no-mi",
+      "page": "Guru Guru no Mi",
+      "pageId": 181608,
+      "redirects": [],
+      "lastRevId": 2085262,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:gutsu-gutsu-no-mi",
+      "page": "Gutsu Gutsu no Mi",
+      "pageId": 286416,
+      "redirects": [],
+      "lastRevId": 2126220,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hana-hana-no-mi",
+      "page": "Hana Hana no Mi",
+      "pageId": 2118,
+      "redirects": [],
+      "lastRevId": 2106964,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hebi-hebi-no-mi-model-anaconda",
+      "page": "Hebi Hebi no Mi, Model: Anaconda",
+      "pageId": 10570,
+      "redirects": [],
+      "lastRevId": 2120004,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hebi-hebi-no-mi-model-king-cobra",
+      "page": "Hebi Hebi no Mi, Model: King Cobra",
+      "pageId": 10571,
+      "redirects": [],
+      "lastRevId": 2086986,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hebi-hebi-no-mi-model-yamata-no-orochi",
+      "page": "Hebi Hebi no Mi, Model: Yamata no Orochi",
+      "pageId": 313851,
+      "redirects": [],
+      "lastRevId": 2111622,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hie-hie-no-mi",
+      "page": "Hie Hie no Mi",
+      "pageId": 2656,
+      "redirects": [],
+      "lastRevId": 2111050,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hira-hira-no-mi",
+      "page": "Hira Hira no Mi",
+      "pageId": 239548,
+      "redirects": [],
+      "lastRevId": 2085987,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hiso-hiso-no-mi",
+      "page": "Hiso Hiso no Mi",
+      "pageId": 2639,
+      "redirects": [],
+      "lastRevId": 2066009,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hito-hito-no-mi",
+      "page": "Hito Hito no Mi",
+      "pageId": 2632,
+      "redirects": [],
+      "lastRevId": 2123335,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hito-hito-no-mi-model-daibutsu",
+      "page": "Hito Hito no Mi, Model: Daibutsu",
+      "pageId": 27176,
+      "redirects": [],
+      "lastRevId": 2116080,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hito-hito-no-mi-model-onyudo",
+      "page": "Hito Hito no Mi, Model: Onyudo",
+      "pageId": 330385,
+      "redirects": [],
+      "lastRevId": 2074141,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hobi-hobi-no-mi",
+      "page": "Hobi Hobi no Mi",
+      "pageId": 234798,
+      "redirects": [],
+      "lastRevId": 2129333,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:homi-homi-no-mi",
+      "page": "Homi Homi no Mi",
+      "pageId": 347487,
+      "redirects": [],
+      "lastRevId": 2109722,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hore-hore-no-mi",
+      "page": "Hore Hore no Mi",
+      "pageId": 271051,
+      "redirects": [],
+      "lastRevId": 2103333,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:horo-horo-no-mi",
+      "page": "Horo Horo no Mi",
+      "pageId": 6467,
+      "redirects": [],
+      "lastRevId": 2120742,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:horu-horu-no-mi",
+      "page": "Horu Horu no Mi",
+      "pageId": 12877,
+      "redirects": [],
+      "lastRevId": 2087359,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:hoya-hoya-no-mi",
+      "page": "Hoya Hoya no Mi",
+      "pageId": 297018,
+      "redirects": [],
+      "lastRevId": 2125354,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:iba-iba-no-mi",
+      "page": "Iba Iba no Mi",
+      "pageId": 350903,
+      "redirects": [],
+      "lastRevId": 2131159,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:iku-iku-no-mi",
+      "page": "Iku Iku no Mi",
+      "pageId": 349760,
+      "redirects": [],
+      "lastRevId": 2120513,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:inu-inu-no-mi-model-bake-danuki",
+      "page": "Inu Inu no Mi, Model: Bake-danuki",
+      "pageId": 226218,
+      "redirects": [],
+      "lastRevId": 2116157,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:inu-inu-no-mi-model-dachshund",
+      "page": "Inu Inu no Mi, Model: Dachshund",
+      "pageId": 2644,
+      "redirects": [],
+      "lastRevId": 2050050,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:inu-inu-no-mi-model-hound",
+      "page": "Inu Inu no Mi, Model: Hound",
+      "pageId": 348830,
+      "redirects": [],
+      "lastRevId": 2109557,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:inu-inu-no-mi-model-jackal",
+      "page": "Inu Inu no Mi, Model: Jackal",
+      "pageId": 2642,
+      "redirects": [],
+      "lastRevId": 2049911,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:inu-inu-no-mi-model-kyubi-no-kitsune",
+      "page": "Inu Inu no Mi, Model: Kyubi no Kitsune",
+      "pageId": 311921,
+      "redirects": [],
+      "lastRevId": 2091446,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:inu-inu-no-mi-model-okuchi-no-makami",
+      "page": "Inu Inu no Mi, Model: Okuchi no Makami",
+      "pageId": 329950,
+      "redirects": [],
+      "lastRevId": 2113225,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:inu-inu-no-mi-model-tanuki",
+      "page": "Inu Inu no Mi, Model: Tanuki",
+      "pageId": 316436,
+      "redirects": [],
+      "lastRevId": 2095392,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:inu-inu-no-mi-model-wolf",
+      "page": "Inu Inu no Mi, Model: Wolf",
+      "pageId": 2648,
+      "redirects": [],
+      "lastRevId": 2101562,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:iro-iro-no-mi",
+      "page": "Iro Iro no Mi",
+      "pageId": 287940,
+      "redirects": [],
+      "lastRevId": 2102932,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ishi-ishi-no-mi",
+      "page": "Ishi Ishi no Mi",
+      "pageId": 240125,
+      "redirects": [],
+      "lastRevId": 2085266,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ito-ito-no-mi",
+      "page": "Ito Ito no Mi",
+      "pageId": 229239,
+      "redirects": [],
+      "lastRevId": 2110697,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:jake-jake-no-mi",
+      "page": "Jake Jake no Mi",
+      "pageId": 220410,
+      "redirects": [],
+      "lastRevId": 2114931,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:jara-jara-no-mi",
+      "page": "Jara Jara no Mi",
+      "pageId": 285847,
+      "redirects": [],
+      "lastRevId": 2102933,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:jiki-jiki-no-mi",
+      "page": "Jiki Jiki no Mi",
+      "pageId": 329179,
+      "redirects": [],
+      "lastRevId": 2108438,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:juku-juku-no-mi",
+      "page": "Juku Juku no Mi",
+      "pageId": 311624,
+      "redirects": [],
+      "lastRevId": 2049846,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kachi-kachi-no-mi",
+      "page": "Kachi Kachi no Mi",
+      "pageId": 2640,
+      "redirects": [],
+      "lastRevId": 2056606,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kage-kage-no-mi",
+      "page": "Kage Kage no Mi",
+      "pageId": 4423,
+      "redirects": [],
+      "lastRevId": 2122819,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kama-kama-no-mi",
+      "page": "Kama Kama no Mi",
+      "pageId": 2638,
+      "redirects": [],
+      "lastRevId": 2101570,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kame-kame-no-mi",
+      "page": "Kame Kame no Mi",
+      "pageId": 284509,
+      "redirects": [],
+      "lastRevId": 2096427,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kibi-kibi-no-mi",
+      "page": "Kibi Kibi no Mi",
+      "pageId": 328874,
+      "redirects": [],
+      "lastRevId": 2099573,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kira-kira-no-mi",
+      "page": "Kira Kira no Mi",
+      "pageId": 312162,
+      "redirects": [],
+      "lastRevId": 2129752,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kiro-kiro-no-mi",
+      "page": "Kiro Kiro no Mi",
+      "pageId": 2114,
+      "redirects": [],
+      "lastRevId": 2129325,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kobu-kobu-no-mi",
+      "page": "Kobu Kobu no Mi",
+      "pageId": 307365,
+      "redirects": [],
+      "lastRevId": 2088216,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kone-kone-no-mi",
+      "page": "Kone Kone no Mi",
+      "pageId": 302799,
+      "redirects": [],
+      "lastRevId": 2103318,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kopi-kopi-no-mi",
+      "page": "Kopi Kopi no Mi",
+      "pageId": 162891,
+      "redirects": [],
+      "lastRevId": 2105797,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:koro-koro-no-mi",
+      "page": "Koro Koro no Mi",
+      "pageId": 286413,
+      "redirects": [],
+      "lastRevId": 2102998,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kote-kote-no-mi",
+      "page": "Kote Kote no Mi",
+      "pageId": 338957,
+      "redirects": [],
+      "lastRevId": 2110294,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kuku-kuku-no-mi",
+      "page": "Kuku Kuku no Mi",
+      "pageId": 299558,
+      "redirects": [],
+      "lastRevId": 2056512,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kumo-kumo-no-mi-model-rosamygale-grauvogeli",
+      "page": "Kumo Kumo no Mi, Model: Rosamygale Grauvogeli",
+      "pageId": 326833,
+      "redirects": [],
+      "lastRevId": 2095836,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kuri-kuri-no-mi",
+      "page": "Kuri Kuri no Mi",
+      "pageId": 309717,
+      "redirects": [],
+      "lastRevId": 2076396,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kyara-kyara-no-mi",
+      "page": "Kyara Kyara no Mi",
+      "pageId": 337468,
+      "redirects": [],
+      "lastRevId": 2080496,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:kyubu-kyubu-no-mi",
+      "page": "Kyubu Kyubu no Mi",
+      "pageId": 253071,
+      "redirects": [],
+      "lastRevId": 2102035,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mabo-mabo-no-mi",
+      "page": "Mabo Mabo no Mi",
+      "pageId": 347486,
+      "redirects": [],
+      "lastRevId": 2109723,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:magu-magu-no-mi",
+      "page": "Magu Magu no Mi",
+      "pageId": 24099,
+      "redirects": [],
+      "lastRevId": 2124028,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:maji-maji-no-mi",
+      "page": "Maji Maji no Mi",
+      "pageId": 324110,
+      "redirects": [],
+      "lastRevId": 2103409,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:maki-maki-no-mi",
+      "page": "Maki Maki no Mi",
+      "pageId": 325977,
+      "redirects": [],
+      "lastRevId": 2049423,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mane-mane-no-mi",
+      "page": "Mane Mane no Mi",
+      "pageId": 2121,
+      "redirects": [],
+      "lastRevId": 2085164,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mari-mari-no-mi",
+      "page": "Mari Mari no Mi",
+      "pageId": 341806,
+      "redirects": [],
+      "lastRevId": 2124031,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mato-mato-no-mi",
+      "page": "Mato Mato no Mi",
+      "pageId": 60970,
+      "redirects": [],
+      "lastRevId": 2115499,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:memo-memo-no-mi",
+      "page": "Memo Memo no Mi",
+      "pageId": 293315,
+      "redirects": [],
+      "lastRevId": 2105761,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mera-mera-no-mi",
+      "page": "Mera Mera no Mi",
+      "pageId": 2674,
+      "redirects": [],
+      "lastRevId": 2122979,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mero-mero-no-mi",
+      "page": "Mero Mero no Mi",
+      "pageId": 10686,
+      "redirects": [],
+      "lastRevId": 2096432,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:meta-meta-no-mi",
+      "page": "Meta Meta no Mi",
+      "pageId": 303304,
+      "redirects": [],
+      "lastRevId": 2103406,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mini-mini-no-mi",
+      "page": "Mini Mini no Mi",
+      "pageId": 7938,
+      "redirects": [],
+      "lastRevId": 2115337,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mira-mira-no-mi",
+      "page": "Mira Mira no Mi",
+      "pageId": 288693,
+      "redirects": [],
+      "lastRevId": 2116800,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:moa-moa-no-mi",
+      "page": "Moa Moa no Mi",
+      "pageId": 250344,
+      "redirects": [],
+      "lastRevId": 2102036,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mochi-mochi-no-mi",
+      "page": "Mochi Mochi no Mi",
+      "pageId": 296607,
+      "redirects": [],
+      "lastRevId": 2116343,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:modo-modo-no-mi",
+      "page": "Modo Modo no Mi",
+      "pageId": 164854,
+      "redirects": [],
+      "lastRevId": 2102601,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mogu-mogu-no-mi",
+      "page": "Mogu Mogu no Mi",
+      "pageId": 2631,
+      "redirects": [],
+      "lastRevId": 2063896,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:moku-moku-no-mi",
+      "page": "Moku Moku no Mi",
+      "pageId": 2673,
+      "redirects": [],
+      "lastRevId": 2122246,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mono-mono-no-mi",
+      "page": "Mono Mono no Mi",
+      "pageId": 302797,
+      "redirects": [],
+      "lastRevId": 2103337,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mori-mori-no-mi",
+      "page": "Mori Mori no Mi",
+      "pageId": 335299,
+      "redirects": [],
+      "lastRevId": 2127866,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mosa-mosa-no-mi",
+      "page": "Mosa Mosa no Mi",
+      "pageId": 164960,
+      "redirects": [],
+      "lastRevId": 2102602,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:muchi-muchi-no-mi",
+      "page": "Muchi Muchi no Mi",
+      "pageId": 340653,
+      "redirects": [],
+      "lastRevId": 2100823,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mushi-mushi-no-mi-model-kabutomushi",
+      "page": "Mushi Mushi no Mi, Model: Kabutomushi",
+      "pageId": 223242,
+      "redirects": [],
+      "lastRevId": 2100883,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:mushi-mushi-no-mi-model-suzumebachi",
+      "page": "Mushi Mushi no Mi, Model: Suzumebachi",
+      "pageId": 223243,
+      "redirects": [],
+      "lastRevId": 2100882,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:nagi-nagi-no-mi",
+      "page": "Nagi Nagi no Mi",
+      "pageId": 256312,
+      "redirects": [],
+      "lastRevId": 2085269,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:neko-neko-no-mi-model-leopard",
+      "page": "Neko Neko no Mi, Model: Leopard",
+      "pageId": 2646,
+      "redirects": [],
+      "lastRevId": 2109371,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:neko-neko-no-mi-model-saber-tiger",
+      "page": "Neko Neko no Mi, Model: Saber Tiger",
+      "pageId": 326835,
+      "redirects": [],
+      "lastRevId": 2109403,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:nemu-nemu-no-mi",
+      "page": "Nemu Nemu no Mi",
+      "pageId": 7100,
+      "redirects": [],
+      "lastRevId": 1895668,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:nepa-nepa-no-mi",
+      "page": "Nepa Nepa no Mi",
+      "pageId": 302798,
+      "redirects": [],
+      "lastRevId": 2103338,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:netsu-netsu-no-mi",
+      "page": "Netsu Netsu no Mi",
+      "pageId": 297019,
+      "redirects": [],
+      "lastRevId": 2121167,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:nibi-nibi-no-mi",
+      "page": "Nibi Nibi no Mi",
+      "pageId": 329536,
+      "redirects": [],
+      "lastRevId": 2103329,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:nikyu-nikyu-no-mi",
+      "page": "Nikyu Nikyu no Mi",
+      "pageId": 7814,
+      "redirects": [],
+      "lastRevId": 2118422,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:nito-nito-no-mi",
+      "page": "Nito Nito no Mi",
+      "pageId": 271050,
+      "redirects": [],
+      "lastRevId": 2110359,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:noko-noko-no-mi",
+      "page": "Noko Noko no Mi",
+      "pageId": 8135,
+      "redirects": [],
+      "lastRevId": 2065436,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:nomi-nomi-no-mi",
+      "page": "Nomi Nomi no Mi",
+      "pageId": 338184,
+      "redirects": [],
+      "lastRevId": 2095701,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:nori-nori-no-mi",
+      "page": "Nori Nori no Mi",
+      "pageId": 343433,
+      "redirects": [],
+      "lastRevId": 2086163,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:noro-noro-no-mi",
+      "page": "Noro Noro no Mi",
+      "pageId": 2634,
+      "redirects": [],
+      "lastRevId": 2085149,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:nui-nui-no-mi",
+      "page": "Nui Nui no Mi",
+      "pageId": 212485,
+      "redirects": [],
+      "lastRevId": 2041207,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:nuke-nuke-no-mi",
+      "page": "Nuke Nuke no Mi",
+      "pageId": 283420,
+      "redirects": [],
+      "lastRevId": 2102941,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:numa-numa-no-mi",
+      "page": "Numa Numa no Mi",
+      "pageId": 60080,
+      "redirects": [],
+      "lastRevId": 2102849,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ope-ope-no-mi",
+      "page": "Ope Ope no Mi",
+      "pageId": 24113,
+      "redirects": [],
+      "lastRevId": 2121122,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ori-ori-no-mi",
+      "page": "Ori Ori no Mi",
+      "pageId": 2177,
+      "redirects": [],
+      "lastRevId": 2085227,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:oshi-oshi-no-mi",
+      "page": "Oshi Oshi no Mi",
+      "pageId": 312197,
+      "redirects": [],
+      "lastRevId": 2115334,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:oto-oto-no-mi",
+      "page": "Oto Oto no Mi",
+      "pageId": 330384,
+      "redirects": [],
+      "lastRevId": 2121185,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:pamu-pamu-no-mi",
+      "page": "Pamu Pamu no Mi",
+      "pageId": 242763,
+      "redirects": [],
+      "lastRevId": 2121799,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:pasa-pasa-no-mi",
+      "page": "Pasa Pasa no Mi",
+      "pageId": 7101,
+      "redirects": [],
+      "lastRevId": 2120950,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:peke-peke-no-mi",
+      "page": "Peke Peke no Mi",
+      "pageId": 337457,
+      "redirects": [],
+      "lastRevId": 2080492,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:pero-pero-no-mi",
+      "page": "Pero Pero no Mi",
+      "pageId": 288429,
+      "redirects": [],
+      "lastRevId": 2105518,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:peto-peto-no-mi",
+      "page": "Peto Peto no Mi",
+      "pageId": 234641,
+      "redirects": [],
+      "lastRevId": 2038107,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:pika-pika-no-mi",
+      "page": "Pika Pika no Mi",
+      "pageId": 10092,
+      "redirects": [],
+      "lastRevId": 2124116,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:pocha-pocha-no-mi",
+      "page": "Pocha Pocha no Mi",
+      "pageId": 302801,
+      "redirects": [],
+      "lastRevId": 2103335,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:poke-poke-no-mi",
+      "page": "Poke Poke no Mi",
+      "pageId": 327729,
+      "redirects": [],
+      "lastRevId": 2085153,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:raki-raki-no-mi",
+      "page": "Raki Raki no Mi",
+      "pageId": 283419,
+      "redirects": [],
+      "lastRevId": 2108422,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:rako-rako-no-mi",
+      "page": "Rako Rako no Mi",
+      "pageId": 348827,
+      "redirects": [],
+      "lastRevId": 2095616,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:riba-riba-no-mi",
+      "page": "Riba Riba no Mi",
+      "pageId": 352019,
+      "redirects": [],
+      "lastRevId": 2109730,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:riki-riki-no-mi",
+      "page": "Riki Riki no Mi",
+      "pageId": 337481,
+      "redirects": [],
+      "lastRevId": 2035137,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:risu-risu-no-mi-model-ratatoskr",
+      "page": "Risu Risu no Mi, Model: Ratatoskr",
+      "pageId": 355470,
+      "redirects": [],
+      "lastRevId": 2128169,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ryu-ryu-no-mi-model-allosaurus",
+      "page": "Ryu Ryu no Mi, Model: Allosaurus",
+      "pageId": 312772,
+      "redirects": [],
+      "lastRevId": 2115521,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ryu-ryu-no-mi-model-brachiosaurus",
+      "page": "Ryu Ryu no Mi, Model: Brachiosaurus",
+      "pageId": 315941,
+      "redirects": [],
+      "lastRevId": 2124141,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ryu-ryu-no-mi-model-kirin",
+      "page": "Ryu Ryu no Mi, Model: Kirin",
+      "pageId": 350907,
+      "redirects": [],
+      "lastRevId": 2131290,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ryu-ryu-no-mi-model-nidhoggr",
+      "page": "Ryu Ryu no Mi, Model: Nidhöggr",
+      "pageId": 354135,
+      "redirects": [],
+      "lastRevId": 2121803,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ryu-ryu-no-mi-model-pachycephalosaurus",
+      "page": "Ryu Ryu no Mi, Model: Pachycephalosaurus",
+      "pageId": 323076,
+      "redirects": [],
+      "lastRevId": 2086079,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ryu-ryu-no-mi-model-pteranodon",
+      "page": "Ryu Ryu no Mi, Model: Pteranodon",
+      "pageId": 313162,
+      "redirects": [],
+      "lastRevId": 2116077,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ryu-ryu-no-mi-model-spinosaurus",
+      "page": "Ryu Ryu no Mi, Model: Spinosaurus",
+      "pageId": 312774,
+      "redirects": [],
+      "lastRevId": 2109551,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ryu-ryu-no-mi-model-triceratops",
+      "page": "Ryu Ryu no Mi, Model: Triceratops",
+      "pageId": 326832,
+      "redirects": [],
+      "lastRevId": 2115523,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:sabi-sabi-no-mi",
+      "page": "Sabi Sabi no Mi",
+      "pageId": 2117,
+      "redirects": [],
+      "lastRevId": 2049677,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:sara-sara-no-mi-model-axolotl",
+      "page": "Sara Sara no Mi, Model: Axolotl",
+      "pageId": 162355,
+      "redirects": [],
+      "lastRevId": 2089705,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:shari-shari-no-mi",
+      "page": "Shari Shari no Mi",
+      "pageId": 5573,
+      "redirects": [],
+      "lastRevId": 2072749,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:shibo-shibo-no-mi",
+      "page": "Shibo Shibo no Mi",
+      "pageId": 307789,
+      "redirects": [],
+      "lastRevId": 1990812,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:shiku-shiku-no-mi",
+      "page": "Shiku Shiku no Mi",
+      "pageId": 337483,
+      "redirects": [],
+      "lastRevId": 2109968,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:shima-shima-no-mi",
+      "page": "Shima Shima no Mi",
+      "pageId": 340650,
+      "redirects": [],
+      "lastRevId": 2131028,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:shiro-shiro-no-mi",
+      "page": "Shiro Shiro no Mi",
+      "pageId": 281277,
+      "redirects": [],
+      "lastRevId": 2118656,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:shuku-shuku-no-mi",
+      "page": "Shuku Shuku no Mi",
+      "pageId": 347484,
+      "redirects": [],
+      "lastRevId": 2109718,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:smile",
+      "page": "SMILE",
+      "pageId": 239579,
+      "redirects": [],
+      "lastRevId": 2124144,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:soru-soru-no-mi",
+      "page": "Soru Soru no Mi",
+      "pageId": 288692,
+      "redirects": [],
+      "lastRevId": 2117615,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:sube-sube-no-mi",
+      "page": "Sube Sube no Mi",
+      "pageId": 2113,
+      "redirects": [],
+      "lastRevId": 2106437,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:sui-sui-no-mi",
+      "page": "Sui Sui no Mi",
+      "pageId": 238823,
+      "redirects": [],
+      "lastRevId": 2112678,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:suke-suke-no-mi",
+      "page": "Suke Suke no Mi",
+      "pageId": 6609,
+      "redirects": [],
+      "lastRevId": 2085232,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:suna-suna-no-mi",
+      "page": "Suna Suna no Mi",
+      "pageId": 2675,
+      "redirects": [],
+      "lastRevId": 2119756,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:supa-supa-no-mi",
+      "page": "Supa Supa no Mi",
+      "pageId": 2122,
+      "redirects": [],
+      "lastRevId": 2118666,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:susu-susu-no-mi",
+      "page": "Susu Susu no Mi",
+      "pageId": 341172,
+      "redirects": [],
+      "lastRevId": 2085270,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:tama-tama-no-mi",
+      "page": "Tama Tama no Mi",
+      "pageId": 294179,
+      "redirects": [],
+      "lastRevId": 2099977,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:toge-toge-no-mi",
+      "page": "Toge Toge no Mi",
+      "pageId": 2123,
+      "redirects": [],
+      "lastRevId": 2098281,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:toki-toki-no-mi",
+      "page": "Toki Toki no Mi",
+      "pageId": 310610,
+      "redirects": [],
+      "lastRevId": 2119984,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ton-ton-no-mi",
+      "page": "Ton Ton no Mi",
+      "pageId": 275218,
+      "redirects": [],
+      "lastRevId": 2085257,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:tori-tori-no-mi-model-albatross",
+      "page": "Tori Tori no Mi, Model: Albatross",
+      "pageId": 317033,
+      "redirects": [],
+      "lastRevId": 2124181,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:tori-tori-no-mi-model-eagle",
+      "page": "Tori Tori no Mi, Model: Eagle",
+      "pageId": 70470,
+      "redirects": [],
+      "lastRevId": 2039021,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:tori-tori-no-mi-model-falcon",
+      "page": "Tori Tori no Mi, Model: Falcon",
+      "pageId": 2643,
+      "redirects": [],
+      "lastRevId": 2124277,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:tori-tori-no-mi-model-nue",
+      "page": "Tori Tori no Mi, Model: Nue",
+      "pageId": 303303,
+      "redirects": [],
+      "lastRevId": 2123262,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:tori-tori-no-mi-model-phoenix",
+      "page": "Tori Tori no Mi, Model: Phoenix",
+      "pageId": 312163,
+      "redirects": [],
+      "lastRevId": 2124234,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:toro-toro-no-mi",
+      "page": "Toro Toro no Mi",
+      "pageId": 4617,
+      "redirects": [],
+      "lastRevId": 2062026,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:toshi-toshi-no-mi",
+      "page": "Toshi Toshi no Mi",
+      "pageId": 344019,
+      "redirects": [],
+      "lastRevId": 2126791,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:tsutsu-tsutsu-no-mi",
+      "page": "Tsutsu Tsutsu no Mi",
+      "pageId": 348826,
+      "redirects": [],
+      "lastRevId": 2127535,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:uma-uma-no-mi",
+      "page": "Uma Uma no Mi",
+      "pageId": 2645,
+      "redirects": [],
+      "lastRevId": 2050554,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:uma-uma-no-mi-model-pegasus",
+      "page": "Uma Uma no Mi, Model: Pegasus",
+      "pageId": 337484,
+      "redirects": [],
+      "lastRevId": 2124185,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:uo-uo-no-mi-model-seiryu",
+      "page": "Uo Uo no Mi, Model: Seiryu",
+      "pageId": 326935,
+      "redirects": [],
+      "lastRevId": 2115814,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ushi-ushi-no-mi-model-bison",
+      "page": "Ushi Ushi no Mi, Model: Bison",
+      "pageId": 2641,
+      "redirects": [],
+      "lastRevId": 2124445,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ushi-ushi-no-mi-model-giraffe",
+      "page": "Ushi Ushi no Mi, Model: Giraffe",
+      "pageId": 2649,
+      "redirects": [],
+      "lastRevId": 2110378,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:uta-uta-no-mi",
+      "page": "Uta Uta no Mi",
+      "pageId": 335592,
+      "redirects": [],
+      "lastRevId": 2130417,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:ute-ute-no-mi",
+      "page": "Ute Ute no Mi",
+      "pageId": 302800,
+      "redirects": [],
+      "lastRevId": 2103336,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:wapu-wapu-no-mi",
+      "page": "Wapu Wapu no Mi",
+      "pageId": 337482,
+      "redirects": [],
+      "lastRevId": 2122510,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:wara-wara-no-mi",
+      "page": "Wara Wara no Mi",
+      "pageId": 309113,
+      "redirects": [],
+      "lastRevId": 2086443,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:woshu-woshu-no-mi",
+      "page": "Woshu Woshu no Mi",
+      "pageId": 24098,
+      "redirects": [],
+      "lastRevId": 2085240,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:yami-yami-no-mi",
+      "page": "Yami Yami no Mi",
+      "pageId": 4420,
+      "redirects": [],
+      "lastRevId": 2127973,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:yomi-yomi-no-mi",
+      "page": "Yomi Yomi no Mi",
+      "pageId": 5043,
+      "redirects": [],
+      "lastRevId": 2131135,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:yuki-yuki-no-mi",
+      "page": "Yuki Yuki no Mi",
+      "pageId": 175055,
+      "redirects": [],
+      "lastRevId": 2101659,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:zou-zou-no-mi",
+      "page": "Zou Zou no Mi",
+      "pageId": 2647,
+      "redirects": [],
+      "lastRevId": 2116598,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:zou-zou-no-mi-model-mammoth",
+      "page": "Zou Zou no Mi, Model: Mammoth",
+      "pageId": 280295,
+      "redirects": [],
+      "lastRevId": 2115522,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:zuma-zuma-no-mi",
+      "page": "Zuma Zuma no Mi",
+      "pageId": 250198,
+      "redirects": [],
+      "lastRevId": 2103317,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "devil-fruit:zushi-zushi-no-mi",
+      "page": "Zushi Zushi no Mi",
+      "pageId": 314090,
+      "redirects": [],
+      "lastRevId": 2125459,
+      "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
       "entityId": "manga-chapter:0",
       "page": "Chapter 0",
       "pageId": 24504,
