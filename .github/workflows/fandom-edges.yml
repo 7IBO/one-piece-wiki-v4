@@ -1,0 +1,97 @@
+# Les arêtes seules d'un type déjà importé — déclenchement MANUEL.
+#
+# Un mapper ne résout une arête que si sa cible est déjà au registre.
+# Mesuré : les 455 personnages portent SIX relations à eux tous, parce
+# qu'au moment de leur crawl `origin` (89 % des Char Box) et
+# `residence` (62 %) pointaient des lieux qui n'existaient pas. Les 336
+# lieux existent maintenant.
+#
+# Rien dans le flux normal ne revient les chercher : `stageToLocal`
+# saute un fichier d'entité déjà présent, et `--overwrite` REMPLACE les
+# propriétés — ce qui perdrait une valeur relue par un humain.
+#
+# D'où cette passe : `addToEntity` → `mergeEntity`, relations SEULES.
+# Un second passage sur le même type n'écrit rien.
+name: fandom-edges
+on:
+  workflow_dispatch:
+    inputs:
+      type:
+        description: >-
+          Type d'entité à re-lire. Les candidats sont ceux importés
+          AVANT leurs cibles : character (origin/residence → location),
+          ship et weapon (owner → character), crew (captain).
+        required: true
+        default: 'character'
+        type: choice
+        options: ['character', 'ship', 'weapon', 'crew', 'organization', 'devil-fruit', 'location']
+      limit:
+        description: >-
+          Plafond de pages pour ce run. Une requête wikitexte par
+          entité, ~1 s chacune : 600 tient dans le timeout.
+        required: true
+        default: '500'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  edges:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run schema:generate
+
+      - name: Re-lire les entités et fondre leurs arêtes
+        run: |
+          bun run import:fandom edges \
+            --type "${{ github.event.inputs.type }}" \
+            --limit "${{ github.event.inputs.limit }}" \
+            --stage | tee /tmp/edges.log
+          {
+            echo '### Arêtes trouvées'
+            echo ''
+            echo '```'
+            tail -30 /tmp/edges.log
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Même ordre que les autres imports : la récolte atteint une
+      # branche AVANT qu'on la juge.
+      - name: Pousser la récolte
+        id: push
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Rien à pousser."
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          branch="import/edges-${{ github.run_id }}"
+          git config user.name "fandom-importer[bot]"
+          git config user.email "noreply@one-piece.wiki"
+          git checkout -b "$branch"
+          git add data/
+          git commit -m "data(import): arêtes ${{ github.event.inputs.type }} (run ${{ github.run_id }})"
+          git push -u origin "$branch"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "### Récolte poussée sur \`$branch\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Valider (rapport, jamais un blocage)
+        if: steps.push.outputs.pushed == 'true'
+        continue-on-error: true
+        run: |
+          if bun run validate && bun run check:references; then
+            echo "### Validation : OK" >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "### Validation : ÉCHEC"
+              echo ""
+              echo "La récolte est en sécurité sur \`${{ steps.push.outputs.branch }}\`."
+              echo "Corriger sur la branche — ne PAS relancer l'import."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi
