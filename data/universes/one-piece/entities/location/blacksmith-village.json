@@ -1,0 +1,21 @@
+{
+  "id": "location:blacksmith-village",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "blacksmith-village",
+  "canonical_name_key": "location.blacksmith-village.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.blacksmith-village.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

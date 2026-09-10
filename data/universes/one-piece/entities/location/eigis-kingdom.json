@@ -1,0 +1,22 @@
+{
+  "id": "location:eigis-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "eigis-kingdom",
+  "canonical_name_key": "location.eigis-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.eigis-kingdom.name",
+        "since": "manga-chapter:1086"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "grand_line"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:sheep-s-house",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "sheep-s-house",
+  "canonical_name_key": "location.sheep-s-house.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.sheep-s-house.name",
+        "since": "manga-chapter:866"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

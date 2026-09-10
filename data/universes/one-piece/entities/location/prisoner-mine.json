@@ -1,0 +1,19 @@
+{
+  "id": "location:prisoner-mine",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "prisoner-mine",
+  "canonical_name_key": "location.prisoner-mine.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.prisoner-mine.name",
+        "since": "manga-chapter:924"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

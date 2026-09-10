@@ -1,0 +1,19 @@
+{
+  "id": "location:micqueot",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "micqueot",
+  "canonical_name_key": "location.micqueot.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.micqueot.name",
+        "since": "manga-chapter:43"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

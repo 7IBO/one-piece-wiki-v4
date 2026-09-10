@@ -1,0 +1,21 @@
+{
+  "id": "location:mountain-zone",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "mountain-zone",
+  "canonical_name_key": "location.mountain-zone.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.mountain-zone.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

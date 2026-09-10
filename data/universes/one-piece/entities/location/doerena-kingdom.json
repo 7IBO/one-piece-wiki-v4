@@ -1,0 +1,22 @@
+{
+  "id": "location:doerena-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "doerena-kingdom",
+  "canonical_name_key": "location.doerena-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.doerena-kingdom.name",
+        "since": "manga-chapter:720"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

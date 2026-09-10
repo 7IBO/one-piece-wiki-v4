@@ -1,0 +1,19 @@
+{
+  "id": "location:sea-forest",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "sea-forest",
+  "canonical_name_key": "location.sea-forest.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.sea-forest.name",
+        "since": "manga-chapter:615"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

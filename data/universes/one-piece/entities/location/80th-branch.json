@@ -1,0 +1,22 @@
+{
+  "id": "location:80th-branch",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "80th-branch",
+  "canonical_name_key": "location.80th-branch.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.80th-branch.name",
+        "since": "manga-chapter:582"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "west_blue"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "location:silver-mine",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "silver-mine",
+  "canonical_name_key": "location.silver-mine.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.silver-mine.name",
+        "since": "anime-episode:747"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

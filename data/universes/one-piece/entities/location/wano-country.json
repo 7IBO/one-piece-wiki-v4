@@ -1,0 +1,22 @@
+{
+  "id": "location:wano-country",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "wano-country",
+  "canonical_name_key": "location.wano-country.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.wano-country.name",
+        "since": "manga-chapter:793"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

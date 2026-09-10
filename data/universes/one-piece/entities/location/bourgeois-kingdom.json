@@ -1,0 +1,22 @@
+{
+  "id": "location:bourgeois-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "bourgeois-kingdom",
+  "canonical_name_key": "location.bourgeois-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.bourgeois-kingdom.name",
+        "since": "manga-chapter:865"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "grand_line"
+    }
+  },
+  "relations": []
+}

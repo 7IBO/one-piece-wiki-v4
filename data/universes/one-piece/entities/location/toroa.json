@@ -1,0 +1,22 @@
+{
+  "id": "location:toroa",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "toroa",
+  "canonical_name_key": "location.toroa.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.toroa.name",
+        "since": "manga-chapter:501"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "west_blue"
+    }
+  },
+  "relations": []
+}

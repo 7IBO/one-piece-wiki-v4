@@ -1,0 +1,22 @@
+{
+  "id": "location:mirro-world",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "mirro-world",
+  "canonical_name_key": "location.mirro-world.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.mirro-world.name",
+        "since": "manga-chapter:838"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

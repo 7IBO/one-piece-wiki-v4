@@ -1,0 +1,22 @@
+{
+  "id": "location:baltigo",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "baltigo",
+  "canonical_name_key": "location.baltigo.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.baltigo.name",
+        "since": "manga-chapter:440"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "grand_line"
+    }
+  },
+  "relations": []
+}

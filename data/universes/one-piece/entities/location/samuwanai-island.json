@@ -1,0 +1,22 @@
+{
+  "id": "location:samuwanai-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "samuwanai-island",
+  "canonical_name_key": "location.samuwanai-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.samuwanai-island.name",
+        "since": "manga-chapter:1153"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "south_blue"
+    }
+  },
+  "relations": []
+}

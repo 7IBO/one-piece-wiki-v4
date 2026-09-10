@@ -1,0 +1,19 @@
+{
+  "id": "location:onigashima",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "onigashima",
+  "canonical_name_key": "location.onigashima.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.onigashima.name",
+        "since": "manga-chapter:793"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

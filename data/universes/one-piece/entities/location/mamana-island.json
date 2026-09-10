@@ -1,0 +1,21 @@
+{
+  "id": "location:mamana-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "mamana-island",
+  "canonical_name_key": "location.mamana-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.mamana-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

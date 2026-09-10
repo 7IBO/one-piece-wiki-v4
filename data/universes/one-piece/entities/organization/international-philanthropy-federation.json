@@ -1,0 +1,20 @@
+{
+  "id": "organization:international-philanthropy-federation",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "international-philanthropy-federation",
+  "canonical_name_key": "organization.international-philanthropy-federation.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.international-philanthropy-federation.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1157"
+      }
+    ],
+    "organization_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

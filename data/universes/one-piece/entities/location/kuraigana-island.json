@@ -1,0 +1,22 @@
+{
+  "id": "location:kuraigana-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "kuraigana-island",
+  "canonical_name_key": "location.kuraigana-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.kuraigana-island.name",
+        "since": "manga-chapter:524"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

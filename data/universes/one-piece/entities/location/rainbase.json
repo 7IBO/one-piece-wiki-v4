@@ -1,0 +1,19 @@
+{
+  "id": "location:rainbase",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "rainbase",
+  "canonical_name_key": "location.rainbase.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.rainbase.name",
+        "since": "manga-chapter:126"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

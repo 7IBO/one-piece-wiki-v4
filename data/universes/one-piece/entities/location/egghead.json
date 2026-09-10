@@ -1,0 +1,22 @@
+{
+  "id": "location:egghead",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "egghead",
+  "canonical_name_key": "location.egghead.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.egghead.name",
+        "since": "manga-chapter:1061"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

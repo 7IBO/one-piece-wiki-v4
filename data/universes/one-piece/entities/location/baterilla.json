@@ -1,0 +1,22 @@
+{
+  "id": "location:baterilla",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "baterilla",
+  "canonical_name_key": "location.baterilla.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.baterilla.name",
+        "since": "manga-chapter:550"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "south_blue"
+    }
+  },
+  "relations": []
+}

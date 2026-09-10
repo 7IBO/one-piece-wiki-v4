@@ -1,0 +1,22 @@
+{
+  "id": "location:reverse-mountain",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "reverse-mountain",
+  "canonical_name_key": "location.reverse-mountain.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.reverse-mountain.name",
+        "since": "manga-chapter:101"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "red_line"
+    }
+  },
+  "relations": []
+}

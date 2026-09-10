@@ -1,0 +1,19 @@
+{
+  "id": "location:arlong-park",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "arlong-park",
+  "canonical_name_key": "location.arlong-park.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.arlong-park.name",
+        "since": "manga-chapter:69"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

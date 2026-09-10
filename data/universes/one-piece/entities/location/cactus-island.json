@@ -1,0 +1,30 @@
+{
+  "id": "location:cactus-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "cactus-island",
+  "canonical_name_key": "location.cactus-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.cactus-island.name",
+        "since": "manga-chapter:106"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": [
+    {
+      "type": "ruled-by",
+      "target": "organization:baroque-works",
+      "qualifiers": {
+        "since": "manga-chapter:106"
+      }
+    }
+  ]
+}

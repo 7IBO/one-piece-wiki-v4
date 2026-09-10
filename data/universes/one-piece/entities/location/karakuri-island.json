@@ -1,0 +1,22 @@
+{
+  "id": "location:karakuri-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "karakuri-island",
+  "canonical_name_key": "location.karakuri-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.karakuri-island.name",
+        "since": "manga-chapter:448"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

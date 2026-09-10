@@ -1,0 +1,19 @@
+{
+  "id": "location:cocoyasi-village",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "cocoyasi-village",
+  "canonical_name_key": "location.cocoyasi-village.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.cocoyasi-village.name",
+        "since": "manga-chapter:70"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

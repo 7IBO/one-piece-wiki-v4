@@ -1,0 +1,22 @@
+{
+  "id": "location:sabaody-park",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "sabaody-park",
+  "canonical_name_key": "location.sabaody-park.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.sabaody-park.name",
+        "since": "manga-chapter:499"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

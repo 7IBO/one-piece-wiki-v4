@@ -1,0 +1,19 @@
+{
+  "id": "location:emerald-city",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "emerald-city",
+  "canonical_name_key": "location.emerald-city.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.emerald-city.name",
+        "since": "manga-chapter:224"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

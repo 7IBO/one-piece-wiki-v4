@@ -1,0 +1,22 @@
+{
+  "id": "location:elbaph",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "elbaph",
+  "canonical_name_key": "location.elbaph.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.elbaph.name",
+        "since": "manga-chapter:865"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

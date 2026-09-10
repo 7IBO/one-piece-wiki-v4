@@ -1,0 +1,19 @@
+{
+  "id": "location:midway-forest",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "midway-forest",
+  "canonical_name_key": "location.midway-forest.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.midway-forest.name",
+        "since": "manga-chapter:583"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

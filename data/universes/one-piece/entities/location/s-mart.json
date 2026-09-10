@@ -1,0 +1,19 @@
+{
+  "id": "location:s-mart",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "s-mart",
+  "canonical_name_key": "location.s-mart.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.s-mart.name",
+        "since": "manga-chapter:641"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

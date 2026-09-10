@@ -1,0 +1,19 @@
+{
+  "id": "location:birka",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "birka",
+  "canonical_name_key": "location.birka.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.birka.name",
+        "since": "manga-chapter:241"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

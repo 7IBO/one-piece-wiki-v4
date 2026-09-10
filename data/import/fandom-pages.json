@@ -10470,9 +10470,11 @@
       "entityId": "character:ban-dedessinee",
       "page": "Ban Dedessinée",
       "pageId": 316124,
-      "redirects": [],
+      "redirects": [
+        "Frauce Kingdom"
+      ],
       "lastRevId": 2125948,
-      "lastImportedAt": "2026-09-10T02:15:53.065Z"
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "character:banban-bang-bang",
@@ -11825,9 +11827,11 @@
       "entityId": "character:chap",
       "page": "Chap",
       "pageId": 329418,
-      "redirects": [],
+      "redirects": [
+        "Deul Kingdom"
+      ],
       "lastRevId": 2111989,
-      "lastImportedAt": "2026-09-10T02:15:53.065Z"
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "character:chappe",
@@ -13100,6 +13104,16 @@
       "lastImportedAt": "2026-09-10T02:04:26.935Z"
     },
     {
+      "entityId": "character:iwatobi",
+      "page": "Iwatobi",
+      "pageId": 329398,
+      "redirects": [
+        "Whiteland Kingdom"
+      ],
+      "lastRevId": 2111996,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
       "entityId": "character:kagero",
       "page": "Kagero (Non-Canon)",
       "pageId": 324483,
@@ -13155,6 +13169,16 @@
         "Straw Hat Luffy",
         "Luffy"
       ]
+    },
+    {
+      "entityId": "character:moqueca",
+      "page": "Moqueca",
+      "pageId": 329406,
+      "redirects": [
+        "Samba Kingdom"
+      ],
+      "lastRevId": 2111971,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "character:mr-10",
@@ -13287,6 +13311,16 @@
       "lastImportedAt": "2026-09-10T02:15:53.065Z"
     },
     {
+      "entityId": "character:rice-rice",
+      "page": "Rice Rice",
+      "pageId": 82826,
+      "redirects": [
+        "High Mountain"
+      ],
+      "lastRevId": 2115701,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
       "entityId": "character:shirano",
       "page": "Cyrano",
       "pageId": 12469,
@@ -13351,6 +13385,14 @@
       ],
       "lastRevId": 2127549,
       "lastImportedAt": "2026-09-10T02:15:53.065Z"
+    },
+    {
+      "entityId": "character:world-tree",
+      "page": "Great Tree",
+      "pageId": 345773,
+      "redirects": [],
+      "lastRevId": 2115778,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "crew:a-o-pirates",
@@ -16137,6 +16179,2762 @@
       "redirects": [],
       "lastRevId": 2125459,
       "lastImportedAt": "2026-09-10T02:04:46.399Z"
+    },
+    {
+      "entityId": "location:153rd-branch",
+      "page": "153rd Branch",
+      "pageId": 33458,
+      "redirects": [],
+      "lastRevId": 2127772,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:16th-branch",
+      "page": "16th Branch",
+      "pageId": 7703,
+      "redirects": [],
+      "lastRevId": 2127773,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:2000-year-island",
+      "page": "2000 Year Island",
+      "pageId": 339635,
+      "redirects": [],
+      "lastRevId": 1989671,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:77th-branch",
+      "page": "77th Branch",
+      "pageId": 17086,
+      "redirects": [],
+      "lastRevId": 2127774,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:80th-branch",
+      "page": "80th Branch",
+      "pageId": 45836,
+      "redirects": [],
+      "lastRevId": 2127775,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:8th-branch",
+      "page": "8th Branch",
+      "pageId": 16135,
+      "redirects": [],
+      "lastRevId": 2127776,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:abyss-zone",
+      "page": "Abyss Zone",
+      "pageId": 327626,
+      "redirects": [],
+      "lastRevId": 2102239,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:acacia",
+      "page": "Acacia",
+      "pageId": 195324,
+      "redirects": [],
+      "lastRevId": 2102240,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:alchemi",
+      "page": "Alchemi",
+      "pageId": 285901,
+      "redirects": [],
+      "lastRevId": 2102921,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:all-blue",
+      "page": "All Blue",
+      "pageId": 2978,
+      "redirects": [],
+      "lastRevId": 2103063,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:alubarna",
+      "page": "Alubarna",
+      "pageId": 4791,
+      "redirects": [],
+      "lastRevId": 2103144,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:amazon-lily",
+      "page": "Amazon Lily",
+      "pageId": 10247,
+      "redirects": [],
+      "lastRevId": 2122314,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:aoi-kingdom",
+      "page": "Aoi Kingdom",
+      "pageId": 348832,
+      "redirects": [],
+      "lastRevId": 2120861,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:applenine-island",
+      "page": "Applenine Island",
+      "pageId": 271125,
+      "redirects": [],
+      "lastRevId": 2120946,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:arabasta-kingdom",
+      "page": "Arabasta Kingdom",
+      "pageId": 2202,
+      "redirects": [
+        "Sandy Island"
+      ],
+      "lastRevId": 2120926,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:arlong-park",
+      "page": "Arlong Park",
+      "pageId": 4512,
+      "redirects": [],
+      "lastRevId": 2060946,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:atoll",
+      "page": "Atoll",
+      "pageId": 322949,
+      "redirects": [],
+      "lastRevId": 2103243,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:aurust-castle",
+      "page": "Aurust Castle",
+      "pageId": 349991,
+      "redirects": [],
+      "lastRevId": 2126448,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:badland",
+      "page": "Badland",
+      "pageId": 8907,
+      "redirects": [],
+      "lastRevId": 2090953,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:ballon-terminal",
+      "page": "Ballon Terminal",
+      "pageId": 272892,
+      "redirects": [],
+      "lastRevId": 2114954,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:ballywood-kingdom",
+      "page": "Ballywood Kingdom",
+      "pageId": 307661,
+      "redirects": [],
+      "lastRevId": 2081001,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:baltigo",
+      "page": "Baltigo",
+      "pageId": 3801,
+      "redirects": [],
+      "lastRevId": 2117506,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:banana-peninsula",
+      "page": "Banana Peninsula",
+      "pageId": 355163,
+      "redirects": [],
+      "lastRevId": 2115104,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:banaro-island",
+      "page": "Banaro Island",
+      "pageId": 3803,
+      "redirects": [],
+      "lastRevId": 1946472,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:baterilla",
+      "page": "Baterilla",
+      "pageId": 17746,
+      "redirects": [],
+      "lastRevId": 2050086,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:bighorn",
+      "page": "Bighorn",
+      "pageId": 4543,
+      "redirects": [],
+      "lastRevId": 2122254,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:birka",
+      "page": "Birka",
+      "pageId": 4592,
+      "redirects": [],
+      "lastRevId": 2084288,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:blacksmith-village",
+      "page": "Blacksmith Village",
+      "pageId": 356045,
+      "redirects": [],
+      "lastRevId": 2124369,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:blue-planet",
+      "page": "Blue Planet",
+      "pageId": 33427,
+      "redirects": [],
+      "lastRevId": 2130801,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:blue-sea",
+      "page": "Blue Sea",
+      "pageId": 4591,
+      "redirects": [],
+      "lastRevId": 2109570,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:boin-archipelago",
+      "page": "Boin Archipelago",
+      "pageId": 10870,
+      "redirects": [],
+      "lastRevId": 2100417,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:bourgeois-kingdom",
+      "page": "Bourgeois Kingdom",
+      "pageId": 297739,
+      "redirects": [],
+      "lastRevId": 2035770,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:branchi",
+      "page": "Branchi",
+      "pageId": 352613,
+      "redirects": [],
+      "lastRevId": 2092030,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:briss-kingdom",
+      "page": "Briss Kingdom",
+      "pageId": 2949,
+      "redirects": [],
+      "lastRevId": 2122147,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:broc-coli-island",
+      "page": "Broc Coli Island",
+      "pageId": 286210,
+      "redirects": [],
+      "lastRevId": 2128544,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:buggyland",
+      "page": "Buggyland",
+      "pageId": 350926,
+      "redirects": [],
+      "lastRevId": 2056778,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:bunt-kingdom",
+      "page": "Bunt Kingdom",
+      "pageId": 351945,
+      "redirects": [],
+      "lastRevId": 2084295,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:cactus-island",
+      "page": "Cactus Island",
+      "pageId": 4516,
+      "redirects": [],
+      "lastRevId": 2095134,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:cactus-saloon",
+      "page": "Cactus Saloon",
+      "pageId": 9569,
+      "redirects": [],
+      "lastRevId": 2053848,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:calm-belt",
+      "page": "Calm Belt",
+      "pageId": 2952,
+      "redirects": [],
+      "lastRevId": 2132189,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:candy-factory",
+      "page": "Candy Factory",
+      "pageId": 57993,
+      "redirects": [],
+      "lastRevId": 1764785,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:carta",
+      "page": "Carta",
+      "pageId": 244848,
+      "redirects": [],
+      "lastRevId": 1931178,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:cave-island",
+      "page": "Cave Island",
+      "pageId": 350174,
+      "redirects": [],
+      "lastRevId": 2058856,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:cave-zone",
+      "page": "Cave Zone",
+      "pageId": 327385,
+      "redirects": [],
+      "lastRevId": 2048187,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:centaurea",
+      "page": "Centaurea",
+      "pageId": 3802,
+      "redirects": [],
+      "lastRevId": 2120854,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:clockwork-island",
+      "page": "Clockwork Island",
+      "pageId": 4930,
+      "redirects": [],
+      "lastRevId": 1863023,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:cloud-end",
+      "page": "Cloud End",
+      "pageId": 6149,
+      "redirects": [],
+      "lastRevId": 1906229,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:cocoa-weed",
+      "page": "Cocoa Weed",
+      "pageId": 8526,
+      "redirects": [],
+      "lastRevId": 1906012,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:cocoyasi-village",
+      "page": "Cocoyasi Village",
+      "pageId": 3254,
+      "redirects": [],
+      "lastRevId": 2122251,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:conomi-islands",
+      "page": "Conomi Islands",
+      "pageId": 5160,
+      "redirects": [],
+      "lastRevId": 2114739,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:corrida-colosseum",
+      "page": "Corrida Colosseum",
+      "pageId": 197520,
+      "redirects": [],
+      "lastRevId": 2100360,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:cozia",
+      "page": "Cozia",
+      "pageId": 290729,
+      "redirects": [],
+      "lastRevId": 1958564,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:cream-mist",
+      "page": "Cream Mist",
+      "pageId": 327859,
+      "redirects": [],
+      "lastRevId": 2054201,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:crescent-island",
+      "page": "Crescent Island",
+      "pageId": 355213,
+      "redirects": [],
+      "lastRevId": 2114733,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:dawn-island",
+      "page": "Dawn Island",
+      "pageId": 12018,
+      "redirects": [],
+      "lastRevId": 2114740,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:delta-island",
+      "page": "Delta Island",
+      "pageId": 317236,
+      "redirects": [],
+      "lastRevId": 2099445,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:devil-s-tower",
+      "page": "Devil's Tower",
+      "pageId": 275268,
+      "redirects": [],
+      "lastRevId": 2103081,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:dimension-zone",
+      "page": "Dimension Zone",
+      "pageId": 327554,
+      "redirects": [],
+      "lastRevId": 2048189,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:doerena-kingdom",
+      "page": "Doerena Kingdom",
+      "pageId": 225056,
+      "redirects": [],
+      "lastRevId": 2100582,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:door-hoverka-colosseum",
+      "page": "Door Hoverka Colosseum",
+      "pageId": 339890,
+      "redirects": [],
+      "lastRevId": 2092294,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:downs",
+      "page": "Downs",
+      "pageId": 344296,
+      "redirects": [],
+      "lastRevId": 2083246,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:dressrosa",
+      "page": "Dressrosa",
+      "pageId": 161471,
+      "redirects": [],
+      "lastRevId": 2127247,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:drum-castle",
+      "page": "Drum Castle",
+      "pageId": 4545,
+      "redirects": [],
+      "lastRevId": 2124546,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:drum-island",
+      "page": "Drum Island",
+      "pageId": 4519,
+      "redirects": [],
+      "lastRevId": 2108034,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:drum-rockies",
+      "page": "Drum Rockies",
+      "pageId": 4544,
+      "redirects": [],
+      "lastRevId": 1840213,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:egghead",
+      "page": "Egghead",
+      "pageId": 336945,
+      "redirects": [],
+      "lastRevId": 2129192,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:eight-nine-island",
+      "page": "Eight Nine Island",
+      "pageId": 82830,
+      "redirects": [],
+      "lastRevId": 2053868,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:eigis-kingdom",
+      "page": "Eigis Kingdom",
+      "pageId": 329506,
+      "redirects": [],
+      "lastRevId": 2035773,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:elbaph",
+      "page": "Elbaph",
+      "pageId": 4520,
+      "redirects": [
+        "Heaven World",
+        "Ida's Bar",
+        "Underworld (Elbaph)",
+        "Warland Kingdom"
+      ],
+      "lastRevId": 2131154,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:elegia",
+      "page": "Elegia",
+      "pageId": 334415,
+      "redirects": [
+        "Elegia Kingdom"
+      ],
+      "lastRevId": 2131366,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:elena",
+      "page": "Elena",
+      "pageId": 54277,
+      "redirects": [],
+      "lastRevId": 2100962,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:emerald-city",
+      "page": "Emerald City",
+      "pageId": 272580,
+      "redirects": [],
+      "lastRevId": 2053916,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:enies-lobby",
+      "page": "Enies Lobby",
+      "pageId": 2158,
+      "redirects": [
+        "Bridge of Hesitation",
+        "Tower of Justice"
+      ],
+      "lastRevId": 2117287,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:enishi",
+      "page": "Enishi",
+      "pageId": 352395,
+      "redirects": [],
+      "lastRevId": 2120947,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:erumalu",
+      "page": "Erumalu",
+      "pageId": 4805,
+      "redirects": [],
+      "lastRevId": 2074552,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:esperia-kingdom",
+      "page": "Esperia Kingdom",
+      "pageId": 355591,
+      "redirects": [],
+      "lastRevId": 2128500,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:euro-peninsula",
+      "page": "Euro Peninsula",
+      "pageId": 355689,
+      "redirects": [],
+      "lastRevId": 2120332,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:evil-black-drum-kingdom",
+      "page": "Evil Black Drum Kingdom",
+      "pageId": 98059,
+      "redirects": [],
+      "lastRevId": 2117925,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:farce-island",
+      "page": "Farce Island",
+      "pageId": 355160,
+      "redirects": [],
+      "lastRevId": 2114665,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:festa-circle",
+      "page": "Festa Circle",
+      "pageId": 346670,
+      "redirects": [],
+      "lastRevId": 2048967,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:fireworks",
+      "page": "Fireworks",
+      "pageId": 277745,
+      "redirects": [],
+      "lastRevId": 1950840,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:firs-island",
+      "page": "Firs Island",
+      "pageId": 183061,
+      "redirects": [],
+      "lastRevId": 2102558,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:fish-man-district",
+      "page": "Fish-Man District",
+      "pageId": 55269,
+      "redirects": [],
+      "lastRevId": 2095819,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:fish-man-island",
+      "page": "Fish-Man Island",
+      "pageId": 2311,
+      "redirects": [],
+      "lastRevId": 2121140,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:fisherman-island",
+      "page": "Fisherman Island",
+      "pageId": 327930,
+      "redirects": [],
+      "lastRevId": 2102910,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:flevance",
+      "page": "Flevance",
+      "pageId": 255680,
+      "redirects": [],
+      "lastRevId": 2120850,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:florian-triangle",
+      "page": "Florian Triangle",
+      "pageId": 3196,
+      "redirects": [],
+      "lastRevId": 2117279,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:flower-capital",
+      "page": "Flower Capital",
+      "pageId": 312470,
+      "redirects": [],
+      "lastRevId": 2105231,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:flower-hill",
+      "page": "Flower Hill",
+      "pageId": 215672,
+      "redirects": [],
+      "lastRevId": 1838148,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:foodvalten",
+      "page": "Foodvalten",
+      "pageId": 32267,
+      "redirects": [],
+      "lastRevId": 1718853,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:foolshout-island",
+      "page": "Foolshout Island",
+      "pageId": 75525,
+      "redirects": [],
+      "lastRevId": 1937330,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:foosha-village",
+      "page": "Foosha Village",
+      "pageId": 3175,
+      "redirects": [],
+      "lastRevId": 2112170,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:forest-island",
+      "page": "Forest Island",
+      "pageId": 350065,
+      "redirects": [],
+      "lastRevId": 2124463,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:franky-house",
+      "page": "Franky House",
+      "pageId": 3612,
+      "redirects": [],
+      "lastRevId": 2085830,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:fron-island",
+      "page": "Fron Island",
+      "pageId": 295186,
+      "redirects": [],
+      "lastRevId": 2103061,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:g-1",
+      "page": "G-1",
+      "pageId": 46989,
+      "redirects": [],
+      "lastRevId": 2127777,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:g-14",
+      "page": "G-14",
+      "pageId": 337011,
+      "redirects": [],
+      "lastRevId": 2127783,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:g-2",
+      "page": "G-2",
+      "pageId": 7502,
+      "redirects": [],
+      "lastRevId": 2127778,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:g-3",
+      "page": "G-3",
+      "pageId": 32417,
+      "redirects": [],
+      "lastRevId": 2127779,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:g-5",
+      "page": "G-5",
+      "pageId": 39794,
+      "redirects": [],
+      "lastRevId": 2127781,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:g-8",
+      "page": "G-8",
+      "pageId": 4942,
+      "redirects": [],
+      "lastRevId": 2127782,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gacha-gacha-island",
+      "page": "Gacha Gacha Island",
+      "pageId": 339819,
+      "redirects": [],
+      "lastRevId": 2120379,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:galzburg",
+      "page": "Galzburg",
+      "pageId": 317232,
+      "redirects": [],
+      "lastRevId": 2120883,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gartel-island",
+      "page": "Gartel Island",
+      "pageId": 348144,
+      "redirects": [],
+      "lastRevId": 2113975,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gates-of-justice",
+      "page": "Gates of Justice",
+      "pageId": 3811,
+      "redirects": [],
+      "lastRevId": 2094828,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gecko-islands",
+      "page": "Gecko Islands",
+      "pageId": 4564,
+      "redirects": [],
+      "lastRevId": 2043652,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gerard",
+      "page": "Gérard",
+      "pageId": 176826,
+      "redirects": [],
+      "lastRevId": 2016321,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:germa-kingdom",
+      "page": "Germa Kingdom",
+      "pageId": 287672,
+      "redirects": [],
+      "lastRevId": 2129316,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:goa-kingdom",
+      "page": "Goa Kingdom",
+      "pageId": 34704,
+      "redirects": [],
+      "lastRevId": 2130302,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:goat-island",
+      "page": "Goat Island",
+      "pageId": 33445,
+      "redirects": [],
+      "lastRevId": 2100762,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:god-valley",
+      "page": "God Valley",
+      "pageId": 318072,
+      "redirects": [],
+      "lastRevId": 2130255,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gold-island",
+      "page": "Gold Island",
+      "pageId": 4477,
+      "redirects": [],
+      "lastRevId": 2099448,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:goldfish-empire",
+      "page": "Goldfish Empire",
+      "pageId": 46267,
+      "redirects": [],
+      "lastRevId": 1981334,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gonarock-island",
+      "page": "Gonarock Island",
+      "pageId": 355214,
+      "redirects": [],
+      "lastRevId": 2115110,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gorge-island",
+      "page": "Gorge Island",
+      "pageId": 350076,
+      "redirects": [],
+      "lastRevId": 2050456,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gosa-village",
+      "page": "Gosa Village",
+      "pageId": 4511,
+      "redirects": [],
+      "lastRevId": 2061134,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gourmet-island",
+      "page": "Gourmet Island",
+      "pageId": 341760,
+      "redirects": [],
+      "lastRevId": 2088788,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gray-terminal",
+      "page": "Gray Terminal",
+      "pageId": 33734,
+      "redirects": [],
+      "lastRevId": 2100225,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:great-kingdom",
+      "page": "Great Kingdom",
+      "pageId": 1627,
+      "redirects": [],
+      "lastRevId": 2131310,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:green-bit",
+      "page": "Green Bit",
+      "pageId": 188970,
+      "redirects": [],
+      "lastRevId": 2095583,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:guanhao",
+      "page": "Guanhao",
+      "pageId": 315874,
+      "redirects": [],
+      "lastRevId": 2000621,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gyasta",
+      "page": "Gyasta",
+      "pageId": 8529,
+      "redirects": [],
+      "lastRevId": 2002862,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gyoncorde-plaza",
+      "page": "Gyoncorde Plaza",
+      "pageId": 88566,
+      "redirects": [],
+      "lastRevId": 2095855,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:gyoverly-hills",
+      "page": "Gyoverly Hills",
+      "pageId": 55411,
+      "redirects": [],
+      "lastRevId": 2006683,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:hachinosu",
+      "page": "Hachinosu",
+      "pageId": 167633,
+      "redirects": [],
+      "lastRevId": 2120321,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:hand-island",
+      "page": "Hand Island",
+      "pageId": 179870,
+      "redirects": [],
+      "lastRevId": 2096054,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:headband-catfish-village",
+      "page": "Headband Catfish Village",
+      "pageId": 15368,
+      "redirects": [],
+      "lastRevId": 2129330,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:human-auctioning-house",
+      "page": "Human Auctioning House",
+      "pageId": 8928,
+      "redirects": [],
+      "lastRevId": 2081804,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:hungry-la-island",
+      "page": "Hungry-La Island",
+      "pageId": 353006,
+      "redirects": [],
+      "lastRevId": 2131362,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:hyokaido",
+      "page": "Hyokaido",
+      "pageId": 7351,
+      "redirects": [],
+      "lastRevId": 2129726,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:hyoutan-island",
+      "page": "Hyoutan Island",
+      "pageId": 355210,
+      "redirects": [],
+      "lastRevId": 2115109,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:iceberg-island",
+      "page": "Iceberg Island",
+      "pageId": 350088,
+      "redirects": [],
+      "lastRevId": 2050458,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:ido",
+      "page": "Ido",
+      "pageId": 8274,
+      "redirects": [],
+      "lastRevId": 1771212,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:ilisia-kingdom",
+      "page": "Ilisia Kingdom",
+      "pageId": 2023,
+      "redirects": [],
+      "lastRevId": 2043657,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:impel-down",
+      "page": "Impel Down",
+      "pageId": 2654,
+      "redirects": [],
+      "lastRevId": 2114563,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:island-of-rare-animals",
+      "page": "Island of Rare Animals",
+      "pageId": 2752,
+      "redirects": [],
+      "lastRevId": 2105338,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:iyasare-island",
+      "page": "Iyasare Island",
+      "pageId": 355203,
+      "redirects": [],
+      "lastRevId": 2116371,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:jaya",
+      "page": "Jaya",
+      "pageId": 4664,
+      "redirects": [],
+      "lastRevId": 2085525,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:jewel-ice-sheet",
+      "page": "Jewel Ice Sheet",
+      "pageId": 224048,
+      "redirects": [],
+      "lastRevId": 2062919,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:judo-island",
+      "page": "Judo Island",
+      "pageId": 337159,
+      "redirects": [],
+      "lastRevId": 2044348,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:jump-worlds",
+      "page": "Jump Worlds",
+      "pageId": 350138,
+      "redirects": [],
+      "lastRevId": 2108859,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:jungle-zone",
+      "page": "Jungle Zone",
+      "pageId": 327321,
+      "redirects": [],
+      "lastRevId": 2048183,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:kamigata",
+      "page": "Kamigata",
+      "pageId": 355836,
+      "redirects": [],
+      "lastRevId": 2121814,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:kano-country",
+      "page": "Kano Country",
+      "pageId": 199910,
+      "redirects": [],
+      "lastRevId": 2082103,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:karai-bari-island",
+      "page": "Karai Bari Island",
+      "pageId": 277105,
+      "redirects": [],
+      "lastRevId": 2104033,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:karakuri-island",
+      "page": "Karakuri Island",
+      "pageId": 6949,
+      "redirects": [
+        "Baldimore"
+      ],
+      "lastRevId": 2120932,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:karate-island",
+      "page": "Karate Island",
+      "pageId": 2961,
+      "redirects": [],
+      "lastRevId": 2050088,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:katorea",
+      "page": "Katorea",
+      "pageId": 4835,
+      "redirects": [],
+      "lastRevId": 2104695,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:kenzan-island",
+      "page": "Kenzan Island",
+      "pageId": 41952,
+      "redirects": [
+        "Tehna Gehna Kingdom"
+      ],
+      "lastRevId": 2127695,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:kilauea",
+      "page": "Kilauea",
+      "pageId": 27809,
+      "redirects": [],
+      "lastRevId": 2002851,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:kinoko-islands",
+      "page": "Kinoko Islands",
+      "pageId": 355207,
+      "redirects": [],
+      "lastRevId": 2114725,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:kuen-village",
+      "page": "Kuen Village",
+      "pageId": 315129,
+      "redirects": [],
+      "lastRevId": 2044284,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:kumate-island",
+      "page": "Kumate Island",
+      "pageId": 8465,
+      "redirects": [],
+      "lastRevId": 2117600,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:kuraigana-island",
+      "page": "Kuraigana Island",
+      "pageId": 10859,
+      "redirects": [
+        "Shikkearu Kingdom"
+      ],
+      "lastRevId": 2120892,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:kutsukku-island",
+      "page": "Kutsukku Island",
+      "pageId": 347843,
+      "redirects": [],
+      "lastRevId": 2041352,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:kyuka-island",
+      "page": "Kyuka Island",
+      "pageId": 8340,
+      "redirects": [],
+      "lastRevId": 2105007,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:land-of-gods",
+      "page": "Land of Gods",
+      "pageId": 348503,
+      "redirects": [
+        "Bigstein Castle"
+      ],
+      "lastRevId": 2123590,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:land-of-ice",
+      "page": "Land of Ice",
+      "pageId": 6109,
+      "redirects": [],
+      "lastRevId": 2124668,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:las-camp",
+      "page": "Las Camp",
+      "pageId": 34351,
+      "redirects": [],
+      "lastRevId": 2003050,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:laugh-tale",
+      "page": "Laugh Tale",
+      "pageId": 2684,
+      "redirects": [],
+      "lastRevId": 2119910,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:little-garden",
+      "page": "Little Garden",
+      "pageId": 2310,
+      "redirects": [],
+      "lastRevId": 2093847,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:lodestar-island",
+      "page": "Lodestar Island",
+      "pageId": 319398,
+      "redirects": [],
+      "lastRevId": 2092820,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:loguetown",
+      "page": "Loguetown",
+      "pageId": 3052,
+      "redirects": [
+        "Polestar Islands"
+      ],
+      "lastRevId": 2123425,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:long-ring-long-land",
+      "page": "Long Ring Long Land",
+      "pageId": 4790,
+      "redirects": [],
+      "lastRevId": 2124973,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:lost-island",
+      "page": "Lost Island",
+      "pageId": 4736,
+      "redirects": [],
+      "lastRevId": 2120944,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:lovely-land",
+      "page": "Lovely Land",
+      "pageId": 100834,
+      "redirects": [],
+      "lastRevId": 2106387,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:lulusia-kingdom",
+      "page": "Lulusia Kingdom",
+      "pageId": 307369,
+      "redirects": [],
+      "lastRevId": 2121387,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:lvneel-kingdom",
+      "page": "Lvneel Kingdom",
+      "pageId": 2593,
+      "redirects": [],
+      "lastRevId": 2088269,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:majiatsuka-kingdom",
+      "page": "Majiatsuka Kingdom",
+      "pageId": 229914,
+      "redirects": [],
+      "lastRevId": 2051404,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mamana-island",
+      "page": "Mamana Island",
+      "pageId": 346169,
+      "redirects": [],
+      "lastRevId": 2039034,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:marine-gs-general-hospital",
+      "page": "Marine GS General Hospital",
+      "pageId": 346733,
+      "redirects": [],
+      "lastRevId": 2111136,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:marineford",
+      "page": "Marineford",
+      "pageId": 4551,
+      "redirects": [],
+      "lastRevId": 2114284,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mary-geoise",
+      "page": "Mary Geoise",
+      "pageId": 2239,
+      "redirects": [],
+      "lastRevId": 2129004,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:melias",
+      "page": "Melias",
+      "pageId": 8717,
+      "redirects": [],
+      "lastRevId": 1768613,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:memoria",
+      "page": "Memoria",
+      "pageId": 340854,
+      "redirects": [],
+      "lastRevId": 2053783,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mermaid-cove",
+      "page": "Mermaid Cove",
+      "pageId": 55333,
+      "redirects": [],
+      "lastRevId": 2093651,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:merveille",
+      "page": "Merveille",
+      "pageId": 27226,
+      "redirects": [],
+      "lastRevId": 2132231,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:meshi",
+      "page": "Meshi",
+      "pageId": 8438,
+      "redirects": [],
+      "lastRevId": 2061170,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:micqueot",
+      "page": "Micqueot",
+      "pageId": 8598,
+      "redirects": [],
+      "lastRevId": 2053830,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:midway-forest",
+      "page": "Midway Forest",
+      "pageId": 34361,
+      "redirects": [],
+      "lastRevId": 1950861,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:minion-island",
+      "page": "Minion Island",
+      "pageId": 256596,
+      "redirects": [],
+      "lastRevId": 1637122,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:miraba-elementary-school",
+      "page": "Miraba Elementary School",
+      "pageId": 353311,
+      "redirects": [],
+      "lastRevId": 2092032,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mirro-world",
+      "page": "Mirro-World",
+      "pageId": 303808,
+      "redirects": [],
+      "lastRevId": 2053780,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mirror-ball-island",
+      "page": "Mirror Ball Island",
+      "pageId": 4717,
+      "redirects": [],
+      "lastRevId": 2109856,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mock-town",
+      "page": "Mock Town",
+      "pageId": 4665,
+      "redirects": [],
+      "lastRevId": 2086807,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mogaro-kingdom",
+      "page": "Mogaro Kingdom",
+      "pageId": 218169,
+      "redirects": [],
+      "lastRevId": 2002858,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mokomo-dukedom",
+      "page": "Mokomo Dukedom",
+      "pageId": 277666,
+      "redirects": [],
+      "lastRevId": 2119088,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:momoiro-island",
+      "page": "Momoiro Island",
+      "pageId": 10784,
+      "redirects": [
+        "Kamabakka Kingdom"
+      ],
+      "lastRevId": 2131398,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:moon",
+      "page": "Moon",
+      "pageId": 6948,
+      "redirects": [],
+      "lastRevId": 2095656,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mountain-zone",
+      "page": "Mountain Zone",
+      "pageId": 327398,
+      "redirects": [],
+      "lastRevId": 2092029,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mt-colubo",
+      "page": "Mt. Colubo",
+      "pageId": 33374,
+      "redirects": [],
+      "lastRevId": 2106932,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mt-kintoki",
+      "page": "Mt. Kintoki",
+      "pageId": 348929,
+      "redirects": [],
+      "lastRevId": 2115113,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mt-mauri",
+      "page": "Mt. Mauri",
+      "pageId": 350480,
+      "redirects": [],
+      "lastRevId": 2053856,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:mystoria-island",
+      "page": "Mystoria Island",
+      "pageId": 133302,
+      "redirects": [],
+      "lastRevId": 1925174,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:nagagutsu-kingdom",
+      "page": "Nagagutsu Kingdom",
+      "pageId": 329511,
+      "redirects": [],
+      "lastRevId": 2106274,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:nakrowa",
+      "page": "Nakrowa",
+      "pageId": 141936,
+      "redirects": [],
+      "lastRevId": 2068280,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:namakura-island",
+      "page": "Namakura Island",
+      "pageId": 10860,
+      "redirects": [
+        "Harahettania"
+      ],
+      "lastRevId": 2120928,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:namonaki-village",
+      "page": "Namonaki Village",
+      "pageId": 355201,
+      "redirects": [],
+      "lastRevId": 2114719,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:nanatsu-islands",
+      "page": "Nanatsu Islands",
+      "pageId": 334202,
+      "redirects": [],
+      "lastRevId": 2094941,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:nanimonai-island",
+      "page": "Nanimonai Island",
+      "pageId": 4522,
+      "redirects": [],
+      "lastRevId": 2108298,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:nanohana",
+      "page": "Nanohana",
+      "pageId": 8343,
+      "redirects": [],
+      "lastRevId": 1907041,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:nazawaka-city",
+      "page": "Nazawaka City",
+      "pageId": 349646,
+      "redirects": [
+        "Naka River"
+      ],
+      "lastRevId": 2123659,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:nebulandia",
+      "page": "Nebulandia",
+      "pageId": 278677,
+      "redirects": [],
+      "lastRevId": 2102731,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:new-marineford",
+      "page": "New Marineford",
+      "pageId": 306939,
+      "redirects": [],
+      "lastRevId": 2031904,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:new-world",
+      "page": "New World",
+      "pageId": 2954,
+      "redirects": [],
+      "lastRevId": 2120319,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:notice",
+      "page": "Notice",
+      "pageId": 258108,
+      "redirects": [],
+      "lastRevId": 2106502,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:ocean-s-navel",
+      "page": "Ocean's Navel",
+      "pageId": 4929,
+      "redirects": [],
+      "lastRevId": 2039037,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:ohara",
+      "page": "Ohara",
+      "pageId": 2445,
+      "redirects": [],
+      "lastRevId": 2118312,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:onigashima",
+      "page": "Onigashima",
+      "pageId": 310664,
+      "redirects": [],
+      "lastRevId": 2127011,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:orange-town",
+      "page": "Orange Town",
+      "pageId": 4500,
+      "redirects": [],
+      "lastRevId": 2061190,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:organ-islands",
+      "page": "Organ Islands",
+      "pageId": 4565,
+      "redirects": [],
+      "lastRevId": 1988812,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:owl-library",
+      "page": "Owl Library",
+      "pageId": 349725,
+      "redirects": [],
+      "lastRevId": 2123220,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:oykot-kingdom",
+      "page": "Oykot Kingdom",
+      "pageId": 311550,
+      "redirects": [],
+      "lastRevId": 2107793,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:pangaea-castle",
+      "page": "Pangaea Castle",
+      "pageId": 308249,
+      "redirects": [],
+      "lastRevId": 2115286,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:pants-hazard",
+      "page": "Pants Hazard",
+      "pageId": 351992,
+      "redirects": [],
+      "lastRevId": 2126547,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:paradise-farm",
+      "page": "Paradise Farm",
+      "pageId": 317552,
+      "redirects": [],
+      "lastRevId": 2088325,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:pasta-lake",
+      "page": "Pasta Lake",
+      "pageId": 138237,
+      "redirects": [],
+      "lastRevId": 2044290,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:peak-ode-island",
+      "page": "Peak Ode Island",
+      "pageId": 337418,
+      "redirects": [],
+      "lastRevId": 2031303,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:pepe-kingdom",
+      "page": "Pepe Kingdom",
+      "pageId": 341114,
+      "redirects": [],
+      "lastRevId": 2053861,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:pescatore-island",
+      "page": "Pescatore Island",
+      "pageId": 355205,
+      "redirects": [],
+      "lastRevId": 2114723,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:pinwhale-village",
+      "page": "Pinwhale Village",
+      "pageId": 355200,
+      "redirects": [],
+      "lastRevId": 2115098,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:plain-zone",
+      "page": "Plain Zone",
+      "pageId": 327307,
+      "redirects": [],
+      "lastRevId": 2048184,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:porco-kingdom",
+      "page": "Porco Kingdom",
+      "pageId": 348851,
+      "redirects": [],
+      "lastRevId": 2093753,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:port-chibaralta-island",
+      "page": "Port Chibaralta Island",
+      "pageId": 308931,
+      "redirects": [],
+      "lastRevId": 1965203,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:primula",
+      "page": "Primula",
+      "pageId": 244851,
+      "redirects": [],
+      "lastRevId": 1931175,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:prisoner-mine",
+      "page": "Prisoner Mine",
+      "pageId": 321397,
+      "redirects": [],
+      "lastRevId": 2046122,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:prodence-kingdom",
+      "page": "Prodence Kingdom",
+      "pageId": 199913,
+      "redirects": [],
+      "lastRevId": 2093621,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:promise-land",
+      "page": "Promise Land",
+      "pageId": 323798,
+      "redirects": [],
+      "lastRevId": 2103250,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:pucci",
+      "page": "Pucci",
+      "pageId": 8742,
+      "redirects": [],
+      "lastRevId": 2132121,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:punk-hazard",
+      "page": "Punk Hazard",
+      "pageId": 133278,
+      "redirects": [],
+      "lastRevId": 2109392,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:raijin-island",
+      "page": "Raijin Island",
+      "pageId": 133299,
+      "redirects": [],
+      "lastRevId": 2100988,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:rainbase",
+      "page": "Rainbase",
+      "pageId": 4763,
+      "redirects": [],
+      "lastRevId": 1830757,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:rainbow-mist",
+      "page": "Rainbow Mist",
+      "pageId": 8369,
+      "redirects": [
+        "Ape's Concert"
+      ],
+      "lastRevId": 2124679,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:rainbow-tower",
+      "page": "Rainbow Tower",
+      "pageId": 8374,
+      "redirects": [],
+      "lastRevId": 2102807,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:rakesh",
+      "page": "Rakesh",
+      "pageId": 271946,
+      "redirects": [],
+      "lastRevId": 1974240,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:red-line",
+      "page": "Red Line",
+      "pageId": 2951,
+      "redirects": [],
+      "lastRevId": 2121138,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:renaisse",
+      "page": "Renaisse",
+      "pageId": 71023,
+      "redirects": [],
+      "lastRevId": 2121844,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:reverse-mountain",
+      "page": "Reverse Mountain",
+      "pageId": 2953,
+      "redirects": [],
+      "lastRevId": 2113203,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:risky-red-island",
+      "page": "Risky Red Island",
+      "pageId": 133305,
+      "redirects": [],
+      "lastRevId": 1925183,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:robelle",
+      "page": "Robelle",
+      "pageId": 8531,
+      "redirects": [],
+      "lastRevId": 2085872,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:rommel-kingdom",
+      "page": "Rommel Kingdom",
+      "pageId": 238106,
+      "redirects": [],
+      "lastRevId": 2053855,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:roshwan-kingdom",
+      "page": "Roshwan Kingdom",
+      "pageId": 307660,
+      "redirects": [],
+      "lastRevId": 1908911,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:royal-sun-island",
+      "page": "Royal Sun Island",
+      "pageId": 346688,
+      "redirects": [],
+      "lastRevId": 2120876,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:rubeck-island",
+      "page": "Rubeck Island",
+      "pageId": 256597,
+      "redirects": [],
+      "lastRevId": 1925185,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:ruins-zone",
+      "page": "Ruins Zone",
+      "pageId": 327357,
+      "redirects": [],
+      "lastRevId": 2048186,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:rusukaina",
+      "page": "Rusukaina",
+      "pageId": 42516,
+      "redirects": [
+        "Ottankaina Kingdom"
+      ],
+      "lastRevId": 2127516,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:ryugu-kingdom",
+      "page": "Ryugu Kingdom",
+      "pageId": 56204,
+      "redirects": [],
+      "lastRevId": 2091939,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:ryugu-palace",
+      "page": "Ryugu Palace",
+      "pageId": 56203,
+      "redirects": [],
+      "lastRevId": 2107936,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:s-mart",
+      "page": "S.Mart",
+      "pageId": 141935,
+      "redirects": [],
+      "lastRevId": 2115931,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sabaody-archipelago",
+      "page": "Sabaody Archipelago",
+      "pageId": 8161,
+      "redirects": [],
+      "lastRevId": 2117290,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sabaody-park",
+      "page": "Sabaody Park",
+      "pageId": 54344,
+      "redirects": [],
+      "lastRevId": 1952292,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sakura-kingdom",
+      "page": "Sakura Kingdom",
+      "pageId": 4549,
+      "redirects": [
+        "Drum Kingdom"
+      ],
+      "lastRevId": 2085835,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:samba-island",
+      "page": "Samba Island",
+      "pageId": 183802,
+      "redirects": [],
+      "lastRevId": 2124148,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:samua-island",
+      "page": "Samua Island",
+      "pageId": 346168,
+      "redirects": [],
+      "lastRevId": 2039033,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:samuwanai-island",
+      "page": "Samuwanai Island",
+      "pageId": 351944,
+      "redirects": [],
+      "lastRevId": 2083716,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:san-faldo",
+      "page": "San Faldo",
+      "pageId": 8743,
+      "redirects": [],
+      "lastRevId": 2002863,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sandora-desert",
+      "page": "Sandora Desert",
+      "pageId": 4857,
+      "redirects": [],
+      "lastRevId": 2043575,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sandora-river",
+      "page": "Sandora River",
+      "pageId": 4860,
+      "redirects": [],
+      "lastRevId": 2086113,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sapoten-graveyard",
+      "page": "Sapoten Graveyard",
+      "pageId": 231620,
+      "redirects": [],
+      "lastRevId": 1831893,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:satsuruzo-kingdom",
+      "page": "Satsuruzo Kingdom",
+      "pageId": 348860,
+      "redirects": [],
+      "lastRevId": 2061213,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sea-forest",
+      "page": "Sea Forest",
+      "pageId": 62613,
+      "redirects": [],
+      "lastRevId": 2095912,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:seaside-zone",
+      "page": "Seaside Zone",
+      "pageId": 327313,
+      "redirects": [],
+      "lastRevId": 2048185,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sebio",
+      "page": "Sebio",
+      "pageId": 231428,
+      "redirects": [],
+      "lastRevId": 1952286,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:secon-island",
+      "page": "Secon Island",
+      "pageId": 183062,
+      "redirects": [],
+      "lastRevId": 2102715,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:shade-port",
+      "page": "Shade Port",
+      "pageId": 348850,
+      "redirects": [],
+      "lastRevId": 2082261,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:shakky-s-rip-off-bar",
+      "page": "Shakky's Rip-off Bar",
+      "pageId": 10847,
+      "redirects": [
+        "Shakky's Rip-off Bar (Hachinosu)"
+      ],
+      "lastRevId": 2124852,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:shandora",
+      "page": "Shandora",
+      "pageId": 6930,
+      "redirects": [],
+      "lastRevId": 2097658,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sheep-s-house",
+      "page": "Sheep's House",
+      "pageId": 297732,
+      "redirects": [],
+      "lastRevId": 2103544,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:shellfish-island",
+      "page": "Shellfish Island",
+      "pageId": 327912,
+      "redirects": [],
+      "lastRevId": 2001533,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:shells-town",
+      "page": "Shells Town",
+      "pageId": 3988,
+      "redirects": [
+        "Food Foo"
+      ],
+      "lastRevId": 2079988,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:shift-station",
+      "page": "Shift Station",
+      "pageId": 17019,
+      "redirects": [],
+      "lastRevId": 1841437,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:shimotsuki-village",
+      "page": "Shimotsuki Village",
+      "pageId": 3974,
+      "redirects": [],
+      "lastRevId": 2108476,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:silver-mine",
+      "page": "Silver Mine",
+      "pageId": 286417,
+      "redirects": [],
+      "lastRevId": 2103006,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sixis",
+      "page": "Sixis",
+      "pageId": 302574,
+      "redirects": [],
+      "lastRevId": 2007387,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:skull-dome",
+      "page": "Skull Dome",
+      "pageId": 327931,
+      "redirects": [],
+      "lastRevId": 2091946,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:skypiea",
+      "page": "Skypiea",
+      "pageId": 2133,
+      "redirects": [],
+      "lastRevId": 2132206,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:smile-factory",
+      "page": "SMILE Factory",
+      "pageId": 241595,
+      "redirects": [],
+      "lastRevId": 2129429,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:soil-island",
+      "page": "Soil Island",
+      "pageId": 349075,
+      "redirects": [],
+      "lastRevId": 2103252,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:soja-island",
+      "page": "Soja Island",
+      "pageId": 348834,
+      "redirects": [],
+      "lastRevId": 2115115,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sorbet-kingdom",
+      "page": "Sorbet Kingdom",
+      "pageId": 308215,
+      "redirects": [
+        "Castle Town"
+      ],
+      "lastRevId": 2071814,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sphinx",
+      "page": "Sphinx (Location)",
+      "pageId": 312169,
+      "redirects": [],
+      "lastRevId": 2132222,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:spice-bean",
+      "page": "Spice Bean",
+      "pageId": 8344,
+      "redirects": [],
+      "lastRevId": 1944493,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:spider-miles",
+      "page": "Spider Miles",
+      "pageId": 255028,
+      "redirects": [],
+      "lastRevId": 2095820,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:spiders-cafe",
+      "page": "Spiders Cafe",
+      "pageId": 4858,
+      "redirects": [],
+      "lastRevId": 2095897,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:st-poplar",
+      "page": "St. Poplar",
+      "pageId": 8922,
+      "redirects": [],
+      "lastRevId": 2000917,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:standing-kingdom",
+      "page": "Standing Kingdom",
+      "pageId": 307407,
+      "redirects": [],
+      "lastRevId": 2035769,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:strumia",
+      "page": "Strumia",
+      "pageId": 326069,
+      "redirects": [],
+      "lastRevId": 2120886,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:suiren",
+      "page": "Suiren",
+      "pageId": 91926,
+      "redirects": [],
+      "lastRevId": 2002864,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:sun-world",
+      "page": "Sun World",
+      "pageId": 349448,
+      "redirects": [
+        "Branch Route 1",
+        "Branch Route 8",
+        "Brewers Village",
+        "Craftsmen Village",
+        "Fishermen Village",
+        "Haugen",
+        "Huntsmen Village",
+        "Warrior's Spring",
+        "Western Village"
+      ],
+      "lastRevId": 2130689,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:swallow-island",
+      "page": "Swallow Island",
+      "pageId": 256618,
+      "redirects": [],
+      "lastRevId": 1942991,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:syrup-village",
+      "page": "Syrup Village",
+      "pageId": 4501,
+      "redirects": [],
+      "lastRevId": 2118581,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tabetsukusare-island",
+      "page": "Tabetsukusare Island",
+      "pageId": 336051,
+      "redirects": [],
+      "lastRevId": 2128625,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tamarisk",
+      "page": "Tamarisk",
+      "pageId": 16960,
+      "redirects": [],
+      "lastRevId": 2074565,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tarai-current",
+      "page": "Tarai Current",
+      "pageId": 19852,
+      "redirects": [],
+      "lastRevId": 2112544,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:taya-kingdom",
+      "page": "Taya Kingdom",
+      "pageId": 348833,
+      "redirects": [],
+      "lastRevId": 2086155,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tequila-wolf",
+      "page": "Tequila Wolf",
+      "pageId": 10871,
+      "redirects": [
+        "Bourbon Wolf",
+        "Rum Wolf",
+        "Vodka Wolf"
+      ],
+      "lastRevId": 2094193,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:third-research-institute",
+      "page": "Third Research Institute",
+      "pageId": 317955,
+      "redirects": [],
+      "lastRevId": 2115111,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tomb-of-the-kings",
+      "page": "Tomb of the Kings",
+      "pageId": 4794,
+      "redirects": [],
+      "lastRevId": 2108319,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tongari-island",
+      "page": "Tongari Island",
+      "pageId": 322336,
+      "redirects": [],
+      "lastRevId": 2109067,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tontatta-kingdom",
+      "page": "Tontatta Kingdom",
+      "pageId": 212623,
+      "redirects": [],
+      "lastRevId": 2100470,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tony-tony-island",
+      "page": "Tony-Tony Island",
+      "pageId": 336049,
+      "redirects": [],
+      "lastRevId": 2128624,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:torino-kingdom",
+      "page": "Torino Kingdom",
+      "pageId": 10861,
+      "redirects": [],
+      "lastRevId": 2085204,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:toroa",
+      "page": "Toroa",
+      "pageId": 10205,
+      "redirects": [],
+      "lastRevId": 1925194,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:totto-land",
+      "page": "Totto Land",
+      "pageId": 285962,
+      "redirects": [],
+      "lastRevId": 2131753,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tou-chuka-island",
+      "page": "Tou-Chuka Island",
+      "pageId": 353036,
+      "redirects": [],
+      "lastRevId": 2085350,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:trans-town",
+      "page": "Trans Town",
+      "pageId": 230119,
+      "redirects": [],
+      "lastRevId": 1992187,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:trap-tower",
+      "page": "Trap Tower",
+      "pageId": 325053,
+      "redirects": [],
+      "lastRevId": 2092038,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:trump-castle",
+      "page": "Trump Castle",
+      "pageId": 4932,
+      "redirects": [],
+      "lastRevId": 2116939,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tsui-village",
+      "page": "Tsui Village",
+      "pageId": 36768,
+      "redirects": [],
+      "lastRevId": 2102075,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:tumi",
+      "page": "Tumi",
+      "pageId": 344207,
+      "redirects": [],
+      "lastRevId": 2084182,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:twin-cape",
+      "page": "Twin Cape",
+      "pageId": 8487,
+      "redirects": [],
+      "lastRevId": 2114327,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:ukkari-hot-spring-island",
+      "page": "Ukkari Hot-Spring Island",
+      "pageId": 51537,
+      "redirects": [],
+      "lastRevId": 2131049,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:uta-world",
+      "page": "Uta World",
+      "pageId": 337950,
+      "redirects": [],
+      "lastRevId": 2053782,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:uwazumi-high-school",
+      "page": "Uwazumi High School",
+      "pageId": 350898,
+      "redirects": [],
+      "lastRevId": 2128593,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:vespa-kingdom",
+      "page": "Vespa Kingdom",
+      "pageId": 348861,
+      "redirects": [],
+      "lastRevId": 2083720,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:vira",
+      "page": "Vira",
+      "pageId": 4571,
+      "redirects": [],
+      "lastRevId": 2120853,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:vodka-kingdom",
+      "page": "Vodka Kingdom",
+      "pageId": 334034,
+      "redirects": [],
+      "lastRevId": 2035772,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:waford",
+      "page": "Waford",
+      "pageId": 333978,
+      "redirects": [],
+      "lastRevId": 2077269,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:wagomuland",
+      "page": "Wagomuland",
+      "pageId": 114909,
+      "redirects": [],
+      "lastRevId": 1966290,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:walrus-school",
+      "page": "Walrus School",
+      "pageId": 349726,
+      "redirects": [],
+      "lastRevId": 2129581,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:wano-country",
+      "page": "Wano Country",
+      "pageId": 7872,
+      "redirects": [],
+      "lastRevId": 2130638,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:warship-island",
+      "page": "Warship Island",
+      "pageId": 4734,
+      "redirects": [],
+      "lastRevId": 1971336,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:water-7",
+      "page": "Water 7",
+      "pageId": 2657,
+      "redirects": [
+        "Blue Station",
+        "Blueno's Bar",
+        "Cashing",
+        "Chiza Hotel",
+        "Liguria Plaza",
+        "Rental Bull Shop",
+        "Rocky Cape",
+        "Shipbuilding Island",
+        "Water Gate Elevator"
+      ],
+      "lastRevId": 2130946,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:weatheria",
+      "page": "Weatheria",
+      "pageId": 10779,
+      "redirects": [],
+      "lastRevId": 2038254,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:welbems-island",
+      "page": "Welbems Island",
+      "pageId": 349534,
+      "redirects": [
+        "Nagels Kingdom"
+      ],
+      "lastRevId": 2082781,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:whisky-peak",
+      "page": "Whisky Peak",
+      "pageId": 4517,
+      "redirects": [],
+      "lastRevId": 2107848,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:whole-cake-chateau",
+      "page": "Whole Cake Chateau",
+      "pageId": 305534,
+      "redirects": [],
+      "lastRevId": 2097214,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:whole-cake-island",
+      "page": "Whole Cake Island",
+      "pageId": 303984,
+      "redirects": [
+        "Seducing Woods"
+      ],
+      "lastRevId": 2124861,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:winner-island",
+      "page": "Winner Island",
+      "pageId": 337580,
+      "redirects": [],
+      "lastRevId": 2094360,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:yano-country",
+      "page": "Yano Country",
+      "pageId": 354161,
+      "redirects": [],
+      "lastRevId": 2132146,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:yo",
+      "page": "Yo",
+      "pageId": 303364,
+      "redirects": [],
+      "lastRevId": 1905827,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:yuba",
+      "page": "Yuba",
+      "pageId": 4615,
+      "redirects": [],
+      "lastRevId": 2047639,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:yuba-oasis",
+      "page": "Yuba Oasis",
+      "pageId": 337551,
+      "redirects": [],
+      "lastRevId": 1964779,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:yukari",
+      "page": "Yukari",
+      "pageId": 338589,
+      "redirects": [],
+      "lastRevId": 2120945,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:yukiryu-island",
+      "page": "Yukiryu Island",
+      "pageId": 8618,
+      "redirects": [],
+      "lastRevId": 2076791,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
+      "entityId": "location:zou",
+      "page": "Zou",
+      "pageId": 194039,
+      "redirects": [],
+      "lastRevId": 2125550,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "manga-chapter:0",
@@ -25745,6 +28543,16 @@
       "lastImportedAt": "2026-09-10T02:15:53.065Z"
     },
     {
+      "entityId": "organization:cefran-zaibatsu",
+      "page": "Cefran Zaibatsu",
+      "pageId": 355711,
+      "redirects": [
+        "Enoa Academy"
+      ],
+      "lastRevId": 2127796,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
       "entityId": "organization:charlotte-family",
       "page": "Charlotte Family",
       "pageId": 281312,
@@ -25783,6 +28591,14 @@
       "redirects": [],
       "lastRevId": 2119123,
       "lastImportedAt": "2026-09-10T02:15:53.065Z"
+    },
+    {
+      "entityId": "organization:international-philanthropy-federation",
+      "page": "International Philanthropy Federation",
+      "pageId": 352394,
+      "redirects": [],
+      "lastRevId": 2079340,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "organization:mads",
@@ -25904,7 +28720,7 @@
       "pageId": 2517,
       "redirects": [],
       "lastRevId": 2117795,
-      "lastImportedAt": "2026-09-10T02:03:31.468Z"
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "ship:bezan-black",
@@ -26019,12 +28835,28 @@
       "lastImportedAt": "2026-09-10T02:03:31.468Z"
     },
     {
+      "entityId": "ship:drum-castle-ropeway",
+      "page": "Drum Castle Ropeway",
+      "pageId": 7448,
+      "redirects": [],
+      "lastRevId": 2047063,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
+    },
+    {
       "entityId": "ship:escar",
       "page": "Escar",
       "pageId": 340107,
       "redirects": [],
       "lastRevId": 2050626,
       "lastImportedAt": "2026-09-10T02:03:31.468Z"
+    },
+    {
+      "entityId": "ship:fish-man-karate-dojo",
+      "page": "Fish-Man Karate Dojo",
+      "pageId": 40046,
+      "redirects": [],
+      "lastRevId": 2002847,
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "ship:flying-dutchman",
@@ -26112,7 +28944,7 @@
       "pageId": 283414,
       "redirects": [],
       "lastRevId": 2124375,
-      "lastImportedAt": "2026-09-10T02:03:31.468Z"
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "ship:great-eirik",
@@ -26376,7 +29208,7 @@
       "pageId": 82187,
       "redirects": [],
       "lastRevId": 2092635,
-      "lastImportedAt": "2026-09-10T02:03:31.468Z"
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "ship:new-witch-s-tongue",
@@ -26656,7 +29488,7 @@
       "pageId": 81175,
       "redirects": [],
       "lastRevId": 1966731,
-      "lastImportedAt": "2026-09-10T02:03:31.468Z"
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "ship:sleeping-cat",
@@ -26744,7 +29576,7 @@
       "pageId": 8188,
       "redirects": [],
       "lastRevId": 2081235,
-      "lastImportedAt": "2026-09-10T02:03:31.468Z"
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "ship:tarielishin",
@@ -26800,7 +29632,7 @@
       "pageId": 5060,
       "redirects": [],
       "lastRevId": 2128554,
-      "lastImportedAt": "2026-09-10T02:03:31.468Z"
+      "lastImportedAt": "2026-09-10T16:07:06.540Z"
     },
     {
       "entityId": "ship:umibozu",

@@ -1,0 +1,22 @@
+{
+  "id": "location:pants-hazard",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "pants-hazard",
+  "canonical_name_key": "location.pants-hazard.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.pants-hazard.name",
+        "since": "sbs:volume-112"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

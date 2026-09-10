@@ -1,0 +1,21 @@
+{
+  "id": "location:buggyland",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "buggyland",
+  "canonical_name_key": "location.buggyland.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.buggyland.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

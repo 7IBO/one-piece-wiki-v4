@@ -1,0 +1,22 @@
+{
+  "id": "location:broc-coli-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "broc-coli-island",
+  "canonical_name_key": "location.broc-coli-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.broc-coli-island.name",
+        "since": "manga-chapter:828"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

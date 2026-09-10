@@ -1,0 +1,22 @@
+{
+  "id": "location:momoiro-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "momoiro-island",
+  "canonical_name_key": "location.momoiro-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.momoiro-island.name",
+        "since": "manga-chapter:523"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "location:memoria",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "memoria",
+  "canonical_name_key": "location.memoria.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.memoria.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

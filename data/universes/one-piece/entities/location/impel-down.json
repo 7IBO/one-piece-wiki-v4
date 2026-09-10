@@ -1,0 +1,22 @@
+{
+  "id": "location:impel-down",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "impel-down",
+  "canonical_name_key": "location.impel-down.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.impel-down.name",
+        "since": "manga-chapter:525"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "calm_belt"
+    }
+  },
+  "relations": []
+}

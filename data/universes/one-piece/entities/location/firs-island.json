@@ -1,0 +1,21 @@
+{
+  "id": "location:firs-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "firs-island",
+  "canonical_name_key": "location.firs-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.firs-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

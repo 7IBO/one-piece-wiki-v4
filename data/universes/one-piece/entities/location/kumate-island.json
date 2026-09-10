@@ -1,0 +1,22 @@
+{
+  "id": "location:kumate-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "kumate-island",
+  "canonical_name_key": "location.kumate-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.kumate-island.name",
+        "since": "manga-chapter:62"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

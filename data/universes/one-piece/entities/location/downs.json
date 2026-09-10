@@ -1,0 +1,22 @@
+{
+  "id": "location:downs",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "downs",
+  "canonical_name_key": "location.downs.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.downs.name",
+        "since": "manga-chapter:782"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "north_blue"
+    }
+  },
+  "relations": []
+}

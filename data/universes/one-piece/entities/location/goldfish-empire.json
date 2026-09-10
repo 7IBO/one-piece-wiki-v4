@@ -1,0 +1,19 @@
+{
+  "id": "location:goldfish-empire",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "goldfish-empire",
+  "canonical_name_key": "location.goldfish-empire.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.goldfish-empire.name",
+        "since": "manga-chapter:189"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

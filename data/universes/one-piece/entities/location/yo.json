@@ -1,0 +1,18 @@
+{
+  "id": "location:yo",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "yo",
+  "canonical_name_key": "location.yo.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.yo.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

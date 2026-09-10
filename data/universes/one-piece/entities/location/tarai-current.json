@@ -1,0 +1,19 @@
+{
+  "id": "location:tarai-current",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "tarai-current",
+  "canonical_name_key": "location.tarai-current.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.tarai-current.name",
+        "since": "manga-chapter:522"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

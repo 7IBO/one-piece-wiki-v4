@@ -1,0 +1,21 @@
+{
+  "id": "location:ocean-s-navel",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "ocean-s-navel",
+  "canonical_name_key": "location.ocean-s-navel.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.ocean-s-navel.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

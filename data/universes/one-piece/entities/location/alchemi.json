@@ -1,0 +1,18 @@
+{
+  "id": "location:alchemi",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "alchemi",
+  "canonical_name_key": "location.alchemi.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.alchemi.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

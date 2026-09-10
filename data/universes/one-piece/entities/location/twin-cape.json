@@ -1,0 +1,22 @@
+{
+  "id": "location:twin-cape",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "twin-cape",
+  "canonical_name_key": "location.twin-cape.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.twin-cape.name",
+        "since": "manga-chapter:102"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "red_line"
+    }
+  },
+  "relations": []
+}

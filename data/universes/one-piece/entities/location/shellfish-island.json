@@ -1,0 +1,21 @@
+{
+  "id": "location:shellfish-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "shellfish-island",
+  "canonical_name_key": "location.shellfish-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.shellfish-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

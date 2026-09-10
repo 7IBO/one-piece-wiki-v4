@@ -1,0 +1,22 @@
+{
+  "id": "location:st-poplar",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "st-poplar",
+  "canonical_name_key": "location.st-poplar.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.st-poplar.name",
+        "since": "manga-chapter:496"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

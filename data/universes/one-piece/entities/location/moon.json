@@ -1,0 +1,19 @@
+{
+  "id": "location:moon",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "moon",
+  "canonical_name_key": "location.moon.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.moon.name",
+        "since": "manga-chapter:5"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

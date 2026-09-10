@@ -1,0 +1,22 @@
+{
+  "id": "location:god-valley",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "god-valley",
+  "canonical_name_key": "location.god-valley.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.god-valley.name",
+        "since": "manga-chapter:957"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "west_blue"
+    }
+  },
+  "relations": []
+}

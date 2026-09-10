@@ -1,0 +1,22 @@
+{
+  "id": "location:g-5",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "g-5",
+  "canonical_name_key": "location.g-5.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.g-5.name",
+        "since": "manga-chapter:681"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

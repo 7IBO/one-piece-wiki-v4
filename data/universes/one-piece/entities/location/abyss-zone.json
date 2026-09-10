@@ -1,0 +1,21 @@
+{
+  "id": "location:abyss-zone",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "abyss-zone",
+  "canonical_name_key": "location.abyss-zone.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.abyss-zone.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

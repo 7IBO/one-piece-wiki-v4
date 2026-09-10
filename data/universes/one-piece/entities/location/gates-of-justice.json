@@ -1,0 +1,22 @@
+{
+  "id": "location:gates-of-justice",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "gates-of-justice",
+  "canonical_name_key": "location.gates-of-justice.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.gates-of-justice.name",
+        "since": "manga-chapter:376"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

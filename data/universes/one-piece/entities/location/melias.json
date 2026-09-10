@@ -1,0 +1,19 @@
+{
+  "id": "location:melias",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "melias",
+  "canonical_name_key": "location.melias.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.melias.name",
+        "since": "anime-episode:98"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

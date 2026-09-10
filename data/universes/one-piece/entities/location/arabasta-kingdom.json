@@ -1,0 +1,28 @@
+{
+  "id": "location:arabasta-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "arabasta-kingdom",
+  "canonical_name_key": "location.arabasta-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.arabasta-kingdom.name",
+        "since": "manga-chapter:113"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    },
+    "population": [
+      {
+        "value": 10000000,
+        "since": "manga-chapter:113"
+      }
+    ]
+  },
+  "relations": []
+}

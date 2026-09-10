@@ -1,0 +1,18 @@
+{
+  "id": "location:yuba-oasis",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "yuba-oasis",
+  "canonical_name_key": "location.yuba-oasis.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.yuba-oasis.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

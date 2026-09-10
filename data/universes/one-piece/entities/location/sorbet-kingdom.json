@@ -1,0 +1,22 @@
+{
+  "id": "location:sorbet-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "sorbet-kingdom",
+  "canonical_name_key": "location.sorbet-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.sorbet-kingdom.name",
+        "since": "manga-chapter:1095"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "south_blue"
+    }
+  },
+  "relations": []
+}

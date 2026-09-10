@@ -1,0 +1,19 @@
+{
+  "id": "location:shakky-s-rip-off-bar",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "shakky-s-rip-off-bar",
+  "canonical_name_key": "location.shakky-s-rip-off-bar.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.shakky-s-rip-off-bar.name",
+        "since": "manga-chapter:498"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

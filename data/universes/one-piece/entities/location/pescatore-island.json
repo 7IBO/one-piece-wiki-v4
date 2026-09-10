@@ -1,0 +1,21 @@
+{
+  "id": "location:pescatore-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "pescatore-island",
+  "canonical_name_key": "location.pescatore-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.pescatore-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

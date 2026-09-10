@@ -1,0 +1,19 @@
+{
+  "id": "location:tontatta-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "tontatta-kingdom",
+  "canonical_name_key": "location.tontatta-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.tontatta-kingdom.name",
+        "since": "manga-chapter:711"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "location:nazawaka-city",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "nazawaka-city",
+  "canonical_name_key": "location.nazawaka-city.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.nazawaka-city.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}
