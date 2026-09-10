@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:modo-modo-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "modo-modo-no-mi",
+  "canonical_name_key": "devil-fruit.modo-modo-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.modo-modo-no-mi.name.common",
+        "name_type": "common",
+        "since": "anime-episode:577"
+      },
+      {
+        "value_key": "devil-fruit.modo-modo-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "anime-episode:577"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "anime-episode:577"
+      }
+    ]
+  },
+  "relations": []
+}

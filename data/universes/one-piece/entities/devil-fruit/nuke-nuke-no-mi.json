@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:nuke-nuke-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "nuke-nuke-no-mi",
+  "canonical_name_key": "devil-fruit.nuke-nuke-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.nuke-nuke-no-mi.name.common",
+        "name_type": "common",
+        "since": "anime-episode:747"
+      },
+      {
+        "value_key": "devil-fruit.nuke-nuke-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "anime-episode:747"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "anime-episode:747"
+      }
+    ]
+  },
+  "relations": []
+}

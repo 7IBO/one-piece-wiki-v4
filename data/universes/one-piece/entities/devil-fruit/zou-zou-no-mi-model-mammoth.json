@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:zou-zou-no-mi-model-mammoth",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "zou-zou-no-mi-model-mammoth",
+  "canonical_name_key": "devil-fruit.zou-zou-no-mi-model-mammoth.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.zou-zou-no-mi-model-mammoth.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:807"
+      },
+      {
+        "value_key": "devil-fruit.zou-zou-no-mi-model-mammoth.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:807"
+      }
+    ],
+    "classification": [
+      {
+        "value": "ancient_zoan",
+        "since": "manga-chapter:807"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Mammoth",
+        "since": "manga-chapter:807"
+      }
+    ]
+  },
+  "relations": []
+}

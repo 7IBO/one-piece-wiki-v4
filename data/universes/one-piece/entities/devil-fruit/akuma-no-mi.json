@@ -1,0 +1,23 @@
+{
+  "id": "devil-fruit:akuma-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "akuma-no-mi",
+  "canonical_name_key": "devil-fruit.akuma-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.akuma-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1085"
+      }
+    ],
+    "classification": [
+      {
+        "value": "unknown",
+        "since": "manga-chapter:1085"
+      }
+    ]
+  },
+  "relations": []
+}

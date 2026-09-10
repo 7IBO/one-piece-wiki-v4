@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:atsu-atsu-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "atsu-atsu-no-mi",
+  "canonical_name_key": "devil-fruit.atsu-atsu-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.atsu-atsu-no-mi.name.common",
+        "name_type": "common",
+        "since": "anime-episode:326"
+      },
+      {
+        "value_key": "devil-fruit.atsu-atsu-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "anime-episode:326"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "anime-episode:326"
+      }
+    ]
+  },
+  "relations": []
+}

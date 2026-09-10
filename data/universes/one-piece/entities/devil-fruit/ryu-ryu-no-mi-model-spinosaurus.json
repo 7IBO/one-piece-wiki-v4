@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:ryu-ryu-no-mi-model-spinosaurus",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "ryu-ryu-no-mi-model-spinosaurus",
+  "canonical_name_key": "devil-fruit.ryu-ryu-no-mi-model-spinosaurus.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.ryu-ryu-no-mi-model-spinosaurus.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:929"
+      },
+      {
+        "value_key": "devil-fruit.ryu-ryu-no-mi-model-spinosaurus.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:929"
+      }
+    ],
+    "classification": [
+      {
+        "value": "ancient_zoan",
+        "since": "manga-chapter:929"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Spinosaurus",
+        "since": "manga-chapter:929"
+      }
+    ]
+  },
+  "relations": []
+}

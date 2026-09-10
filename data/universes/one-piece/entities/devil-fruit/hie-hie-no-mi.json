@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:hie-hie-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "hie-hie-no-mi",
+  "canonical_name_key": "devil-fruit.hie-hie-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.hie-hie-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:303"
+      },
+      {
+        "value_key": "devil-fruit.hie-hie-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:303"
+      }
+    ],
+    "classification": [
+      {
+        "value": "logia",
+        "since": "manga-chapter:303"
+      }
+    ]
+  },
+  "relations": []
+}

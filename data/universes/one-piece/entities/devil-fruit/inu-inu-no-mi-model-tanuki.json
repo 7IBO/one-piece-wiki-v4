@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:inu-inu-no-mi-model-tanuki",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "inu-inu-no-mi-model-tanuki",
+  "canonical_name_key": "devil-fruit.inu-inu-no-mi-model-tanuki.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-tanuki.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:911"
+      },
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-tanuki.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:911"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "manga-chapter:911"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Tanuki",
+        "since": "manga-chapter:911"
+      }
+    ]
+  },
+  "relations": []
+}

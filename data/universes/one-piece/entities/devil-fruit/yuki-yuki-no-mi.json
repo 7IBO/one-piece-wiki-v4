@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:yuki-yuki-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "yuki-yuki-no-mi",
+  "canonical_name_key": "devil-fruit.yuki-yuki-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.yuki-yuki-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:681"
+      },
+      {
+        "value_key": "devil-fruit.yuki-yuki-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:681"
+      }
+    ],
+    "classification": [
+      {
+        "value": "logia",
+        "since": "manga-chapter:681"
+      }
+    ]
+  },
+  "relations": []
+}

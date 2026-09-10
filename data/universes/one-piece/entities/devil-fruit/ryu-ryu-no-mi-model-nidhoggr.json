@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:ryu-ryu-no-mi-model-nidhoggr",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "ryu-ryu-no-mi-model-nidhoggr",
+  "canonical_name_key": "devil-fruit.ryu-ryu-no-mi-model-nidhoggr.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.ryu-ryu-no-mi-model-nidhoggr.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1170"
+      },
+      {
+        "value_key": "devil-fruit.ryu-ryu-no-mi-model-nidhoggr.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:1170"
+      }
+    ],
+    "classification": [
+      {
+        "value": "mythical_zoan",
+        "since": "manga-chapter:1170"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Nidhöggr",
+        "since": "manga-chapter:1170"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,30 @@
+{
+  "id": "devil-fruit:inu-inu-no-mi-model-bake-danuki",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "inu-inu-no-mi-model-bake-danuki",
+  "canonical_name_key": "devil-fruit.inu-inu-no-mi-model-bake-danuki.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-bake-danuki.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "devil-fruit.inu-inu-no-mi-model-bake-danuki.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "classification": [
+      {
+        "value": "mythical_zoan"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Bake-danuki"
+      }
+    ]
+  },
+  "relations": []
+}
