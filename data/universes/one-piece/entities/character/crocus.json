@@ -1,0 +1,35 @@
+{
+  "id": "character:crocus",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "crocus",
+  "canonical_name_key": "character.crocus.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.crocus.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:102"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:102"
+      }
+    ],
+    "height": [
+      {
+        "value": 203,
+        "source": "databook-card:0127"
+      }
+    ],
+    "birthday": {
+      "value": "06-04"
+    },
+    "blood_type": {
+      "value": "XF"
+    }
+  },
+  "relations": []
+}

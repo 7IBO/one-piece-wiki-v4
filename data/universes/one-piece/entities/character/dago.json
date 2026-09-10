@@ -1,0 +1,31 @@
+{
+  "id": "character:dago",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "dago",
+  "canonical_name_key": "character.dago.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.dago.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:329"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:329"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "bounty_hunter"
+        ],
+        "since": "manga-chapter:329"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,57 @@
+{
+  "id": "character:bartolomeo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bartolomeo",
+  "canonical_name_key": "character.bartolomeo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bartolomeo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:705"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.bartolomeo.epithet.bartolomeo-the-cannibal",
+        "since": "manga-chapter:706"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:705"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 150000000,
+        "since": "manga-chapter:706"
+      },
+      {
+        "value": 200000000,
+        "since": "manga-chapter:801"
+      }
+    ],
+    "age": [
+      {
+        "value": 24,
+        "source": "sbs:volume-72"
+      }
+    ],
+    "height": [
+      {
+        "value": 220,
+        "source": "sbs:volume-72"
+      }
+    ],
+    "birthday": {
+      "value": "10-06"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

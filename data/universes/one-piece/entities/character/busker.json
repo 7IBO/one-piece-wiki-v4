@@ -1,0 +1,21 @@
+{
+  "id": "character:busker",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "busker",
+  "canonical_name_key": "character.busker.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.busker.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

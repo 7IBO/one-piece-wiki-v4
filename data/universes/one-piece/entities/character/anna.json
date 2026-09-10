@@ -1,0 +1,26 @@
+{
+  "id": "character:anna",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "anna",
+  "canonical_name_key": "character.anna.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.anna.name.common",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.anna.epithet.anna-the-lonely"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

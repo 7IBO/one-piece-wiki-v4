@@ -1,0 +1,37 @@
+{
+  "id": "character:borod",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "borod",
+  "canonical_name_key": "character.borod.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.borod.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.borod.name.borodo",
+        "name_type": "alias"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.borod.epithet.thief-brothers"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "thief"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

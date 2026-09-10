@@ -1,0 +1,28 @@
+{
+  "id": "character:bokuden",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bokuden",
+  "canonical_name_key": "character.bokuden.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bokuden.name.common",
+        "name_type": "common",
+        "since": "anime-episode:55"
+      },
+      {
+        "value_key": "character.bokuden.name.bokden",
+        "name_type": "alias",
+        "since": "anime-episode:55"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:55"
+      }
+    ]
+  },
+  "relations": []
+}

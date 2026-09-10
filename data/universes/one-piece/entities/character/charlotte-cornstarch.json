@@ -1,0 +1,33 @@
+{
+  "id": "character:charlotte-cornstarch",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-cornstarch",
+  "canonical_name_key": "character.charlotte-cornstarch.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-cornstarch.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.charlotte-cornstarch.name.first-chapter-865-episode-841",
+        "name_type": "alias"
+      },
+      {
+        "value_key": "character.charlotte-cornstarch.name.affiliation-charlotte-family-big-mom-pirates",
+        "name_type": "alias"
+      },
+      {
+        "value_key": "character.charlotte-cornstarch.name.occupation-pirate-big-mom-pirates-officers",
+        "name_type": "alias"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

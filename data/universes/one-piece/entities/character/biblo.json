@@ -1,0 +1,23 @@
+{
+  "id": "character:biblo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "biblo",
+  "canonical_name_key": "character.biblo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.biblo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1134"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1134"
+      }
+    ]
+  },
+  "relations": []
+}

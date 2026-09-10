@@ -1,0 +1,31 @@
+{
+  "id": "character:brew",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "brew",
+  "canonical_name_key": "character.brew.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.brew.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:561"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:561"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:561"
+      }
+    ]
+  },
+  "relations": []
+}

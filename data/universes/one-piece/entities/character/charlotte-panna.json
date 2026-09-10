@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-panna",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-panna",
+  "canonical_name_key": "character.charlotte-panna.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-panna.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:897"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:897"
+      }
+    ],
+    "age": [
+      {
+        "value": 21
+      }
+    ]
+  },
+  "relations": []
+}

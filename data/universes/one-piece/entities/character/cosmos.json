@@ -1,0 +1,34 @@
+{
+  "id": "character:cosmos",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cosmos",
+  "canonical_name_key": "character.cosmos.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cosmos.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "birthday": {
+      "value": "09-26"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:516"
+      }
+    ]
+  },
+  "relations": []
+}

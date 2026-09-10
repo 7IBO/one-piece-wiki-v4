@@ -1,0 +1,23 @@
+{
+  "id": "character:bongoh",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bongoh",
+  "canonical_name_key": "character.bongoh.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bongoh.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:928"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:928"
+      }
+    ]
+  },
+  "relations": []
+}

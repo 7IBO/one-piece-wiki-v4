@@ -1,0 +1,23 @@
+{
+  "id": "character:briscola",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "briscola",
+  "canonical_name_key": "character.briscola.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.briscola.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:993"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:993"
+      }
+    ]
+  },
+  "relations": []
+}

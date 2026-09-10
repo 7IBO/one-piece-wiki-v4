@@ -1,0 +1,37 @@
+{
+  "id": "character:charlotte-amande",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-amande",
+  "canonical_name_key": "character.charlotte-amande.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-amande.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:827"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.charlotte-amande.epithet.demon-lady",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:827"
+      }
+    ],
+    "age": [
+      {
+        "value": 47
+      }
+    ],
+    "birthday": {
+      "value": "12-10"
+    }
+  },
+  "relations": []
+}

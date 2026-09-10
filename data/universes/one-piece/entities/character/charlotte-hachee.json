@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-hachee",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-hachee",
+  "canonical_name_key": "character.charlotte-hachee.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-hachee.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:871"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:871"
+      }
+    ],
+    "age": [
+      {
+        "value": 47
+      }
+    ],
+    "birthday": {
+      "value": "12-10"
+    }
+  },
+  "relations": []
+}

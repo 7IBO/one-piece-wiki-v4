@@ -1,0 +1,53 @@
+{
+  "id": "character:charlotte-cracker",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-cracker",
+  "canonical_name_key": "character.charlotte-cracker.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-cracker.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:835"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.charlotte-cracker.epithet.thousand-arms-cracker",
+        "since": "manga-chapter:836"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:835"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 860000000,
+        "since": "manga-chapter:836"
+      }
+    ],
+    "age": [
+      {
+        "value": 45,
+        "source": "sbs:volume-88"
+      }
+    ],
+    "height": [
+      {
+        "value": 307,
+        "source": "sbs:volume-88"
+      }
+    ],
+    "birthday": {
+      "value": "02-28"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

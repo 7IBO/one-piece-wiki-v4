@@ -1,0 +1,21 @@
+{
+  "id": "character:cannon-man",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cannon-man",
+  "canonical_name_key": "character.cannon-man.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cannon-man.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

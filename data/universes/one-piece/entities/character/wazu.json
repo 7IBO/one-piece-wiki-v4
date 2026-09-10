@@ -1,0 +1,28 @@
+{
+  "id": "character:wazu",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "wazu",
+  "canonical_name_key": "character.wazu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.wazu.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

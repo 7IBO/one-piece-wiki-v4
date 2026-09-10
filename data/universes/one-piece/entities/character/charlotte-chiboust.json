@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-chiboust",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-chiboust",
+  "canonical_name_key": "character.charlotte-chiboust.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-chiboust.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:894"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:894"
+      }
+    ],
+    "age": [
+      {
+        "value": 27
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "character:bear-man",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bear-man",
+  "canonical_name_key": "character.bear-man.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bear-man.name.common",
+        "name_type": "common",
+        "since": "anime-episode:934"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:934"
+      }
+    ]
+  },
+  "relations": []
+}

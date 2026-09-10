@@ -1,0 +1,41 @@
+{
+  "id": "character:concelot",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "concelot",
+  "canonical_name_key": "character.concelot.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.concelot.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:809"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:809"
+      }
+    ],
+    "age": [
+      {
+        "value": 29,
+        "source": "databook-card:0970"
+      }
+    ],
+    "height": [
+      {
+        "value": 204,
+        "source": "databook-card:0970"
+      }
+    ],
+    "birthday": {
+      "value": "11-02"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

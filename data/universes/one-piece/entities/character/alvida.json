@@ -1,0 +1,46 @@
+{
+  "id": "character:alvida",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "alvida",
+  "canonical_name_key": "character.alvida.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.alvida.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:2"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.alvida.epithet.iron-mace",
+        "since": "manga-chapter:2"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:2"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 5000000
+      }
+    ],
+    "height": [
+      {
+        "value": 198,
+        "source": "databook-card:0029"
+      }
+    ],
+    "birthday": {
+      "value": "03-14"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "character:peekatha-krotch",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "peekatha-krotch",
+  "canonical_name_key": "character.peekatha-krotch.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.peekatha-krotch.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:707"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:707"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,34 @@
+{
+  "id": "character:belladonna",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "belladonna",
+  "canonical_name_key": "character.belladonna.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.belladonna.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:514"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:514"
+      }
+    ],
+    "birthday": {
+      "value": "10-26"
+    },
+    "occupation": [
+      {
+        "value": [
+          "doctor"
+        ],
+        "since": "manga-chapter:514"
+      }
+    ]
+  },
+  "relations": []
+}

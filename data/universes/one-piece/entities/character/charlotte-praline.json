@@ -1,0 +1,40 @@
+{
+  "id": "character:charlotte-praline",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-praline",
+  "canonical_name_key": "character.charlotte-praline.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-praline.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:830"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:830"
+      }
+    ],
+    "age": [
+      {
+        "value": 29
+      }
+    ],
+    "height": [
+      {
+        "value": 800,
+        "source": "databook-card:0997"
+      }
+    ],
+    "birthday": {
+      "value": "07-22"
+    },
+    "blood_type": {
+      "value": "S (RH-)"
+    }
+  },
+  "relations": []
+}

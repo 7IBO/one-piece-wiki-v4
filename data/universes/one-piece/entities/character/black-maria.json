@@ -1,0 +1,47 @@
+{
+  "id": "character:black-maria",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "black-maria",
+  "canonical_name_key": "character.black-maria.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.black-maria.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:977"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:977"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 480000000,
+        "since": "databook-card:1553"
+      }
+    ],
+    "age": [
+      {
+        "value": 29,
+        "source": "sbs:volume-97"
+      }
+    ],
+    "height": [
+      {
+        "value": 820,
+        "source": "sbs:volume-97"
+      }
+    ],
+    "birthday": {
+      "value": "09-24"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-maple",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-maple",
+  "canonical_name_key": "character.charlotte-maple.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-maple.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:897"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:897"
+      }
+    ],
+    "age": [
+      {
+        "value": 25
+      }
+    ],
+    "birthday": {
+      "value": "11-17"
+    }
+  },
+  "relations": []
+}

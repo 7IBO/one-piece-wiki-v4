@@ -1,0 +1,28 @@
+{
+  "id": "character:catacombo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "catacombo",
+  "canonical_name_key": "character.catacombo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.catacombo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:602"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:602"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 200000000
+      }
+    ]
+  },
+  "relations": []
+}

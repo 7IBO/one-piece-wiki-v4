@@ -1,0 +1,31 @@
+{
+  "id": "character:barbell",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "barbell",
+  "canonical_name_key": "character.barbell.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.barbell.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1096"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1096"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:1156"
+      }
+    ]
+  },
+  "relations": []
+}

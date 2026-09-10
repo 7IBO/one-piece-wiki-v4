@@ -1,0 +1,31 @@
+{
+  "id": "character:breed",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "breed",
+  "canonical_name_key": "character.breed.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.breed.name.common",
+        "name_type": "common",
+        "since": "anime-episode:625"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:625"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "anime-episode:625"
+      }
+    ]
+  },
+  "relations": []
+}

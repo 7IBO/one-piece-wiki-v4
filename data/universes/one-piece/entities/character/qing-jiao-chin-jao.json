@@ -1,0 +1,53 @@
+{
+  "id": "character:qing-jiao-chin-jao",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "qing-jiao-chin-jao",
+  "canonical_name_key": "character.qing-jiao-chin-jao.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.qing-jiao-chin-jao.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:704"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.qing-jiao-chin-jao.epithet.don-chinjao",
+        "since": "manga-chapter:717"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:704"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 542000000,
+        "since": "databook-card:0838"
+      }
+    ],
+    "age": [
+      {
+        "value": 78,
+        "source": "databook-card:0838"
+      }
+    ],
+    "height": [
+      {
+        "value": 520,
+        "source": "databook-card:0838"
+      }
+    ],
+    "birthday": {
+      "value": "12-12"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

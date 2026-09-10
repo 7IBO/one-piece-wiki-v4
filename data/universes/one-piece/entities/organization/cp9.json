@@ -1,0 +1,20 @@
+{
+  "id": "organization:cp9",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "cp9",
+  "canonical_name_key": "organization.cp9.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.cp9.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:325"
+      }
+    ],
+    "organization_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

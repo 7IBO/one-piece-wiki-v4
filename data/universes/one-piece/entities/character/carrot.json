@@ -1,0 +1,41 @@
+{
+  "id": "character:carrot",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "carrot",
+  "canonical_name_key": "character.carrot.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.carrot.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:804"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:804"
+      }
+    ],
+    "age": [
+      {
+        "value": 15,
+        "source": "databook-card:0955"
+      }
+    ],
+    "height": [
+      {
+        "value": 161,
+        "source": "databook-card:0955"
+      }
+    ],
+    "birthday": {
+      "value": "05-24"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "character:bian",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bian",
+  "canonical_name_key": "character.bian.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bian.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:717"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:717"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:718"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "character:beeyo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "beeyo",
+  "canonical_name_key": "character.beeyo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.beeyo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:658"
+      },
+      {
+        "value_key": "character.beeyo.name.biyo",
+        "name_type": "alias",
+        "since": "manga-chapter:658"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:658"
+      }
+    ]
+  },
+  "relations": []
+}

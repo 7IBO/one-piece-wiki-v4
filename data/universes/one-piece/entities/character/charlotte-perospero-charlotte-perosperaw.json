@@ -1,0 +1,47 @@
+{
+  "id": "character:charlotte-perospero-charlotte-perosperaw",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-perospero-charlotte-perosperaw",
+  "canonical_name_key": "character.charlotte-perospero-charlotte-perosperaw.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-perospero-charlotte-perosperaw.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:834"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:834"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 700000000,
+        "since": "manga-chapter:877"
+      }
+    ],
+    "age": [
+      {
+        "value": 50,
+        "source": "sbs:volume-88"
+      }
+    ],
+    "height": [
+      {
+        "value": 333,
+        "source": "sbs:volume-88"
+      }
+    ],
+    "birthday": {
+      "value": "03-14"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

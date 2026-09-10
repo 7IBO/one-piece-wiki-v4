@@ -1,0 +1,40 @@
+{
+  "id": "character:charlotte-brulee",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-brulee",
+  "canonical_name_key": "character.charlotte-brulee.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-brulee.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:831"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:831"
+      }
+    ],
+    "age": [
+      {
+        "value": 43
+      }
+    ],
+    "height": [
+      {
+        "value": 350,
+        "source": "databook-card:1003"
+      }
+    ],
+    "birthday": {
+      "value": "03-06"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

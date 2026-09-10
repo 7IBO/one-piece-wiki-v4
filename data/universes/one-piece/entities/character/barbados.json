@@ -1,0 +1,28 @@
+{
+  "id": "character:barbados",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "barbados",
+  "canonical_name_key": "character.barbados.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.barbados.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

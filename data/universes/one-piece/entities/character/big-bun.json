@@ -1,0 +1,45 @@
+{
+  "id": "character:big-bun",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "big-bun",
+  "canonical_name_key": "character.big-bun.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.big-bun.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:309"
+      },
+      {
+        "value_key": "character.big-bun.name.big-pan",
+        "name_type": "alias",
+        "since": "manga-chapter:309"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.big-bun.epithet.big-pan-the-wotan",
+        "since": "manga-chapter:309"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:309"
+      }
+    ],
+    "birthday": {
+      "value": "05-25"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:309"
+      }
+    ]
+  },
+  "relations": []
+}

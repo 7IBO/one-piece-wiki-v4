@@ -1,0 +1,31 @@
+{
+  "id": "character:dumas-regal-ix",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "dumas-regal-ix",
+  "canonical_name_key": "character.dumas-regal-ix.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.dumas-regal-ix.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:587"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:587"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "noble"
+        ],
+        "since": "manga-chapter:587"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,36 @@
+{
+  "id": "character:charlotte-monder",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-monder",
+  "canonical_name_key": "character.charlotte-monder.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-monder.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:854"
+      },
+      {
+        "value_key": "character.charlotte-monder.name.charlotte-mondee",
+        "name_type": "alias",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "age": [
+      {
+        "value": 47
+      }
+    ],
+    "birthday": {
+      "value": "12-10"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "character:bimine",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bimine",
+  "canonical_name_key": "character.bimine.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bimine.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:657"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:657"
+      }
+    ]
+  },
+  "relations": []
+}

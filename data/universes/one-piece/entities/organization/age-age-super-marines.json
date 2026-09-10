@@ -1,0 +1,19 @@
+{
+  "id": "organization:age-age-super-marines",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "age-age-super-marines",
+  "canonical_name_key": "organization.age-age-super-marines.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.age-age-super-marines.name.common",
+        "name_type": "common"
+      }
+    ],
+    "organization_type": {
+      "value": "marine"
+    }
+  },
+  "relations": []
+}

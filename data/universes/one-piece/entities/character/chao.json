@@ -1,0 +1,23 @@
+{
+  "id": "character:chao",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chao",
+  "canonical_name_key": "character.chao.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chao.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:738"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:738"
+      }
+    ]
+  },
+  "relations": []
+}

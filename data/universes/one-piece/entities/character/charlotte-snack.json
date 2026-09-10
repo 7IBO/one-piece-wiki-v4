@@ -1,0 +1,37 @@
+{
+  "id": "character:charlotte-snack",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-snack",
+  "canonical_name_key": "character.charlotte-snack.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-snack.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:894"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:894"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 600000000,
+        "since": "manga-chapter:894"
+      }
+    ],
+    "age": [
+      {
+        "value": 30
+      }
+    ],
+    "birthday": {
+      "value": "10-29"
+    }
+  },
+  "relations": []
+}

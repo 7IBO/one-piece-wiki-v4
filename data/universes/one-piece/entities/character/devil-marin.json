@@ -1,0 +1,31 @@
+{
+  "id": "character:devil-marin",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "devil-marin",
+  "canonical_name_key": "character.devil-marin.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.devil-marin.name.common",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.devil-marin.epithet.devil-marin-the-witch"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 24000000
+      }
+    ]
+  },
+  "relations": []
+}

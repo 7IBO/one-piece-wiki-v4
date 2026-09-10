@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-joconde",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-joconde",
+  "canonical_name_key": "character.charlotte-joconde.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-joconde.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:894"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:894"
+      }
+    ],
+    "age": [
+      {
+        "value": 23
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-joscarpone",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-joscarpone",
+  "canonical_name_key": "character.charlotte-joscarpone.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-joscarpone.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "age": [
+      {
+        "value": 20
+      }
+    ],
+    "birthday": {
+      "value": "02-27"
+    }
+  },
+  "relations": []
+}

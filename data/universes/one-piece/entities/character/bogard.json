@@ -1,0 +1,23 @@
+{
+  "id": "character:bogard",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bogard",
+  "canonical_name_key": "character.bogard.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bogard.name.common",
+        "name_type": "common",
+        "since": "anime-episode:68"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:68"
+      }
+    ]
+  },
+  "relations": []
+}

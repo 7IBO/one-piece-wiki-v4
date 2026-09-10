@@ -1,0 +1,28 @@
+{
+  "id": "character:bluegrass",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bluegrass",
+  "canonical_name_key": "character.bluegrass.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bluegrass.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1089"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1089"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 500000000
+      }
+    ]
+  },
+  "relations": []
+}

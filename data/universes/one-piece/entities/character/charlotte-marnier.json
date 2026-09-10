@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-marnier",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-marnier",
+  "canonical_name_key": "character.charlotte-marnier.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-marnier.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:861"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:861"
+      }
+    ],
+    "age": [
+      {
+        "value": 37
+      }
+    ],
+    "birthday": {
+      "value": "12-20"
+    }
+  },
+  "relations": []
+}

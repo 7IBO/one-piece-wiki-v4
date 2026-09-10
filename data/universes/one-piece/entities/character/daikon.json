@@ -1,0 +1,31 @@
+{
+  "id": "character:daikon",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "daikon",
+  "canonical_name_key": "character.daikon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.daikon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:732"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:732"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:889"
+      }
+    ]
+  },
+  "relations": []
+}

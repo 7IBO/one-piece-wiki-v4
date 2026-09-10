@@ -1,0 +1,23 @@
+{
+  "id": "character:caroline",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "caroline",
+  "canonical_name_key": "character.caroline.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.caroline.name.common",
+        "name_type": "common",
+        "since": "anime-episode:454"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:454"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "character:arthur",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "arthur",
+  "canonical_name_key": "character.arthur.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.arthur.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:556"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:556"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:556"
+      }
+    ]
+  },
+  "relations": []
+}

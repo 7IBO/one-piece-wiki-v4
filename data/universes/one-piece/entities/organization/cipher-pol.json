@@ -1,0 +1,20 @@
+{
+  "id": "organization:cipher-pol",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "cipher-pol",
+  "canonical_name_key": "organization.cipher-pol.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.cipher-pol.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:323"
+      }
+    ],
+    "organization_type": {
+      "value": "cipher_pol"
+    }
+  },
+  "relations": []
+}

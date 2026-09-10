@@ -1,0 +1,21 @@
+{
+  "id": "character:dejide",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "dejide",
+  "canonical_name_key": "character.dejide.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.dejide.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

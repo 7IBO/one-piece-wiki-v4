@@ -1,0 +1,28 @@
+{
+  "id": "character:daisy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "daisy",
+  "canonical_name_key": "character.daisy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.daisy.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

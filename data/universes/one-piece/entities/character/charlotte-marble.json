@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-marble",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-marble",
+  "canonical_name_key": "character.charlotte-marble.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-marble.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:894"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:894"
+      }
+    ],
+    "age": [
+      {
+        "value": 25
+      }
+    ],
+    "birthday": {
+      "value": "11-17"
+    }
+  },
+  "relations": []
+}

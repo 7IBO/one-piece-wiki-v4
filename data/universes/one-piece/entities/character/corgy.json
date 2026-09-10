@@ -1,0 +1,34 @@
+{
+  "id": "character:corgy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "corgy",
+  "canonical_name_key": "character.corgy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.corgy.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:328"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:328"
+      }
+    ],
+    "birthday": {
+      "value": "08-25"
+    },
+    "occupation": [
+      {
+        "value": [
+          "government_official"
+        ],
+        "since": "manga-chapter:328"
+      }
+    ]
+  },
+  "relations": []
+}

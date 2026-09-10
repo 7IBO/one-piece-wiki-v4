@@ -1,0 +1,26 @@
+{
+  "id": "character:mr-13",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "mr-13",
+  "canonical_name_key": "character.mr-13.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.mr-13.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:105"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:105"
+      }
+    ],
+    "birthday": {
+      "value": "05-17"
+    }
+  },
+  "relations": []
+}

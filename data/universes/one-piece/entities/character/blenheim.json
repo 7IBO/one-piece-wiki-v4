@@ -1,0 +1,34 @@
+{
+  "id": "character:blenheim",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "blenheim",
+  "canonical_name_key": "character.blenheim.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.blenheim.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "birthday": {
+      "value": "08-06"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:553"
+      }
+    ]
+  },
+  "relations": []
+}

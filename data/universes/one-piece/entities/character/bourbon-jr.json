@@ -1,0 +1,41 @@
+{
+  "id": "character:bourbon-jr",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bourbon-jr",
+  "canonical_name_key": "character.bourbon-jr.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bourbon-jr.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:180"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:180"
+      }
+    ],
+    "age": [
+      {
+        "value": 14,
+        "source": "databook-card:209"
+      }
+    ],
+    "height": [
+      {
+        "value": 133,
+        "source": "databook-card:209"
+      }
+    ],
+    "birthday": {
+      "value": "04-08"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

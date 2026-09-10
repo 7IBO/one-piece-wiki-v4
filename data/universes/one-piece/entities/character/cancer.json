@@ -1,0 +1,28 @@
+{
+  "id": "character:cancer",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cancer",
+  "canonical_name_key": "character.cancer.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cancer.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:96"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:96"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 500000000
+      }
+    ]
+  },
+  "relations": []
+}

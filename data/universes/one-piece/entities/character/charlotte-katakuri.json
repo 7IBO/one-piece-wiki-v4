@@ -1,0 +1,47 @@
+{
+  "id": "character:charlotte-katakuri",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-katakuri",
+  "canonical_name_key": "character.charlotte-katakuri.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-katakuri.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:860"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:860"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 1057000000,
+        "since": "manga-chapter:860"
+      }
+    ],
+    "age": [
+      {
+        "value": 48,
+        "source": "sbs:volume-87"
+      }
+    ],
+    "height": [
+      {
+        "value": 509,
+        "source": "sbs:volume-87"
+      }
+    ],
+    "birthday": {
+      "value": "11-25"
+    },
+    "blood_type": {
+      "value": "XF"
+    }
+  },
+  "relations": []
+}

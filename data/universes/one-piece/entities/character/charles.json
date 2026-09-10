@@ -1,0 +1,21 @@
+{
+  "id": "character:charles",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charles",
+  "canonical_name_key": "character.charles.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charles.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

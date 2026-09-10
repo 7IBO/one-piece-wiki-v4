@@ -1,0 +1,20 @@
+{
+  "id": "organization:accino-family",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "accino-family",
+  "canonical_name_key": "organization.accino-family.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.accino-family.name.common",
+        "name_type": "common",
+        "since": "anime-episode:326"
+      }
+    ],
+    "organization_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

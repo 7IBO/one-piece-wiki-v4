@@ -1,0 +1,23 @@
+{
+  "id": "character:baburu",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "baburu",
+  "canonical_name_key": "character.baburu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.baburu.name.common",
+        "name_type": "common",
+        "since": "anime-episode:921"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:921"
+      }
+    ]
+  },
+  "relations": []
+}

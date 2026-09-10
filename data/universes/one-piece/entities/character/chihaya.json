@@ -1,0 +1,23 @@
+{
+  "id": "character:chihaya",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chihaya",
+  "canonical_name_key": "character.chihaya.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chihaya.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:919"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:919"
+      }
+    ]
+  },
+  "relations": []
+}

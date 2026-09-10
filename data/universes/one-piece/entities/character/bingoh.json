@@ -1,0 +1,23 @@
+{
+  "id": "character:bingoh",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bingoh",
+  "canonical_name_key": "character.bingoh.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bingoh.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:928"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:928"
+      }
+    ]
+  },
+  "relations": []
+}

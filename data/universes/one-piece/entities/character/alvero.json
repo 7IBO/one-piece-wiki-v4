@@ -1,0 +1,28 @@
+{
+  "id": "character:alvero",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "alvero",
+  "canonical_name_key": "character.alvero.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.alvero.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

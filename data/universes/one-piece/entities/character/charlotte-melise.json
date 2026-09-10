@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-melise",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-melise",
+  "canonical_name_key": "character.charlotte-melise.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-melise.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "age": [
+      {
+        "value": 33
+      }
+    ]
+  },
+  "relations": []
+}

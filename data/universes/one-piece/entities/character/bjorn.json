@@ -1,0 +1,29 @@
+{
+  "id": "character:bjorn",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bjorn",
+  "canonical_name_key": "character.bjorn.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bjorn.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1134"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1134"
+      }
+    ],
+    "age": [
+      {
+        "value": 33,
+        "source": "sbs:volume-115"
+      }
+    ]
+  },
+  "relations": []
+}

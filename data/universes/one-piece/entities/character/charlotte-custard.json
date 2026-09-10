@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-custard",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-custard",
+  "canonical_name_key": "character.charlotte-custard.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-custard.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "age": [
+      {
+        "value": 45
+      }
+    ],
+    "birthday": {
+      "value": "02-28"
+    }
+  },
+  "relations": []
+}

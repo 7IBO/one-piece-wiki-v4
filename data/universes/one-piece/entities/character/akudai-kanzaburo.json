@@ -1,0 +1,23 @@
+{
+  "id": "character:akudai-kanzaburo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "akudai-kanzaburo",
+  "canonical_name_key": "character.akudai-kanzaburo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.akudai-kanzaburo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:926"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:926"
+      }
+    ]
+  },
+  "relations": []
+}

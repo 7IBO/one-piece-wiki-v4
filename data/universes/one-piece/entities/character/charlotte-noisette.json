@@ -1,0 +1,32 @@
+{
+  "id": "character:charlotte-noisette",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-noisette",
+  "canonical_name_key": "character.charlotte-noisette.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-noisette.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "age": [
+      {
+        "value": 41,
+        "source": "sbs:volume-90"
+      }
+    ],
+    "birthday": {
+      "value": "12-15"
+    }
+  },
+  "relations": []
+}

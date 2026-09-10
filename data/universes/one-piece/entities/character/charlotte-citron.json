@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-citron",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-citron",
+  "canonical_name_key": "character.charlotte-citron.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-citron.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:861"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:861"
+      }
+    ],
+    "age": [
+      {
+        "value": 35
+      }
+    ],
+    "birthday": {
+      "value": "10-12"
+    }
+  },
+  "relations": []
+}

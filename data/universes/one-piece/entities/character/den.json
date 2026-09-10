@@ -1,0 +1,49 @@
+{
+  "id": "character:den",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "den",
+  "canonical_name_key": "character.den.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.den.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:616"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:616"
+      }
+    ],
+    "age": [
+      {
+        "value": 62,
+        "source": "databook-card:0740"
+      }
+    ],
+    "height": [
+      {
+        "value": 435,
+        "source": "databook-card:0740"
+      }
+    ],
+    "birthday": {
+      "value": "10-10"
+    },
+    "blood_type": {
+      "value": "X"
+    },
+    "occupation": [
+      {
+        "value": [
+          "shipwright"
+        ],
+        "since": "manga-chapter:616"
+      }
+    ]
+  },
+  "relations": []
+}

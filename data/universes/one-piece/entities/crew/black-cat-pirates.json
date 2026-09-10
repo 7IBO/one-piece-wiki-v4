@@ -1,0 +1,17 @@
+{
+  "id": "crew:black-cat-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "black-cat-pirates",
+  "canonical_name_key": "crew.black-cat-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.black-cat-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:25"
+      }
+    ]
+  },
+  "relations": []
+}

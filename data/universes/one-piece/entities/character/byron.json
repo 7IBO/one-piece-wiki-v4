@@ -1,0 +1,42 @@
+{
+  "id": "character:byron",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "byron",
+  "canonical_name_key": "character.byron.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.byron.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:501"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:501"
+      }
+    ],
+    "height": [
+      {
+        "value": 192,
+        "source": "manga-chapter:501"
+      }
+    ],
+    "birthday": {
+      "value": "12-18"
+    },
+    "occupation": [
+      {
+        "value": [
+          "musician",
+          "pirate",
+          "slave"
+        ],
+        "since": "manga-chapter:501"
+      }
+    ]
+  },
+  "relations": []
+}

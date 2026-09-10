@@ -1,0 +1,33 @@
+{
+  "id": "character:chameleone",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chameleone",
+  "canonical_name_key": "character.chameleone.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chameleone.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 300000000
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

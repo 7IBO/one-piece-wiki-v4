@@ -1,0 +1,36 @@
+{
+  "id": "character:comp",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "comp",
+  "canonical_name_key": "character.comp.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.comp.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1040"
+      },
+      {
+        "value_key": "character.comp.name.compo",
+        "name_type": "alias",
+        "since": "manga-chapter:1040"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1040"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:1040"
+      }
+    ]
+  },
+  "relations": []
+}

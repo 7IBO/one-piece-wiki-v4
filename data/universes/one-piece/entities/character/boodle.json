@@ -1,0 +1,35 @@
+{
+  "id": "character:boodle",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "boodle",
+  "canonical_name_key": "character.boodle.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.boodle.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:12"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:12"
+      }
+    ],
+    "height": [
+      {
+        "value": 172,
+        "source": "databook-card:0052"
+      }
+    ],
+    "birthday": {
+      "value": "01-16"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

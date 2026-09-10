@@ -1,0 +1,23 @@
+{
+  "id": "character:couran",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "couran",
+  "canonical_name_key": "character.couran.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.couran.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:906"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:906"
+      }
+    ]
+  },
+  "relations": []
+}

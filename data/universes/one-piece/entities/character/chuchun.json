@@ -1,0 +1,32 @@
+{
+  "id": "character:chuchun",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chuchun",
+  "canonical_name_key": "character.chuchun.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chuchun.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.chuchun.name.chirp-chirp",
+        "name_type": "alias"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "character:brock",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "brock",
+  "canonical_name_key": "character.brock.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.brock.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,29 @@
+{
+  "id": "character:buena-festa",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "buena-festa",
+  "canonical_name_key": "character.buena-festa.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.buena-festa.name.common",
+        "name_type": "common",
+        "since": "anime-episode:895"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.buena-festa.epithet.master-of-festivities",
+        "since": "anime-episode:895"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:895"
+      }
+    ]
+  },
+  "relations": []
+}

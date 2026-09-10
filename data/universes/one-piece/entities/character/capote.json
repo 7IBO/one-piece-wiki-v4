@@ -1,0 +1,31 @@
+{
+  "id": "character:capote",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "capote",
+  "canonical_name_key": "character.capote.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.capote.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "birthday": {
+      "value": "05-01"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

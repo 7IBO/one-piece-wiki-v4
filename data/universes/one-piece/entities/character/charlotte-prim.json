@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-prim",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-prim",
+  "canonical_name_key": "character.charlotte-prim.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-prim.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:896"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:896"
+      }
+    ],
+    "age": [
+      {
+        "value": 29
+      }
+    ],
+    "birthday": {
+      "value": "07-22"
+    }
+  },
+  "relations": []
+}

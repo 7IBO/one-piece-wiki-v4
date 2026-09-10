@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-compo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-compo",
+  "canonical_name_key": "character.charlotte-compo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-compo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:864"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:864"
+      }
+    ],
+    "age": [
+      {
+        "value": 39
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,33 @@
+{
+  "id": "character:lil-bulbro",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "lil-bulbro",
+  "canonical_name_key": "character.lil-bulbro.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.lil-bulbro.name.common",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.lil-bulbro.epithet.heinous"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,49 @@
+{
+  "id": "character:bluejam",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bluejam",
+  "canonical_name_key": "character.bluejam.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bluejam.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:584"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:584"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 14300000,
+        "since": "databook-card:0661"
+      }
+    ],
+    "height": [
+      {
+        "value": 261,
+        "source": "databook-card:0661"
+      }
+    ],
+    "birthday": {
+      "value": "02-16"
+    },
+    "blood_type": {
+      "value": "X"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:584"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "organization:black-kingdom",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "black-kingdom",
+  "canonical_name_key": "organization.black-kingdom.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.black-kingdom.name.common",
+        "name_type": "common"
+      }
+    ],
+    "organization_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

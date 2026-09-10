@@ -1,0 +1,52 @@
+{
+  "id": "character:bentham",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bentham",
+  "canonical_name_key": "character.bentham.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bentham.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:129"
+      },
+      {
+        "value_key": "character.bentham.name.mr-2-bon-kurei",
+        "name_type": "alias",
+        "since": "manga-chapter:154"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.bentham.epithet.bentham-of-the-wild",
+        "since": "databook-card:0172"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:129"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 32000000,
+        "since": "manga-chapter:372"
+      }
+    ],
+    "height": [
+      {
+        "value": 238,
+        "source": "databook-card:0172"
+      }
+    ],
+    "birthday": {
+      "value": "08-15"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

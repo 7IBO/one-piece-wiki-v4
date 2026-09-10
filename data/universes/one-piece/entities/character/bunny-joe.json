@@ -1,0 +1,31 @@
+{
+  "id": "character:bunny-joe",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bunny-joe",
+  "canonical_name_key": "character.bunny-joe.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bunny-joe.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:546"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:546"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "revolutionary"
+        ],
+        "since": "manga-chapter:546"
+      }
+    ]
+  },
+  "relations": []
+}

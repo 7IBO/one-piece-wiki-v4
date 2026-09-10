@@ -1,0 +1,23 @@
+{
+  "id": "character:cezar",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cezar",
+  "canonical_name_key": "character.cezar.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cezar.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:823"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:823"
+      }
+    ]
+  },
+  "relations": []
+}

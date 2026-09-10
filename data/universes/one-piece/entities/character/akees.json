@@ -1,0 +1,37 @@
+{
+  "id": "character:akees",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "akees",
+  "canonical_name_key": "character.akees.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.akees.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.akees.name.akisu",
+        "name_type": "alias"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.akees.epithet.thief-brothers"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "thief"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

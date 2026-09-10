@@ -1,0 +1,20 @@
+{
+  "id": "organization:wci-31",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "wci-31",
+  "canonical_name_key": "organization.wci-31.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.wci-31.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:880"
+      }
+    ],
+    "organization_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

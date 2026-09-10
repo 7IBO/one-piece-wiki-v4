@@ -1,0 +1,32 @@
+{
+  "id": "character:decuplets",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "decuplets",
+  "canonical_name_key": "character.decuplets.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.decuplets.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "age": [
+      {
+        "value": 18,
+        "source": "sbs:volume-85"
+      }
+    ],
+    "birthday": {
+      "value": "12-02"
+    }
+  },
+  "relations": []
+}

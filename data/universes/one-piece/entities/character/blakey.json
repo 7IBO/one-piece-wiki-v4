@@ -1,0 +1,23 @@
+{
+  "id": "character:blakey",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "blakey",
+  "canonical_name_key": "character.blakey.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.blakey.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:649"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:649"
+      }
+    ]
+  },
+  "relations": []
+}

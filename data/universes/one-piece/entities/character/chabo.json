@@ -1,0 +1,36 @@
+{
+  "id": "character:chabo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chabo",
+  "canonical_name_key": "character.chabo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chabo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:69"
+      },
+      {
+        "value_key": "character.chabo.name.cabo",
+        "name_type": "alias",
+        "since": "manga-chapter:69"
+      },
+      {
+        "value_key": "character.chabo.name.benson",
+        "name_type": "alias",
+        "since": "manga-chapter:69"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:69"
+      }
+    ],
+    "birthday": {
+      "value": "06-14"
+    }
+  },
+  "relations": []
+}

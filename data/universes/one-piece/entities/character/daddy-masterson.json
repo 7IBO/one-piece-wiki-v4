@@ -1,0 +1,29 @@
+{
+  "id": "character:daddy-masterson",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "daddy-masterson",
+  "canonical_name_key": "character.daddy-masterson.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.daddy-masterson.name.common",
+        "name_type": "common",
+        "since": "anime-episode:50"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.daddy-masterson.epithet.daddy-the-father",
+        "since": "anime-episode:50"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:50"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,17 @@
+{
+  "id": "crew:bliking-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "bliking-pirates",
+  "canonical_name_key": "crew.bliking-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.bliking-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:131"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,37 @@
+{
+  "id": "character:campacino",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "campacino",
+  "canonical_name_key": "character.campacino.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.campacino.name.common",
+        "name_type": "common",
+        "since": "anime-episode:326"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.campacino.epithet.love-hunter",
+        "since": "anime-episode:333"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:326"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "bounty_hunter"
+        ],
+        "since": "anime-episode:326"
+      }
+    ]
+  },
+  "relations": []
+}

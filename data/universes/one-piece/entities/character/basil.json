@@ -1,0 +1,31 @@
+{
+  "id": "character:basil",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "basil",
+  "canonical_name_key": "character.basil.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.basil.name.common",
+        "name_type": "common",
+        "since": "anime-episode:326"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:326"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "anime-episode:326"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "character:cosmo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cosmo",
+  "canonical_name_key": "character.cosmo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cosmo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:437"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:437"
+      }
+    ]
+  },
+  "relations": []
+}

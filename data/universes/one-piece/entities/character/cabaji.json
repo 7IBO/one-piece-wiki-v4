@@ -1,0 +1,50 @@
+{
+  "id": "character:cabaji",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cabaji",
+  "canonical_name_key": "character.cabaji.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cabaji.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:9"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.cabaji.epithet.cabaji-the-acrobat",
+        "since": "manga-chapter:15"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:9"
+      }
+    ],
+    "height": [
+      {
+        "value": 208,
+        "source": "databook-card:0055"
+      }
+    ],
+    "birthday": {
+      "value": "09-08"
+    },
+    "blood_type": {
+      "value": "X"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate",
+          "swordsman"
+        ],
+        "since": "manga-chapter:15"
+      }
+    ]
+  },
+  "relations": []
+}
