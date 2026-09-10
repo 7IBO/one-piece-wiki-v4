@@ -335,8 +335,15 @@ function hatchPath(f: Frame, deg: number, spacing: number): string {
  * distance to a light point that sits OUTSIDE the disc — so the tone
  * fades into a crescent instead of ringing the shape. Reads as manga
  * shading, not as an identicon grid. Emitted as ONE path (many
- * subpaths); the cell is floored so the dot count stays bounded (~80)
- * whatever the radius, keeping the DOM small.
+ * subpaths).
+ *
+ * **La densité suit `detail`, et c'est la moitié du poids d'une page
+ * de liste.** Mesuré sur `/devil-fruits` : le screentone sortait 103
+ * points, soit 6,8 Ko sur les 9,6 Ko d'une vignette, et 60 vignettes
+ * font 575 Ko. Or une vignette s'affiche vers 180 px de large pour un
+ * cadre de 240 : à cette taille, un point sur deux tombe sous le
+ * pixel. La trame reste une trame, elle est simplement calibrée pour
+ * la taille où on la regarde.
  */
 function screentonePath(
   cx: number,
@@ -345,8 +352,9 @@ function screentonePath(
   cell: number,
   deg: number,
   light: Pt,
+  detail = 1,
 ): string {
-  const step = Math.max(cell, radius / 6);
+  const step = Math.max(cell, radius / (3 * detail));
   const steps = Math.ceil(radius / step);
   const reach = radius * 2.2;
   const parts: string[] = [];
@@ -577,7 +585,7 @@ const figure: Grammar = (ctx) => {
       screentonePath(cx, cy, r * 0.99, f.s * 0.03, rng.range(0, 60), [
         cx - r * 0.8 * dir,
         cy - r * 0.75,
-      ]),
+      ], ctx.detail),
       p.ink,
       0.3,
     );
@@ -883,7 +891,15 @@ const impact: Grammar = (ctx) => {
 
   shapes.push(
     filled(
-      screentonePath(focal[0], focal[1], f.s * 0.5, f.s * 0.05, rng.range(0, 45), focal),
+      screentonePath(
+        focal[0],
+        focal[1],
+        f.s * 0.5,
+        f.s * 0.05,
+        rng.range(0, 45),
+        focal,
+        ctx.detail,
+      ),
       p.glow,
       0.26,
     ),
@@ -933,7 +949,7 @@ const spiralGrammar: Grammar = (ctx) => {
       screentonePath(cx, cy, Math.min(rx, ry) * 0.96, f.s * 0.05, rng.range(0, 60), [
         cx - rx * 0.9,
         cy - ry * 0.85,
-      ]),
+      ], ctx.detail),
       p.ink,
       0.36,
     ),
@@ -1033,7 +1049,14 @@ function pageRect(
  * a border (SVG has no clip here, and a clipPath per panel would cost
  * an id and a def for no visual gain).
  */
-function panelContent(rng: Rng, cell: Rect, tilt: number, origin: Pt, p: Palette): ArtShape[] {
+function panelContent(
+  rng: Rng,
+  cell: Rect,
+  tilt: number,
+  origin: Pt,
+  p: Palette,
+  detail: number,
+): ArtShape[] {
   const at = (x: number, y: number): Pt => rotate([x, y], origin, tilt);
   const rectIn = (
     x: number,
@@ -1079,7 +1102,7 @@ function panelContent(rng: Rng, cell: Rect, tilt: number, origin: Pt, p: Palette
           screentonePath(spot[0], spot[1], r, short * 0.16, rng.range(0, 60), [
             spot[0] - r * 0.9,
             spot[1] - r * 0.8,
-          ]),
+          ], detail),
           p.glow,
           0.75,
         ),
@@ -1161,7 +1184,7 @@ const panels: Grammar = (ctx) => {
       );
       return;
     }
-    shapes.push(...panelContent(rng, cell, page.tilt, page.origin, p));
+    shapes.push(...panelContent(rng, cell, page.tilt, page.origin, p, ctx.detail));
   });
 
   return { shapes, mark: null, markIndex };
@@ -1210,7 +1233,7 @@ const stack: Grammar = (ctx) => {
       screentonePath(spot[0], spot[1], r * 0.98, f.s * 0.05, rng.range(0, 60), [
         spot[0] - r * 0.85,
         spot[1] - r * 0.8,
-      ]),
+      ], ctx.detail),
       p.ink,
       0.35,
     ),
@@ -1418,7 +1441,7 @@ const field: Grammar = (ctx) => {
         screentonePath(cx, cy, r * 0.96, f.s * 0.05, rng.range(0, 60), [
           cx - r * 0.85,
           cy - r * 0.8,
-        ]),
+        ], ctx.detail),
         p.ink,
         0.35,
       ),
