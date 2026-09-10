@@ -9409,6 +9409,398 @@
       "lastImportedAt": "2026-08-27T23:30:30.367Z"
     },
     {
+      "entityId": "arc:amazon-lily",
+      "page": "Amazon Lily Arc",
+      "pageId": 11035,
+      "redirects": [],
+      "lastRevId": 2130196,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:arabasta",
+      "page": "Arabasta Arc",
+      "pageId": 1548,
+      "redirects": [],
+      "lastRevId": 2121875,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:arlong-park",
+      "page": "Arlong Park Arc",
+      "pageId": 18248,
+      "redirects": [],
+      "lastRevId": 2109549,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:baratie",
+      "page": "Baratie Arc",
+      "pageId": 1537,
+      "redirects": [],
+      "lastRevId": 2109550,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:caesar-retrieval",
+      "page": "Caesar Retrieval Arc",
+      "pageId": 234615,
+      "redirects": [],
+      "lastRevId": 2062665,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:cidre-guild",
+      "page": "Cidre Guild Arc",
+      "pageId": 316673,
+      "redirects": [],
+      "lastRevId": 2062670,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:dressrosa",
+      "page": "Dressrosa Arc",
+      "pageId": 193989,
+      "redirects": [],
+      "lastRevId": 2127414,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:drum-island",
+      "page": "Drum Island Arc",
+      "pageId": 1547,
+      "redirects": [],
+      "lastRevId": 2122898,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:egghead",
+      "page": "Egghead Arc",
+      "pageId": 336986,
+      "redirects": [],
+      "lastRevId": 2123887,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:elbaph",
+      "page": "Elbaph Arc",
+      "pageId": 348250,
+      "redirects": [],
+      "lastRevId": 2131634,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:enies-lobby",
+      "page": "Enies Lobby Arc",
+      "pageId": 1555,
+      "redirects": [],
+      "lastRevId": 2119009,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:fish-man-island",
+      "page": "Fish-Man Island Arc",
+      "pageId": 50596,
+      "redirects": [],
+      "lastRevId": 2130039,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:foxy-s-return",
+      "page": "Foxy's Return Arc",
+      "pageId": 3516,
+      "redirects": [],
+      "lastRevId": 2098689,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:g-8",
+      "page": "G-8 Arc",
+      "pageId": 5107,
+      "redirects": [],
+      "lastRevId": 2098681,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:goat-island",
+      "page": "Goat Island Arc",
+      "pageId": 1568,
+      "redirects": [],
+      "lastRevId": 2098657,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:ice-hunter",
+      "page": "Ice Hunter Arc",
+      "pageId": 7356,
+      "redirects": [],
+      "lastRevId": 2085855,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:impel-down",
+      "page": "Impel Down Arc",
+      "pageId": 10928,
+      "redirects": [],
+      "lastRevId": 2118635,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:jaya",
+      "page": "Jaya Arc",
+      "pageId": 1550,
+      "redirects": [],
+      "lastRevId": 2124007,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:levely",
+      "page": "Levely Arc",
+      "pageId": 310829,
+      "redirects": [],
+      "lastRevId": 2130424,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:little-east-blue",
+      "page": "Little East Blue Arc",
+      "pageId": 27852,
+      "redirects": [],
+      "lastRevId": 2128536,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:little-garden",
+      "page": "Little Garden Arc",
+      "pageId": 1546,
+      "redirects": [],
+      "lastRevId": 2118631,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:loguetown",
+      "page": "Loguetown Arc",
+      "pageId": 1539,
+      "redirects": [],
+      "lastRevId": 2111539,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:long-ring-long-land",
+      "page": "Long Ring Long Land Arc",
+      "pageId": 1553,
+      "redirects": [],
+      "lastRevId": 2111838,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:marine-rookie",
+      "page": "Marine Rookie Arc",
+      "pageId": 295128,
+      "redirects": [],
+      "lastRevId": 2103062,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:marineford",
+      "page": "Marineford Arc",
+      "pageId": 17120,
+      "redirects": [],
+      "lastRevId": 2124032,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:ocean-s-dream",
+      "page": "Ocean's Dream Arc",
+      "pageId": 1571,
+      "redirects": [],
+      "lastRevId": 2126710,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:orange-town",
+      "page": "Orange Town Arc",
+      "pageId": 1535,
+      "redirects": [],
+      "lastRevId": 2109577,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:post-arabasta",
+      "page": "Post-Arabasta Arc",
+      "pageId": 1567,
+      "redirects": [],
+      "lastRevId": 2098893,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:post-enies-lobby",
+      "page": "Post-Enies Lobby Arc",
+      "pageId": 2948,
+      "redirects": [],
+      "lastRevId": 2118991,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:post-war",
+      "page": "Post-War Arc",
+      "pageId": 32177,
+      "redirects": [],
+      "lastRevId": 2124126,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:punk-hazard",
+      "page": "Punk Hazard Arc",
+      "pageId": 133462,
+      "redirects": [],
+      "lastRevId": 2120196,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:return-to-sabaody",
+      "page": "Return to Sabaody Arc",
+      "pageId": 46948,
+      "redirects": [],
+      "lastRevId": 2118633,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:reverse-mountain",
+      "page": "Reverse Mountain Arc",
+      "pageId": 1544,
+      "redirects": [],
+      "lastRevId": 2109546,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:romance-dawn",
+      "page": "Romance Dawn Arc",
+      "pageId": 1534,
+      "redirects": [],
+      "lastRevId": 2131572,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:ruluka-island",
+      "page": "Ruluka Island Arc",
+      "pageId": 1569,
+      "redirects": [],
+      "lastRevId": 2102818,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:sabaody-archipelago",
+      "page": "Sabaody Archipelago Arc",
+      "pageId": 8162,
+      "redirects": [],
+      "lastRevId": 2131410,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:silver-mine",
+      "page": "Silver Mine Arc",
+      "pageId": 286232,
+      "redirects": [],
+      "lastRevId": 2103049,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:skypiea",
+      "page": "Skypiea Arc",
+      "pageId": 1551,
+      "redirects": [],
+      "lastRevId": 2109538,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:spa-island",
+      "page": "Spa Island Arc",
+      "pageId": 11752,
+      "redirects": [],
+      "lastRevId": 2095008,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:syrup-village",
+      "page": "Syrup Village Arc",
+      "pageId": 1536,
+      "redirects": [],
+      "lastRevId": 2119176,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:thriller-bark",
+      "page": "Thriller Bark Arc",
+      "pageId": 7709,
+      "redirects": [],
+      "lastRevId": 2124833,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:uta-s-past",
+      "page": "Uta's Past Arc",
+      "pageId": 335511,
+      "redirects": [],
+      "lastRevId": 2052253,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:wano-country",
+      "page": "Wano Country Arc",
+      "pageId": 308529,
+      "redirects": [],
+      "lastRevId": 2126636,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:warship-island",
+      "page": "Warship Island Arc",
+      "pageId": 1566,
+      "redirects": [],
+      "lastRevId": 2095033,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:water-7",
+      "page": "Water 7 Arc",
+      "pageId": 1554,
+      "redirects": [],
+      "lastRevId": 2118675,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:whisky-peak",
+      "page": "Whisky Peak Arc",
+      "pageId": 1545,
+      "redirects": [],
+      "lastRevId": 2109545,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:whole-cake-island",
+      "page": "Whole Cake Island Arc",
+      "pageId": 285023,
+      "redirects": [],
+      "lastRevId": 2118598,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:z-s-ambition",
+      "page": "Z's Ambition Arc",
+      "pageId": 177837,
+      "redirects": [],
+      "lastRevId": 2102605,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
+      "entityId": "arc:zou",
+      "page": "Zou Arc",
+      "pageId": 276584,
+      "redirects": [],
+      "lastRevId": 2124203,
+      "lastImportedAt": "2026-09-10T02:02:27.888Z"
+    },
+    {
       "entityId": "character:monkey-d-luffy",
       "page": "Monkey D. Luffy",
       "pageId": 1444,
