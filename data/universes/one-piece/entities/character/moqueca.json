@@ -1,0 +1,23 @@
+{
+  "id": "character:moqueca",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "moqueca",
+  "canonical_name_key": "character.moqueca.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.moqueca.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:906"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:906"
+      }
+    ]
+  },
+  "relations": []
+}

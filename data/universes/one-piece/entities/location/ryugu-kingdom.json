@@ -1,0 +1,19 @@
+{
+  "id": "location:ryugu-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "ryugu-kingdom",
+  "canonical_name_key": "location.ryugu-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.ryugu-kingdom.name",
+        "since": "manga-chapter:609"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

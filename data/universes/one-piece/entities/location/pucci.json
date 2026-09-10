@@ -1,0 +1,22 @@
+{
+  "id": "location:pucci",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "pucci",
+  "canonical_name_key": "location.pucci.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.pucci.name",
+        "since": "manga-chapter:657"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

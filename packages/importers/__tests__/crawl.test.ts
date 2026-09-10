@@ -35,12 +35,16 @@ describe('detectKind', () => {
     };
     expect(detectKind(chapter.parse.wikitext)).toEqual({ kind: 'chapter' });
     expect(detectKind('{{Crew Box|name=Straw Hats}}')).toEqual({ kind: 'crew' });
-    // Island Box is deliberately mapper-less (ADR-109 §scope: islands
-    // need their own modelling ADR) — the analyzer's "next mapper to
-    // build" signal has to keep working.
-    expect(detectKind('{{Island Box|name=Water 7}}')).toEqual({
+    // L'« Island Box » a maintenant son mapper : c'est la plus grosse
+    // boite de l'inventaire (414 pages), et sans les lieux les 451
+    // personnages importes n'ont que 6 relations a eux tous.
+    expect(detectKind('{{Island Box|name=Water 7}}')).toEqual({ kind: 'island' });
+    // Le signal « prochaine boite a mapper » de l'analyseur doit
+    // continuer a marcher : la « Song Box » (207 pages) n'a pas de
+    // mapper, et c'est elle qui tient maintenant ce role dans le test.
+    expect(detectKind('{{Song Box|Singer=Someone}}')).toEqual({
       kind: 'unknown',
-      box: 'Island Box',
+      box: 'Song Box',
     });
     expect(detectKind('just prose')).toEqual({ kind: 'none' });
   });
@@ -103,11 +107,16 @@ describe('crawl', () => {
         ],
       },
     });
-    const islandPage = JSON.stringify({
+    // Une boite SANS mapper, choisie parce qu'elle l'est vraiment :
+    // la « Song Box » (207 pages au releve) n'en a pas. Ce test
+    // nommait l'« Island Box », qui en a un depuis qu'elle est le plus
+    // gros gisement de l'inventaire — l'exemple avait vieilli avec le
+    // code qu'il decrivait.
+    const unmappedBoxPage = JSON.stringify({
       parse: {
         title: 'Water 7',
         pageid: 7,
-        wikitext: '{{Island Box|name=Water 7}} Home port of the [[Going Merry]].',
+        wikitext: '{{Song Box|Singer=Someone}} Home port of the [[Going Merry]].',
       },
     });
     const personality = JSON.stringify({
@@ -125,7 +134,7 @@ describe('crawl', () => {
         'redirect-personality',
       ),
       'page=Monkey D. Luffy/Personality': personality,
-      'page=Water 7': islandPage,
+      'page=Water 7': unmappedBoxPage,
     });
 
     const report = await crawl(client, { categories: ['Test'] }, { limit: 10 });
@@ -137,8 +146,8 @@ describe('crawl', () => {
     ]);
     const redirected = report.results.find((r) => r.redirectedFrom !== undefined);
     expect(redirected?.redirectedFrom).toBe('Monkey D. Luffy/Personality and Relationships');
-    expect(report.unknownBoxes).toEqual([{ box: 'Island Box', count: 1 }]);
-    expect(report.failures.some((f) => f.reason.includes('Island Box'))).toBe(true);
+    expect(report.unknownBoxes).toEqual([{ box: 'Song Box', count: 1 }]);
+    expect(report.failures.some((f) => f.reason.includes('Song Box'))).toBe(true);
     // The island page's link feeds the frontier.
     expect(report.frontier.some((f) => f.title === 'Going Merry')).toBe(true);
   });

@@ -1,0 +1,19 @@
+{
+  "id": "location:weatheria",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "weatheria",
+  "canonical_name_key": "location.weatheria.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.weatheria.name",
+        "since": "manga-chapter:523"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

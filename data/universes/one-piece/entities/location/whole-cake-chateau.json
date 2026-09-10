@@ -1,0 +1,19 @@
+{
+  "id": "location:whole-cake-chateau",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "whole-cake-chateau",
+  "canonical_name_key": "location.whole-cake-chateau.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.whole-cake-chateau.name",
+        "since": "manga-chapter:651"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

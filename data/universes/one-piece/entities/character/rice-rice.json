@@ -1,0 +1,23 @@
+{
+  "id": "character:rice-rice",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "rice-rice",
+  "canonical_name_key": "character.rice-rice.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.rice-rice.name.common",
+        "name_type": "common",
+        "since": "anime-episode:132"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:132"
+      }
+    ]
+  },
+  "relations": []
+}

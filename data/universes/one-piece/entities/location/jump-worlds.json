@@ -1,0 +1,18 @@
+{
+  "id": "location:jump-worlds",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "jump-worlds",
+  "canonical_name_key": "location.jump-worlds.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.jump-worlds.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

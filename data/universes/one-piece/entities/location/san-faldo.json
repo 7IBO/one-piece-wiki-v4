@@ -1,0 +1,22 @@
+{
+  "id": "location:san-faldo",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "san-faldo",
+  "canonical_name_key": "location.san-faldo.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.san-faldo.name",
+        "since": "manga-chapter:322"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:judo-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "judo-island",
+  "canonical_name_key": "location.judo-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.judo-island.name",
+        "since": "manga-chapter:15"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

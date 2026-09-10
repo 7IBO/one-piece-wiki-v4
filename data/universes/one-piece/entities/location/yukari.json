@@ -1,0 +1,18 @@
+{
+  "id": "location:yukari",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "yukari",
+  "canonical_name_key": "location.yukari.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.yukari.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

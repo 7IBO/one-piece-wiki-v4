@@ -1,0 +1,22 @@
+{
+  "id": "location:soja-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "soja-island",
+  "canonical_name_key": "location.soja-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.soja-island.name",
+        "since": "sbs:volume-110"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "west_blue"
+    }
+  },
+  "relations": []
+}

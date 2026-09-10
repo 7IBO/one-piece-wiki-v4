@@ -1,0 +1,19 @@
+{
+  "id": "location:foosha-village",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "foosha-village",
+  "canonical_name_key": "location.foosha-village.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.foosha-village.name",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

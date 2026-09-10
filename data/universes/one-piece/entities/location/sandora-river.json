@@ -1,0 +1,19 @@
+{
+  "id": "location:sandora-river",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "sandora-river",
+  "canonical_name_key": "location.sandora-river.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.sandora-river.name",
+        "since": "manga-chapter:161"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

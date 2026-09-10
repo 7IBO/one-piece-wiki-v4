@@ -1,0 +1,22 @@
+{
+  "id": "location:minion-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "minion-island",
+  "canonical_name_key": "location.minion-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.minion-island.name",
+        "since": "manga-chapter:765"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "north_blue"
+    }
+  },
+  "relations": []
+}

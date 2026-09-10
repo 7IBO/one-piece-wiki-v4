@@ -1,0 +1,19 @@
+{
+  "id": "location:headband-catfish-village",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "headband-catfish-village",
+  "canonical_name_key": "location.headband-catfish-village.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.headband-catfish-village.name",
+        "since": "manga-chapter:214"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

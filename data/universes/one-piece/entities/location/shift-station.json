@@ -1,0 +1,22 @@
+{
+  "id": "location:shift-station",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "shift-station",
+  "canonical_name_key": "location.shift-station.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.shift-station.name",
+        "since": "manga-chapter:322"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

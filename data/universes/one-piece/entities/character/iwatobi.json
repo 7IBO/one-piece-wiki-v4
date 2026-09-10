@@ -1,0 +1,23 @@
+{
+  "id": "character:iwatobi",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "iwatobi",
+  "canonical_name_key": "character.iwatobi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.iwatobi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:823"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:823"
+      }
+    ]
+  },
+  "relations": []
+}

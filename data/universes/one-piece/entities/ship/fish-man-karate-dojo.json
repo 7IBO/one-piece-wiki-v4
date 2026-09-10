@@ -1,0 +1,20 @@
+{
+  "id": "ship:fish-man-karate-dojo",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "fish-man-karate-dojo",
+  "canonical_name_key": "ship.fish-man-karate-dojo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.fish-man-karate-dojo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:593"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

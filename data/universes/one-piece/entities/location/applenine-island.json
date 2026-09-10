@@ -1,0 +1,22 @@
+{
+  "id": "location:applenine-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "applenine-island",
+  "canonical_name_key": "location.applenine-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.applenine-island.name",
+        "since": "manga-chapter:792"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

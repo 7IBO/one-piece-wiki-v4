@@ -1,0 +1,17 @@
+{
+  "id": "sbs:volume-114",
+  "type": "sbs",
+  "schema_version": 1,
+  "slug": "volume-114",
+  "properties": {
+    "canon_scope": {
+      "value": "sbs"
+    }
+  },
+  "relations": [
+    {
+      "type": "part-of-volume",
+      "target": "volume:114"
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:skypiea",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "skypiea",
+  "canonical_name_key": "location.skypiea.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.skypiea.name",
+        "since": "manga-chapter:239"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

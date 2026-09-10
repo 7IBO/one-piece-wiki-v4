@@ -1,0 +1,22 @@
+{
+  "id": "location:vodka-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "vodka-kingdom",
+  "canonical_name_key": "location.vodka-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.vodka-kingdom.name",
+        "since": "manga-chapter:1049"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "grand_line"
+    }
+  },
+  "relations": []
+}

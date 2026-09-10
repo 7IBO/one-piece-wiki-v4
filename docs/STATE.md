@@ -15,9 +15,47 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-09-10 (import de masse 2 557 → 3 696 entités ;
+**Last updated**: 2026-09-10 (apparitions lisibles, 336 lieux, titres
+japonais complets — corpus 4 049 ; puis import de masse 2 557 → 3 696 ;
 ADR-131 sources citées matérialisées, ADR-132 contraintes fausses
 retirées, ADR-133 progression par arc groupé par saga)
+
+## 2026-09-10 — Qui apparaît dans une source, et 336 lieux
+
+### Les apparitions se lisent, elles ne se devinent pas
+
+Les arêtes `features` étaient à **zéro**. La donnée n'est pas dans
+l'infobox : `<table class="CharTable">` sur une page de chapitre (39/40),
+une liste ordonnée sur une page d'épisode (40/40). Le **film n'est pas
+couvert** — 4 pages sur 28, et son « Cast » liste des comédiens.
+
+`appearances.ts` lit les deux formes ; la passe CLI ne fond que des
+arêtes (`addToEntity` → `mergeEntity`). Ce qu'elle refuse : fabriquer
+un id depuis un titre non résolu (ce serait une référence pendante),
+mapper le groupement par faction sur `role` (`narrative-roles` porte
+protagoniste/antagoniste, pas une faction), et garder le rang
+d'apparition en silence — il n'a pas de qualificatif, et c'est dit.
+
+### Les lieux, et la mesure qui les a mis en tête
+
+451 personnages, **6 relations à eux tous**. Hypothèse écartée par le
+test : ce n'était pas l'ordre des imports (registre peuplé → même
+résultat). La cause était que `origin` (89 %) et `residence` (62 %)
+pointaient des lieux inexistants. 336 lieux importés.
+
+**Ils n'ont pas encore rejoint les personnages** : `stageToLocal` saute
+un fichier d'entité déjà présent, et `--overwrite` remplacerait les
+propriétés. D'où `import:fandom edges --type <type>`, passe à arêtes
+seules, à faire tourner.
+
+### Les titres japonais
+
+| type            |    en |        ja |   ja-latn |
+| --------------- | ----: | --------: | --------: |
+| `anime-episode` | 1 178 | **1 178** | **1 178** |
+| `character`     |   455 |   **433** |   **416** |
+
+Avant : `0/0` et `1/1`.
 
 ## 2026-09-10 — L'import de masse : 2 557 → 3 696 entités
 

@@ -1,0 +1,21 @@
+{
+  "id": "location:forest-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "forest-island",
+  "canonical_name_key": "location.forest-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.forest-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

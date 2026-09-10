@@ -1,0 +1,22 @@
+{
+  "id": "location:kyuka-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "kyuka-island",
+  "canonical_name_key": "location.kyuka-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.kyuka-island.name",
+        "since": "manga-chapter:117"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

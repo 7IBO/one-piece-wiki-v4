@@ -1,0 +1,19 @@
+{
+  "id": "location:shandora",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "shandora",
+  "canonical_name_key": "location.shandora.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.shandora.name",
+        "since": "manga-chapter:268"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

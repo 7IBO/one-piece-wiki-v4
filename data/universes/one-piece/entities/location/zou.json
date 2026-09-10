@@ -1,0 +1,22 @@
+{
+  "id": "location:zou",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "zou",
+  "canonical_name_key": "location.zou.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.zou.name",
+        "since": "manga-chapter:795"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

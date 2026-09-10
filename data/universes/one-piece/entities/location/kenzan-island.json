@@ -1,0 +1,22 @@
+{
+  "id": "location:kenzan-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "kenzan-island",
+  "canonical_name_key": "location.kenzan-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.kenzan-island.name",
+        "since": "manga-chapter:596"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

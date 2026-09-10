@@ -1,0 +1,22 @@
+{
+  "id": "location:namakura-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "namakura-island",
+  "canonical_name_key": "location.namakura-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.namakura-island.name",
+        "since": "manga-chapter:524"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

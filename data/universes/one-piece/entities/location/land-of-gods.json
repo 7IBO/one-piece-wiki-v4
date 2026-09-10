@@ -1,0 +1,19 @@
+{
+  "id": "location:land-of-gods",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "land-of-gods",
+  "canonical_name_key": "location.land-of-gods.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.land-of-gods.name",
+        "since": "manga-chapter:1126"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

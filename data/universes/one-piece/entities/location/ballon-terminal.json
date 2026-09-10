@@ -1,0 +1,19 @@
+{
+  "id": "location:ballon-terminal",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "ballon-terminal",
+  "canonical_name_key": "location.ballon-terminal.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.ballon-terminal.name",
+        "since": "manga-chapter:793"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

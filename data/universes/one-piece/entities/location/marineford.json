@@ -1,0 +1,22 @@
+{
+  "id": "location:marineford",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "marineford",
+  "canonical_name_key": "location.marineford.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.marineford.name",
+        "since": "manga-chapter:94"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

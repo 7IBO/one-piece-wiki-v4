@@ -1,0 +1,19 @@
+{
+  "id": "location:great-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "great-kingdom",
+  "canonical_name_key": "location.great-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.great-kingdom.name",
+        "since": "manga-chapter:395"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

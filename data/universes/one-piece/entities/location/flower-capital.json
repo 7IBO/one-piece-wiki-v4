@@ -1,0 +1,19 @@
+{
+  "id": "location:flower-capital",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "flower-capital",
+  "canonical_name_key": "location.flower-capital.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.flower-capital.name",
+        "since": "manga-chapter:909"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "character:world-tree",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "world-tree",
+  "canonical_name_key": "character.world-tree.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.world-tree.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

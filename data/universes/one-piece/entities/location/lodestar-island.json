@@ -1,0 +1,22 @@
+{
+  "id": "location:lodestar-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "lodestar-island",
+  "canonical_name_key": "location.lodestar-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.lodestar-island.name",
+        "since": "manga-chapter:820"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

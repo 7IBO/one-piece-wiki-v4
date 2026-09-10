@@ -1,0 +1,22 @@
+{
+  "id": "location:florian-triangle",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "florian-triangle",
+  "canonical_name_key": "location.florian-triangle.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.florian-triangle.name",
+        "since": "manga-chapter:442"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

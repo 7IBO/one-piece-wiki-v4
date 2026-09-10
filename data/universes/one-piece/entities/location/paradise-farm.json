@@ -1,0 +1,19 @@
+{
+  "id": "location:paradise-farm",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "paradise-farm",
+  "canonical_name_key": "location.paradise-farm.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.paradise-farm.name",
+        "since": "manga-chapter:917"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

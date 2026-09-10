@@ -1,0 +1,22 @@
+{
+  "id": "location:spider-miles",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "spider-miles",
+  "canonical_name_key": "location.spider-miles.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.spider-miles.name",
+        "since": "manga-chapter:752"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "north_blue"
+    }
+  },
+  "relations": []
+}

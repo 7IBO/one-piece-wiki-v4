@@ -1,0 +1,22 @@
+{
+  "id": "location:satsuruzo-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "satsuruzo-kingdom",
+  "canonical_name_key": "location.satsuruzo-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.satsuruzo-kingdom.name",
+        "since": "databook-card:0028"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

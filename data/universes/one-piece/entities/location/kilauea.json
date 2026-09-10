@@ -1,0 +1,21 @@
+{
+  "id": "location:kilauea",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "kilauea",
+  "canonical_name_key": "location.kilauea.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.kilauea.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

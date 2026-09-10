@@ -1,0 +1,19 @@
+{
+  "id": "location:third-research-institute",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "third-research-institute",
+  "canonical_name_key": "location.third-research-institute.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.third-research-institute.name",
+        "since": "manga-chapter:657"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

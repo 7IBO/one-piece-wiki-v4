@@ -1,0 +1,107 @@
+# Les arêtes d'apparition (`features`) — déclenchement MANUEL.
+#
+# « Qui apparaît dans ce chapitre / cet épisode ». Le corpus en compte
+# ZÉRO, et `docs/DESIGN_PLAN.md` §5 en fait le premier déblocage
+# produit : compteurs d'en-tête de chapitre, « personnages présents »,
+# « premières apparitions », « apparitions par arc », et le
+# dénominateur « 342 apparitions lues sur 1 044 ».
+#
+# La donnée n'est pas dans l'infobox : elle est dans la page RENDUE
+# (`<table class="CharTable">` pour un chapitre, une liste ordonnée
+# pour un épisode). Une requête rendue par source, donc le run est
+# borné par `--from`/`--to`/`--limit` et CI marche le corpus en passes.
+#
+# Passe à ARÊTES SEULES : `addToEntity` → `mergeEntity`. Les propriétés
+# des sources ne sont jamais touchées, et un second passage sur le même
+# intervalle n'écrit rien.
+name: fandom-appearances
+on:
+  workflow_dispatch:
+    inputs:
+      kind:
+        description: 'Type de source à parcourir'
+        required: true
+        default: 'chapter'
+        type: choice
+        options: ['chapter', 'episode']
+      from:
+        description: 'Premier numéro (inclus)'
+        required: true
+        default: '1'
+      to:
+        description: 'Dernier numéro (inclus)'
+        required: true
+        default: '200'
+      limit:
+        description: >-
+          Plafond de pages pour ce run. Une requête rendue par source,
+          ~1 s chacune : 800 tient dans le timeout, 1200 non.
+        required: true
+        default: '400'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  appearances:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - uses: oven-sh/setup-bun@v2
+      - run: bun install --frozen-lockfile
+      - run: bun run schema:generate
+
+      - name: Lire les apparitions et fondre les arêtes
+        run: |
+          bun run import:fandom appearances \
+            --kind "${{ github.event.inputs.kind }}" \
+            --from "${{ github.event.inputs.from }}" \
+            --to "${{ github.event.inputs.to }}" \
+            --limit "${{ github.event.inputs.limit }}" \
+            --stage | tee /tmp/appearances.log
+          {
+            echo '### Frontière — ce que les pages citent et que le corpus ignore'
+            echo ''
+            echo '```'
+            sed -n '/hors corpus/,$p' /tmp/appearances.log | head -40
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
+
+      # Même ordre que `fandom-import`, et pour la même raison : la
+      # récolte est l'artefact cher et irrejouable, elle atteint une
+      # branche AVANT qu'on la juge.
+      - name: Pousser la récolte
+        id: push
+        run: |
+          if [ -z "$(git status --porcelain)" ]; then
+            echo "Rien à pousser."
+            echo "pushed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          branch="import/appearances-${{ github.run_id }}"
+          git config user.name "fandom-importer[bot]"
+          git config user.email "noreply@one-piece.wiki"
+          git checkout -b "$branch"
+          git add data/
+          git commit -m "data(import): apparitions ${{ github.event.inputs.kind }} ${{ github.event.inputs.from }}-${{ github.event.inputs.to }} (run ${{ github.run_id }})"
+          git push -u origin "$branch"
+          echo "pushed=true" >> "$GITHUB_OUTPUT"
+          echo "branch=$branch" >> "$GITHUB_OUTPUT"
+          echo "### Récolte poussée sur \`$branch\`" >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Valider (rapport, jamais un blocage)
+        if: steps.push.outputs.pushed == 'true'
+        continue-on-error: true
+        run: |
+          if bun run validate && bun run check:references; then
+            echo "### Validation : OK" >> "$GITHUB_STEP_SUMMARY"
+          else
+            {
+              echo "### Validation : ÉCHEC"
+              echo ""
+              echo "La récolte est en sécurité sur \`${{ steps.push.outputs.branch }}\`."
+              echo "Corriger sur la branche — ne PAS relancer l'import."
+            } >> "$GITHUB_STEP_SUMMARY"
+          fi

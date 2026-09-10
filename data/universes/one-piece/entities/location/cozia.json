@@ -1,0 +1,22 @@
+{
+  "id": "location:cozia",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "cozia",
+  "canonical_name_key": "location.cozia.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.cozia.name",
+        "since": "manga-chapter:841"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

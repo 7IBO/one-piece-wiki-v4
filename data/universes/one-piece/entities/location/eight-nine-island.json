@@ -1,0 +1,19 @@
+{
+  "id": "location:eight-nine-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "eight-nine-island",
+  "canonical_name_key": "location.eight-nine-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.eight-nine-island.name",
+        "since": "anime-episode:132"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,18 @@
+{
+  "id": "location:gerard",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "gerard",
+  "canonical_name_key": "location.gerard.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.gerard.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "location:flevance",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "flevance",
+  "canonical_name_key": "location.flevance.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.flevance.name",
+        "since": "manga-chapter:762"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "north_blue"
+    }
+  },
+  "relations": []
+}

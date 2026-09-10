@@ -1,0 +1,19 @@
+{
+  "id": "location:all-blue",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "all-blue",
+  "canonical_name_key": "location.all-blue.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.all-blue.name",
+        "since": "manga-chapter:56"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

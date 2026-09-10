@@ -1,0 +1,19 @@
+{
+  "id": "location:mt-mauri",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "mt-mauri",
+  "canonical_name_key": "location.mt-mauri.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.mt-mauri.name",
+        "since": "manga-chapter:860"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

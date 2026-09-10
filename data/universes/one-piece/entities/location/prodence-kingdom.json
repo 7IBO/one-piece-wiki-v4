@@ -1,0 +1,22 @@
+{
+  "id": "location:prodence-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "prodence-kingdom",
+  "canonical_name_key": "location.prodence-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.prodence-kingdom.name",
+        "since": "manga-chapter:823"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

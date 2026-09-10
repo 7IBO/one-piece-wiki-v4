@@ -1,0 +1,19 @@
+{
+  "id": "location:corrida-colosseum",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "corrida-colosseum",
+  "canonical_name_key": "location.corrida-colosseum.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.corrida-colosseum.name",
+        "since": "manga-chapter:702"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

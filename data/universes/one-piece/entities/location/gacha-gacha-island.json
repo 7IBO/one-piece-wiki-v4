@@ -1,0 +1,18 @@
+{
+  "id": "location:gacha-gacha-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "gacha-gacha-island",
+  "canonical_name_key": "location.gacha-gacha-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.gacha-gacha-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "location:human-auctioning-house",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "human-auctioning-house",
+  "canonical_name_key": "location.human-auctioning-house.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.human-auctioning-house.name",
+        "since": "manga-chapter:501"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

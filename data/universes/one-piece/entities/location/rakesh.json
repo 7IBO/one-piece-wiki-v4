@@ -1,0 +1,22 @@
+{
+  "id": "location:rakesh",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "rakesh",
+  "canonical_name_key": "location.rakesh.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.rakesh.name",
+        "since": "manga-chapter:762"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "north_blue"
+    }
+  },
+  "relations": []
+}

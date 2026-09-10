@@ -1,0 +1,21 @@
+{
+  "id": "location:festa-circle",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "festa-circle",
+  "canonical_name_key": "location.festa-circle.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.festa-circle.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

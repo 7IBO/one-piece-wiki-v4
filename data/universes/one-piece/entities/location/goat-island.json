@@ -1,0 +1,22 @@
+{
+  "id": "location:goat-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "goat-island",
+  "canonical_name_key": "location.goat-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.goat-island.name",
+        "since": "manga-chapter:2"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:ido",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "ido",
+  "canonical_name_key": "location.ido.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.ido.name",
+        "since": "anime-episode:99"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

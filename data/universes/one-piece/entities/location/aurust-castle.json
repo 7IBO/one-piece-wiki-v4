@@ -1,0 +1,19 @@
+{
+  "id": "location:aurust-castle",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "aurust-castle",
+  "canonical_name_key": "location.aurust-castle.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.aurust-castle.name",
+        "since": "manga-chapter:1132"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

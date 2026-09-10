@@ -23,6 +23,7 @@ import type { FandomClient, ParsedPage } from './client.ts';
 import { mapCrew } from './crew.ts';
 import { mapDevilFruit } from './devil-fruit.ts';
 import { mapEpisode } from './episode.ts';
+import { mapIsland } from './island.ts';
 import { orderCrawlQueue, readOrdinalTitle } from './ordinal-title.ts';
 import { mapOrganization } from './organization.ts';
 import type { FandomRegistry } from './registry.ts';
@@ -44,7 +45,8 @@ export type MapperKind =
   | 'organization'
   | 'weapon'
   | 'arc'
-  | 'saga';
+  | 'saga'
+  | 'island';
 
 type Mapper = (page: ParsedPage) => (MapperEmit & { warnings: readonly string[]; }) | null;
 
@@ -66,6 +68,7 @@ function buildMappers(
     organization: (page) => mapOrganization(page, boxCtx),
     weapon: (page) => mapWeapon(page, boxCtx),
     arc: (page) => mapArc(page, boxCtx),
+    island: (page) => mapIsland(page, boxCtx),
     // Le mapper de saga ne prend pas de contexte : le Saga Box ne
     // porte aucun wikilien a resoudre, seulement des titres de chaine.
     saga: mapSaga,
@@ -84,6 +87,7 @@ const BOX_TO_KIND: readonly (readonly [string, MapperKind])[] = [
   ['organization box', 'organization'],
   ['weapon box', 'weapon'],
   ['arc box', 'arc'],
+  ['island box', 'island'],
   ['saga box', 'saga'],
 ];
 

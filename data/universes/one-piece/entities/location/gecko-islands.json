@@ -1,0 +1,22 @@
+{
+  "id": "location:gecko-islands",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "gecko-islands",
+  "canonical_name_key": "location.gecko-islands.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.gecko-islands.name",
+        "since": "manga-chapter:23"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

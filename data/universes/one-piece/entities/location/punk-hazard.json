@@ -1,0 +1,22 @@
+{
+  "id": "location:punk-hazard",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "punk-hazard",
+  "canonical_name_key": "location.punk-hazard.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.punk-hazard.name",
+        "since": "manga-chapter:655"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "location:royal-sun-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "royal-sun-island",
+  "canonical_name_key": "location.royal-sun-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.royal-sun-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:mt-colubo",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "mt-colubo",
+  "canonical_name_key": "location.mt-colubo.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.mt-colubo.name",
+        "since": "manga-chapter:582"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}
