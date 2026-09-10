@@ -1,0 +1,20 @@
+{
+  "id": "weapon:poseidon",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "poseidon",
+  "canonical_name_key": "weapon.poseidon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.poseidon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:612"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "weapon:pretzel",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "pretzel",
+  "canonical_name_key": "weapon.pretzel.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.pretzel.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:835"
+      }
+    ],
+    "weapon_type": {
+      "value": "sword"
+    }
+  },
+  "relations": []
+}

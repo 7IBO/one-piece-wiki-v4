@@ -1,0 +1,20 @@
+{
+  "id": "weapon:kx-launcher",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "kx-launcher",
+  "canonical_name_key": "weapon.kx-launcher.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.kx-launcher.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:859"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

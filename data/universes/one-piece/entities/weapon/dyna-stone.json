@@ -1,0 +1,19 @@
+{
+  "id": "weapon:dyna-stone",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "dyna-stone",
+  "canonical_name_key": "weapon.dyna-stone.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.dyna-stone.name.common",
+        "name_type": "common"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

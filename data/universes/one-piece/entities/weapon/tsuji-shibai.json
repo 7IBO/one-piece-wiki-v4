@@ -1,0 +1,25 @@
+{
+  "id": "weapon:tsuji-shibai",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "tsuji-shibai",
+  "canonical_name_key": "weapon.tsuji-shibai.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.tsuji-shibai.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:754"
+      },
+      {
+        "value_key": "weapon.tsuji-shibai.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:754"
+      }
+    ],
+    "weapon_type": {
+      "value": "katana"
+    }
+  },
+  "relations": []
+}

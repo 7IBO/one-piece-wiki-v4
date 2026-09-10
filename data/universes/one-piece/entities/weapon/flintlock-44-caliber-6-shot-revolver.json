@@ -1,0 +1,20 @@
+{
+  "id": "weapon:flintlock-44-caliber-6-shot-revolver",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "flintlock-44-caliber-6-shot-revolver",
+  "canonical_name_key": "weapon.flintlock-44-caliber-6-shot-revolver.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.flintlock-44-caliber-6-shot-revolver.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:124"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "weapon:soul-solid",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "soul-solid",
+  "canonical_name_key": "weapon.soul-solid.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.soul-solid.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:442"
+      },
+      {
+        "value_key": "weapon.soul-solid.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:442"
+      }
+    ],
+    "weapon_type": {
+      "value": "shikomizue"
+    }
+  },
+  "relations": []
+}

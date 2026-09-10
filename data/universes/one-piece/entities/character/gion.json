@@ -1,0 +1,33 @@
+{
+  "id": "character:gion",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "gion",
+  "canonical_name_key": "character.gion.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.gion.name.common",
+        "name_type": "common",
+        "since": "sbs:volume-74"
+      },
+      {
+        "value_key": "character.gion.name.momousagi",
+        "name_type": "alias",
+        "since": "sbs:volume-74"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "sbs:volume-74"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 500000000
+      }
+    ]
+  },
+  "relations": []
+}

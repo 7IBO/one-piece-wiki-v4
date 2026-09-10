@@ -1,0 +1,19 @@
+{
+  "id": "weapon:king-cannon",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "king-cannon",
+  "canonical_name_key": "weapon.king-cannon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.king-cannon.name.common",
+        "name_type": "common"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

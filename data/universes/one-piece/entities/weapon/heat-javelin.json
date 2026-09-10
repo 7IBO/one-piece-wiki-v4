@@ -1,0 +1,25 @@
+{
+  "id": "weapon:heat-javelin",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "heat-javelin",
+  "canonical_name_key": "weapon.heat-javelin.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.heat-javelin.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:241"
+      },
+      {
+        "value_key": "weapon.heat-javelin.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:241"
+      }
+    ],
+    "weapon_type": {
+      "value": "spear"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "weapon:milky-arrow",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "milky-arrow",
+  "canonical_name_key": "weapon.milky-arrow.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.milky-arrow.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:242"
+      },
+      {
+        "value_key": "weapon.milky-arrow.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:242"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

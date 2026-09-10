@@ -1,0 +1,25 @@
+{
+  "id": "weapon:nakiri-swords",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "nakiri-swords",
+  "canonical_name_key": "weapon.nakiri-swords.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.nakiri-swords.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:44"
+      },
+      {
+        "value_key": "weapon.nakiri-swords.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:44"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

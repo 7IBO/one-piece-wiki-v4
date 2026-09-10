@@ -1,0 +1,25 @@
+{
+  "id": "weapon:kogatana",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "kogatana",
+  "canonical_name_key": "weapon.kogatana.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.kogatana.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:49"
+      },
+      {
+        "value_key": "weapon.kogatana.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:49"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

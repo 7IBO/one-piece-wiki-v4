@@ -1,0 +1,20 @@
+{
+  "id": "ship:vegaforce-01",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "vegaforce-01",
+  "canonical_name_key": "ship.vegaforce-01.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.vegaforce-01.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1061"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "weapon:punishers",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "punishers",
+  "canonical_name_key": "weapon.punishers.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.punishers.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:498"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

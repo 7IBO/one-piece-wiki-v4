@@ -1,0 +1,25 @@
+{
+  "id": "weapon:takeru",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "takeru",
+  "canonical_name_key": "weapon.takeru.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.takeru.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:983"
+      },
+      {
+        "value_key": "weapon.takeru.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:983"
+      }
+    ],
+    "weapon_type": {
+      "value": "kanabo"
+    }
+  },
+  "relations": []
+}

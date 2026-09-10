@@ -1,0 +1,42 @@
+{
+  "id": "character:butler",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "butler",
+  "canonical_name_key": "character.butler.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.butler.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.butler.name.battler",
+        "name_type": "alias"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.butler.epithet.earl-battler"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 14900000
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "musician"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

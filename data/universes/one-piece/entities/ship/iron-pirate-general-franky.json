@@ -1,0 +1,20 @@
+{
+  "id": "ship:iron-pirate-general-franky",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "iron-pirate-general-franky",
+  "canonical_name_key": "ship.iron-pirate-general-franky.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.iron-pirate-general-franky.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:636"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

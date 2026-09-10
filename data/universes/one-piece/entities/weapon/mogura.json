@@ -1,0 +1,25 @@
+{
+  "id": "weapon:mogura",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "mogura",
+  "canonical_name_key": "weapon.mogura.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.mogura.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:862"
+      },
+      {
+        "value_key": "weapon.mogura.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

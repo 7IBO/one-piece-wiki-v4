@@ -1,0 +1,23 @@
+{
+  "id": "character:wanyudo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "wanyudo",
+  "canonical_name_key": "character.wanyudo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.wanyudo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1005"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1005"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "weapon:bruiser-axe",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "bruiser-axe",
+  "canonical_name_key": "weapon.bruiser-axe.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.bruiser-axe.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:116"
+      }
+    ],
+    "weapon_type": {
+      "value": "axe"
+    }
+  },
+  "relations": []
+}

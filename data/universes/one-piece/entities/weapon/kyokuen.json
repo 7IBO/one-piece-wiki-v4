@@ -1,0 +1,26 @@
+{
+  "id": "weapon:kyokuen",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "kyokuen",
+  "canonical_name_key": "weapon.kyokuen.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.kyokuen.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "weapon.kyokuen.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    },
+    "weapon_grade": {
+      "value": "ryo_wazamono"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,23 @@
+{
+  "id": "weapon:hyper-shibireru-kun",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "hyper-shibireru-kun",
+  "canonical_name_key": "weapon.hyper-shibireru-kun.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.hyper-shibireru-kun.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "weapon.hyper-shibireru-kun.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "weapon_type": {
+      "value": "katana"
+    }
+  },
+  "relations": []
+}

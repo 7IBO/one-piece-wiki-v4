@@ -1,0 +1,25 @@
+{
+  "id": "weapon:beethoven",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "beethoven",
+  "canonical_name_key": "weapon.beethoven.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.beethoven.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1061"
+      },
+      {
+        "value_key": "weapon.beethoven.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:1061"
+      }
+    ],
+    "weapon_type": {
+      "value": "whip"
+    }
+  },
+  "relations": []
+}

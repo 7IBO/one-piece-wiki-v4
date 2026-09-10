@@ -1,0 +1,25 @@
+{
+  "id": "weapon:karakuri-rasento",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "karakuri-rasento",
+  "canonical_name_key": "weapon.karakuri-rasento.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.karakuri-rasento.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:982"
+      },
+      {
+        "value_key": "weapon.karakuri-rasento.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:982"
+      }
+    ],
+    "weapon_type": {
+      "value": "sword"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "weapon:royal-drum-crown-7-shot-bliking-cannon",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "royal-drum-crown-7-shot-bliking-cannon",
+  "canonical_name_key": "weapon.royal-drum-crown-7-shot-bliking-cannon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.royal-drum-crown-7-shot-bliking-cannon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:150"
+      },
+      {
+        "value_key": "weapon.royal-drum-crown-7-shot-bliking-cannon.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:150"
+      }
+    ],
+    "weapon_type": {
+      "value": "cannon"
+    }
+  },
+  "relations": []
+}

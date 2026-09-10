@@ -1,0 +1,20 @@
+{
+  "id": "weapon:battle-smasher",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "battle-smasher",
+  "canonical_name_key": "weapon.battle-smasher.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.battle-smasher.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:691"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

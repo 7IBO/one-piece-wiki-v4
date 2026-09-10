@@ -1,0 +1,25 @@
+{
+  "id": "weapon:daisenso",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "daisenso",
+  "canonical_name_key": "weapon.daisenso.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.daisenso.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:64"
+      },
+      {
+        "value_key": "weapon.daisenso.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:64"
+      }
+    ],
+    "weapon_type": {
+      "value": "spear"
+    }
+  },
+  "relations": []
+}

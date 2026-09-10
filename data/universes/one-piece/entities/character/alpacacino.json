@@ -1,0 +1,29 @@
+{
+  "id": "character:alpacacino",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "alpacacino",
+  "canonical_name_key": "character.alpacacino.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.alpacacino.name.common",
+        "name_type": "common",
+        "since": "anime-episode:575"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.alpacacino.epithet.beast-cannon",
+        "since": "anime-episode:575"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:575"
+      }
+    ]
+  },
+  "relations": []
+}
