@@ -1,0 +1,18 @@
+{
+  "id": "saga:arabasta",
+  "type": "saga",
+  "schema_version": 1,
+  "slug": "arabasta",
+  "canonical_name_key": "saga.arabasta.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "saga.arabasta.name"
+      }
+    ],
+    "saga_number": {
+      "value": 2
+    }
+  },
+  "relations": []
+}

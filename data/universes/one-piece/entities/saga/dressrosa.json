@@ -1,0 +1,18 @@
+{
+  "id": "saga:dressrosa",
+  "type": "saga",
+  "schema_version": 1,
+  "slug": "dressrosa",
+  "canonical_name_key": "saga.dressrosa.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "saga.dressrosa.name"
+      }
+    ],
+    "saga_number": {
+      "value": 8
+    }
+  },
+  "relations": []
+}

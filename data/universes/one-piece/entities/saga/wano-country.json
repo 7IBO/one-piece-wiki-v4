@@ -1,0 +1,18 @@
+{
+  "id": "saga:wano-country",
+  "type": "saga",
+  "schema_version": 1,
+  "slug": "wano-country",
+  "canonical_name_key": "saga.wano-country.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "saga.wano-country.name"
+      }
+    ],
+    "saga_number": {
+      "value": 10
+    }
+  },
+  "relations": []
+}
