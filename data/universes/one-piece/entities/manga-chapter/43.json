@@ -34,6 +34,32 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:20"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
+    },
+    {
+      "type": "features",
+      "target": "character:arlong",
+      "qualifiers": {
+        "appearance_type": "wanted_poster"
+      }
+    },
+    {
+      "type": "features",
+      "target": "character:fullbody"
+    },
+    {
+      "type": "features",
+      "target": "character:bacchy"
+    },
+    {
+      "type": "features",
+      "target": "character:buckox",
+      "qualifiers": {
+        "appearance_type": "cover_story"
+      }
     }
   ],
   "slug_history": [

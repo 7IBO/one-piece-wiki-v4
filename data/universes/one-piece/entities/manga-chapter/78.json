@@ -34,6 +34,18 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:36"
+    },
+    {
+      "type": "features",
+      "target": "character:arlong"
+    },
+    {
+      "type": "features",
+      "target": "character:choo"
+    },
+    {
+      "type": "features",
+      "target": "character:belle-mere"
     }
   ],
   "slug_history": [

@@ -34,6 +34,14 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:5"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
+    },
+    {
+      "type": "features",
+      "target": "crew:buggy-pirates"
     }
   ],
   "slug_history": [

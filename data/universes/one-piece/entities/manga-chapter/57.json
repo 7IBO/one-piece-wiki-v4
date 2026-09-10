@@ -34,6 +34,20 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:26"
+    },
+    {
+      "type": "features",
+      "target": "character:cabaji",
+      "qualifiers": {
+        "appearance_type": "cover_story"
+      }
+    },
+    {
+      "type": "features",
+      "target": "crew:buggy-pirates",
+      "qualifiers": {
+        "appearance_type": "cover_story"
+      }
     }
   ],
   "slug_history": [

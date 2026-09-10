@@ -38,6 +38,10 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:17"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
     }
   ],
   "slug_history": [

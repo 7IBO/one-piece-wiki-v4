@@ -30,6 +30,10 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:11"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
     }
   ],
   "slug_history": [

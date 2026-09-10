@@ -46,6 +46,29 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:878"
+    },
+    {
+      "type": "features",
+      "target": "character:benn-beckman"
+    },
+    {
+      "type": "features",
+      "target": "character:bonk-punch"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
+    },
+    {
+      "type": "features",
+      "target": "character:mrs-chicken"
+    },
+    {
+      "type": "features",
+      "target": "character:anjo",
+      "qualifiers": {
+        "appearance_type": "flashback"
+      }
     }
   ],
   "slug_history": [

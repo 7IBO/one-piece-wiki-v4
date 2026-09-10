@@ -30,6 +30,38 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:17"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
+    },
+    {
+      "type": "features",
+      "target": "character:benn-beckman",
+      "qualifiers": {
+        "appearance_type": "cover_story"
+      }
+    },
+    {
+      "type": "features",
+      "target": "character:building-snake",
+      "qualifiers": {
+        "appearance_type": "cover_story"
+      }
+    },
+    {
+      "type": "features",
+      "target": "character:bonk-punch",
+      "qualifiers": {
+        "appearance_type": "cover_story"
+      }
+    },
+    {
+      "type": "features",
+      "target": "character:bankina",
+      "qualifiers": {
+        "appearance_type": "flashback"
+      }
     }
   ],
   "slug_history": [

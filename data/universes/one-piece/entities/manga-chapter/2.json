@@ -30,6 +30,14 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:1"
+    },
+    {
+      "type": "features",
+      "target": "character:alvida"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
     }
   ],
   "slug_history": [
