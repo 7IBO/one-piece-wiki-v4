@@ -2984,3 +2984,178 @@ export async function buildEntityView(
     propagateScope: scopeToPropagate(row, cursor, scope),
   };
 }
+
+// ---------------------------------------------------------------------------
+// Le sélecteur de progression (planche `design/v2/Progression.dc.html`)
+
+/** Un arc dans l'échelle du sélecteur, avec ses bornes par axe. */
+export type ProgressArcView = {
+  readonly id: string;
+  readonly name: string;
+  /** Bornes ordinales par axe de curseur : `manga` → chapitres, etc. */
+  readonly range: Readonly<Record<keyof ProgressCursor, readonly [number, number] | null>>;
+};
+
+/** Une saga et ses arcs, dans l'ordre de lecture. */
+export type ProgressSagaView = {
+  readonly id: string;
+  readonly name: string;
+  readonly arcs: readonly ProgressArcView[];
+};
+
+export type ProgressPickerView = {
+  readonly sagas: readonly ProgressSagaView[];
+};
+
+/**
+ * Les deux types que le sélecteur met en scène : le GROUPE et le
+ * SEGMENT (« le dernier arc terminé, groupé par saga »).
+ *
+ * C'est une liaison de présentation au sens d'ADR-091 — deux ids
+ * bien connus, dans `views.ts`, avec la dégradation exigée : si l'un
+ * des deux types n'existe pas au schéma, la vue rend une échelle vide
+ * et le dialogue retombe sur la saisie du numéro. Rien d'autre n'est
+ * nommé en dur : la relation qui les relie, la propriété qui les
+ * ordonne et les types de source des axes sont tous DÉCOUVERTS.
+ */
+const PICKER_GROUP_TYPE = 'saga';
+const PICKER_SEGMENT_TYPE = 'arc';
+
+/**
+ * La relation qui va du segment au groupe, cherchée au catalogue
+ * plutôt qu'écrite (`part-of-saga` aujourd'hui). Une seule doit
+ * qualifier ; deux candidates voudraient dire que le schéma exprime
+ * deux fois la même appartenance, et on préfère ne rien grouper que
+ * d'en choisir une au hasard.
+ */
+function segmentToGroupRelation(cat: ValidatedCatalogue): string | null {
+  const found: string[] = [];
+  for (const [id, relation] of cat.relationTypes) {
+    const from: readonly string[] = relation.valid_from_types;
+    const to: readonly string[] = relation.valid_to_types;
+    if (from.includes(PICKER_SEGMENT_TYPE) && to.includes(PICKER_GROUP_TYPE)) found.push(id);
+  }
+  return found.length === 1 ? (found[0] ?? null) : null;
+}
+
+/**
+ * L'ordinal d'une source, lu sur son id.
+ *
+ * Même règle que `isSourceVisible` (`server/progress.ts`), mot pour
+ * mot : depuis la migration 0014 le slug d'une entité ordinale EST
+ * son numéro, donc `manga-chapter:1044` porte 1044. La lire ici évite
+ * de charger les 1193 chapitres et les 1174 épisodes pour n'en tirer
+ * qu'un entier ; un suffixe non numérique ne donne pas d'ordinal,
+ * exactement comme la porte anti-spoil.
+ */
+function ordinalFromSourceId(sourceId: string): number | null {
+  const rest = sourceId.slice(sourceId.indexOf(':') + 1);
+  return /^\d+$/.test(rest) ? Number(rest) : null;
+}
+
+/**
+ * L'échelle du sélecteur : « quel est le dernier arc que tu as
+ * terminé ? », groupé par saga.
+ *
+ * Trois choses à savoir sur cette vue.
+ *
+ * **Elle n'est pas filtrée par le curseur, et c'est voulu.** Partout
+ * ailleurs la règle anti-spoil s'applique ; ici, l'échelle EST la
+ * question posée. Un lecteur ne peut pas déclarer sa position dans une
+ * liste qui s'arrête à sa position — et il la connaît déjà, puisque
+ * c'est lui qui la déclare. Les NOMS sont donc résolus au curseur
+ * vide ; rien d'autre de la page ne l'est.
+ *
+ * **Les bornes viennent du corpus, jamais d'une table.** Un arc
+ * commence au premier chapitre qui le référence, et les axes sont ceux
+ * que `CURSOR_AXES` déclare — la même liste qui sert à la porte
+ * anti-spoil et à l'index de recherche. Un arc sans source sur un axe
+ * n'a pas de borne sur cet axe : il disparaît de l'onglet
+ * correspondant plutôt que d'y figurer sans intervalle.
+ *
+ * **Les arcs hors groupe sont absents.** Ce sont les arcs d'anime
+ * (filler, cover story) : ils n'ont pas de place dans la progression
+ * du manga, et leur en inventer une mentirait sur l'ordre de lecture.
+ */
+export async function buildProgressPicker(locale: Locale): Promise<ProgressPickerView> {
+  const cat = await getCatalogue();
+  if (
+    cat.entityTypes.get(PICKER_GROUP_TYPE) === undefined
+    || cat.entityTypes.get(PICKER_SEGMENT_TYPE) === undefined
+  ) return { sagas: [] };
+  const membership = segmentToGroupRelation(cat);
+  if (membership === null) return { sagas: [] };
+
+  const axisOfSourceType = new Map<string, keyof ProgressCursor>(
+    CURSOR_AXES.map((entry) => [entry.sourceType, entry.axis]),
+  );
+
+  const groups = new Map<string, { row: EntityRow; arcs: ProgressArcView[]; }>();
+  const segments: { row: EntityRow; groupId: string; }[] = [];
+  for (const row of db.listEntitiesByType(PICKER_SEGMENT_TYPE)) {
+    const edges = db.listRelationsFrom(row.id);
+    const edge = edges.find((candidate) =>
+      candidate.relation_type === membership && !candidate.is_inferred
+    );
+    if (edge === undefined) continue;
+    segments.push({ row, groupId: edge.target_entity_id });
+
+    // Les bornes : chaque source qui pointe cet arc, rangée par l'axe
+    // de son type. L'arête est l'INVERSE materialisée (ADR-086), donc
+    // elle est déjà là — aucun parcours des 1193 chapitres.
+    const bounds = new Map<keyof ProgressCursor, [number, number]>();
+    for (const candidate of edges) {
+      const targetType = candidate.target_entity_id.slice(
+        0,
+        candidate.target_entity_id.indexOf(':'),
+      );
+      const axis = axisOfSourceType.get(targetType);
+      if (axis === undefined) continue;
+      const n = ordinalFromSourceId(candidate.target_entity_id);
+      if (n === null) continue;
+      const span = bounds.get(axis);
+      if (span === undefined) bounds.set(axis, [n, n]);
+      else bounds.set(axis, [Math.min(span[0], n), Math.max(span[1], n)]);
+    }
+    if (bounds.size === 0) continue;
+
+    const range = Object.fromEntries(
+      CURSOR_AXES.map((entry) => [entry.axis, bounds.get(entry.axis) ?? null]),
+    ) as ProgressArcView['range'];
+    const arc: ProgressArcView = {
+      id: row.id,
+      name: db.displayNameAtCursor(row.id, EMPTY_CURSOR, locale) ?? humanize(row.slug),
+      range,
+    };
+    const group = groups.get(edge.target_entity_id);
+    if (group !== undefined) group.arcs.push(arc);
+    else {
+      const groupRow = db.getEntityById(edge.target_entity_id);
+      if (groupRow === null) continue;
+      groups.set(edge.target_entity_id, { row: groupRow, arcs: [arc] });
+    }
+  }
+
+  // L'ordre : celui des ordinaux que chaque type déclare lui-même
+  // (`saga_number`, `arc_number`), découverts par `ordinalOf`. Une
+  // entité sans ordinal passe en queue plutôt que de renuméroter les
+  // autres.
+  const last = Number.MAX_SAFE_INTEGER;
+  const arcKey = (arc: ProgressArcView): number => {
+    const first = CURSOR_AXES.map((entry) => arc.range[entry.axis])
+      .find((span) => span !== null);
+    return first?.[0] ?? last;
+  };
+  const sagas = [...groups.values()]
+    .map((group) => ({
+      id: group.row.id,
+      name: db.displayNameAtCursor(group.row.id, EMPTY_CURSOR, locale)
+        ?? humanize(group.row.slug),
+      order: ordinalOf(group.row, cat) ?? last,
+      arcs: [...group.arcs].sort((a, b) => arcKey(a) - arcKey(b)),
+    }))
+    .sort((a, b) => a.order - b.order)
+    .map(({ id, name, arcs }) => ({ id, name, arcs }));
+
+  return { sagas };
+}
