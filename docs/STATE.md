@@ -15,8 +15,78 @@ this file is the current status + the open threads.
 > consciemment, pas à les interdire. Casser + migrer le corpus d'un
 > coup est le mode normal.
 
-**Last updated**: 2026-08-28 (ADR-122 ancrage dérivé des conteneurs,
-ADR-123 axe de curseur vide — les deux fuites anti-spoil sont fermées)
+**Last updated**: 2026-09-10 (import de masse 2 557 → 3 696 entités ;
+ADR-131 sources citées matérialisées, ADR-132 contraintes fausses
+retirées, ADR-133 progression par arc groupé par saga)
+
+## 2026-09-10 — L'import de masse : 2 557 → 3 696 entités
+
+Six runs `fandom-import` + un `fandom-render`, repris ici.
+
+| type            | avant | après |
+| --------------- | ----: | ----: |
+| `character`     |    10 |   441 |
+| `devil-fruit`   |     1 |   210 |
+| `crew`          |     1 |   164 |
+| `ship`          |     0 |   119 |
+| `weapon`        |     0 |   106 |
+| `saga`          |     1 |    11 |
+| `databook-card` |     0 |    77 |
+| `sbs`           |     0 |    16 |
+
+Le goulot que `DESIGN_PLAN.md` nommait — « les planches décrivent des
+types à 10, 1 et 1 entités » — est levé pour cinq types sur six.
+
+### Ce que l'import a fait sortir
+
+Quatre défauts, quatre familles, tous corrigés à la source :
+
+1. **Les sources citées n'existaient pas** (166 références pendantes).
+   Un Qref cite une source réelle ; personne n'écrivait l'entité en
+   face. ADR-131 : le crawl la matérialise, avec exactement ce que la
+   citation dit.
+2. **Deux contraintes du schéma affirmaient du faux sur l'œuvre**
+   (`bounty.step`, `height.step`). ADR-132 : ce sont les contraintes
+   qui se trompaient, pas les quatre valeurs canon.
+3. **Un champ pour trois valeurs.** « Bas: X And: XF Kerville: F » —
+   Baskerville a trois têtes. Le mapper refuse et avertit plutôt que de
+   choisir.
+4. **Une assertion épinglée au corpus.** Un test de recherche exigeait
+   « zéro résultat » pour « Mugiwara » ; avec 210 fruits, la passe
+   floue trouve « Wara Wara no Mi ». L'assertion porte maintenant sur
+   la règle, pas sur la taille du corpus. Quatrième occurrence de cette
+   famille.
+
+### Les sagas, et ce qu'elles débloquent
+
+Le `Saga Box` ne porte pas `saga_number` — il porte `prev`/`next`. Le
+rang vient donc de la CHAÎNE, calculée après le crawl quand l'ensemble
+mappé est connu (`rankSagas` → `orderSagas`). Les 11 sagas sont sorties
+dans l'ordre canonique 1–11 du premier coup.
+
+La migration 0015 accroche ensuite les 32 arcs canon manga à leur saga,
+**par dérivation** : les plages de chapitres viennent des 11 pages
+rendues (le Saga Box les calcule en Lua), elles sont contiguës et sans
+recouvrement, donc l'affectation est unique par construction. Les 17
+arcs d'anime (filler, cover story) ne reçoivent rien.
+
+Ça débloque la planche Progression, faite dans la foulée (ADR-133) :
+le dialogue demande le dernier arc terminé, groupé par saga, avec un
+curseur pour affiner à l'intérieur de l'arc. Vérifié au navigateur sur
+le build : choisir « Marineford » écrit `Ch. 580` dans l'en-tête, zéro
+erreur console.
+
+### Ce qui reste
+
+- **Les images** : 2 555 entités sur 2 557 n'en avaient aucune avant
+  l'import, et l'import n'en apporte pas. C'est le travail TMDB.
+- **Les traductions `fr`** : 50 clés sur 2 572. L'import écrit `en`,
+  `ja` et `ja-latn`.
+- **Les mappers manquants** : Island (414 pages), Song (207), Game
+  (87), Race (41), Album (31), Movie (28), Event (26).
+- **`buildTypeListView` / `buildHomeView` ne filtrent toujours pas** —
+  l'arbitrage (a)/(b)/(c) ci-dessous n'est pas tranché, et il porte
+  maintenant sur 3 696 entités au lieu de 2 557.
 
 ## 2026-08-28 — `east-blue` était une SAGA déguisée en arc — RÉGLÉ
 

@@ -41,13 +41,21 @@ de « Gomu Gomu no Mi · depuis toujours »).
 | **Anti-spoil : aucun compteur d'absence, aucune tuile pointillée, aucune barre grisée au-delà de la position** | ⚠️ à auditer                   |
 | **Apparitions en LISTE : vignette au ratio natif, toutes à la MÊME HAUTEUR**                                   | ✅ `SourceRow`                |
 | **Langue : liste maison ouverte, la courante en or avec sa coche**                                             | ❌ on bascule entre 2 langues |
-| Progression : par ARC groupé par SAGA, pas par numéro                                                          | ❌ bloqué (0 saga)            |
+| Progression : par ARC groupé par SAGA, pas par numéro                                                          | ✅ ADR-133                    |
 
 Les ❌ restants sont du travail identifié, pas des inconnues.
 
 ## 3. Le comptage qui décide du plan
 
 C'est le chiffre le plus important de cette analyse.
+
+> **Mesure du 2026-08-28, dépassée.** L'import de masse du 2026-09-10
+> a porté le corpus à 3 696 entités : `character` 10 → **441**,
+> `devil-fruit` 1 → **210**, `crew` 1 → **164**, `ship` 0 → **119**,
+> `weapon` 0 → **106**, `saga` 1 → **11**. Le constat « les planches
+> décrivent des types à 10, 1 et 1 entités » ne tient plus, et le plan
+> (B) ci-dessous s'en trouve largement exécuté. Le tableau reste pour
+> mémoire de ce qui a décidé l'ordre des travaux.
 
 | type                    |   corpus | planche dédiée         |
 | ----------------------- | -------: | ---------------------- |
@@ -146,9 +154,10 @@ Par ordre de déblocage :
    « 342 apparitions lues sur 1044 ».
 3. **Les fruits du démon.** 1 sur ~200.
 4. **Les équipages.** 1.
-5. **Les sagas.** 0 — et la planche Progression en dépend
-   structurellement (« le dernier arc terminé, **groupé par saga** »).
-   Lié à l'arbitrage `arc:east-blue`.
+5. ~~**Les sagas.**~~ **Fait.** Les 11 sagas sont importées, leur rang
+   vient de la chaîne `prev`/`next`, et la migration 0015 accroche les
+   32 arcs canon manga à la leur par dérivation des plages de
+   chapitres. La planche Progression est implémentée (ADR-133).
 
 ## 6. Ce qui reste bloqué sur un arbitrage
 
