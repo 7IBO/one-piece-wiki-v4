@@ -1,0 +1,17 @@
+{
+  "id": "crew:tontatta-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "tontatta-pirates",
+  "canonical_name_key": "crew.tontatta-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.tontatta-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:799"
+      }
+    ]
+  },
+  "relations": []
+}

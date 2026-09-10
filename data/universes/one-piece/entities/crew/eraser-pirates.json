@@ -1,0 +1,17 @@
+{
+  "id": "crew:eraser-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "eraser-pirates",
+  "canonical_name_key": "crew.eraser-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.eraser-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:237"
+      }
+    ]
+  },
+  "relations": []
+}

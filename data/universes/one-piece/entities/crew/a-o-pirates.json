@@ -1,0 +1,17 @@
+{
+  "id": "crew:a-o-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "a-o-pirates",
+  "canonical_name_key": "crew.a-o-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.a-o-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:551"
+      }
+    ]
+  },
+  "relations": []
+}

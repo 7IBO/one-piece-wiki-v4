@@ -1,0 +1,17 @@
+{
+  "id": "crew:brownbeard-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "brownbeard-pirates",
+  "canonical_name_key": "crew.brownbeard-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.brownbeard-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:581"
+      }
+    ]
+  },
+  "relations": []
+}

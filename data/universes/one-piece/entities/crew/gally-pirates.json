@@ -1,0 +1,17 @@
+{
+  "id": "crew:gally-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "gally-pirates",
+  "canonical_name_key": "crew.gally-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.gally-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:902"
+      }
+    ]
+  },
+  "relations": []
+}

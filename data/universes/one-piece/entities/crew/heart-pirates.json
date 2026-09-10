@@ -1,0 +1,17 @@
+{
+  "id": "crew:heart-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "heart-pirates",
+  "canonical_name_key": "crew.heart-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.heart-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:498"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,16 @@
+{
+  "id": "crew:long-long-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "long-long-pirates",
+  "canonical_name_key": "crew.long-long-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.long-long-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

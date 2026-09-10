@@ -1,0 +1,16 @@
+{
+  "id": "crew:fischer-s-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "fischer-s-pirates",
+  "canonical_name_key": "crew.fischer-s-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.fischer-s-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

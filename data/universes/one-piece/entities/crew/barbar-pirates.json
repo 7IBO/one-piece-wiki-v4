@@ -1,0 +1,17 @@
+{
+  "id": "crew:barbar-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "barbar-pirates",
+  "canonical_name_key": "crew.barbar-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.barbar-pirates.name.common",
+        "name_type": "common",
+        "since": "anime-episode:97"
+      }
+    ]
+  },
+  "relations": []
+}

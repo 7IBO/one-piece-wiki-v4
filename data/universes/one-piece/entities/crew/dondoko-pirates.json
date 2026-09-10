@@ -1,0 +1,16 @@
+{
+  "id": "crew:dondoko-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "dondoko-pirates",
+  "canonical_name_key": "crew.dondoko-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.dondoko-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

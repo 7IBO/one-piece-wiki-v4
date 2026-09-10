@@ -1,0 +1,16 @@
+{
+  "id": "crew:ganzack-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "ganzack-pirates",
+  "canonical_name_key": "crew.ganzack-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.ganzack-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

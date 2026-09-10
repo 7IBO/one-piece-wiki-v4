@@ -1,0 +1,17 @@
+{
+  "id": "crew:gyro-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "gyro-pirates",
+  "canonical_name_key": "crew.gyro-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.gyro-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:611"
+      }
+    ]
+  },
+  "relations": []
+}

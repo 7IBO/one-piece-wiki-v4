@@ -1,0 +1,16 @@
+{
+  "id": "crew:trump-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "trump-pirates",
+  "canonical_name_key": "crew.trump-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.trump-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

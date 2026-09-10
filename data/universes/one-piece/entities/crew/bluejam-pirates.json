@@ -1,0 +1,17 @@
+{
+  "id": "crew:bluejam-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "bluejam-pirates",
+  "canonical_name_key": "crew.bluejam-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.bluejam-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:583"
+      }
+    ]
+  },
+  "relations": []
+}

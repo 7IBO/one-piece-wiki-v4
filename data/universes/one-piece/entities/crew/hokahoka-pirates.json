@@ -1,0 +1,17 @@
+{
+  "id": "crew:hokahoka-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "hokahoka-pirates",
+  "canonical_name_key": "crew.hokahoka-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.hokahoka-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:224"
+      }
+    ]
+  },
+  "relations": []
+}

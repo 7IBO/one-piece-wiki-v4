@@ -1,0 +1,17 @@
+{
+  "id": "crew:red-hair-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "red-hair-pirates",
+  "canonical_name_key": "crew.red-hair-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.red-hair-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1"
+      }
+    ]
+  },
+  "relations": []
+}

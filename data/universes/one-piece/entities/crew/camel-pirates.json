@@ -1,0 +1,16 @@
+{
+  "id": "crew:camel-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "camel-pirates",
+  "canonical_name_key": "crew.camel-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.camel-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

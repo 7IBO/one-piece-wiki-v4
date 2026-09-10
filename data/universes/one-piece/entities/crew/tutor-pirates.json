@@ -1,0 +1,16 @@
+{
+  "id": "crew:tutor-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "tutor-pirates",
+  "canonical_name_key": "crew.tutor-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.tutor-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

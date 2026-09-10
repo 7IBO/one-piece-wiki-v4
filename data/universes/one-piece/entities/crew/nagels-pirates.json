@@ -1,0 +1,16 @@
+{
+  "id": "crew:nagels-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "nagels-pirates",
+  "canonical_name_key": "crew.nagels-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.nagels-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

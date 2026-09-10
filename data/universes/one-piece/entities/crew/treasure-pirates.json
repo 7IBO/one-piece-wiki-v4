@@ -1,0 +1,16 @@
+{
+  "id": "crew:treasure-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "treasure-pirates",
+  "canonical_name_key": "crew.treasure-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.treasure-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

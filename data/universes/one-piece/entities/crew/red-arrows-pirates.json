@@ -1,0 +1,16 @@
+{
+  "id": "crew:red-arrows-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "red-arrows-pirates",
+  "canonical_name_key": "crew.red-arrows-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.red-arrows-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

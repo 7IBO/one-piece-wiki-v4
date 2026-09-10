@@ -9418,6 +9418,1102 @@
       ]
     },
     {
+      "entityId": "crew:a-o-pirates",
+      "page": "A O Pirates",
+      "pageId": 276625,
+      "redirects": [],
+      "lastRevId": 2101978,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:acumate-pirates",
+      "page": "Acumate Pirates",
+      "pageId": 8498,
+      "redirects": [],
+      "lastRevId": 2102261,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:alvida-pirates",
+      "page": "Alvida Pirates",
+      "pageId": 5589,
+      "redirects": [],
+      "lastRevId": 2114632,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:amber-pirates",
+      "page": "Amber Pirates",
+      "pageId": 316461,
+      "redirects": [],
+      "lastRevId": 2036157,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:amigo-pirates",
+      "page": "Amigo Pirates",
+      "pageId": 23876,
+      "redirects": [],
+      "lastRevId": 2037893,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:ancient-pirates",
+      "page": "Ancient Pirates",
+      "pageId": 355177,
+      "redirects": [],
+      "lastRevId": 2115430,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:arlong-pirates",
+      "page": "Arlong Pirates",
+      "pageId": 4200,
+      "redirects": [],
+      "lastRevId": 2072523,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:banzai-pirates",
+      "page": "Banzai Pirates",
+      "pageId": 253382,
+      "redirects": [],
+      "lastRevId": 2064676,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:barbar-pirates",
+      "page": "Barbar Pirates",
+      "pageId": 5591,
+      "redirects": [],
+      "lastRevId": 2050483,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:barrels-pirates",
+      "page": "Barrels Pirates",
+      "pageId": 257289,
+      "redirects": [],
+      "lastRevId": 2128674,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:barto-club",
+      "page": "Barto Club",
+      "pageId": 201884,
+      "redirects": [],
+      "lastRevId": 2123504,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:bayan-pirates",
+      "page": "Bayan Pirates",
+      "pageId": 8727,
+      "redirects": [],
+      "lastRevId": 2050484,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:beardless-pirates",
+      "page": "Beardless Pirates",
+      "pageId": 349460,
+      "redirects": [],
+      "lastRevId": 2041215,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:beasts-pirates",
+      "page": "Beasts Pirates",
+      "pageId": 279360,
+      "redirects": [],
+      "lastRevId": 2129130,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:beautiful-pirates",
+      "page": "Beautiful Pirates",
+      "pageId": 200006,
+      "redirects": [],
+      "lastRevId": 2094885,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:bellamy-pirates",
+      "page": "Bellamy Pirates",
+      "pageId": 4425,
+      "redirects": [],
+      "lastRevId": 2079251,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:big-helmet-pirates",
+      "page": "Big Helmet Pirates",
+      "pageId": 10470,
+      "redirects": [],
+      "lastRevId": 2105025,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:big-mom-pirates",
+      "page": "Big Mom Pirates",
+      "pageId": 123156,
+      "redirects": [],
+      "lastRevId": 2127806,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:big-pirates",
+      "page": "BIG Pirates",
+      "pageId": 303640,
+      "redirects": [],
+      "lastRevId": 2103182,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:black-cat-pirates",
+      "page": "Black Cat Pirates",
+      "pageId": 3070,
+      "redirects": [],
+      "lastRevId": 2092803,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:blackbeard-pirates",
+      "page": "Blackbeard Pirates",
+      "pageId": 2551,
+      "redirects": [],
+      "lastRevId": 2127466,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:bliking-pirates",
+      "page": "Bliking Pirates",
+      "pageId": 5610,
+      "redirects": [],
+      "lastRevId": 2112480,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:bluejam-pirates",
+      "page": "Bluejam Pirates",
+      "pageId": 33725,
+      "redirects": [],
+      "lastRevId": 2128678,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:bonney-pirates",
+      "page": "Bonney Pirates",
+      "pageId": 8601,
+      "redirects": [],
+      "lastRevId": 2072153,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:bounties-pirates",
+      "page": "Bounties Pirates",
+      "pageId": 324099,
+      "redirects": [],
+      "lastRevId": 2103193,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:bounty-pirates",
+      "page": "Bounty Pirates",
+      "pageId": 340814,
+      "redirects": [],
+      "lastRevId": 2108943,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:bourgeois-pirates",
+      "page": "Bourgeois Pirates",
+      "pageId": 340524,
+      "redirects": [],
+      "lastRevId": 2053932,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:breed-pirates",
+      "page": "Breed Pirates",
+      "pageId": 239039,
+      "redirects": [],
+      "lastRevId": 1952511,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:brownbeard-pirates",
+      "page": "Brownbeard Pirates",
+      "pageId": 150681,
+      "redirects": [],
+      "lastRevId": 2005080,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:buggy-pirates",
+      "page": "Buggy Pirates",
+      "pageId": 2983,
+      "redirects": [],
+      "lastRevId": 2121333,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:bull-s-eye-hit-pirates",
+      "page": "Bull's Eye Hit Pirates",
+      "pageId": 339139,
+      "redirects": [],
+      "lastRevId": 2005123,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:camel-pirates",
+      "page": "Camel Pirates",
+      "pageId": 346679,
+      "redirects": [],
+      "lastRevId": 2127795,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:candy-pirates",
+      "page": "Candy Pirates",
+      "pageId": 10211,
+      "redirects": [],
+      "lastRevId": 2037942,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:caribou-pirates",
+      "page": "Caribou Pirates",
+      "pageId": 49281,
+      "redirects": [],
+      "lastRevId": 2102874,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:cook-pirates",
+      "page": "Cook Pirates",
+      "pageId": 8450,
+      "redirects": [],
+      "lastRevId": 1992259,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:dance-pirates",
+      "page": "Dance Pirates",
+      "pageId": 338654,
+      "redirects": [],
+      "lastRevId": 2092556,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:dondoko-pirates",
+      "page": "Dondoko Pirates",
+      "pageId": 349076,
+      "redirects": [],
+      "lastRevId": 2103204,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:donquixote-pirates",
+      "page": "Donquixote Pirates",
+      "pageId": 181622,
+      "redirects": [],
+      "lastRevId": 2132211,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:dr-gero-sky-pirates",
+      "page": "Dr. Gero Sky Pirates",
+      "pageId": 351278,
+      "redirects": [],
+      "lastRevId": 2127797,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:drake-pirates",
+      "page": "Drake Pirates",
+      "pageId": 8604,
+      "redirects": [],
+      "lastRevId": 2124809,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:drayke-pirates",
+      "page": "Drayke Pirates",
+      "pageId": 308152,
+      "redirects": [],
+      "lastRevId": 2112458,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:eldoraggo-pirates",
+      "page": "Eldoraggo Pirates",
+      "pageId": 344302,
+      "redirects": [],
+      "lastRevId": 2100687,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:endurance-curry-pirates",
+      "page": "Endurance Curry Pirates",
+      "pageId": 347446,
+      "redirects": [],
+      "lastRevId": 2108849,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:eraser-pirates",
+      "page": "Eraser Pirates",
+      "pageId": 5612,
+      "redirects": [],
+      "lastRevId": 2108322,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:fake-straw-hat-crew",
+      "page": "Fake Straw Hat Crew",
+      "pageId": 46800,
+      "redirects": [],
+      "lastRevId": 2102863,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:fallen-monk-pirates",
+      "page": "Fallen Monk Pirates",
+      "pageId": 8605,
+      "redirects": [],
+      "lastRevId": 2082668,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:fanged-toad-pirates",
+      "page": "Fanged Toad Pirates",
+      "pageId": 5613,
+      "redirects": [],
+      "lastRevId": 2005101,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:festival-pirates",
+      "page": "Festival Pirates",
+      "pageId": 339953,
+      "redirects": [],
+      "lastRevId": 2092399,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:fire-tank-pirates",
+      "page": "Fire Tank Pirates",
+      "pageId": 8600,
+      "redirects": [],
+      "lastRevId": 2127810,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:fischer-s-pirates",
+      "page": "Fischer's Pirates",
+      "pageId": 337465,
+      "redirects": [],
+      "lastRevId": 2089092,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:flying-pirates",
+      "page": "Flying Pirates",
+      "pageId": 31975,
+      "redirects": [],
+      "lastRevId": 2037935,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:foxy-pirates",
+      "page": "Foxy Pirates",
+      "pageId": 5592,
+      "redirects": [],
+      "lastRevId": 2126148,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:gally-pirates",
+      "page": "Gally Pirates",
+      "pageId": 234564,
+      "redirects": [],
+      "lastRevId": 2118733,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:ganzack-pirates",
+      "page": "Ganzack Pirates",
+      "pageId": 5614,
+      "redirects": [],
+      "lastRevId": 2103092,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:gasparde-pirates",
+      "page": "Gasparde Pirates",
+      "pageId": 8726,
+      "redirects": [],
+      "lastRevId": 2078984,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:gecko-pirates",
+      "page": "Gecko Pirates",
+      "pageId": 320182,
+      "redirects": [],
+      "lastRevId": 2105755,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:germ-pirates",
+      "page": "Germ Pirates",
+      "pageId": 318970,
+      "redirects": [],
+      "lastRevId": 2091460,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:giant-warrior-pirates",
+      "page": "Giant Warrior Pirates",
+      "pageId": 6287,
+      "redirects": [],
+      "lastRevId": 2131359,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:gyro-pirates",
+      "page": "Gyro Pirates",
+      "pageId": 271402,
+      "redirects": [],
+      "lastRevId": 2037941,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:hailey-pirates",
+      "page": "Hailey Pirates",
+      "pageId": 356047,
+      "redirects": [],
+      "lastRevId": 2123670,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:handai-pirates",
+      "page": "Handai Pirates",
+      "pageId": 346693,
+      "redirects": [],
+      "lastRevId": 2127799,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:happo-navy",
+      "page": "Happo Navy",
+      "pageId": 218143,
+      "redirects": [],
+      "lastRevId": 2105018,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:hawkins-pirates",
+      "page": "Hawkins Pirates",
+      "pageId": 8602,
+      "redirects": [],
+      "lastRevId": 2128686,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:heart-pirates",
+      "page": "Heart Pirates",
+      "pageId": 8606,
+      "redirects": [],
+      "lastRevId": 2105292,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:hokahoka-pirates",
+      "page": "Hokahoka Pirates",
+      "pageId": 17376,
+      "redirects": [],
+      "lastRevId": 2105022,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:hunger-pirates",
+      "page": "Hunger Pirates",
+      "pageId": 314572,
+      "redirects": [],
+      "lastRevId": 2112748,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:ideo-pirates",
+      "page": "Ideo Pirates",
+      "pageId": 274823,
+      "redirects": [],
+      "lastRevId": 2102118,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:insect-pirates",
+      "page": "Insect Pirates",
+      "pageId": 340822,
+      "redirects": [],
+      "lastRevId": 2005128,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:jellyfish-pirates",
+      "page": "Jellyfish Pirates",
+      "pageId": 334825,
+      "redirects": [],
+      "lastRevId": 2077538,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:kalik-pirates",
+      "page": "Kalik Pirates",
+      "pageId": 349529,
+      "redirects": [],
+      "lastRevId": 2127816,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:kid-pirates",
+      "page": "Kid Pirates",
+      "pageId": 8560,
+      "redirects": [],
+      "lastRevId": 2127817,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:krieg-pirates",
+      "page": "Krieg Pirates",
+      "pageId": 4831,
+      "redirects": [],
+      "lastRevId": 2114684,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:little-pirates",
+      "page": "Little Pirates",
+      "pageId": 312386,
+      "redirects": [],
+      "lastRevId": 2047160,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:long-long-pirates",
+      "page": "Long Long Pirates",
+      "pageId": 285523,
+      "redirects": [],
+      "lastRevId": 2130377,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:lytton-food-thieves",
+      "page": "Lytton Food Thieves",
+      "pageId": 352512,
+      "redirects": [],
+      "lastRevId": 2077521,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:macro-pirates",
+      "page": "Macro Pirates",
+      "pageId": 5611,
+      "redirects": [],
+      "lastRevId": 2045580,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:mad-dog-pirates",
+      "page": "Mad Dog Pirates",
+      "pageId": 346677,
+      "redirects": [],
+      "lastRevId": 2092610,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:maelstrom-spider-pirates",
+      "page": "Maelstrom Spider Pirates",
+      "pageId": 56504,
+      "redirects": [],
+      "lastRevId": 2124027,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:makiguso-pirates",
+      "page": "Makiguso Pirates",
+      "pageId": 339851,
+      "redirects": [],
+      "lastRevId": 2005134,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:masira-pirates",
+      "page": "Masira Pirates",
+      "pageId": 78673,
+      "redirects": [],
+      "lastRevId": 2109321,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:mussel-pirates",
+      "page": "Mussel Pirates",
+      "pageId": 331019,
+      "redirects": [],
+      "lastRevId": 2112749,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:mustache-pirates",
+      "page": "Mustache Pirates",
+      "pageId": 8725,
+      "redirects": [],
+      "lastRevId": 2104395,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:nagels-pirates",
+      "page": "Nagels Pirates",
+      "pageId": 349531,
+      "redirects": [],
+      "lastRevId": 2127800,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:naguri-pirates",
+      "page": "Naguri Pirates",
+      "pageId": 79805,
+      "redirects": [],
+      "lastRevId": 2092420,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:naniwa-pirates",
+      "page": "Naniwa Pirates",
+      "pageId": 328022,
+      "redirects": [],
+      "lastRevId": 1779950,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:new-donquixote-family",
+      "page": "New Donquixote Family",
+      "pageId": 340904,
+      "redirects": [],
+      "lastRevId": 2059986,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:new-fish-man-pirates",
+      "page": "New Fish-Man Pirates",
+      "pageId": 54721,
+      "redirects": [],
+      "lastRevId": 2126611,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:new-giant-warrior-pirates",
+      "page": "New Giant Warrior Pirates",
+      "pageId": 305744,
+      "redirects": [],
+      "lastRevId": 2118281,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:night-butterfly-pirates",
+      "page": "Night Butterfly Pirates",
+      "pageId": 345391,
+      "redirects": [],
+      "lastRevId": 2052736,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:nisenise-pirates",
+      "page": "Nisenise Pirates",
+      "pageId": 355182,
+      "redirects": [],
+      "lastRevId": 2129880,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:nox-pirates",
+      "page": "Nox Pirates",
+      "pageId": 292719,
+      "redirects": [],
+      "lastRevId": 2092641,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:on-air-pirates",
+      "page": "On Air Pirates",
+      "pageId": 8603,
+      "redirects": [],
+      "lastRevId": 2004947,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:opera-pirates",
+      "page": "Opera Pirates",
+      "pageId": 339609,
+      "redirects": [],
+      "lastRevId": 2005127,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:otearai-pirates",
+      "page": "Otearai Pirates",
+      "pageId": 339777,
+      "redirects": [],
+      "lastRevId": 2005133,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:peachbeard-pirates",
+      "page": "Peachbeard Pirates",
+      "pageId": 307396,
+      "redirects": [],
+      "lastRevId": 2120172,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:phoenix-pirates",
+      "page": "Phoenix Pirates",
+      "pageId": 7357,
+      "redirects": [],
+      "lastRevId": 2037894,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:polo-pirates",
+      "page": "Polo Pirates",
+      "pageId": 353197,
+      "redirects": [],
+      "lastRevId": 2088132,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:puddle-pirates",
+      "page": "Puddle Pirates",
+      "pageId": 340527,
+      "redirects": [],
+      "lastRevId": 2034154,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:red-arrows-pirates",
+      "page": "Red Arrows Pirates",
+      "pageId": 8723,
+      "redirects": [],
+      "lastRevId": 2103993,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:red-hair-pirates",
+      "page": "Red Hair Pirates",
+      "pageId": 1668,
+      "redirects": [],
+      "lastRevId": 2124135,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:rocks-pirates",
+      "page": "Rocks Pirates",
+      "pageId": 318064,
+      "redirects": [],
+      "lastRevId": 2130755,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:roger-pirates",
+      "page": "Roger Pirates",
+      "pageId": 9409,
+      "redirects": [],
+      "lastRevId": 2125383,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:rolling-pirates",
+      "page": "Rolling Pirates",
+      "pageId": 7370,
+      "redirects": [],
+      "lastRevId": 2128663,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:roshio-pirates",
+      "page": "Roshio Pirates",
+      "pageId": 10218,
+      "redirects": [],
+      "lastRevId": 2037876,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:rumbar-pirates",
+      "page": "Rumbar Pirates",
+      "pageId": 6715,
+      "redirects": [],
+      "lastRevId": 2122201,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:saruyama-alliance",
+      "page": "Saruyama Alliance",
+      "pageId": 2544,
+      "redirects": [],
+      "lastRevId": 2124751,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:sasaki-pirates",
+      "page": "Sasaki Pirates",
+      "pageId": 330489,
+      "redirects": [],
+      "lastRevId": 2127802,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:schneider-pirates",
+      "page": "Schneider Pirates",
+      "pageId": 70071,
+      "redirects": [],
+      "lastRevId": 2058903,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:sea-animal-pirates",
+      "page": "Sea Animal Pirates",
+      "pageId": 237840,
+      "redirects": [],
+      "lastRevId": 2117321,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:set-sail-pirates",
+      "page": "Set Sail Pirates",
+      "pageId": 296931,
+      "redirects": [],
+      "lastRevId": 2115042,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:shoujou-pirates",
+      "page": "Shoujou Pirates",
+      "pageId": 148181,
+      "redirects": [],
+      "lastRevId": 2108258,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:silver-pirate-alliance",
+      "page": "Silver Pirate Alliance",
+      "pageId": 286235,
+      "redirects": [],
+      "lastRevId": 2117118,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:simon-pirates",
+      "page": "Simon Pirates",
+      "pageId": 84537,
+      "redirects": [],
+      "lastRevId": 2028504,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:social-club",
+      "page": "Social Club",
+      "pageId": 340526,
+      "redirects": [],
+      "lastRevId": 2082674,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:space-pirates",
+      "page": "Space Pirates",
+      "pageId": 6491,
+      "redirects": [],
+      "lastRevId": 2125403,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:spade-pirates",
+      "page": "Spade Pirates",
+      "pageId": 18463,
+      "redirects": [],
+      "lastRevId": 2092422,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:spicy-spice-pirates",
+      "page": "Spicy Spice Pirates",
+      "pageId": 339431,
+      "redirects": [],
+      "lastRevId": 2005126,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:sun-pirates",
+      "page": "Sun Pirates",
+      "pageId": 9416,
+      "redirects": [],
+      "lastRevId": 2117556,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:sweet-pirates",
+      "page": "Sweet Pirates",
+      "pageId": 287184,
+      "redirects": [],
+      "lastRevId": 2117120,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:takotopus-pirates",
+      "page": "Takotopus Pirates",
+      "pageId": 319071,
+      "redirects": [],
+      "lastRevId": 2128448,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:tearoom-pirates",
+      "page": "Tearoom Pirates",
+      "pageId": 4609,
+      "redirects": [],
+      "lastRevId": 2107730,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:thriller-bark-pirates",
+      "page": "Thriller Bark Pirates",
+      "pageId": 24065,
+      "redirects": [],
+      "lastRevId": 2097466,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:tired-pirates",
+      "page": "Tired Pirates",
+      "pageId": 355191,
+      "redirects": [],
+      "lastRevId": 2115266,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:tomcat-pirates",
+      "page": "Tomcat Pirates",
+      "pageId": 346678,
+      "redirects": [],
+      "lastRevId": 2127803,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:tongari-pirates",
+      "page": "Tongari Pirates",
+      "pageId": 326159,
+      "redirects": [],
+      "lastRevId": 2103381,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:tontatta-pirates",
+      "page": "Tontatta Pirates",
+      "pageId": 275954,
+      "redirects": [],
+      "lastRevId": 2092799,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:treasure-pirates",
+      "page": "Treasure Pirates",
+      "pageId": 288379,
+      "redirects": [],
+      "lastRevId": 2114514,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:trump-pirates",
+      "page": "Trump Pirates",
+      "pageId": 5590,
+      "redirects": [],
+      "lastRevId": 2108199,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:tulip-pirates",
+      "page": "Tulip Pirates",
+      "pageId": 5609,
+      "redirects": [],
+      "lastRevId": 2106973,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:tutor-pirates",
+      "page": "Tutor Pirates",
+      "pageId": 355186,
+      "redirects": [],
+      "lastRevId": 2115095,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:wetton-pirates",
+      "page": "Wetton Pirates",
+      "pageId": 8724,
+      "redirects": [],
+      "lastRevId": 2102821,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:whitebeard-pirates",
+      "page": "Whitebeard Pirates",
+      "pageId": 3752,
+      "redirects": [],
+      "lastRevId": 2124196,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:who-s-who-pirates",
+      "page": "Who's-Who Pirates",
+      "pageId": 330490,
+      "redirects": [],
+      "lastRevId": 2127804,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:world-pirates",
+      "page": "World Pirates",
+      "pageId": 250343,
+      "redirects": [],
+      "lastRevId": 2116739,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:yes-pirates",
+      "page": "Yes Pirates",
+      "pageId": 29040,
+      "redirects": [],
+      "lastRevId": 2128659,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:yonta-maria-grand-fleet",
+      "page": "Yonta Maria Grand Fleet",
+      "pageId": 274828,
+      "redirects": [],
+      "lastRevId": 2128691,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
+      "entityId": "crew:zenny-pirates",
+      "page": "Zenny Pirates",
+      "pageId": 6292,
+      "redirects": [],
+      "lastRevId": 2008679,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
+    },
+    {
       "entityId": "manga-chapter:0",
       "page": "Chapter 0",
       "pageId": 24504,
@@ -18958,6 +20054,14 @@
       "redirects": [],
       "lastRevId": 2123851,
       "lastImportedAt": "2026-08-27T20:43:36.613Z"
+    },
+    {
+      "entityId": "organization:buggy-s-delivery",
+      "page": "Buggy's Delivery",
+      "pageId": 278641,
+      "redirects": [],
+      "lastRevId": 2127751,
+      "lastImportedAt": "2026-09-10T02:03:45.150Z"
     },
     {
       "entityId": "volume:1",

@@ -1,0 +1,17 @@
+{
+  "id": "crew:drake-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "drake-pirates",
+  "canonical_name_key": "crew.drake-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.drake-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:498"
+      }
+    ]
+  },
+  "relations": []
+}

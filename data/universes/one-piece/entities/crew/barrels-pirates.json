@@ -1,0 +1,17 @@
+{
+  "id": "crew:barrels-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "barrels-pirates",
+  "canonical_name_key": "crew.barrels-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.barrels-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:765"
+      }
+    ]
+  },
+  "relations": []
+}

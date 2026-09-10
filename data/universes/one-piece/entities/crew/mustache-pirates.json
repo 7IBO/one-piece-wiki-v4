@@ -1,0 +1,16 @@
+{
+  "id": "crew:mustache-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "mustache-pirates",
+  "canonical_name_key": "crew.mustache-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.mustache-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

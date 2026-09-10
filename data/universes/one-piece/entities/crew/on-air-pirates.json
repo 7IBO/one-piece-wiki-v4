@@ -1,0 +1,17 @@
+{
+  "id": "crew:on-air-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "on-air-pirates",
+  "canonical_name_key": "crew.on-air-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.on-air-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:498"
+      }
+    ]
+  },
+  "relations": []
+}

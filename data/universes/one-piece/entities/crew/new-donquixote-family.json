@@ -1,0 +1,16 @@
+{
+  "id": "crew:new-donquixote-family",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "new-donquixote-family",
+  "canonical_name_key": "crew.new-donquixote-family.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.new-donquixote-family.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,17 @@
+{
+  "id": "crew:sasaki-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "sasaki-pirates",
+  "canonical_name_key": "crew.sasaki-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.sasaki-pirates.name.common",
+        "name_type": "common",
+        "since": "databook-card:1554"
+      }
+    ]
+  },
+  "relations": []
+}

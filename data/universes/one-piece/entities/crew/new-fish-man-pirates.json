@@ -1,0 +1,17 @@
+{
+  "id": "crew:new-fish-man-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "new-fish-man-pirates",
+  "canonical_name_key": "crew.new-fish-man-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.new-fish-man-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:607"
+      }
+    ]
+  },
+  "relations": []
+}

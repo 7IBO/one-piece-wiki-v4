@@ -1,0 +1,17 @@
+{
+  "id": "crew:fire-tank-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "fire-tank-pirates",
+  "canonical_name_key": "crew.fire-tank-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.fire-tank-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:498"
+      }
+    ]
+  },
+  "relations": []
+}

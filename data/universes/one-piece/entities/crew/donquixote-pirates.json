@@ -1,0 +1,17 @@
+{
+  "id": "crew:donquixote-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "donquixote-pirates",
+  "canonical_name_key": "crew.donquixote-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.donquixote-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:233"
+      }
+    ]
+  },
+  "relations": []
+}

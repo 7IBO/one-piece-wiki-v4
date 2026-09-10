@@ -1,0 +1,16 @@
+{
+  "id": "crew:tongari-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "tongari-pirates",
+  "canonical_name_key": "crew.tongari-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.tongari-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

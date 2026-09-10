@@ -1,0 +1,17 @@
+{
+  "id": "crew:gecko-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "gecko-pirates",
+  "canonical_name_key": "crew.gecko-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.gecko-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:969"
+      }
+    ]
+  },
+  "relations": []
+}

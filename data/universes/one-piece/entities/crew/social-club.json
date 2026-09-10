@@ -1,0 +1,17 @@
+{
+  "id": "crew:social-club",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "social-club",
+  "canonical_name_key": "crew.social-club.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.social-club.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1079"
+      }
+    ]
+  },
+  "relations": []
+}

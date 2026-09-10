@@ -1,0 +1,17 @@
+{
+  "id": "crew:buggy-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "buggy-pirates",
+  "canonical_name_key": "crew.buggy-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.buggy-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:8"
+      }
+    ]
+  },
+  "relations": []
+}

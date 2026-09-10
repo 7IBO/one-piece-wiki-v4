@@ -1,0 +1,17 @@
+{
+  "id": "crew:little-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "little-pirates",
+  "canonical_name_key": "crew.little-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.little-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:554"
+      }
+    ]
+  },
+  "relations": []
+}

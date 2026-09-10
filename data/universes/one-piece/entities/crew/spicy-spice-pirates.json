@@ -1,0 +1,16 @@
+{
+  "id": "crew:spicy-spice-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "spicy-spice-pirates",
+  "canonical_name_key": "crew.spicy-spice-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.spicy-spice-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}
