@@ -1,0 +1,20 @@
+{
+  "id": "ship:big-top",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "big-top",
+  "canonical_name_key": "ship.big-top.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.big-top.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:8"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "ship:catapult",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "catapult",
+  "canonical_name_key": "ship.catapult.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.catapult.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ship:nasugasira",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "nasugasira",
+  "canonical_name_key": "ship.nasugasira.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.nasugasira.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:627"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

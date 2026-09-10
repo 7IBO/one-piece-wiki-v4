@@ -1,0 +1,20 @@
+{
+  "id": "ship:thriller-bark",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "thriller-bark",
+  "canonical_name_key": "ship.thriller-bark.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.thriller-bark.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:443"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

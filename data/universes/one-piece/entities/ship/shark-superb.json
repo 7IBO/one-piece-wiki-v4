@@ -1,0 +1,20 @@
+{
+  "id": "ship:shark-superb",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "shark-superb",
+  "canonical_name_key": "ship.shark-superb.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.shark-superb.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:77"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

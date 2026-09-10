@@ -1,0 +1,20 @@
+{
+  "id": "ship:pine-peak",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "pine-peak",
+  "canonical_name_key": "ship.pine-peak.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.pine-peak.name.common",
+        "name_type": "common",
+        "since": "anime-episode:205"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

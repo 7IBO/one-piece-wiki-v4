@@ -1,0 +1,20 @@
+{
+  "id": "ship:little-gerais",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "little-gerais",
+  "canonical_name_key": "ship.little-gerais.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.little-gerais.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:551"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

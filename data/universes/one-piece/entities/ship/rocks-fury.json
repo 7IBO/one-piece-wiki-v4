@@ -1,0 +1,20 @@
+{
+  "id": "ship:rocks-fury",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "rocks-fury",
+  "canonical_name_key": "ship.rocks-fury.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.rocks-fury.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:957"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

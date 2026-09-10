@@ -1,0 +1,20 @@
+{
+  "id": "ship:cooking-george",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "cooking-george",
+  "canonical_name_key": "ship.cooking-george.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.cooking-george.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:56"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ship:bounty-maru",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "bounty-maru",
+  "canonical_name_key": "ship.bounty-maru.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.bounty-maru.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:624"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

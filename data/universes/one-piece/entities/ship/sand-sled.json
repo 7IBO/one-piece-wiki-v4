@@ -1,0 +1,20 @@
+{
+  "id": "ship:sand-sled",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "sand-sled",
+  "canonical_name_key": "ship.sand-sled.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.sand-sled.name.common",
+        "name_type": "common",
+        "since": "anime-episode:98"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

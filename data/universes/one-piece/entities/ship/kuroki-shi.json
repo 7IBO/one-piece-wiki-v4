@@ -1,0 +1,19 @@
+{
+  "id": "ship:kuroki-shi",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "kuroki-shi",
+  "canonical_name_key": "ship.kuroki-shi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.kuroki-shi.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

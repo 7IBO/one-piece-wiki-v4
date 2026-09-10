@@ -1,0 +1,19 @@
+{
+  "id": "ship:marubenny",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "marubenny",
+  "canonical_name_key": "ship.marubenny.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.marubenny.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ship:marine-ships",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "marine-ships",
+  "canonical_name_key": "ship.marine-ships.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.marine-ships.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:43"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

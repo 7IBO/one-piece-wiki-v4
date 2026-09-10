@@ -1,0 +1,20 @@
+{
+  "id": "ship:swanda-express",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "swanda-express",
+  "canonical_name_key": "ship.swanda-express.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.swanda-express.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:129"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

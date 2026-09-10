@@ -1,0 +1,19 @@
+{
+  "id": "ship:thousand-gorry",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "thousand-gorry",
+  "canonical_name_key": "ship.thousand-gorry.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.thousand-gorry.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

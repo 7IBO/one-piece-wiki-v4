@@ -1,0 +1,20 @@
+{
+  "id": "ship:chiryaku-ten-nen-maru",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "chiryaku-ten-nen-maru",
+  "canonical_name_key": "ship.chiryaku-ten-nen-maru.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.chiryaku-ten-nen-maru.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:158"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

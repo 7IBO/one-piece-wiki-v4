@@ -1,0 +1,20 @@
+{
+  "id": "ship:numancia-flamingo",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "numancia-flamingo",
+  "canonical_name_key": "ship.numancia-flamingo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.numancia-flamingo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:763"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

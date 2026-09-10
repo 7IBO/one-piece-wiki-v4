@@ -1,0 +1,20 @@
+{
+  "id": "ship:blood-batako",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "blood-batako",
+  "canonical_name_key": "ship.blood-batako.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.blood-batako.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:586"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

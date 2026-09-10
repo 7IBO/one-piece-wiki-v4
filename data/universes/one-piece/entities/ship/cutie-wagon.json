@@ -1,0 +1,20 @@
+{
+  "id": "ship:cutie-wagon",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "cutie-wagon",
+  "canonical_name_key": "ship.cutie-wagon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.cutie-wagon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:306"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

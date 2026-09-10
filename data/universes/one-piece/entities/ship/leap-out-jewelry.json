@@ -1,0 +1,20 @@
+{
+  "id": "ship:leap-out-jewelry",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "leap-out-jewelry",
+  "canonical_name_key": "ship.leap-out-jewelry.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.leap-out-jewelry.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1100"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

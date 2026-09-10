@@ -1,0 +1,20 @@
+{
+  "id": "ship:new-witch-s-tongue",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "new-witch-s-tongue",
+  "canonical_name_key": "ship.new-witch-s-tongue.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.new-witch-s-tongue.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:229"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "ship:web-panic",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "web-panic",
+  "canonical_name_key": "ship.web-panic.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.web-panic.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

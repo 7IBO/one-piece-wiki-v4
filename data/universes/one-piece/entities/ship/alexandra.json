@@ -1,0 +1,19 @@
+{
+  "id": "ship:alexandra",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "alexandra",
+  "canonical_name_key": "ship.alexandra.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.alexandra.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

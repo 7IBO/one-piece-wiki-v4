@@ -1,0 +1,20 @@
+{
+  "id": "ship:sexy-foxy",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "sexy-foxy",
+  "canonical_name_key": "ship.sexy-foxy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.sexy-foxy.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:304"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

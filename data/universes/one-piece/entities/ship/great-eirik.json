@@ -1,0 +1,20 @@
+{
+  "id": "ship:great-eirik",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "great-eirik",
+  "canonical_name_key": "ship.great-eirik.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.great-eirik.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:129"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}
