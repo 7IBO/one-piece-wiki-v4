@@ -1,0 +1,47 @@
+{
+  "id": "character:charlotte-lola",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-lola",
+  "canonical_name_key": "character.charlotte-lola.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-lola.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:476"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.charlotte-lola.epithet.marriage-proposal-lola",
+        "since": "manga-chapter:476"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:476"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 24000000,
+        "since": "databook-card:0477"
+      }
+    ],
+    "height": [
+      {
+        "value": 215,
+        "source": "databook-card:0477"
+      }
+    ],
+    "birthday": {
+      "value": "01-27"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

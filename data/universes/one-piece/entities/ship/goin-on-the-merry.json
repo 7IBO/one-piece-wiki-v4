@@ -1,0 +1,19 @@
+{
+  "id": "ship:goin-on-the-merry",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "goin-on-the-merry",
+  "canonical_name_key": "ship.goin-on-the-merry.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.goin-on-the-merry.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

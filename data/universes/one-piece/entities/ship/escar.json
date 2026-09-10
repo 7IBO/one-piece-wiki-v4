@@ -1,0 +1,20 @@
+{
+  "id": "ship:escar",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "escar",
+  "canonical_name_key": "ship.escar.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.escar.name.common",
+        "name_type": "common",
+        "since": "anime-episode:132"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

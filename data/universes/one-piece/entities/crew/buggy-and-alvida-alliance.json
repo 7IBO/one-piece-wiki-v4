@@ -1,0 +1,17 @@
+{
+  "id": "crew:buggy-and-alvida-alliance",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "buggy-and-alvida-alliance",
+  "canonical_name_key": "crew.buggy-and-alvida-alliance.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.buggy-and-alvida-alliance.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:54"
+      }
+    ]
+  },
+  "relations": []
+}

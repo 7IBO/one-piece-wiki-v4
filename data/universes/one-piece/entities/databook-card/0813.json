@@ -1,0 +1,12 @@
+{
+  "id": "databook-card:0813",
+  "type": "databook-card",
+  "schema_version": 1,
+  "slug": "0813",
+  "properties": {
+    "card_number": {
+      "value": "0813"
+    }
+  },
+  "relations": []
+}

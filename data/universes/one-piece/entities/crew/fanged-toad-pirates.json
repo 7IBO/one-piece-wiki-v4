@@ -1,0 +1,17 @@
+{
+  "id": "crew:fanged-toad-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "fanged-toad-pirates",
+  "canonical_name_key": "crew.fanged-toad-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.fanged-toad-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:304"
+      }
+    ]
+  },
+  "relations": []
+}

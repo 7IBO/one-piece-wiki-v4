@@ -1,0 +1,52 @@
+{
+  "id": "character:butchie",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "butchie",
+  "canonical_name_key": "character.butchie.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.butchie.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:31"
+      },
+      {
+        "value_key": "character.butchie.name.buchi",
+        "name_type": "alias",
+        "since": "manga-chapter:31"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.butchie.epithet.nyaban-brothers",
+        "since": "manga-chapter:31"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:31"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 7000000,
+        "since": "databook-card:0068"
+      }
+    ],
+    "height": [
+      {
+        "value": 216,
+        "source": "databook-card:0068"
+      }
+    ],
+    "birthday": {
+      "value": "02-07"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

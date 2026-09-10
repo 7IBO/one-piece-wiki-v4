@@ -1,0 +1,42 @@
+{
+  "id": "character:chouchou",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chouchou",
+  "canonical_name_key": "character.chouchou.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chouchou.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:12"
+      },
+      {
+        "value_key": "character.chouchou.name.shushu",
+        "name_type": "alias",
+        "since": "manga-chapter:12"
+      },
+      {
+        "value_key": "character.chouchou.name.chou-chou",
+        "name_type": "alias",
+        "since": "manga-chapter:12"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:12"
+      }
+    ],
+    "height": [
+      {
+        "value": 40,
+        "source": "databook-card:0051"
+      }
+    ],
+    "birthday": {
+      "value": "11-22"
+    }
+  },
+  "relations": []
+}

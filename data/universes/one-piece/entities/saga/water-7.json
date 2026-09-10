@@ -1,0 +1,18 @@
+{
+  "id": "saga:water-7",
+  "type": "saga",
+  "schema_version": 1,
+  "slug": "water-7",
+  "canonical_name_key": "saga.water-7.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "saga.water-7.name"
+      }
+    ],
+    "saga_number": {
+      "value": 4
+    }
+  },
+  "relations": []
+}

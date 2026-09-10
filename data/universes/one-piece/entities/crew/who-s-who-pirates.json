@@ -1,0 +1,17 @@
+{
+  "id": "crew:who-s-who-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "who-s-who-pirates",
+  "canonical_name_key": "crew.who-s-who-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.who-s-who-pirates.name.common",
+        "name_type": "common",
+        "since": "databook-card:1552"
+      }
+    ]
+  },
+  "relations": []
+}

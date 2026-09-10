@@ -1,0 +1,12 @@
+{
+  "id": "databook-card:1818",
+  "type": "databook-card",
+  "schema_version": 1,
+  "slug": "1818",
+  "properties": {
+    "card_number": {
+      "value": "1818"
+    }
+  },
+  "relations": []
+}

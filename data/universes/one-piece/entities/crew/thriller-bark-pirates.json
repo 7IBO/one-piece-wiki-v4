@@ -1,0 +1,17 @@
+{
+  "id": "crew:thriller-bark-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "thriller-bark-pirates",
+  "canonical_name_key": "crew.thriller-bark-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.thriller-bark-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:446"
+      }
+    ]
+  },
+  "relations": []
+}

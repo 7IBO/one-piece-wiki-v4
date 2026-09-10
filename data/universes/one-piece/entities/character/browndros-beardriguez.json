@@ -1,0 +1,52 @@
+{
+  "id": "character:browndros-beardriguez",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "browndros-beardriguez",
+  "canonical_name_key": "character.browndros-beardriguez.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.browndros-beardriguez.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:581"
+      },
+      {
+        "value_key": "character.browndros-beardriguez.name.chadros-higelyges",
+        "name_type": "alias",
+        "since": "manga-chapter:581"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.browndros-beardriguez.epithet.brownbeard",
+        "since": "manga-chapter:661"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:581"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 80060000,
+        "since": "manga-chapter:661"
+      }
+    ],
+    "height": [
+      {
+        "value": 691,
+        "source": "databook-card:0655"
+      }
+    ],
+    "birthday": {
+      "value": "02-03"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

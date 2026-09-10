@@ -1,0 +1,28 @@
+{
+  "id": "character:beret",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "beret",
+  "canonical_name_key": "character.beret.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.beret.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:537"
+      },
+      {
+        "value_key": "character.beret.name.bellett",
+        "name_type": "alias",
+        "since": "manga-chapter:537"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:537"
+      }
+    ]
+  },
+  "relations": []
+}

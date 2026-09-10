@@ -1,0 +1,23 @@
+{
+  "id": "weapon:senpu-king",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "senpu-king",
+  "canonical_name_key": "weapon.senpu-king.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.senpu-king.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "weapon.senpu-king.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

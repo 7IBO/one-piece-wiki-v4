@@ -1,0 +1,34 @@
+{
+  "id": "character:atatchi",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "atatchi",
+  "canonical_name_key": "character.atatchi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.atatchi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:436"
+      },
+      {
+        "value_key": "character.atatchi.name.attach",
+        "name_type": "alias",
+        "since": "manga-chapter:436"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.atatchi.epithet.flaming-attachan",
+        "since": "sbs:volume-24"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:436"
+      }
+    ]
+  },
+  "relations": []
+}

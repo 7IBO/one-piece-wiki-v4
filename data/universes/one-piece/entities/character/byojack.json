@@ -1,0 +1,28 @@
+{
+  "id": "character:byojack",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "byojack",
+  "canonical_name_key": "character.byojack.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.byojack.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

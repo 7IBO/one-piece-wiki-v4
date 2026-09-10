@@ -1,0 +1,16 @@
+{
+  "id": "crew:bounty-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "bounty-pirates",
+  "canonical_name_key": "crew.bounty-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.bounty-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

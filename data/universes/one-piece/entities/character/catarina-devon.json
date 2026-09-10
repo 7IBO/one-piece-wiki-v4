@@ -1,0 +1,46 @@
+{
+  "id": "character:catarina-devon",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "catarina-devon",
+  "canonical_name_key": "character.catarina-devon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.catarina-devon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:575"
+      },
+      {
+        "value_key": "character.catarina-devon.name.catalina-devon",
+        "name_type": "alias",
+        "since": "manga-chapter:575"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.catarina-devon.epithet.crescent-moon-hunter",
+        "since": "manga-chapter:576"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:575"
+      }
+    ],
+    "height": [
+      {
+        "value": 361,
+        "source": "databook-card:0650"
+      }
+    ],
+    "birthday": {
+      "value": "03-29"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,41 @@
+{
+  "id": "character:charlotte-flampe",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-flampe",
+  "canonical_name_key": "character.charlotte-flampe.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-flampe.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:891"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:891"
+      }
+    ],
+    "age": [
+      {
+        "value": 15,
+        "source": "manga-chapter:891"
+      }
+    ],
+    "height": [
+      {
+        "value": 170,
+        "source": "databook-card:1147"
+      }
+    ],
+    "birthday": {
+      "value": "02-11"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

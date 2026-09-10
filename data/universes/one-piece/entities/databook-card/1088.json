@@ -1,0 +1,12 @@
+{
+  "id": "databook-card:1088",
+  "type": "databook-card",
+  "schema_version": 1,
+  "slug": "1088",
+  "properties": {
+    "card_number": {
+      "value": "1088"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,26 @@
+{
+  "id": "character:brontosaurus",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "brontosaurus",
+  "canonical_name_key": "character.brontosaurus.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.brontosaurus.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:115"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:115"
+      }
+    ],
+    "birthday": {
+      "value": "11-19"
+    }
+  },
+  "relations": []
+}

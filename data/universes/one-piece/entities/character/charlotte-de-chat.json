@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-de-chat",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-de-chat",
+  "canonical_name_key": "character.charlotte-de-chat.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-de-chat.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "age": [
+      {
+        "value": 11
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,16 @@
+{
+  "id": "crew:handai-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "handai-pirates",
+  "canonical_name_key": "crew.handai-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.handai-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

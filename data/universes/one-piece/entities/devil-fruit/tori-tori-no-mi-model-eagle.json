@@ -1,0 +1,30 @@
+{
+  "id": "devil-fruit:tori-tori-no-mi-model-eagle",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "tori-tori-no-mi-model-eagle",
+  "canonical_name_key": "devil-fruit.tori-tori-no-mi-model-eagle.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.tori-tori-no-mi-model-eagle.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "devil-fruit.tori-tori-no-mi-model-eagle.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Eagle"
+      }
+    ]
+  },
+  "relations": []
+}

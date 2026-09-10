@@ -1,0 +1,20 @@
+{
+  "id": "weapon:flower-bullets",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "flower-bullets",
+  "canonical_name_key": "weapon.flower-bullets.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.flower-bullets.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1080"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

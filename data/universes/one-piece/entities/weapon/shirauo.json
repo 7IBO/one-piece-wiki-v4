@@ -1,0 +1,25 @@
+{
+  "id": "weapon:shirauo",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "shirauo",
+  "canonical_name_key": "weapon.shirauo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.shirauo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:827"
+      },
+      {
+        "value_key": "weapon.shirauo.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:827"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

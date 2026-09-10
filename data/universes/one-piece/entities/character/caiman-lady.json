@@ -1,0 +1,23 @@
+{
+  "id": "character:caiman-lady",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "caiman-lady",
+  "canonical_name_key": "character.caiman-lady.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.caiman-lady.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1004"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1004"
+      }
+    ]
+  },
+  "relations": []
+}

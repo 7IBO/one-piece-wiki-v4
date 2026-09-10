@@ -1,0 +1,25 @@
+{
+  "id": "weapon:carbonation-equipment",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "carbonation-equipment",
+  "canonical_name_key": "weapon.carbonation-equipment.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.carbonation-equipment.name.common",
+        "name_type": "common",
+        "since": "anime-episode:895"
+      },
+      {
+        "value_key": "weapon.carbonation-equipment.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "anime-episode:895"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

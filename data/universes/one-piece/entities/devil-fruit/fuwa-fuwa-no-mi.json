@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:fuwa-fuwa-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "fuwa-fuwa-no-mi",
+  "canonical_name_key": "devil-fruit.fuwa-fuwa-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.fuwa-fuwa-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:0"
+      },
+      {
+        "value_key": "devil-fruit.fuwa-fuwa-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:0"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "manga-chapter:0"
+      }
+    ]
+  },
+  "relations": []
+}

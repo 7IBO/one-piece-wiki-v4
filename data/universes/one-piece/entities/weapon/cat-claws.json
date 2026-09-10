@@ -1,0 +1,25 @@
+{
+  "id": "weapon:cat-claws",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "cat-claws",
+  "canonical_name_key": "weapon.cat-claws.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.cat-claws.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:28"
+      },
+      {
+        "value_key": "weapon.cat-claws.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:28"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

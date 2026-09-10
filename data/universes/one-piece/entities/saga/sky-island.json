@@ -1,0 +1,18 @@
+{
+  "id": "saga:sky-island",
+  "type": "saga",
+  "schema_version": 1,
+  "slug": "sky-island",
+  "canonical_name_key": "saga.sky-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "saga.sky-island.name"
+      }
+    ],
+    "saga_number": {
+      "value": 3
+    }
+  },
+  "relations": []
+}

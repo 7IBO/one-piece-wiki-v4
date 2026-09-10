@@ -1,0 +1,23 @@
+{
+  "id": "character:bb",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bb",
+  "canonical_name_key": "character.bb.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bb.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:805"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:805"
+      }
+    ]
+  },
+  "relations": []
+}

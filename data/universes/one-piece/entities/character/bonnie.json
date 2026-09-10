@@ -1,0 +1,21 @@
+{
+  "id": "character:bonnie",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bonnie",
+  "canonical_name_key": "character.bonnie.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bonnie.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

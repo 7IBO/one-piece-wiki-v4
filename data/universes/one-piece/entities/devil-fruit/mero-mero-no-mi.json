@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:mero-mero-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "mero-mero-no-mi",
+  "canonical_name_key": "devil-fruit.mero-mero-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.mero-mero-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:516"
+      },
+      {
+        "value_key": "devil-fruit.mero-mero-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "manga-chapter:516"
+      }
+    ]
+  },
+  "relations": []
+}

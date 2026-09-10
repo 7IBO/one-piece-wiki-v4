@@ -1,0 +1,19 @@
+{
+  "id": "ship:sleeping-cat",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "sleeping-cat",
+  "canonical_name_key": "ship.sleeping-cat.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.sleeping-cat.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

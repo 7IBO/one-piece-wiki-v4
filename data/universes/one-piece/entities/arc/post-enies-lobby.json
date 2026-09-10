@@ -15,5 +15,10 @@
       "value": 17
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:water-7"
+    }
+  ]
 }

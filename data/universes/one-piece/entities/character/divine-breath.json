@@ -1,0 +1,21 @@
+{
+  "id": "character:divine-breath",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "divine-breath",
+  "canonical_name_key": "character.divine-breath.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.divine-breath.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

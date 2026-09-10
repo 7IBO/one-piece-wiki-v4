@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:tori-tori-no-mi-model-albatross",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "tori-tori-no-mi-model-albatross",
+  "canonical_name_key": "devil-fruit.tori-tori-no-mi-model-albatross.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.tori-tori-no-mi-model-albatross.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:860"
+      },
+      {
+        "value_key": "devil-fruit.tori-tori-no-mi-model-albatross.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:860"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "manga-chapter:860"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Albatross",
+        "since": "manga-chapter:860"
+      }
+    ]
+  },
+  "relations": []
+}

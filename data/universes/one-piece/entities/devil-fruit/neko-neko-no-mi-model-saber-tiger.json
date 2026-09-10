@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:neko-neko-no-mi-model-saber-tiger",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "neko-neko-no-mi-model-saber-tiger",
+  "canonical_name_key": "devil-fruit.neko-neko-no-mi-model-saber-tiger.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.neko-neko-no-mi-model-saber-tiger.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:998"
+      },
+      {
+        "value_key": "devil-fruit.neko-neko-no-mi-model-saber-tiger.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:998"
+      }
+    ],
+    "classification": [
+      {
+        "value": "ancient_zoan",
+        "since": "manga-chapter:998"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Saber Tiger",
+        "since": "manga-chapter:998"
+      }
+    ]
+  },
+  "relations": []
+}

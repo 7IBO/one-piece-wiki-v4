@@ -1,0 +1,59 @@
+{
+  "id": "character:basil-hawkins",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "basil-hawkins",
+  "canonical_name_key": "character.basil-hawkins.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.basil-hawkins.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:498"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.basil-hawkins.epithet.magician",
+        "since": "manga-chapter:498"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:498"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 249000000,
+        "since": "manga-chapter:498"
+      },
+      {
+        "value": 320000000,
+        "since": "manga-chapter:677"
+      }
+    ],
+    "height": [
+      {
+        "value": 210,
+        "source": "sbs:volume-68"
+      }
+    ],
+    "birthday": {
+      "value": "09-09"
+    },
+    "blood_type": {
+      "value": "S"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:498"
+      }
+    ]
+  },
+  "relations": []
+}

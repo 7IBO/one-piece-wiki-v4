@@ -1,0 +1,12 @@
+{
+  "id": "databook-card:209",
+  "type": "databook-card",
+  "schema_version": 1,
+  "slug": "209",
+  "properties": {
+    "card_number": {
+      "value": "209"
+    }
+  },
+  "relations": []
+}

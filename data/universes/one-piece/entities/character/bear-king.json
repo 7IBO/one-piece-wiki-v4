@@ -1,0 +1,26 @@
+{
+  "id": "character:bear-king",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bear-king",
+  "canonical_name_key": "character.bear-king.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bear-king.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 11600000
+      }
+    ]
+  },
+  "relations": []
+}

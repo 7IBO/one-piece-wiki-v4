@@ -1,0 +1,19 @@
+{
+  "id": "ship:marchen",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "marchen",
+  "canonical_name_key": "ship.marchen.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.marchen.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

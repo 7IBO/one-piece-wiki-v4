@@ -1,0 +1,32 @@
+{
+  "id": "character:bonk-punch",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bonk-punch",
+  "canonical_name_key": "character.bonk-punch.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bonk-punch.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate",
+          "musician"
+        ],
+        "since": "manga-chapter:1"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,49 @@
+{
+  "id": "character:chocolat",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chocolat",
+  "canonical_name_key": "character.chocolat.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chocolat.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:598"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:598"
+      }
+    ],
+    "age": [
+      {
+        "value": 26,
+        "source": "databook-card:0681"
+      }
+    ],
+    "height": [
+      {
+        "value": 181,
+        "source": "databook-card:0681"
+      }
+    ],
+    "birthday": {
+      "value": "09-21"
+    },
+    "blood_type": {
+      "value": "X"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:598"
+      }
+    ]
+  },
+  "relations": []
+}

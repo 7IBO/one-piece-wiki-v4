@@ -1,0 +1,31 @@
+{
+  "id": "character:brocca",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "brocca",
+  "canonical_name_key": "character.brocca.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.brocca.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:561"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:561"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:561"
+      }
+    ]
+  },
+  "relations": []
+}

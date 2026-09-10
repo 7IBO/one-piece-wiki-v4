@@ -1,0 +1,19 @@
+{
+  "id": "ship:big-runner",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "big-runner",
+  "canonical_name_key": "ship.big-runner.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.big-runner.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

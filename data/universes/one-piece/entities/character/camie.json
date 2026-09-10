@@ -1,0 +1,35 @@
+{
+  "id": "character:camie",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "camie",
+  "canonical_name_key": "character.camie.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.camie.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:195"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:195"
+      }
+    ],
+    "height": [
+      {
+        "value": 197,
+        "source": "databook-card:0494"
+      }
+    ],
+    "birthday": {
+      "value": "11-03"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

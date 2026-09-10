@@ -1,0 +1,17 @@
+{
+  "id": "crew:fake-straw-hat-crew",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "fake-straw-hat-crew",
+  "canonical_name_key": "crew.fake-straw-hat-crew.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.fake-straw-hat-crew.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:598"
+      }
+    ]
+  },
+  "relations": []
+}

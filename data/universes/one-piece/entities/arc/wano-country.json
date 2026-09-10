@@ -15,5 +15,10 @@
       "value": 31
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:wano-country"
+    }
+  ]
 }

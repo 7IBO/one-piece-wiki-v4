@@ -1,0 +1,20 @@
+{
+  "id": "weapon:gryphon",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "gryphon",
+  "canonical_name_key": "weapon.gryphon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.gryphon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:234"
+      }
+    ],
+    "weapon_type": {
+      "value": "saber"
+    }
+  },
+  "relations": []
+}

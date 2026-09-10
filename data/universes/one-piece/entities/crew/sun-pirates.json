@@ -1,0 +1,17 @@
+{
+  "id": "crew:sun-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "sun-pirates",
+  "canonical_name_key": "crew.sun-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.sun-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:620"
+      }
+    ]
+  },
+  "relations": []
+}

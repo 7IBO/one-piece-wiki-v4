@@ -1,0 +1,17 @@
+{
+  "id": "crew:big-helmet-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "big-helmet-pirates",
+  "canonical_name_key": "crew.big-helmet-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.big-helmet-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:323"
+      }
+    ]
+  },
+  "relations": []
+}

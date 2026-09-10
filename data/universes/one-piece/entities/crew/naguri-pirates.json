@@ -1,0 +1,17 @@
+{
+  "id": "crew:naguri-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "naguri-pirates",
+  "canonical_name_key": "crew.naguri-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.naguri-pirates.name.common",
+        "name_type": "common",
+        "since": "anime-episode:499"
+      }
+    ]
+  },
+  "relations": []
+}

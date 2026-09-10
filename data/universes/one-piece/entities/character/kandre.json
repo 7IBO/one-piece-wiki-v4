@@ -1,0 +1,26 @@
+{
+  "id": "character:kandre",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "kandre",
+  "canonical_name_key": "character.kandre.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.kandre.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:557"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:557"
+      }
+    ],
+    "birthday": {
+      "value": "05-19"
+    }
+  },
+  "relations": []
+}

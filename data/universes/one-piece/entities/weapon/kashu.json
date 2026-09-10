@@ -1,0 +1,28 @@
+{
+  "id": "weapon:kashu",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "kashu",
+  "canonical_name_key": "weapon.kashu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.kashu.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:128"
+      },
+      {
+        "value_key": "weapon.kashu.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:128"
+      }
+    ],
+    "weapon_type": {
+      "value": "katana"
+    },
+    "weapon_grade": {
+      "value": "ryo_wazamono"
+    }
+  },
+  "relations": []
+}

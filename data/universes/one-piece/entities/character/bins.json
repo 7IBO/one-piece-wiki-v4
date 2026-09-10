@@ -1,0 +1,28 @@
+{
+  "id": "character:bins",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bins",
+  "canonical_name_key": "character.bins.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bins.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:691"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:691"
+      }
+    ],
+    "height": [
+      {
+        "value": 435
+      }
+    ]
+  },
+  "relations": []
+}

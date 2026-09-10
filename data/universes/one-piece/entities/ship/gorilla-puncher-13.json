@@ -1,0 +1,20 @@
+{
+  "id": "ship:gorilla-puncher-13",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "gorilla-puncher-13",
+  "canonical_name_key": "ship.gorilla-puncher-13.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.gorilla-puncher-13.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:316"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

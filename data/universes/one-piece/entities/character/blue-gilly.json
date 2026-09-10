@@ -1,0 +1,55 @@
+{
+  "id": "character:blue-gilly",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "blue-gilly",
+  "canonical_name_key": "character.blue-gilly.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.blue-gilly.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:706"
+      },
+      {
+        "value_key": "character.blue-gilly.name.bluegilly",
+        "name_type": "alias",
+        "since": "manga-chapter:706"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:706"
+      }
+    ],
+    "age": [
+      {
+        "value": 24,
+        "source": "databook-card:0868"
+      }
+    ],
+    "height": [
+      {
+        "value": 314,
+        "source": "databook-card:0868"
+      }
+    ],
+    "birthday": {
+      "value": "11-27"
+    },
+    "blood_type": {
+      "value": "S"
+    },
+    "occupation": [
+      {
+        "value": [
+          "martial_artist",
+          "pirate"
+        ],
+        "since": "manga-chapter:888"
+      }
+    ]
+  },
+  "relations": []
+}

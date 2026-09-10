@@ -1,0 +1,32 @@
+{
+  "id": "character:building-snake",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "building-snake",
+  "canonical_name_key": "character.building-snake.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.building-snake.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:41"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:41"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate",
+          "navigator"
+        ],
+        "since": "manga-chapter:41"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ship:usoland",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "usoland",
+  "canonical_name_key": "ship.usoland.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.usoland.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:892"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

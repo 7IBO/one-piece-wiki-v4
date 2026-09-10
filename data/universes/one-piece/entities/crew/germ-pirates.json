@@ -1,0 +1,17 @@
+{
+  "id": "crew:germ-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "germ-pirates",
+  "canonical_name_key": "crew.germ-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.germ-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:963"
+      }
+    ]
+  },
+  "relations": []
+}

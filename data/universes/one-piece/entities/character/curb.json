@@ -1,0 +1,21 @@
+{
+  "id": "character:curb",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "curb",
+  "canonical_name_key": "character.curb.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.curb.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

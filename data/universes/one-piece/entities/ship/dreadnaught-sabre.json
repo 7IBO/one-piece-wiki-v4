@@ -1,0 +1,20 @@
+{
+  "id": "ship:dreadnaught-sabre",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "dreadnaught-sabre",
+  "canonical_name_key": "ship.dreadnaught-sabre.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.dreadnaught-sabre.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:46"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

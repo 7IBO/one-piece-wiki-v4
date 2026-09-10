@@ -1,0 +1,20 @@
+{
+  "id": "weapon:eagle-launcher",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "eagle-launcher",
+  "canonical_name_key": "weapon.eagle-launcher.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.eagle-launcher.name.common",
+        "name_type": "common",
+        "since": "anime-episode:205"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

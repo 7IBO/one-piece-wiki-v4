@@ -1,0 +1,23 @@
+{
+  "id": "weapon:protagonist-tractor-beam",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "protagonist-tractor-beam",
+  "canonical_name_key": "weapon.protagonist-tractor-beam.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.protagonist-tractor-beam.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "weapon.protagonist-tractor-beam.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

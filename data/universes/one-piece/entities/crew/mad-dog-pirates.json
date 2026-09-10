@@ -1,0 +1,16 @@
+{
+  "id": "crew:mad-dog-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "mad-dog-pirates",
+  "canonical_name_key": "crew.mad-dog-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.mad-dog-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

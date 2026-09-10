@@ -1,0 +1,23 @@
+{
+  "id": "character:demoni-aiyo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "demoni-aiyo",
+  "canonical_name_key": "character.demoni-aiyo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.demoni-aiyo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:966"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:966"
+      }
+    ]
+  },
+  "relations": []
+}

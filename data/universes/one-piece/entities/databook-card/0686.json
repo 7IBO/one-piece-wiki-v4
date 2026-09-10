@@ -1,0 +1,12 @@
+{
+  "id": "databook-card:0686",
+  "type": "databook-card",
+  "schema_version": 1,
+  "slug": "0686",
+  "properties": {
+    "card_number": {
+      "value": "0686"
+    }
+  },
+  "relations": []
+}

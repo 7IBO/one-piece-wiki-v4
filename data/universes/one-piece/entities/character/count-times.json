@@ -1,0 +1,30 @@
+{
+  "id": "character:count-times",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "count-times",
+  "canonical_name_key": "character.count-times.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.count-times.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.count-times.name.golden-earl-times",
+        "name_type": "alias"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.count-times.epithet.press-king"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

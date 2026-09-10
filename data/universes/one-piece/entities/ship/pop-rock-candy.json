@@ -1,0 +1,19 @@
+{
+  "id": "ship:pop-rock-candy",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "pop-rock-candy",
+  "canonical_name_key": "ship.pop-rock-candy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.pop-rock-candy.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

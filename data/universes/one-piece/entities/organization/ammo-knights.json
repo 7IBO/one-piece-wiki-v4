@@ -1,0 +1,20 @@
+{
+  "id": "organization:ammo-knights",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "ammo-knights",
+  "canonical_name_key": "organization.ammo-knights.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.ammo-knights.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:609"
+      }
+    ],
+    "organization_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

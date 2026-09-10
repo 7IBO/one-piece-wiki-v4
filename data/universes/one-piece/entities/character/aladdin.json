@@ -1,0 +1,41 @@
+{
+  "id": "character:aladdin",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "aladdin",
+  "canonical_name_key": "character.aladdin.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.aladdin.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:620"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:620"
+      }
+    ],
+    "age": [
+      {
+        "value": 46,
+        "source": "databook-card:0748"
+      }
+    ],
+    "height": [
+      {
+        "value": 627,
+        "source": "databook-card:0748"
+      }
+    ],
+    "birthday": {
+      "value": "01-31"
+    },
+    "blood_type": {
+      "value": "XF"
+    }
+  },
+  "relations": []
+}

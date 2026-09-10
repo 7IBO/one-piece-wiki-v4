@@ -1,0 +1,23 @@
+{
+  "id": "character:cerberus",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cerberus",
+  "canonical_name_key": "character.cerberus.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cerberus.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1137"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1137"
+      }
+    ]
+  },
+  "relations": []
+}

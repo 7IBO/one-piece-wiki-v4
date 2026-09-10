@@ -1,0 +1,20 @@
+{
+  "id": "ship:going-luffy-senpai",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "going-luffy-senpai",
+  "canonical_name_key": "ship.going-luffy-senpai.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.going-luffy-senpai.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:801"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

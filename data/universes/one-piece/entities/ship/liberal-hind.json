@@ -1,0 +1,20 @@
+{
+  "id": "ship:liberal-hind",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "liberal-hind",
+  "canonical_name_key": "ship.liberal-hind.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.liberal-hind.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:581"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "weapon:nanashaku-jitte",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "nanashaku-jitte",
+  "canonical_name_key": "weapon.nanashaku-jitte.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.nanashaku-jitte.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:98"
+      },
+      {
+        "value_key": "weapon.nanashaku-jitte.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:98"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

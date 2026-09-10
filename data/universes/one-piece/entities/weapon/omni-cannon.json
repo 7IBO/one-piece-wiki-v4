@@ -1,0 +1,19 @@
+{
+  "id": "weapon:omni-cannon",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "omni-cannon",
+  "canonical_name_key": "weapon.omni-cannon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.omni-cannon.name.common",
+        "name_type": "common"
+      }
+    ],
+    "weapon_type": {
+      "value": "cannon"
+    }
+  },
+  "relations": []
+}

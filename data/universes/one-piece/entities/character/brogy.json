@@ -1,0 +1,52 @@
+{
+  "id": "character:brogy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "brogy",
+  "canonical_name_key": "character.brogy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.brogy.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "character.brogy.name.broggy",
+        "name_type": "alias"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.brogy.epithet.brogy-the-red-ogre"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 100000000,
+        "since": "manga-chapter:118"
+      },
+      {
+        "value": 1800000000,
+        "since": "manga-chapter:1130"
+      }
+    ],
+    "height": [
+      {
+        "value": 2130,
+        "source": "databook-card:0144"
+      }
+    ],
+    "birthday": {
+      "value": "02-01"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

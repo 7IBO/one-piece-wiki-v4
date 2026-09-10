@@ -1,0 +1,26 @@
+{
+  "id": "weapon:kosho",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "kosho",
+  "canonical_name_key": "weapon.kosho.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.kosho.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "weapon.kosho.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "weapon_type": {
+      "value": "katana"
+    },
+    "weapon_grade": {
+      "value": "ryo_wazamono"
+    }
+  },
+  "relations": []
+}

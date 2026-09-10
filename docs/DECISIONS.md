@@ -8029,6 +8029,138 @@ répondent 200, les sous-pages de section aussi, et
 
 ---
 
+## ADR-131 — Une source citée par Qref est matérialisée, jamais devinée
+
+**Date**: 2026-09-10
+
+**Context**: L'import de 1 033 entités (fruits, équipages, navires,
+armes, personnages) a produit **166 références pendantes** vers deux
+types de source : `sbs:volume-N` et `databook-card:NNNN`. Elles ne
+sortent pas de nulle part — `qrefSourceIds` les fabrique à partir des
+paramètres `sbs=` et `card=` d'un `{{Qref}}`, qui citent une source
+réelle. Simplement, personne n'écrivait l'entité en face.
+
+`check:references` était rouge, et le rester n'était pas une option :
+c'est la garantie que les quatre axes pointent quelque chose.
+
+**Options**:
+
+- A — **Jeter la citation** quand la cible n'existe pas. Rejetée : on
+  perdrait la provenance, qui est précisément ce que les quatre axes
+  promettent. La citation est vraie ; c'est notre corpus qui est
+  incomplet.
+- B — **Écrire les entités à la main** au fil des imports. Rejetée : ça
+  recommence à chaque run, et 85 fichiers à la main en un seul import
+  dit assez où ça mène.
+- C — **Matérialiser la source citée**, avec exactement ce que la
+  citation donne et rien de plus.
+
+**Choice**: C.
+
+**Rationale**: L'id cité porte déjà des faits : `sbs:volume-90` dit le
+tome, `databook-card:0740` dit le numéro. Les écrire n'invente rien.
+Tout le reste — la date de parution d'une colonne, le titre d'une
+fiche, son type — demanderait de LIRE la source, et un import qui
+comble un trou par une supposition est pire qu'un trou visible.
+
+**Consequences**:
+
+- `packages/importers/src/fandom/cited-sources.ts` porte la règle, et
+  le crawl la joue à chaque run : la corpus reste cohérent tout seul.
+- Un stub ne porte **aucune date**. Pour `sbs`, `released_at` devient
+  facultatif : la date d'une colonne est celle de son tome, déjà portée
+  par le `volume` et reliée par `part-of-volume` — la dupliquer
+  contredirait ADR-099.
+- `card_kind` devient **facultatif** sur `databook-card` : une citation
+  ne dit pas le type d'une fiche. Il était `required`, ce qui rendait
+  toute fiche citée inécrivable.
+- Un type de source que le module ne sait pas matérialiser laisse la
+  référence pendante, et `check:references` le dit. C'est voulu : une
+  erreur vaut mieux qu'une entité inventée.
+
+## ADR-132 — Deux contraintes du schéma affirmaient des choses fausses sur l'œuvre
+
+**Date**: 2026-09-10
+
+**Context**: L'import de 431 personnages a fait échouer la validation
+sur cinq fichiers. Quatre échecs venaient de deux contraintes :
+
+| contrainte             | ce qu'elle refusait                                               |
+| ---------------------- | ----------------------------------------------------------------- |
+| `bounty.step = 100000` | Bepo 500 et 1 500 ₿, Adio 2 009 430 000 ₿, Browndros 80 060 000 ₿ |
+| `height.step = 1`      | Adio, 243,6 cm (Vivre Card)                                       |
+
+Les quatre valeurs sont canon. Le pas de 100 000 encodait une
+généralisation — « les primes sont rondes » — que l'œuvre dément :
+Bepo porte une prime dérisoire par gag, et les primes récentes
+descendent au berry près.
+
+**Options**:
+
+- A — **Corriger les données** pour rentrer dans la contrainte.
+  Rejetée : ce serait falsifier le corpus pour sauver une règle fausse.
+- B — **Retirer les deux `step`**, garder `min: 0`.
+
+**Choice**: B.
+
+**Rationale**: Une contrainte de schéma dit ce que l'œuvre autorise,
+pas ce qu'on croit qu'elle autorise. Quand une donnée canon la viole,
+c'est la contrainte qui a tort. `min: 0` reste : une prime ou une
+taille négative, elle, est bien impossible.
+
+**Consequences**: le formulaire du dashboard ne bloque plus la saisie
+d'une prime non ronde. Aucune donnée existante ne change.
+
+## ADR-133 — La progression se déclare par arc, groupé par saga
+
+**Date**: 2026-09-10
+
+**Context**: Le curseur anti-spoil se réglait par deux champs
+numériques : « chapitre » et « épisode ». C'est la question à laquelle
+un lecteur ne sait pas répondre — personne ne retient « chapitre
+1044 », tout le monde retient « j'ai fini Wano ». La planche
+`design/v2/Progression.dc.html` le dit depuis le début : « quel est le
+dernier arc que tu as terminé ? », groupé par saga. Elle était bloquée
+sur la donnée : le corpus ne portait **qu'une** saga.
+
+Les 11 sagas sont maintenant importées (chaîne `prev`/`next` →
+`saga_number`), et la migration 0015 accroche les 32 arcs canon manga
+à la leur.
+
+**Options**:
+
+- A — Garder les deux champs et ajouter la liste à côté. Rejetée : deux
+  chemins pour une même donnée, ce qu'ADR-099 refuse.
+- B — **L'échelle d'arcs devient le chemin normal**, le numéro exact
+  reste accessible pour qui le connaît.
+
+**Choice**: B.
+
+**Rationale**: La liste répond à la vraie question, le champ reste pour
+le cas précis. Le curseur à l'intérieur de l'arc choisi couvre
+l'entre-deux (« je suis au milieu de Marineford ») sans redemander un
+numéro.
+
+**Consequences**:
+
+- **L'échelle n'est pas filtrée par le curseur.** C'est la seule
+  surface publique dans ce cas, et c'est la question elle-même : on ne
+  déclare pas sa position dans une liste qui s'arrête à sa position.
+  Documenté sur `buildProgressPicker`, qui résout les noms au curseur
+  vide.
+- **Les deux axes se règlent dans le même dialogue.** Depuis ADR-123,
+  un axe vide vaut zéro dès qu'un autre est réglé : n'en proposer
+  qu'un filtrerait l'autre à zéro sans le dire.
+- **L'échelle est dérivée, pas écrite.** Les bornes viennent des arêtes
+  du corpus, les axes de `CURSOR_AXES`, l'ordre des ordinaux que chaque
+  type déclare, et la relation arc→saga est **cherchée au catalogue**.
+  Seuls les deux ids de type (`arc`, `saga`) sont nommés, sous ADR-091,
+  et l'échelle est vide s'ils manquent — le dialogue retombe alors sur
+  le numéro.
+- Un arc sans source sur un axe disparaît de l'onglet correspondant
+  plutôt que d'y figurer sans intervalle ; les arcs d'anime (filler,
+  cover story) n'appartiennent à aucune saga et sont absents des deux.
+
 ## Template for new entries
 
 ```

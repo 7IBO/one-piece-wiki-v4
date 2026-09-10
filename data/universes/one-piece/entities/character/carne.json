@@ -1,0 +1,40 @@
+{
+  "id": "character:carne",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "carne",
+  "canonical_name_key": "character.carne.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.carne.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:45"
+      },
+      {
+        "value_key": "character.carne.name.carny",
+        "name_type": "alias",
+        "since": "manga-chapter:45"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:45"
+      }
+    ],
+    "height": [
+      {
+        "value": 171,
+        "source": "databook-card:0082"
+      }
+    ],
+    "birthday": {
+      "value": "02-09"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

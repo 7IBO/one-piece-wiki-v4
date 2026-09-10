@@ -1,0 +1,47 @@
+{
+  "id": "character:belo-betty",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "belo-betty",
+  "canonical_name_key": "character.belo-betty.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.belo-betty.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:904"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:904"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 457000000,
+        "since": "databook-card:1187"
+      }
+    ],
+    "age": [
+      {
+        "value": 34,
+        "source": "databook-card:1187"
+      }
+    ],
+    "height": [
+      {
+        "value": 196,
+        "source": "databook-card:1187"
+      }
+    ],
+    "birthday": {
+      "value": "06-15"
+    },
+    "blood_type": {
+      "value": "XF"
+    }
+  },
+  "relations": []
+}

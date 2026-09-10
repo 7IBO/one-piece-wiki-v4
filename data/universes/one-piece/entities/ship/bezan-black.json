@@ -1,0 +1,20 @@
+{
+  "id": "ship:bezan-black",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "bezan-black",
+  "canonical_name_key": "ship.bezan-black.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.bezan-black.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:26"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

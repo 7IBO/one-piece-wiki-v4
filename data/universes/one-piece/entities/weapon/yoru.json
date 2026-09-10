@@ -1,0 +1,34 @@
+{
+  "id": "weapon:yoru",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "yoru",
+  "canonical_name_key": "weapon.yoru.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.yoru.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:49"
+      },
+      {
+        "value_key": "weapon.yoru.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:49"
+      }
+    ],
+    "weapon_type": {
+      "value": "sword"
+    },
+    "is_black_blade": [
+      {
+        "value": true,
+        "since": "manga-chapter:49"
+      }
+    ],
+    "weapon_grade": {
+      "value": "saijo_o_wazamono"
+    }
+  },
+  "relations": []
+}

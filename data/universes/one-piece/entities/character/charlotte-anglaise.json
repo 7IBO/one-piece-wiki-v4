@@ -1,0 +1,32 @@
+{
+  "id": "character:charlotte-anglaise",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-anglaise",
+  "canonical_name_key": "character.charlotte-anglaise.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-anglaise.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "age": [
+      {
+        "value": 14,
+        "source": "sbs:volume-90"
+      }
+    ],
+    "birthday": {
+      "value": "10-19"
+    }
+  },
+  "relations": []
+}

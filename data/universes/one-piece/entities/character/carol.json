@@ -1,0 +1,23 @@
+{
+  "id": "character:carol",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "carol",
+  "canonical_name_key": "character.carol.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.carol.name.common",
+        "name_type": "common",
+        "since": "anime-episode:50"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:50"
+      }
+    ]
+  },
+  "relations": []
+}

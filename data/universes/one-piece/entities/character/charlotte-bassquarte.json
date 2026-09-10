@@ -1,0 +1,37 @@
+{
+  "id": "character:charlotte-bassquarte",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-bassquarte",
+  "canonical_name_key": "character.charlotte-bassquarte.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-bassquarte.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:860"
+      },
+      {
+        "value_key": "character.charlotte-bassquarte.name.charlotte-basskarte",
+        "name_type": "alias",
+        "since": "manga-chapter:860"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:860"
+      }
+    ],
+    "age": [
+      {
+        "value": 42,
+        "source": "sbs:volume-90"
+      }
+    ],
+    "birthday": {
+      "value": "01-23"
+    }
+  },
+  "relations": []
+}

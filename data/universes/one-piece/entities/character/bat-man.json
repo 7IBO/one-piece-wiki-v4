@@ -1,0 +1,28 @@
+{
+  "id": "character:bat-man",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bat-man",
+  "canonical_name_key": "character.bat-man.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bat-man.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:914"
+      },
+      {
+        "value_key": "character.bat-man.name.batman",
+        "name_type": "alias",
+        "since": "manga-chapter:914"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:914"
+      }
+    ]
+  },
+  "relations": []
+}

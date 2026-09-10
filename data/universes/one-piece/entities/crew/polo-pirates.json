@@ -1,0 +1,17 @@
+{
+  "id": "crew:polo-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "polo-pirates",
+  "canonical_name_key": "crew.polo-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.polo-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1162"
+      }
+    ]
+  },
+  "relations": []
+}

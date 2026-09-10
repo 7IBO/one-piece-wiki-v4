@@ -1,0 +1,21 @@
+{
+  "id": "character:chavez",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chavez",
+  "canonical_name_key": "character.chavez.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chavez.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

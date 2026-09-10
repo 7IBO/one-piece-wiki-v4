@@ -1,0 +1,20 @@
+{
+  "id": "ship:zenny",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "zenny",
+  "canonical_name_key": "ship.zenny.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.zenny.name.common",
+        "name_type": "common",
+        "since": "anime-episode:136"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

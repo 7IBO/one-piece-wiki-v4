@@ -1,0 +1,16 @@
+{
+  "id": "crew:hunger-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "hunger-pirates",
+  "canonical_name_key": "crew.hunger-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.hunger-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,42 @@
+{
+  "id": "character:brindo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "brindo",
+  "canonical_name_key": "character.brindo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.brindo.name.common",
+        "name_type": "common",
+        "since": "anime-episode:326"
+      },
+      {
+        "value_key": "character.brindo.name.blend",
+        "name_type": "alias",
+        "since": "anime-episode:326"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.brindo.epithet.love-hunter",
+        "since": "anime-episode:333"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:326"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "bounty_hunter"
+        ],
+        "since": "anime-episode:326"
+      }
+    ]
+  },
+  "relations": []
+}

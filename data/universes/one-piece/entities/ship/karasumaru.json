@@ -1,0 +1,20 @@
+{
+  "id": "ship:karasumaru",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "karasumaru",
+  "canonical_name_key": "ship.karasumaru.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.karasumaru.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:244"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

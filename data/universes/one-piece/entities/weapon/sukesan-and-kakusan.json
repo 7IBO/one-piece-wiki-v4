@@ -1,0 +1,25 @@
+{
+  "id": "weapon:sukesan-and-kakusan",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "sukesan-and-kakusan",
+  "canonical_name_key": "weapon.sukesan-and-kakusan.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.sukesan-and-kakusan.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:659"
+      },
+      {
+        "value_key": "weapon.sukesan-and-kakusan.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:659"
+      }
+    ],
+    "weapon_type": {
+      "value": "katana"
+    }
+  },
+  "relations": []
+}

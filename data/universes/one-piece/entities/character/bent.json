@@ -1,0 +1,29 @@
+{
+  "id": "character:bent",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bent",
+  "canonical_name_key": "character.bent.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bent.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1134"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1134"
+      }
+    ],
+    "age": [
+      {
+        "value": 25,
+        "source": "sbs:volume-115"
+      }
+    ]
+  },
+  "relations": []
+}

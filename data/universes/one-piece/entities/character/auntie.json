@@ -1,0 +1,23 @@
+{
+  "id": "character:auntie",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "auntie",
+  "canonical_name_key": "character.auntie.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.auntie.name.common",
+        "name_type": "common",
+        "since": "anime-episode:318"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:318"
+      }
+    ]
+  },
+  "relations": []
+}

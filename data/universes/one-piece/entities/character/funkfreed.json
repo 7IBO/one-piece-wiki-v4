@@ -1,0 +1,31 @@
+{
+  "id": "character:funkfreed",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "funkfreed",
+  "canonical_name_key": "character.funkfreed.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.funkfreed.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:365"
+      },
+      {
+        "value_key": "character.funkfreed.name.funk-freed",
+        "name_type": "alias",
+        "since": "manga-chapter:365"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:365"
+      }
+    ],
+    "birthday": {
+      "value": "04-28"
+    }
+  },
+  "relations": []
+}

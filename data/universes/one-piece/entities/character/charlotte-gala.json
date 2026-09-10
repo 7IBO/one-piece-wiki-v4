@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-gala",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-gala",
+  "canonical_name_key": "character.charlotte-gala.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-gala.name.common",
+        "name_type": "common",
+        "since": "sbs:volume-85"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "sbs:volume-85"
+      }
+    ],
+    "age": [
+      {
+        "value": 46
+      }
+    ],
+    "birthday": {
+      "value": "09-29"
+    }
+  },
+  "relations": []
+}

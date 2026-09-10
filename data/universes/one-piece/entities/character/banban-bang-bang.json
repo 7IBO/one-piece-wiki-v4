@@ -1,0 +1,23 @@
+{
+  "id": "character:banban-bang-bang",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "banban-bang-bang",
+  "canonical_name_key": "character.banban-bang-bang.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.banban-bang-bang.name.common",
+        "name_type": "common",
+        "since": "anime-episode:319"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:319"
+      }
+    ]
+  },
+  "relations": []
+}

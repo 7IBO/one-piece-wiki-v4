@@ -1,0 +1,28 @@
+{
+  "id": "character:charlotte-brownie",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-brownie",
+  "canonical_name_key": "character.charlotte-brownie.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-brownie.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "age": [
+      {
+        "value": 24
+      }
+    ]
+  },
+  "relations": []
+}

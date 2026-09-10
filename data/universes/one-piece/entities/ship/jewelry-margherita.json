@@ -1,0 +1,20 @@
+{
+  "id": "ship:jewelry-margherita",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "jewelry-margherita",
+  "canonical_name_key": "ship.jewelry-margherita.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.jewelry-margherita.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:581"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

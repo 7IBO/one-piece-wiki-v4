@@ -1,0 +1,34 @@
+{
+  "id": "character:delacuaji",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "delacuaji",
+  "canonical_name_key": "character.delacuaji.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.delacuaji.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:551"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:551"
+      }
+    ],
+    "birthday": {
+      "value": "09-01"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:551"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "character:busshiri",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "busshiri",
+  "canonical_name_key": "character.busshiri.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.busshiri.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:391"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:391"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "archaeologist"
+        ],
+        "since": "manga-chapter:391"
+      }
+    ]
+  },
+  "relations": []
+}

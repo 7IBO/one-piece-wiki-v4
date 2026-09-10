@@ -1,0 +1,20 @@
+{
+  "id": "ship:mini-merry-ii",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "mini-merry-ii",
+  "canonical_name_key": "ship.mini-merry-ii.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.mini-merry-ii.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:444"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,29 @@
+{
+  "id": "character:collun",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "collun",
+  "canonical_name_key": "character.collun.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.collun.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1076"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1076"
+      }
+    ],
+    "age": [
+      {
+        "value": 20,
+        "source": "manga-chapter:1139"
+      }
+    ]
+  },
+  "relations": []
+}

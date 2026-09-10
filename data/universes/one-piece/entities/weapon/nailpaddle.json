@@ -1,0 +1,19 @@
+{
+  "id": "weapon:nailpaddle",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "nailpaddle",
+  "canonical_name_key": "weapon.nailpaddle.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.nailpaddle.name.common",
+        "name_type": "common"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

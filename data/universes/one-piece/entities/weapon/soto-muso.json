@@ -1,0 +1,20 @@
+{
+  "id": "weapon:soto-muso",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "soto-muso",
+  "canonical_name_key": "weapon.soto-muso.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.soto-muso.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:948"
+      }
+    ],
+    "weapon_type": {
+      "value": "katana"
+    }
+  },
+  "relations": []
+}

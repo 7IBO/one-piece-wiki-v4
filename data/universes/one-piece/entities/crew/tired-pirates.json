@@ -1,0 +1,16 @@
+{
+  "id": "crew:tired-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "tired-pirates",
+  "canonical_name_key": "crew.tired-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.tired-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

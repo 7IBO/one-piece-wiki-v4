@@ -1,0 +1,62 @@
+{
+  "id": "character:cavendish",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "cavendish",
+  "canonical_name_key": "character.cavendish.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.cavendish.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:704"
+      },
+      {
+        "value_key": "character.cavendish.name.hakuba",
+        "name_type": "alias",
+        "since": "manga-chapter:734"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.cavendish.epithet.cavendish-of-the-white-horse",
+        "since": "manga-chapter:704"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:704"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 280000000,
+        "since": "manga-chapter:704"
+      },
+      {
+        "value": 330000000,
+        "since": "manga-chapter:801"
+      }
+    ],
+    "age": [
+      {
+        "value": 26,
+        "source": "sbs:volume-83"
+      }
+    ],
+    "height": [
+      {
+        "value": 208,
+        "source": "databook-card:0849"
+      }
+    ],
+    "birthday": {
+      "value": "08-31"
+    },
+    "blood_type": {
+      "value": "XF"
+    }
+  },
+  "relations": []
+}

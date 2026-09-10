@@ -1,0 +1,23 @@
+{
+  "id": "character:dashiteyaro",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "dashiteyaro",
+  "canonical_name_key": "character.dashiteyaro.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.dashiteyaro.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:951"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:951"
+      }
+    ]
+  },
+  "relations": []
+}

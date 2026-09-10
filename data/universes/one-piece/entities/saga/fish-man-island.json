@@ -1,0 +1,18 @@
+{
+  "id": "saga:fish-man-island",
+  "type": "saga",
+  "schema_version": 1,
+  "slug": "fish-man-island",
+  "canonical_name_key": "saga.fish-man-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "saga.fish-man-island.name"
+      }
+    ],
+    "saga_number": {
+      "value": 7
+    }
+  },
+  "relations": []
+}

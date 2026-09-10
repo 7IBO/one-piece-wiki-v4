@@ -1,0 +1,49 @@
+{
+  "id": "character:ikaros-much",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "ikaros-much",
+  "canonical_name_key": "character.ikaros-much.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.ikaros-much.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:611"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:611"
+      }
+    ],
+    "age": [
+      {
+        "value": 30,
+        "source": "databook-card:0729"
+      }
+    ],
+    "height": [
+      {
+        "value": 499,
+        "source": "databook-card:0729"
+      }
+    ],
+    "birthday": {
+      "value": "01-13"
+    },
+    "blood_type": {
+      "value": "XF"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:611"
+      }
+    ]
+  },
+  "relations": []
+}

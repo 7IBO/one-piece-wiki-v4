@@ -1,0 +1,41 @@
+{
+  "id": "character:boa-marigold",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "boa-marigold",
+  "canonical_name_key": "character.boa-marigold.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.boa-marigold.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 40000000,
+        "since": "databook-card:0559"
+      }
+    ],
+    "height": [
+      {
+        "value": 432,
+        "source": "databook-card:0559"
+      }
+    ],
+    "birthday": {
+      "value": "09-05"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

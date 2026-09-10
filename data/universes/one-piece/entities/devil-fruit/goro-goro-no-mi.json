@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:goro-goro-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "goro-goro-no-mi",
+  "canonical_name_key": "devil-fruit.goro-goro-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.goro-goro-no-mi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:241"
+      },
+      {
+        "value_key": "devil-fruit.goro-goro-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:241"
+      }
+    ],
+    "classification": [
+      {
+        "value": "logia",
+        "since": "manga-chapter:241"
+      }
+    ]
+  },
+  "relations": []
+}

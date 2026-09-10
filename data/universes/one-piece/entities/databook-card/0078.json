@@ -1,0 +1,15 @@
+{
+  "id": "databook-card:0078",
+  "type": "databook-card",
+  "schema_version": 1,
+  "slug": "0078",
+  "properties": {
+    "card_number": {
+      "value": "0078"
+    },
+    "card_kind": {
+      "value": "character"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,34 @@
+{
+  "id": "character:blamenco",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "blamenco",
+  "canonical_name_key": "character.blamenco.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.blamenco.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "birthday": {
+      "value": "02-05"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:553"
+      }
+    ]
+  },
+  "relations": []
+}

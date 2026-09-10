@@ -3,9 +3,35 @@
   "id": "card-kinds",
   "schema_version": 1,
   "values": {
-    "character": { "labels": { "en": "Character profile", "fr": "Profil de personnage" } },
-    "extra": { "labels": { "en": "Extra characters", "fr": "Personnages secondaires" } },
-    "skill": { "labels": { "en": "Skill / ability", "fr": "Compétence / capacité" } },
-    "ship": { "labels": { "en": "Ship", "fr": "Navire" } }
+    "character": {
+      "labels": {
+        "en": "Character profile",
+        "fr": "Profil de personnage"
+      }
+    },
+    "extra": {
+      "labels": {
+        "en": "Extra characters",
+        "fr": "Personnages secondaires"
+      }
+    },
+    "skill": {
+      "labels": {
+        "en": "Skill / ability",
+        "fr": "Compétence / capacité"
+      }
+    },
+    "ship": {
+      "labels": {
+        "en": "Ship",
+        "fr": "Navire"
+      }
+    },
+    "crew": {
+      "labels": {
+        "en": "Crew",
+        "fr": "Équipage"
+      }
+    }
   }
 }

@@ -1,0 +1,19 @@
+{
+  "id": "ship:yamato-maru",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "yamato-maru",
+  "canonical_name_key": "ship.yamato-maru.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.yamato-maru.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,28 @@
+{
+  "id": "devil-fruit:gutsu-gutsu-no-mi",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "gutsu-gutsu-no-mi",
+  "canonical_name_key": "devil-fruit.gutsu-gutsu-no-mi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.gutsu-gutsu-no-mi.name.common",
+        "name_type": "common",
+        "since": "anime-episode:746"
+      },
+      {
+        "value_key": "devil-fruit.gutsu-gutsu-no-mi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "anime-episode:746"
+      }
+    ],
+    "classification": [
+      {
+        "value": "paramecia",
+        "since": "anime-episode:746"
+      }
+    ]
+  },
+  "relations": []
+}

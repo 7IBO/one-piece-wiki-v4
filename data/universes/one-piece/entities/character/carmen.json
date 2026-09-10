@@ -1,0 +1,33 @@
+{
+  "id": "character:carmen",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "carmen",
+  "canonical_name_key": "character.carmen.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.carmen.name.common",
+        "name_type": "common"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.carmen.epithet.fiery-carmen"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "cook"
+        ]
+      }
+    ]
+  },
+  "relations": []
+}

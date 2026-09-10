@@ -1,0 +1,19 @@
+{
+  "id": "ship:rokuron-dokuron",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "rokuron-dokuron",
+  "canonical_name_key": "ship.rokuron-dokuron.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.rokuron-dokuron.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

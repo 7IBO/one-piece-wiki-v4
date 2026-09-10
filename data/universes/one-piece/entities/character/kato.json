@@ -1,0 +1,39 @@
+{
+  "id": "character:kato",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "kato",
+  "canonical_name_key": "character.kato.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.kato.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:854"
+      },
+      {
+        "value_key": "character.kato.name.fructose",
+        "name_type": "alias",
+        "since": "manga-chapter:854"
+      },
+      {
+        "value_key": "character.kato.name.charlotte-kato",
+        "name_type": "alias",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "age": [
+      {
+        "value": 28,
+        "source": "sbs:volume-90"
+      }
+    ]
+  },
+  "relations": []
+}

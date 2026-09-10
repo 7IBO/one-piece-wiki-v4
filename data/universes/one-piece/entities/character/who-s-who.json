@@ -1,0 +1,53 @@
+{
+  "id": "character:who-s-who",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "who-s-who",
+  "canonical_name_key": "character.who-s-who.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.who-s-who.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:977"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.who-s-who.epithet.who-of-the-droplets",
+        "since": "databook-card:1552"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:977"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 546000000,
+        "since": "databook-card:1552"
+      }
+    ],
+    "age": [
+      {
+        "value": 38,
+        "source": "sbs:volume-97"
+      }
+    ],
+    "height": [
+      {
+        "value": 336,
+        "source": "sbs:volume-97"
+      }
+    ],
+    "birthday": {
+      "value": "03-15"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

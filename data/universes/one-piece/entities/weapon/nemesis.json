@@ -1,0 +1,25 @@
+{
+  "id": "weapon:nemesis",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "nemesis",
+  "canonical_name_key": "weapon.nemesis.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.nemesis.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:907"
+      },
+      {
+        "value_key": "weapon.nemesis.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:907"
+      }
+    ],
+    "weapon_type": {
+      "value": "sword"
+    }
+  },
+  "relations": []
+}

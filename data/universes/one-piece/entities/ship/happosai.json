@@ -1,0 +1,20 @@
+{
+  "id": "ship:happosai",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "happosai",
+  "canonical_name_key": "ship.happosai.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.happosai.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:800"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

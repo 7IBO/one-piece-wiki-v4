@@ -27,6 +27,7 @@ import { orderCrawlQueue, readOrdinalTitle } from './ordinal-title.ts';
 import { mapOrganization } from './organization.ts';
 import type { FandomRegistry } from './registry.ts';
 import { buildTitleIndex, detectEntityLinks, normalizeTitle } from './registry.ts';
+import { mapSaga } from './saga.ts';
 import { mapShip } from './ship.ts';
 import { mapVolume } from './volume.ts';
 import { mapWeapon } from './weapon.ts';
@@ -42,7 +43,8 @@ export type MapperKind =
   | 'ship'
   | 'organization'
   | 'weapon'
-  | 'arc';
+  | 'arc'
+  | 'saga';
 
 type Mapper = (page: ParsedPage) => (MapperEmit & { warnings: readonly string[]; }) | null;
 
@@ -64,6 +66,9 @@ function buildMappers(
     organization: (page) => mapOrganization(page, boxCtx),
     weapon: (page) => mapWeapon(page, boxCtx),
     arc: (page) => mapArc(page, boxCtx),
+    // Le mapper de saga ne prend pas de contexte : le Saga Box ne
+    // porte aucun wikilien a resoudre, seulement des titres de chaine.
+    saga: mapSaga,
   };
 }
 
@@ -79,6 +84,7 @@ const BOX_TO_KIND: readonly (readonly [string, MapperKind])[] = [
   ['organization box', 'organization'],
   ['weapon box', 'weapon'],
   ['arc box', 'arc'],
+  ['saga box', 'saga'],
 ];
 
 /**

@@ -127,9 +127,14 @@ async function main(): Promise<void> {
   const force = args.includes('--force');
   const cdpAt = args.indexOf('--cdp');
   const cdpUrl = cdpAt === -1 ? null : args[cdpAt + 1] ?? null;
+  // L'URL qui SUIT `--cdp` est l'adresse du navigateur, pas une page a
+  // relever. Le garde ne vaut que si `--cdp` est present : sans lui,
+  // `cdpAt` vaut -1, et exclure l'indice 0 faisait disparaitre en
+  // silence la premiere URL passee en argument.
+  const cdpValueAt = cdpAt === -1 ? -1 : cdpAt + 1;
   const urls = [
     ...(preset ?? []),
-    ...args.filter((a, i) => a.startsWith('http') && i !== cdpAt + 1),
+    ...args.filter((a, i) => a.startsWith('http') && i !== cdpValueAt),
   ];
   if (urls.length === 0) {
     process.stderr.write(

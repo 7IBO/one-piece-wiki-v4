@@ -1,0 +1,25 @@
+{
+  "id": "weapon:nonosama-bo",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "nonosama-bo",
+  "canonical_name_key": "weapon.nonosama-bo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.nonosama-bo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:254"
+      },
+      {
+        "value_key": "weapon.nonosama-bo.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:254"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

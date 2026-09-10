@@ -1,0 +1,20 @@
+{
+  "id": "ship:thousand-sunny",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "thousand-sunny",
+  "canonical_name_key": "ship.thousand-sunny.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.thousand-sunny.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:436"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

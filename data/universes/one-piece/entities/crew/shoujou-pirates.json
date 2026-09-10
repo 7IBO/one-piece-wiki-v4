@@ -1,0 +1,17 @@
+{
+  "id": "crew:shoujou-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "shoujou-pirates",
+  "canonical_name_key": "crew.shoujou-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.shoujou-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:226"
+      }
+    ]
+  },
+  "relations": []
+}

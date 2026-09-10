@@ -15,5 +15,10 @@
       "value": 23
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:summit-war"
+    }
+  ]
 }

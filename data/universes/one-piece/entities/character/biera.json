@@ -1,0 +1,21 @@
+{
+  "id": "character:biera",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "biera",
+  "canonical_name_key": "character.biera.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.biera.name.common",
+        "name_type": "common"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive"
+      }
+    ]
+  },
+  "relations": []
+}

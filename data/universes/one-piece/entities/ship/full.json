@@ -1,0 +1,20 @@
+{
+  "id": "ship:full",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "full",
+  "canonical_name_key": "ship.full.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.full.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:212"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

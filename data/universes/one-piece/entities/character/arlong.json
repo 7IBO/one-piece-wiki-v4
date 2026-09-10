@@ -1,0 +1,47 @@
+{
+  "id": "character:arlong",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "arlong",
+  "canonical_name_key": "character.arlong.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.arlong.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:69"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.arlong.epithet.arlong-the-saw",
+        "since": "manga-chapter:69"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:69"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 20000000,
+        "since": "manga-chapter:69"
+      }
+    ],
+    "height": [
+      {
+        "value": 263,
+        "source": "databook-card:0094"
+      }
+    ],
+    "birthday": {
+      "value": "05-03"
+    },
+    "blood_type": {
+      "value": "F"
+    }
+  },
+  "relations": []
+}

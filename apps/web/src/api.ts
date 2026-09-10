@@ -19,6 +19,7 @@ import {
   buildEntityPreview,
   buildEntityView,
   buildHomeView,
+  buildProgressPicker,
   buildTypeListView,
 } from '../server/views';
 import type { Locale } from './lib/chrome';
@@ -47,6 +48,9 @@ export type {
   LabelledValue,
   MemberRowView,
   MemberThumbView,
+  ProgressArcView,
+  ProgressPickerView,
+  ProgressSagaView,
   PropertyEntryView,
   PropertyView,
   ReadingView,
@@ -144,6 +148,21 @@ export const fetchPreview = createServerFn({ method: 'GET' })
   .handler(({ data }) =>
     buildEntityPreview(data.type, data.slug, data.locale, readProgress(), data.scope)
   );
+
+/**
+ * L'échelle du sélecteur de progression : les arcs groupés par saga,
+ * avec leurs bornes. Appelée à la PREMIÈRE ouverture du dialogue et
+ * mémoïsée côté client par locale — l'échelle ne dépend ni de la page
+ * ni du curseur, seulement de la langue.
+ *
+ * Pas de curseur en entrée, volontairement : cette liste EST la
+ * question posée au lecteur (« où en es-tu ? »), la seule surface du
+ * site qui doit montrer au-delà de la position déclarée. Voir
+ * `buildProgressPicker`.
+ */
+export const fetchProgressPicker = createServerFn({ method: 'GET' })
+  .inputValidator((input: { locale: Locale; }) => ({ locale: asLocale(input.locale) }))
+  .handler(({ data }) => buildProgressPicker(data.locale));
 
 export const fetchEntity = createServerFn({ method: 'GET' })
   .inputValidator((input: { locale: Locale; type: string; slug: string; scope?: string; }) => ({

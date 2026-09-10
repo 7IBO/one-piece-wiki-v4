@@ -122,11 +122,18 @@ describe.skipIf(!hasArtifact)('search (real artifact)', () => {
     expect(fruitEn?.name).toBe('Gomu Gomu no Mi');
   });
 
-  test('data locales never surface: a romanized/Japanese query matches nothing', async () => {
+  test('data locales never surface: a romanized/Japanese name does not find its entity', async () => {
     // `ja` / `ja-latn` exist in the artifact's translations for Luffy
-    // but are dashboard-only (ADR-095) and are not indexed.
-    expect(await ids('モンキー')).toEqual([]);
-    expect(await ids('Mugiwara')).toEqual([]);
+    // et l'équipage, mais sont réservées au dashboard (ADR-095) et ne
+    // sont pas indexées.
+    //
+    // L'assertion porte sur L'ENTITÉ QUI PORTE LE NOM, pas sur un
+    // total nul : « Mugiwara » ressemble à « Wara Wara no Mi », et
+    // depuis l'import des 209 fruits la passe floue le trouve. C'est
+    // le comportement voulu de la recherche approchante — épingler
+    // « zéro résultat » testait la taille du corpus, pas la règle.
+    expect(await ids('モンキー')).not.toContain('character:monkey-d-luffy');
+    expect(await ids('Mugiwara')).not.toContain('crew:straw-hat-pirates');
   });
 
   // -------------------------------------------------------------------------

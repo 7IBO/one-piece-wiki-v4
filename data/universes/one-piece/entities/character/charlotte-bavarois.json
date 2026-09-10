@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-bavarois",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-bavarois",
+  "canonical_name_key": "character.charlotte-bavarois.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-bavarois.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:888"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:888"
+      }
+    ],
+    "age": [
+      {
+        "value": 30
+      }
+    ],
+    "birthday": {
+      "value": "10-29"
+    }
+  },
+  "relations": []
+}

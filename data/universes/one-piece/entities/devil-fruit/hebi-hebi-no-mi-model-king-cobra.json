@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:hebi-hebi-no-mi-model-king-cobra",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "hebi-hebi-no-mi-model-king-cobra",
+  "canonical_name_key": "devil-fruit.hebi-hebi-no-mi-model-king-cobra.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.hebi-hebi-no-mi-model-king-cobra.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:518"
+      },
+      {
+        "value_key": "devil-fruit.hebi-hebi-no-mi-model-king-cobra.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:518"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "manga-chapter:518"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "King Cobra",
+        "since": "manga-chapter:518"
+      }
+    ]
+  },
+  "relations": []
+}

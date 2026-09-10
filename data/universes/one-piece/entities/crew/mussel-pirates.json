@@ -1,0 +1,16 @@
+{
+  "id": "crew:mussel-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "mussel-pirates",
+  "canonical_name_key": "crew.mussel-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.mussel-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

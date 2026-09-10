@@ -1,0 +1,34 @@
+{
+  "id": "character:bizarre",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bizarre",
+  "canonical_name_key": "character.bizarre.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bizarre.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:553"
+      }
+    ],
+    "birthday": {
+      "value": "02-03"
+    },
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:553"
+      }
+    ]
+  },
+  "relations": []
+}

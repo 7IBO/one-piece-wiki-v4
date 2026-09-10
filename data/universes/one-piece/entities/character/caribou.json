@@ -1,0 +1,53 @@
+{
+  "id": "character:caribou",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "caribou",
+  "canonical_name_key": "character.caribou.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.caribou.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:600"
+      }
+    ],
+    "epithet": [
+      {
+        "value_key": "character.caribou.epithet.wet-haired-caribou",
+        "since": "manga-chapter:600"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:600"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 210000000,
+        "since": "manga-chapter:600"
+      }
+    ],
+    "age": [
+      {
+        "value": 32,
+        "source": "databook-card:0691"
+      }
+    ],
+    "height": [
+      {
+        "value": 228,
+        "source": "databook-card:0691"
+      }
+    ],
+    "birthday": {
+      "value": "07-04"
+    },
+    "blood_type": {
+      "value": "XF"
+    }
+  },
+  "relations": []
+}

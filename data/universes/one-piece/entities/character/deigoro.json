@@ -1,0 +1,23 @@
+{
+  "id": "character:deigoro",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "deigoro",
+  "canonical_name_key": "character.deigoro.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.deigoro.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:958"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:958"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-raisin",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-raisin",
+  "canonical_name_key": "character.charlotte-raisin.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-raisin.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:845"
+      }
+    ],
+    "age": [
+      {
+        "value": 22
+      }
+    ],
+    "birthday": {
+      "value": "03-23"
+    }
+  },
+  "relations": []
+}

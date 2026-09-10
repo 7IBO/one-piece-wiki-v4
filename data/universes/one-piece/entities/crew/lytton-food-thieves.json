@@ -1,0 +1,16 @@
+{
+  "id": "crew:lytton-food-thieves",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "lytton-food-thieves",
+  "canonical_name_key": "crew.lytton-food-thieves.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.lytton-food-thieves.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

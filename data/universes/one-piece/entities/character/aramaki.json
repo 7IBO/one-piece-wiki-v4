@@ -1,0 +1,52 @@
+{
+  "id": "character:aramaki",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "aramaki",
+  "canonical_name_key": "character.aramaki.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.aramaki.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:905"
+      },
+      {
+        "value_key": "character.aramaki.name.ryokugyu",
+        "name_type": "alias",
+        "since": "manga-chapter:713"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:905"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 3000000000,
+        "since": "manga-chapter:1087"
+      }
+    ],
+    "age": [
+      {
+        "value": 41,
+        "source": "databook-card:1678"
+      }
+    ],
+    "height": [
+      {
+        "value": 308,
+        "source": "databook-card:1678"
+      }
+    ],
+    "birthday": {
+      "value": "02-29"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

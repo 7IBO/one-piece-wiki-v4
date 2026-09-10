@@ -1,0 +1,41 @@
+{
+  "id": "character:boa-sandersonia",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "boa-sandersonia",
+  "canonical_name_key": "character.boa-sandersonia.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.boa-sandersonia.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:516"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 40000000,
+        "since": "databook-card:0558"
+      }
+    ],
+    "height": [
+      {
+        "value": 453,
+        "source": "databook-card:0558"
+      }
+    ],
+    "birthday": {
+      "value": "09-03"
+    },
+    "blood_type": {
+      "value": "S"
+    }
+  },
+  "relations": []
+}

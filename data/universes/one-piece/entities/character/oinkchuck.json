@@ -1,0 +1,23 @@
+{
+  "id": "character:oinkchuck",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "oinkchuck",
+  "canonical_name_key": "character.oinkchuck.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.oinkchuck.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:446"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:446"
+      }
+    ]
+  },
+  "relations": []
+}

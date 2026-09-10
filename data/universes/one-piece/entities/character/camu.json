@@ -1,0 +1,23 @@
+{
+  "id": "character:camu",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "camu",
+  "canonical_name_key": "character.camu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.camu.name.common",
+        "name_type": "common",
+        "since": "anime-episode:99"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:99"
+      }
+    ]
+  },
+  "relations": []
+}

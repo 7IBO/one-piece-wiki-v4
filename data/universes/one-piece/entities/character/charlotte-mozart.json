@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-mozart",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-mozart",
+  "canonical_name_key": "character.charlotte-mozart.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-mozart.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:862"
+      }
+    ],
+    "age": [
+      {
+        "value": 37
+      }
+    ],
+    "birthday": {
+      "value": "12-20"
+    }
+  },
+  "relations": []
+}

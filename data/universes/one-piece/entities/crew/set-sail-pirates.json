@@ -1,0 +1,16 @@
+{
+  "id": "crew:set-sail-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "set-sail-pirates",
+  "canonical_name_key": "crew.set-sail-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.set-sail-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

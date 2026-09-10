@@ -1,0 +1,20 @@
+{
+  "id": "ship:rocky-port",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "rocky-port",
+  "canonical_name_key": "ship.rocky-port.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.rocky-port.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1080"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

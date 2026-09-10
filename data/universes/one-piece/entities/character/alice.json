@@ -1,0 +1,23 @@
+{
+  "id": "character:alice",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "alice",
+  "canonical_name_key": "character.alice.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.alice.name.common",
+        "name_type": "common",
+        "since": "anime-episode:381"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "anime-episode:381"
+      }
+    ]
+  },
+  "relations": []
+}

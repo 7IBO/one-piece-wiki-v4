@@ -1,0 +1,26 @@
+{
+  "id": "character:candy",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "candy",
+  "canonical_name_key": "character.candy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.candy.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:510"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:510"
+      }
+    ],
+    "birthday": {
+      "value": "06-14"
+    }
+  },
+  "relations": []
+}

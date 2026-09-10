@@ -1,0 +1,28 @@
+{
+  "id": "weapon:shodai-kitetsu",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "shodai-kitetsu",
+  "canonical_name_key": "weapon.shodai-kitetsu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.shodai-kitetsu.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:233"
+      },
+      {
+        "value_key": "weapon.shodai-kitetsu.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:233"
+      }
+    ],
+    "weapon_type": {
+      "value": "sword"
+    },
+    "weapon_grade": {
+      "value": "saijo_o_wazamono"
+    }
+  },
+  "relations": []
+}

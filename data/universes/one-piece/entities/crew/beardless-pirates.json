@@ -1,0 +1,16 @@
+{
+  "id": "crew:beardless-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "beardless-pirates",
+  "canonical_name_key": "crew.beardless-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.beardless-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

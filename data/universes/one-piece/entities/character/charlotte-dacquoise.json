@@ -1,0 +1,29 @@
+{
+  "id": "character:charlotte-dacquoise",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-dacquoise",
+  "canonical_name_key": "character.charlotte-dacquoise.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-dacquoise.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:854"
+      }
+    ],
+    "age": [
+      {
+        "value": 32,
+        "source": "sbs:volume-90"
+      }
+    ]
+  },
+  "relations": []
+}

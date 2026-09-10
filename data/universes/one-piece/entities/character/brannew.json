@@ -1,0 +1,45 @@
+{
+  "id": "character:brannew",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "brannew",
+  "canonical_name_key": "character.brannew.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.brannew.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:96"
+      },
+      {
+        "value_key": "character.brannew.name.brandnew",
+        "name_type": "alias",
+        "since": "manga-chapter:96"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:96"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 100000000
+      }
+    ],
+    "height": [
+      {
+        "value": 190,
+        "source": "databook-card:0113"
+      }
+    ],
+    "birthday": {
+      "value": "09-03"
+    },
+    "blood_type": {
+      "value": "X"
+    }
+  },
+  "relations": []
+}

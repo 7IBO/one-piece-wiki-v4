@@ -1,0 +1,23 @@
+{
+  "id": "character:atagoyama",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "atagoyama",
+  "canonical_name_key": "character.atagoyama.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.atagoyama.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:915"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:915"
+      }
+    ]
+  },
+  "relations": []
+}

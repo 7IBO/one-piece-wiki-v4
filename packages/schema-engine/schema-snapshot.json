@@ -259,7 +259,7 @@
           "required": false
         },
         "card_kind": {
-          "required": true
+          "required": false
         },
         "card_number": {
           "required": false
@@ -703,7 +703,7 @@
           "required": false
         },
         "released_at": {
-          "required": true
+          "required": false
         }
       },
       "allowed_relations": [
@@ -1125,7 +1125,7 @@
       "constraints": {
         "min": 0,
         "max": null,
-        "step": 100000,
+        "step": null,
         "pattern": null
       }
     },
@@ -1485,7 +1485,7 @@
       "constraints": {
         "min": 0,
         "max": null,
-        "step": 1,
+        "step": null,
         "pattern": null
       }
     },
@@ -3781,6 +3781,7 @@
     ],
     "card-kinds": [
       "character",
+      "crew",
       "extra",
       "ship",
       "skill"

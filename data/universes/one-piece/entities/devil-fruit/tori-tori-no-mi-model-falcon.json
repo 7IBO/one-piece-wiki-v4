@@ -1,0 +1,34 @@
+{
+  "id": "devil-fruit:tori-tori-no-mi-model-falcon",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "tori-tori-no-mi-model-falcon",
+  "canonical_name_key": "devil-fruit.tori-tori-no-mi-model-falcon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.tori-tori-no-mi-model-falcon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:169"
+      },
+      {
+        "value_key": "devil-fruit.tori-tori-no-mi-model-falcon.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:169"
+      }
+    ],
+    "classification": [
+      {
+        "value": "zoan",
+        "since": "manga-chapter:169"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Falcon",
+        "since": "manga-chapter:169"
+      }
+    ]
+  },
+  "relations": []
+}

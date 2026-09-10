@@ -1,0 +1,20 @@
+{
+  "id": "ship:mammoth",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "mammoth",
+  "canonical_name_key": "ship.mammoth.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.mammoth.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:801"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

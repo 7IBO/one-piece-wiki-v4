@@ -1,0 +1,31 @@
+{
+  "id": "character:bankina",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "bankina",
+  "canonical_name_key": "character.bankina.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.bankina.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:41"
+      },
+      {
+        "value_key": "character.bankina.name.banchina",
+        "name_type": "alias",
+        "since": "manga-chapter:41"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:41"
+      }
+    ],
+    "birthday": {
+      "value": "12-17"
+    }
+  },
+  "relations": []
+}

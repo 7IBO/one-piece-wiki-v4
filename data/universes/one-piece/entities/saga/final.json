@@ -1,0 +1,18 @@
+{
+  "id": "saga:final",
+  "type": "saga",
+  "schema_version": 1,
+  "slug": "final",
+  "canonical_name_key": "saga.final.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "saga.final.name"
+      }
+    ],
+    "saga_number": {
+      "value": 11
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,20 @@
+{
+  "id": "ship:miss-love-duck",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "miss-love-duck",
+  "canonical_name_key": "ship.miss-love-duck.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.miss-love-duck.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:2"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

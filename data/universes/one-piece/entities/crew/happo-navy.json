@@ -1,0 +1,17 @@
+{
+  "id": "crew:happo-navy",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "happo-navy",
+  "canonical_name_key": "crew.happo-navy.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.happo-navy.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:704"
+      }
+    ]
+  },
+  "relations": []
+}

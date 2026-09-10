@@ -15,5 +15,10 @@
       "value": 28
     }
   },
-  "relations": []
+  "relations": [
+    {
+      "type": "part-of-saga",
+      "target": "saga:whole-cake-island"
+    }
+  ]
 }

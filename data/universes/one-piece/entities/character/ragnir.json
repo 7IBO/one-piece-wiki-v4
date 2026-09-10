@@ -1,0 +1,23 @@
+{
+  "id": "character:ragnir",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "ragnir",
+  "canonical_name_key": "character.ragnir.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.ragnir.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1130"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:1130"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,25 @@
+{
+  "id": "weapon:kabuto",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "kabuto",
+  "canonical_name_key": "weapon.kabuto.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.kabuto.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:390"
+      },
+      {
+        "value_key": "weapon.kabuto.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:390"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

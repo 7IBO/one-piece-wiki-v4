@@ -1,0 +1,23 @@
+{
+  "id": "character:adelle",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "adelle",
+  "canonical_name_key": "character.adelle.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.adelle.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:608"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:608"
+      }
+    ]
+  },
+  "relations": []
+}

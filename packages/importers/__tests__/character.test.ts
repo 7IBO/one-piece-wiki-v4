@@ -2,10 +2,15 @@
  * Char Box → character mapper on the REAL Hyougoro response
  * (fixture captured by the maintainer, 2026-06-14).
  */
-import { describe, expect, it } from 'bun:test';
+import { describe, expect, it, test } from 'bun:test';
 import { join } from 'node:path';
 import { GENERATED_DIR } from '../../schema-engine/src/paths.ts';
-import { mapCharacter, parseBirthday, parseBountyEntries } from '../src/fandom/character.ts';
+import {
+  mapCharacter,
+  parseBirthday,
+  parseBloodType,
+  parseBountyEntries,
+} from '../src/fandom/character.ts';
 import type { ParsedPage } from '../src/fandom/client.ts';
 import { buildTitleIndex } from '../src/fandom/registry.ts';
 import { parseNihongo, parseQrefs } from '../src/fandom/wikitext.ts';
@@ -278,5 +283,28 @@ describe("`ename` multi-ligne : la mention d'edition n'est pas le nom", () => {
     const names = result!.entity.properties['name'] as { name_type: string; }[];
     expect(result!.entity.slug).toBe('nami');
     expect(names.filter((n) => n.name_type === 'alias')).toEqual([]);
+  });
+});
+
+describe('parseBloodType', () => {
+  test('les quatre groupes du vocabulaire passent', () => {
+    expect(parseBloodType('S')).toBe('S');
+    expect(parseBloodType('f')).toBe('F');
+    expect(parseBloodType('XF')).toBe('XF');
+    expect(parseBloodType('X')).toBe('X');
+  });
+
+  test('une précision entre parenthèses tombe, la valeur reste', () => {
+    // Charlotte Praline : « S (RH-) » — la parenthèse porte une
+    // précision, pas l'identité (ADR-124).
+    expect(parseBloodType('S (RH-)')).toBe('S');
+  });
+
+  test('trois valeurs dans un champ ne se choisissent pas', () => {
+    // Baskerville a trois têtes et un seul champ. Choisir, ce serait
+    // inventer : le mapper refuse et avertit.
+    expect(parseBloodType('Bas: X And: XF Kerville: F')).toBeNull();
+    expect(parseBloodType('')).toBeNull();
+    expect(parseBloodType('AB')).toBeNull();
   });
 });

@@ -1,0 +1,20 @@
+{
+  "id": "weapon:flash-gun",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "flash-gun",
+  "canonical_name_key": "weapon.flash-gun.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.flash-gun.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:249"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

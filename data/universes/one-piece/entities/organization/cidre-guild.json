@@ -1,0 +1,20 @@
+{
+  "id": "organization:cidre-guild",
+  "type": "organization",
+  "schema_version": 1,
+  "slug": "cidre-guild",
+  "canonical_name_key": "organization.cidre-guild.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "organization.cidre-guild.name.common",
+        "name_type": "common",
+        "since": "anime-episode:895"
+      }
+    ],
+    "organization_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

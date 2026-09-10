@@ -1,0 +1,19 @@
+{
+  "id": "ship:umibozu",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "umibozu",
+  "canonical_name_key": "ship.umibozu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.umibozu.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

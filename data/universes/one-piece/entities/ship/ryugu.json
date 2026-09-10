@@ -1,0 +1,20 @@
+{
+  "id": "ship:ryugu",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "ryugu",
+  "canonical_name_key": "ship.ryugu.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.ryugu.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:609"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

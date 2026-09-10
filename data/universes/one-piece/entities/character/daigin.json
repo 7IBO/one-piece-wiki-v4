@@ -1,0 +1,31 @@
+{
+  "id": "character:daigin",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "daigin",
+  "canonical_name_key": "character.daigin.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.daigin.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:531"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:531"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 100000000
+      }
+    ],
+    "birthday": {
+      "value": "08-24"
+    }
+  },
+  "relations": []
+}

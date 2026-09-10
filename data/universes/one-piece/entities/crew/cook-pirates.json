@@ -1,0 +1,17 @@
+{
+  "id": "crew:cook-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "cook-pirates",
+  "canonical_name_key": "crew.cook-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.cook-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:56"
+      }
+    ]
+  },
+  "relations": []
+}

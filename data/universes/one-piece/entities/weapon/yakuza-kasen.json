@@ -1,0 +1,28 @@
+{
+  "id": "weapon:yakuza-kasen",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "yakuza-kasen",
+  "canonical_name_key": "weapon.yakuza-kasen.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.yakuza-kasen.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:701"
+      },
+      {
+        "value_key": "weapon.yakuza-kasen.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:701"
+      }
+    ],
+    "weapon_type": {
+      "value": "shikomizue"
+    },
+    "weapon_grade": {
+      "value": "saijo_o_wazamono"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,30 @@
+{
+  "id": "devil-fruit:tori-tori-no-mi-model-nue",
+  "type": "devil-fruit",
+  "schema_version": 1,
+  "slug": "tori-tori-no-mi-model-nue",
+  "canonical_name_key": "devil-fruit.tori-tori-no-mi-model-nue.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "devil-fruit.tori-tori-no-mi-model-nue.name.common",
+        "name_type": "common"
+      },
+      {
+        "value_key": "devil-fruit.tori-tori-no-mi-model-nue.name.literal-meaning",
+        "name_type": "literal_meaning"
+      }
+    ],
+    "classification": [
+      {
+        "value": "mythical_zoan"
+      }
+    ],
+    "zoan_model": [
+      {
+        "value": "Nue"
+      }
+    ]
+  },
+  "relations": []
+}

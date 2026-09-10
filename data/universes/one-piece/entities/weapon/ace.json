@@ -1,0 +1,23 @@
+{
+  "id": "weapon:ace",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "ace",
+  "canonical_name_key": "weapon.ace.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.ace.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:0"
+      }
+    ],
+    "weapon_type": {
+      "value": "cutlass"
+    },
+    "weapon_grade": {
+      "value": "saijo_o_wazamono"
+    }
+  },
+  "relations": []
+}

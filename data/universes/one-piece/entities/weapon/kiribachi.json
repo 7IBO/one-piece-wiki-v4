@@ -1,0 +1,25 @@
+{
+  "id": "weapon:kiribachi",
+  "type": "weapon",
+  "schema_version": 1,
+  "slug": "kiribachi",
+  "canonical_name_key": "weapon.kiribachi.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "weapon.kiribachi.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:92"
+      },
+      {
+        "value_key": "weapon.kiribachi.name.literal-meaning",
+        "name_type": "literal_meaning",
+        "since": "manga-chapter:92"
+      }
+    ],
+    "weapon_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

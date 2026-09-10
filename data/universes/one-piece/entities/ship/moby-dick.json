@@ -1,0 +1,20 @@
+{
+  "id": "ship:moby-dick",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "moby-dick",
+  "canonical_name_key": "ship.moby-dick.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.moby-dick.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:234"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

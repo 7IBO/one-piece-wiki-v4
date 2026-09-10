@@ -1,0 +1,23 @@
+{
+  "id": "character:chap",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "chap",
+  "canonical_name_key": "character.chap.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.chap.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:823"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:823"
+      }
+    ]
+  },
+  "relations": []
+}

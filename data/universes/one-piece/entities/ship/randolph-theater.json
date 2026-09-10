@@ -1,0 +1,19 @@
+{
+  "id": "ship:randolph-theater",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "randolph-theater",
+  "canonical_name_key": "ship.randolph-theater.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.randolph-theater.name.common",
+        "name_type": "common"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

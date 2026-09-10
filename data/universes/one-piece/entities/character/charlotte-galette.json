@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-galette",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-galette",
+  "canonical_name_key": "character.charlotte-galette.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-galette.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:829"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:829"
+      }
+    ],
+    "age": [
+      {
+        "value": 31
+      }
+    ],
+    "birthday": {
+      "value": "10-19"
+    }
+  },
+  "relations": []
+}

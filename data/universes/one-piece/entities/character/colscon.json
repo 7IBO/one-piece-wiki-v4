@@ -1,0 +1,31 @@
+{
+  "id": "character:colscon",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "colscon",
+  "canonical_name_key": "character.colscon.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.colscon.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:574"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:574"
+      }
+    ],
+    "occupation": [
+      {
+        "value": [
+          "pirate"
+        ],
+        "since": "manga-chapter:574"
+      }
+    ]
+  },
+  "relations": []
+}

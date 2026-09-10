@@ -1,0 +1,31 @@
+{
+  "id": "character:charlotte-compote",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "charlotte-compote",
+  "canonical_name_key": "character.charlotte-compote.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.charlotte-compote.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:860"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:860"
+      }
+    ],
+    "age": [
+      {
+        "value": 49
+      }
+    ],
+    "birthday": {
+      "value": "10-15"
+    }
+  },
+  "relations": []
+}

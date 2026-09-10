@@ -1,0 +1,54 @@
+{
+  "id": "character:choo",
+  "type": "character",
+  "schema_version": 1,
+  "slug": "choo",
+  "canonical_name_key": "character.choo.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "character.choo.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:69"
+      },
+      {
+        "value_key": "character.choo.name.chu",
+        "name_type": "alias",
+        "since": "manga-chapter:69"
+      }
+    ],
+    "status": [
+      {
+        "value": "alive",
+        "since": "manga-chapter:69"
+      }
+    ],
+    "bounty": [
+      {
+        "value": 5500000,
+        "since": "databook-card:0102"
+      }
+    ],
+    "height": [
+      {
+        "value": 257,
+        "source": "databook-card:0102"
+      }
+    ],
+    "birthday": {
+      "value": "05-23"
+    },
+    "blood_type": {
+      "value": "X"
+    },
+    "occupation": [
+      {
+        "value": [
+          "sniper"
+        ],
+        "since": "manga-chapter:75"
+      }
+    ]
+  },
+  "relations": []
+}

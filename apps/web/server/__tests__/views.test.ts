@@ -750,3 +750,66 @@ describe.skipIf(!hasArtifact)("l'URL publique vient du schema (url_segment)", ()
     expect(view.firstAppearance?.urlSegment).toBe('chapters');
   });
 });
+
+describe.if(hasArtifact)('progress picker (real artifact)', () => {
+  const picker = async (locale: 'en' | 'fr' = 'en') => {
+    const { buildProgressPicker } = await import('../views.ts');
+    return await buildProgressPicker(locale);
+  };
+
+  test('the scale is grouped by saga, in reading order', async () => {
+    const view = await picker();
+    expect(view.sagas.length).toBeGreaterThan(1);
+    // L'ordre vient de `saga_number`, découvert au schéma : la
+    // première saga est celle qui ouvre l'œuvre.
+    expect(view.sagas[0]?.id).toBe('saga:east-blue');
+    const arcs = view.sagas[0]?.arcs ?? [];
+    expect(arcs.map((arc) => arc.id)).toContain('arc:romance-dawn');
+    // Et les arcs sont dans l'ordre des chapitres, pas alphabétique.
+    const firsts = arcs.map((arc) => arc.range.manga?.[0] ?? -1);
+    expect([...firsts].sort((a, b) => a - b)).toEqual(firsts);
+  });
+
+  test('every arc carries a real span on at least one axis', async () => {
+    const view = await picker();
+    for (const saga of view.sagas) {
+      for (const arc of saga.arcs) {
+        const spans = [arc.range.manga, arc.range.anime].filter((span) => span !== null);
+        expect(spans.length).toBeGreaterThan(0);
+        for (const span of spans) expect(span[0]).toBeLessThanOrEqual(span[1]);
+      }
+    }
+  });
+
+  test('the spans are the corpus, not a table: they chain without a gap', async () => {
+    const view = await picker();
+    const spans = view.sagas
+      .flatMap((saga) => saga.arcs)
+      .map((arc) => arc.range.manga)
+      .filter((span) => span !== null)
+      .sort((a, b) => a[0] - b[0]);
+    expect(spans[0]?.[0]).toBe(1);
+    for (const [index, span] of spans.entries()) {
+      if (index === 0) continue;
+      expect(span[0]).toBe((spans[index - 1]?.[1] ?? 0) + 1);
+    }
+  });
+
+  test('an arc with no manga chapter is absent from the manga scale', async () => {
+    const view = await picker();
+    const ids = view.sagas.flatMap((saga) => saga.arcs).map((arc) => arc.id);
+    // Les arcs d'anime (filler, cover story) n'appartiennent à aucune
+    // saga du manga et ne doivent pas apparaître dans la progression.
+    expect(ids).not.toContain('arc:g-8');
+    expect(ids).not.toContain('arc:warship-island');
+  });
+
+  test('the names follow the locale', async () => {
+    const en = await picker('en');
+    const fr = await picker('fr');
+    expect(en.sagas.length).toBe(fr.sagas.length);
+    for (const [index, saga] of en.sagas.entries()) {
+      expect(fr.sagas[index]?.id).toBe(saga.id);
+    }
+  });
+});

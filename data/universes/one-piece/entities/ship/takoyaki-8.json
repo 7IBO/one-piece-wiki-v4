@@ -1,0 +1,20 @@
+{
+  "id": "ship:takoyaki-8",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "takoyaki-8",
+  "canonical_name_key": "ship.takoyaki-8.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.takoyaki-8.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:227"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}
