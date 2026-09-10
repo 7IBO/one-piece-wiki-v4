@@ -38,6 +38,22 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:29"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
+    },
+    {
+      "type": "features",
+      "target": "character:patty"
+    },
+    {
+      "type": "features",
+      "target": "character:carne"
+    },
+    {
+      "type": "features",
+      "target": "character:belle-mere"
     }
   ],
   "slug_history": [

@@ -42,6 +42,10 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:20"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
     }
   ],
   "slug_history": [

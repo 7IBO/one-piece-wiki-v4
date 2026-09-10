@@ -34,6 +34,28 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:32"
+    },
+    {
+      "type": "features",
+      "target": "character:arlong"
+    },
+    {
+      "type": "features",
+      "target": "character:choo"
+    },
+    {
+      "type": "features",
+      "target": "character:cabaji",
+      "qualifiers": {
+        "appearance_type": "cover_story"
+      }
+    },
+    {
+      "type": "features",
+      "target": "character:alvida",
+      "qualifiers": {
+        "appearance_type": "cover_story"
+      }
     }
   ],
   "slug_history": [

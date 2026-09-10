@@ -34,6 +34,21 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:24"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
+    },
+    {
+      "type": "features",
+      "target": "character:alvida",
+      "qualifiers": {
+        "appearance_type": "cover_story"
+      }
+    },
+    {
+      "type": "features",
+      "target": "character:patty"
     }
   ],
   "slug_history": [

@@ -30,6 +30,26 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:8"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
+    },
+    {
+      "type": "features",
+      "target": "character:cabaji"
+    },
+    {
+      "type": "features",
+      "target": "crew:buggy-pirates"
+    },
+    {
+      "type": "features",
+      "target": "character:boodle"
+    },
+    {
+      "type": "features",
+      "target": "character:chouchou"
     }
   ],
   "slug_history": [

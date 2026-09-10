@@ -34,6 +34,14 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:42"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
+    },
+    {
+      "type": "features",
+      "target": "character:arlong"
     }
   ],
   "slug_history": [

@@ -29,6 +29,7 @@
  */
 import { join } from 'node:path';
 import { REPO_ROOT } from '../../../schema-engine/src/paths.ts';
+import { buildCorpusSlugIndex, resolveAgainstCorpus } from '../corpus-index.ts';
 import { buildEmitFiles, type MapperEmit, mergeEntity, stageToLocal } from '../emit.ts';
 import {
   FEATURES_TARGET_TYPES,
@@ -735,8 +736,21 @@ if (kind === 'crawl') {
 
   const registry = await loadRegistry();
   const titleIndex = buildTitleIndex(registry);
-  const resolve = (title: string): string | null =>
-    resolveTitle(titleIndex, title)?.entityId ?? null;
+  // Le registre ne connait que ce qui est passe par un crawl. Les
+  // entites semees a la main n'y sont pas — mesure sur la premiere
+  // passe : 78 mentions de Roronoa Zoro, 71 de Nami, 57 d'Usopp et 55
+  // de Sanji rangees « hors corpus » alors qu'elles y sont depuis
+  // toujours. Le corpus lui-meme sert donc de repli.
+  const corpus = await buildCorpusSlugIndex(REPO_ROOT);
+  const ambiguous = new Map<string, readonly string[]>();
+  const resolve = (title: string): string | null => {
+    const known = resolveTitle(titleIndex, title)?.entityId;
+    if (known !== undefined) return known;
+    const found = resolveAgainstCorpus(corpus, title, FEATURES_TARGET_TYPES);
+    if (found.kind === 'resolved') return found.entityId;
+    if (found.kind === 'ambiguous') ambiguous.set(title, found.candidates);
+    return null;
+  };
 
   const onDisk = [...await ordinalsOnDisk(sourceType)]
     .filter((n) => n >= from && n <= to)
@@ -792,6 +806,14 @@ if (kind === 'crawl') {
       `\n${unresolved.size} cible(s) hors corpus — a importer ensuite (top 25) :\n`,
     );
     for (const [name, count] of top) process.stdout.write(`  ${count}x ${name}\n`);
+  }
+  // Une ambiguite ne se tranche pas : deux types portant le meme slug
+  // demandent un humain, pas un tirage au sort.
+  if (ambiguous.size > 0) {
+    process.stdout.write(`\n${ambiguous.size} titre(s) AMBIGU(S), non resolus :\n`);
+    for (const [title, candidates] of [...ambiguous].slice(0, 15)) {
+      process.stdout.write(`  ${title} → ${candidates.join(' | ')}\n`);
+    }
   }
   if (failures.length > 0) {
     process.stdout.write(`\n${failures.length} page(s) sans apparitions :\n`);

@@ -30,6 +30,14 @@
     {
       "type": "adapted-by",
       "target": "anime-episode:13"
+    },
+    {
+      "type": "features",
+      "target": "character:monkey-d-luffy"
+    },
+    {
+      "type": "features",
+      "target": "character:butchie"
     }
   ],
   "slug_history": [
