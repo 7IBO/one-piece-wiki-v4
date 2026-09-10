@@ -132,16 +132,32 @@ import ne doit pas faire. **Laissé en avertissement.**
 
 1. Les titres `ja` / `ja-latn` des 1 176 épisodes (`Kanji` / `Romaji`).
 2. Les noms `ja` / `ja-latn` des 451 personnages (`jname` / `rname`).
+3. Le mapper de l'**Island Box** → `location` (voir ci-dessous).
+
+4. **L'Island Box** (414 pages) → le type `location`.
+
+> **Correction de ce classement, faite en mesurant.** Cette section
+> plaçait d'abord `charDebut` en tête et l'Island Box en dernier. La
+> mesure dit l'inverse : les **451 personnages importés portent 6
+> relations à eux tous**, et le mapper de personnage explique pourquoi
+> — `origin` (89 % des Char Box) et `residence` (62 %) pointent des
+> lieux qui **n'existent pas** dans le corpus. Ce n'est pas un défaut
+> de résolution : testé avec un registre peuplé, le résultat est le
+> même. Importer les lieux est donc le premier déblocage, et il en
+> apporte deux : les 414 pages elles-mêmes, et les relations des
+> personnages.
+>
+> Au passage, la même mesure a montré que le vide des relations a une
+> **seconde** cause, délibérée celle-là : le mapper refuse les lignes
+> d'affiliation annotées « (former) », qui demandent une ancre `until`
+> qu'aucun fait de page ne donne. Ça, ça reste juste.
 
 **Ensuite, par rendement décroissant** :
 
-3. `charDebut` → les arêtes d'apparition, qui débloquent le plus de
-   surface produit d'un seul champ.
-4. Les dates de diffusion par territoire (`released_at` + `territory`).
-5. Live-Action Episode Box, puis Album, puis Game : trois boîtes propres
+4. `charDebut` → les arêtes d'apparition (52 % des épisodes).
+5. Les dates de diffusion par territoire (`released_at` + `territory`).
+6. Live-Action Episode Box, puis Album, puis Game : trois boîtes propres
    dont le type existe déjà.
-6. Island Box (414 pages) : le volume le plus gros, mais `location` est
-   un type vide dont le layout n'a jamais été rendu.
 
 **Refusé, et pourquoi** :
 

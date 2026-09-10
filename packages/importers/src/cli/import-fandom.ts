@@ -42,6 +42,7 @@ import { crawl, type CrawlResult, type MapperKind } from '../fandom/crawl.ts';
 import { mapCrew } from '../fandom/crew.ts';
 import { mapDevilFruit } from '../fandom/devil-fruit.ts';
 import { mapEpisode } from '../fandom/episode.ts';
+import { mapIsland } from '../fandom/island.ts';
 import { mapOrganization } from '../fandom/organization.ts';
 import {
   buildTitleIndex,
@@ -72,6 +73,7 @@ const MAPPER_KINDS: readonly MapperKind[] = [
   'weapon',
   'arc',
   'saga',
+  'island',
 ];
 
 const REGISTRY_PATH = join(REPO_ROOT, 'data', 'import', 'fandom-pages.json');
@@ -186,6 +188,7 @@ async function buildMappers(): Promise<
     weapon: (page) => mapWeapon(page, boxCtx),
     arc: (page) => mapArc(page, boxCtx),
     saga: mapSaga,
+    island: (page) => mapIsland(page, boxCtx),
   };
 }
 
