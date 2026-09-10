@@ -11,6 +11,7 @@
  * NB: the infobox `rating` is the Japanese viewership share (e.g.
  * 3.9%), NOT the `tv_rating` content rating — deliberately not mapped.
  */
+import { readJapaneseName } from './box.ts';
 import type { ParsedPage } from './client.ts';
 import { readOrdinalTitle } from './ordinal-title.ts';
 import { cleanValue, findTemplate, parseLooseNumber } from './wikitext.ts';
@@ -24,7 +25,11 @@ export type EpisodeMapResult = {
     readonly properties: Record<string, unknown>;
     readonly relations: readonly Record<string, unknown>[];
   };
-  readonly translations: { readonly en: Record<string, string>; };
+  readonly translations: {
+    readonly en: Record<string, string>;
+    readonly ja?: Record<string, string>;
+    readonly 'ja-latn'?: Record<string, string>;
+  };
   readonly warnings: readonly string[];
 };
 
@@ -48,6 +53,8 @@ export const EPISODE_HANDLED_PARAMS: readonly string[] = [
   'Translation',
   'translation',
   'entitle',
+  'Kanji',
+  'Romaji',
   'Screen',
   'Art',
   'Ad',
@@ -95,10 +102,27 @@ export function mapEpisode(page: ParsedPage): EpisodeMapResult | null {
   };
   const translations: Record<string, string> = {};
 
+  const titleKey = `anime-episode.${number}.title`;
   const enTitle = get('Translation', 'translation', 'entitle');
   if (enTitle !== undefined) {
-    translations[`anime-episode.${number}.title`] = cleanValue(enTitle);
+    translations[titleKey] = cleanValue(enTitle);
   } else warnings.push('no Translation title in infobox');
+
+  // Le titre japonais et sa romanisation. L'Episode Box les nomme
+  // `Kanji`/`Romaji` la ou les autres boites disent `jname`/`rname` —
+  // le docblock ci-dessus les citait depuis le premier jour, et
+  // personne ne les lisait : 1 176 episodes portaient un titre `en` et
+  // rien d'autre, pour deux champs remplis a 100 %.
+  const japanese = readJapaneseName((...keys) => {
+    for (const k of keys) {
+      const mapped = k === 'jname' ? 'Kanji' : k === 'rname' ? 'Romaji' : k;
+      const v = box.named[mapped] ?? box.named[k];
+      if (v !== undefined && v.trim() !== '') return v;
+    }
+    return undefined;
+  });
+  const ja = japanese.ja === null ? undefined : { [titleKey]: japanese.ja };
+  const jaLatn = japanese.jaLatn === null ? undefined : { [titleKey]: japanese.jaLatn };
 
   warnings.push(
     'no JP airdate in the infobox (required released_at — supply from the episode list or manually)',
@@ -124,7 +148,11 @@ export function mapEpisode(page: ParsedPage): EpisodeMapResult | null {
       properties,
       relations: [],
     },
-    translations: { en: translations },
+    translations: {
+      en: translations,
+      ...(ja !== undefined ? { ja } : {}),
+      ...(jaLatn !== undefined ? { 'ja-latn': jaLatn } : {}),
+    },
     warnings,
   };
 }

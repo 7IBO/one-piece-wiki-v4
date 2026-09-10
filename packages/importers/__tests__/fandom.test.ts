@@ -152,6 +152,36 @@ describe('chapter mapper (real Chapter Box)', () => {
 });
 
 describe('episode mapper (real Episode Box)', () => {
+  it('sort le titre japonais et sa romanisation (Kanji / Romaji)', async () => {
+    const page = await fixture('episode-1071');
+    const result = mapEpisode(page);
+    // L'Episode Box nomme la paire `Kanji`/`Romaji` la ou les autres
+    // boites disent `jname`/`rname` — remplies a 100 % sur les 500
+    // pages relevees, et lues par personne jusqu'ici.
+    expect(result?.translations.ja).toEqual({
+      'anime-episode.1071.title': 'ルフィの最高地点 到達！〝ギア5〟',
+    });
+    expect(result?.translations['ja-latn']).toEqual({
+      'anime-episode.1071.title': 'Rufi no Saikō Chiten - Tōtatsu! "Gia Fifusu"',
+    });
+    // La clé est la MÊME que le titre `en` : un titre japonais est une
+    // traduction du titre, pas une seconde propriété (ADR-095).
+    expect(Object.keys(result?.translations.ja ?? {})).toEqual(
+      Object.keys(result?.translations.en ?? {}),
+    );
+  });
+
+  it('un épisode sans paire japonaise ne sort tout simplement pas ces locales', async () => {
+    const page = await fixture('episode-1071');
+    const stripped = page.wikitext
+      .replace(/\| Kanji[^\n]*\n/, '')
+      .replace(/\| Romaji[^\n]*\n/, '');
+    const result = mapEpisode({ ...page, wikitext: stripped });
+    expect(result?.translations.en).toBeDefined();
+    expect(result?.translations.ja).toBeUndefined();
+    expect(result?.translations['ja-latn']).toBeUndefined();
+  });
+
   it('maps # ordinal, Translation title, and surfaces staff as warnings', async () => {
     const page = await fixture('episode-1071');
     const result = mapEpisode(page);

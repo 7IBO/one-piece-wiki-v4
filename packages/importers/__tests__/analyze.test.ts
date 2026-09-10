@@ -158,7 +158,11 @@ describe('analyzeWiki', () => {
       charBox.fields.find((f) => f.name === name);
     // Aggregated across both samples.
     expect(field('ename')).toMatchObject({ occurrences: 2, handling: 'mapped' });
-    expect(field('jname')).toMatchObject({ occurrences: 2, handling: 'unmapped' });
+    // Le triplet de noms est lu en entier : `ename` par le mapper,
+    // `jname`/`rname` par `readJapaneseName`. Cette assertion disait
+    // `unmapped` pour `jname` — elle epinglait un TROU comme s'il
+    // etait un fait stable, et le trou est comble.
+    expect(field('jname')).toMatchObject({ occurrences: 2, handling: 'mapped' });
     expect(field('colorscheme')).toMatchObject({ occurrences: 1, handling: 'unmapped' });
     expect(field('bounty')).toMatchObject({ occurrences: 1, handling: 'mapped' });
     // "blood type" ties back to our blood_type property.
@@ -196,11 +200,14 @@ describe('analyzeWiki', () => {
 
   it('reports the three gap sections, sorted', async () => {
     const report = await analyzedFixtures();
-    // Most-frequent unmapped field first.
+    // Le plus frequent des champs NON LUS d'abord. `colorscheme` a
+    // pris la tete quand `jname` a ete lu : la palette de faction est
+    // maintenant le premier trou du Char Box (cf.
+    // `docs/FANDOM_ENTITY_STRUCTURE.md` §4, qui demande un ADR).
     expect(report.gaps.unmappedInfoboxFields[0]).toEqual({
       template: 'Char Box',
-      field: 'jname',
-      occurrences: 2,
+      field: 'colorscheme',
+      occurrences: 1,
     });
     expect(report.gaps.categoriesWithoutEntityType).toEqual([
       { name: 'Article Maintenance', pages: 40 },
@@ -215,7 +222,7 @@ describe('analyzeWiki', () => {
     const md = renderMarkdownSummary(report);
     expect(md).toContain('# Fandom structural analysis');
     expect(md).toContain('| Char Box | character | character | 2 |');
-    expect(md).toContain('| Char Box | jname | 2 |');
+    expect(md).toContain('| Char Box | colorscheme | 1 |');
     expect(md).toContain('- `theme-song`');
   });
 

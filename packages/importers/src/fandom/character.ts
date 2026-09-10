@@ -19,7 +19,7 @@
  * Anything unresolved, "former"-annotated, or fuzzy stays a warning
  * for the AI-extraction / human pass.
  */
-import { isPlaceholderName, slugify } from './box.ts';
+import { isPlaceholderName, readJapaneseName, slugify } from './box.ts';
 import type { ParsedPage } from './client.ts';
 import { extractWikiLinks, resolveTitle, type TitleIndex } from './registry.ts';
 import {
@@ -43,7 +43,11 @@ export type CharacterMapResult = {
     readonly properties: Record<string, unknown>;
     readonly relations: readonly Record<string, unknown>[];
   };
-  readonly translations: { readonly en: Record<string, string>; };
+  readonly translations: {
+    readonly en: Record<string, string>;
+    readonly ja?: Record<string, string>;
+    readonly 'ja-latn'?: Record<string, string>;
+  };
   readonly warnings: readonly string[];
 };
 
@@ -62,6 +66,10 @@ export const CHARACTER_INFOBOX_NAMES: readonly string[] = [
  * calls in {@link mapCharacter}.
  */
 export const CHARACTER_HANDLED_PARAMS: readonly string[] = [
+  // Le triplet de noms : `ename` ci-dessous, la paire japonaise lue
+  // par `readJapaneseName` — l'inventaire ADR-092 doit voir les trois.
+  'jname',
+  'rname',
   'ename',
   'first',
   'alias',
@@ -315,6 +323,14 @@ export function mapCharacter(
   const translations: Record<string, string> = {};
   const nameKey = `character.${slug}.name.common`;
   translations[nameKey] = enName;
+
+  // Le nom japonais et sa romanisation. Les mappers « * Box » les
+  // sortent depuis toujours via `box.ts` ; celui-ci, plus ancien, ne
+  // lisait que `ename` — 451 personnages importes portaient un nom
+  // `en` et rien d'autre, pour un `jname` rempli a 100 %.
+  const japanese = readJapaneseName(get);
+  const ja = japanese.ja === null ? undefined : { [nameKey]: japanese.ja };
+  const jaLatn = japanese.jaLatn === null ? undefined : { [nameKey]: japanese.jaLatn };
   const properties: Record<string, unknown> = {
     name: [{ value_key: nameKey, name_type: 'common', ...since }],
   };
@@ -545,7 +561,11 @@ export function mapCharacter(
       properties,
       relations,
     },
-    translations: { en: translations },
+    translations: {
+      en: translations,
+      ...(ja !== undefined ? { ja } : {}),
+      ...(jaLatn !== undefined ? { 'ja-latn': jaLatn } : {}),
+    },
     warnings,
   };
 }

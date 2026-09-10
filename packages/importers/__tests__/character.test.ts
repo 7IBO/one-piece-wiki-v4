@@ -308,3 +308,40 @@ describe('parseBloodType', () => {
     expect(parseBloodType('AB')).toBeNull();
   });
 });
+
+describe('le triplet de noms', () => {
+  it('sort le nom japonais et sa romanisation', async () => {
+    const page = await hyougoro();
+    const result = mapCharacter(page, { titleIndex: buildTitleIndex({ pages: [] }) });
+    const key = 'character.hyogoro.name.common';
+    // `jname` est rempli a 100 % sur les 500 Char Box relevees ; ce
+    // mapper ne lisait que `ename`, et 451 personnages importes
+    // n'avaient donc aucune locale japonaise.
+    expect(result?.translations.ja).toEqual({ [key]: 'ヒョウ五郎' });
+    // `rname` arrive en italiques wiki : elles tombent au nettoyage.
+    expect(result?.translations['ja-latn']).toEqual({ [key]: 'Hyōgorō' });
+  });
+
+  it('la cle japonaise est celle du nom canonique, pas une clé à part', async () => {
+    const page = await hyougoro();
+    const result = mapCharacter(page, { titleIndex: buildTitleIndex({ pages: [] }) });
+    // Un nom japonais est une TRADUCTION du nom (ADR-095), pas une
+    // seconde propriete : il partage donc la cle `name.common`.
+    expect(Object.keys(result?.translations.ja ?? {})).toEqual(['character.hyogoro.name.common']);
+    expect(result?.translations.en['character.hyogoro.name.common']).toBe('Hyogoro');
+  });
+
+  it('sans paire japonaise, les locales ne sont pas emises', async () => {
+    const page = await hyougoro();
+    const stripped = page.wikitext
+      .replace(/\|jname\s*=[^\n]*\n/, '')
+      .replace(/\|rname\s*=[^\n]*\n/, '');
+    const result = mapCharacter(
+      { ...page, wikitext: stripped },
+      { titleIndex: buildTitleIndex({ pages: [] }) },
+    );
+    expect(result?.translations.en).toBeDefined();
+    expect(result?.translations.ja).toBeUndefined();
+    expect(result?.translations['ja-latn']).toBeUndefined();
+  });
+});
