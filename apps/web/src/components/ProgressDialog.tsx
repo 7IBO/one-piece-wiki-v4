@@ -119,27 +119,48 @@ function scaleTop(scale: ProgressPickerView | null, axis: keyof ProgressCursor):
   return top;
 }
 
-export function ProgressDialog(
-  { progress, locale, open, onOpenChange, extent }: {
-    readonly progress: ProgressCursor;
-    readonly locale: Locale;
-    readonly open: boolean;
-    readonly onOpenChange: (open: boolean) => void;
-    /** Le plus haut ordinal du corpus par axe — borne des raccourcis. */
-    readonly extent: ProgressCursor;
-  },
+type DialogProps = {
+  readonly progress: ProgressCursor;
+  readonly locale: Locale;
+  readonly open: boolean;
+  readonly onOpenChange: (open: boolean) => void;
+  /** Le plus haut ordinal du corpus par axe — borne des raccourcis. */
+  readonly extent: ProgressCursor;
+};
+
+/**
+ * La coque : elle porte l'ouverture, le corps porte le brouillon.
+ *
+ * Le brouillon PART de la position enregistrée, mais s'en détache dès
+ * la première modification — c'est exactement le cas où une `key`
+ * remplace un effet de resynchronisation (react.dev, « resetting state
+ * with a key »). Rouvrir avec une position différente remonte le
+ * corps, donc `useState(progress)` redevient ce qu'il doit être : une
+ * valeur INITIALE, pas une copie entretenue.
+ */
+export function ProgressDialog(props: DialogProps): ReactElement {
+  const { progress, locale, open, onOpenChange } = props;
+  return (
+    <Dialog.Root open={open} onOpenChange={onOpenChange}>
+      <Dialog.Portal>
+        <Dialog.Backdrop className='palette-backdrop fixed inset-0 z-40 bg-canvas/80 backdrop-blur-[2px]' />
+        <ProgressDialogBody
+          key={`${locale}/${progress.manga ?? ''}/${progress.anime ?? ''}`}
+          {...props}
+        />
+      </Dialog.Portal>
+    </Dialog.Root>
+  );
+}
+
+function ProgressDialogBody(
+  { progress, locale, open, onOpenChange, extent }: DialogProps,
 ): ReactElement {
   const router = useRouter();
   const scale = useProgressScale(locale, open);
   const [axis, setAxis] = useState<keyof ProgressCursor>('manga');
   const [draft, setDraft] = useState<ProgressCursor>(progress);
   const sliderId = useId();
-
-  // Rouvrir le dialogue repart de la position enregistrée : un brouillon
-  // abandonné ne doit pas ressusciter à l'ouverture suivante.
-  useEffect(() => {
-    if (open) setDraft(progress);
-  }, [open, progress]);
 
   const apply = (next: ProgressCursor): void => {
     writeProgressCookie(next);
@@ -161,161 +182,155 @@ export function ProgressDialog(
   }, []);
 
   return (
-    <Dialog.Root open={open} onOpenChange={onOpenChange}>
-      <Dialog.Portal>
-        <Dialog.Backdrop className='palette-backdrop fixed inset-0 z-40 bg-canvas/80 backdrop-blur-[2px]' />
-        <Dialog.Popup className='palette-popup fixed left-1/2 top-[7vh] z-50 flex max-h-[86vh] w-[min(30rem,94vw)] -translate-x-1/2 flex-col overflow-hidden rounded-lg border border-line-strong bg-surface shadow-2xl'>
-          <header className='flex items-start justify-between gap-4 border-b border-line px-5 py-4'>
-            <div>
-              <Dialog.Title className='text-[17px] font-bold leading-tight text-fg'>
-                {t(locale, 'progressWhere')}
-              </Dialog.Title>
-              <p className='mt-1.5 text-xs leading-relaxed text-muted'>
-                {t(locale, 'progressHint')}
-              </p>
-            </div>
-            <Dialog.Close
-              aria-label={t(locale, 'progressCancel')}
-              className='-mr-1 -mt-1 shrink-0 cursor-pointer rounded-md px-2 py-1 text-lg leading-none text-muted transition-colors duration-150 hover:text-fg'
-            >
-              ×
-            </Dialog.Close>
-          </header>
+    <Dialog.Popup className='palette-popup fixed left-1/2 top-[7vh] z-50 flex max-h-[86vh] w-[min(30rem,94vw)] -translate-x-1/2 flex-col overflow-hidden rounded-lg border border-line-strong bg-surface shadow-2xl'>
+      <header className='flex items-start justify-between gap-4 border-b border-line px-5 py-4'>
+        <div>
+          <Dialog.Title className='text-[17px] font-bold leading-tight text-fg'>
+            {t(locale, 'progressWhere')}
+          </Dialog.Title>
+          <p className='mt-1.5 text-xs leading-relaxed text-muted'>
+            {t(locale, 'progressHint')}
+          </p>
+        </div>
+        <Dialog.Close
+          aria-label={t(locale, 'progressCancel')}
+          className='-mr-1 -mt-1 shrink-0 cursor-pointer rounded-md px-2 py-1 text-lg leading-none text-muted transition-colors duration-150 hover:text-fg'
+        >
+          ×
+        </Dialog.Close>
+      </header>
 
-          {
-            /* Les onglets changent l'AXE ÉDITÉ, pas ce qui sera
+      {
+        /* Les onglets changent l'AXE ÉDITÉ, pas ce qui sera
               enregistré : les deux partent ensemble (ADR-123). Chacun
               porte sa position, pour qu'on voie l'autre sans y aller. */
-          }
-          <div role='tablist' className='flex gap-1 border-b border-line px-5 pt-3'>
-            {AXES.map((entry) => {
-              const active = entry.axis === axis;
-              const value = draft[entry.axis];
-              return (
-                <button
-                  key={entry.axis}
-                  type='button'
-                  role='tab'
-                  aria-selected={active}
-                  onClick={() => setAxis(entry.axis)}
-                  className={`cursor-pointer rounded-t-md border-b-2 px-3 py-2 text-[13px] font-semibold transition-colors duration-150 ${
-                    active
-                      ? 'border-gold text-gold'
-                      : 'border-transparent text-muted hover:text-fg'
-                  }`}
-                >
-                  {t(locale, entry.label)}
-                  {value === null
-                    ? null
-                    : (
-                      <span className='ml-2 text-[11px] font-normal tabular-nums opacity-70'>
-                        {value}
-                      </span>
-                    )}
-                </button>
-              );
-            })}
-          </div>
+      }
+      <div role='tablist' className='flex gap-1 border-b border-line px-5 pt-3'>
+        {AXES.map((entry) => {
+          const active = entry.axis === axis;
+          const value = draft[entry.axis];
+          return (
+            <button
+              key={entry.axis}
+              type='button'
+              role='tab'
+              aria-selected={active}
+              onClick={() => setAxis(entry.axis)}
+              className={`cursor-pointer rounded-t-md border-b-2 px-3 py-2 text-[13px] font-semibold transition-colors duration-150 ${
+                active
+                  ? 'border-gold text-gold'
+                  : 'border-transparent text-muted hover:text-fg'
+              }`}
+            >
+              {t(locale, entry.label)}
+              {value === null
+                ? null
+                : (
+                  <span className='ml-2 text-[11px] font-normal tabular-nums opacity-70'>
+                    {value}
+                  </span>
+                )}
+            </button>
+          );
+        })}
+      </div>
 
-          <div className='min-h-0 flex-1 overflow-y-auto px-5 py-4'>
-            <p className='label-xs'>{t(locale, 'progressLastArc')}</p>
-            {scale === null
-              ? <p className='mt-3 text-xs text-muted'>{t(locale, 'progressLoading')}</p>
-              : (
-                <ArcScale
-                  scale={scale}
-                  axis={axis}
-                  selectedId={current?.id ?? null}
-                  onSelectedRef={revealSelected}
-                  onPick={(arc) => {
-                    const range = arc.range[axis];
-                    if (range !== null) setDraft({ ...draft, [axis]: range[1] });
-                  }}
+      <div className='min-h-0 flex-1 overflow-y-auto px-5 py-4'>
+        <p className='label-xs'>{t(locale, 'progressLastArc')}</p>
+        {scale === null
+          ? <p className='mt-3 text-xs text-muted'>{t(locale, 'progressLoading')}</p>
+          : (
+            <ArcScale
+              scale={scale}
+              axis={axis}
+              selectedId={current?.id ?? null}
+              onSelectedRef={revealSelected}
+              onPick={(arc) => {
+                const range = arc.range[axis];
+                if (range !== null) setDraft({ ...draft, [axis]: range[1] });
+              }}
+            />
+          )}
+      </div>
+
+      <footer className='border-t border-line px-5 py-4'>
+        {current === null || current.range[axis] === null
+          ? null
+          : (
+            <div className='mb-3'>
+              <label htmlFor={sliderId} className='label-xs block'>
+                {t(locale, 'progressWithinArc').replace('{arc}', current.name)}
+              </label>
+              <div className='mt-2 flex items-center gap-3'>
+                <input
+                  id={sliderId}
+                  type='range'
+                  min={current.range[axis][0]}
+                  max={current.range[axis][1]}
+                  value={at ?? current.range[axis][1]}
+                  onChange={(event) => setDraft({ ...draft, [axis]: Number(event.target.value) })}
+                  className='h-1 w-full cursor-pointer appearance-none rounded-sm bg-line accent-gold'
                 />
-              )}
-          </div>
+                <span className='w-14 shrink-0 text-right text-[13px] font-bold tabular-nums text-gold'>
+                  {at}
+                </span>
+              </div>
+            </div>
+          )}
 
-          <footer className='border-t border-line px-5 py-4'>
-            {current === null || current.range[axis] === null
-              ? null
-              : (
-                <div className='mb-3'>
-                  <label htmlFor={sliderId} className='label-xs block'>
-                    {t(locale, 'progressWithinArc').replace('{arc}', current.name)}
-                  </label>
-                  <div className='mt-2 flex items-center gap-3'>
-                    <input
-                      id={sliderId}
-                      type='range'
-                      min={current.range[axis][0]}
-                      max={current.range[axis][1]}
-                      value={at ?? current.range[axis][1]}
-                      onChange={(event) =>
-                        setDraft({ ...draft, [axis]: Number(event.target.value) })}
-                      className='h-1 w-full cursor-pointer appearance-none rounded-sm bg-line accent-gold'
-                    />
-                    <span className='w-14 shrink-0 text-right text-[13px] font-bold tabular-nums text-gold'>
-                      {at}
-                    </span>
-                  </div>
-                </div>
-              )}
-
-            {
-              /* Les raccourcis : uniquement ceux qu'on peut poser sans
+        {
+          /* Les raccourcis : uniquement ceux qu'on peut poser sans
                 mentir. « Fin de l'anime diffusé » demanderait le
                 chapitre correspondant, que le corpus ne dérive pas
                 encore — un raccourci faux vaut moins que pas de
                 raccourci. */
-            }
-            <div className='flex flex-wrap gap-2'>
-              <Shortcut onClick={() => setDraft({ manga: 1, anime: 1 })}>
-                {t(locale, 'progressStarting')}
-              </Shortcut>
-              <Shortcut
-                onClick={() =>
-                  setDraft({
-                    manga: scaleTop(scale, 'manga') ?? extent.manga,
-                    anime: scaleTop(scale, 'anime') ?? extent.anime,
-                  })}
-              >
-                {t(locale, 'progressUpToDate')}
-              </Shortcut>
-              <Shortcut onClick={() => apply({ manga: null, anime: null })}>
-                {t(locale, 'progressReset')}
-              </Shortcut>
-            </div>
+        }
+        <div className='flex flex-wrap gap-2'>
+          <Shortcut onClick={() => setDraft({ manga: 1, anime: 1 })}>
+            {t(locale, 'progressStarting')}
+          </Shortcut>
+          <Shortcut
+            onClick={() =>
+              setDraft({
+                manga: scaleTop(scale, 'manga') ?? extent.manga,
+                anime: scaleTop(scale, 'anime') ?? extent.anime,
+              })}
+          >
+            {t(locale, 'progressUpToDate')}
+          </Shortcut>
+          <Shortcut onClick={() => apply({ manga: null, anime: null })}>
+            {t(locale, 'progressReset')}
+          </Shortcut>
+        </div>
 
-            <p className='mt-3 text-[11px] text-muted'>{t(locale, 'progressEditable')}</p>
+        <p className='mt-3 text-[11px] text-muted'>{t(locale, 'progressEditable')}</p>
 
-            <div className='mt-3 flex items-center justify-between gap-2'>
-              <ExactInput
-                locale={locale}
-                value={at}
-                max={top}
-                onChange={(value) => setDraft({ ...draft, [axis]: value })}
-              />
-              <div className='flex gap-2'>
-                <button
-                  type='button'
-                  onClick={() => onOpenChange(false)}
-                  className='cursor-pointer rounded-md border border-line-strong px-4 py-2 text-[13px] font-semibold text-muted transition-colors duration-150 hover:text-fg'
-                >
-                  {t(locale, 'progressCancel')}
-                </button>
-                <button
-                  type='button'
-                  onClick={() => apply(draft)}
-                  className='cursor-pointer rounded-md bg-gold px-5 py-2 text-[13px] font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
-                >
-                  {t(locale, 'progressSave')}
-                </button>
-              </div>
-            </div>
-          </footer>
-        </Dialog.Popup>
-      </Dialog.Portal>
-    </Dialog.Root>
+        <div className='mt-3 flex items-center justify-between gap-2'>
+          <ExactInput
+            locale={locale}
+            value={at}
+            max={top}
+            onChange={(value) => setDraft({ ...draft, [axis]: value })}
+          />
+          <div className='flex gap-2'>
+            <button
+              type='button'
+              onClick={() => onOpenChange(false)}
+              className='cursor-pointer rounded-md border border-line-strong px-4 py-2 text-[13px] font-semibold text-muted transition-colors duration-150 hover:text-fg'
+            >
+              {t(locale, 'progressCancel')}
+            </button>
+            <button
+              type='button'
+              onClick={() => apply(draft)}
+              className='cursor-pointer rounded-md bg-gold px-5 py-2 text-[13px] font-semibold text-canvas transition-colors duration-150 hover:bg-gold/85'
+            >
+              {t(locale, 'progressSave')}
+            </button>
+          </div>
+        </div>
+      </footer>
+    </Dialog.Popup>
   );
 }
 
@@ -351,9 +366,12 @@ function ArcScale(
     readonly onSelectedRef: (node: HTMLElement | null) => void;
   },
 ): ReactElement {
-  const sagas = scale.sagas
-    .map((saga) => ({ ...saga, arcs: saga.arcs.filter((arc) => arc.range[axis] !== null) }))
-    .filter((saga) => saga.arcs.length > 0);
+  // Un seul passage : garder les arcs qui ont un intervalle sur cet
+  // axe, et ne garder la saga que s'il lui en reste.
+  const sagas = scale.sagas.flatMap((saga) => {
+    const arcs = saga.arcs.filter((arc) => arc.range[axis] !== null);
+    return arcs.length === 0 ? [] : [{ ...saga, arcs }];
+  });
 
   return (
     <div className='mt-3 space-y-4'>
