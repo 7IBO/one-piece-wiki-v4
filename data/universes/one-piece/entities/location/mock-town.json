@@ -1,0 +1,19 @@
+{
+  "id": "location:mock-town",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "mock-town",
+  "canonical_name_key": "location.mock-town.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.mock-town.name",
+        "since": "manga-chapter:222"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

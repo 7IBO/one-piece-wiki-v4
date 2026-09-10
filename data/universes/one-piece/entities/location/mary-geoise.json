@@ -1,0 +1,22 @@
+{
+  "id": "location:mary-geoise",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "mary-geoise",
+  "canonical_name_key": "location.mary-geoise.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.mary-geoise.name",
+        "since": "manga-chapter:142"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "red_line"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:franky-house",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "franky-house",
+  "canonical_name_key": "location.franky-house.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.franky-house.name",
+        "since": "manga-chapter:329"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

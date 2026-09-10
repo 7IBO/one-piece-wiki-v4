@@ -1,0 +1,19 @@
+{
+  "id": "location:yano-country",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "yano-country",
+  "canonical_name_key": "location.yano-country.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.yano-country.name",
+        "since": "sbs:volume-114"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "location:boin-archipelago",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "boin-archipelago",
+  "canonical_name_key": "location.boin-archipelago.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.boin-archipelago.name",
+        "since": "manga-chapter:524"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

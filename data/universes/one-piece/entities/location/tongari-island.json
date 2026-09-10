@@ -1,0 +1,21 @@
+{
+  "id": "location:tongari-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "tongari-island",
+  "canonical_name_key": "location.tongari-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.tongari-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

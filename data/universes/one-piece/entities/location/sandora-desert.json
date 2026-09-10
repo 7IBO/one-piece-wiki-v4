@@ -1,0 +1,19 @@
+{
+  "id": "location:sandora-desert",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "sandora-desert",
+  "canonical_name_key": "location.sandora-desert.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.sandora-desert.name",
+        "since": "manga-chapter:162"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

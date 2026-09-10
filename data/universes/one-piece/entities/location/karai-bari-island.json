@@ -1,0 +1,30 @@
+{
+  "id": "location:karai-bari-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "karai-bari-island",
+  "canonical_name_key": "location.karai-bari-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.karai-bari-island.name",
+        "since": "manga-chapter:803"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": [
+    {
+      "type": "ruled-by",
+      "target": "organization:buggy-s-delivery",
+      "qualifiers": {
+        "since": "manga-chapter:803"
+      }
+    }
+  ]
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:rommel-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "rommel-kingdom",
+  "canonical_name_key": "location.rommel-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.rommel-kingdom.name",
+        "since": "manga-chapter:734"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

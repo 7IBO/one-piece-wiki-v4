@@ -1,0 +1,19 @@
+{
+  "id": "location:sakura-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "sakura-kingdom",
+  "canonical_name_key": "location.sakura-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.sakura-kingdom.name",
+        "since": "manga-chapter:142"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

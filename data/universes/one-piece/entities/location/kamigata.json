@@ -1,0 +1,19 @@
+{
+  "id": "location:kamigata",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "kamigata",
+  "canonical_name_key": "location.kamigata.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.kamigata.name",
+        "since": "manga-chapter:1185"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:nanohana",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "nanohana",
+  "canonical_name_key": "location.nanohana.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.nanohana.name",
+        "since": "manga-chapter:155"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

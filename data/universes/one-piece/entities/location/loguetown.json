@@ -1,0 +1,22 @@
+{
+  "id": "location:loguetown",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "loguetown",
+  "canonical_name_key": "location.loguetown.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.loguetown.name",
+        "since": "manga-chapter:1"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

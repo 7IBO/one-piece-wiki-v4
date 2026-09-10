@@ -1,0 +1,19 @@
+{
+  "id": "location:tomb-of-the-kings",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "tomb-of-the-kings",
+  "canonical_name_key": "location.tomb-of-the-kings.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.tomb-of-the-kings.name",
+        "since": "manga-chapter:202"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

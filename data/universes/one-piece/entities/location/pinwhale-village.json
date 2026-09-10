@@ -1,0 +1,18 @@
+{
+  "id": "location:pinwhale-village",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "pinwhale-village",
+  "canonical_name_key": "location.pinwhale-village.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.pinwhale-village.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

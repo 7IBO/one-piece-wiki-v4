@@ -1,0 +1,22 @@
+{
+  "id": "location:risky-red-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "risky-red-island",
+  "canonical_name_key": "location.risky-red-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.risky-red-island.name",
+        "since": "manga-chapter:655"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

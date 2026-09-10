@@ -1,0 +1,19 @@
+{
+  "id": "location:pasta-lake",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "pasta-lake",
+  "canonical_name_key": "location.pasta-lake.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.pasta-lake.name",
+        "since": "manga-chapter:272"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,21 @@
+{
+  "id": "location:port-chibaralta-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "port-chibaralta-island",
+  "canonical_name_key": "location.port-chibaralta-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.port-chibaralta-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

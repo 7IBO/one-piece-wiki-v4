@@ -1,0 +1,18 @@
+{
+  "id": "location:door-hoverka-colosseum",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "door-hoverka-colosseum",
+  "canonical_name_key": "location.door-hoverka-colosseum.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.door-hoverka-colosseum.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

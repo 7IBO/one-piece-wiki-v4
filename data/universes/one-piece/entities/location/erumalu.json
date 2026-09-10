@@ -1,0 +1,25 @@
+{
+  "id": "location:erumalu",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "erumalu",
+  "canonical_name_key": "location.erumalu.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.erumalu.name",
+        "since": "manga-chapter:161"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "population": [
+      {
+        "value": 0,
+        "since": "manga-chapter:161"
+      }
+    ]
+  },
+  "relations": []
+}

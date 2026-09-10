@@ -1,0 +1,22 @@
+{
+  "id": "location:conomi-islands",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "conomi-islands",
+  "canonical_name_key": "location.conomi-islands.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.conomi-islands.name",
+        "since": "manga-chapter:69"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

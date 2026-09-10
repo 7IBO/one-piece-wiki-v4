@@ -1,0 +1,22 @@
+{
+  "id": "location:fron-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "fron-island",
+  "canonical_name_key": "location.fron-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.fron-island.name",
+        "since": "anime-episode:780"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

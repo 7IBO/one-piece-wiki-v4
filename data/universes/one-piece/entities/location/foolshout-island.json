@@ -1,0 +1,22 @@
+{
+  "id": "location:foolshout-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "foolshout-island",
+  "canonical_name_key": "location.foolshout-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.foolshout-island.name",
+        "since": "manga-chapter:623"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

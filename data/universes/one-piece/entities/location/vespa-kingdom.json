@@ -1,0 +1,22 @@
+{
+  "id": "location:vespa-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "vespa-kingdom",
+  "canonical_name_key": "location.vespa-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.vespa-kingdom.name",
+        "since": "databook-card:0357"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "south_blue"
+    }
+  },
+  "relations": []
+}

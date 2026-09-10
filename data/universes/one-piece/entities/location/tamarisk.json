@@ -1,0 +1,19 @@
+{
+  "id": "location:tamarisk",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "tamarisk",
+  "canonical_name_key": "location.tamarisk.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.tamarisk.name",
+        "since": "manga-chapter:212"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "location:organ-islands",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "organ-islands",
+  "canonical_name_key": "location.organ-islands.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.organ-islands.name",
+        "since": "manga-chapter:8"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

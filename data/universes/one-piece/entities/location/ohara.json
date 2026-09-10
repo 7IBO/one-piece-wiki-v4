@@ -1,0 +1,22 @@
+{
+  "id": "location:ohara",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "ohara",
+  "canonical_name_key": "location.ohara.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.ohara.name",
+        "since": "manga-chapter:374"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "west_blue"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:cocoa-weed",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "cocoa-weed",
+  "canonical_name_key": "location.cocoa-weed.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.cocoa-weed.name",
+        "since": "manga-chapter:134"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

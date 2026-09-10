@@ -1,0 +1,22 @@
+{
+  "id": "location:majiatsuka-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "majiatsuka-kingdom",
+  "canonical_name_key": "location.majiatsuka-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.majiatsuka-kingdom.name",
+        "since": "manga-chapter:725"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

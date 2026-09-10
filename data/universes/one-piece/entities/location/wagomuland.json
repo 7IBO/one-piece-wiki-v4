@@ -1,0 +1,19 @@
+{
+  "id": "location:wagomuland",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "wagomuland",
+  "canonical_name_key": "location.wagomuland.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.wagomuland.name",
+        "since": "manga-chapter:645"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

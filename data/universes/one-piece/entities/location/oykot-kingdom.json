@@ -1,0 +1,22 @@
+{
+  "id": "location:oykot-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "oykot-kingdom",
+  "canonical_name_key": "location.oykot-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.oykot-kingdom.name",
+        "since": "manga-chapter:77"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

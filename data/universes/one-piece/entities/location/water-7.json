@@ -1,0 +1,22 @@
+{
+  "id": "location:water-7",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "water-7",
+  "canonical_name_key": "location.water-7.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.water-7.name",
+        "since": "manga-chapter:323"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "location:germa-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "germa-kingdom",
+  "canonical_name_key": "location.germa-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.germa-kingdom.name",
+        "since": "manga-chapter:832"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "north_blue"
+    }
+  },
+  "relations": []
+}

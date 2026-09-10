@@ -1,0 +1,22 @@
+{
+  "id": "location:mogaro-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "mogaro-kingdom",
+  "canonical_name_key": "location.mogaro-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.mogaro-kingdom.name",
+        "since": "manga-chapter:715"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

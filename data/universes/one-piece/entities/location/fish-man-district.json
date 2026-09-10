@@ -1,0 +1,19 @@
+{
+  "id": "location:fish-man-district",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "fish-man-district",
+  "canonical_name_key": "location.fish-man-district.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.fish-man-district.name",
+        "since": "manga-chapter:608"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:acacia",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "acacia",
+  "canonical_name_key": "location.acacia.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.acacia.name",
+        "since": "manga-chapter:701"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "location:island-of-rare-animals",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "island-of-rare-animals",
+  "canonical_name_key": "location.island-of-rare-animals.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.island-of-rare-animals.name",
+        "since": "manga-chapter:22"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,19 @@
+{
+  "id": "location:merveille",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "merveille",
+  "canonical_name_key": "location.merveille.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.merveille.name",
+        "since": "manga-chapter:0"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

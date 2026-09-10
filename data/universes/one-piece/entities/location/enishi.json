@@ -1,0 +1,22 @@
+{
+  "id": "location:enishi",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "enishi",
+  "canonical_name_key": "location.enishi.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.enishi.name",
+        "since": "manga-chapter:1157"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

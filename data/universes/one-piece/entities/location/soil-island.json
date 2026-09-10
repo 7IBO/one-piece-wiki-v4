@@ -1,0 +1,18 @@
+{
+  "id": "location:soil-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "soil-island",
+  "canonical_name_key": "location.soil-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.soil-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

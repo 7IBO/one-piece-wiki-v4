@@ -1,0 +1,19 @@
+{
+  "id": "location:gosa-village",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "gosa-village",
+  "canonical_name_key": "location.gosa-village.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.gosa-village.name",
+        "since": "manga-chapter:70"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

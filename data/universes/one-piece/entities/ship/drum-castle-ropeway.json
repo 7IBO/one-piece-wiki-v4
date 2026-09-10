@@ -1,0 +1,20 @@
+{
+  "id": "ship:drum-castle-ropeway",
+  "type": "ship",
+  "schema_version": 1,
+  "slug": "drum-castle-ropeway",
+  "canonical_name_key": "ship.drum-castle-ropeway.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "ship.drum-castle-ropeway.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:142"
+      }
+    ],
+    "ship_type": {
+      "value": "unknown"
+    }
+  },
+  "relations": []
+}

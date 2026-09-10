@@ -1,0 +1,22 @@
+{
+  "id": "location:lulusia-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "lulusia-kingdom",
+  "canonical_name_key": "location.lulusia-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.lulusia-kingdom.name",
+        "since": "manga-chapter:272"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

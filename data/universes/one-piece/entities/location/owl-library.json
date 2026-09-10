@@ -1,0 +1,19 @@
+{
+  "id": "location:owl-library",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "owl-library",
+  "canonical_name_key": "location.owl-library.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.owl-library.name",
+        "since": "manga-chapter:1133"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

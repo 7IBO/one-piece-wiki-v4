@@ -1,0 +1,22 @@
+{
+  "id": "location:rubeck-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "rubeck-island",
+  "canonical_name_key": "location.rubeck-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.rubeck-island.name",
+        "since": "manga-chapter:765"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "north_blue"
+    }
+  },
+  "relations": []
+}

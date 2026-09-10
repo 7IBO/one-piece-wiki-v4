@@ -1,0 +1,21 @@
+{
+  "id": "location:galzburg",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "galzburg",
+  "canonical_name_key": "location.galzburg.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.galzburg.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "grand_line"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "location:jaya",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "jaya",
+  "canonical_name_key": "location.jaya.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.jaya.name",
+        "since": "manga-chapter:222"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

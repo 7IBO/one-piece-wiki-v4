@@ -1,0 +1,21 @@
+{
+  "id": "location:fisherman-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "fisherman-island",
+  "canonical_name_key": "location.fisherman-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.fisherman-island.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

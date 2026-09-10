@@ -1,0 +1,19 @@
+{
+  "id": "location:goa-kingdom",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "goa-kingdom",
+  "canonical_name_key": "location.goa-kingdom.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.goa-kingdom.name",
+        "since": "manga-chapter:585"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

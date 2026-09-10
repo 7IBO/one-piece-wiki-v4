@@ -1,0 +1,21 @@
+{
+  "id": "location:devil-s-tower",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "devil-s-tower",
+  "canonical_name_key": "location.devil-s-tower.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.devil-s-tower.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "east_blue"
+    }
+  },
+  "relations": []
+}

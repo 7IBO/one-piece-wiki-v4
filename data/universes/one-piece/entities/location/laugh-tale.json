@@ -1,0 +1,22 @@
+{
+  "id": "location:laugh-tale",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "laugh-tale",
+  "canonical_name_key": "location.laugh-tale.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.laugh-tale.name",
+        "since": "manga-chapter:967"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

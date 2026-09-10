@@ -1,0 +1,30 @@
+{
+  "id": "location:amazon-lily",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "amazon-lily",
+  "canonical_name_key": "location.amazon-lily.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.amazon-lily.name",
+        "since": "manga-chapter:514"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "calm_belt"
+    }
+  },
+  "relations": [
+    {
+      "type": "ruled-by",
+      "target": "character:monkey-d-luffy",
+      "qualifiers": {
+        "since": "manga-chapter:514"
+      }
+    }
+  ]
+}

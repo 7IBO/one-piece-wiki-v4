@@ -1,0 +1,22 @@
+{
+  "id": "location:karate-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "karate-island",
+  "canonical_name_key": "location.karate-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.karate-island.name",
+        "since": "manga-chapter:362"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "south_blue"
+    }
+  },
+  "relations": []
+}

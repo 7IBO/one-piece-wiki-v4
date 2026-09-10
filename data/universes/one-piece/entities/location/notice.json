@@ -1,0 +1,22 @@
+{
+  "id": "location:notice",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "notice",
+  "canonical_name_key": "location.notice.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.notice.name",
+        "since": "manga-chapter:769"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "north_blue"
+    }
+  },
+  "relations": []
+}

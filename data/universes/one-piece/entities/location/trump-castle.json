@@ -1,0 +1,18 @@
+{
+  "id": "location:trump-castle",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "trump-castle",
+  "canonical_name_key": "location.trump-castle.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.trump-castle.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

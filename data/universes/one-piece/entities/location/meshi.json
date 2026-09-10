@@ -1,0 +1,19 @@
+{
+  "id": "location:meshi",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "meshi",
+  "canonical_name_key": "location.meshi.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.meshi.name",
+        "since": "manga-chapter:23"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

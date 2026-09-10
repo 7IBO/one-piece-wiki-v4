@@ -1,0 +1,21 @@
+{
+  "id": "location:waford",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "waford",
+  "canonical_name_key": "location.waford.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.waford.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

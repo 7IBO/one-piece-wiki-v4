@@ -1,0 +1,19 @@
+{
+  "id": "location:cactus-saloon",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "cactus-saloon",
+  "canonical_name_key": "location.cactus-saloon.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.cactus-saloon.name",
+        "since": "manga-chapter:409"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

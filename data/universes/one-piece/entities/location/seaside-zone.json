@@ -1,0 +1,21 @@
+{
+  "id": "location:seaside-zone",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "seaside-zone",
+  "canonical_name_key": "location.seaside-zone.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.seaside-zone.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "paradise"
+    }
+  },
+  "relations": []
+}

@@ -1,0 +1,22 @@
+{
+  "id": "location:mystoria-island",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "mystoria-island",
+  "canonical_name_key": "location.mystoria-island.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.mystoria-island.name",
+        "since": "manga-chapter:655"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    },
+    "region": {
+      "value": "new_world"
+    }
+  },
+  "relations": []
+}

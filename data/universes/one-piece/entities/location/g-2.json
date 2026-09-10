@@ -1,0 +1,19 @@
+{
+  "id": "location:g-2",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "g-2",
+  "canonical_name_key": "location.g-2.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.g-2.name",
+        "since": "manga-chapter:282"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

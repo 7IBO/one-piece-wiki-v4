@@ -1,0 +1,19 @@
+{
+  "id": "location:spice-bean",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "spice-bean",
+  "canonical_name_key": "location.spice-bean.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.spice-bean.name",
+        "since": "manga-chapter:157"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}

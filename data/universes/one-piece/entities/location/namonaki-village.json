@@ -1,0 +1,18 @@
+{
+  "id": "location:namonaki-village",
+  "type": "location",
+  "schema_version": 1,
+  "slug": "namonaki-village",
+  "canonical_name_key": "location.namonaki-village.name",
+  "properties": {
+    "name": [
+      {
+        "value_key": "location.namonaki-village.name"
+      }
+    ],
+    "location_subtype": {
+      "value": "island"
+    }
+  },
+  "relations": []
+}
