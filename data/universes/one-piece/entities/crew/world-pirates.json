@@ -1,0 +1,16 @@
+{
+  "id": "crew:world-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "world-pirates",
+  "canonical_name_key": "crew.world-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.world-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

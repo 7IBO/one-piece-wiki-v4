@@ -1,0 +1,17 @@
+{
+  "id": "crew:big-mom-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "big-mom-pirates",
+  "canonical_name_key": "crew.big-mom-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.big-mom-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:651"
+      }
+    ]
+  },
+  "relations": []
+}

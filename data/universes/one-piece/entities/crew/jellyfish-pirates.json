@@ -1,0 +1,16 @@
+{
+  "id": "crew:jellyfish-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "jellyfish-pirates",
+  "canonical_name_key": "crew.jellyfish-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.jellyfish-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

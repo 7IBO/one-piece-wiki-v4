@@ -1,0 +1,16 @@
+{
+  "id": "crew:insect-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "insect-pirates",
+  "canonical_name_key": "crew.insect-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.insect-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

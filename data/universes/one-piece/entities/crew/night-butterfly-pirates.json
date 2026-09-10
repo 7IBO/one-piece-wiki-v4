@@ -1,0 +1,17 @@
+{
+  "id": "crew:night-butterfly-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "night-butterfly-pirates",
+  "canonical_name_key": "crew.night-butterfly-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.night-butterfly-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1079"
+      }
+    ]
+  },
+  "relations": []
+}

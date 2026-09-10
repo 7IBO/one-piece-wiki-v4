@@ -1,0 +1,17 @@
+{
+  "id": "crew:silver-pirate-alliance",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "silver-pirate-alliance",
+  "canonical_name_key": "crew.silver-pirate-alliance.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.silver-pirate-alliance.name.common",
+        "name_type": "common",
+        "since": "anime-episode:746"
+      }
+    ]
+  },
+  "relations": []
+}

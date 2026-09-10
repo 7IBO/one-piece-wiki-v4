@@ -1,0 +1,17 @@
+{
+  "id": "crew:rumbar-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "rumbar-pirates",
+  "canonical_name_key": "crew.rumbar-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.rumbar-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:103"
+      }
+    ]
+  },
+  "relations": []
+}

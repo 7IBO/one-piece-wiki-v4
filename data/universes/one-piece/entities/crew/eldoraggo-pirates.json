@@ -1,0 +1,16 @@
+{
+  "id": "crew:eldoraggo-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "eldoraggo-pirates",
+  "canonical_name_key": "crew.eldoraggo-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.eldoraggo-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

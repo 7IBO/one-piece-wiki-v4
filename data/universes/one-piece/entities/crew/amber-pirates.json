@@ -1,0 +1,16 @@
+{
+  "id": "crew:amber-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "amber-pirates",
+  "canonical_name_key": "crew.amber-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.amber-pirates.name.common",
+        "name_type": "common"
+      }
+    ]
+  },
+  "relations": []
+}

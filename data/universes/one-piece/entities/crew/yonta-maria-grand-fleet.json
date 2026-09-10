@@ -1,0 +1,17 @@
+{
+  "id": "crew:yonta-maria-grand-fleet",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "yonta-maria-grand-fleet",
+  "canonical_name_key": "crew.yonta-maria-grand-fleet.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.yonta-maria-grand-fleet.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:704"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,17 @@
+{
+  "id": "crew:saruyama-alliance",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "saruyama-alliance",
+  "canonical_name_key": "crew.saruyama-alliance.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.saruyama-alliance.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:219"
+      }
+    ]
+  },
+  "relations": []
+}

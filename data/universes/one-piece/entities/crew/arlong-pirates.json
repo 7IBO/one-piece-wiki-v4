@@ -1,0 +1,17 @@
+{
+  "id": "crew:arlong-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "arlong-pirates",
+  "canonical_name_key": "crew.arlong-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.arlong-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:69"
+      }
+    ]
+  },
+  "relations": []
+}

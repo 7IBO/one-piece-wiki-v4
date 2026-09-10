@@ -1,0 +1,17 @@
+{
+  "id": "crew:krieg-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "krieg-pirates",
+  "canonical_name_key": "crew.krieg-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.krieg-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:45"
+      }
+    ]
+  },
+  "relations": []
+}

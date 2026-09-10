@@ -1,0 +1,17 @@
+{
+  "id": "crew:macro-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "macro-pirates",
+  "canonical_name_key": "crew.macro-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.macro-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:197"
+      }
+    ]
+  },
+  "relations": []
+}

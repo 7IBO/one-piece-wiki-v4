@@ -1,0 +1,17 @@
+{
+  "id": "crew:roger-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "roger-pirates",
+  "canonical_name_key": "crew.roger-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.roger-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:19"
+      }
+    ]
+  },
+  "relations": []
+}

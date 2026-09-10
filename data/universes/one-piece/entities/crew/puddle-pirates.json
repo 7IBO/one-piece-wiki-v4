@@ -1,0 +1,17 @@
+{
+  "id": "crew:puddle-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "puddle-pirates",
+  "canonical_name_key": "crew.puddle-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.puddle-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1079"
+      }
+    ]
+  },
+  "relations": []
+}

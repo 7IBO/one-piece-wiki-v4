@@ -1,0 +1,17 @@
+{
+  "id": "crew:rolling-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "rolling-pirates",
+  "canonical_name_key": "crew.rolling-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.rolling-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:476"
+      }
+    ]
+  },
+  "relations": []
+}

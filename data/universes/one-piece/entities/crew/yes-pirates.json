@@ -1,0 +1,17 @@
+{
+  "id": "crew:yes-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "yes-pirates",
+  "canonical_name_key": "crew.yes-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.yes-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:96"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,17 @@
+{
+  "id": "crew:zenny-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "zenny-pirates",
+  "canonical_name_key": "crew.zenny-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.zenny-pirates.name.common",
+        "name_type": "common",
+        "since": "anime-episode:137"
+      }
+    ]
+  },
+  "relations": []
+}

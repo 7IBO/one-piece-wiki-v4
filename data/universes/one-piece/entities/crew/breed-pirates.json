@@ -1,0 +1,17 @@
+{
+  "id": "crew:breed-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "breed-pirates",
+  "canonical_name_key": "crew.breed-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.breed-pirates.name.common",
+        "name_type": "common",
+        "since": "anime-episode:626"
+      }
+    ]
+  },
+  "relations": []
+}

@@ -1,0 +1,17 @@
+{
+  "id": "crew:masira-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "masira-pirates",
+  "canonical_name_key": "crew.masira-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.masira-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:219"
+      }
+    ]
+  },
+  "relations": []
+}

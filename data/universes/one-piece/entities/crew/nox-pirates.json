@@ -1,0 +1,17 @@
+{
+  "id": "crew:nox-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "nox-pirates",
+  "canonical_name_key": "crew.nox-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.nox-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:651"
+      }
+    ]
+  },
+  "relations": []
+}

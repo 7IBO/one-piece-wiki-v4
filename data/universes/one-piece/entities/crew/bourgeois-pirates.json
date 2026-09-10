@@ -1,0 +1,17 @@
+{
+  "id": "crew:bourgeois-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "bourgeois-pirates",
+  "canonical_name_key": "crew.bourgeois-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.bourgeois-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:1079"
+      }
+    ]
+  },
+  "relations": []
+}

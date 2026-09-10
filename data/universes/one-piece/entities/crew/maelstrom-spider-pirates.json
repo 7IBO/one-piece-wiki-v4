@@ -1,0 +1,17 @@
+{
+  "id": "crew:maelstrom-spider-pirates",
+  "type": "crew",
+  "schema_version": 1,
+  "slug": "maelstrom-spider-pirates",
+  "canonical_name_key": "crew.maelstrom-spider-pirates.name.common",
+  "properties": {
+    "name": [
+      {
+        "value_key": "crew.maelstrom-spider-pirates.name.common",
+        "name_type": "common",
+        "since": "manga-chapter:551"
+      }
+    ]
+  },
+  "relations": []
+}
