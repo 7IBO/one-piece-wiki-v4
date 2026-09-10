@@ -758,6 +758,38 @@ function chipFor(
   return row === null ? null : chipForRow(row, cat, locale, cursor);
 }
 
+/**
+ * Le chip d'une ANCRE — « depuis … », « jusqu'à … », « source … ».
+ *
+ * Une ancre nomme un MOMENT, pas une œuvre. « depuis le chapitre
+ * 1044 » situe ; « depuis *La mort de Nefeltari Cobra* » raconte —
+ * et raconte précisément ce que le lecteur n'a pas encore lu. Le
+ * titre d'un chapitre est du contenu, souvent spoilant en lui-même,
+ * et il n'a pas sa place dans un repère temporel.
+ *
+ * Les types ORDINAUX s'affichent donc par leur numéro (« Chapitre
+ * 1044 », « Épisode 1071 », « Tome 105 »), le numéro venant de la
+ * propriété que le type déclare lui-même (`ordinalPropertyOf` :
+ * `number`, `arc_number`, `film_number`…). Aucun id n'est nommé ici.
+ *
+ * Un type SANS ordinal — un arc, une saga, une colonne SBS — garde
+ * son nom : c'est son seul identifiant lisible, et il ne divulgue pas
+ * d'intrigue de la même façon.
+ */
+function anchorChipFor(
+  id: string,
+  cat: ValidatedCatalogue,
+  locale: Locale,
+  cursor: ProgressCursor,
+): EntityChip | null {
+  const row = db.getEntityById(id);
+  if (row === null) return null;
+  const chip = chipForRow(row, cat, locale, cursor);
+  const ordinal = ordinalOf(row, cat);
+  if (ordinal === null) return chip;
+  return { ...chip, name: `${entityTypeShortLabel(cat, row.type, locale)} ${ordinal}` };
+}
+
 /** Chip for a possibly-dangling reference: falls back to the raw id. */
 function chipOrPlaceholder(
   id: string,
@@ -1139,7 +1171,9 @@ function displayQualifierValue(
       const head = displayQualifierValue(item.target, def, cat, locale, cursor);
       const sources = entityRefItemSources(item);
       if (sources.length === 0) return head;
-      const names = sources.map((s) => chipFor(s, cat, locale, cursor)?.name ?? s).join(', ');
+      const names = sources.map((s) => anchorChipFor(s, cat, locale, cursor)?.name ?? s).join(
+        ', ',
+      );
       return { ...head, value: `${head.value} (${names})` };
     }
   }
@@ -1152,7 +1186,10 @@ function displayQualifierValue(
       || (def.valueType === undefined && /^[a-z0-9-]+:[a-z0-9-]+$/.test(raw)))
     && raw.includes(':')
   ) {
-    const chip = chipFor(raw, cat, locale, cursor);
+    // Un `source_ref` EST une ancre : il situe, il ne raconte pas.
+    const chip = def.valueType === 'source_ref'
+      ? anchorChipFor(raw, cat, locale, cursor)
+      : chipFor(raw, cat, locale, cursor);
     if (chip !== null) return { value: chip.name, chip };
   }
   if (def.valueType === 'date') return { value: formatDate(raw, locale) };
@@ -1955,7 +1992,7 @@ export async function buildTypeListView(
         secondary: cardSecondary(row, cat, locale, cursor),
         subtitle: row.first_appearance_source === null
           ? null
-          : chipFor(row.first_appearance_source, cat, locale, cursor)?.name ?? null,
+          : anchorChipFor(row.first_appearance_source, cat, locale, cursor)?.name ?? null,
         tag: cardStatusTag(row, cat, locale, cursor),
       };
     })
@@ -2006,10 +2043,10 @@ function buildEntryView(
     valueChip: value?.chip ?? null,
     since: entry.row.since_source === null
       ? null
-      : chipFor(entry.row.since_source, cat, locale, cursor),
+      : anchorChipFor(entry.row.since_source, cat, locale, cursor),
     until: entry.row.until_source === null
       ? null
-      : chipFor(entry.row.until_source, cat, locale, cursor),
+      : anchorChipFor(entry.row.until_source, cat, locale, cursor),
     epistemic: epistemicView(cat, entry.row.epistemic_status, locale),
     actualDisplay: actual?.display ?? null,
     event: entry.row.event_id === null ? null : chipFor(entry.row.event_id, cat, locale, cursor),
@@ -2108,8 +2145,12 @@ function buildRelationViews(
         target.name,
       ),
       secondary: targetRow === null ? null : cardSecondary(targetRow, cat, locale, cursor),
-      since: rel.since_source === null ? null : chipFor(rel.since_source, cat, locale, cursor),
-      until: rel.until_source === null ? null : chipFor(rel.until_source, cat, locale, cursor),
+      since: rel.since_source === null
+        ? null
+        : anchorChipFor(rel.since_source, cat, locale, cursor),
+      until: rel.until_source === null
+        ? null
+        : anchorChipFor(rel.until_source, cat, locale, cursor),
       epistemic: epistemicView(cat, rel.epistemic_status, locale),
       qualifiers: rel.qualifiers === null
         ? []
@@ -2194,10 +2235,12 @@ function memberRow(
     secondary: cardSecondary(target, cat, locale, cursor),
     role: edgeQualifierLabel(edge, 'role', schema, cat, locale, cursor),
     rank: edgeQualifierLabel(edge, 'held_rank', schema, cat, locale, cursor),
-    since: edge.since_source === null ? null : chipFor(edge.since_source, cat, locale, cursor),
+    since: edge.since_source === null
+      ? null
+      : anchorChipFor(edge.since_source, cat, locale, cursor),
     until: edge.until_source === null || !isSourceVisible(edge.until_source, cursor)
       ? null
-      : chipFor(edge.until_source, cat, locale, cursor),
+      : anchorChipFor(edge.until_source, cat, locale, cursor),
     stat: withStat ? cardStat(target, cat, locale, cursor) : null,
   };
 }
@@ -2876,7 +2919,7 @@ export async function buildEntityPreview(
     tag: cardStatusTag(row, cat, locale, cursor),
     firstAppearance: row.first_appearance_source === null
       ? null
-      : chipFor(row.first_appearance_source, cat, locale, cursor)?.name ?? null,
+      : anchorChipFor(row.first_appearance_source, cat, locale, cursor)?.name ?? null,
     facts,
   };
 }
@@ -2957,7 +3000,7 @@ export async function buildEntityView(
   const infobox = totalBounty === null ? declaredInfobox : [...declaredInfobox, totalBounty];
   const firstAppearance = row.first_appearance_source === null
     ? null
-    : chipFor(row.first_appearance_source, cat, locale, cursor);
+    : anchorChipFor(row.first_appearance_source, cat, locale, cursor);
   const images = resolveEntityImages(row, edges, cursor, scope, locale, name);
   return {
     kind: 'entity',

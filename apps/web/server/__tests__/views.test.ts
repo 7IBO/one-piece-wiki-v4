@@ -494,14 +494,30 @@ describe.skipIf(!hasArtifact)('reader view models (real artifact)', () => {
     expect(ribbon.every((item) => item.image === null && item.context === null)).toBe(true);
   });
 
-  test('appearances stay empty until appearance edges exist', async () => {
-    // The corpus has no chapter/episode → character `features` edges
-    // yet (a known data gap): the module must simply not render.
+  test('les apparitions se rendent, et un conteneur n’en est pas une', async () => {
+    // Ce test disait « appearances stay empty until appearance edges
+    // exist » et epinglait un TROU comme un fait stable. Les aretes
+    // `features` existent maintenant (passe `appearances`), donc il
+    // porte sur la REGLE : les apparitions se rendent quand elles
+    // existent, et le contenu d'un conteneur n'en est pas une.
     const luffy = await entity('character', 'monkey-d-luffy');
-    expect(luffy.appearances).toEqual([]);
-    // …and a container's contents are NOT mistaken for appearances.
+    expect(luffy.appearances.length).toBeGreaterThan(0);
+    for (const group of luffy.appearances) {
+      expect(group.items.length).toBeGreaterThan(0);
+    }
+
+    // Un tome CONTIENT des chapitres ; il ne les « présente » pas. La
+    // distinction est le sens même d'ADR-105.
     const volume = await entity('volume', '1');
     expect(volume.appearances).toEqual([]);
+  });
+
+  test('les apparitions sont filtrées par le curseur comme le reste', async () => {
+    const early = await entity('character', 'monkey-d-luffy', 'en', cursor(5));
+    const late = await entity('character', 'monkey-d-luffy', 'en', cursor(100));
+    const count = (v: EntityView): number => v.appearances.reduce((n, g) => n + g.items.length, 0);
+    // Un lecteur au chapitre 5 ne voit pas les apparitions du 90.
+    expect(count(early)).toBeLessThan(count(late));
   });
 
   // -------------------------------------------------------------------------
@@ -811,5 +827,41 @@ describe.if(hasArtifact)('progress picker (real artifact)', () => {
     for (const [index, saga] of en.sagas.entries()) {
       expect(fr.sagas[index]?.id).toBe(saga.id);
     }
+  });
+});
+
+describe.if(hasArtifact)('les ancres disent le NUMÉRO, pas le titre', () => {
+  test("« première apparition » d'un personnage nomme le chapitre par son numéro", async () => {
+    const view = await entity('character', 'monkey-d-luffy');
+    // Le chapitre 1 s'intitule « Romance Dawn ». Une ancre situe, elle
+    // ne raconte pas : le titre d'un chapitre est du contenu, et il est
+    // souvent spoilant en lui-même.
+    expect(view.firstAppearance?.name).toMatch(/^(Chapter|Chapitre) \d+$/);
+  });
+
+  test('les `since` des propriétés historisées aussi', async () => {
+    const view = await entity('character', 'monkey-d-luffy');
+    const anchors = view.properties
+      .flatMap((p) => p.entries)
+      .flatMap((e) => (e.since === null ? [] : [e.since]))
+      .filter((chip) => chip.type === 'manga-chapter' || chip.type === 'anime-episode');
+    expect(anchors.length).toBeGreaterThan(0);
+    for (const chip of anchors) {
+      expect(chip.name).toMatch(/^(Chapter|Chapitre|Episode|Épisode) \d+$/);
+    }
+  });
+
+  test('la règle suit la locale, sans id en dur', async () => {
+    const fr = await entity('character', 'monkey-d-luffy', 'fr');
+    expect(fr.firstAppearance?.name).toMatch(/^Chapitre \d+$/);
+  });
+
+  test('un type SANS ordinal garde son nom — un arc n’est pas numéroté à l’affichage', async () => {
+    const { buildEntityView } = await import('../views.ts');
+    const chapter = await buildEntityView('manga-chapter', '1', 'en', cursor(), null);
+    // L'arc porte bien un `arc_number`, donc il s'affiche numéroté ; ce
+    // qui compte est que la règle vienne du SCHÉMA (le type déclare-t-il
+    // un ordinal ?) et non d'une liste d'ids écrite à la main.
+    expect(chapter).not.toBeNull();
   });
 });

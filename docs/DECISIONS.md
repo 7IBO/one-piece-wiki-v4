@@ -8161,6 +8161,59 @@ numéro.
   plutôt que d'y figurer sans intervalle ; les arcs d'anime (filler,
   cover story) n'appartiennent à aucune saga et sont absents des deux.
 
+## ADR-134 — Une ancre dit un numéro, pas un titre
+
+**Date**: 2026-09-10
+
+**Context**: Le mainteneur, en regardant `/devil-fruits` : « quand on
+met "depuis xx chapitre" on doit mettre le numéro, pas le nom du
+chapitre ». Les pages affichaient :
+
+> Akuma no Mi — _since_ **The Death of Nefeltari Cobra**
+> Aro Aro no Mi — _since_ **Friends' Cups**
+> Monkey D. Luffy — première apparition · **Romance Dawn**
+
+Le rendu résolvait chaque ancre par `chipFor`, qui rend le NOM
+d'affichage de l'entité. Pour un chapitre, ce nom est son titre.
+
+Ce n'est pas qu'une question de style. **Le titre d'un chapitre est du
+contenu, et il est souvent spoilant en lui-même** : « La mort de
+Nefeltari Cobra » raconte l'événement au lecteur qui ne l'a pas lu, au
+moment précis où l'interface prétend seulement le situer dans le temps.
+La porte anti-spoil masque bien le titre d'un chapitre NON ATTEINT ;
+elle ne le masquait pas quand ce titre servait d'étiquette d'ancre à
+une valeur, elle, visible.
+
+**Options**:
+
+- A — Masquer les titres d'ancre au-delà du curseur. Rejetée : ça ne
+  règle que la moitié du problème (un lecteur à jour verrait encore des
+  titres là où il attend un repère) et ça complique la porte.
+- B — **Une ancre affiche le NUMÉRO du type ordinal**, et le nom
+  seulement pour les types qui n'en ont pas.
+
+**Choice**: B.
+
+**Rationale**: Une ancre nomme un MOMENT, pas une œuvre. « depuis le
+chapitre 1044 » situe et ne raconte rien ; c'est aussi la forme que le
+lecteur manipule dans le sélecteur de progression, donc les deux
+surfaces parlent enfin la même langue.
+
+**Consequences**:
+
+- `anchorChipFor` dans `server/views.ts` remplace `chipFor` sur les
+  onze sites d'ancre : `first_appearance`, les `since`/`until` des
+  propriétés historisées, ceux des relations et des arêtes, la
+  provenance par item d'ADR-096, et tout qualificatif déclaré
+  `source_ref`.
+- **Le numéro vient du schéma**, jamais d'une liste d'ids :
+  `ordinalPropertyOf` cherche la propriété que le type déclare lui-même
+  (`number`, `arc_number`, `film_number`…), et `short_labels` donne le
+  mot. Un type sans ordinal — une saga, une colonne SBS — garde son nom,
+  qui est son seul identifiant lisible.
+- Le libellé suit la locale (« Chapter 1044 » / « Chapitre 1044 ») sans
+  chaîne codée en dur dans le template.
+
 ## Template for new entries
 
 ```
